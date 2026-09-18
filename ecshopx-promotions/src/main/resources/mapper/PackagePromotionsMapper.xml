@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.promotions.mapper.PackagePromotionsMapper">
+
+	<sql id="adminPackageListWhere">
+		<where>
+			company_id = #{companyId}
+			AND package_status = 'AGREE'
+			<choose>
+				<when test='status == "waiting"'>
+					AND start_time &gt; #{now}
+				</when>
+				<when test='status == "ongoing"'>
+					AND start_time &lt; #{now} AND end_time &gt; #{now}
+				</when>
+				<when test='status == "end"'>
+					AND end_time &lt; #{now}
+				</when>
+			</choose>
+			<if test="distributorIdFromQuery > 0 and operatorType != null and operatorType == 'distributor'">
+				AND source_id = #{distributorIdFromQuery} AND source_type = 'distributor'
+			</if>
+		</where>
+	</sql>
+
+	<select id="countAdminPackageList" resultType="long">
+		SELECT COUNT(*) FROM promotions_package
+		<include refid="adminPackageListWhere"/>
+	</select>
+
+	<select id="selectAdminPackageListPage" resultType="cn.shopex.ecshopx.promotions.domain.PackagePromotions">
+		SELECT package_id, company_id, goods_id, main_item_id, main_item_price, package_name, valid_grade,
+			used_platform, free_postage, package_total_price, start_time, end_time, package_status, reason,
+			created, updated, source_type, source_id
+		FROM promotions_package
+		<include refid="adminPackageListWhere"/>
+		ORDER BY created DESC
+		LIMIT #{offset}, #{limit}
+	</select>
+
+</mapper>

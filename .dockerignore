@@ -1,0 +1,19 @@
+**/target/
+**/logs/
+**/.git/
+**/.gitignore
+**/.idea/
+**/.vscode/
+**/.DS_Store
+**/*.iml
+**/*.log
+
+# 编排与 SQL 仅在 compose 阶段挂载，无需进入镜像
+docker-compose.yml
+docker/ecshopx.sql
+docker/tables_xxl_job.sql
+
+# 文档/规范（不影响 jar 构建）
+**/README.md
+**/readme*.md
+**/CHANGELOG.md

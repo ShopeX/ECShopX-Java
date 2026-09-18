@@ -1,0 +1,136 @@
+package cn.shopex.ecshopx.dispatch;
+
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
+import cn.shopex.ecshopx.common.dispatch.OrdersDispatchEventNames;
+import cn.shopex.ecshopx.orders.dispatch.TradeFinishCustomDeclareOrderDispatchListener;
+import cn.shopex.ecshopx.orders.service.customs.TradeFinishCustomDeclareOrderBusService;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import org.junit.jupiter.api.Test;
+
+class TradeFinishCustomDeclareOrderEventSyncDispatchFlowTest {
+
+	private static final String LISTENER_NAME = "listener:orders.listeners.TradeFinishCustomDeclareOrder";
+
+	@Test
+	void publishEvent_whenTradeStateNotSuccess_skipsBusService() {
+		TradeFinishCustomDeclareOrderBusService bus = mock(TradeFinishCustomDeclareOrderBusService.class);
+		TradeFinishCustomDeclareOrderDispatchListener listener = new TradeFinishCustomDeclareOrderDispatchListener(bus);
+
+		InMemoryDispatchRegistry registry = new InMemoryDispatchRegistry();
+		registry.registerEventListener(
+				OrdersDispatchEventNames.EVENT_TRADE_FINISH,
+				LISTENER_NAME,
+				ListenerDispatchOptions.syncDefaults(),
+				listener);
+
+		DispatchCore core = DispatchCore.asyncReady(registry, new SyncDispatchDriver(registry), Map.of());
+		DispatchFacade facade = new DispatchFacade(core, new DispatchFanOutPlanner(registry));
+
+		Map<String, Object> payload = new LinkedHashMap<>();
+		payload.put("company_id", 9L);
+		payload.put("order_id", 501L);
+		payload.put("trade_source_type", "normal");
+		payload.put("trade_state", "NOTPAY");
+		payload.put("user_id", 3L);
+		payload.put("pay_type", "wxpay");
+
+		facade.publishEvent(
+				OrdersDispatchEventNames.EVENT_TRADE_FINISH, payload, DispatchOptions.eventDefaults());
+
+		verify(bus, never()).handleTradeFinishRow(anyMap());
+	}
+
+	@Test
+	void publishEvent_whenPayTypeAlipay_skipsBusService() {
+		TradeFinishCustomDeclareOrderBusService bus = mock(TradeFinishCustomDeclareOrderBusService.class);
+		TradeFinishCustomDeclareOrderDispatchListener listener = new TradeFinishCustomDeclareOrderDispatchListener(bus);
+
+		InMemoryDispatchRegistry registry = new InMemoryDispatchRegistry();
+		registry.registerEventListener(
+				OrdersDispatchEventNames.EVENT_TRADE_FINISH,
+				LISTENER_NAME,
+				ListenerDispatchOptions.syncDefaults(),
+				listener);
+
+		DispatchCore core = DispatchCore.asyncReady(registry, new SyncDispatchDriver(registry), Map.of());
+		DispatchFacade facade = new DispatchFacade(core, new DispatchFanOutPlanner(registry));
+
+		Map<String, Object> payload = new LinkedHashMap<>();
+		payload.put("company_id", 9L);
+		payload.put("order_id", 501L);
+		payload.put("trade_source_type", "normal");
+		payload.put("trade_state", "SUCCESS");
+		payload.put("user_id", 3L);
+		payload.put("pay_type", "alipay");
+
+		facade.publishEvent(
+				OrdersDispatchEventNames.EVENT_TRADE_FINISH, payload, DispatchOptions.eventDefaults());
+
+		verify(bus, never()).handleTradeFinishRow(anyMap());
+	}
+
+	@Test
+	void publishEvent_whenWxpaySuccess_invokesHandleTradeFinishRowOnce() {
+		TradeFinishCustomDeclareOrderBusService bus = mock(TradeFinishCustomDeclareOrderBusService.class);
+		TradeFinishCustomDeclareOrderDispatchListener listener = new TradeFinishCustomDeclareOrderDispatchListener(bus);
+
+		InMemoryDispatchRegistry registry = new InMemoryDispatchRegistry();
+		registry.registerEventListener(
+				OrdersDispatchEventNames.EVENT_TRADE_FINISH,
+				LISTENER_NAME,
+				ListenerDispatchOptions.syncDefaults(),
+				listener);
+
+		DispatchCore core = DispatchCore.asyncReady(registry, new SyncDispatchDriver(registry), Map.of());
+		DispatchFacade facade = new DispatchFacade(core, new DispatchFanOutPlanner(registry));
+
+		Map<String, Object> payload = new LinkedHashMap<>();
+		payload.put("company_id", 9L);
+		payload.put("order_id", 501L);
+		payload.put("trade_source_type", "normal");
+		payload.put("trade_state", "SUCCESS");
+		payload.put("user_id", "3");
+		payload.put("pay_type", "wxpay");
+
+		facade.publishEvent(
+				OrdersDispatchEventNames.EVENT_TRADE_FINISH, payload, DispatchOptions.eventDefaults());
+
+		verify(bus, times(1))
+				.handleTradeFinishRow(
+						argThat(
+								m -> {
+									if (m == null) {
+										return false;
+									}
+									Long uid = userIdFromPayload(m.get("user_id"));
+									return "normal".equals(String.valueOf(m.get("trade_source_type")))
+											&& "SUCCESS".equals(String.valueOf(m.get("trade_state")))
+											&& "wxpay".equals(String.valueOf(m.get("pay_type")).trim().toLowerCase())
+											&& ((Number) m.get("company_id")).longValue() == 9L
+											&& ((Number) m.get("order_id")).longValue() == 501L
+											&& uid != null
+											&& uid == 3L;
+								}));
+	}
+
+	private static Long userIdFromPayload(Object raw) {
+		if (raw == null) {
+			return null;
+		}
+		if (raw instanceof Number n) {
+			return n.longValue();
+		}
+		try {
+			return Long.parseLong(String.valueOf(raw).trim());
+		} catch (NumberFormatException e) {
+			return null;
+		}
+	}
+}

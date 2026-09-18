@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.popularize.mapper.PromoterGoodsMapper">
+
+	<select id="countJoinedItemsForShop" resultType="long">
+		SELECT COUNT(1)
+		FROM popularize_promoter_goods pg
+		LEFT JOIN items i ON pg.goods_id = i.goods_id
+		WHERE pg.company_id = #{companyId} AND pg.user_id = #{userId}
+		<if test="!isAllGoods">
+			AND i.rebate = 1
+		</if>
+	</select>
+
+	<select id="listGoodsIdsJoinedItemsForShop" resultType="long">
+		SELECT pg.goods_id
+		FROM popularize_promoter_goods pg
+		LEFT JOIN items i ON pg.goods_id = i.goods_id
+		WHERE pg.company_id = #{companyId} AND pg.user_id = #{userId}
+		<if test="!isAllGoods">
+			AND i.rebate = 1
+		</if>
+		ORDER BY pg.id ASC
+	</select>
+
+	<select id="countBasePromoterGoods" resultType="long">
+		SELECT COUNT(1) FROM popularize_promoter_goods pg
+		WHERE pg.company_id = #{companyId} AND pg.user_id = #{userId}
+		<if test="goodsId != null">
+			AND pg.goods_id = #{goodsId}
+		</if>
+	</select>
+
+	<select id="listPagedGoodsIdsJoinedRebate" resultType="long">
+		SELECT pg.goods_id
+		FROM popularize_promoter_goods pg
+		LEFT JOIN items i ON pg.goods_id = i.goods_id
+		WHERE pg.company_id = #{companyId} AND pg.user_id = #{userId}
+		<if test="goodsId != null">
+			AND pg.goods_id = #{goodsId}
+		</if>
+		<if test="!isAllGoods">
+			AND i.rebate = 1
+		</if>
+		ORDER BY pg.id ASC
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+</mapper>

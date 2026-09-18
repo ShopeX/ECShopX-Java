@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.reservation.mapper.WorkShiftMapper">
+
+	<!--
+	  按「当天」日期锚定，筛掉排班时段与预约 begin_time 无交集的行：
+	  排除排班开始晚于预约开始，或排班结束早于等于预约开始的记录。
+	-->
+	<select id="selectIdsIntersectingReservationWindow" resultType="long">
+		SELECT DISTINCT w.resource_level_id
+		FROM reservation_work_shift w
+		INNER JOIN reservation_shift_type t ON w.shift_type_id = t.type_id
+		WHERE w.company_id = #{companyId}
+		AND w.shop_id = #{shopId}
+		AND w.work_date = #{workDate}
+		AND w.resource_level_id IN
+		<foreach collection="workShiftIds" item="id" open="(" separator="," close=")">#{id}</foreach>
+		AND (w.shift_type_id IS NULL OR CAST(w.shift_type_id AS SIGNED) != -1)
+		AND NOT (
+			UNIX_TIMESTAMP(CONCAT(DATE(FROM_UNIXTIME(UNIX_TIMESTAMP())), ' ', t.begin_time)) >
+			UNIX_TIMESTAMP(CONCAT(DATE(FROM_UNIXTIME(UNIX_TIMESTAMP())), ' ', #{beginTime}))
+			OR UNIX_TIMESTAMP(CONCAT(DATE(FROM_UNIXTIME(UNIX_TIMESTAMP())), ' ', t.end_time)) &lt;=
+			UNIX_TIMESTAMP(CONCAT(DATE(FROM_UNIXTIME(UNIX_TIMESTAMP())), ' ', #{beginTime}))
+		)
+	</select>
+</mapper>

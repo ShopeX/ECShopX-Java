@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.aftersales.mapper.AftersalesMapper">
+
+	<sql id="adminListWhereInner">
+		<if test="filter.company_id != null">
+			AND a.company_id = #{filter.company_id}
+		</if>
+		<if test="filter.create_time_gte != null">
+			AND a.create_time &gt;= #{filter.create_time_gte}
+		</if>
+		<if test="filter.create_time_lte != null">
+			AND a.create_time &lt;= #{filter.create_time_lte}
+		</if>
+		<if test="filter.aftersales_status != null and filter.aftersales_status != ''">
+			AND a.aftersales_status = #{filter.aftersales_status}
+		</if>
+		<if test="filter.aftersales_type != null and filter.aftersales_type != ''">
+			AND a.aftersales_type = #{filter.aftersales_type}
+		</if>
+		<if test="filter.aftersales_impossible != null and filter.aftersales_impossible == true">
+			AND 1 = 0
+		</if>
+		<if test="filter.aftersales_bn_eq != null">
+			AND a.aftersales_bn = #{filter.aftersales_bn_eq}
+		</if>
+		<if test="filter.aftersales_bn_like != null and filter.aftersales_bn_like != ''">
+			AND CAST(a.aftersales_bn AS CHAR) LIKE #{filter.aftersales_bn_like}
+		</if>
+		<if test="filter.aftersales_bn_in != null and filter.aftersales_bn_in.size() &gt; 0">
+			AND a.aftersales_bn IN
+			<foreach collection="filter.aftersales_bn_in" item="bn" open="(" separator="," close=")">
+				#{bn}
+			</foreach>
+		</if>
+		<if test="filter.item_id != null and filter.item_id != ''">
+			AND a.item_id = #{filter.item_id}
+		</if>
+		<if test="filter.item_bn_like != null and filter.item_bn_like != ''">
+			AND a.item_bn LIKE #{filter.item_bn_like}
+		</if>
+		<if test="filter.order_impossible != null and filter.order_impossible == true">
+			AND 1 = 0
+		</if>
+		<if test="filter.order_id_eq != null">
+			AND a.order_id = #{filter.order_id_eq}
+		</if>
+		<if test="filter.order_id_like != null and filter.order_id_like != ''">
+			AND CAST(a.order_id AS CHAR) LIKE #{filter.order_id_like}
+		</if>
+		<if test="filter.order_id_in != null and filter.order_id_in.size() &gt; 0">
+			AND a.order_id IN
+			<foreach collection="filter.order_id_in" item="oid" open="(" separator="," close=")">
+				#{oid}
+			</foreach>
+		</if>
+		<if test="filter.shop_id != null and filter.shop_id != ''">
+			AND a.shop_id = #{filter.shop_id}
+		</if>
+		<if test="filter.user_id != null and filter.user_id != ''">
+			AND a.user_id = #{filter.user_id}
+		</if>
+		<if test="filter.self_delivery_operator_id != null">
+			AND a.self_delivery_operator_id = #{filter.self_delivery_operator_id}
+		</if>
+		<if test="filter.mobile_cipher != null and filter.mobile_cipher != ''">
+			AND a.mobile = #{filter.mobile_cipher}
+		</if>
+		<if test="filter.merchant_id != null">
+			AND a.merchant_id = #{filter.merchant_id}
+		</if>
+		<if test="filter.supplier_id != null">
+			AND a.supplier_id = #{filter.supplier_id}
+		</if>
+		<if test="filter.distributor_or_ids != null and filter.distributor_or_ids.size() &gt; 0">
+			AND (
+			a.distributor_id IN
+			<foreach collection="filter.distributor_or_ids" item="did" open="(" separator="," close=")">
+				#{did}
+			</foreach>
+			OR a.return_distributor_id IN
+			<foreach collection="filter.distributor_or_ids" item="did2" open="(" separator="," close=")">
+				#{did2}
+			</foreach>
+			)
+		</if>
+	</sql>
+
+	<sql id="adminJoinOrderPrescription">
+		<if test="filter.o_prescription_eq0 != null and filter.o_prescription_eq0 == true">
+			AND o.prescription_status = 0
+		</if>
+		<if test="filter.o_prescription_gt0 != null and filter.o_prescription_gt0 == true">
+			AND o.prescription_status &gt; 0
+		</if>
+	</sql>
+
+	<sql id="frontH5JoinOrderExtras">
+		<include refid="adminJoinOrderPrescription"/>
+		<if test="filter.o_order_class != null and filter.o_order_class != ''">
+			AND o.order_class = #{filter.o_order_class}
+		</if>
+	</sql>
+
+	<select id="countAdminList" resultType="long">
+		SELECT COUNT(1)
+		FROM aftersales a
+		<where>
+			<include refid="adminListWhereInner"/>
+		</where>
+	</select>
+
+	<select id="selectAdminList" resultType="cn.shopex.ecshopx.aftersales.domain.Aftersales">
+		SELECT a.*
+		FROM aftersales a
+		<where>
+			<include refid="adminListWhereInner"/>
+		</where>
+		<choose>
+			<when test="filter.order_by_create_time_asc != null and filter.order_by_create_time_asc == true">
+				ORDER BY a.create_time ASC
+			</when>
+			<otherwise>
+				ORDER BY a.create_time DESC
+			</otherwise>
+		</choose>
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+
+	<select id="countAdminListJoinOrder" resultType="long">
+		SELECT COUNT(1)
+		FROM aftersales a
+		INNER JOIN orders_normal_orders o ON o.order_id = a.order_id AND o.company_id = a.company_id
+		<where>
+			<include refid="adminJoinOrderPrescription"/>
+			<include refid="adminListWhereInner"/>
+		</where>
+	</select>
+
+	<select id="selectAdminListJoinOrder" resultType="cn.shopex.ecshopx.aftersales.domain.Aftersales">
+		SELECT a.*
+		FROM aftersales a
+		INNER JOIN orders_normal_orders o ON o.order_id = a.order_id AND o.company_id = a.company_id
+		<where>
+			<include refid="adminJoinOrderPrescription"/>
+			<include refid="adminListWhereInner"/>
+		</where>
+		<choose>
+			<when test="filter.order_by_create_time_asc != null and filter.order_by_create_time_asc == true">
+				ORDER BY a.create_time ASC
+			</when>
+			<otherwise>
+				ORDER BY a.create_time DESC
+			</otherwise>
+		</choose>
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+
+	<select id="countFrontH5ListJoinOrder" resultType="long">
+		SELECT COUNT(1)
+		FROM aftersales a
+		LEFT JOIN orders_normal_orders o ON o.order_id = a.order_id AND o.company_id = a.company_id
+		<where>
+			<include refid="frontH5JoinOrderExtras"/>
+			<include refid="adminListWhereInner"/>
+		</where>
+	</select>
+
+	<select id="selectFrontH5ListJoinOrder" resultType="cn.shopex.ecshopx.aftersales.domain.Aftersales">
+		SELECT a.*
+		FROM aftersales a
+		LEFT JOIN orders_normal_orders o ON o.order_id = a.order_id AND o.company_id = a.company_id
+		<where>
+			<include refid="frontH5JoinOrderExtras"/>
+			<include refid="adminListWhereInner"/>
+		</where>
+		ORDER BY a.create_time DESC
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+
+	<select id="selectItemNamesByAftersalesBns" resultType="java.util.LinkedHashMap">
+		SELECT
+			ad.aftersales_bn AS aftersales_bn,
+			i.item_id AS item_id,
+			i.item_name AS item_name,
+			i.item_bn AS item_bn
+		FROM aftersales_detail ad
+		LEFT JOIN items i ON ad.item_id = i.item_id
+		WHERE ad.company_id = #{companyId}
+		<if test="bns != null and bns.size() &gt; 0">
+			AND ad.aftersales_bn IN
+			<foreach collection="bns" item="bn" open="(" separator="," close=")">
+				#{bn}
+			</foreach>
+		</if>
+	</select>
+
+	<select id="selectOrderIdsByCompanyAndOrderClass" resultType="long">
+		SELECT order_id FROM orders_normal_orders
+		WHERE company_id = #{companyId} AND order_class = #{orderClass}
+	</select>
+
+	<select id="selectOrderIdsByCompanyAndReceiverMobile" resultType="long">
+		SELECT order_id FROM orders_normal_orders
+		WHERE company_id = #{companyId}
+		AND (receiver_mobile = #{plain} OR receiver_mobile = #{cipher})
+	</select>
+
+	<select id="selectItemIdsByCompanyAndItemNameContains" resultType="long">
+		SELECT item_id FROM items
+		WHERE company_id = #{companyId}
+		AND item_name LIKE #{likePattern}
+	</select>
+
+	<select id="selectNormalOrderHeadersByOrderIds" resultType="java.util.LinkedHashMap">
+		SELECT order_id AS order_id, receiver_mobile AS receiver_mobile, order_holder AS order_holder, salesman_id AS salesman_id
+		FROM orders_normal_orders
+		WHERE company_id = #{companyId}
+		<if test="orderIds != null and orderIds.size() &gt; 0">
+			AND order_id IN
+			<foreach collection="orderIds" item="oid" open="(" separator="," close=")">
+				#{oid}
+			</foreach>
+		</if>
+	</select>
+
+	<select id="selectNormalOrderItemsByCompanyAndOrderIds" resultType="java.util.LinkedHashMap">
+		SELECT
+			id AS id,
+			order_id AS order_id,
+			company_id AS company_id,
+			item_id AS item_id,
+			item_bn AS item_bn,
+			item_name AS item_name,
+			supplier_id AS supplier_id,
+			num AS num,
+			is_prescription AS is_prescription
+		FROM orders_normal_orders_items
+		WHERE company_id = #{companyId}
+		<if test="orderIds != null and orderIds.size() &gt; 0">
+			AND order_id IN
+			<foreach collection="orderIds" item="oid" open="(" separator="," close=")">
+				#{oid}
+			</foreach>
+		</if>
+	</select>
+
+	<select id="selectSubOrderPrescriptionBySubIds" resultType="java.util.LinkedHashMap">
+		SELECT id AS id, is_prescription AS is_prescription
+		FROM orders_normal_orders_items
+		WHERE company_id = #{companyId}
+		<if test="subIds != null and subIds.size() &gt; 0">
+			AND id IN
+			<foreach collection="subIds" item="sid" open="(" separator="," close=")">
+				#{sid}
+			</foreach>
+		</if>
+	</select>
+
+	<select id="selectShoppingGuideWorkUseridBySalespersonIds" resultType="java.util.LinkedHashMap">
+		SELECT salesperson_id AS salesperson_id, work_userid AS work_userid
+		FROM shop_salesperson
+		WHERE company_id = #{companyId}
+		AND salesperson_type = 'shopping_guide'
+		<if test="salespersonIds != null and salespersonIds.size() &gt; 0">
+			AND salesperson_id IN
+			<foreach collection="salespersonIds" item="spid" open="(" separator="," close=")">
+				#{spid}
+			</foreach>
+		</if>
+	</select>
+
+	<select id="selectFinancialExportPage" resultType="java.util.LinkedHashMap">
+		SELECT
+			a.aftersales_bn,
+			a.order_id,
+			ad.item_name,
+			ad.num,
+			a.create_time,
+			a.refund_fee,
+			a.description,
+			a.reason,
+			ar.refund_success_time
+		FROM aftersales a
+		LEFT JOIN aftersales_detail ad ON a.aftersales_bn = ad.aftersales_bn
+		LEFT JOIN aftersales_refund ar ON a.aftersales_bn = ar.aftersales_bn
+		<where>
+			<include refid="adminListWhereInner"/>
+		</where>
+		ORDER BY a.create_time DESC
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+
+	<select id="selectRecordListExportPage" resultType="java.util.LinkedHashMap">
+		SELECT
+			a.aftersales_bn AS aftersales_bn,
+			a.order_id AS order_id,
+			ad.item_bn AS item_bn,
+			ad.item_name AS item_name,
+			ad.num AS num,
+			a.aftersales_type AS aftersales_type,
+			a.aftersales_status AS aftersales_status,
+			a.create_time AS create_time,
+			ad.refund_fee AS refund_fee,
+			a.progress AS progress,
+			a.description AS description,
+			a.reason AS reason,
+			a.refuse_reason AS refuse_reason,
+			a.memo AS memo,
+			ad.distributor_id AS distributor_id,
+			a.company_id AS company_id,
+			a.supplier_id AS supplier_id,
+			a.self_delivery_operator_id AS self_delivery_operator_id
+		FROM aftersales_detail ad
+		LEFT JOIN aftersales a ON ad.aftersales_bn = a.aftersales_bn
+		<where>
+			<include refid="adminListWhereInner"/>
+		</where>
+		ORDER BY a.create_time DESC
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+
+	<select id="selectDeliveryStaffAftersalesAggregates"
+			resultType="cn.shopex.ecshopx.aftersales.domain.dto.DeliveryStaffAftersalesAggregateRow">
+		SELECT
+			aftersales.self_delivery_operator_id AS selfDeliveryOperatorId,
+			COUNT(aftersales.order_id) AS aftersalesCount,
+			SUM(aftersales.refund_fee) AS refundFeeCount
+		FROM aftersales
+		LEFT JOIN aftersales_refund ON aftersales.aftersales_bn = aftersales_refund.aftersales_bn
+		WHERE aftersales.aftersales_status = 2
+			AND aftersales.company_id = #{companyId}
+			AND aftersales_refund.refund_success_time &gt;= #{startEpoch}
+			AND aftersales_refund.refund_success_time &lt;= #{endEpoch}
+		<if test="operatorIds != null and !operatorIds.isEmpty()">
+			AND aftersales.self_delivery_operator_id IN
+			<foreach collection="operatorIds" item="oid" open="(" separator="," close=")">
+				#{oid}
+			</foreach>
+		</if>
+		<if test="distributorIds != null and !distributorIds.isEmpty()">
+			AND aftersales.distributor_id IN
+			<foreach collection="distributorIds" item="did" open="(" separator="," close=")">
+				#{did}
+			</foreach>
+		</if>
+		GROUP BY aftersales.self_delivery_operator_id
+	</select>
+
+	<select id="selectTradeIndexRowsForRefundExport" resultType="java.util.LinkedHashMap">
+		SELECT order_id AS orderId, trade_no AS tradeNo
+		FROM trade
+		WHERE trade_state = 'SUCCESS'
+			AND company_id = #{companyId}
+		<if test="orderIds != null and orderIds.size() &gt; 0">
+			AND order_id IN
+			<foreach collection="orderIds" item="oid" open="(" separator="," close=")">
+				#{oid}
+			</foreach>
+		</if>
+	</select>
+</mapper>

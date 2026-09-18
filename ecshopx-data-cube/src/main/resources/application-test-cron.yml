@@ -1,0 +1,39 @@
+# 本文件仅在 spring.profiles.active 包含 test-cron 时生效（由 orchestrator 衔接步骤 3 启动参数激活）。
+# 本任务无「影响 DB diff = 否」的副作用 bean 可替换；本文件仅占位满足 profile 约定。
+
+# 商户日统计：主路径为 Dispatch Bus 投递 Redis slow（非独立线程池模拟队列）。与 QUEUE_DRIVER=sync 式「同连接连贯终态」对账时，
+# 可打开下方开关，使 runStatistics 在同一线程内执行（不经 Bus 入队）：
+# datacube:
+#   cron:
+#     merchant-daily-statistic:
+#       sync-inline: true
+#
+# 等价的扁平键（与代码 @Value 一致）：
+# datacube.cron.merchant-daily-statistic.sync-inline: true
+#
+# 商品日统计：主路径为 Dispatch Bus 投递 Redis slow（非 @Async 线程池）。与 QUEUE_DRIVER=sync 式「排空 slow、同线程终态」对账时，
+# 可打开下方开关，使 runStatistics 在同一线程内执行：
+# datacube:
+#   cron:
+#     goods-daily-statistics:
+#       sync-inline: true
+#
+# datacube.cron.goods-daily-statistics.sync-inline: true
+#
+# 内购活动商品日统计：独立开关 datacube.cron.employee-purchase-goods-daily-statistics.sync-inline
+# （勿与 goods-daily-statistics.sync-inline 混用，避免两条任务互相影响）
+# datacube:
+#   cron:
+#     employee-purchase-goods-daily-statistics:
+#       sync-inline: true
+#
+# datacube.cron.employee-purchase-goods-daily-statistics.sync-inline: true
+#
+# 门店日统计：默认经 Dispatch Bus 投递 slow（非 @Async 线程池）。与 QUEUE_DRIVER=sync 式对账时：
+# datacube.cron.distributor-daily-statistic.sync-inline: true
+# （勿与 merchant-daily-statistic / goods-daily-statistics 混用）
+#
+# 全站商城日统计（与 XXL daily-statistics 语义对齐）：主路径为 Dispatch Bus 投递 Redis slow（非历史专用线程池路径）。
+# 与「同线程内联跑批」终态对账时，可打开：
+# datacube.cron.daily-statistics.sync-inline: true
+# （勿与 merchant-daily-statistic / goods-daily-statistics / distributor-daily-statistic 等其它 sync-inline 混用，避免互相干扰）

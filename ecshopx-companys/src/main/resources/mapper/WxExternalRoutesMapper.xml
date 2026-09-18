@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.companys.mapper.WxExternalRoutesMapper">
+
+	<sql id="configRoutesFromJoinWhere">
+		FROM wx_external_config config
+		RIGHT JOIN wx_external_routes routes ON config.wx_external_config_id = routes.wx_external_config_id
+		WHERE config.company_id = #{companyId}
+		<if test="appId != null">
+			AND config.app_id = #{appId}
+		</if>
+		<if test="routeInfoNeedleEscaped != null">
+			AND routes.route_info LIKE CONCAT('%', #{routeInfoNeedleEscaped}, '%')
+		</if>
+	</sql>
+
+	<select id="countConfigRoutesList" resultType="java.lang.Long">
+		SELECT COUNT(*)
+		<include refid="configRoutesFromJoinWhere"/>
+	</select>
+
+	<select id="selectConfigRoutesList" resultType="java.util.LinkedHashMap">
+		SELECT
+			config.wx_external_config_id AS wx_external_config_id,
+			config.app_id AS app_id,
+			config.app_name AS app_name,
+			config.app_desc AS app_desc,
+			routes.wx_external_routes_id AS wx_external_routes_id,
+			routes.route_name AS route_name,
+			routes.route_info AS route_info,
+			routes.route_desc AS route_desc
+		<include refid="configRoutesFromJoinWhere"/>
+		ORDER BY routes.wx_external_routes_id ASC
+		<if test="paged">
+			LIMIT #{limit} OFFSET #{offset}
+		</if>
+	</select>
+</mapper>

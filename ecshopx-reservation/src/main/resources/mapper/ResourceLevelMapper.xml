@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.reservation.mapper.ResourceLevelMapper">
+
+	<select id="selectActiveIdsByShopAndFilter" resultType="long">
+		SELECT resource_level_id FROM reservation_resource_level
+		WHERE company_id = CAST(#{companyId} AS CHAR)
+		AND shop_id = CAST(#{shopId} AS CHAR)
+		AND status = 'active'
+		AND resource_level_id IN
+		<foreach collection="ids" item="id" open="(" separator="," close=")">#{id}</foreach>
+	</select>
+</mapper>

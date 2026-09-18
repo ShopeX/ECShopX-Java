@@ -1,0 +1,528 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.hfpay.mapper.HfpayStatisticsOrderMetricsMapper">
+
+	<sql id="ordersMetricsBase">
+		a.company_id = #{companyId}
+		AND a.pay_type = 'hfpay'
+		AND a.is_profitsharing = 2
+		AND a.order_status NOT IN ('NOTPAY', 'PART_PAYMENT', 'WAIT_GROUPS_SUCCESS')
+		AND a.pay_status &lt;&gt; 'NOTPAY'
+		<if test="distributorId != null">
+			AND a.distributor_id = #{distributorId}
+		</if>
+		<if test="startUnix != null">
+			AND a.create_time &gt;= #{startUnix}
+		</if>
+		<if test="endUnix != null">
+			AND a.create_time &lt;= #{endUnix}
+		</if>
+	</sql>
+
+	<!-- Profit-sharing charge rows filter distributor_id on order_profit_sharing (ps), not on orders_normal_orders (a); this base filter must not add a.distributor_id. -->
+	<sql id="ordersMetricsBaseNoDistributor">
+		a.company_id = #{companyId}
+		AND a.pay_type = 'hfpay'
+		AND a.is_profitsharing = 2
+		AND a.order_status NOT IN ('NOTPAY', 'PART_PAYMENT', 'WAIT_GROUPS_SUCCESS')
+		AND a.pay_status &lt;&gt; 'NOTPAY'
+		<if test="startUnix != null">
+			AND a.create_time &gt;= #{startUnix}
+		</if>
+		<if test="endUnix != null">
+			AND a.create_time &lt;= #{endUnix}
+		</if>
+	</sql>
+
+	<!-- Normalize charset/collation so CAST(a.order_id AS CHAR) does not mix utf8mb4_general_ci with trade.order_id (e.g. utf8mb4_unicode_ci). -->
+	<sql id="joinTradeOnOrder">
+		a.company_id = CAST(t.company_id AS UNSIGNED)
+		AND CONVERT(CAST(a.order_id AS CHAR) USING utf8mb4) COLLATE utf8mb4_unicode_ci
+			= CONVERT(t.order_id USING utf8mb4) COLLATE utf8mb4_unicode_ci
+	</sql>
+
+	<select id="countPaidOrders" resultType="long">
+		SELECT COUNT(*)
+		FROM orders_normal_orders a
+		<where>
+			<include refid="ordersMetricsBase"/>
+		</where>
+	</select>
+
+	<select id="sumOrderTotalFees" resultType="java.lang.Long">
+		SELECT IFNULL(SUM(CAST(a.total_fee AS DECIMAL(20, 0))), 0)
+		FROM orders_normal_orders a
+		<where>
+			<include refid="ordersMetricsBase"/>
+		</where>
+	</select>
+
+	<select id="countDistinctOrdersRefundSuccess" resultType="long">
+		SELECT COUNT(DISTINCT a.order_id)
+		FROM orders_normal_orders a
+		INNER JOIN aftersales_refund r ON a.company_id = r.company_id AND a.order_id = r.order_id
+		<where>
+			<include refid="ordersMetricsBase"/>
+			AND r.refund_status = 'SUCCESS'
+		</where>
+	</select>
+
+	<select id="sumRefundedFeesSuccessOrAudit" resultType="java.lang.Long">
+		SELECT IFNULL(SUM(r.refunded_fee), 0)
+		FROM orders_normal_orders a
+		INNER JOIN aftersales_refund r ON a.company_id = r.company_id AND a.order_id = r.order_id
+		<where>
+			<include refid="ordersMetricsBase"/>
+			AND r.refund_status IN ('SUCCESS', 'AUDIT_SUCCESS')
+		</where>
+	</select>
+
+	<select id="countDistinctOrdersRefunding" resultType="long">
+		SELECT COUNT(DISTINCT a.order_id)
+		FROM orders_normal_orders a
+		INNER JOIN aftersales_refund r ON a.company_id = r.company_id AND a.order_id = r.order_id
+		<where>
+			<include refid="ordersMetricsBase"/>
+			AND r.refund_status IN ('AUDIT_SUCCESS', 'READY', 'PROCESSING')
+		</where>
+	</select>
+
+	<select id="sumRefundFeesRefunding" resultType="java.lang.Long">
+		SELECT IFNULL(SUM(r.refund_fee), 0)
+		FROM orders_normal_orders a
+		INNER JOIN aftersales_refund r ON a.company_id = r.company_id AND a.order_id = r.order_id
+		<where>
+			<include refid="ordersMetricsBase"/>
+			AND r.refund_status IN ('AUDIT_SUCCESS', 'READY', 'PROCESSING')
+		</where>
+	</select>
+
+	<select id="listProfitSharingChargeRows" resultType="map">
+		SELECT a.profitsharing_rate AS profitsharing_rate, ps.total_fee AS total_fee
+		FROM orders_normal_orders a
+		INNER JOIN order_profit_sharing ps
+			ON a.company_id = ps.company_id AND a.order_id = ps.order_id
+		<where>
+			<include refid="ordersMetricsBaseNoDistributor"/>
+			AND ps.status = 1
+			<if test="distributorId != null">
+				AND ps.distributor_id = #{distributorId}
+			</if>
+		</where>
+	</select>
+
+	<select id="listTotalChargeRows" resultType="map">
+		SELECT a.profitsharing_rate AS profitsharing_rate, t.pay_fee AS total_fee
+		FROM orders_normal_orders a
+		INNER JOIN trade t ON <include refid="joinTradeOnOrder"/>
+		<where>
+			<include refid="ordersMetricsBase"/>
+			AND t.trade_state = 'SUCCESS'
+		</where>
+	</select>
+
+	<select id="listRefundChargeRows" resultType="map">
+		SELECT a.profitsharing_rate AS profitsharing_rate, r.refunded_fee AS total_fee
+		FROM orders_normal_orders a
+		INNER JOIN aftersales_refund r ON a.company_id = r.company_id AND a.order_id = r.order_id
+		<where>
+			<include refid="ordersMetricsBase"/>
+			AND r.refund_status = 'SUCCESS'
+		</where>
+	</select>
+
+	<select id="listUnProfitChargeRows" resultType="map">
+		SELECT a.profitsharing_rate AS profitsharing_rate, t.pay_fee AS total_fee
+		FROM orders_normal_orders a
+		INNER JOIN trade t ON <include refid="joinTradeOnOrder"/>
+		<where>
+			<include refid="ordersMetricsBase"/>
+			AND a.profitsharing_status = 1
+			AND t.trade_state = 'SUCCESS'
+		</where>
+	</select>
+
+	<select id="listUnProfitRefundChargeRows" resultType="map">
+		SELECT a.profitsharing_rate AS profitsharing_rate, r.refunded_fee AS total_fee
+		FROM orders_normal_orders a
+		INNER JOIN aftersales_refund r ON a.company_id = r.company_id AND a.order_id = r.order_id
+		<where>
+			<include refid="ordersMetricsBase"/>
+			AND a.profitsharing_status = 1
+			AND r.refund_status = 'SUCCESS'
+		</where>
+	</select>
+
+	<select id="listCompanyIncomeDayRows" resultType="map">
+		SELECT a.profitsharing_rate AS profitsharing_rate, t.pay_fee AS total_fee
+		FROM orders_normal_orders a
+		INNER JOIN trade t ON <include refid="joinTradeOnOrder"/>
+		WHERE a.company_id = #{companyId}
+		AND a.pay_type = 'hfpay'
+		AND a.is_profitsharing = 2
+		AND a.order_status NOT IN ('NOTPAY', 'PART_PAYMENT', 'WAIT_GROUPS_SUCCESS')
+		AND a.pay_status &lt;&gt; 'NOTPAY'
+		AND t.trade_state = 'SUCCESS'
+		AND CAST(t.time_expire AS UNSIGNED) &gt;= #{todayStartUnix}
+	</select>
+
+	<select id="listCompanyRefundDayRows" resultType="map">
+		SELECT a.profitsharing_rate AS profitsharing_rate, r.refunded_fee AS total_fee
+		FROM orders_normal_orders a
+		INNER JOIN aftersales_refund r ON a.company_id = r.company_id AND a.order_id = r.order_id
+		WHERE a.company_id = #{companyId}
+		AND a.pay_type = 'hfpay'
+		AND a.is_profitsharing = 2
+		AND a.order_status NOT IN ('NOTPAY', 'PART_PAYMENT', 'WAIT_GROUPS_SUCCESS')
+		AND a.pay_status &lt;&gt; 'NOTPAY'
+		AND r.refund_status = 'SUCCESS'
+		AND r.refund_success_time &gt;= #{todayStartUnix}
+	</select>
+
+	<select id="sumProfitShareCapital" resultType="java.lang.Long">
+		SELECT IFNULL(SUM(d.total_fee), 0)
+		FROM order_profit_sharing p
+		INNER JOIN order_profit_sharing_details d
+			ON p.company_id = d.company_id AND p.order_profit_sharing_id = d.sharing_id
+		WHERE p.company_id = #{companyId}
+		AND p.pay_type = 'hfpay'
+		AND d.distributor_id = 0
+		AND p.status = 1
+		AND p.hf_order_date &gt;= #{hfOrderDateYmd}
+	</select>
+
+	<select id="listDistributorIncomeDayRows" resultType="map">
+		SELECT a.profitsharing_rate AS profitsharing_rate, t.pay_fee AS total_fee
+		FROM orders_normal_orders a
+		INNER JOIN trade t ON <include refid="joinTradeOnOrder"/>
+		WHERE a.company_id = #{companyId}
+		AND a.pay_type = 'hfpay'
+		AND a.is_profitsharing = 2
+		AND a.order_status NOT IN ('NOTPAY', 'PART_PAYMENT', 'WAIT_GROUPS_SUCCESS')
+		AND a.pay_status &lt;&gt; 'NOTPAY'
+		AND a.distributor_id = #{distributorId}
+		AND t.trade_state = 'SUCCESS'
+		AND CAST(t.time_expire AS UNSIGNED) &gt;= #{todayStartUnix}
+	</select>
+
+	<select id="listDistributorRefundSuccessDayRows" resultType="map">
+		SELECT a.profitsharing_rate AS profitsharing_rate, r.refunded_fee AS total_fee
+		FROM orders_normal_orders a
+		INNER JOIN aftersales_refund r ON a.company_id = r.company_id AND a.order_id = r.order_id
+		WHERE a.company_id = #{companyId}
+		AND a.pay_type = 'hfpay'
+		AND a.is_profitsharing = 2
+		AND a.order_status NOT IN ('NOTPAY', 'PART_PAYMENT', 'WAIT_GROUPS_SUCCESS')
+		AND a.pay_status &lt;&gt; 'NOTPAY'
+		AND a.distributor_id = #{distributorId}
+		AND r.refund_status = 'SUCCESS'
+		AND r.refund_success_time &gt;= #{todayStartUnix}
+	</select>
+
+	<select id="listDistributorRefundingDayRows" resultType="map">
+		SELECT a.profitsharing_rate AS profitsharing_rate, r.refund_fee AS total_fee
+		FROM orders_normal_orders a
+		INNER JOIN aftersales_refund r ON a.company_id = r.company_id AND a.order_id = r.order_id
+		WHERE a.company_id = #{companyId}
+		AND a.pay_type = 'hfpay'
+		AND a.is_profitsharing = 2
+		AND a.order_status NOT IN ('NOTPAY', 'PART_PAYMENT', 'WAIT_GROUPS_SUCCESS')
+		AND a.pay_status &lt;&gt; 'NOTPAY'
+		AND a.distributor_id = #{distributorId}
+		AND r.refund_status IN ('READY', 'AUDIT_SUCCESS', 'PROCESSING')
+	</select>
+
+	<select id="sumProfitShareCapitalForDistributor" resultType="java.lang.Long">
+		SELECT IFNULL(SUM(d.total_fee), 0)
+		FROM order_profit_sharing p
+		INNER JOIN order_profit_sharing_details d
+			ON p.company_id = d.company_id AND p.order_profit_sharing_id = d.sharing_id
+		WHERE p.company_id = #{companyId}
+		AND p.pay_type = 'hfpay'
+		AND d.distributor_id = #{distributorId}
+		AND p.status = 1
+		AND p.hf_order_date &gt;= #{hfOrderDateYmd}
+	</select>
+
+	<!-- 分账日「截至昨日」的已结算分账额；条件顺序与 PHP 构造 Filter 的字段压栈一致。 -->
+	<select id="sumProfitShareCapitalForDistributorWhereHfOrderDateLteYmd" resultType="java.lang.Long">
+		SELECT IFNULL(SUM(d.total_fee), 0)
+		FROM order_profit_sharing p
+		INNER JOIN order_profit_sharing_details d
+			ON p.company_id = d.company_id AND p.order_profit_sharing_id = d.sharing_id
+		WHERE p.company_id = #{companyId}
+		AND p.pay_type = 'hfpay'
+		AND d.distributor_id = #{distributorId}
+		AND p.status = 1
+		AND p.hf_order_date &lt;= #{hfOrderDateYmd}
+	</select>
+
+	<!-- 跑批日「累计至日末」收入侧：不施加 create_time 日窗，仅 trade 态与 time_expire 上界。 -->
+	<sql id="ordersDistributorDayBaseByDistributor">
+		a.company_id = #{companyId}
+		AND a.pay_type = 'hfpay'
+		AND a.is_profitsharing = 2
+		AND a.order_status NOT IN ('NOTPAY', 'PART_PAYMENT', 'WAIT_GROUPS_SUCCESS')
+		AND a.pay_status &lt;&gt; 'NOTPAY'
+		AND a.distributor_id = #{distributorId}
+	</sql>
+
+	<select id="listDistributorCumulativeIncomeRowsToEndUnix" resultType="map">
+		SELECT a.profitsharing_rate AS profitsharing_rate, t.pay_fee AS total_fee
+		FROM orders_normal_orders a
+		INNER JOIN trade t ON <include refid="joinTradeOnOrder"/>
+		<where>
+			<include refid="ordersDistributorDayBaseByDistributor"/>
+			AND t.trade_state = 'SUCCESS'
+			AND CAST(t.time_expire AS UNSIGNED) &lt;= #{endUnix}
+		</where>
+	</select>
+
+	<select id="listDistributorCumulativeRefundSuccessRowsToEndUnix" resultType="map">
+		SELECT a.profitsharing_rate AS profitsharing_rate, r.refunded_fee AS total_fee
+		FROM orders_normal_orders a
+		INNER JOIN aftersales_refund r ON a.company_id = r.company_id AND a.order_id = r.order_id
+		<where>
+			<include refid="ordersDistributorDayBaseByDistributor"/>
+			AND r.refund_status = 'SUCCESS'
+			AND r.refund_success_time &lt;= #{endUnix}
+		</where>
+	</select>
+
+	<sql id="ordersCompanyCumulativeBaseNoDistributor">
+		a.company_id = #{companyId}
+		AND a.pay_type = 'hfpay'
+		AND a.is_profitsharing = 2
+		AND a.order_status NOT IN ('NOTPAY', 'PART_PAYMENT', 'WAIT_GROUPS_SUCCESS')
+		AND a.pay_status &lt;&gt; 'NOTPAY'
+	</sql>
+
+	<select id="sumProfitShareCapitalForPlatformWhereHfOrderDateLteYmd" resultType="java.lang.Long">
+		SELECT IFNULL(SUM(d.total_fee), 0)
+		FROM order_profit_sharing p
+		INNER JOIN order_profit_sharing_details d
+			ON p.company_id = d.company_id AND p.order_profit_sharing_id = d.sharing_id
+		WHERE p.company_id = #{companyId}
+		AND p.pay_type = 'hfpay'
+		AND d.distributor_id = 0
+		AND p.status = 1
+		AND p.hf_order_date &lt;= #{hfOrderDateYmd}
+	</select>
+
+	<select id="listCompanyCumulativeIncomeRowsToEndUnix" resultType="map">
+		SELECT a.profitsharing_rate AS profitsharing_rate, t.pay_fee AS total_fee
+		FROM orders_normal_orders a
+		INNER JOIN trade t ON <include refid="joinTradeOnOrder"/>
+		<where>
+			<include refid="ordersCompanyCumulativeBaseNoDistributor"/>
+			AND t.trade_state = 'SUCCESS'
+			AND CAST(t.time_expire AS UNSIGNED) &lt;= #{endUnix}
+		</where>
+	</select>
+
+	<select id="listCompanyCumulativeRefundSuccessRowsToEndUnix" resultType="map">
+		SELECT a.profitsharing_rate AS profitsharing_rate, r.refunded_fee AS total_fee
+		FROM orders_normal_orders a
+		INNER JOIN aftersales_refund r ON a.company_id = r.company_id AND a.order_id = r.order_id
+		<where>
+			<include refid="ordersCompanyCumulativeBaseNoDistributor"/>
+			AND r.refund_status = 'SUCCESS'
+			AND r.refund_success_time &lt;= #{endUnix}
+		</where>
+	</select>
+
+	<!-- Context-based filters for order-list statistics total block (legacy statistics trait WHERE). -->
+
+	<sql id="ordersMetricsCoreFromCtx">
+		a.company_id = #{ctx.companyId}
+		AND a.pay_type = 'hfpay'
+		AND a.is_profitsharing = 2
+		AND a.order_status NOT IN ('NOTPAY', 'PART_PAYMENT', 'WAIT_GROUPS_SUCCESS')
+		AND a.pay_status &lt;&gt; 'NOTPAY'
+		AND a.create_time &gt;= #{ctx.startDateEpochSec}
+		AND a.create_time &lt;= #{ctx.endDateEpochSec}
+		<if test="ctx.distributorId != null">
+			AND a.distributor_id = #{ctx.distributorId}
+		</if>
+		<if test="ctx.orderId != null and ctx.orderId != '' and ctx.orderId != '0'">
+			AND a.order_id = #{ctx.orderId}
+		</if>
+		<if test="ctx.appPayType != null and ctx.appPayType != ''">
+			AND a.app_pay_type = #{ctx.appPayType}
+		</if>
+	</sql>
+
+	<sql id="ordersMetricsBaseFromCtx">
+		<include refid="ordersMetricsCoreFromCtx"/>
+		<if test="ctx.profitsharingStatus != null">
+			AND a.profitsharing_status = #{ctx.profitsharingStatus}
+		</if>
+	</sql>
+
+	<sql id="ordersMetricsCoreNoDistributorFromCtx">
+		a.company_id = #{ctx.companyId}
+		AND a.pay_type = 'hfpay'
+		AND a.is_profitsharing = 2
+		AND a.order_status NOT IN ('NOTPAY', 'PART_PAYMENT', 'WAIT_GROUPS_SUCCESS')
+		AND a.pay_status &lt;&gt; 'NOTPAY'
+		AND a.create_time &gt;= #{ctx.startDateEpochSec}
+		AND a.create_time &lt;= #{ctx.endDateEpochSec}
+		<if test="ctx.orderId != null and ctx.orderId != '' and ctx.orderId != '0'">
+			AND a.order_id = #{ctx.orderId}
+		</if>
+		<if test="ctx.appPayType != null and ctx.appPayType != ''">
+			AND a.app_pay_type = #{ctx.appPayType}
+		</if>
+	</sql>
+
+	<sql id="ordersMetricsBaseNoDistributorFromCtx">
+		<include refid="ordersMetricsCoreNoDistributorFromCtx"/>
+		<if test="ctx.profitsharingStatus != null">
+			AND a.profitsharing_status = #{ctx.profitsharingStatus}
+		</if>
+	</sql>
+
+	<sql id="metricsOrderStatusWhereA">
+		<choose>
+			<when test="statusKind == 'REFUNDING'">
+				AND (
+					(a.order_status = 'CANCEL_WAIT_PROCESS' AND a.cancel_status = 'WAIT_PROCESS')
+					OR (a.order_status = 'CANCEL_WAIT_PROCESS' AND a.cancel_status = 'NO_APPLY_CANCEL')
+					OR (a.order_status = 'PAYED' AND a.cancel_status = 'WAIT_PROCESS')
+					OR (a.order_status = 'DONE')
+				)
+			</when>
+			<when test="statusKind == 'REFUND_SUCCESS'">
+				AND a.order_status = 'CANCEL'
+				AND a.cancel_status = 'SUCCESS'
+			</when>
+			<when test="statusKind == 'REFUND_FAIL'">
+				AND a.order_status = 'DONE'
+				AND a.cancel_status = 'FAILS'
+			</when>
+			<when test="statusKind == 'PAY'">
+				AND (
+					(a.order_status = 'PAYED' AND a.cancel_status IN ('NO_APPLY_CANCEL', 'FAILS'))
+					OR (a.order_status = 'PAYED' AND a.receipt_type = 'ziti' AND a.ziti_status = 'PENDING')
+					OR (a.order_status = 'WAIT_BUYER_CONFIRM' AND a.delivery_status = 'DONE' AND a.receipt_type = 'logistics')
+					OR (a.order_status IN ('DONE', 'REVIEW_PASS'))
+				)
+			</when>
+		</choose>
+	</sql>
+
+	<select id="countPaidOrdersFiltered" resultType="long">
+		SELECT COUNT(*)
+		FROM orders_normal_orders a
+		<where>
+			<include refid="ordersMetricsBaseFromCtx"/>
+			<include refid="metricsOrderStatusWhereA"/>
+		</where>
+	</select>
+
+	<select id="sumOrderTotalFeesFiltered" resultType="java.lang.Long">
+		SELECT IFNULL(SUM(CAST(a.total_fee AS DECIMAL(20, 0))), 0)
+		FROM orders_normal_orders a
+		<where>
+			<include refid="ordersMetricsBaseFromCtx"/>
+			<include refid="metricsOrderStatusWhereA"/>
+		</where>
+	</select>
+
+	<select id="countDistinctOrdersRefundSuccessFiltered" resultType="long">
+		SELECT COUNT(DISTINCT a.order_id)
+		FROM orders_normal_orders a
+		INNER JOIN aftersales_refund r ON a.company_id = r.company_id AND a.order_id = r.order_id
+		<where>
+			<include refid="ordersMetricsBaseFromCtx"/>
+			AND r.refund_status = 'SUCCESS'
+		</where>
+	</select>
+
+	<select id="sumRefundedFeesSuccessOrAuditFiltered" resultType="java.lang.Long">
+		SELECT IFNULL(SUM(r.refunded_fee), 0)
+		FROM orders_normal_orders a
+		INNER JOIN aftersales_refund r ON a.company_id = r.company_id AND a.order_id = r.order_id
+		<where>
+			<include refid="ordersMetricsBaseFromCtx"/>
+			AND r.refund_status IN ('SUCCESS', 'AUDIT_SUCCESS')
+		</where>
+	</select>
+
+	<select id="countDistinctOrdersRefundingFiltered" resultType="long">
+		SELECT COUNT(DISTINCT a.order_id)
+		FROM orders_normal_orders a
+		INNER JOIN aftersales_refund r ON a.company_id = r.company_id AND a.order_id = r.order_id
+		<where>
+			<include refid="ordersMetricsBaseFromCtx"/>
+			AND r.refund_status IN ('AUDIT_SUCCESS', 'READY', 'PROCESSING')
+		</where>
+	</select>
+
+	<select id="sumRefundFeesRefundingFiltered" resultType="java.lang.Long">
+		SELECT IFNULL(SUM(r.refund_fee), 0)
+		FROM orders_normal_orders a
+		INNER JOIN aftersales_refund r ON a.company_id = r.company_id AND a.order_id = r.order_id
+		<where>
+			<include refid="ordersMetricsBaseFromCtx"/>
+			AND r.refund_status IN ('AUDIT_SUCCESS', 'READY', 'PROCESSING')
+		</where>
+	</select>
+
+	<select id="listProfitSharingChargeRowsFiltered" resultType="map">
+		SELECT a.profitsharing_rate AS profitsharing_rate, ps.total_fee AS total_fee
+		FROM orders_normal_orders a
+		INNER JOIN order_profit_sharing ps
+			ON a.company_id = ps.company_id AND a.order_id = ps.order_id
+		<where>
+			<include refid="ordersMetricsBaseNoDistributorFromCtx"/>
+			AND ps.status = 1
+			<if test="ctx.distributorId != null">
+				AND ps.distributor_id = #{ctx.distributorId}
+			</if>
+			<include refid="metricsOrderStatusWhereA"/>
+		</where>
+	</select>
+
+	<select id="listTotalChargeRowsFiltered" resultType="map">
+		SELECT a.profitsharing_rate AS profitsharing_rate, t.pay_fee AS total_fee
+		FROM orders_normal_orders a
+		INNER JOIN trade t ON <include refid="joinTradeOnOrder"/>
+		<where>
+			<include refid="ordersMetricsBaseFromCtx"/>
+			AND t.trade_state = 'SUCCESS'
+		</where>
+	</select>
+
+	<select id="listRefundChargeRowsFiltered" resultType="map">
+		SELECT a.profitsharing_rate AS profitsharing_rate, r.refunded_fee AS total_fee
+		FROM orders_normal_orders a
+		INNER JOIN aftersales_refund r ON a.company_id = r.company_id AND a.order_id = r.order_id
+		<where>
+			<include refid="ordersMetricsBaseFromCtx"/>
+			AND r.refund_status = 'SUCCESS'
+		</where>
+	</select>
+
+	<select id="listUnProfitChargeRowsFiltered" resultType="map">
+		SELECT a.profitsharing_rate AS profitsharing_rate, t.pay_fee AS total_fee
+		FROM orders_normal_orders a
+		INNER JOIN trade t ON <include refid="joinTradeOnOrder"/>
+		<where>
+			<include refid="ordersMetricsCoreFromCtx"/>
+			AND a.profitsharing_status = 1
+			AND t.trade_state = 'SUCCESS'
+		</where>
+	</select>
+
+	<select id="listUnProfitRefundChargeRowsFiltered" resultType="map">
+		SELECT a.profitsharing_rate AS profitsharing_rate, r.refunded_fee AS total_fee
+		FROM orders_normal_orders a
+		INNER JOIN aftersales_refund r ON a.company_id = r.company_id AND a.order_id = r.order_id
+		<where>
+			<include refid="ordersMetricsCoreFromCtx"/>
+			AND a.profitsharing_status = 1
+			AND r.refund_status = 'SUCCESS'
+		</where>
+	</select>
+</mapper>

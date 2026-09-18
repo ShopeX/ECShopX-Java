@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.kujiale.mapper.KujialeDesignerWorksItemsQueryMapper">
+
+	<sql id="designerWorksItemsFrom">
+		FROM kujiale_designer_works_item_rel rel
+		INNER JOIN items i ON rel.item_id = i.item_id
+		LEFT JOIN kujiale_designer_works w ON rel.design_id = w.design_id
+	</sql>
+
+	<sql id="designerWorksItemsWhere">
+		WHERE i.company_id = #{companyId}
+		<if test="itemName != null and itemName != ''">
+			AND i.item_name LIKE CONCAT('%', #{itemName}, '%')
+		</if>
+		<if test="itemBn != null and itemBn != ''">
+			AND i.item_bn LIKE CONCAT('%', #{itemBn}, '%')
+		</if>
+		<if test="goodsBn != null and goodsBn != ''">
+			AND (rel.goods_bn LIKE CONCAT('%', #{goodsBn}, '%') OR i.goods_bn LIKE CONCAT('%', #{goodsBn}, '%'))
+		</if>
+		<if test="designId != null and designId != ''">
+			AND rel.design_id = #{designId}
+		</if>
+		<if test="designName != null and designName != ''">
+			AND w.design_name LIKE CONCAT('%', #{designName}, '%')
+		</if>
+		<if test="approveStatus != null and approveStatus.length == 1">
+			AND i.approve_status = #{approveStatus[0]}
+		</if>
+		<if test="approveStatus != null and approveStatus.length > 1">
+			AND i.approve_status IN
+			<foreach collection="approveStatus" item="st" open="(" separator="," close=")">
+				#{st}
+			</foreach>
+		</if>
+		<if test="itemCategory != null and itemCategory.length == 1">
+			AND i.item_category = #{itemCategory[0]}
+		</if>
+		<if test="itemCategory != null and itemCategory.length > 1">
+			AND i.item_category IN
+			<foreach collection="itemCategory" item="cat" open="(" separator="," close=")">
+				#{cat}
+			</foreach>
+		</if>
+	</sql>
+
+	<select id="selectPageRows" resultType="map">
+		SELECT
+			i.item_id AS item_id,
+			i.item_name AS item_name,
+			i.item_bn AS item_bn,
+			i.goods_bn AS item_goods_bn,
+			i.approve_status AS approve_status,
+			i.item_category AS item_category,
+			i.store AS store,
+			i.price AS price,
+			i.market_price AS market_price,
+			i.pics AS pics,
+			i.created AS created,
+			i.updated AS updated,
+			rel.design_id AS design_id,
+			rel.goods_bn AS rel_goods_bn,
+			w.design_name AS design_name,
+			w.cover_pic AS cover_pic,
+			rel.id AS rel_id,
+			rel.created AS bind_created
+		<include refid="designerWorksItemsFrom"/>
+		<include refid="designerWorksItemsWhere"/>
+		ORDER BY rel.created DESC
+		<if test="applyPaging">
+			LIMIT #{limit} OFFSET #{offset}
+		</if>
+	</select>
+
+	<select id="countDistinct" resultType="long">
+		SELECT COUNT(DISTINCT rel.id)
+		<include refid="designerWorksItemsFrom"/>
+		<include refid="designerWorksItemsWhere"/>
+	</select>
+
+	<select id="selectSalesCategories" resultType="map">
+		SELECT irc.item_id AS item_id, ic.category_name AS category_name
+		FROM goods_items_rel_cats irc
+		INNER JOIN items_category ic ON irc.category_id = ic.category_id
+		WHERE ic.is_main_category = 0
+		AND irc.item_id IN
+		<foreach collection="itemIds" item="id" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</select>
+
+	<select id="selectItemTagRows" resultType="map">
+		SELECT irt.item_id AS item_id, it.tag_id AS tag_id, it.tag_name AS tag_name,
+			it.tag_color AS tag_color, it.font_color AS font_color
+		FROM items_rel_tags irt
+		INNER JOIN items_tags it ON irt.tag_id = it.tag_id
+		WHERE irt.company_id = #{companyId}
+		AND it.company_id = #{companyId}
+		AND irt.item_id IN
+		<foreach collection="itemIds" item="id" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</select>
+
+	<select id="selectDesignTagNames" resultType="map">
+		SELECT design_id AS design_id, tag_name AS tag_name
+		FROM kujiale_designer_works_rel_tags
+		WHERE design_id IN
+		<foreach collection="designIds" item="did" open="(" separator="," close=")">
+			#{did}
+		</foreach>
+	</select>
+</mapper>

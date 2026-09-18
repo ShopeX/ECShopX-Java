@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.distribution.mapper.DistributorSalemanShopListMapper">
+
+	<sql id="salemanShopFromJoin">
+		FROM distribution_distributor d
+		LEFT JOIN merchant m ON m.id = d.merchant_id AND m.company_id = d.company_id
+	</sql>
+
+	<sql id="salemanShopWhere">
+		WHERE d.distributor_id IN
+		<foreach collection="ids" item="id" open="(" separator="," close=")">#{id}</foreach>
+		<if test="nameLike != null">
+			AND d.name LIKE CONCAT('%', #{nameLike}, '%') ESCAPE '\\'
+		</if>
+		<if test="mobileLikeEnc != null">
+			AND d.mobile LIKE CONCAT('%', #{mobileLikeEnc}, '%')
+		</if>
+	</sql>
+
+	<select id="countForSalemanShopList" resultType="long">
+		SELECT COUNT(*)
+		<include refid="salemanShopFromJoin"/>
+		<include refid="salemanShopWhere"/>
+	</select>
+
+	<select id="selectListForSalemanShopList" resultType="cn.shopex.ecshopx.distribution.domain.Distributor">
+		SELECT d.*, m.merchant_name AS merchantName
+		<include refid="salemanShopFromJoin"/>
+		<include refid="salemanShopWhere"/>
+	</select>
+</mapper>

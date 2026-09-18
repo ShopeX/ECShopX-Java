@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.distribution.mapper.DistributorGeofenceMapper">
+
+	<select id="selectJoinPage" resultType="cn.shopex.ecshopx.distribution.service.dto.DistributorGeofenceJoinRow">
+		SELECT
+			g.id,
+			g.company_id,
+			g.distributor_id,
+			g.config_service_local_id,
+			g.geofence_id,
+			g.geofence_data,
+			g.status,
+			g.created,
+			g.updated,
+			s.service_id AS service_id,
+			c.app_key AS app_key,
+			c.type AS config_type
+		FROM distribution_distributor_geofence g
+		INNER JOIN map_config_service s
+			ON s.company_id = g.company_id AND s.id = g.config_service_local_id
+		INNER JOIN map_config c
+			ON c.company_id = s.company_id AND c.id = s.config_id
+		WHERE g.company_id = #{companyId}
+			AND g.distributor_id = #{distributorId}
+		<if test="filterByGeofenceId">
+			AND g.id = #{geofenceId}
+		</if>
+	</select>
+
+	<select id="selectJoinList" resultType="cn.shopex.ecshopx.distribution.service.dto.DistributorGeofenceJoinRow">
+		SELECT
+			g.id,
+			g.company_id,
+			g.distributor_id,
+			g.config_service_local_id,
+			g.geofence_id,
+			g.geofence_data,
+			g.status,
+			g.created,
+			g.updated,
+			s.service_id AS service_id,
+			c.app_key AS app_key,
+			c.type AS config_type
+		FROM distribution_distributor_geofence g
+		INNER JOIN map_config_service s
+			ON s.company_id = g.company_id AND s.id = g.config_service_local_id
+		INNER JOIN map_config c
+			ON c.company_id = s.company_id AND c.id = s.config_id
+		WHERE g.company_id = #{companyId}
+			AND g.distributor_id = #{distributorId}
+		<if test="filterByGeofenceId">
+			AND g.id = #{geofenceId}
+		</if>
+	</select>
+</mapper>

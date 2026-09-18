@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.adapay.mapper.AdapayMemberDetailMapper">
+
+	<select id="selectMemberByOperatorTypeAndOperatorIdAndCompany" resultType="cn.shopex.ecshopx.adapay.domain.AdapayMember">
+		SELECT * FROM adapay_member
+		WHERE operator_type = #{operatorType}
+		  AND operator_id = #{operatorId}
+		  AND company_id = #{companyId}
+		ORDER BY id DESC
+		LIMIT 1
+	</select>
+
+	<select id="selectSettleAccountByMemberIdAndCompany" resultType="cn.shopex.ecshopx.adapay.domain.AdapaySettleAccount">
+		SELECT * FROM adapay_settle_account
+		WHERE member_id = #{memberId}
+		  AND company_id = #{companyId}
+		ORDER BY id DESC
+		LIMIT 1
+	</select>
+
+	<select id="selectCorpMemberByMemberIdAndCompany" resultType="cn.shopex.ecshopx.adapay.domain.AdapayCorpMember">
+		SELECT * FROM adapay_corp_member
+		WHERE member_id = #{memberId}
+		  AND company_id = #{companyId}
+		ORDER BY id DESC
+		LIMIT 1
+	</select>
+
+	<select id="selectConcatAreaNamesByProvAndAreaCode" resultType="java.lang.String">
+		SELECT CONCAT(COALESCE(p.area_name, ''), '-', COALESCE(a.area_name, ''))
+		FROM adapay_regions p
+		CROSS JOIN adapay_regions a
+		WHERE p.area_code = #{provCode}
+		  AND a.area_code = #{areaCode}
+		LIMIT 1
+	</select>
+
+	<select id="selectLatestUpdateLogByMemberIdForWaitDataTranf" resultType="cn.shopex.ecshopx.adapay.domain.AdapayMemberUpdateLog">
+		SELECT * FROM adapay_member_update_log
+		WHERE member_id = #{memberId}
+		ORDER BY id DESC
+		LIMIT 1
+	</select>
+</mapper>

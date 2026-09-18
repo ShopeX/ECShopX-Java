@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.members.mapper.AdminMemberBatchOperatingMapper">
+
+	<sql id="MemberBatchOperatingFrom">
+		FROM members m
+		LEFT JOIN members_info info ON m.company_id = info.company_id AND m.user_id = info.user_id
+		<if test="(f.shopIds != null and f.shopIds.size() &gt; 0) or (f.distributorIds != null and f.distributorIds.size() &gt; 0)">
+			LEFT JOIN members_rel_shop shop ON shop.user_id = m.user_id AND shop.company_id = m.company_id
+		</if>
+		<if test="f.shopIds != null and f.shopIds.size() &gt; 0">
+			LEFT JOIN wxshops s ON shop.shop_id = s.wx_shop_id
+		</if>
+		<if test="(f.shopIds == null or f.shopIds.size() == 0) and f.distributorIds != null and f.distributorIds.size() &gt; 0">
+			LEFT JOIN distribution_distributor d ON shop.shop_id = d.distributor_id
+		</if>
+		<if test="f.tagIds != null and f.tagIds.size() &gt; 0">
+			LEFT JOIN members_rel_tags reltags ON reltags.user_id = m.user_id AND reltags.company_id = m.company_id
+		</if>
+		<if test="f.pointGte != null or f.pointLte != null or f.pointEq != null">
+			LEFT JOIN point_member pm ON pm.user_id = m.user_id AND pm.company_id = m.company_id
+		</if>
+		WHERE m.company_id = #{f.companyId}
+		<if test="f.membersGradeId != null">
+			AND m.grade_id = #{f.membersGradeId}
+		</if>
+		<if test="f.userIdsIn != null and f.userIdsIn.size() &gt; 0">
+			AND m.user_id IN
+			<foreach collection="f.userIdsIn" item="uid" open="(" separator="," close=")">#{uid}</foreach>
+		</if>
+		<if test="f.userIdsNotIn != null and f.userIdsNotIn.size() &gt; 0">
+			AND m.user_id NOT IN
+			<foreach collection="f.userIdsNotIn" item="uid" open="(" separator="," close=")">#{uid}</foreach>
+		</if>
+		<if test="f.mobileEqEncrypted != null and f.mobileEqEncrypted != ''">
+			AND m.mobile = #{f.mobileEqEncrypted}
+		</if>
+		<if test="f.remarksLike != null and f.remarksLike != ''">
+			AND m.remarks LIKE CONCAT('%', #{f.remarksLike}, '%')
+		</if>
+		<if test="f.inviterId != null">
+			AND m.inviter_id = #{f.inviterId}
+		</if>
+		<if test="f.userCardCode != null and f.userCardCode != ''">
+			AND m.user_card_code = #{f.userCardCode}
+		</if>
+		<if test="f.usernameEqEncrypted != null and f.usernameEqEncrypted != ''">
+			AND info.username = #{f.usernameEqEncrypted}
+		</if>
+		<if test="f.nameEq != null and f.nameEq != ''">
+			AND info.name = #{f.nameEq}
+		</if>
+		<if test="f.createdGte != null">
+			AND m.created &gt;= #{f.createdGte}
+		</if>
+		<if test="f.createdLte != null">
+			AND m.created &lt;= #{f.createdLte}
+		</if>
+		<if test="f.birthdayGte != null and f.birthdayGte != ''">
+			AND info.birthday &gt;= #{f.birthdayGte}
+		</if>
+		<if test="f.birthdayLte != null and f.birthdayLte != ''">
+			AND info.birthday &lt;= #{f.birthdayLte}
+		</if>
+		<if test="f.haveConsume != null">
+			AND info.have_consume = #{f.haveConsume}
+		</if>
+		<if test="f.distributorIds != null and f.distributorIds.size() &gt; 0">
+			AND shop.shop_type = 'distributor'
+			AND shop.shop_id IN
+			<foreach collection="f.distributorIds" item="did" open="(" separator="," close=")">#{did}</foreach>
+		</if>
+		<if test="(f.distributorIds == null or f.distributorIds.size() == 0) and f.shopIds != null and f.shopIds.size() &gt; 0">
+			AND shop.shop_type = 'shop'
+			AND shop.shop_id IN
+			<foreach collection="f.shopIds" item="sid" open="(" separator="," close=")">#{sid}</foreach>
+		</if>
+		<if test="f.tagIds != null and f.tagIds.size() &gt; 0">
+			AND reltags.tag_id IN
+			<foreach collection="f.tagIds" item="tid" open="(" separator="," close=")">#{tid}</foreach>
+		</if>
+		<if test="f.pointEq != null">
+			AND pm.point = #{f.pointEq}
+		</if>
+		<if test="f.pointGte != null">
+			AND pm.point &gt;= #{f.pointGte}
+		</if>
+		<if test="f.pointLte != null">
+			AND pm.point &lt;= #{f.pointLte}
+		</if>
+	</sql>
+
+	<select id="countMembers" resultType="long">
+		SELECT COUNT(DISTINCT m.user_id)
+		<include refid="MemberBatchOperatingFrom"/>
+	</select>
+
+	<select id="listUserIdsPage" resultType="long">
+		SELECT DISTINCT m.user_id
+		<include refid="MemberBatchOperatingFrom"/>
+		ORDER BY m.user_id DESC
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+
+	<select id="listMemberExportRowsPage" resultType="cn.shopex.ecshopx.members.service.export.dto.AdminMemberExportRow">
+		SELECT
+			m.user_id AS userId,
+			m.company_id AS companyId,
+			m.user_card_code AS userCardCode,
+			m.mobile AS mobile,
+			m.inviter_id AS inviterId,
+			m.grade_id AS gradeId,
+			m.created_year AS createdYear,
+			m.created_month AS createdMonth,
+			m.created_day AS createdDay,
+			info.name AS name,
+			info.sex AS sex,
+			info.username AS username,
+			info.birthday AS birthday,
+			info.address AS address,
+			info.email AS email,
+			info.industry AS industry,
+			info.income AS income,
+			info.edu_background AS eduBackground,
+			info.habbit AS habbit,
+			(SELECT ma.unionid FROM members_associations ma
+				WHERE ma.company_id = m.company_id AND ma.user_id = m.user_id AND ma.user_type = 'wechat'
+				LIMIT 1) AS unionId,
+			(SELECT w.open_id FROM members_associations ma2
+				INNER JOIN members_wechatusers w
+					ON w.company_id = ma2.company_id AND w.unionid = ma2.unionid
+				WHERE ma2.company_id = m.company_id AND ma2.user_id = m.user_id AND ma2.user_type = 'wechat'
+				LIMIT 1) AS openId
+			<choose>
+				<when test="f.shopIds != null and f.shopIds.size() &gt; 0">
+					, s.store_name AS storeName
+					, CAST(NULL AS CHAR) AS shopName
+				</when>
+				<when test="(f.shopIds == null or f.shopIds.size() == 0) and f.distributorIds != null and f.distributorIds.size() &gt; 0">
+					, d.name AS shopName
+					, CAST(NULL AS CHAR) AS storeName
+				</when>
+				<otherwise>
+					, CAST(NULL AS CHAR) AS shopName
+					, CAST(NULL AS CHAR) AS storeName
+				</otherwise>
+			</choose>
+		<include refid="MemberBatchOperatingFrom"/>
+		ORDER BY m.user_id DESC
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+</mapper>

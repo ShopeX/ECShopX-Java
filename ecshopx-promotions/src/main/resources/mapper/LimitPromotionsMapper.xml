@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.promotions.mapper.LimitPromotionsMapper">
+
+	<sql id="adminLimitListWhere">
+		<where>
+			company_id = #{companyId}
+			<choose>
+				<when test='status == "waiting"'>
+					AND start_time &gt; #{now}
+				</when>
+				<when test='status == "ongoing"'>
+					AND start_time &lt; #{now} AND end_time &gt; #{now}
+				</when>
+				<when test='status == "end"'>
+					AND end_time &lt; #{now}
+				</when>
+			</choose>
+			<if test="sourceIdFromQuery > 0 and sourceType != null and sourceType == 'distributor'">
+				AND source_id = #{sourceIdFromQuery} AND source_type = 'distributor'
+			</if>
+		</where>
+	</sql>
+
+	<select id="countAdminLimitList" resultType="long">
+		SELECT COUNT(*) FROM promotions_limit
+		<include refid="adminLimitListWhere"/>
+	</select>
+
+	<select id="selectAdminLimitListPage" resultType="cn.shopex.ecshopx.promotions.domain.LimitPromotions">
+		SELECT limit_id, company_id, limit_name, limit_type, valid_grade, rule, start_time, end_time,
+			use_bound, tag_ids, brand_ids, total_item_num, valid_item_num, error_desc, created, updated, source_type, source_id
+		FROM promotions_limit
+		<include refid="adminLimitListWhere"/>
+		ORDER BY created DESC
+		LIMIT #{offset}, #{limit}
+	</select>
+
+	<select id="selectLimitNamesByLimitIds" resultType="cn.shopex.ecshopx.promotions.dto.LimitPromotionNameRow">
+		SELECT limit_id AS limitId, limit_name AS limitName
+		FROM promotions_limit
+		WHERE limit_id IN
+		<foreach collection="ids" item="id" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</select>
+
+	<select id="selectOverlappingLimits" resultType="cn.shopex.ecshopx.promotions.domain.LimitPromotions">
+		SELECT limit_id, company_id, limit_name, limit_type, valid_grade, rule, start_time, end_time,
+			use_bound, tag_ids, brand_ids, total_item_num, valid_item_num, error_desc, created, updated, source_type, source_id
+		FROM promotions_limit
+		WHERE company_id = #{companyId}
+		AND start_time &lt;= #{windowEnd}
+		AND end_time &gt;= #{overlapStart}
+		<if test="excludeLimitId != null">
+			AND limit_id != #{excludeLimitId}
+		</if>
+	</select>
+
+	<select id="selectLimitIdsCategorySql1" resultType="long">
+		SELECT DISTINCT a.limit_id
+		FROM promotions_limit_item a
+		INNER JOIN promotions_limit pl ON pl.limit_id = a.limit_id AND pl.company_id = #{companyId}
+		WHERE a.item_type = 'category'
+		AND a.item_id IN
+		<foreach collection="categoryIds" item="cid" open="(" separator="," close=")">#{cid}</foreach>
+		AND a.start_time &lt;= #{windowEnd}
+		AND a.end_time &gt;= #{overlapStart}
+	</select>
+
+	<select id="selectLimitIdsCategorySql2" resultType="long">
+		SELECT DISTINCT a.limit_id
+		FROM promotions_limit_item a
+		INNER JOIN promotions_limit pl ON pl.limit_id = a.limit_id AND pl.company_id = #{companyId}
+		INNER JOIN items b ON a.item_id = b.item_id
+		WHERE a.item_type = 'normal'
+		AND b.item_category IN
+		<foreach collection="categoryIds" item="cid" open="(" separator="," close=")">#{cid}</foreach>
+		AND a.start_time &lt;= #{windowEnd}
+		AND a.end_time &gt;= #{overlapStart}
+	</select>
+
+	<select id="selectLimitIdsCategorySql3" resultType="long">
+		SELECT DISTINCT a.limit_id
+		FROM promotions_limit_item a
+		INNER JOIN promotions_limit pl ON pl.limit_id = a.limit_id AND pl.company_id = #{companyId}
+		INNER JOIN items b ON a.item_id = b.brand_id
+		WHERE a.item_type = 'brand'
+		AND b.item_category IN
+		<foreach collection="categoryIds" item="cid" open="(" separator="," close=")">#{cid}</foreach>
+		AND a.start_time &lt;= #{windowEnd}
+		AND a.end_time &gt;= #{overlapStart}
+	</select>
+
+	<select id="selectLimitIdsCategorySql4" resultType="long">
+		SELECT DISTINCT a.limit_id
+		FROM promotions_limit_item a
+		INNER JOIN promotions_limit pl ON pl.limit_id = a.limit_id AND pl.company_id = #{companyId}
+		INNER JOIN items_rel_tags c ON a.item_id = c.tag_id
+		INNER JOIN items b ON c.item_id = b.item_id
+		WHERE a.item_type = 'tag'
+		AND b.item_category IN
+		<foreach collection="categoryIds" item="cid" open="(" separator="," close=")">#{cid}</foreach>
+		AND a.start_time &lt;= #{windowEnd}
+		AND a.end_time &gt;= #{overlapStart}
+	</select>
+
+	<select id="selectLimitIdsTagsSql1" resultType="long">
+		SELECT DISTINCT a.limit_id
+		FROM promotions_limit_item a
+		INNER JOIN promotions_limit pl ON pl.limit_id = a.limit_id AND pl.company_id = #{companyId}
+		INNER JOIN items_rel_tags c ON a.item_id = c.tag_id
+		INNER JOIN items_rel_tags d ON c.item_id = d.item_id
+		WHERE a.item_type = 'tag'
+		AND d.tag_id IN
+		<foreach collection="tagIds" item="tid" open="(" separator="," close=")">#{tid}</foreach>
+		AND a.end_time &gt;= #{overlapStart}
+	</select>
+
+	<select id="selectLimitIdsTagsSql2" resultType="long">
+		SELECT DISTINCT a.limit_id
+		FROM promotions_limit_item a
+		INNER JOIN promotions_limit pl ON pl.limit_id = a.limit_id AND pl.company_id = #{companyId}
+		INNER JOIN items_rel_tags c ON a.item_id = c.item_id
+		WHERE a.item_type = 'normal'
+		AND c.tag_id IN
+		<foreach collection="tagIds" item="tid" open="(" separator="," close=")">#{tid}</foreach>
+		AND a.start_time &lt;= #{windowEnd}
+		AND a.end_time &gt;= #{overlapStart}
+	</select>
+
+	<select id="selectLimitIdsTagsSql3" resultType="long">
+		SELECT DISTINCT a.limit_id
+		FROM promotions_limit_item a
+		INNER JOIN promotions_limit pl ON pl.limit_id = a.limit_id AND pl.company_id = #{companyId}
+		INNER JOIN items b ON a.item_id = b.brand_id
+		INNER JOIN items_rel_tags c ON b.item_id = c.item_id
+		WHERE a.item_type = 'brand'
+		AND c.tag_id IN
+		<foreach collection="tagIds" item="tid" open="(" separator="," close=")">#{tid}</foreach>
+		AND a.start_time &lt;= #{windowEnd}
+		AND a.end_time &gt;= #{overlapStart}
+	</select>
+
+	<select id="selectLimitIdsTagsSql4" resultType="long">
+		SELECT DISTINCT a.limit_id
+		FROM promotions_limit_item a
+		INNER JOIN promotions_limit pl ON pl.limit_id = a.limit_id AND pl.company_id = #{companyId}
+		INNER JOIN items b ON a.item_id = b.item_category
+		INNER JOIN items_rel_tags c ON b.item_id = c.item_id
+		WHERE a.item_type = 'category'
+		AND c.tag_id IN
+		<foreach collection="tagIds" item="tid" open="(" separator="," close=")">#{tid}</foreach>
+		AND a.start_time &lt;= #{windowEnd}
+		AND a.end_time &gt;= #{overlapStart}
+	</select>
+
+	<select id="selectLimitIdsBrandSql1" resultType="long">
+		SELECT DISTINCT a.limit_id
+		FROM promotions_limit_item a
+		INNER JOIN promotions_limit pl ON pl.limit_id = a.limit_id AND pl.company_id = #{companyId}
+		WHERE a.item_type = 'brand'
+		AND a.item_id IN
+		<foreach collection="brandIds" item="bid" open="(" separator="," close=")">#{bid}</foreach>
+	</select>
+
+	<select id="selectLimitIdsBrandSql2" resultType="long">
+		SELECT DISTINCT a.limit_id
+		FROM promotions_limit_item a
+		INNER JOIN promotions_limit pl ON pl.limit_id = a.limit_id AND pl.company_id = #{companyId}
+		INNER JOIN items b ON a.item_id = b.item_id
+		WHERE a.item_type = 'normal'
+		AND b.brand_id IN
+		<foreach collection="brandIds" item="bid" open="(" separator="," close=")">#{bid}</foreach>
+		AND a.start_time &lt;= #{windowEnd}
+		AND a.end_time &gt;= #{overlapStart}
+	</select>
+
+	<select id="selectLimitIdsBrandSql3" resultType="long">
+		SELECT DISTINCT a.limit_id
+		FROM promotions_limit_item a
+		INNER JOIN promotions_limit pl ON pl.limit_id = a.limit_id AND pl.company_id = #{companyId}
+		INNER JOIN items_rel_tags c ON a.item_id = c.tag_id
+		INNER JOIN items b ON c.item_id = b.item_id
+		WHERE a.item_type = 'tag'
+		AND b.brand_id IN
+		<foreach collection="brandIds" item="bid" open="(" separator="," close=")">#{bid}</foreach>
+		AND a.start_time &lt;= #{windowEnd}
+		AND a.end_time &gt;= #{overlapStart}
+	</select>
+
+	<select id="selectLimitIdsBrandSql4" resultType="long">
+		SELECT DISTINCT a.limit_id
+		FROM promotions_limit_item a
+		INNER JOIN promotions_limit pl ON pl.limit_id = a.limit_id AND pl.company_id = #{companyId}
+		INNER JOIN items b ON a.item_id = b.item_category
+		WHERE a.item_type = 'category'
+		AND b.brand_id IN
+		<foreach collection="brandIds" item="bid" open="(" separator="," close=")">#{bid}</foreach>
+		AND a.start_time &lt;= #{windowEnd}
+		AND a.end_time &gt;= #{overlapStart}
+	</select>
+</mapper>

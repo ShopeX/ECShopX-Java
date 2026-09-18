@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.orders.mapper.ConsumptionOrderDqlMapper">
+
+	<select id="selectHaveAftersalesOrderIds" resultType="long">
+		SELECT orders.order_id
+		FROM orders_normal_orders AS orders
+		LEFT JOIN aftersales AS a ON orders.order_id = a.order_id
+		WHERE orders.order_auto_close_aftersales_time &lt; #{timeSec}
+		  AND orders.order_status = 'DONE'
+		  AND orders.is_consumption = 0
+		  AND a.aftersales_status NOT IN (2, 3, 4)
+		GROUP BY orders.order_id
+	</select>
+
+	<select id="selectProcessedAftersalesOrderIds" resultType="long">
+		SELECT order_id
+		FROM aftersales
+		WHERE aftersales_status = 2
+		<if test="orderIds != null and orderIds.size() &gt; 0">
+			AND order_id IN
+			<foreach collection="orderIds" item="oid" open="(" separator="," close=")">
+				#{oid}
+			</foreach>
+		</if>
+		GROUP BY order_id
+	</select>
+
+	<select id="selectRefundSumsExcludingPoint" resultType="cn.shopex.ecshopx.orders.domain.dto.OrderIdRefundSumRow">
+		SELECT order_id AS orderId, SUM(refunded_fee) AS sumRefundedFee
+		FROM aftersales_refund
+		WHERE pay_type &lt;&gt; 'point'
+		  AND refund_status = 'SUCCESS'
+		<if test="orderIds != null and orderIds.size() &gt; 0">
+			AND order_id IN
+			<foreach collection="orderIds" item="oid" open="(" separator="," close=")">
+				#{oid}
+			</foreach>
+		</if>
+		GROUP BY order_id
+	</select>
+</mapper>

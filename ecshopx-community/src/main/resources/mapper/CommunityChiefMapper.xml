@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.community.mapper.CommunityChiefMapper">
+
+	<sql id="chiefListJoinFrom">
+		FROM community_chief c
+		LEFT JOIN community_chief_distributor d ON c.chief_id = d.chief_id
+		LEFT JOIN community_chief_apply_info a ON c.user_id = a.user_id AND d.distributor_id = a.distributor_id
+	</sql>
+
+	<sql id="chiefListWhere">
+		WHERE c.company_id = #{companyId}
+		<if test="distributorIdFilter != null">
+			AND d.distributor_id = #{distributorIdFilter}
+		</if>
+		<if test="chiefNameOrNull != null">
+			AND c.chief_name = #{chiefNameOrNull}
+		</if>
+		<if test="chiefMobileOrNull != null">
+			AND c.chief_mobile = #{chiefMobileOrNull}
+		</if>
+	</sql>
+
+	<select id="countChiefListByDistributorJoin" resultType="long">
+		SELECT COUNT(c.chief_id)
+		<include refid="chiefListJoinFrom"/>
+		<include refid="chiefListWhere"/>
+	</select>
+
+	<!-- 列：community_chief 显式列 + apply_time、approve_time、distributor_id、source、extra_data（来自 apply / distributor 关联） -->
+	<select id="selectChiefListByDistributorJoin" resultType="map">
+		SELECT c.chief_id,
+		       c.company_id,
+		       c.chief_name,
+		       c.chief_avatar,
+		       c.chief_mobile,
+		       c.chief_desc,
+		       c.chief_intro,
+		       c.province,
+		       c.city,
+		       c.area,
+		       c.regions_id,
+		       c.regions,
+		       c.address,
+		       c.lng,
+		       c.lat,
+		       c.user_id,
+		       c.created_at,
+		       c.updated_at,
+		       c.alipay_name,
+		       c.alipay_account,
+		       c.bank_name,
+		       c.bankcard_no,
+		       a.created_at AS apply_time,
+		       d.bound_time AS approve_time,
+		       d.distributor_id,
+		       (CASE WHEN a.apply_id IS NULL THEN 0 ELSE 1 END) AS source,
+		       a.extra_data
+		<include refid="chiefListJoinFrom"/>
+		<include refid="chiefListWhere"/>
+		ORDER BY c.created_at DESC
+		LIMIT #{offset}, #{limit}
+	</select>
+
+	<select id="selectChiefDetailByDistributorJoin" resultType="map">
+		SELECT c.chief_id,
+		       c.company_id,
+		       c.chief_name,
+		       c.chief_avatar,
+		       c.chief_mobile,
+		       c.chief_desc,
+		       c.chief_intro,
+		       c.province,
+		       c.city,
+		       c.area,
+		       c.regions_id,
+		       c.regions,
+		       c.address,
+		       c.lng,
+		       c.lat,
+		       c.user_id,
+		       c.created_at,
+		       c.updated_at,
+		       c.alipay_name,
+		       c.alipay_account,
+		       c.bank_name,
+		       c.bankcard_no,
+		       a.created_at AS apply_time,
+		       d.bound_time AS approve_time,
+		       d.distributor_id,
+		       (CASE WHEN a.apply_id IS NULL THEN 0 ELSE 1 END) AS source,
+		       a.extra_data
+		<include refid="chiefListJoinFrom"/>
+		WHERE c.company_id = #{companyId}
+		  AND CAST(c.chief_id AS CHAR) = #{chiefId}
+		  AND d.distributor_id = #{distributorId}
+		ORDER BY c.created_at DESC, c.chief_id DESC
+		LIMIT 1
+	</select>
+</mapper>

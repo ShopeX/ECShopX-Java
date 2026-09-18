@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.distribution.mapper.SelfDeliveryStaffMapper">
+
+	<select id="selectByOperatorIds" resultType="cn.shopex.ecshopx.distribution.domain.SelfDeliveryStaff">
+		SELECT * FROM self_delivery_staff
+		<where>
+			<choose>
+				<when test="operatorIds != null and operatorIds.size() > 0">
+					operator_id IN
+					<foreach collection="operatorIds" item="id" open="(" separator="," close=")">
+						#{id}
+					</foreach>
+				</when>
+				<otherwise>
+					1 = 0
+				</otherwise>
+			</choose>
+		</where>
+	</select>
+</mapper>

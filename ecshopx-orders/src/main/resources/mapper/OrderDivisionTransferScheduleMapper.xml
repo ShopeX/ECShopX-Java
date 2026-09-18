@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.orders.mapper.OrderDivisionTransferScheduleMapper">
+
+	<select id="countNeedTransfer" resultType="long">
+		SELECT COUNT(1) FROM orders_rel_chinaumspay_division reldivision
+		INNER JOIN orders_normal_orders o ON reldivision.order_id = o.order_id
+		WHERE reldivision.status = '0' AND o.order_auto_close_aftersales_time &lt;= #{now}
+	</select>
+
+	<select id="listDistributorIds" resultType="long">
+		SELECT o.distributor_id FROM orders_rel_chinaumspay_division reldivision
+		INNER JOIN orders_normal_orders o ON reldivision.order_id = o.order_id
+		WHERE o.company_id = #{companyId} AND reldivision.status = '0'
+		AND o.order_auto_close_aftersales_time &lt;= #{now}
+		GROUP BY o.distributor_id
+	</select>
+
+	<resultMap id="NeedTransfer" type="cn.shopex.ecshopx.orders.service.division.NeedTransferOrderRow">
+		<id column="id" property="id"/>
+		<result column="order_id" property="orderId"/>
+		<result column="company_id" property="companyId"/>
+		<result column="total_fee" property="totalFee"/>
+		<result column="distributor_id" property="distributorId"/>
+	</resultMap>
+
+	<select id="listNeedTransferByDistributor" resultMap="NeedTransfer">
+		SELECT reldivision.id, reldivision.order_id, reldivision.company_id, o.total_fee, o.distributor_id
+		FROM orders_rel_chinaumspay_division reldivision
+		INNER JOIN orders_normal_orders o ON reldivision.order_id = o.order_id
+		WHERE o.distributor_id = #{distributorId} AND reldivision.status = '0'
+		AND o.order_auto_close_aftersales_time &lt;= #{now}
+	</select>
+
+	<select id="sumAppliedRefundFenByOrder" resultType="int">
+		SELECT IFNULL(SUM(ad.refund_fee), 0) FROM aftersales_detail ad
+		WHERE ad.company_id = #{companyId} AND ad.order_id = #{orderId}
+		AND ad.aftersales_status IN (0, 5, 1, 2)
+	</select>
+</mapper>

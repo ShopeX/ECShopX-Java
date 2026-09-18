@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.kujiale.mapper.KujialeDesignerWorksH5ListMapper">
+
+	<select id="selectDesignIdsByTag" resultType="string">
+		SELECT design_id
+		FROM kujiale_designer_works_rel_tags
+		WHERE tag_category_id = #{tagCategoryId}
+		  AND tag_id = #{tagId}
+	</select>
+
+	<sql id="h5ListWhere">
+		<where>
+			<if test="keyword != null and keyword != ''">
+				AND design_name LIKE CONCAT('%', #{keyword}, '%')
+			</if>
+			<choose>
+				<when test="designIdMode == 'empty_string'">
+					AND design_id = ''
+				</when>
+				<when test="designIdMode == 'in_list'">
+					<if test="designIds != null and designIds.size() > 0">
+						AND design_id IN
+						<foreach collection="designIds" item="did" open="(" separator="," close=")">
+							#{did}
+						</foreach>
+					</if>
+				</when>
+			</choose>
+			<choose>
+				<when test="cityMode == 'scalar'">
+					<if test="cityScalar != null and cityScalar != ''">
+						AND city LIKE CONCAT('%', #{cityScalar}, '%')
+					</if>
+				</when>
+				<when test="cityMode == 'list'">
+					<if test="cityIds != null and cityIds.size() > 0">
+						AND (
+						<foreach collection="cityIds" item="cid" separator=" OR ">
+							city LIKE CONCAT('%', #{cid}, '%')
+						</foreach>
+						)
+					</if>
+				</when>
+			</choose>
+		</where>
+	</sql>
+
+	<select id="countByFilter" resultType="long">
+		SELECT COUNT(*)
+		FROM kujiale_designer_works
+		<include refid="h5ListWhere"/>
+	</select>
+
+	<select id="selectPageByFilter" resultType="map">
+		SELECT
+			id,
+			design_name,
+			cover_pic,
+			is_origin,
+			is_excellent,
+			is_real_excellent,
+			is_top,
+			design_id,
+			plan_id,
+			comm_name,
+			city,
+			name,
+			tag_id,
+			design_pano_url,
+			user_avatar,
+			email,
+			user_name,
+			user_id,
+			organization_id,
+			created,
+			updated,
+			view_count,
+			like_count,
+			ku_created
+		FROM kujiale_designer_works
+		<include refid="h5ListWhere"/>
+		<choose>
+			<when test="sortKey == 'hot'">
+				ORDER BY view_count DESC
+			</when>
+			<when test="sortKey == 'latest'">
+				ORDER BY ku_created DESC
+			</when>
+		</choose>
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+
+	<select id="selectRelTagsByDesignIds" resultType="map">
+		SELECT
+			id,
+			tag_category_id,
+			tag_category_name,
+			tag_id,
+			tag_name,
+			design_id,
+			plan_id,
+			created,
+			updated
+		FROM kujiale_designer_works_rel_tags
+		WHERE design_id IN
+		<foreach collection="designIds" item="did" open="(" separator="," close=")">
+			#{did}
+		</foreach>
+	</select>
+</mapper>

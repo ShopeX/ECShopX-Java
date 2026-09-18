@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.distribution.mapper.DistributorWhiteListExportMapper">
+
+	<sql id="whiteListWhere">
+		w.company_id = #{f.companyId}
+		<if test="f.shopNotFound">
+			AND 1 = 0
+		</if>
+		<if test="f.distributorIds != null and f.distributorIds.size() &gt; 0">
+			AND w.distributor_id IN
+			<foreach collection="f.distributorIds" item="id" open="(" separator="," close=")">#{id}</foreach>
+		</if>
+		<if test="f.mobileFilterActive">
+			AND w.mobile = #{f.mobile}
+		</if>
+		<if test="f.usernamePrefix != null and f.usernamePrefix != ''">
+			AND w.username LIKE CONCAT(#{f.usernamePrefix}, '%')
+		</if>
+	</sql>
+
+	<select id="countGroupedByMobile" resultType="long">
+		SELECT COUNT(1) FROM (
+			SELECT w.mobile
+			FROM distribution_distributor_white_list w
+			WHERE
+			<include refid="whiteListWhere"/>
+			GROUP BY w.mobile
+		) t
+	</select>
+
+	<select id="selectGroupedByMobilePage" resultType="cn.shopex.ecshopx.distribution.mapper.DistributorWhiteListMobileAggRow">
+		SELECT w.mobile AS mobile,
+			MAX(w.username) AS username,
+			GROUP_CONCAT(DISTINCT w.distributor_id ORDER BY w.distributor_id SEPARATOR ',') AS distributorIdCsv
+		FROM distribution_distributor_white_list w
+		WHERE
+		<include refid="whiteListWhere"/>
+		GROUP BY w.mobile
+		ORDER BY w.mobile ASC
+		LIMIT #{offset}, #{limit}
+	</select>
+
+	<select id="selectGroupedByMobileAll" resultType="cn.shopex.ecshopx.distribution.mapper.DistributorWhiteListMobileAggRow">
+		SELECT MIN(w.id) AS id,
+			MIN(w.company_id) AS companyId,
+			MIN(w.created) AS created,
+			MAX(w.updated) AS updated,
+			MAX(w.username) AS username,
+			w.mobile AS mobile,
+			GROUP_CONCAT(DISTINCT w.distributor_id ORDER BY w.distributor_id SEPARATOR ',') AS distributorIdCsv
+		FROM distribution_distributor_white_list w
+		WHERE
+		<include refid="whiteListWhere"/>
+		GROUP BY w.mobile
+		ORDER BY MAX(w.updated) DESC, w.mobile ASC
+	</select>
+</mapper>

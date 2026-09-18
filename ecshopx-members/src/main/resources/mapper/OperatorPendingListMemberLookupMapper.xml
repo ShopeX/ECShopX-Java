@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.members.mapper.OperatorPendingListMemberLookupMapper">
+
+	<select id="selectMemberBaseRows" resultType="java.util.LinkedHashMap">
+		SELECT DISTINCT
+			m.user_id AS user_id,
+			m.company_id AS company_id,
+			m.grade_id AS grade_id,
+			m.mobile AS mobile,
+			m.user_card_code AS user_card_code,
+			m.authorizer_appid AS authorizer_appid,
+			m.wxa_appid AS wxa_appid,
+			m.source_id AS source_id,
+			m.monitor_id AS monitor_id,
+			m.latest_source_id AS latest_source_id,
+			m.latest_monitor_id AS latest_monitor_id,
+			m.created AS created,
+			m.updated AS updated,
+			m.created_year AS created_year,
+			m.created_month AS created_month,
+			m.created_day AS created_day,
+			m.offline_card_code AS offline_card_code,
+			m.inviter_id AS inviter_id,
+			m.source_from AS source_from,
+			m.password AS password,
+			m.disabled AS disabled,
+			m.use_point AS use_point,
+			m.remarks AS remarks,
+			m.third_data AS third_data,
+			m.region_mobile AS region_mobile,
+			m.mobile_country_code AS mobile_country_code,
+			m.reg_distributor AS reg_distributor,
+			m.reg_salesperson AS reg_salesperson,
+			m.fp_salesperson AS fp_salesperson,
+			m.has_fp AS has_fp,
+			m.op_distributor AS op_distributor,
+			info.username AS username,
+			info.name AS name,
+			info.sex AS sex,
+			info.birthday AS birthday,
+			info.address AS address,
+			info.email AS email,
+			info.industry AS industry,
+			info.income AS income,
+			info.edu_background AS edu_background,
+			info.habbit AS habbit,
+			info.avatar AS avatar
+		FROM members m
+		LEFT JOIN members_info info ON m.company_id = info.company_id AND m.user_id = info.user_id
+		WHERE m.company_id = #{companyId}
+		AND m.user_id IN
+		<foreach collection="userIds" item="uid" open="(" separator="," close=")">
+			#{uid}
+		</foreach>
+		ORDER BY m.user_id DESC
+		LIMIT #{limit}
+	</select>
+
+	<select id="selectMemberAssociationsForPendingList" resultType="java.util.LinkedHashMap">
+		SELECT unionid AS unionid, user_id AS user_id
+		FROM members_associations
+		WHERE user_id IN
+		<foreach collection="userIds" item="uid" open="(" separator="," close=")">
+			#{uid}
+		</foreach>
+		<if test="companyId > 0">
+			AND company_id = #{companyId}
+		</if>
+	</select>
+
+	<select id="selectWechatOpenIdsForPendingList" resultType="java.util.LinkedHashMap">
+		SELECT unionid AS unionid, open_id AS open_id
+		FROM members_wechatusers
+		WHERE unionid IN
+		<foreach collection="unionids" item="u" open="(" separator="," close=")">
+			#{u}
+		</foreach>
+		<if test="companyId > 0">
+			AND company_id = #{companyId}
+		</if>
+	</select>
+</mapper>

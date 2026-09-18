@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.adapay.mapper.AdapayMemberRelCorpListMapper">
+
+	<sql id="fromJoin">
+		FROM adapay_member member
+		LEFT JOIN adapay_corp_member corp ON member.id = corp.member_id
+	</sql>
+
+	<sql id="whereClause">
+		WHERE member.company_id = #{f.companyId}
+		AND member.operator_type != 'promoter'
+		<if test="f.memberType != null">
+			AND member.member_type = #{f.memberType}
+		</if>
+		<if test="f.operatorType != null">
+			AND member.operator_type = #{f.operatorType}
+		</if>
+		<if test="f.keywordsPlain != null">
+			AND (corp.legal_person = #{f.keywordsEnc}
+			OR member.user_name = #{f.keywordsEnc}
+			OR member.location = #{f.keywordsPlain})
+		</if>
+	</sql>
+
+	<select id="countByFilter" resultType="long">
+		SELECT COUNT(*)
+		<include refid="fromJoin"/>
+		<include refid="whereClause"/>
+	</select>
+
+	<select id="selectPageByFilter" resultType="map">
+		SELECT
+			member.id AS id,
+			member.company_id AS company_id,
+			member.location AS location,
+			member.user_name AS user_name,
+			member.member_type AS member_type,
+			member.operator_type AS operator_type,
+			corp.legal_person AS legal_person
+		<include refid="fromJoin"/>
+		<include refid="whereClause"/>
+		ORDER BY member.create_time DESC
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+</mapper>

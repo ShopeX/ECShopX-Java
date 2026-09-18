@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.goods.mapper.ItemsWxappFilterFacetMapper">
+
+	<select id="selectFacetRows" resultType="java.util.LinkedHashMap">
+		SELECT
+			i.price AS price,
+			i.market_price AS market_price,
+			i.item_category AS item_category,
+			i.distributor_id AS distributor_id,
+			ira.attribute_id AS attribute_id,
+			ira.attribute_value_id AS attribute_value_id,
+			ia.attribute_name AS attribute_name,
+			ia.attribute_type AS attribute_type,
+			iav.attribuattribute_valuete_name AS attribute_value_name
+		FROM items_rel_attributes ira
+		LEFT JOIN items i ON ira.item_id = i.item_id
+		LEFT JOIN items_attributes ia ON ira.attribute_id = ia.attribute_id
+		LEFT JOIN items_attribute_values iav ON ira.attribute_value_id = iav.attribute_value_id
+		<where>
+			AND ia.attribute_type IN ('item_params', 'item_spec')
+			AND ia.is_show = 1
+			<if test="p.orConds != null and p.orConds.size() &gt; 0">
+				AND (
+				<foreach collection="p.orConds" item="c" separator=" OR ">
+					<choose>
+						<when test="c.kind == 'EQ'">i.${c.column} = #{c.singleValue}</when>
+						<when test="c.kind == 'NEQ'">i.${c.column} != #{c.singleValue}</when>
+						<when test="c.kind == 'GT'">i.${c.column} &gt; #{c.singleValue}</when>
+						<when test="c.kind == 'LT'">i.${c.column} &lt; #{c.singleValue}</when>
+						<when test="c.kind == 'GTE'">i.${c.column} &gt;= #{c.singleValue}</when>
+						<when test="c.kind == 'LTE'">i.${c.column} &lt;= #{c.singleValue}</when>
+						<when test="c.kind == 'LIKE'">i.${c.column} LIKE CONCAT('%', #{c.singleValue}, '%')</when>
+						<when test="c.kind == 'IN'">i.${c.column} IN
+							<foreach collection="c.listValues" item="v" open="(" separator="," close=")">#{v}</foreach>
+						</when>
+					</choose>
+				</foreach>
+				)
+			</if>
+			<foreach collection="p.ands" item="c">
+				<choose>
+					<when test="c.kind == 'EQ'">AND i.${c.column} = #{c.singleValue}</when>
+					<when test="c.kind == 'NEQ'">AND i.${c.column} != #{c.singleValue}</when>
+					<when test="c.kind == 'GT'">AND i.${c.column} &gt; #{c.singleValue}</when>
+					<when test="c.kind == 'LT'">AND i.${c.column} &lt; #{c.singleValue}</when>
+					<when test="c.kind == 'GTE'">AND i.${c.column} &gt;= #{c.singleValue}</when>
+					<when test="c.kind == 'LTE'">AND i.${c.column} &lt;= #{c.singleValue}</when>
+					<when test="c.kind == 'LIKE'">AND i.${c.column} LIKE CONCAT('%', #{c.singleValue}, '%')</when>
+					<when test="c.kind == 'IN'">AND i.${c.column} IN
+						<foreach collection="c.listValues" item="v" open="(" separator="," close=")">#{v}</foreach>
+					</when>
+				</choose>
+			</foreach>
+		</where>
+	</select>
+
+</mapper>

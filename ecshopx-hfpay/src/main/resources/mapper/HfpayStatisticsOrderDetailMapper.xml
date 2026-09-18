@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.hfpay.mapper.HfpayStatisticsOrderDetailMapper">
+
+	<select id="selectOrderDetailRow" resultType="map">
+		SELECT
+			FROM_UNIXTIME(a.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+			a.order_id,
+			a.profitsharing_status,
+			a.total_fee,
+			IF(IFNULL((a.total_fee * (a.profitsharing_rate / 10000)), 0) &gt;= 1,
+				a.total_fee * (a.profitsharing_rate / 10000), 0) AS charge,
+			IFNULL(CONVERT(a.profitsharing_rate / 100, DECIMAL(15, 2)), 0) AS profitsharing_rate,
+			b.name AS distributor_name,
+			a.distributor_id,
+			a.order_status,
+			a.delivery_status,
+			a.receipt_type,
+			a.ziti_status,
+			a.cancel_status,
+			a.is_invoiced,
+			a.app_pay_type
+		FROM orders_normal_orders a
+		LEFT JOIN distribution_distributor b ON a.distributor_id = b.distributor_id
+		WHERE a.company_id = #{companyId}
+			AND a.order_id = #{orderId}
+			AND a.order_status NOT IN ('NOTPAY', 'PART_PAYMENT', 'WAIT_GROUPS_SUCCESS')
+			AND a.pay_status &lt;&gt; 'NOTPAY'
+	</select>
+</mapper>

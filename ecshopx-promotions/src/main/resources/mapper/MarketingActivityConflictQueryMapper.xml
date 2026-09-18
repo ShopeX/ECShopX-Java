@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.promotions.mapper.MarketingActivityConflictQueryMapper">
+
+	<select id="selectMarketingIdsUseBound0Overlapping" resultType="long">
+		SELECT marketing_id FROM promotions_marketing_activity
+		WHERE company_id = #{companyId}
+		AND use_bound = 0
+		AND start_time &lt;= #{windowEnd}
+		AND end_time &gt;= #{overlapStart}
+		<if test="marketingTypes != null and marketingTypes.size() &gt; 0">
+			AND marketing_type IN
+			<foreach collection="marketingTypes" item="t" open="(" separator="," close=")">#{t}</foreach>
+		</if>
+	</select>
+
+	<select id="selectActiveMarketingItemBindings"
+			resultType="cn.shopex.ecshopx.promotions.dto.MarketingActivityItemBindingRow">
+		SELECT marketing_id AS marketingId, item_id AS itemId, item_type AS itemType
+		FROM promotions_marketing_activity_items
+		WHERE company_id = #{companyId}
+		AND end_time &gt;= #{nowSeconds}
+	</select>
+
+	<select id="selectPromotionItemBindings"
+			resultType="cn.shopex.ecshopx.promotions.dto.MarketingActivityItemBindingRow">
+		SELECT marketing_id AS marketingId, item_id AS itemId, item_type AS itemType
+		FROM promotions_marketing_activity_items
+		WHERE company_id = #{companyId}
+		AND item_type = #{itemType}
+		AND end_time &gt;= #{nowSeconds}
+		<if test="itemIds != null and itemIds.size() &gt; 0">
+			AND item_id IN
+			<foreach collection="itemIds" item="id" open="(" separator="," close=")">#{id}</foreach>
+		</if>
+	</select>
+
+	<select id="selectOverlappingMarketingActivities"
+			resultType="cn.shopex.ecshopx.promotions.dto.MarketingActivityConflictRow">
+		SELECT marketing_id AS marketingId, marketing_name AS marketingName,
+			promotion_tag AS promotionTag, source_id AS sourceId, shop_ids AS shopIds
+		FROM promotions_marketing_activity
+		WHERE company_id = #{companyId}
+		AND start_time &lt;= #{windowEnd}
+		AND end_time &gt;= #{overlapStart}
+		<if test="marketingTypes != null and marketingTypes.size() &gt; 0">
+			AND marketing_type IN
+			<foreach collection="marketingTypes" item="t" open="(" separator="," close=")">#{t}</foreach>
+		</if>
+		<if test="marketingIds != null and marketingIds.size() &gt; 0">
+			AND marketing_id IN
+			<foreach collection="marketingIds" item="id" open="(" separator="," close=")">#{id}</foreach>
+		</if>
+	</select>
+
+	<select id="selectMarketingIdsByItemCategoryCategoryType" resultType="long">
+		SELECT DISTINCT a.marketing_id
+		FROM promotions_marketing_activity_items a
+		WHERE a.item_type = 'category'
+		AND a.item_id IN
+		<foreach collection="itemCategories" item="c" open="(" separator="," close=")">#{c}</foreach>
+		AND a.start_time &lt;= #{windowEnd}
+		AND a.end_time &gt;= #{overlapStart}
+	</select>
+
+	<select id="selectMarketingIdsByItemCategoryNormalItems" resultType="long">
+		SELECT DISTINCT a.marketing_id
+		FROM promotions_marketing_activity_items a
+		INNER JOIN items b ON a.item_id = b.item_id
+		WHERE a.item_type = 'normal'
+		AND b.item_category IN
+		<foreach collection="itemCategories" item="c" open="(" separator="," close=")">#{c}</foreach>
+		AND a.start_time &lt;= #{windowEnd}
+		AND a.end_time &gt;= #{overlapStart}
+	</select>
+
+	<select id="selectMarketingIdsByItemCategoryBrandType" resultType="long">
+		SELECT DISTINCT a.marketing_id
+		FROM promotions_marketing_activity_items a
+		INNER JOIN items b ON a.item_id = b.brand_id
+		WHERE a.item_type = 'brand'
+		AND b.item_category IN
+		<foreach collection="itemCategories" item="c" open="(" separator="," close=")">#{c}</foreach>
+		AND a.start_time &lt;= #{windowEnd}
+		AND a.end_time &gt;= #{overlapStart}
+	</select>
+
+	<select id="selectMarketingIdsByItemCategoryTagType" resultType="long">
+		SELECT DISTINCT a.marketing_id
+		FROM promotions_marketing_activity_items a
+		INNER JOIN items_rel_tags c ON a.item_id = c.tag_id
+		INNER JOIN items b ON c.item_id = b.item_id
+		WHERE a.item_type = 'tag'
+		AND b.item_category IN
+		<foreach collection="itemCategories" item="c" open="(" separator="," close=")">#{c}</foreach>
+		AND a.start_time &lt;= #{windowEnd}
+		AND a.end_time &gt;= #{overlapStart}
+	</select>
+
+	<select id="selectMarketingIdsByItemTagsTagToTag" resultType="long">
+		SELECT DISTINCT a.marketing_id
+		FROM promotions_marketing_activity_items a
+		INNER JOIN items_rel_tags c ON a.item_id = c.tag_id
+		INNER JOIN items_rel_tags d ON c.item_id = d.item_id
+		WHERE a.item_type = 'tag'
+		AND d.tag_id IN
+		<foreach collection="tagIds" item="tid" open="(" separator="," close=")">#{tid}</foreach>
+		AND a.end_time &gt;= #{overlapStart}
+	</select>
+
+	<select id="selectMarketingIdsByItemTagsNormalItems" resultType="long">
+		SELECT DISTINCT a.marketing_id
+		FROM promotions_marketing_activity_items a
+		INNER JOIN items_rel_tags c ON a.item_id = c.item_id
+		WHERE a.item_type = 'normal'
+		AND c.tag_id IN
+		<foreach collection="tagIds" item="tid" open="(" separator="," close=")">#{tid}</foreach>
+		AND a.start_time &lt;= #{windowEnd}
+		AND a.end_time &gt;= #{overlapStart}
+	</select>
+
+	<select id="selectMarketingIdsByItemTagsBrandType" resultType="long">
+		SELECT DISTINCT a.marketing_id
+		FROM promotions_marketing_activity_items a
+		INNER JOIN items b ON a.item_id = b.brand_id
+		INNER JOIN items_rel_tags c ON b.item_id = c.item_id
+		WHERE a.item_type = 'brand'
+		AND c.tag_id IN
+		<foreach collection="tagIds" item="tid" open="(" separator="," close=")">#{tid}</foreach>
+		AND a.start_time &lt;= #{windowEnd}
+		AND a.end_time &gt;= #{overlapStart}
+	</select>
+
+	<select id="selectMarketingIdsByItemTagsCategoryType" resultType="long">
+		SELECT DISTINCT a.marketing_id
+		FROM promotions_marketing_activity_items a
+		INNER JOIN items b ON a.item_id = b.item_category
+		INNER JOIN items_rel_tags c ON b.item_id = c.item_id
+		WHERE a.item_type = 'category'
+		AND c.tag_id IN
+		<foreach collection="tagIds" item="tid" open="(" separator="," close=")">#{tid}</foreach>
+		AND a.start_time &lt;= #{windowEnd}
+		AND a.end_time &gt;= #{overlapStart}
+	</select>
+
+	<select id="selectMarketingIdsByItemBrandBrandType" resultType="long">
+		SELECT DISTINCT a.marketing_id
+		FROM promotions_marketing_activity_items a
+		WHERE a.item_type = 'brand'
+		AND a.item_id IN
+		<foreach collection="brandIds" item="bid" open="(" separator="," close=")">#{bid}</foreach>
+	</select>
+
+	<select id="selectMarketingIdsByItemBrandNormalItems" resultType="long">
+		SELECT DISTINCT a.marketing_id
+		FROM promotions_marketing_activity_items a
+		INNER JOIN items b ON a.item_id = b.item_id
+		WHERE a.item_type = 'normal'
+		AND b.brand_id IN
+		<foreach collection="brandIds" item="bid" open="(" separator="," close=")">#{bid}</foreach>
+		AND a.start_time &lt;= #{windowEnd}
+		AND a.end_time &gt;= #{overlapStart}
+	</select>
+
+	<select id="selectMarketingIdsByItemBrandTagType" resultType="long">
+		SELECT DISTINCT a.marketing_id
+		FROM promotions_marketing_activity_items a
+		INNER JOIN items_rel_tags c ON a.item_id = c.tag_id
+		INNER JOIN items b ON c.item_id = b.item_id
+		WHERE a.item_type = 'tag'
+		AND b.brand_id IN
+		<foreach collection="brandIds" item="bid" open="(" separator="," close=")">#{bid}</foreach>
+		AND a.start_time &lt;= #{windowEnd}
+		AND a.end_time &gt;= #{overlapStart}
+	</select>
+
+	<select id="selectMarketingIdsByItemBrandCategoryType" resultType="long">
+		SELECT DISTINCT a.marketing_id
+		FROM promotions_marketing_activity_items a
+		INNER JOIN items b ON a.item_id = b.item_category
+		WHERE a.item_type = 'category'
+		AND b.brand_id IN
+		<foreach collection="brandIds" item="bid" open="(" separator="," close=")">#{bid}</foreach>
+		AND a.start_time &lt;= #{windowEnd}
+		AND a.end_time &gt;= #{overlapStart}
+	</select>
+
+	<select id="countItemsByGoodsIdsAndItemIds" resultType="long">
+		SELECT COUNT(1) FROM items
+		WHERE company_id = #{companyId}
+		AND item_id IN
+		<foreach collection="itemIds" item="id" open="(" separator="," close=")">#{id}</foreach>
+		AND goods_id IN
+		<foreach collection="goodsIds" item="gid" open="(" separator="," close=")">#{gid}</foreach>
+	</select>
+
+	<select id="countItemsByItemCategoryAndGoodsIds" resultType="long">
+		SELECT COUNT(1) FROM items
+		WHERE company_id = #{companyId}
+		AND item_category IN
+		<foreach collection="itemCategories" item="c" open="(" separator="," close=")">#{c}</foreach>
+		AND goods_id IN
+		<foreach collection="goodsIds" item="gid" open="(" separator="," close=")">#{gid}</foreach>
+	</select>
+
+	<select id="countItemsByBrandIdsAndGoodsIds" resultType="long">
+		SELECT COUNT(1) FROM items
+		WHERE company_id = #{companyId}
+		AND brand_id IN
+		<foreach collection="brandIds" item="bid" open="(" separator="," close=")">#{bid}</foreach>
+		AND goods_id IN
+		<foreach collection="goodsIds" item="gid" open="(" separator="," close=")">#{gid}</foreach>
+	</select>
+
+	<select id="selectDistinctTagIdsByItemIds" resultType="long">
+		SELECT DISTINCT tag_id FROM items_rel_tags
+		WHERE company_id = #{companyId}
+		AND item_id IN
+		<foreach collection="itemIds" item="id" open="(" separator="," close=")">#{id}</foreach>
+	</select>
+
+	<select id="countItemsByItemCategoryAndItemIds" resultType="long">
+		SELECT COUNT(1) FROM items
+		WHERE company_id = #{companyId}
+		AND item_category IN
+		<foreach collection="itemCategories" item="c" open="(" separator="," close=")">#{c}</foreach>
+		AND item_id IN
+		<foreach collection="itemIds" item="id" open="(" separator="," close=")">#{id}</foreach>
+	</select>
+
+	<select id="countItemsByBrandIdsAndItemIds" resultType="long">
+		SELECT COUNT(1) FROM items
+		WHERE company_id = #{companyId}
+		AND brand_id IN
+		<foreach collection="brandIds" item="bid" open="(" separator="," close=")">#{bid}</foreach>
+		AND item_id IN
+		<foreach collection="itemIds" item="id" open="(" separator="," close=")">#{id}</foreach>
+	</select>
+
+	<select id="countPromotionGroupOverlapForItemIds" resultType="long">
+		SELECT COUNT(1) FROM promotion_groups_activity g
+		INNER JOIN items i ON i.goods_id = g.goods_id AND i.company_id = g.company_id
+		WHERE g.company_id = #{companyId}
+		AND (g.disabled = 0 OR g.disabled IS NULL OR g.disabled = false)
+		AND i.item_id IN
+		<foreach collection="itemIds" item="id" open="(" separator="," close=")">#{id}</foreach>
+		AND (
+			(g.begin_time &lt;= #{beginTime} AND g.end_time &gt;= #{beginTime})
+			OR (g.begin_time &lt;= #{endTime} AND g.end_time &gt;= #{endTime})
+		)
+		<if test="excludeGroupId != null and excludeGroupId &gt; 0">
+			AND g.groups_activity_id &lt;&gt; #{excludeGroupId}
+		</if>
+	</select>
+
+	<select id="countBargainOverlapForItemIds" resultType="long">
+		SELECT COUNT(1) FROM promotions_bargain b
+		WHERE b.company_id = #{companyId}
+		AND CAST(b.item_id AS UNSIGNED) IN
+		<foreach collection="itemIds" item="id" open="(" separator="," close=")">#{id}</foreach>
+		AND (
+			(b.begin_time &lt;= #{beginTime} AND b.end_time &gt;= #{beginTime})
+			OR (b.begin_time &lt;= #{endTime} AND b.end_time &gt;= #{endTime})
+		)
+		<if test="excludeBargainId != null and excludeBargainId &gt; 0">
+			AND b.bargain_id &lt;&gt; #{excludeBargainId}
+		</if>
+	</select>
+</mapper>

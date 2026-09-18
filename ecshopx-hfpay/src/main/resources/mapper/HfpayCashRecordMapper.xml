@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.hfpay.mapper.HfpayCashRecordMapper">
+
+	<sql id="withdrawFilterCompanyTimeDistOrder">
+			a.company_id = #{ctx.companyId}
+			AND a.created_at &gt;= #{ctx.startDateTime}
+			AND a.created_at &lt;= #{ctx.endDateTime}
+			<if test="ctx.distributorId != null">
+				AND a.distributor_id = #{ctx.distributorId}
+			</if>
+			<if test="ctx.orderId != null and ctx.orderId != ''">
+				AND a.order_id = #{ctx.orderId}
+			</if>
+	</sql>
+
+	<sql id="withdrawExportWhere">
+		<where>
+			<include refid="withdrawFilterCompanyTimeDistOrder"/>
+			<choose>
+				<when test="ctx.cashStatusInProgress">
+					AND a.cash_status IN (0, 1)
+				</when>
+				<when test="ctx.cashStatusExact != null">
+					AND a.cash_status = #{ctx.cashStatusExact}
+				</when>
+			</choose>
+		</where>
+	</sql>
+
+	<select id="countWithdrawExport" resultType="long">
+		SELECT COUNT(*)
+		FROM hfpay_cash_record a
+		<include refid="withdrawExportWhere"/>
+	</select>
+
+	<select id="selectWithdrawExportPage"
+			resultType="cn.shopex.ecshopx.hfpay.service.export.HfpayWithdrawRecordExportRow">
+		SELECT
+			a.created_at AS createdAt,
+			a.order_id AS orderId,
+			a.bind_card_id AS bindCardId,
+			a.trans_amt AS transAmt,
+			b.name AS distributorName,
+			a.operator_id AS operatorId,
+			a.cash_status AS cashStatus,
+			a.resp_desc AS respDesc
+		FROM hfpay_cash_record a
+		LEFT JOIN distribution_distributor b ON a.distributor_id = b.distributor_id
+		<include refid="withdrawExportWhere"/>
+		ORDER BY a.created_at DESC
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+
+	<select id="selectWithdrawListPage" resultType="java.util.LinkedHashMap">
+		SELECT
+			a.*,
+			b.name AS distributor_name
+		FROM hfpay_cash_record a
+		LEFT JOIN distribution_distributor b ON a.distributor_id = b.distributor_id
+		<include refid="withdrawExportWhere"/>
+		ORDER BY a.created_at DESC
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+
+	<select id="sumWithdrawTransAmtTotal" resultType="long">
+		SELECT COALESCE(SUM(a.trans_amt), 0)
+		FROM hfpay_cash_record a
+		<where>
+			<include refid="withdrawFilterCompanyTimeDistOrder"/>
+		</where>
+	</select>
+
+	<select id="sumWithdrawTransAmtFinish" resultType="long">
+		SELECT COALESCE(SUM(a.trans_amt), 0)
+		FROM hfpay_cash_record a
+		<where>
+			<include refid="withdrawFilterCompanyTimeDistOrder"/>
+			AND a.cash_status = 2
+		</where>
+	</select>
+
+	<select id="sumWithdrawTransAmtInProgress" resultType="long">
+		SELECT COALESCE(SUM(a.trans_amt), 0)
+		FROM hfpay_cash_record a
+		<where>
+			<include refid="withdrawFilterCompanyTimeDistOrder"/>
+			AND a.cash_status IN (0, 1)
+		</where>
+	</select>
+
+	<select id="sumWithdrawTransAmtFail" resultType="long">
+		SELECT COALESCE(SUM(a.trans_amt), 0)
+		FROM hfpay_cash_record a
+		<where>
+			<include refid="withdrawFilterCompanyTimeDistOrder"/>
+			AND a.cash_status = 3
+		</where>
+	</select>
+</mapper>

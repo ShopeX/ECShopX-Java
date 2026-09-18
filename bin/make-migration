@@ -1,0 +1,1003 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+MIGRATION_DIR="$ROOT_DIR/ecshopx-bootstrap/src/main/resources/db/migration"
+RESOURCES_DIR="$ROOT_DIR/ecshopx-bootstrap/src/main/resources"
+
+resolve_prop_value() {
+  python3 - "$1" <<'PY'
+import os
+import re
+import sys
+value = sys.argv[1]
+def repl(match):
+    expr = match.group(1)
+    if ':' in expr:
+        name, default = expr.split(':', 1)
+        return os.environ.get(name, default)
+    return os.environ.get(expr, match.group(0))
+print(re.sub(r"\$\{([^}]+)\}", repl, value), end="")
+PY
+}
+
+load_prop() {
+  local key="$1"
+  local file value
+  value=""
+  for file in "$RESOURCES_DIR/application.properties" ${PROFILE:+"$RESOURCES_DIR/application-$PROFILE.properties"}; do
+    [[ -f "$file" ]] || continue
+    local line
+    line="$(grep -E "^[[:space:]]*${key}[[:space:]]*[:=]" "$file" | tail -1 || true)"
+    [[ -n "$line" ]] || continue
+    value="${line#*=}"
+    if [[ "$value" == "$line" ]]; then
+      value="${line#*:}"
+    fi
+    value="$(printf '%s' "$value" | sed -E 's/^[[:space:]]+|[[:space:]]+$//g')"
+  done
+  [[ -n "$value" ]] && resolve_prop_value "$value"
+}
+
+run_flyway() {
+  local goal="$1"
+  local url user password
+  url="${DB_URL:-$(load_prop spring.datasource.url)}"
+  user="${DB_USER:-$(load_prop spring.datasource.username)}"
+  password="${DB_PASSWORD:-$(load_prop spring.datasource.password)}"
+  [[ -n "$url" ]] || { echo "No database URL found. Set spring.datasource.url or pass --db-url." >&2; exit 1; }
+  echo "Running Flyway $goal against: $url"
+  (cd "$ROOT_DIR" && ./mvnw -pl ecshopx-bootstrap "org.flywaydb:flyway-maven-plugin:$goal" \
+    -Dflyway.url="$url" \
+    -Dflyway.user="$user" \
+    -Dflyway.password="$password" \
+    -Dflyway.locations="filesystem:ecshopx-bootstrap/src/main/resources/db/migration" \
+    -Dflyway.baselineOnMigrate=true \
+    -Dflyway.baselineVersion=0 \
+    -Dflyway.encoding=UTF-8)
+}
+
+run_migrate() {
+  run_flyway migrate
+}
+
+run_repair() {
+  run_flyway repair
+}
+
+usage() {
+  cat <<'USAGE'
+Usage:
+  bin/make-migration [options] <description>
+  bin/make-migration migrate [options]
+  bin/make-migration repair [options]
+
+Options:
+  --empty                  Create a blank migration template.
+  --profile <name>         Overlay application-<name>.properties.
+  --db-url <jdbc-url>      Override spring.datasource.url.
+  --db-user <username>     Override spring.datasource.username.
+  --db-password <password> Override spring.datasource.password.
+  --filter-expression <re> Limit tables by regular expression, similar to doctrine:migrations:diff.
+  --changed-only           Compare only domain files changed in git diff (default compares all domain files).
+  --allow-drop             Also generate DROP COLUMN / DROP TABLE for database objects absent from domain mapping.
+  --allow-empty-diff       Create a migration file even when no schema differences are detected.
+
+Examples:
+  bin/make-migration sync_domain_schema
+  bin/make-migration --profile local add_order_extra_index
+  bin/make-migration --filter-expression '^items$' sync_items
+  bin/make-migration --changed-only add_is_test_to_items
+  bin/make-migration --empty manual_data_fix
+  bin/make-migration migrate --profile local
+  bin/make-migration repair --profile local
+
+This command mirrors the core flow of ecshopx-api's doctrine:migrations:diff:
+  from schema = current connected database schema
+  to schema   = schema inferred from local MyBatis-Plus domain mapping
+  output      = Flyway SQL migration from from-schema to to-schema
+
+MyBatis-Plus annotations are less expressive than Doctrine ORM metadata, so generated SQL is best-effort.
+Always review SQL type, nullability, default, comment, indexes and destructive changes before applying.
+USAGE
+}
+
+EMPTY=false
+PROFILE="${SPRING_PROFILES_ACTIVE:-}"
+DB_URL="${SPRING_DATASOURCE_URL:-}"
+DB_USER="${SPRING_DATASOURCE_USERNAME:-}"
+DB_PASSWORD="${SPRING_DATASOURCE_PASSWORD:-}"
+FILTER_EXPRESSION=""
+CHANGED_ONLY=false
+ALLOW_DROP=false
+ALLOW_EMPTY_DIFF=false
+ARGS=()
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --empty) EMPTY=true; shift ;;
+    --profile) PROFILE="${2:-}"; [[ -n "$PROFILE" ]] || { echo "--profile requires a value" >&2; exit 1; }; shift 2 ;;
+    --db-url) DB_URL="${2:-}"; [[ -n "$DB_URL" ]] || { echo "--db-url requires a value" >&2; exit 1; }; shift 2 ;;
+    --db-user) DB_USER="${2:-}"; shift 2 ;;
+    --db-password) DB_PASSWORD="${2:-}"; shift 2 ;;
+    --filter-expression) FILTER_EXPRESSION="${2:-}"; [[ -n "$FILTER_EXPRESSION" ]] || { echo "--filter-expression requires a value" >&2; exit 1; }; shift 2 ;;
+    --changed-only) CHANGED_ONLY=true; shift ;;
+    --allow-drop) ALLOW_DROP=true; shift ;;
+    --allow-empty-diff) ALLOW_EMPTY_DIFF=true; shift ;;
+    -h|--help) usage; exit 0 ;;
+    --) shift; ARGS+=("$@"); break ;;
+    --*) echo "Unknown option: $1" >&2; usage >&2; exit 1 ;;
+    *) ARGS+=("$1"); shift ;;
+  esac
+done
+
+if [[ ${#ARGS[@]} -lt 1 ]]; then
+  usage >&2
+  exit 1
+fi
+
+if [[ "${ARGS[0]}" == "migrate" ]]; then
+  if [[ ${#ARGS[@]} -gt 1 ]]; then
+    echo "migrate does not accept a description or extra positional arguments: ${ARGS[*]:1}" >&2
+    exit 1
+  fi
+  run_migrate
+  exit 0
+fi
+
+if [[ "${ARGS[0]}" == "repair" ]]; then
+  if [[ ${#ARGS[@]} -gt 1 ]]; then
+    echo "repair does not accept a description or extra positional arguments: ${ARGS[*]:1}" >&2
+    exit 1
+  fi
+  run_repair
+  exit 0
+fi
+
+DESCRIPTION="${ARGS[*]}"
+SLUG="$(printf '%s' "$DESCRIPTION" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9]+/_/g; s/^_+//; s/_+$//')"
+[[ -n "$SLUG" ]] || { echo "Migration description must contain at least one letter or number." >&2; exit 1; }
+
+mkdir -p "$MIGRATION_DIR"
+VERSION="$(date +%Y%m%d%H%M%S)"
+FILE="$MIGRATION_DIR/V${VERSION}__${SLUG}.sql"
+[[ ! -e "$FILE" ]] || { echo "Migration already exists: $FILE" >&2; exit 1; }
+
+generate_domain_schema_diff() {
+  python3 - "$ROOT_DIR" "$PROFILE" "$DB_URL" "$DB_USER" "$DB_PASSWORD" "$FILTER_EXPRESSION" "$CHANGED_ONLY" "$ALLOW_DROP" <<'PY'
+import os
+import re
+import subprocess
+import sys
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Optional
+from urllib.parse import parse_qs, urlparse
+
+try:
+    import pymysql
+except Exception as exc:
+    print("pymysql is required to compare domain schema with MySQL. Install it or use --empty.", file=sys.stderr)
+    raise SystemExit(2) from exc
+
+root = Path(sys.argv[1])
+profile = sys.argv[2]
+db_url_override = sys.argv[3]
+db_user_override = sys.argv[4]
+db_password_override = sys.argv[5]
+filter_expression = sys.argv[6]
+changed_only = sys.argv[7].lower() == "true"
+allow_drop = sys.argv[8].lower() == "true"
+resources = root / "ecshopx-bootstrap" / "src" / "main" / "resources"
+
+@dataclass
+class DomainColumn:
+    table: str
+    name: str
+    java_type: str
+    sql_type: str
+    nullable: Optional[str]
+    default: Optional[str]
+    comment: str
+    id: bool
+    auto_increment: bool
+    source: str
+    column_definition: str = ""
+
+    def definition(self) -> str:
+        if self.column_definition:
+            parts = [f"`{self.name}`", self.column_definition]
+            if self.comment and "comment" not in self.column_definition.lower():
+                parts.append("COMMENT " + sql_literal(self.comment))
+            return " ".join(parts)
+        parts = [f"`{self.name}`", self.sql_type]
+        if self.auto_increment:
+            parts.append("AUTO_INCREMENT")
+        if self.nullable == "NO":
+            parts.append("NOT NULL")
+        elif self.nullable == "YES":
+            parts.append("DEFAULT NULL")
+        if self.default is not None and not self.auto_increment and supports_default(self.sql_type):
+            parts = [p for p in parts if p != "DEFAULT NULL"]
+            parts.append("DEFAULT " + sql_default_literal(self.default, self.sql_type))
+        if self.comment:
+            parts.append("COMMENT " + sql_literal(self.comment))
+        return " ".join(parts)
+
+
+@dataclass
+class DomainIndex:
+    name: str
+    columns: list[str]
+    unique: bool = False
+    lengths: Optional[list[int]] = None
+
+    def definition(self) -> str:
+        kind = "UNIQUE KEY" if self.unique else "KEY"
+        cols = []
+        for idx, column in enumerate(self.columns):
+            length = self.lengths[idx] if self.lengths and idx < len(self.lengths) else -1
+            suffix = f"({length})" if length and length > 0 else ""
+            cols.append(f"`{column}`{suffix}")
+        return f"{kind} `{self.name}` (" + ", ".join(cols) + ")"
+
+
+@dataclass
+class DomainTable:
+    name: str
+    columns: list[DomainColumn]
+    primary_keys: list[str]
+    comment: str
+    source: str
+    indexes: list[DomainIndex]
+
+
+def sql_literal(value):
+    if value is None:
+        return "NULL"
+    if isinstance(value, str) and value.upper() in ("CURRENT_TIMESTAMP", "NULL"):
+        return value.upper()
+    return "'" + str(value).replace("'", "''") + "'"
+
+
+def supports_default(sql_type):
+    type_name = (sql_type or "").lower()
+    return not re.match(r'^(?:tinytext|text|mediumtext|longtext|blob|mediumblob|longblob)\b', type_name)
+
+
+def clean_default_value(value):
+    if value is None:
+        return None
+    value = str(value).strip()
+    if len(value) >= 2 and value[0] == value[-1] and value[0] in ("'", '"'):
+        value = value[1:-1]
+    value = re.sub(r'''["']+$''', "", value)
+    return value
+
+
+def sql_default_literal(value, sql_type):
+    if value is None:
+        return "NULL"
+    value = clean_default_value(value)
+    upper = value.upper()
+    if upper in ("CURRENT_TIMESTAMP", "NULL"):
+        return upper
+    if upper == "TRUE":
+        return "1"
+    if upper == "FALSE":
+        return "0"
+    type_name = (sql_type or "").lower()
+    if re.match(r'^(?:tinyint|smallint|mediumint|int|integer|bigint|decimal|double|float)\b', type_name):
+        number_match = re.search(r"-?\d+(?:\.\d+)?", value)
+        if number_match:
+            return number_match.group(0)
+    return "'" + value.replace("'", "''") + "'"
+
+
+def load_properties(path):
+    props = {}
+    if not path.exists():
+        return props
+    for raw in path.read_text(encoding="utf-8").splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#") or line.startswith("!"):
+            continue
+        sep_positions = [pos for pos in (line.find("="), line.find(":")) if pos >= 0]
+        if not sep_positions:
+            continue
+        sep = min(sep_positions)
+        props[line[:sep].strip()] = resolve_placeholders(line[sep + 1:].strip())
+    return props
+
+
+def resolve_placeholders(value):
+    def repl(match):
+        expr = match.group(1)
+        if ":" in expr:
+            name, default = expr.split(":", 1)
+            return os.environ.get(name, default)
+        return os.environ.get(expr, match.group(0))
+    return re.sub(r"\$\{([^}]+)\}", repl, value)
+
+
+props = load_properties(resources / "application.properties")
+if profile:
+    for item in [part.strip() for part in profile.split(",") if part.strip()]:
+        props.update(load_properties(resources / f"application-{item}.properties"))
+
+db_url = db_url_override or props.get("spring.datasource.url", "")
+db_user = db_user_override or props.get("spring.datasource.username", "")
+db_password = db_password_override if db_password_override != "" else props.get("spring.datasource.password", "")
+if not db_url:
+    print("No database URL found. Set spring.datasource.url or pass --db-url.", file=sys.stderr)
+    raise SystemExit(2)
+
+
+def parse_jdbc_mysql(url):
+    if not url.startswith("jdbc:mysql://"):
+        raise ValueError(f"Only jdbc:mysql URLs are supported, got: {url}")
+    parsed = urlparse(url[len("jdbc:"):])
+    database = parsed.path.lstrip("/").split("/", 1)[0]
+    if not database:
+        raise ValueError(f"Database name is missing from JDBC URL: {url}")
+    query = parse_qs(parsed.query)
+    charset = query.get("characterEncoding", ["utf8mb4"])[0]
+    if charset.lower().replace("-", "") == "utf8":
+        charset = "utf8mb4"
+    return {"host": parsed.hostname or "127.0.0.1", "port": parsed.port or 3306, "database": database, "charset": charset}
+
+
+def normalize_identifier(name):
+    if name is None:
+        return None
+    name = name.strip()
+    if len(name) >= 2 and name[0] == "`" and name[-1] == "`":
+        return name[1:-1]
+    return name
+
+
+def camel_to_snake(name):
+    s = re.sub(r"(.)([A-Z][a-z]+)", r"\1_\2", name)
+    s = re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", s)
+    return s.lower()
+
+
+def clean_comment(lines):
+    text = "\n".join(lines)
+    text = re.sub(r"/\*\*|\*/", "", text)
+    text = re.sub(r"^\s*\*\s?", "", text, flags=re.M)
+    return re.sub(r"\s+", " ", text).strip()
+
+
+def annotation_body(annotation):
+    start = annotation.find("(")
+    end = annotation.rfind(")")
+    return annotation[start + 1:end] if start >= 0 and end > start else ""
+
+
+def annotation_string(annotation, name=None):
+    body = annotation_body(annotation)
+    if name:
+        match = re.search(rf'{name}\s*=\s*"((?:\\.|[^"])*)"', body)
+        return match.group(1).replace('\\"', '"') if match else None
+    match = re.search(r'^\s*"((?:\\.|[^"])*)"', body)
+    return match.group(1).replace('\\"', '"') if match else None
+
+
+def annotation_bool(annotation, name, default=False):
+    body = annotation_body(annotation)
+    match = re.search(rf'{name}\s*=\s*(true|false)', body)
+    return (match.group(1) == "true") if match else default
+
+
+def annotation_int(annotation, name, default=-1):
+    body = annotation_body(annotation)
+    match = re.search(rf'{name}\s*=\s*(-?\d+)', body)
+    return int(match.group(1)) if match else default
+
+
+def annotation_int_array(annotation, name):
+    body = annotation_body(annotation)
+    value = named_annotation_value(body, name)
+    if not value:
+        return []
+    return [int(item) for item in re.findall(r'-?\d+', value)]
+
+
+def annotation_string_array(annotation, name):
+    body = annotation_body(annotation)
+    value = named_annotation_value(body, name)
+    if not value:
+        return []
+    return re.findall(r'"((?:\\.|[^"])*)"', value)
+
+
+def paren_delta(text):
+    return text.count("(") - text.count(")")
+
+
+def balanced_annotation_at(text, pos):
+    match = re.match(r'@(\w+)', text[pos:])
+    if not match:
+        return None, pos
+    idx = pos + match.end()
+    while idx < len(text) and text[idx].isspace():
+        idx += 1
+    if idx >= len(text) or text[idx] != "(":
+        return text[pos:idx], idx
+    depth = 0
+    in_string = False
+    escaped = False
+    for cur in range(idx, len(text)):
+        ch = text[cur]
+        if in_string:
+            if escaped:
+                escaped = False
+            elif ch == "\\":
+                escaped = True
+            elif ch == '"':
+                in_string = False
+            continue
+        if ch == '"':
+            in_string = True
+        elif ch == "(":
+            depth += 1
+        elif ch == ")":
+            depth -= 1
+            if depth == 0:
+                return text[pos:cur + 1], cur + 1
+    return text[pos:], len(text)
+
+
+def find_annotation(java_text, name):
+    match = re.search(rf'@{name}\b', java_text)
+    if not match:
+        return None
+    annotation, _ = balanced_annotation_at(java_text, match.start())
+    return annotation
+
+
+def find_annotations(text, name):
+    result = []
+    for match in re.finditer(rf'@{name}\b', text):
+        annotation, _ = balanced_annotation_at(text, match.start())
+        if annotation:
+            result.append(annotation)
+    return result
+
+
+def named_annotation_value(body, name):
+    match = re.search(rf'{name}\s*=', body)
+    if not match:
+        return None
+    idx = match.end()
+    while idx < len(body) and body[idx].isspace():
+        idx += 1
+    if idx >= len(body):
+        return None
+    opener = body[idx]
+    closer = {"{": "}", "(": ")"}.get(opener)
+    if closer:
+        depth = 0
+        in_string = False
+        escaped = False
+        for cur in range(idx, len(body)):
+            ch = body[cur]
+            if in_string:
+                if escaped:
+                    escaped = False
+                elif ch == "\\":
+                    escaped = True
+                elif ch == '"':
+                    in_string = False
+                continue
+            if ch == '"':
+                in_string = True
+            elif ch == opener:
+                depth += 1
+            elif ch == closer:
+                depth -= 1
+                if depth == 0:
+                    return body[idx:cur + 1]
+    end = idx
+    while end < len(body) and body[end] != ",":
+        end += 1
+    return body[idx:end].strip()
+
+
+def parse_indexes_from_table(annotation):
+    body = annotation_body(annotation)
+    indexes = []
+    for property_name, force_unique in (("indexes", False), ("uniqueIndexes", True)):
+        value = named_annotation_value(body, property_name)
+        if not value:
+            continue
+        for index_annotation in find_annotations(value, "MpIndex"):
+            name = annotation_string(index_annotation, "name") or annotation_string(index_annotation)
+            columns = annotation_string_array(index_annotation, "columns")
+            if not name or not columns:
+                continue
+            unique = force_unique or annotation_bool(index_annotation, "unique", False)
+            indexes.append(DomainIndex(name, columns, unique, annotation_int_array(index_annotation, "lengths")))
+    return indexes
+
+
+def table_meta(java_text):
+    mp_table = find_annotation(java_text, "MpTable")
+    if mp_table:
+        name = normalize_identifier(annotation_string(mp_table) or annotation_string(mp_table, "value"))
+        return name, annotation_string(mp_table, "comment") or "", parse_indexes_from_table(mp_table)
+    table_name = find_annotation(java_text, "TableName")
+    if not table_name:
+        return None, "", []
+    name = normalize_identifier(annotation_string(table_name) or annotation_string(table_name, "value"))
+    return name, table_comment_before(java_text), []
+
+
+def table_comment_before(java_text):
+    match = re.search(r'(/\*\*.*?\*/)\s*(?:@[\w.]+(?:\([^)]*\))?\s*)*@(?:MpTable|TableName)', java_text, flags=re.S)
+    if match:
+        return clean_comment(match.group(1).splitlines())
+    return ""
+
+
+def sql_type_from_definition(column_definition):
+    definition = (column_definition or "").strip()
+    if not definition:
+        return ""
+    constraint_words = {"not", "null", "default", "comment", "auto_increment", "primary", "unique", "collate", "character"}
+    parts = []
+    for token in definition.split():
+        if token.lower() in constraint_words:
+            break
+        parts.append(token)
+    return " ".join(parts) or definition
+
+
+def sql_type(java_type, annotation):
+    column_definition = annotation_string(annotation, "columnDefinition") or ""
+    if column_definition:
+        return sql_type_from_definition(column_definition)
+    column_type = (annotation_string(annotation, "columnType") or "").strip().lower()
+    length = annotation_int(annotation, "length")
+    precision = annotation_int(annotation, "precision")
+    scale = annotation_int(annotation, "scale")
+    if column_type:
+        if column_type == "string":
+            return f"varchar({length if length > 0 else 255})"
+        if column_type == "integer":
+            return "int"
+        if column_type == "bigint":
+            return "bigint"
+        if column_type == "smallint":
+            return "smallint"
+        if column_type == "boolean":
+            return "tinyint(1)"
+        if column_type == "decimal":
+            return f"decimal({precision if precision > 0 else 10},{scale if scale >= 0 else 0})"
+        if column_type == "float":
+            return "double"
+        if column_type == "date":
+            return "date"
+        if column_type == "datetime":
+            return "datetime"
+        if column_type in ("text", "json_array", "array", "simple_array"):
+            return "longtext"
+        return column_type
+    java_type = java_type.split("<", 1)[0]
+    # Fallback for legacy @TableField/@TableId domain classes without Mp metadata.
+    return {
+        "String": "varchar(255)",
+        "Integer": "int(11)",
+        "int": "int(11)",
+        "Long": "bigint(20)",
+        "long": "bigint(20)",
+        "Boolean": "tinyint(1)",
+        "boolean": "tinyint(1)",
+        "Double": "double",
+        "double": "double",
+        "Float": "float",
+        "float": "float",
+        "BigDecimal": "decimal(20,2)",
+        "LocalDate": "date",
+        "LocalDateTime": "datetime",
+        "Date": "datetime",
+    }.get(java_type, "varchar(255)")
+
+
+def parse_initializer(java_type, initializer):
+    initializer = (initializer or "").strip()
+    if not initializer:
+        return None, None
+    initializer = re.sub(r"[lLfFdD]$", "", initializer)
+    if initializer in ("true", "Boolean.TRUE"):
+        return "NO", "1"
+    if initializer in ("false", "Boolean.FALSE"):
+        return "NO", "0"
+    if initializer.startswith('"') and initializer.endswith('"'):
+        return "NO", initializer[1:-1]
+    if re.fullmatch(r"-?\d+(\.\d+)?", initializer):
+        return "NO", initializer
+    return "YES", None
+
+
+def field_annotations_and_members(java_text):
+    chunks = []
+    pending_comments = []
+    pending_annotations = []
+    annotation_lines = []
+    annotation_depth = 0
+    for raw in java_text.splitlines():
+        stripped = raw.strip()
+        if not stripped:
+            continue
+        if annotation_lines:
+            annotation_lines.append(stripped)
+            annotation_depth += paren_delta(stripped)
+            if annotation_depth <= 0:
+                pending_annotations.append(" ".join(annotation_lines))
+                annotation_lines = []
+                annotation_depth = 0
+            continue
+        if stripped.startswith("/**") or stripped.startswith("*") or stripped.startswith("*/"):
+            pending_comments.append(raw)
+            continue
+        if stripped.startswith("@"):
+            annotation_depth = paren_delta(stripped)
+            if annotation_depth > 0:
+                annotation_lines = [stripped]
+            else:
+                pending_annotations.append(stripped)
+            continue
+        match = re.match(r'(?:private|protected|public)\s+([\w<>.?]+)\s+(\w+)\s*(?:=\s*([^;]+))?;', stripped)
+        if match:
+            chunks.append((pending_comments, pending_annotations, match.groups()))
+        if not stripped.startswith("@") and not stripped.startswith("*"):
+            pending_comments = []
+            pending_annotations = []
+    return chunks
+
+
+def changed_domain_paths():
+    output = subprocess.check_output(["git", "-C", str(root), "diff", "--name-only", "--", "*.java"], text=True)
+    staged = subprocess.check_output(["git", "-C", str(root), "diff", "--cached", "--name-only", "--", "*.java"], text=True)
+    return {line.strip() for line in (output + "\n" + staged).splitlines() if "/domain/" in line and line.endswith(".java")}
+
+
+def domain_files():
+    all_files = sorted(p for p in root.glob("ecshopx-*/src/main/java/**/domain/**/*.java"))
+    if not changed_only:
+        return all_files
+    changed = changed_domain_paths()
+    return [root / p for p in changed]
+
+
+def parse_domain_table(path):
+    text = path.read_text(encoding="utf-8")
+    table, table_comment, indexes = table_meta(text)
+    if not table:
+        return None
+    columns = []
+    primary_keys = []
+    for comments, annotations, (java_type, field_name, initializer) in field_annotations_and_members(text):
+        mp_field = next((a for a in annotations if a.startswith("@MpField")), None)
+        mp_id = next((a for a in annotations if a.startswith("@MpId")), None)
+        table_field = next((a for a in annotations if a.startswith("@TableField")), None)
+        table_id = next((a for a in annotations if a.startswith("@TableId")), None)
+        if not any((mp_field, mp_id, table_field, table_id)):
+            continue
+        annotation = mp_id or mp_field or table_id or table_field
+        field_annotation = mp_field or table_field
+        if field_annotation and annotation_bool(field_annotation, "exist", True) is False:
+            continue
+        name = normalize_identifier(annotation_string(annotation) or annotation_string(annotation, "value")) or camel_to_snake(field_name)
+        is_id = (mp_id or table_id) is not None
+        auto_increment = is_id and "IdType.AUTO" in annotation
+        has_mp_metadata = annotation.startswith("@Mp")
+        if has_mp_metadata:
+            nullable = "YES" if annotation_bool(annotation, "nullable", False) else "NO"
+            default = annotation_string(annotation, "defaultValue")
+            if default == "":
+                default = None
+        else:
+            nullable, default = parse_initializer(java_type, initializer)
+        if is_id or auto_increment:
+            nullable = "NO"
+            if auto_increment:
+                default = None
+        comment = annotation_string(annotation, "comment") if has_mp_metadata else None
+        if comment is None:
+            comment = clean_comment(comments)
+        column_definition = annotation_string(annotation, "columnDefinition") or ""
+        col = DomainColumn(table, name, java_type, sql_type(java_type, annotation), nullable, default, comment, is_id, auto_increment, str(path.relative_to(root)), column_definition)
+        columns.append(col)
+        if is_id:
+            primary_keys.append(name)
+        if annotation_bool(annotation, "unique", False):
+            indexes.append(DomainIndex(f"uniq_{table}_{name}", [name], True, []))
+    return DomainTable(table, columns, primary_keys, table_comment, str(path.relative_to(root)), indexes)
+
+def table_allowed(name):
+    return re.search(filter_expression, name) is not None if filter_expression else True
+
+
+def canonical_type(t):
+    t = (t or "").lower()
+    t = re.sub(r'\b(tinyint|smallint|mediumint|int|integer|bigint)\(\d+\)', r'\1', t)
+    aliases = {
+        "integer": "int",
+        "tinyint unsigned": "tinyint unsigned",
+        "tinyint(1) unsigned": "tinyint unsigned",
+    }
+    return aliases.get(t, t)
+
+
+def normalize_default(value):
+    if value is None:
+        return None
+    return clean_default_value(value)
+
+
+def column_differs(domain, actual):
+    reasons = []
+    if canonical_type(actual.get("column_type")) != canonical_type(domain.sql_type):
+        reasons.append(f"type db={actual.get('column_type')} mapping={domain.sql_type}")
+    if domain.nullable is not None and actual.get("is_nullable") != domain.nullable:
+        reasons.append(f"nullable db={actual.get('is_nullable')} mapping={domain.nullable}")
+    actual_default = normalize_default(actual.get("column_default"))
+    expected_default = normalize_default(domain.default) if supports_default(domain.sql_type) else None
+    if expected_default is not None and actual_default != expected_default:
+        reasons.append(f"default db={actual_default!r} mapping={expected_default!r}")
+    actual_comment = actual.get("column_comment") or ""
+    if domain.comment and actual_comment != domain.comment:
+        reasons.append("comment differs")
+    actual_extra = actual.get("extra") or ""
+    if domain.auto_increment and "auto_increment" not in actual_extra.lower():
+        reasons.append("auto_increment differs")
+    return reasons
+
+
+def create_table_sql(table):
+    column_defs = ["  " + col.definition() for col in table.columns]
+    if table.primary_keys:
+        column_defs.append("  PRIMARY KEY (" + ", ".join(f"`{pk}`" for pk in table.primary_keys) + ")")
+    for index in table.indexes:
+        column_defs.append("  " + index.definition())
+    suffix = " ENGINE = InnoDB DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci`"
+    if table.comment:
+        suffix += " COMMENT = " + sql_literal(table.comment)
+    return f"CREATE TABLE `{table.name}` (\n" + ",\n".join(column_defs) + f"\n){suffix};"
+
+
+def normalized_index_lengths(lengths, column_count):
+    values = list(lengths or [])
+    values = values[:column_count] + [-1] * max(0, column_count - len(values))
+    return tuple(values) if any(length > 0 for length in values) else tuple()
+
+
+def index_signature(index):
+    return (tuple(index.columns), bool(index.unique), normalized_index_lengths(index.lengths, len(index.columns)))
+
+
+def actual_index_signature(index):
+    columns = index["columns"]
+    return (tuple(columns), bool(index["unique"]), normalized_index_lengths(index.get("lengths"), len(columns)))
+
+
+def find_actual_index_by_signature(actual_indexes, signature):
+    for actual_name, actual_index in actual_indexes.items():
+        if actual_index_signature(actual_index) == signature:
+            return actual_name, actual_index
+    return None, None
+
+
+def load_db_schema(conn):
+    with conn.cursor(pymysql.cursors.DictCursor) as cur:
+        cur.execute("""
+            SELECT TABLE_NAME AS table_name, TABLE_COMMENT AS table_comment
+            FROM information_schema.tables
+            WHERE table_schema = DATABASE() AND table_type = 'BASE TABLE'
+        """)
+        tables = {row["table_name"]: {"comment": row.get("table_comment") or "", "columns": {}, "primary_keys": [], "indexes": {}} for row in cur.fetchall()}
+        cur.execute("""
+            SELECT TABLE_NAME AS table_name,
+                   COLUMN_NAME AS column_name,
+                   COLUMN_TYPE AS column_type,
+                   IS_NULLABLE AS is_nullable,
+                   COLUMN_DEFAULT AS column_default,
+                   COLUMN_COMMENT AS column_comment,
+                   EXTRA AS extra,
+                   ORDINAL_POSITION AS ordinal_position
+            FROM information_schema.columns
+            WHERE table_schema = DATABASE()
+            ORDER BY table_name, ordinal_position
+        """)
+        for row in cur.fetchall():
+            if row["table_name"] in tables:
+                tables[row["table_name"]]["columns"][row["column_name"]] = row
+        cur.execute("""
+            SELECT TABLE_NAME AS table_name,
+                   COLUMN_NAME AS column_name,
+                   SEQ_IN_INDEX AS seq_in_index
+            FROM information_schema.statistics
+            WHERE table_schema = DATABASE() AND index_name = 'PRIMARY'
+            ORDER BY table_name, seq_in_index
+        """)
+        for row in cur.fetchall():
+            if row["table_name"] in tables:
+                tables[row["table_name"]]["primary_keys"].append(row["column_name"])
+        cur.execute("""
+            SELECT TABLE_NAME AS table_name,
+                   INDEX_NAME AS index_name,
+                   COLUMN_NAME AS column_name,
+                   NON_UNIQUE AS non_unique,
+                   SEQ_IN_INDEX AS seq_in_index,
+                   SUB_PART AS sub_part
+            FROM information_schema.statistics
+            WHERE table_schema = DATABASE() AND index_name <> 'PRIMARY'
+            ORDER BY table_name, index_name, seq_in_index
+        """)
+        for row in cur.fetchall():
+            table = tables.get(row["table_name"])
+            if not table:
+                continue
+            index = table["indexes"].setdefault(row["index_name"], {"columns": [], "unique": row["non_unique"] == 0, "lengths": []})
+            index["columns"].append(row["column_name"])
+            index["lengths"].append(row.get("sub_part") or -1)
+    return tables
+
+
+db = parse_jdbc_mysql(db_url)
+print(f"Connecting database: {db['host']}:{db['port']}/{db['database']}", file=sys.stderr)
+conn = pymysql.connect(host=db["host"], port=db["port"], user=db_user, password=db_password, database=db["database"], charset=db["charset"], autocommit=True)
+db_schema = load_db_schema(conn)
+conn.close()
+
+statements = []
+table_alters = {}
+warnings = []
+created_tables = changed_columns = added_columns = dropped_columns = dropped_tables = changed_primary_keys = added_indexes = changed_indexes = 0
+
+def table_mapping_score(table):
+    return (len(table.columns), len(table.indexes), len(table.primary_keys), -len(table.source))
+
+
+domain_tables = {}
+for path in domain_files():
+    table = parse_domain_table(path)
+    if table and table_allowed(table.name):
+        existing = domain_tables.get(table.name)
+        if existing is not None:
+            if table_mapping_score(table) > table_mapping_score(existing):
+                warnings.append(f"Duplicate domain mapping for table `{table.name}`: keeping {table.source}, ignoring {existing.source}.")
+                domain_tables[table.name] = table
+            else:
+                warnings.append(f"Duplicate domain mapping for table `{table.name}`: keeping {existing.source}, ignoring {table.source}.")
+            continue
+        domain_tables[table.name] = table
+
+for table_name in sorted(domain_tables):
+    table = domain_tables[table_name]
+    actual_table = db_schema.get(table_name)
+    if actual_table is None:
+        statements.append(create_table_sql(table))
+        created_tables += 1
+        continue
+    actual_columns = actual_table["columns"]
+    domain_columns = {col.name: col for col in table.columns}
+    for col in table.columns:
+        actual = actual_columns.get(col.name)
+        if actual is None:
+            table_alters.setdefault(table_name, []).append(f"ADD COLUMN {col.definition()}")
+            added_columns += 1
+        else:
+            reasons = column_differs(col, actual)
+            if reasons:
+                table_alters.setdefault(table_name, []).append(f"CHANGE `{col.name}` {col.definition()}")
+                warnings.append(f"Column `{table_name}`.`{col.name}` changed because: " + "; ".join(reasons))
+                changed_columns += 1
+    actual_pk = actual_table.get("primary_keys", [])
+    if actual_pk != table.primary_keys:
+        if actual_pk:
+            table_alters.setdefault(table_name, []).append("DROP PRIMARY KEY")
+        if table.primary_keys:
+            table_alters.setdefault(table_name, []).append("ADD PRIMARY KEY (" + ", ".join(f"`{pk}`" for pk in table.primary_keys) + ")")
+        warnings.append(f"Primary key for `{table_name}` differs: db={actual_pk}, mapping={table.primary_keys}")
+        changed_primary_keys += 1
+
+
+    actual_indexes = actual_table.get("indexes", {})
+    consumed_actual_indexes = set()
+    for index in table.indexes:
+        signature = index_signature(index)
+        actual_index = actual_indexes.get(index.name)
+        if actual_index is None:
+            matching_name, matching_index = find_actual_index_by_signature(actual_indexes, signature)
+            if matching_index is not None and matching_name not in consumed_actual_indexes:
+                table_alters.setdefault(table_name, []).append(f"DROP INDEX `{matching_name}`")
+                table_alters.setdefault(table_name, []).append("ADD " + index.definition())
+                warnings.append(f"Index `{table_name}` rename differs: db=`{matching_name}` {actual_index_signature(matching_index)}, mapping=`{index.name}` {signature}")
+                consumed_actual_indexes.add(matching_name)
+                changed_indexes += 1
+                continue
+            table_alters.setdefault(table_name, []).append("ADD " + index.definition())
+            added_indexes += 1
+        else:
+            consumed_actual_indexes.add(index.name)
+            if signature != actual_index_signature(actual_index):
+                table_alters.setdefault(table_name, []).append(f"DROP INDEX `{index.name}`")
+                table_alters.setdefault(table_name, []).append("ADD " + index.definition())
+                warnings.append(f"Index `{table_name}`.`{index.name}` differs: db={actual_index_signature(actual_index)}, mapping={signature}")
+                changed_indexes += 1
+
+    for actual_col in actual_columns:
+        if actual_col not in domain_columns:
+            if allow_drop:
+                table_alters.setdefault(table_name, []).append(f"DROP COLUMN `{actual_col}`")
+                dropped_columns += 1
+            else:
+                warnings.append(f"Column `{table_name}`.`{actual_col}` exists in database but not in domain mapping; skipped DROP (use --allow-drop to generate).")
+
+if allow_drop:
+    for table_name in sorted(db_schema):
+        if table_allowed(table_name) and table_name not in domain_tables and table_name not in {"flyway_schema_history"}:
+            statements.append(f"DROP TABLE `{table_name}`;")
+            dropped_tables += 1
+else:
+    for table_name in sorted(db_schema):
+        if table_allowed(table_name) and table_name not in domain_tables and table_name not in {"flyway_schema_history"}:
+            warnings.append(f"Table `{table_name}` exists in database but not in domain mapping; skipped DROP (use --allow-drop to generate).")
+
+for table_name in sorted(table_alters):
+    clauses = table_alters[table_name]
+    statements.append(
+        f"ALTER TABLE `{table_name}`\n  " + ",\n  ".join(clauses) + ";"
+    )
+
+print(
+    f"Compared schemas: domain tables={len(domain_tables)}, database tables={len([t for t in db_schema if table_allowed(t)])}; "
+    f"create tables={created_tables}, add columns={added_columns}, change columns={changed_columns}, "
+    f"change primary keys={changed_primary_keys}, add indexes={added_indexes}, change indexes={changed_indexes}, "
+    f"drop columns={dropped_columns}, drop tables={dropped_tables}.",
+    file=sys.stderr,
+)
+for warning in warnings[:200]:
+    print("WARNING: " + warning, file=sys.stderr)
+if len(warnings) > 200:
+    print(f"WARNING: {len(warnings) - 200} additional warnings suppressed.", file=sys.stderr)
+
+if statements:
+    print("\n\n".join(statements))
+PY
+}
+
+DDL=""
+if [[ "$EMPTY" == false ]]; then
+  DDL="$(generate_domain_schema_diff)"
+fi
+
+if [[ "$EMPTY" == false && -z "$DDL" && "$ALLOW_EMPTY_DIFF" == false ]]; then
+  echo "No changes detected in your mapping information." >&2
+  exit 1
+fi
+
+{
+  printf -- '-- Flyway migration: %s\n' "$DESCRIPTION"
+  printf -- '-- Created at: %s\n\n' "$(date '+%Y-%m-%d %H:%M:%S %z')"
+  if [[ -n "$DDL" ]]; then
+    printf '%s\n' "$DDL"
+  else
+    printf -- '-- TODO: Write migration SQL here.\n'
+    if [[ "$EMPTY" == false ]]; then
+      printf -- '-- No schema differences were detected from MyBatis-Plus domain mapping.\n'
+    fi
+  fi
+} > "$FILE"
+
+RELATIVE_FILE="${FILE#$ROOT_DIR/}"
+echo "Created migration: $RELATIVE_FILE"
+if [[ -n "$DDL" ]]; then
+  echo "Generated DDL by comparing connected database schema with MyBatis-Plus domain mapping. Please review before applying."
+else
+  echo "No DDL generated; created a migration template."
+fi

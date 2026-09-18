@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.datacube.mapper.CompanyDataStatisticsMapper">
+
+	<select id="countNewMembers" resultType="long">
+		SELECT COUNT(*)
+		FROM members
+		WHERE company_id = #{companyId}
+		AND created &gt;= #{start}
+		AND created &lt;= #{end}
+	</select>
+
+	<select id="countAftersales" resultType="long">
+		SELECT COUNT(*)
+		FROM aftersales a
+		<if test="orderClass != null and orderClass != ''">
+		LEFT JOIN orders_normal_orders o ON a.order_id = o.order_id
+		</if>
+		WHERE a.company_id = #{companyId}
+		AND a.create_time &gt;= #{start}
+		AND a.create_time &lt;= #{end}
+		<if test="orderClass != null and orderClass != ''">
+		AND o.order_class = #{orderClass}
+		AND o.act_id = #{actId}
+		</if>
+	</select>
+
+	<select id="sumRefundedFee" resultType="long">
+		SELECT IFNULL(SUM(r.refunded_fee), 0)
+		FROM aftersales_refund r
+		<if test="orderClass != null and orderClass != ''">
+		LEFT JOIN orders_normal_orders o ON r.order_id = o.order_id
+		</if>
+		WHERE r.company_id = #{companyId}
+		AND r.update_time &gt;= #{start}
+		AND r.update_time &lt;= #{end}
+		AND r.refund_status = 'SUCCESS'
+		<if test="orderClass != null and orderClass != ''">
+		AND o.order_class = #{orderClass}
+		AND o.act_id = #{actId}
+		</if>
+	</select>
+
+	<select id="sumAmountPayed" resultType="long">
+		SELECT IFNULL(SUM(CAST(t.total_fee AS SIGNED)), 0)
+		FROM trade t
+		<if test="orderClass != null and orderClass != ''">
+		LEFT JOIN orders_normal_orders o ON t.order_id = o.order_id
+		</if>
+		WHERE t.company_id = #{companyId}
+		AND t.trade_state IN ('REFUND_PROCESS', 'REFUND_SUCCESS', 'SUCCESS')
+		AND t.time_expire &gt;= #{start}
+		AND t.time_expire &lt;= #{end}
+		<if test="orderClass != null and orderClass != ''">
+		AND o.order_class = #{orderClass}
+		AND o.act_id = #{actId}
+		</if>
+	</select>
+
+	<select id="countOrders" resultType="long">
+		SELECT COUNT(*)
+		FROM orders_normal_orders
+		WHERE company_id = #{companyId}
+		AND create_time &gt;= #{start}
+		AND create_time &lt;= #{end}
+		<if test="orderClass != null and orderClass != ''">
+		AND order_class = #{orderClass}
+		AND act_id = #{actId}
+		</if>
+	</select>
+
+	<select id="countTradesSuccessWindow" resultType="long">
+		SELECT COUNT(*)
+		FROM trade t
+		<if test="orderClass != null and orderClass != ''">
+		LEFT JOIN orders_normal_orders o ON t.order_id = o.order_id
+		</if>
+		WHERE t.company_id = #{companyId}
+		AND t.trade_state IN ('REFUND_PROCESS', 'REFUND_SUCCESS', 'SUCCESS')
+		AND t.time_expire &gt;= #{start}
+		AND t.time_expire &lt;= #{end}
+		<if test="orderClass != null and orderClass != ''">
+		AND o.order_class = #{orderClass}
+		AND o.act_id = #{actId}
+		</if>
+	</select>
+
+	<select id="sumGmv" resultType="long">
+		SELECT IFNULL(SUM(CAST(total_fee AS SIGNED)), 0)
+		FROM orders_normal_orders
+		WHERE company_id = #{companyId}
+		AND create_time &gt;= #{start}
+		AND create_time &lt;= #{end}
+		<if test="orderClass != null and orderClass != ''">
+		AND order_class = #{orderClass}
+		AND act_id = #{actId}
+		</if>
+	</select>
+
+</mapper>

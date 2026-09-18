@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.datacube.mapper.DistributorDataStatisticsMapper">
+
+	<select id="countAftersales" resultType="long">
+		SELECT COUNT(*)
+		FROM aftersales a
+		WHERE a.company_id = #{companyId}
+		AND a.distributor_id = #{distributorId}
+		AND a.create_time &gt;= #{start}
+		AND a.create_time &lt;= #{end}
+	</select>
+
+	<select id="sumRefundedFee" resultType="long">
+		SELECT IFNULL(SUM(r.refunded_fee), 0)
+		FROM aftersales_refund r
+		WHERE r.company_id = #{companyId}
+		AND r.distributor_id = #{distributorId}
+		AND r.update_time &gt;= #{start}
+		AND r.update_time &lt;= #{end}
+		AND r.refund_status = 'SUCCESS'
+	</select>
+
+	<select id="sumAmountPayed" resultType="long">
+		SELECT IFNULL(SUM(CAST(t.total_fee AS SIGNED)), 0)
+		FROM trade t
+		WHERE t.company_id = #{companyId}
+		AND t.distributor_id = #{distributorId}
+		AND t.trade_state IN ('REFUND_PROCESS', 'REFUND_SUCCESS', 'SUCCESS')
+		AND t.time_expire &gt;= #{start}
+		AND t.time_expire &lt;= #{end}
+	</select>
+
+	<select id="sumAmountPointPayed" resultType="long">
+		SELECT IFNULL(SUM(CAST(t.total_fee AS SIGNED)), 0)
+		FROM trade t
+		WHERE t.company_id = #{companyId}
+		AND t.distributor_id = #{distributorId}
+		AND t.trade_state IN ('REFUND_PROCESS', 'REFUND_SUCCESS', 'SUCCESS')
+		AND t.time_expire &gt;= #{start}
+		AND t.time_expire &lt;= #{end}
+	</select>
+
+	<select id="countOrders" resultType="long">
+		SELECT COUNT(*)
+		FROM orders_normal_orders
+		WHERE company_id = #{companyId}
+		AND distributor_id = #{distributorId}
+		AND create_time &gt;= #{start}
+		AND create_time &lt;= #{end}
+	</select>
+
+	<select id="countOrderPoint" resultType="long">
+		SELECT COUNT(*)
+		FROM orders_normal_orders
+		WHERE company_id = #{companyId}
+		AND distributor_id = #{distributorId}
+		AND create_time &gt;= #{start}
+		AND create_time &lt;= #{end}
+	</select>
+
+	<select id="countTradesSuccessWindow" resultType="long">
+		SELECT COUNT(*)
+		FROM trade t
+		WHERE t.company_id = #{companyId}
+		AND t.distributor_id = #{distributorId}
+		AND t.trade_state IN ('REFUND_PROCESS', 'REFUND_SUCCESS', 'SUCCESS')
+		AND t.time_expire &gt;= #{start}
+		AND t.time_expire &lt;= #{end}
+	</select>
+
+	<select id="countTradesPointPayedWindow" resultType="long">
+		SELECT COUNT(*)
+		FROM trade t
+		WHERE t.company_id = #{companyId}
+		AND t.distributor_id = #{distributorId}
+		AND t.trade_state IN ('REFUND_PROCESS', 'REFUND_SUCCESS', 'SUCCESS')
+		AND t.time_expire &gt;= #{start}
+		AND t.time_expire &lt;= #{end}
+	</select>
+
+	<select id="sumGmv" resultType="long">
+		SELECT IFNULL(SUM(CAST(total_fee AS SIGNED)), 0)
+		FROM orders_normal_orders
+		WHERE company_id = #{companyId}
+		AND distributor_id = #{distributorId}
+		AND create_time &gt;= #{start}
+		AND create_time &lt;= #{end}
+	</select>
+
+	<select id="sumGmvPoint" resultType="long">
+		SELECT IFNULL(SUM(CAST(total_fee AS SIGNED)), 0)
+		FROM orders_normal_orders
+		WHERE company_id = #{companyId}
+		AND distributor_id = #{distributorId}
+		AND create_time &gt;= #{start}
+		AND create_time &lt;= #{end}
+	</select>
+
+</mapper>

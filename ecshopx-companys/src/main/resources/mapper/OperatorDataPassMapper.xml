@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.companys.mapper.OperatorDataPassMapper">
+
+	<sql id="dataPassListWhere">
+		WHERE p.company_id = #{filter.companyId}
+		AND p.merchant_id = #{filter.merchantId}
+		<if test="filter.restrictOperatorId != null">
+			AND p.operator_id = #{filter.restrictOperatorId}
+		</if>
+		<if test="filter.loginNameEq != null and filter.loginNameEq != ''">
+			AND o.login_name = #{filter.loginNameEq}
+		</if>
+		<if test="filter.statusEq != null">
+			AND p.status = #{filter.statusEq}
+		</if>
+		<if test="filter.createTimeGte != null and filter.createTimeLte != null">
+			AND p.create_time &gt;= #{filter.createTimeGte}
+			AND p.create_time &lt;= #{filter.createTimeLte}
+		</if>
+	</sql>
+
+	<select id="countDataPassListJoin" resultType="long">
+		SELECT COUNT(p.pass_id)
+		FROM operator_data_pass p
+		LEFT JOIN operators o ON p.operator_id = o.operator_id
+		<include refid="dataPassListWhere"/>
+	</select>
+
+	<select id="pageDataPassListJoin" resultType="cn.shopex.ecshopx.companys.dto.OperatorDataPassListRow">
+		SELECT
+			p.pass_id AS passId,
+			p.company_id AS companyId,
+			p.operator_id AS operatorId,
+			p.status AS status,
+			p.is_closed AS isClosed,
+			p.start_time AS startTime,
+			p.end_time AS endTime,
+			p.rule AS rule,
+			p.reason AS reason,
+			p.remarks AS remarks,
+			p.create_time AS createTime,
+			p.approve_time AS approveTime,
+			p.merchant_id AS merchantId,
+			o.login_name AS loginName,
+			o.head_portrait AS headPortrait,
+			o.operator_type AS operatorType
+		FROM operator_data_pass p
+		LEFT JOIN operators o ON p.operator_id = o.operator_id
+		<include refid="dataPassListWhere"/>
+		ORDER BY p.create_time DESC
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+</mapper>

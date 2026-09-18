@@ -1,0 +1,78 @@
+/**
+ * Copyright 2019-2026 ShopeX
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package cn.shopex.ecshopx.goods.service.cart.wxapp;
+
+import cn.shopex.ecshopx.orders.port.WxappCartListPort;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import org.springframework.stereotype.Service;
+
+@Service
+public class WxappCartListPortImpl implements WxappCartListPort {
+
+	private final WxappH5CartListService h5CartListService;
+	private final WxappH5DistributorCartListService wxappH5DistributorCartListService;
+
+	public WxappCartListPortImpl(
+			WxappH5CartListService h5CartListService,
+			WxappH5DistributorCartListService wxappH5DistributorCartListService) {
+		this.h5CartListService = h5CartListService;
+		this.wxappH5DistributorCartListService = wxappH5DistributorCartListService;
+	}
+
+	@Override
+	public Map<String, Object> getCartList(long companyId, long userId, long shopId, String shopType) {
+		Map<String, Object> result =
+				h5CartListService.getCartList(companyId, userId, shopId, "cart", shopType, false, 0, 0);
+		Map<String, Object> out = new LinkedHashMap<>(result);
+		out.remove("total_count");
+		return out;
+	}
+
+	@Override
+	public Map<String, Object> getDistributorCartList(
+			long companyId,
+			long authUserId,
+			long effectiveUserId,
+			Map<String, Object> mergedQueryAndBody) {
+		return wxappH5DistributorCartListService.getDistributorCartList(
+				companyId, authUserId, effectiveUserId, mergedQueryAndBody);
+	}
+
+	@Override
+	public Map<String, Object> getCartItemCount(
+			long companyId,
+			long authUserId,
+			long shopId,
+			String cartType,
+			String shopType,
+			int iscrossborder,
+			int isShopScreen,
+			long promoterUserId,
+			long buyUserId) {
+		return h5CartListService.getCartItemCount(
+				companyId,
+				authUserId,
+				shopId,
+				cartType,
+				shopType,
+				iscrossborder,
+				isShopScreen,
+				promoterUserId,
+				buyUserId);
+	}
+}

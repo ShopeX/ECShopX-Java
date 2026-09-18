@@ -1,0 +1,2 @@
+# 本文件仅在 spring.profiles.active 包含 test-cron 时生效（由 orchestrator 衔接步骤 3 的启动参数激活）。
+# 汇付 Noop 见 {@code cn.shopex.ecshopx.hfpay.cron.testcfg.CronTestMockConfig}（hfpay-qry008、hf-acou-qry001、hf-acou-cash01、hfpay-order-id 等）；如需 profile 级覆盖可在此追加。

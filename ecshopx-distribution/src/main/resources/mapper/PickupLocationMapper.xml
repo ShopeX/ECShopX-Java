@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.distribution.mapper.PickupLocationMapper">
+
+	<select id="countH5NearByRelDistributorIds" resultType="long">
+		SELECT COUNT(1)
+		FROM distribution_pickup_location pl
+		WHERE pl.company_id = #{companyId}
+		AND pl.rel_distributor_id IN
+		<foreach collection="relIds" item="id" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</select>
+
+	<select id="selectH5NearByRelDistributorIds" resultType="java.util.LinkedHashMap">
+		SELECT pl.*,
+		<choose>
+			<when test="useDistance">
+				(6371 * ACOS(
+					COS(RADIANS(#{lat})) * COS(RADIANS(CAST(pl.lat AS DECIMAL(18,8))))
+					* COS(RADIANS(CAST(pl.lng AS DECIMAL(18,8))) - RADIANS(#{lng}))
+					+ SIN(RADIANS(#{lat})) * SIN(RADIANS(CAST(pl.lat AS DECIMAL(18,8))))
+				)) AS distance
+			</when>
+			<otherwise>
+				NULL AS distance
+			</otherwise>
+		</choose>
+		FROM distribution_pickup_location pl
+		WHERE pl.company_id = #{companyId}
+		AND pl.rel_distributor_id IN
+		<foreach collection="relIds" item="id" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+		<choose>
+			<when test="useDistance">
+				ORDER BY distance ASC
+			</when>
+			<otherwise>
+				ORDER BY pl.created DESC
+			</otherwise>
+		</choose>
+		LIMIT 100
+	</select>
+</mapper>

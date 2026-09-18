@@ -1,0 +1,6 @@
+# ecshopx-bspay — module-local config (optional profile: spring.config.import)
+ecshopx:
+  bspay:
+    callback:
+      # 汇付斗拱异步通知验签公钥（对应 bspay.rsa_public_key）；生产/本地填入 PEM 或裸 Base64
+      rsa-public-key: ""

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.deposit.mapper.RechargeRuleMapper">
+
+	<select id="selectOneByCompanyIdAndMoney" resultType="cn.shopex.ecshopx.deposit.domain.RechargeRule">
+		SELECT id, company_id, money, rule_type, rule_data, create_time
+		FROM deposit_recharge_rule
+		WHERE company_id = #{companyId} AND money = #{money}
+		LIMIT 1
+	</select>
+</mapper>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.orders.mapper.StatementDetailsMapper">
+	<insert id="insertBatch">
+		INSERT INTO statement_details (
+			company_id, merchant_id, supplier_id, distributor_id, statement_id, statement_no,
+			order_id, total_fee, freight_fee, intra_city_freight_fee, rebate_fee, refund_fee, statement_fee,
+			pay_type, created, updated, num, item_fee, commission_fee, cost_fee, point_fee,
+			refund_num, refund_point, refund_cost_fee
+		) VALUES
+		<foreach collection="list" item="e" separator=",">
+			(#{e.companyId}, #{e.merchantId}, #{e.supplierId}, #{e.distributorId},
+			 #{e.statementId}, #{e.statementNo}, #{e.orderId}, #{e.totalFee},
+			 #{e.freightFee}, #{e.intraCityFreightFee}, #{e.rebateFee}, #{e.refundFee},
+			 #{e.statementFee}, #{e.payType}, #{e.created}, #{e.updated},
+			 #{e.num}, #{e.itemFee}, #{e.commissionFee}, #{e.costFee}, #{e.pointFee},
+			 #{e.refundNum}, #{e.refundPoint}, #{e.refundCostFee})
+		</foreach>
+	</insert>
+</mapper>

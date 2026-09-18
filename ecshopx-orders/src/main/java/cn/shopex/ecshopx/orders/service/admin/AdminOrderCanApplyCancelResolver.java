@@ -1,0 +1,79 @@
+/**
+ * Copyright 2019-2026 ShopeX
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package cn.shopex.ecshopx.orders.service.admin;
+
+import cn.shopex.ecshopx.orders.domain.CancelOrders;
+import java.util.Map;
+
+/** Aligns {@code can_apply_cancel} with PHP {@code AbstractNormalOrder} and rejected-refund re-apply. */
+public final class AdminOrderCanApplyCancelResolver {
+
+	private static final String NO_APPLY_CANCEL = "NO_APPLY_CANCEL";
+
+	private AdminOrderCanApplyCancelResolver() {
+	}
+
+	public static void apply(Map<String, Object> orderInfo, CancelOrders cancelRow, boolean repeatCancel) {
+		apply(orderInfo, cancelRow == null ? null : cancelToMap(cancelRow), repeatCancel);
+	}
+
+	public static void apply(Map<String, Object> orderInfo, Map<String, Object> cancelData, boolean repeatCancel) {
+		orderInfo.put("can_apply_cancel", 0);
+		String oStatus = str(orderInfo.get("order_status"));
+		if ("NOTPAY".equals(oStatus) || "PAYED".equals(oStatus)) {
+			orderInfo.put("can_apply_cancel", 1);
+		}
+		String cancelStatus = str(orderInfo.get("cancel_status"));
+		if (!NO_APPLY_CANCEL.equals(cancelStatus)) {
+			if (!repeatCancel && !isRejectedCancel(cancelData)) {
+				orderInfo.put("can_apply_cancel", 0);
+			}
+			if (!"FAILS".equals(cancelStatus)) {
+				orderInfo.put("can_apply_cancel", 0);
+			}
+		}
+	}
+
+	static boolean isRejectedCancel(Map<String, Object> cancelData) {
+		if (cancelData == null || cancelData.isEmpty()) {
+			return false;
+		}
+		if ("SHOP_CHECK_FAILS".equalsIgnoreCase(str(cancelData.get("refund_status")))) {
+			return true;
+		}
+		Object progress = cancelData.get("progress");
+		if (progress instanceof Number n) {
+			return n.intValue() == 4;
+		}
+		try {
+			return Integer.parseInt(String.valueOf(progress).trim()) == 4;
+		} catch (NumberFormatException e) {
+			return false;
+		}
+	}
+
+	private static Map<String, Object> cancelToMap(CancelOrders c) {
+		return Map.of(
+				"cancel_from", c.getCancelFrom() == null ? "" : c.getCancelFrom(),
+				"refund_status", c.getRefundStatus() == null ? "" : c.getRefundStatus(),
+				"progress", c.getProgress() == null ? 0 : c.getProgress());
+	}
+
+	private static String str(Object o) {
+		return o == null ? "" : String.valueOf(o);
+	}
+}

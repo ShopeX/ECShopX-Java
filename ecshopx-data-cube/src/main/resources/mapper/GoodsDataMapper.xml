@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.datacube.mapper.GoodsDataMapper">
+
+	<select id="selectAggregatesByFilter"
+			parameterType="cn.shopex.ecshopx.datacube.service.goodsdata.AdminGoodsDataFilter"
+			resultType="cn.shopex.ecshopx.datacube.mapper.GoodsDataAggregateRow">
+		SELECT
+			item_id AS itemId,
+			SUM(sales_count) AS sumSalesCount,
+			SUM(fixed_amount_count) AS sumFixedAmountCount,
+			SUM(settle_amount_count) AS sumSettleAmountCount
+		FROM datacube_goods_data
+		WHERE sales_count &gt; 0
+		AND count_date &gt;= #{f.dateStart}
+		AND count_date &lt;= #{f.dateEnd}
+		<if test="f.companyId > 0">
+			AND company_id = #{f.companyId}
+		</if>
+		<if test="f.merchantIdOrNull != null">
+			AND merchant_id = #{f.merchantIdOrNull}
+		</if>
+		<choose>
+			<when test="f.orderClassRestrictToValue">
+				AND order_class = #{f.orderClassValue}
+			</when>
+			<otherwise>
+				AND order_class IS NULL
+			</otherwise>
+		</choose>
+		<choose>
+			<when test="f.actIdsForIn != null and f.actIdsForIn.size() > 0">
+				AND act_id IN
+				<foreach collection="f.actIdsForIn" item="aid" open="(" separator="," close=")">
+					#{aid}
+				</foreach>
+			</when>
+			<otherwise>
+				AND act_id = 0
+			</otherwise>
+		</choose>
+		GROUP BY item_id
+		ORDER BY SUM(sales_count) DESC
+	</select>
+</mapper>

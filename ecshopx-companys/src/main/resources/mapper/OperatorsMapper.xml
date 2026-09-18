@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.companys.mapper.OperatorsMapper">
+
+	<sql id="operatorColumns">
+		operator_id, mobile, login_name, operator_type, password, company_id, is_disable,
+		merchant_id, distributor_ids, shop_ids, username, head_portrait, regionauth_id, contact,
+		split_ledger_info, adapay_open_account_time, dealer_parent_id, is_dealer_main, is_merchant_main,
+		is_distributor_main, passport_uid, shopex_bind_account, eid, created, updated
+	</sql>
+
+	<sql id="jsonDistributorIdsMatchWhere">
+		<if test="distributorIds != null and distributorIds.size() &gt; 0">
+			AND (
+			<foreach collection="distributorIds" item="did" separator=" OR ">
+				(
+					JSON_CONTAINS(
+						IFNULL(JSON_EXTRACT(${jsonColumn}, '$[*].distributor_id'), JSON_ARRAY()),
+						CAST(#{did} AS JSON)
+					)
+					OR
+					JSON_CONTAINS(
+						IFNULL(JSON_EXTRACT(${jsonColumn}, '$[*].distributor_id'), JSON_ARRAY()),
+						JSON_QUOTE(CAST(#{did} AS CHAR))
+					)
+				)
+			</foreach>
+			)
+		</if>
+	</sql>
+
+	<sql id="jsonDistributorIdEquals">
+		(
+			JSON_CONTAINS(
+				IFNULL(JSON_EXTRACT(distributor_ids, '$[*].distributor_id'), JSON_ARRAY()),
+				CAST(#{distributorId} AS JSON)
+			)
+			OR
+			JSON_CONTAINS(
+				IFNULL(JSON_EXTRACT(distributor_ids, '$[*].distributor_id'), JSON_ARRAY()),
+				JSON_QUOTE(CAST(#{distributorId} AS CHAR))
+			)
+		)
+	</sql>
+
+	<select id="selectInfo" resultType="java.util.Map">
+		SELECT
+		<include refid="operatorColumns"/>
+		FROM operators
+		<where>
+			<if test="loginName != null and loginName != ''">
+				AND login_name = #{loginName}
+			</if>
+			<if test="mobile != null and mobile != ''">
+				AND mobile = #{mobile}
+			</if>
+			<if test="operatorType != null and operatorType != ''">
+				AND operator_type = #{operatorType}
+			</if>
+			<if test="companyId != null">
+				AND company_id = #{companyId}
+			</if>
+			<if test="passportUid != null and passportUid != ''">
+				AND passport_uid = #{passportUid}
+			</if>
+			<if test="operatorId != null">
+				AND operator_id = #{operatorId}
+			</if>
+		</where>
+		LIMIT 1
+	</select>
+
+	<select id="getOperatorByMobile" resultType="java.util.Map">
+		SELECT
+		<include refid="operatorColumns"/>
+		FROM operators
+		WHERE mobile = #{mobile}
+		  AND operator_type = #{operatorType}
+		LIMIT 1
+	</select>
+
+	<select id="countDistributorMainConflict" resultType="long">
+		SELECT COUNT(1) FROM operators
+		WHERE company_id = #{companyId}
+		  AND is_distributor_main = 1
+		  AND <include refid="jsonDistributorIdEquals"/>
+	</select>
+
+	<select id="countDistributorMainConflictExcludingOperatorId" resultType="long">
+		SELECT COUNT(1) FROM operators
+		WHERE company_id = #{companyId}
+		  AND is_distributor_main = 1
+		  AND operator_id != #{excludeOperatorId}
+		  AND <include refid="jsonDistributorIdEquals"/>
+	</select>
+
+	<select id="countExistingByMobileAndOperatorType" resultType="long">
+		SELECT COUNT(1) FROM operators
+		WHERE mobile = #{mobile}
+		  AND operator_type = #{operatorType}
+	</select>
+
+	<select id="countExistingByLoginNameAndOperatorType" resultType="long">
+		SELECT COUNT(1) FROM operators
+		WHERE login_name = #{loginName}
+		  AND operator_type = #{operatorType}
+	</select>
+
+	<select id="countExistingByMobileAndOperatorTypeExcluding" resultType="long">
+		SELECT COUNT(1) FROM operators
+		WHERE mobile = #{mobile}
+		  AND operator_type = #{operatorType}
+		  AND operator_id != #{excludeOperatorId}
+	</select>
+
+	<select id="countExistingByLoginNameAndOperatorTypeExcluding" resultType="long">
+		SELECT COUNT(1) FROM operators
+		WHERE login_name = #{loginName}
+		  AND operator_type = #{operatorType}
+		  AND operator_id != #{excludeOperatorId}
+	</select>
+
+	<sql id="selfDeliveryStaffDataWhere">
+		WHERE company_id = #{companyId}
+		  AND operator_type = 'self_delivery_staff'
+		<if test="username != null and username != ''">
+			AND username = #{username}
+		</if>
+		<if test="merchantId != null and merchantId > 0">
+			AND merchant_id = #{merchantId}
+		</if>
+		<if test="mobileEncrypted != null and mobileEncrypted != ''">
+			AND mobile = #{mobileEncrypted}
+		</if>
+		<bind name="jsonColumn" value="'distributor_ids'"/>
+		<include refid="jsonDistributorIdsMatchWhere"/>
+	</sql>
+
+	<select id="countSelfDeliveryStaffForDeliveryStaffData" resultType="long">
+		SELECT COUNT(1) FROM operators
+		<include refid="selfDeliveryStaffDataWhere"/>
+	</select>
+
+	<select id="pageSelfDeliveryStaffForDeliveryStaffData" resultType="cn.shopex.ecshopx.companys.domain.Operators">
+		SELECT
+		<include refid="operatorColumns"/>
+		FROM operators
+		<include refid="selfDeliveryStaffDataWhere"/>
+		ORDER BY operator_id DESC
+		LIMIT #{offset}, #{limit}
+	</select>
+
+	<sql id="accountManagementWhere">
+		WHERE 1 = 1
+		  AND o.company_id = #{filter.companyId}
+		<if test="filter.merchantId != null">
+			AND o.merchant_id = #{filter.merchantId}
+		</if>
+		<if test="filter.isDistributorMain != null">
+			AND o.is_distributor_main = #{filter.isDistributorMain}
+		</if>
+		<if test="filter.operatorIds != null and filter.operatorIds.size() &gt; 0">
+			AND o.operator_id IN
+			<foreach collection="filter.operatorIds" item="oid" open="(" separator="," close=")">#{oid}</foreach>
+		</if>
+		<if test="filter.mobile != null and filter.mobile != ''">
+			AND o.mobile = #{filter.mobile}
+		</if>
+		<if test="filter.usernameContains != null and filter.usernameContains != ''">
+			AND o.username LIKE CONCAT('%', #{filter.usernameContains}, '%')
+		</if>
+		<if test="filter.isDisable != null and filter.isDisable != ''">
+			AND o.is_disable = #{filter.isDisable}
+		</if>
+		<if test="filter.loginName != null and filter.loginName != ''">
+			AND o.login_name = #{filter.loginName}
+		</if>
+		<if test="filter.roleId != null and filter.roleId != ''">
+			AND o.role_id = #{filter.roleId}
+		</if>
+		<choose>
+			<when test="filter.operatorType == null">
+				AND o.operator_type IS NULL
+			</when>
+			<otherwise>
+				AND o.operator_type = #{filter.operatorType}
+			</otherwise>
+		</choose>
+		<if test="filter.distributorIds != null and filter.distributorIds.size() &gt; 0">
+			<bind name="distributorIds" value="filter.distributorIds"/>
+			<bind name="jsonColumn" value="'o.distributor_ids'"/>
+			<include refid="jsonDistributorIdsMatchWhere"/>
+		</if>
+	</sql>
+
+	<select id="countAccountManagementList" resultType="long">
+		SELECT COUNT(1) FROM operators o
+		<include refid="accountManagementWhere"/>
+	</select>
+
+	<select id="pageAccountManagementList" resultType="cn.shopex.ecshopx.companys.domain.Operators">
+		SELECT
+		<include refid="operatorColumns"/>
+		FROM operators o
+		<include refid="accountManagementWhere"/>
+		<choose>
+			<when test="orderBy != null and orderBy.size() &gt; 0 and orderBy[0].field == 'created'">
+				ORDER BY o.created
+				<choose>
+					<when test="orderBy[0].direction.name() == 'DESC'">DESC</when>
+					<otherwise>ASC</otherwise>
+				</choose>
+			</when>
+			<otherwise>ORDER BY o.created DESC</otherwise>
+		</choose>
+		LIMIT #{offset}, #{limit}
+	</select>
+</mapper>

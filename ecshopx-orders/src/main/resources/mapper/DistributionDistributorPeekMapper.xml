@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.orders.mapper.DistributionDistributorPeekMapper">
+	<select id="selectPageForStatementSchedule" resultType="cn.shopex.ecshopx.orders.domain.DistributionDistributorPeek">
+		SELECT company_id, distributor_id, created
+		FROM distribution_distributor
+		WHERE is_valid &lt;&gt; 'delete'
+		ORDER BY created ASC
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+
+	<select id="selectDistributorIdByShopCode" resultType="java.lang.Long">
+		SELECT distributor_id
+		FROM distribution_distributor
+		WHERE shop_code = #{shopCode}
+		LIMIT 1
+	</select>
+</mapper>

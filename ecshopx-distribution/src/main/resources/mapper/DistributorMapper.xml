@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.distribution.mapper.DistributorMapper">
+
+	<sql id="dynamicDistributorWhere">
+		<if test="q.company_id != null">AND company_id = #{q.company_id}</if>
+		<if test="q.distributor_id != null">AND distributor_id = #{q.distributor_id}</if>
+		<if test="q.distributor_id_in != null">
+			AND distributor_id IN
+			<foreach collection="q.distributor_id_in" item="id" open="(" separator="," close=")">
+				#{id}
+			</foreach>
+		</if>
+		<if test="q.is_valid != null">AND is_valid = #{q.is_valid}</if>
+		<if test="q.open_divided != null">AND open_divided = #{q.open_divided}</if>
+		<if test="q.distributor_self != null">AND distributor_self = #{q.distributor_self}</if>
+		<if test="q.is_default != null">AND is_default = #{q.is_default}</if>
+		<if test="q.is_ziti != null and q.is_ziti == true">
+			AND (is_ziti = 1 OR LOWER(TRIM(CAST(is_ziti AS CHAR))) IN ('true','1'))
+		</if>
+	</sql>
+
+	<sql id="nonBlankLatLng">
+		AND lat IS NOT NULL AND TRIM(lat) != ''
+		AND lng IS NOT NULL AND TRIM(lng) != ''
+		AND CAST(lat AS DECIMAL(18, 8)) != 0
+		AND CAST(lng AS DECIMAL(18, 8)) != 0
+	</sql>
+
+	<select id="selectDistributorRowDynamic" resultType="java.util.LinkedHashMap">
+		SELECT * FROM distribution_distributor
+		<where>
+			<include refid="dynamicDistributorWhere"/>
+		</where>
+		LIMIT 1
+	</select>
+
+	<select id="selectNearestDistributorHaversineFirst" resultType="java.util.LinkedHashMap">
+		SELECT *,
+		(6371 * ACOS(
+			COS(RADIANS(#{lat})) * COS(RADIANS(CAST(lat AS DECIMAL(18, 8))))
+			* COS(RADIANS(CAST(lng AS DECIMAL(18, 8))) - RADIANS(#{lng}))
+			+ SIN(RADIANS(#{lat})) * SIN(RADIANS(CAST(lat AS DECIMAL(18, 8))))
+		)) AS distance
+		FROM distribution_distributor
+		<where>
+			<include refid="dynamicDistributorWhere"/>
+			<include refid="nonBlankLatLng"/>
+		</where>
+		ORDER BY distance ASC
+		LIMIT 1
+	</select>
+</mapper>

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.orders.mapper.StatementGenerationQueryMapper">
+
+	<select id="selectDistributorOrdersPage" resultType="cn.shopex.ecshopx.orders.statement.generate.StatementDistributorOrderRow">
+		SELECT
+			t.trade_id AS tradeId,
+			o.order_id AS orderId,
+			CAST(o.total_fee AS SIGNED) AS totalFee,
+			CAST(o.freight_fee AS SIGNED) AS freightFee,
+			o.receipt_type AS receiptType,
+			COALESCE(r.refund_fee, 0) AS refundFee,
+			t.pay_type AS payType
+		FROM orders_normal_orders o
+		LEFT JOIN trade t ON o.order_id = t.order_id
+		LEFT JOIN (
+			SELECT order_id, SUM(refund_fee) AS refund_fee
+			FROM aftersales_refund a
+			WHERE refund_status IN ('AUDIT_SUCCESS', 'SUCCESS', 'CHANGE')
+			GROUP BY order_id
+		) r ON o.order_id = r.order_id
+		WHERE o.company_id = #{companyId}
+		  AND o.distributor_id = #{distributorId}
+		  AND t.trade_state = 'SUCCESS'
+		  AND IFNULL(t.is_settled, 0) &lt;&gt; 1
+		  AND o.order_auto_close_aftersales_time &gt; 0
+		  AND o.order_auto_close_aftersales_time &lt; #{endTime}
+		  AND o.order_id NOT IN (
+			SELECT order_id FROM aftersales_refund
+			WHERE refund_status IN ('READY', 'PROCESSING')
+		  )
+		ORDER BY o.create_time ASC
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+
+	<select id="selectSupplierOrdersPage" resultType="cn.shopex.ecshopx.orders.statement.generate.StatementSupplierOrderRow">
+		SELECT
+			t.trade_id AS tradeId,
+			t.pay_type AS payType,
+			o.order_id AS orderId,
+			CAST(o.total_fee AS SIGNED) AS totalFee,
+			CAST(o.cost_fee AS SIGNED) AS costFee,
+			CAST(o.freight_fee AS SIGNED) AS freightFee,
+			o.receipt_type AS receiptType,
+			COALESCE(r.refund_fee, 0) AS refundFee,
+			CAST(o.commission_fee AS SIGNED) AS commissionFee,
+			COALESCE(o.point_fee, 0) AS pointFee,
+			o.item_fee AS itemFee,
+			o.order_status AS orderStatus,
+			o.pay_status AS payStatus,
+			ono.order_auto_close_aftersales_time AS orderAutoCloseAftersalesTime,
+			ono.supplier_id AS onoSupplierId
+		FROM supplier_order o
+		LEFT JOIN trade t ON o.order_id = t.order_id
+		LEFT JOIN (
+			SELECT order_id, SUM(refund_fee) AS refund_fee
+			FROM aftersales_refund a
+			WHERE refund_status IN ('AUDIT_SUCCESS', 'SUCCESS', 'CHANGE')
+			  AND supplier_id = #{operatorId}
+			GROUP BY order_id
+		) r ON o.order_id = r.order_id
+		LEFT JOIN orders_normal_orders ono ON ono.order_id = o.order_id
+		WHERE o.company_id = #{companyId}
+		  AND o.supplier_id = #{operatorId}
+		  AND t.trade_state = 'SUCCESS'
+		  AND IFNULL(o.is_settled, 0) = 0
+		  AND ono.order_auto_close_aftersales_time &gt; 0
+		  AND ono.order_auto_close_aftersales_time &lt; #{endTime}
+		  AND o.order_id NOT IN (
+			SELECT order_id FROM aftersales_refund
+			WHERE refund_status IN ('READY', 'PROCESSING')
+		  )
+		ORDER BY o.create_time ASC
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+
+	<select id="sumItemCostForDistributorOrder" resultType="int">
+		SELECT IFNULL(SUM(CAST(cost_fee AS SIGNED)), 0)
+		FROM orders_normal_orders_items
+		WHERE company_id = #{companyId}
+		  AND order_id = #{orderId}
+		  AND supplier_id &gt;= 1
+	</select>
+
+	<select id="sumAftersalesDetailNumForOrder" resultType="long">
+		SELECT IFNULL(SUM(COALESCE(num, 0)), 0)
+		FROM aftersales_detail
+		WHERE company_id = #{companyId}
+		  AND order_id = #{orderId}
+	</select>
+
+	<select id="sumOrderSupplierItemNums" resultType="cn.shopex.ecshopx.orders.statement.generate.StatementOrderItemNumRow">
+		SELECT order_id AS orderId, IFNULL(SUM(num), 0) AS num
+		FROM orders_normal_orders_items
+		WHERE company_id = #{companyId}
+		  AND supplier_id = #{operatorId}
+		  AND order_id IN
+		  <foreach collection="orderIds" item="oid" open="(" separator="," close=")">
+			#{oid}
+		  </foreach>
+		GROUP BY order_id
+	</select>
+
+	<select id="selectSupplierRefundInfo" resultType="cn.shopex.ecshopx.orders.statement.generate.StatementRefundInfoRow">
+		SELECT
+			IFNULL(SUM(C.refunded_fee), 0) AS refundedFee,
+			IFNULL(SUM(C.refunded_point), 0) AS refundedPoint,
+			IFNULL(SUM(D.cost_price * COALESCE(A.num, 0)), 0) AS refundCostFee
+		FROM aftersales_detail A
+		LEFT JOIN aftersales_refund C ON A.aftersales_bn = C.aftersales_bn
+		LEFT JOIN items D ON A.item_id = D.item_id
+		WHERE A.company_id = #{companyId}
+		  AND A.order_id = #{orderId}
+		  AND C.refund_status IN ('AUDIT_SUCCESS', 'SUCCESS')
+		  AND C.supplier_id = #{operatorId}
+		GROUP BY A.order_id
+	</select>
+</mapper>

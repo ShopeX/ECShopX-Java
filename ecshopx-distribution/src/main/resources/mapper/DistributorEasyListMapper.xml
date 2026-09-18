@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.distribution.mapper.DistributorEasyListMapper">
+
+	<sql id="easyFromJoin">
+		FROM distribution_distributor d
+	</sql>
+
+	<sql id="easyWhere">
+		WHERE d.company_id = #{f.companyId}
+		<if test="f.merchantIdEq != null">
+			AND d.merchant_id = #{f.merchantIdEq}
+		</if>
+		<if test="f.distributorIdIn != null and f.distributorIdIn.size() &gt; 0">
+			AND d.distributor_id IN
+			<foreach collection="f.distributorIdIn" item="id" open="(" separator="," close=")">#{id}</foreach>
+		</if>
+		<if test="f.nameContains != null and f.nameContains != ''">
+			AND d.name LIKE CONCAT('%', #{f.nameContains}, '%')
+		</if>
+		<if test="f.provinceEq != null and f.provinceEq != ''">
+			AND d.province = #{f.provinceEq}
+		</if>
+		<if test="f.cityEq != null and f.cityEq != ''">
+			AND d.city = #{f.cityEq}
+		</if>
+		<if test="f.areaEq != null and f.areaEq != ''">
+			AND d.area = #{f.areaEq}
+		</if>
+		<if test="f.mobileExact != null and f.mobileExact != ''">
+			AND d.mobile = #{f.mobileExact}
+		</if>
+		<if test="f.isValid != null and f.isValid != ''">
+			AND d.is_valid = #{f.isValid}
+		</if>
+	</sql>
+
+	<select id="countByFilter" resultType="long">
+		SELECT COUNT(DISTINCT d.distributor_id)
+		<include refid="easyFromJoin"/>
+		<include refid="easyWhere"/>
+	</select>
+
+	<select id="selectPageByFilter" resultType="cn.shopex.ecshopx.distribution.domain.Distributor">
+		SELECT
+			d.distributor_id,
+			d.is_distributor,
+			d.company_id,
+			d.mobile,
+			d.address AS address,
+			d.house_number,
+			d.name AS name,
+			d.first_letter,
+			d.auto_sync_goods,
+			d.logo AS logo,
+			d.contract_phone,
+			d.banner,
+			d.contact AS contact,
+			d.is_valid,
+			d.lng,
+			d.lat,
+			d.child_count,
+			d.is_default,
+			d.province AS province,
+			d.is_delivery,
+			d.city AS city,
+			d.area AS area,
+			d.hour,
+			d.created,
+			d.updated,
+			d.shop_code,
+			d.wechat_work_department_id,
+			d.distributor_self,
+			d.regionauth_id,
+			d.is_open,
+			d.rate,
+			d.is_dada,
+			d.business,
+			d.dada_shop_create,
+			d.shansong_shop_create,
+			d.shansong_store_id,
+			d.merchant_id,
+			d.distribution_type,
+			d.is_require_subdistrict,
+			d.is_require_building,
+			d.delivery_distance,
+			d.offline_aftersales,
+			d.offline_aftersales_self,
+			d.offline_aftersales_distributor_id,
+			d.offline_aftersales_other,
+			d.is_self_delivery,
+			d.freight_time,
+			d.is_refund_freight,
+			d.wdt_shop_no,
+			d.wdt_shop_id,
+			d.jst_shop_id,
+			d.kuaizhen_store_id,
+			d.open_divided,
+			d.payment_subject,
+			d.review_status,
+			d.dealer_id,
+			d.split_ledger_info,
+			d.bspay_split_ledger_info,
+			d.source_from,
+			d.is_open_salesman,
+			d.show_salesperson,
+			d.fixed_salesperson_qrcode_url,
+			d.shop_id
+		<include refid="easyFromJoin"/>
+		<include refid="easyWhere"/>
+		ORDER BY d.created DESC, d.distributor_id ASC
+		<if test="f.limit != null">
+			LIMIT #{f.limit} OFFSET #{f.offset}
+		</if>
+	</select>
+</mapper>

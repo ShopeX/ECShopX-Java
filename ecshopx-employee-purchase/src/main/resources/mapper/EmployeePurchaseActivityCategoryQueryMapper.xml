@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.employeepurchase.mapper.EmployeePurchaseActivityCategoryQueryMapper">
+
+	<select id="selectDistinctCategoryIds" resultType="java.lang.Long">
+		SELECT DISTINCT irc.category_id
+		FROM employee_purchase_activity_items eai
+		INNER JOIN goods_items_rel_cats irc
+			ON eai.item_id = irc.item_id AND eai.company_id = irc.company_id
+		WHERE eai.company_id = #{companyId}
+			AND eai.activity_id = #{activityId}
+			AND eai.shelf_status = 1
+	</select>
+</mapper>

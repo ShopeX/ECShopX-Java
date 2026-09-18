@@ -1,0 +1,4 @@
+# ecshopx-companys — module-local config (optional profile: spring.config.import)
+common:
+  # 保留「天」；未设或 0 时按 3 个自然月清理；可覆盖为 DEL_OPERATOR_LOGS_DATE
+  del-operator-logs-date: ${DEL_OPERATOR_LOGS_DATE:}

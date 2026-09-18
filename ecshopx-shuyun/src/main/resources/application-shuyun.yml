@@ -1,0 +1,15 @@
+# 数云开放平台（与 UAPI ecshopx.thirdparty.shuyun 隔离）
+# 可选：spring.config.import=classpath:application-shuyun.yml
+ecshopx:
+  shuyun:
+    open-platform:
+      base-uri: http://open-api.shuyun.com
+      timeout-seconds: 30
+      token-refresh-base-uri: http://open-client.shuyun.com
+      # DELTA-001 默认关
+      fallback-gateway-access-token: ""
+      callback-identity-secret: ${SHUYUN_OPEN_PLATFORM_CALLBACK_IDENTITY_SECRET:}
+      auth-value: ${SHUYUN_OPEN_PLATFORM_AUTH_VALUE:}
+      callback-debug-log: false
+      offline-plat-id-suffix: "-off"
+      merge-dispatch-ttl-seconds: 3

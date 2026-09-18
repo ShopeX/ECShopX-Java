@@ -1,0 +1,3 @@
+# ecshopx-promotions — module-local config (optional profile: spring.config.import)
+ecshopx:
+  promotion: {}

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.promotions.mapper.MarketingActivityItemsMapper">
+
+	<select id="selectActiveRowsForTagActivityCheck"
+			resultType="cn.shopex.ecshopx.promotions.dto.MarketingActivityItemTagCheckRow">
+		SELECT marketing_id AS marketingId, item_id AS itemId, item_type AS itemType, start_time AS startTime,
+		end_time AS endTime, marketing_type AS marketingType
+		FROM promotions_marketing_activity_items
+		WHERE company_id = #{companyId}
+		AND end_time &gt;= #{now}
+		AND (
+		<trim prefixOverrides="OR">
+			<if test="tagIds != null and tagIds.size() &gt; 0">
+				OR (item_type = 'tag' AND item_id IN
+				<foreach collection="tagIds" item="id" open="(" separator="," close=")">
+					#{id}
+				</foreach>
+				)
+			</if>
+			<if test="requestItemIds != null and requestItemIds.size() &gt; 0">
+				OR (item_type = 'normal' AND item_id IN
+				<foreach collection="requestItemIds" item="id" open="(" separator="," close=")">
+					#{id}
+				</foreach>
+				)
+			</if>
+			<if test="brandIds != null and brandIds.size() &gt; 0">
+				OR (item_type = 'brand' AND item_id IN
+				<foreach collection="brandIds" item="id" open="(" separator="," close=")">
+					#{id}
+				</foreach>
+				)
+			</if>
+			<if test="categoryIds != null and categoryIds.size() &gt; 0">
+				OR (item_type = 'category' AND item_id IN
+				<foreach collection="categoryIds" item="id" open="(" separator="," close=")">
+					#{id}
+				</foreach>
+				)
+			</if>
+		</trim>
+		)
+	</select>
+</mapper>

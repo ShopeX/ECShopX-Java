@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.employeepurchase.mapper.EmployeeAdminListQueryMapper">
+
+	<sql id="listFromWhere">
+		FROM employee_purchase_employees ep
+		LEFT JOIN employee_purchase_enterprises et ON ep.enterprise_id = et.id
+		WHERE ep.company_id = #{companyId}
+		<if test="distributorId != null">
+			AND ep.distributor_id = #{distributorId}
+		</if>
+		<if test="mobile != null and mobile != ''">
+			AND ep.mobile = #{mobile}
+		</if>
+		<if test="account != null and account != ''">
+			AND ep.account = #{account}
+		</if>
+		<if test="email != null and email != ''">
+			AND ep.email = #{email}
+		</if>
+		<if test="memberMobile != null and memberMobile != ''">
+			AND ep.member_mobile = #{memberMobile}
+		</if>
+		<if test="enterpriseId != null">
+			AND ep.enterprise_id = #{enterpriseId}
+		</if>
+	</sql>
+
+	<select id="countList" resultType="long">
+		SELECT COUNT(*)
+		<include refid="listFromWhere"/>
+	</select>
+
+	<select id="selectListPage" resultType="cn.shopex.ecshopx.employeepurchase.mapper.dto.EmployeeAdminListRow">
+		SELECT
+			ep.id,
+			ep.company_id AS companyId,
+			ep.distributor_id AS distributorId,
+			ep.operator_id AS operatorId,
+			ep.name,
+			ep.mobile,
+			ep.account,
+			ep.email,
+			ep.auth_code AS authCode,
+			ep.enterprise_id AS enterpriseId,
+			ep.user_id AS userId,
+			ep.member_mobile AS memberMobile,
+			ep.created,
+			ep.updated,
+			ep.disabled,
+			et.enterprise_sn AS enterpriseSn,
+			et.name AS enterpriseName,
+			et.auth_type AS authType
+		<include refid="listFromWhere"/>
+		ORDER BY ep.created DESC
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+</mapper>

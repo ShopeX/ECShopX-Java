@@ -1,0 +1,28 @@
+/**
+ * Copyright 2019-2026 ShopeX
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package cn.shopex.ecshopx.orders.port;
+
+import java.util.Map;
+
+/** H5 小程序加购编排端口（由 goods 模块实现，避免 orders→goods 依赖）。 */
+public interface WxappCartAddPort {
+
+	Object addCart(Map<String, Object> params);
+
+	/** Same params as {@link #addCart}, but returns the raw add result only (no list refresh). */
+	Object addCartDirect(Map<String, Object> params);
+}

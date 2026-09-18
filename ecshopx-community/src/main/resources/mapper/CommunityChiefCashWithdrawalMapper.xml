@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.community.mapper.CommunityChiefCashWithdrawalMapper">
+
+	<sql id="refundSubquery">
+		(SELECT order_id, SUM(refund_fee) AS refund_fee
+		 FROM aftersales_refund a
+		 WHERE refund_status IN ('AUDIT_SUCCESS', 'SUCCESS', 'CHANGE')
+		   AND order_id IN (SELECT order_id FROM orders_normal_orders WHERE order_type = 'normal' AND order_class = 'community')
+		 GROUP BY order_id)
+	</sql>
+
+	<select id="countWithdrawalList" resultType="long">
+		SELECT COUNT(*)
+		FROM community_chief_cash_withdrawal
+		WHERE company_id = #{companyId}
+		  AND distributor_id = #{distributorId}
+		<if test="mobileEnc != null">
+			AND mobile = #{mobileEnc}
+		</if>
+		<if test="status != null">
+			AND status = #{status}
+		</if>
+	</select>
+
+	<select id="selectWithdrawalList" resultType="cn.shopex.ecshopx.community.domain.CommunityChiefCashWithdrawal">
+		SELECT id, company_id, distributor_id, chief_id, pay_account, account_name, bank_name, mobile, money, status,
+		       remarks, pay_type, wxa_appid, created, updated
+		FROM community_chief_cash_withdrawal
+		WHERE company_id = #{companyId}
+		  AND distributor_id = #{distributorId}
+		<if test="mobileEnc != null">
+			AND mobile = #{mobileEnc}
+		</if>
+		<if test="status != null">
+			AND status = #{status}
+		</if>
+		ORDER BY created DESC
+		LIMIT #{offset}, #{limit}
+	</select>
+
+	<select id="selectChiefRebateRebateTotalByChiefIds" resultType="cn.shopex.ecshopx.community.domain.dto.ChiefRebateAggRow">
+		SELECT rel.chief_id AS chiefId,
+		       SUM(o.total_fee - COALESCE(r.refund_fee, 0)) AS totalFee,
+		       SUM(FLOOR((o.total_fee - COALESCE(r.refund_fee, 0)) * rel.rebate_ratio / 100)) AS rebateTotal
+		FROM orders_normal_orders o
+		LEFT JOIN community_order_rel_activity rel ON o.order_id = rel.order_id
+		LEFT JOIN
+		<include refid="refundSubquery"/>
+		r ON o.order_id = r.order_id
+		WHERE o.order_type = 'normal'
+		  AND o.order_class = 'community'
+		  AND o.pay_status = 'PAYED'
+		  AND o.order_status != 'CANCEL'
+		  AND o.company_id = #{companyId}
+		  AND rel.chief_id IN
+		<foreach collection="chiefIds" item="cid" open="(" separator="," close=")">
+			#{cid}
+		</foreach>
+		GROUP BY rel.chief_id
+	</select>
+
+	<select id="selectChiefRebateCloseRebateByChiefIds" resultType="cn.shopex.ecshopx.community.domain.dto.ChiefRebateAggRow">
+		SELECT rel.chief_id AS chiefId,
+		       SUM(FLOOR((o.total_fee - COALESCE(r.refund_fee, 0)) * rel.rebate_ratio / 100)) AS closeRebate
+		FROM orders_normal_orders o
+		LEFT JOIN community_order_rel_activity rel ON o.order_id = rel.order_id
+		LEFT JOIN
+		<include refid="refundSubquery"/>
+		r ON o.order_id = r.order_id
+		WHERE o.order_type = 'normal'
+		  AND o.order_class = 'community'
+		  AND o.pay_status = 'PAYED'
+		  AND o.order_status != 'CANCEL'
+		  AND o.company_id = #{companyId}
+		  AND o.order_auto_close_aftersales_time IS NOT NULL
+		  AND o.order_auto_close_aftersales_time &lt; #{nowSeconds}
+		  AND rel.chief_id IN
+		<foreach collection="chiefIds" item="cid" open="(" separator="," close=")">
+			#{cid}
+		</foreach>
+		GROUP BY rel.chief_id
+	</select>
+
+	<select id="selectChiefRebateApplyMoneyByChiefIds" resultType="cn.shopex.ecshopx.community.domain.dto.ChiefRebateAggRow">
+		SELECT chief_id AS chiefId, SUM(money) AS money
+		FROM community_chief_cash_withdrawal
+		WHERE status = 'apply'
+		  AND company_id = #{companyId}
+		  AND chief_id IN
+		<foreach collection="chiefIds" item="cid" open="(" separator="," close=")">
+			#{cid}
+		</foreach>
+		GROUP BY chief_id
+	</select>
+
+	<select id="selectChiefRebateSuccessMoneyByChiefIds" resultType="cn.shopex.ecshopx.community.domain.dto.ChiefRebateAggRow">
+		SELECT chief_id AS chiefId, SUM(money) AS money
+		FROM community_chief_cash_withdrawal
+		WHERE status = 'success'
+		  AND company_id = #{companyId}
+		  AND chief_id IN
+		<foreach collection="chiefIds" item="cid" open="(" separator="," close=")">
+			#{cid}
+		</foreach>
+		GROUP BY chief_id
+	</select>
+
+	<select id="selectCashWithdrawalCountAggregates" resultType="java.util.HashMap">
+		SELECT
+			(SELECT SUM(FLOOR((o.total_fee - COALESCE(r.refund_fee, 0)) * rel.rebate_ratio / 100))
+			 FROM orders_normal_orders o
+			 LEFT JOIN community_order_rel_activity rel ON o.order_id = rel.order_id
+			 LEFT JOIN
+			 <include refid="refundSubquery"/>
+			 r ON o.order_id = r.order_id
+			 WHERE o.order_type = 'normal'
+			   AND o.order_class = 'community'
+			   AND o.pay_status = 'PAYED'
+			   AND o.order_status != 'CANCEL'
+			   AND o.company_id = #{companyId}
+			   AND o.distributor_id = #{distributorId}) AS rebate_total,
+			(SELECT COALESCE(SUM(money), 0)
+			 FROM community_chief_cash_withdrawal
+			 WHERE status = 'apply'
+			   AND company_id = #{companyId}
+			   AND distributor_id = #{distributorId}) AS freeze_cash_withdrawal_rebate,
+			(SELECT COALESCE(SUM(money), 0)
+			 FROM community_chief_cash_withdrawal
+			 WHERE status = 'success'
+			   AND company_id = #{companyId}
+			   AND distributor_id = #{distributorId}) AS payed_rebate,
+			(SELECT COUNT(DISTINCT chief_id)
+			 FROM community_chief_cash_withdrawal
+			 WHERE company_id = #{companyId}
+			   AND distributor_id = #{distributorId}) AS apply_chief_num
+	</select>
+</mapper>

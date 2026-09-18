@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.promotions.mapper.PromotionGroupsTeamMemberMapper">
+
+	<sql id="teamMemberOrderWhere">
+		WHERE m.company_id = #{companyId}
+		AND m.team_id = #{teamId}
+		<if test="startTime != null and startTime != 0">
+			AND m.join_time &gt;= #{startTime}
+		</if>
+		<if test="endTime != null and endTime != 0">
+			AND m.join_time &lt;= #{endTime}
+		</if>
+		<if test="orderId != null">
+			AND m.order_id = #{orderId}
+		</if>
+	</sql>
+
+	<select id="countTeamMemberOrderList" resultType="long">
+		SELECT COUNT(*)
+		FROM promotion_groups_team_member m
+		LEFT JOIN orders_associations o ON m.order_id = o.order_id
+		<include refid="teamMemberOrderWhere"/>
+	</select>
+
+	<select id="selectTeamMemberOrderListPage" resultType="java.util.LinkedHashMap">
+		SELECT
+			m.id AS m_id,
+			m.team_id AS m_team_id,
+			m.company_id AS m_company_id,
+			m.act_id AS m_act_id,
+			m.member_id AS m_member_id,
+			m.join_time AS m_join_time,
+			m.order_id AS m_order_id,
+			m.group_goods_type AS m_group_goods_type,
+			m.member_info AS m_member_info,
+			m.disabled AS m_disabled,
+			o.order_id AS o_order_id,
+			o.authorizer_appid AS o_authorizer_appid,
+			o.wxa_appid AS o_wxa_appid,
+			o.title AS o_title,
+			o.total_fee AS o_total_fee,
+			o.company_id AS o_company_id,
+			o.shop_id AS o_shop_id,
+			o.store_name AS o_store_name,
+			o.user_id AS o_user_id,
+			o.promoter_user_id AS o_promoter_user_id,
+			o.promoter_shop_id AS o_promoter_shop_id,
+			o.source_id AS o_source_id,
+			o.monitor_id AS o_monitor_id,
+			o.mobile AS o_mobile,
+			o.order_class AS o_order_class,
+			o.order_type AS o_order_type,
+			o.order_status AS o_order_status,
+			o.is_distribution AS o_is_distribution,
+			o.total_rebate AS o_total_rebate,
+			o.delivery_corp AS o_delivery_corp,
+			o.delivery_code AS o_delivery_code,
+			o.delivery_time AS o_delivery_time,
+			o.member_discount AS o_member_discount,
+			o.coupon_discount AS o_coupon_discount,
+			o.coupon_discount_desc AS o_coupon_discount_desc,
+			o.member_discount_desc AS o_member_discount_desc,
+			o.delivery_status AS o_delivery_status,
+			o.cancel_status AS o_cancel_status,
+			o.create_time AS o_create_time,
+			o.end_time AS o_end_time,
+			o.update_time AS o_update_time,
+			o.fee_type AS o_fee_type,
+			o.fee_rate AS o_fee_rate,
+			o.fee_symbol AS o_fee_symbol,
+			o.salesman_id AS o_salesman_id
+		FROM promotion_groups_team_member m
+		LEFT JOIN orders_associations o ON m.order_id = o.order_id
+		<include refid="teamMemberOrderWhere"/>
+		ORDER BY m.join_time DESC
+		LIMIT #{offset}, #{limit}
+	</select>
+
+	<select id="countPaidServiceOrdersAfterTeamEnd" resultType="long">
+		SELECT COUNT(*)
+		FROM promotion_groups_team_member m
+		INNER JOIN service_orders so
+			ON so.company_id = m.company_id
+			AND so.order_id = CAST(m.order_id AS UNSIGNED)
+		WHERE m.company_id = #{companyId}
+		AND m.team_id = #{teamId}
+		AND m.disabled = 0
+		AND m.order_id IS NOT NULL
+		AND TRIM(m.order_id) != ''
+		AND TRIM(m.order_id) REGEXP '^[0-9]+$'
+		AND so.order_status IN ('PAYED', 'WAIT_BUYER_CONFIRM', 'DONE')
+		AND so.update_time IS NOT NULL
+		AND so.update_time > #{teamEndTimeSeconds}
+	</select>
+
+	<select id="selectPaymentOverEndTimeList"
+		resultType="cn.shopex.ecshopx.promotions.domain.PaymentOverEndTimeRow">
+		SELECT
+			t.act_id AS actId,
+			t.end_time AS endTime,
+			m.team_id AS teamId,
+			m.member_id AS memberId,
+			m.order_id AS orderId,
+			tr.time_expire AS timeExpire
+		FROM promotion_groups_team_member m
+		LEFT JOIN trade tr ON m.order_id = tr.order_id
+		INNER JOIN promotion_groups_team t ON m.team_id = t.team_id
+		WHERE tr.trade_state = 'SUCCESS'
+		AND (tr.time_expire + 0) &gt; t.end_time
+		AND m.member_id &gt; 0
+		AND (m.disabled = 0 OR m.disabled IS NULL)
+		<if test="teamIds == null or teamIds.size() == 0">
+			AND 1 = 0
+		</if>
+		<if test="teamIds != null and teamIds.size() &gt; 0">
+			AND m.team_id IN
+			<foreach collection="teamIds" item="tid" open="(" separator="," close=")">
+				#{tid}
+			</foreach>
+		</if>
+	</select>
+
+	<select id="selectGroupTeamSuccessMembers" resultType="cn.shopex.ecshopx.promotions.domain.PromotionGroupsTeamMember">
+		SELECT *
+		FROM promotion_groups_team_member
+		WHERE team_id = #{teamId}
+		AND member_id &gt; 0
+		AND (disabled = 0 OR disabled IS NULL)
+	</select>
+
+</mapper>

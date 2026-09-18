@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.reservation.mapper.ReservationRecordMapper">
+
+	<select id="countConflictingReservations" resultType="long">
+		SELECT COUNT(*) FROM reservation_record
+		WHERE company_id = #{companyId}
+		AND shop_id = #{shopId}
+		AND agreement_date = #{agreementDate}
+		AND begin_time = #{beginTime}
+		AND resource_level_id IN
+		<foreach collection="resourceLevelIds" item="id" open="(" separator="," close=")">#{id}</foreach>
+		AND status IN
+		<foreach collection="statuses" item="st" open="(" separator="," close=")">#{st}</foreach>
+	</select>
+
+	<select id="countRightsQuotaUsage" resultType="long">
+		SELECT COUNT(*) FROM reservation_record
+		WHERE company_id = #{companyId}
+		AND rights_id = #{rightsId}
+		AND user_id = #{userId}
+		AND status IN
+		<foreach collection="statuses" item="st" open="(" separator="," close=")">#{st}</foreach>
+	</select>
+
+	<select id="selectOccupiedResourceLevelIds" resultType="long">
+		SELECT DISTINCT resource_level_id FROM reservation_record
+		WHERE company_id = #{companyId}
+		AND shop_id = #{shopId}
+		AND agreement_date = #{agreementDate}
+		AND begin_time = #{beginTime}
+		AND resource_level_id IN
+		<foreach collection="resourceLevelIds" item="id" open="(" separator="," close=")">#{id}</foreach>
+		AND status IN
+		<foreach collection="statuses" item="st" open="(" separator="," close=")">#{st}</foreach>
+	</select>
+
+	<select id="selectForLimitDaysWindow" resultType="cn.shopex.ecshopx.reservation.domain.ReservationRecord">
+		SELECT record_id, agreement_date, company_id, shop_id, user_id, label_id, status
+		FROM reservation_record
+		WHERE company_id = #{companyId}
+		AND user_id = #{userId}
+		AND agreement_date &gt;= #{limitBegin}
+		AND agreement_date &lt;= #{limitEnd}
+		AND status IN
+		<foreach collection="statuses" item="st" open="(" separator="," close=")">#{st}</foreach>
+		<choose>
+			<when test="labelId != null">AND label_id = #{labelId}</when>
+			<otherwise>AND label_id IS NULL</otherwise>
+		</choose>
+		ORDER BY agreement_date ASC
+		LIMIT 100
+	</select>
+
+	<select id="countForLimitNumsSameDay" resultType="long">
+		SELECT COUNT(*) FROM reservation_record
+		WHERE company_id = #{companyId}
+		AND user_id = #{userId}
+		AND agreement_date = #{agreementDate}
+		AND status IN
+		<foreach collection="statuses" item="st" open="(" separator="," close=")">#{st}</foreach>
+		<choose>
+			<when test="labelId != null">AND label_id = #{labelId}</when>
+			<otherwise>AND label_id IS NULL</otherwise>
+		</choose>
+	</select>
+</mapper>

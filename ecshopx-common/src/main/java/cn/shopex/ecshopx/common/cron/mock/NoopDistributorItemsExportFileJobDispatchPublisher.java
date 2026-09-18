@@ -1,0 +1,40 @@
+/**
+ * Copyright 2019-2026 ShopeX
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package cn.shopex.ecshopx.common.cron.mock;
+
+import cn.shopex.ecshopx.common.dispatch.DistributorItemsExportFileJobDispatchPublisher;
+import java.util.LinkedHashMap;
+import lombok.extern.slf4j.Slf4j;
+
+/** test-cron profile: avoids enqueueing distributor-items export-file dispatch jobs. */
+@Slf4j
+public class NoopDistributorItemsExportFileJobDispatchPublisher implements DistributorItemsExportFileJobDispatchPublisher {
+
+	@Override
+	public void publish(
+			long companyId,
+			long operatorId,
+			String acceptLanguage,
+			LinkedHashMap<String, Object> filterSnapshot,
+			int pageSize) {
+		log.info(
+				"[cron-mock][distributor-items-export-file-job] publish companyId={} operatorId={} pageSize={}",
+				companyId,
+				operatorId,
+				pageSize);
+	}
+}

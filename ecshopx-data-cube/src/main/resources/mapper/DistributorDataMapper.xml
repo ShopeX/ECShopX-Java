@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.datacube.mapper.DistributorDataMapper">
+
+	<sql id="aggregatedSelectColumns">
+		count_date,
+		company_id,
+		SUM(member_count) AS member_count,
+		SUM(aftersales_count) AS aftersales_count,
+		SUM(refunded_count) AS refunded_count,
+		SUM(amount_payed_count) AS amount_payed_count,
+		SUM(amount_point_payed_count) AS amount_point_payed_count,
+		SUM(order_count) AS order_count,
+		SUM(order_point_count) AS order_point_count,
+		SUM(order_payed_count) AS order_payed_count,
+		SUM(order_point_payed_count) AS order_point_payed_count,
+		SUM(gmv_count) AS gmv_count,
+		SUM(gmv_point_count) AS gmv_point_count
+	</sql>
+
+	<select id="selectAggregatedByDistributorIds" resultType="java.util.LinkedHashMap">
+		SELECT
+		<include refid="aggregatedSelectColumns"/>
+		FROM datacube_distributor_data
+		WHERE company_id = #{companyId}
+		AND distributor_id IN
+		<foreach collection="distributorIds" item="id" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+		AND count_date &gt;= #{start}
+		AND count_date &lt;= #{end}
+		GROUP BY count_date
+		ORDER BY count_date ASC
+	</select>
+
+	<select id="selectAggregatedByMerchantIds" resultType="java.util.LinkedHashMap">
+		SELECT
+		<include refid="aggregatedSelectColumns"/>
+		FROM datacube_distributor_data
+		WHERE company_id = #{companyId}
+		AND merchant_id IN
+		<foreach collection="merchantIds" item="id" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+		AND count_date &gt;= #{start}
+		AND count_date &lt;= #{end}
+		GROUP BY count_date
+		ORDER BY count_date ASC
+	</select>
+</mapper>

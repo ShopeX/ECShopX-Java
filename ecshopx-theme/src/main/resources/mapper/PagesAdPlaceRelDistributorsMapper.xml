@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.theme.mapper.PagesAdPlaceRelDistributorsMapper">
+
+	<select id="selectRelDistributorsByAdPlaceIds" resultType="cn.shopex.ecshopx.theme.mapper.dto.PagesAdPlaceDistributorJoinRow">
+		SELECT
+			r.ad_place_id AS ad_place_id,
+			r.distributor_id AS distributor_id,
+			d.name AS distributor_name
+		FROM pages_ad_place_rel_distributors r
+		LEFT JOIN distribution_distributor d ON r.distributor_id = d.distributor_id
+		WHERE r.ad_place_id IN
+		<foreach collection="ids" item="id" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</select>
+</mapper>

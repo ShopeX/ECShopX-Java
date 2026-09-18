@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.employeepurchase.mapper.ActivityEnterpriseBehaviorLogMapper">
+
+	<sql id="aggregatedStatsSelect">
+		SELECT
+			l.activity_id AS activity_id,
+			l.enterprise_id AS enterprise_id,
+			SUM(CASE WHEN l.behavior_type = 'scan' THEN 1 ELSE 0 END) AS scan_count,
+			COUNT(DISTINCT CASE
+				WHEN l.behavior_type = 'scan'
+				THEN COALESCE(CAST(l.user_id AS CHAR), CONCAT('v:', IFNULL(l.visitor_key, '')))
+			END) AS scan_user_count,
+			COUNT(DISTINCT CASE
+				WHEN l.behavior_type = 'passphrase_verify' AND l.result_status = 'success'
+				THEN COALESCE(CAST(l.user_id AS CHAR), CONCAT('v:', IFNULL(l.visitor_key, '')))
+			END) AS passphrase_verify_user_count,
+			COUNT(DISTINCT CASE
+				WHEN l.behavior_type = 'bind' AND l.user_id IS NOT NULL
+				THEN CAST(l.user_id AS CHAR)
+			END) AS bind_user_count,
+			COUNT(DISTINCT CASE
+				WHEN l.behavior_type = 'order' AND l.user_id IS NOT NULL
+				THEN CAST(l.user_id AS CHAR)
+			END) AS order_user_count
+		FROM employee_purchase_activity_enterprise_behavior_log l
+		WHERE l.company_id = #{companyId}
+	</sql>
+
+	<select id="selectAggregatedStatsByActivityIds" resultType="java.util.LinkedHashMap">
+		SELECT
+			t.activity_id,
+			SUM(t.scan_count) AS scan_count,
+			SUM(t.scan_user_count) AS scan_user_count,
+			SUM(t.passphrase_verify_user_count) AS passphrase_verify_user_count,
+			SUM(t.bind_user_count) AS bind_user_count,
+			SUM(t.order_user_count) AS order_user_count
+		FROM (
+			<include refid="aggregatedStatsSelect"/>
+			AND l.activity_id IN
+			<foreach collection="activityIds" item="id" open="(" separator="," close=")">
+				#{id}
+			</foreach>
+			GROUP BY l.activity_id, l.enterprise_id
+		) t
+		GROUP BY t.activity_id
+	</select>
+
+	<select id="selectAggregatedStatsByActivity" resultType="java.util.LinkedHashMap">
+		<include refid="aggregatedStatsSelect"/>
+		AND l.activity_id = #{activityId}
+		GROUP BY l.activity_id, l.enterprise_id
+		ORDER BY l.enterprise_id ASC
+	</select>
+</mapper>

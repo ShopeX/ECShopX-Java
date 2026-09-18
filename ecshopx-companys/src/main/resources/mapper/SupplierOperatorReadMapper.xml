@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.companys.mapper.SupplierOperatorReadMapper">
+
+	<select id="selectOperatorIdsByCompanyIdAndSupplierNameLike" resultType="long">
+		SELECT operator_id
+		FROM supplier
+		WHERE company_id = #{companyId}
+		  AND supplier_name LIKE CONCAT('%', #{supplierName}, '%')
+	</select>
+
+	<select id="selectSupplierNameRowsByCompanyIdAndOperatorIds"
+			resultType="cn.shopex.ecshopx.companys.dto.SupplierOperatorNameRow">
+		SELECT operator_id AS operatorId, supplier_name AS supplierName
+		FROM supplier
+		WHERE company_id = #{companyId}
+		<if test="operatorIds != null and operatorIds.size() &gt; 0">
+			AND operator_id IN
+			<foreach collection="operatorIds" item="id" open="(" separator="," close=")">#{id}</foreach>
+		</if>
+	</select>
+
+	<select id="selectIsCheckByCompanyIdAndOperatorId" resultType="java.lang.Integer">
+		SELECT is_check
+		FROM supplier
+		WHERE company_id = #{companyId}
+		  AND operator_id = #{operatorId}
+		LIMIT 1
+	</select>
+</mapper>

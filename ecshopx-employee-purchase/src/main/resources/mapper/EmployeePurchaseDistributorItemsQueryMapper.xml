@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.employeepurchase.mapper.EmployeePurchaseDistributorItemsQueryMapper">
+
+	<select id="selectDistributorSelf" resultType="java.lang.Integer">
+		SELECT d.distributor_self
+		FROM distribution_distributor d
+		WHERE d.company_id = #{companyId}
+			AND d.distributor_id = #{distributorId}
+		LIMIT 1
+	</select>
+
+	<select id="countItemsForDistributorByItemCategories" resultType="java.lang.Long">
+		<choose>
+			<when test="distributorSelf != null and distributorSelf != 0">
+				SELECT COUNT(*) FROM items i
+				WHERE i.company_id = #{companyId}
+					AND EXISTS (
+						SELECT 1 FROM distribution_distributor d
+						WHERE d.distributor_id = #{distributorId}
+							AND d.company_id = #{companyId}
+					)
+					AND i.item_category IN
+					<foreach collection="itemCategoryKeys" item="k" open="(" separator="," close=")">
+						#{k}
+					</foreach>
+			</when>
+			<otherwise>
+				SELECT COUNT(*) FROM items i
+				INNER JOIN distribution_distributor d
+					ON d.distributor_id = #{distributorId} AND d.company_id = #{companyId}
+				INNER JOIN distribution_distributor_items ddi
+					ON ddi.item_id = i.item_id
+					AND ddi.company_id = i.company_id
+					AND ddi.distributor_id = #{distributorId}
+				WHERE i.company_id = #{companyId}
+					AND i.item_category IN
+					<foreach collection="itemCategoryKeys" item="k" open="(" separator="," close=")">
+						#{k}
+					</foreach>
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="selectItemIdsForDistributorByItemCategories" resultType="java.lang.Long">
+		<choose>
+			<when test="distributorSelf != null and distributorSelf != 0">
+				SELECT i.item_id FROM items i
+				WHERE i.company_id = #{companyId}
+					AND EXISTS (
+						SELECT 1 FROM distribution_distributor d
+						WHERE d.distributor_id = #{distributorId}
+							AND d.company_id = #{companyId}
+					)
+					AND i.item_category IN
+					<foreach collection="itemCategoryKeys" item="k" open="(" separator="," close=")">
+						#{k}
+					</foreach>
+				ORDER BY i.item_id ASC
+			</when>
+			<otherwise>
+				SELECT i.item_id FROM items i
+				INNER JOIN distribution_distributor d
+					ON d.distributor_id = #{distributorId} AND d.company_id = #{companyId}
+				INNER JOIN distribution_distributor_items ddi
+					ON ddi.item_id = i.item_id
+					AND ddi.company_id = i.company_id
+					AND ddi.distributor_id = #{distributorId}
+				WHERE i.company_id = #{companyId}
+					AND i.item_category IN
+					<foreach collection="itemCategoryKeys" item="k" open="(" separator="," close=")">
+						#{k}
+					</foreach>
+				ORDER BY i.item_id ASC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="countItemsForDistributorByItemIds" resultType="java.lang.Long">
+		<choose>
+			<when test="distributorSelf != null and distributorSelf != 0">
+				SELECT COUNT(*) FROM items i
+				WHERE i.company_id = #{companyId}
+					AND EXISTS (
+						SELECT 1 FROM distribution_distributor d
+						WHERE d.distributor_id = #{distributorId}
+							AND d.company_id = #{companyId}
+					)
+					AND i.item_id IN
+					<foreach collection="itemIds" item="id" open="(" separator="," close=")">
+						#{id}
+					</foreach>
+			</when>
+			<otherwise>
+				SELECT COUNT(*) FROM items i
+				INNER JOIN distribution_distributor d
+					ON d.distributor_id = #{distributorId} AND d.company_id = #{companyId}
+				INNER JOIN distribution_distributor_items ddi
+					ON ddi.item_id = i.item_id
+					AND ddi.company_id = i.company_id
+					AND ddi.distributor_id = #{distributorId}
+				WHERE i.company_id = #{companyId}
+					AND i.item_id IN
+					<foreach collection="itemIds" item="id" open="(" separator="," close=")">
+						#{id}
+					</foreach>
+			</otherwise>
+		</choose>
+	</select>
+</mapper>

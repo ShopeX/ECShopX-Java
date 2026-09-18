@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.distribution.mapper.DistributorAftersalesAddressMapper">
+
+	<sql id="offlineNearWhere">
+		WHERE company_id = #{companyId}
+			AND return_type = 'offline'
+			AND distributor_id IN
+			<foreach collection="distributorIds" item="id" open="(" separator="," close=")">#{id}</foreach>
+	</sql>
+
+	<sql id="offlineNearColumnsBase">
+		address_id,
+		distributor_id,
+		company_id,
+		province,
+		city,
+		area,
+		regions_id,
+		regions,
+		address,
+		lng,
+		lat,
+		contact,
+		mobile,
+		post_code,
+		is_default,
+		created,
+		updated,
+		merchant_id,
+		name,
+		hours,
+		return_type,
+		supplier_id
+	</sql>
+
+	<select id="countOfflineNear" resultType="long">
+		SELECT COUNT(*)
+		FROM distributor_aftersales_address
+		<include refid="offlineNearWhere"/>
+	</select>
+
+	<select id="selectOfflineNear" resultType="java.util.LinkedHashMap">
+		<choose>
+			<when test="useDistance">
+				SELECT
+					<include refid="offlineNearColumnsBase"/>,
+					(6371 * ACOS(LEAST(1.0, GREATEST(-1.0,
+						COS(RADIANS(#{requestLat})) * COS(RADIANS(CAST(lat AS DECIMAL(18,8))))
+						* COS(RADIANS(CAST(lng AS DECIMAL(18,8))) - RADIANS(#{requestLng}))
+						+ SIN(RADIANS(#{requestLat})) * SIN(RADIANS(CAST(lat AS DECIMAL(18,8))))
+					)))) AS distance
+				FROM distributor_aftersales_address
+				<include refid="offlineNearWhere"/>
+				ORDER BY distance ASC
+			</when>
+			<otherwise>
+				SELECT
+					<include refid="offlineNearColumnsBase"/>
+				FROM distributor_aftersales_address
+				<include refid="offlineNearWhere"/>
+				ORDER BY created DESC
+			</otherwise>
+		</choose>
+	</select>
+</mapper>

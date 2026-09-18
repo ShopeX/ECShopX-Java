@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.orders.mapper.TradeMapper">
+
+	<select id="sumTradeTotalFeeCentsForYoushu" resultType="java.lang.Long">
+		SELECT SUM(CAST(total_fee AS SIGNED))
+		FROM trade
+		WHERE CAST(company_id AS SIGNED) = #{companyId}
+			AND trade_state IN ('REFUND_PROCESS', 'REFUND_SUCCESS', 'SUCCESS')
+			AND CAST(time_expire AS SIGNED) &gt;= #{startSec}
+			AND CAST(time_expire AS SIGNED) &lt;= #{endSec}
+	</select>
+
+	<select id="countTradesForYoushu" resultType="long">
+		SELECT COUNT(*)
+		FROM trade
+		WHERE CAST(company_id AS SIGNED) = #{companyId}
+			AND trade_state IN ('REFUND_PROCESS', 'REFUND_SUCCESS', 'SUCCESS')
+			AND CAST(time_expire AS SIGNED) &gt;= #{startSec}
+			AND CAST(time_expire AS SIGNED) &lt;= #{endSec}
+	</select>
+
+	<select id="selectSuccessTradeIndexRows" resultType="java.util.LinkedHashMap">
+		SELECT order_id, trade_no
+		FROM trade
+		WHERE company_id = #{companyId}
+			AND trade_state = 'SUCCESS'
+			AND order_id IN
+		<foreach collection="orderIds" item="oid" open="(" separator="," close=")">
+			#{oid}
+		</foreach>
+	</select>
+
+</mapper>

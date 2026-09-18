@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.employeepurchase.mapper.EmployeePurchaseUserActivitiesQueryMapper">
+
+	<sql id="userActivitiesUnionSql">
+		SELECT
+			ac.id,
+			ac.company_id,
+			ac.pic,
+			ac.list_pic,
+			ac.name,
+			ac.title,
+			ac.pages_template_id,
+			ac.display_time,
+			ac.employee_begin_time,
+			ac.employee_end_time,
+			ac.employee_limitfee,
+			ac.if_relative_join,
+			ac.invite_limit,
+			ac.relative_begin_time,
+			ac.relative_end_time,
+			ac.if_share_limitfee,
+			ac.relative_limitfee,
+			ac.minimum_amount,
+			ac.status,
+			ac.if_share_store,
+			ac.created,
+			ac.updated,
+			ac.price_display_config,
+			ac.is_discount_description_enabled,
+			ac.discount_description,
+			ac.is_passphrase_enabled,
+			ac.purchase_mode,
+			ep.enterprise_id,
+			ep.user_id,
+			1 AS is_employee,
+			0 AS is_relative,
+			et.name AS rel_enterprise,
+			et.auth_type
+		FROM employee_purchase_activities ac
+		LEFT JOIN employee_purchase_activity_enterprises ae ON ac.id = ae.activity_id
+		LEFT JOIN employee_purchase_employees ep ON ae.enterprise_id = ep.enterprise_id
+		LEFT JOIN employee_purchase_enterprises et ON ae.enterprise_id = et.id
+		WHERE ac.company_id = #{companyId}
+			AND ep.user_id = #{userId}
+			AND ac.status IN ('active', 'pending')
+			AND et.disabled = 0
+			AND ac.display_time &lt; #{now}
+			AND (ac.employee_end_time &gt; #{now} OR ac.relative_end_time &gt; #{now})
+		UNION
+		SELECT
+			ac.id,
+			ac.company_id,
+			ac.pic,
+			ac.list_pic,
+			ac.name,
+			ac.title,
+			ac.pages_template_id,
+			ac.display_time,
+			ac.employee_begin_time,
+			ac.employee_end_time,
+			ac.employee_limitfee,
+			ac.if_relative_join,
+			ac.invite_limit,
+			ac.relative_begin_time,
+			ac.relative_end_time,
+			ac.if_share_limitfee,
+			ac.relative_limitfee,
+			ac.minimum_amount,
+			ac.status,
+			ac.if_share_store,
+			ac.created,
+			ac.updated,
+			ac.price_display_config,
+			ac.is_discount_description_enabled,
+			ac.discount_description,
+			ac.is_passphrase_enabled,
+			ac.purchase_mode,
+			re.enterprise_id,
+			re.user_id,
+			0 AS is_employee,
+			1 AS is_relative,
+			et.name AS rel_enterprise,
+			et.auth_type
+		FROM employee_purchase_activities ac
+		LEFT JOIN employee_purchase_relatives re ON ac.id = re.activity_id
+		LEFT JOIN employee_purchase_enterprises et ON re.enterprise_id = et.id
+		WHERE ac.company_id = #{companyId}
+			AND re.user_id = #{userId}
+			AND ac.status IN ('active', 'pending')
+			AND et.disabled = 0
+			AND ac.display_time &lt; #{now}
+			AND ac.relative_end_time &gt; #{now}
+	</sql>
+
+	<sql id="userActivitiesOuterWhere">
+		WHERE 1 = 1
+			AND t.company_id = #{companyId}
+			AND t.user_id = #{userId}
+			AND t.enterprise_id = #{enterpriseId}
+		<if test="activityId != null">
+			AND t.id = #{activityId}
+		</if>
+		<if test="activityName != null and activityName != ''">
+			AND t.name LIKE CONCAT('%', #{activityName}, '%')
+		</if>
+	</sql>
+
+	<select id="countUserActivities" resultType="long">
+		SELECT COUNT(*) FROM (
+			<include refid="userActivitiesUnionSql"/>
+		) t
+		<include refid="userActivitiesOuterWhere"/>
+	</select>
+
+	<select id="selectUserActivities" resultType="java.util.LinkedHashMap">
+		SELECT * FROM (
+			<include refid="userActivitiesUnionSql"/>
+		) t
+		<include refid="userActivitiesOuterWhere"/>
+		ORDER BY t.display_time ASC
+		LIMIT #{pageSize} OFFSET #{offset}
+	</select>
+</mapper>

@@ -1,0 +1,93 @@
+package cn.shopex.ecshopx.promotions.cron;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
+import cn.shopex.ecshopx.common.cron.event.CronAlertEvent;
+import cn.shopex.ecshopx.promotions.service.PromotionGroupsTeamService;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
+
+@ExtendWith(MockitoExtension.class)
+class ScheduleDoneNoStoreGroupHandlerTest {
+
+	@Mock
+	private PromotionGroupsTeamService promotionGroupsTeamService;
+
+	@Mock
+	private ApplicationEventPublisher eventPublisher;
+
+	@InjectMocks
+	private ScheduleDoneNoStoreGroupHandler handler;
+
+	private ListAppender<ILoggingEvent> listAppender;
+	private Logger handlerLogger;
+
+	@BeforeEach
+	void attachLogAppender() {
+		listAppender = new ListAppender<>();
+		listAppender.start();
+		listAppender.list.clear();
+		handlerLogger = (Logger) LoggerFactory.getLogger(ScheduleDoneNoStoreGroupHandler.class);
+		handlerLogger.addAppender(listAppender);
+	}
+
+	@AfterEach
+	void detachLogAppender() {
+		handlerLogger.detachAppender(listAppender);
+		listAppender.stop();
+	}
+
+	@Test
+	@DisplayName("plan §5 handler: 成功路径；无 CronAlertEvent")
+	void execute_ok_noAlert() {
+		when(promotionGroupsTeamService.scheduleNoStoreAutoDoneGroup()).thenReturn(3);
+		handler.execute();
+		verify(promotionGroupsTeamService, times(1)).scheduleNoStoreAutoDoneGroup();
+		verify(eventPublisher, never()).publishEvent(any());
+		assertThat(listAppender.list)
+				.anyMatch(
+						e -> e.getLevel() == Level.INFO
+								&& e.getFormattedMessage() != null
+								&& e.getFormattedMessage().contains("done-nostore-group")
+								&& e.getFormattedMessage().contains("done")
+								&& e.getFormattedMessage().contains("processed=3"));
+	}
+
+	@Test
+	@DisplayName("plan §5 handler: 异常路径 + CronAlertEvent + 重抛")
+	void execute_failure_publishesAlertAndRethrows() {
+		RuntimeException err = new RuntimeException("test error");
+		doThrow(err).when(promotionGroupsTeamService).scheduleNoStoreAutoDoneGroup();
+		assertThrows(RuntimeException.class, () -> handler.execute());
+		ArgumentCaptor<CronAlertEvent> cap = ArgumentCaptor.forClass(CronAlertEvent.class);
+		verify(eventPublisher, times(1)).publishEvent(cap.capture());
+		assertThat(cap.getValue().getHandlerShortName()).isEqualTo("done-nostore-group");
+		assertThat(listAppender.list)
+				.anyMatch(
+						e -> e.getLevel() == Level.ERROR
+								&& e.getFormattedMessage() != null
+								&& e.getFormattedMessage().contains("done-nostore-group")
+								&& e.getFormattedMessage().contains("cost=")
+								&& e.getFormattedMessage().contains("ms"));
+	}
+}

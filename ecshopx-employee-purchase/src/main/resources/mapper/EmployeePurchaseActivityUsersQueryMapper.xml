@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.employeepurchase.mapper.EmployeePurchaseActivityUsersQueryMapper">
+
+	<sql id="activityUsersFromWhere">
+		FROM employee_purchase_relatives re
+		LEFT JOIN employee_purchase_employees ep ON re.employee_id = ep.id
+		LEFT JOIN employee_purchase_enterprises et ON re.enterprise_id = et.id
+		LEFT JOIN employee_purchase_member_activity_aggregate ag
+			ON re.enterprise_id = ag.enterprise_id
+			AND re.user_id = ag.user_id
+			AND re.activity_id = ag.activity_id
+			AND re.disabled = 0
+		WHERE re.company_id = #{companyId}
+			AND re.activity_id = #{activityId}
+		<if test="employeeMobile != null and employeeMobile != ''">
+			AND ep.mobile = #{employeeMobile}
+		</if>
+		<if test="relativeMobile != null and relativeMobile != ''">
+			AND re.member_mobile = #{relativeMobile}
+		</if>
+	</sql>
+
+	<select id="countActivityUsers" resultType="long">
+		SELECT COUNT(re.id)
+		<include refid="activityUsersFromWhere"/>
+	</select>
+
+	<select id="selectActivityUsers" resultType="java.util.LinkedHashMap">
+		SELECT
+			et.name AS enterprise_name,
+			et.enterprise_sn AS enterprise_sn,
+			ep.user_id AS employee_user_id,
+			ep.mobile AS employee_mobile,
+			ep.account AS employee_account,
+			re.user_id AS relative_user_id,
+			re.member_mobile AS relative_mobile,
+			re.created AS created,
+			re.disabled AS disabled,
+			ag.aggregate_fee AS aggregate_fee
+		<include refid="activityUsersFromWhere"/>
+		ORDER BY re.created DESC
+		<if test="pageSize > 0">
+			LIMIT #{pageSize} OFFSET #{offset}
+		</if>
+	</select>
+</mapper>

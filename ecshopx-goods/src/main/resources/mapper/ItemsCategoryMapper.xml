@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.goods.mapper.ItemsCategoryMapper">
+
+	<select id="selectSingleLevelList" resultType="java.util.LinkedHashMap">
+		SELECT p.*,
+		(CASE WHEN EXISTS (SELECT 1 FROM items_category c WHERE c.parent_id = p.category_id LIMIT 1) THEN 1 ELSE 0 END) AS has_children
+		FROM items_category p
+		<where>
+			AND p.company_id = #{companyId}
+			AND p.is_main_category = #{isMainCategory}
+			AND p.distributor_id = #{distributorId}
+			<if test="parentIdPresent">
+				AND p.parent_id = #{parentIdRaw}
+			</if>
+			<if test="categoryLevelPresent">
+				AND p.category_level = #{categoryLevelRaw}
+			</if>
+			<if test="isShowFrontPresent">
+				AND p.is_show_front = #{isShowFront}
+			</if>
+		</where>
+		ORDER BY p.sort DESC, p.created ASC
+		<if test="limitApplied">
+			LIMIT #{offset}, #{limit}
+		</if>
+	</select>
+
+</mapper>

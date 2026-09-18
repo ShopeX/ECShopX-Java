@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.hfpay.mapper.HfpayStatisticsOrderListMapper">
+
+	<sql id="joinTradeOnOrder">
+		a.company_id = CAST(t.company_id AS UNSIGNED)
+		AND CONVERT(CAST(a.order_id AS CHAR) USING utf8mb4) COLLATE utf8mb4_unicode_ci
+			= CONVERT(t.order_id USING utf8mb4) COLLATE utf8mb4_unicode_ci
+	</sql>
+
+	<sql id="baseWhere">
+		a.company_id = #{p.companyId}
+		AND a.pay_type = 'hfpay'
+		AND a.is_profitsharing = 2
+		AND (
+			<include refid="joinTradeOnOrder"/>
+		)
+		AND t.trade_state = 'SUCCESS'
+		AND a.order_status NOT IN ('NOTPAY', 'PART_PAYMENT', 'WAIT_GROUPS_SUCCESS')
+		AND a.pay_status &lt;&gt; 'NOTPAY'
+		AND a.create_time &gt;= #{p.startUnix}
+		AND a.create_time &lt;= #{p.endUnix}
+		<if test="p.distributorId != null">
+			AND a.distributor_id = #{p.distributorId}
+		</if>
+		<if test="p.narrowOrderId != null and p.narrowOrderId != ''">
+			AND a.order_id = #{p.narrowOrderId}
+		</if>
+		<if test="p.appPayType != null and p.appPayType != ''">
+			AND a.app_pay_type = #{p.appPayType}
+		</if>
+		<if test="p.profitsharingStatus != null">
+			AND a.profitsharing_status = #{p.profitsharingStatus}
+		</if>
+	</sql>
+
+	<!-- Same predicates as baseWhere with alias o (for refund-partition scan joined on orders). -->
+	<sql id="joinTradeOnOrderO">
+		o.company_id = CAST(t.company_id AS UNSIGNED)
+		AND CONVERT(CAST(o.order_id AS CHAR) USING utf8mb4) COLLATE utf8mb4_unicode_ci
+			= CONVERT(t.order_id USING utf8mb4) COLLATE utf8mb4_unicode_ci
+	</sql>
+
+	<sql id="refundPartitionOrderWhere">
+		o.company_id = #{p.companyId}
+		AND o.pay_type = 'hfpay'
+		AND o.is_profitsharing = 2
+		AND (
+			<include refid="joinTradeOnOrderO"/>
+		)
+		AND t.trade_state = 'SUCCESS'
+		AND o.order_status NOT IN ('NOTPAY', 'PART_PAYMENT', 'WAIT_GROUPS_SUCCESS')
+		AND o.pay_status &lt;&gt; 'NOTPAY'
+		AND o.create_time &gt;= #{p.startUnix}
+		AND o.create_time &lt;= #{p.endUnix}
+		<if test="p.distributorId != null">
+			AND o.distributor_id = #{p.distributorId}
+		</if>
+		<if test="p.narrowOrderId != null and p.narrowOrderId != ''">
+			AND o.order_id = #{p.narrowOrderId}
+		</if>
+		<if test="p.appPayType != null and p.appPayType != ''">
+			AND o.app_pay_type = #{p.appPayType}
+		</if>
+		<if test="p.profitsharingStatus != null">
+			AND o.profitsharing_status = #{p.profitsharingStatus}
+		</if>
+	</sql>
+
+	<sql id="refundingRefundJoinPredicate">
+		AND c.refund_status IN ('AUDIT_SUCCESS', 'READY', 'PROCESSING')
+		AND (
+			(a.order_status = 'CANCEL_WAIT_PROCESS' AND a.cancel_status = 'WAIT_PROCESS')
+			OR (a.order_status = 'CANCEL_WAIT_PROCESS' AND a.cancel_status = 'NO_APPLY_CANCEL')
+			OR (a.order_status = 'PAYED' AND a.cancel_status = 'WAIT_PROCESS')
+			OR (a.order_status = 'DONE')
+		)
+	</sql>
+
+	<sql id="refundSuccessPredicate">
+		AND c.refund_status = 'SUCCESS'
+		AND a.order_status = 'CANCEL'
+		AND a.cancel_status = 'SUCCESS'
+	</sql>
+
+	<sql id="refundFailPredicate">
+		AND a.order_status = 'DONE'
+		AND a.cancel_status = 'FAILS'
+		<if test="p.partitionIds != null and p.partitionIds.size() &gt; 0">
+			AND a.order_id IN
+			<foreach collection="p.partitionIds" item="oid" open="(" separator="," close=")">
+				#{oid}
+			</foreach>
+		</if>
+	</sql>
+
+	<sql id="payStatusPredicate">
+		AND (
+			(a.order_status = 'PAYED' AND a.cancel_status IN ('NO_APPLY_CANCEL', 'FAILS'))
+			OR (a.order_status = 'PAYED' AND a.receipt_type = 'ziti' AND a.ziti_status = 'PENDING')
+			OR (a.order_status = 'WAIT_BUYER_CONFIRM' AND a.delivery_status = 'DONE' AND a.receipt_type = 'logistics')
+			OR (a.order_status IN ('DONE', 'REVIEW_PASS'))
+		)
+		<choose>
+			<when test="p.partitionIds != null and p.partitionIds.size() &gt; 0">
+				AND (a.order_id IN
+				<foreach collection="p.partitionIds" item="oid" open="(" separator="," close=")">
+					#{oid}
+				</foreach>
+				OR c.order_id IS NULL)
+			</when>
+			<otherwise>
+				AND c.order_id IS NULL
+			</otherwise>
+		</choose>
+	</sql>
+
+	<sql id="statusKindFragment">
+		<choose>
+			<when test="p.statusKind == 'REFUNDING'">
+				<include refid="refundingRefundJoinPredicate"/>
+			</when>
+			<when test="p.statusKind == 'REFUND_SUCCESS'">
+				<include refid="refundSuccessPredicate"/>
+			</when>
+			<when test="p.statusKind == 'REFUND_FAIL'">
+				<include refid="refundFailPredicate"/>
+			</when>
+			<when test="p.statusKind == 'PAY'">
+				<include refid="payStatusPredicate"/>
+			</when>
+		</choose>
+	</sql>
+
+	<select id="countOrders" resultType="long">
+		SELECT COUNT(DISTINCT a.order_id)
+		FROM orders_normal_orders a
+		INNER JOIN trade t ON
+			<include refid="joinTradeOnOrder"/>
+		LEFT JOIN distribution_distributor b ON a.distributor_id = b.distributor_id
+		<if test="p.joinRefundC">
+			LEFT JOIN aftersales_refund c ON a.company_id = c.company_id AND a.order_id = c.order_id
+		</if>
+		<where>
+			<include refid="baseWhere"/>
+			<if test="p.joinRefundC">
+				<include refid="statusKindFragment"/>
+			</if>
+		</where>
+	</select>
+
+	<select id="pageOrders" resultType="map">
+		SELECT
+			FROM_UNIXTIME(MAX(a.create_time)) AS create_time,
+			a.order_id,
+			MAX(t.trade_id) AS trade_id,
+			MAX(a.distributor_id) AS distributor_id,
+			MAX(a.profitsharing_status) AS profitsharing_status,
+			MAX(a.total_fee) AS total_fee,
+			IF(IFNULL((MAX(a.total_fee) * (MAX(a.profitsharing_rate) / 10000)), 0) &gt;= 1,
+				MAX(a.total_fee) * (MAX(a.profitsharing_rate) / 10000), 0) AS charge,
+			IFNULL(CONVERT(MAX(a.profitsharing_rate) / 100, DECIMAL(15, 2)), 0) AS profitsharing_rate,
+			MAX(b.name) AS distributor_name,
+			MAX(a.order_status) AS order_status,
+			MAX(a.delivery_status) AS delivery_status,
+			MAX(a.receipt_type) AS receipt_type,
+			MAX(a.ziti_status) AS ziti_status,
+			MAX(a.cancel_status) AS cancel_status,
+			MAX(a.app_pay_type) AS app_pay_type
+		FROM orders_normal_orders a
+		INNER JOIN trade t ON
+			<include refid="joinTradeOnOrder"/>
+		LEFT JOIN distribution_distributor b ON a.distributor_id = b.distributor_id
+		<if test="p.joinRefundC">
+			LEFT JOIN aftersales_refund c ON a.company_id = c.company_id AND a.order_id = c.order_id
+		</if>
+		<where>
+			<include refid="baseWhere"/>
+			<if test="p.joinRefundC">
+				<include refid="statusKindFragment"/>
+			</if>
+		</where>
+		GROUP BY a.company_id, a.order_id
+		ORDER BY MAX(a.create_time) DESC
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+
+	<select id="selectRefundStatusesForPartitionScan" resultType="map">
+		SELECT ar.order_id AS order_id, ar.refund_status AS refund_status
+		FROM aftersales_refund ar
+		INNER JOIN orders_normal_orders o
+			ON ar.company_id = o.company_id
+			AND CONVERT(CAST(ar.order_id AS CHAR) USING utf8mb4) COLLATE utf8mb4_unicode_ci
+				= CONVERT(CAST(o.order_id AS CHAR) USING utf8mb4) COLLATE utf8mb4_unicode_ci
+		INNER JOIN trade t ON
+			<include refid="joinTradeOnOrderO"/>
+		<where>
+			<include refid="refundPartitionOrderWhere"/>
+		</where>
+	</select>
+</mapper>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.salesperson.mapper.SalespersonTaskMapper">
+
+	<select id="countOverlappingAllDistributorTasks" resultType="int">
+		SELECT COUNT(1)
+		FROM salesperson_task
+		WHERE company_id = #{companyId}
+			AND COALESCE(use_all_distributor, 0) = 1
+			AND task_type = #{taskType}
+			AND (
+				( start_time &lt;= #{startTime} AND end_time &gt;= #{startTime} )
+				OR
+				( start_time &lt;= #{endTime} AND end_time &gt;= #{endTime} )
+			)
+		<if test="excludeTaskId != null">
+			AND task_id != #{excludeTaskId}
+		</if>
+	</select>
+
+	<!-- 部分渠道任务时间重叠计数：仅 use_all_distributor=0；distributorIds 非空时按关联表 IN 限定渠道，为空则不限定渠道；可选排除指定 task_id -->
+	<select id="countOverlappingPartialTasks" resultType="int">
+		SELECT COUNT(1)
+		FROM salesperson_task st
+		LEFT JOIN salesperson_task_rel_distributor strd ON st.task_id = strd.task_id
+		WHERE st.company_id = #{companyId}
+			AND COALESCE(st.use_all_distributor, 0) = 0
+			AND st.task_type = #{taskType}
+			AND (
+				( st.start_time &lt;= #{startTime} AND st.end_time &gt;= #{startTime} )
+				OR
+				( st.start_time &lt;= #{endTime} AND st.end_time &gt;= #{endTime} )
+			)
+		<if test="distributorIds != null and distributorIds.size() &gt; 0">
+			AND strd.distributor_id IN
+			<foreach collection="distributorIds" item="id" open="(" separator="," close=")">
+				#{id}
+			</foreach>
+		</if>
+		<if test="excludeTaskId != null">
+			AND st.task_id != #{excludeTaskId}
+		</if>
+	</select>
+</mapper>

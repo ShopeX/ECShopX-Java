@@ -1,0 +1,83 @@
+package cn.shopex.ecshopx.goods.service.wxapp;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import cn.shopex.ecshopx.distribution.service.DistributorListQueryService;
+import cn.shopex.ecshopx.goods.repository.ItemsListQueryRepository;
+import cn.shopex.ecshopx.goods.repository.ItemsRelTagsRepository;
+import cn.shopex.ecshopx.goods.service.ItemsCategoryDistributorIdResolver;
+import cn.shopex.ecshopx.goods.service.items.GoodsItemsListFacadeService;
+import cn.shopex.ecshopx.merchant.service.MerchantDisabledDistributorIdsQueryService;
+import cn.shopex.ecshopx.salesperson.service.WxappItemsListSalesmanDistributorResolveService;
+import cn.shopex.ecshopx.salesperson.service.WxappItemsListSalesmanGateResult;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+@ExtendWith(MockitoExtension.class)
+class WxappGoodsItemsListQueryOrchestratorKeywordTest {
+
+	@Mock
+	private MerchantDisabledDistributorIdsQueryService merchantDisabledDistributorIdsQueryService;
+	@Mock
+	private WxappItemsListSalesmanDistributorResolveService wxappItemsListSalesmanDistributorResolveService;
+	@Mock
+	private GoodsItemsListFacadeService goodsItemsListFacadeService;
+	@Mock
+	private ItemsRelTagsRepository itemsRelTagsRepository;
+	@Mock
+	private ItemsCategoryDistributorIdResolver itemsCategoryDistributorIdResolver;
+	@Mock
+	private DistributorListQueryService distributorListQueryService;
+
+	private WxappGoodsItemsListQueryOrchestrator sut;
+
+	@BeforeEach
+	void setUp() {
+		sut = new WxappGoodsItemsListQueryOrchestrator(merchantDisabledDistributorIdsQueryService,
+				wxappItemsListSalesmanDistributorResolveService, goodsItemsListFacadeService, itemsRelTagsRepository,
+				itemsCategoryDistributorIdResolver, distributorListQueryService);
+		when(merchantDisabledDistributorIdsQueryService.listDistributorIdsLinkedToDisabledMerchants(anyLong()))
+				.thenReturn(List.of());
+		when(wxappItemsListSalesmanDistributorResolveService.resolve(anyLong(), anyLong(), any()))
+				.thenReturn(WxappItemsListSalesmanGateResult.proceed(Map.of()));
+		when(goodsItemsListFacadeService.wxappQueryDefaultItemList(anyLong(), anyMap(), anyInt(), anyInt(), anyString(),
+				anyString())).thenReturn(Map.of("list", List.of(), "total_count", 0L));
+	}
+
+	@Test
+	void queryItemListData_emptyKeywordHits_forcesNoMatchItemIdFilter() {
+		LinkedHashMap<String, Object> params = new LinkedHashMap<>();
+		params.put("user_id", 1L);
+		params.put("keywords", "测试");
+		params.put("__keyword_default_item_ids", List.of());
+		params.put("approve_status", List.of("onsale", "only_show"));
+		params.put("audit_status", "approved");
+		params.put("is_default", Boolean.TRUE);
+		params.put(WxappGoodsItemsListQueryOrchestrator.KEY_INTERNAL_LIST_PAGE, 1);
+		params.put(WxappGoodsItemsListQueryOrchestrator.KEY_INTERNAL_LIST_PAGE_SIZE, 10);
+		params.put(WxappGoodsItemsListQueryOrchestrator.KEY_INTERNAL_ACCEPT_LANGUAGE, "zh-CN");
+
+		sut.queryItemListData(38L, params, List.of());
+
+		@SuppressWarnings("unchecked")
+		ArgumentCaptor<Map<String, Object>> repoCaptor = ArgumentCaptor.forClass(Map.class);
+		verify(goodsItemsListFacadeService).wxappQueryDefaultItemList(eq(38L), repoCaptor.capture(), eq(1), eq(10),
+				anyString(), eq("zh-CN"));
+		assertEquals(List.of(-1L), repoCaptor.getValue().get(ItemsListQueryRepository.KEY_ITEM_ID_OR_DEFAULT_IDS));
+	}
+}

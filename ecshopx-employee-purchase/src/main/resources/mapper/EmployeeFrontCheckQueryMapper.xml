@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.employeepurchase.mapper.EmployeeFrontCheckQueryMapper">
+
+	<select id="selectEnterpriseIdsByActivity" resultType="long">
+		SELECT enterprise_id
+		FROM employee_purchase_activity_enterprises
+		WHERE company_id = #{companyId}
+		  AND activity_id = #{activityId}
+	</select>
+
+	<select id="selectFirstEnterpriseByEmailSuffix"
+			resultType="cn.shopex.ecshopx.employeepurchase.mapper.dto.EmployeeFrontEmailEnterpriseRow">
+		SELECT
+			e.id AS enterpriseId,
+			e.name,
+			e.enterprise_sn AS enterpriseSn,
+			e.auth_type AS authType,
+			e.distributor_id AS distributorId,
+			e.operator_id AS operatorId
+		FROM employee_purchase_enterprises e
+		INNER JOIN employee_purchase_enterprise_email_box eb ON e.id = eb.enterprise_id
+		WHERE e.company_id = #{companyId}
+		  AND eb.suffix = #{suffix}
+		<if test="enterpriseIds != null and enterpriseIds.size() > 0">
+			AND e.id IN
+			<foreach collection="enterpriseIds" item="eid" open="(" separator="," close=")">
+				#{eid}
+			</foreach>
+		</if>
+		ORDER BY e.id ASC
+		LIMIT 1
+	</select>
+
+	<select id="selectFirstEnterpriseForEmailVcode"
+			resultType="cn.shopex.ecshopx.employeepurchase.mapper.dto.EmployeeEmailVcodeEnterpriseRow">
+		SELECT
+			e.id AS enterpriseId,
+			e.name,
+			e.enterprise_sn AS enterpriseSn,
+			e.auth_type AS authType,
+			e.distributor_id AS distributorId,
+			e.operator_id AS operatorId,
+			eb.relay_host AS relayHost,
+			eb.smtp_port AS smtpPort,
+			eb.user AS emailUser,
+			eb.password AS emailPassword
+		FROM employee_purchase_enterprises e
+		INNER JOIN employee_purchase_enterprise_email_box eb ON e.id = eb.enterprise_id
+		WHERE e.company_id = #{companyId}
+		  AND eb.suffix = #{suffix}
+		<if test="distributorId != null and distributorId > 0">
+			AND e.distributor_id = #{distributorId}
+		</if>
+		<if test="enterpriseId != null and enterpriseId > 0">
+			AND e.id = #{enterpriseId}
+		</if>
+		ORDER BY e.id ASC
+		LIMIT 1
+	</select>
+
+	<sql id="employeeRelFromWhere">
+		FROM employee_purchase_employees ep
+		LEFT JOIN employee_purchase_enterprises et ON ep.enterprise_id = et.id
+		WHERE ep.company_id = #{companyId}
+		  AND et.auth_type = #{authType}
+		<if test="enterpriseIds != null and enterpriseIds.size() > 0">
+			AND ep.enterprise_id IN
+			<foreach collection="enterpriseIds" item="eid" open="(" separator="," close=")">
+				#{eid}
+			</foreach>
+		</if>
+		<if test="singleEnterpriseId != null">
+			AND ep.enterprise_id = #{singleEnterpriseId}
+		</if>
+		<if test="distributorId != null and distributorId > 0">
+			AND ep.distributor_id = #{distributorId}
+		</if>
+		<if test="mobileEncrypted != null and mobileEncrypted != ''">
+			AND ep.mobile = #{mobileEncrypted}
+		</if>
+		<if test="account != null and account != ''">
+			AND ep.account = #{account}
+		</if>
+		<if test="authCode != null and authCode != ''">
+			AND ep.auth_code = #{authCode}
+		</if>
+		<if test="requireUnboundUser">
+			AND (ep.user_id IS NULL OR ep.user_id = 0)
+		</if>
+	</sql>
+
+	<select id="countEmployeesWithRel" resultType="long">
+		SELECT COUNT(*)
+		<include refid="employeeRelFromWhere"/>
+	</select>
+
+	<select id="selectEmployeesWithRel"
+			resultType="cn.shopex.ecshopx.employeepurchase.mapper.dto.EmployeeFrontCheckListRow">
+		SELECT
+			ep.id,
+			ep.company_id AS companyId,
+			ep.distributor_id AS distributorId,
+			ep.operator_id AS operatorId,
+			ep.name,
+			ep.mobile,
+			ep.account,
+			ep.email,
+			ep.auth_code AS authCode,
+			ep.enterprise_id AS enterpriseId,
+			ep.user_id AS userId,
+			ep.member_mobile AS memberMobile,
+			ep.created,
+			ep.updated,
+			ep.disabled,
+			et.enterprise_sn AS enterpriseSn,
+			et.name AS enterpriseName,
+			et.auth_type AS authType
+		<include refid="employeeRelFromWhere"/>
+		ORDER BY ep.created DESC
+	</select>
+</mapper>

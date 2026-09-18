@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.orders.mapper.NormalOrderAutoCloseAftersalesMapper">
+
+	<sql id="FromJoin">
+		FROM orders_normal_orders_items oi
+		INNER JOIN orders_normal_orders o
+			ON o.order_id = oi.order_id
+			AND o.company_id = oi.company_id
+		WHERE o.order_status = 'DONE'
+		  AND o.order_class = 'normal'
+		  AND oi.auto_close_aftersales_time IS NOT NULL
+		  AND oi.auto_close_aftersales_time <![CDATA[ <= ]]> #{now}
+		  AND oi.aftersales_status IS NULL
+	</sql>
+
+	<select id="countPending" resultType="long">
+		SELECT COUNT(1)
+		<include refid="FromJoin"/>
+	</select>
+
+	<select id="listPending" resultType="cn.shopex.ecshopx.common.port.order.PendingAutoCloseOrderItemRow">
+		SELECT oi.id AS id, oi.company_id AS companyId, oi.order_id AS orderId, o.pay_type AS payType
+		<include refid="FromJoin"/>
+		ORDER BY oi.auto_close_aftersales_time ASC
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+
+	<update id="updateItemAftersalesClosed">
+		UPDATE orders_normal_orders_items
+		SET aftersales_status = 'CLOSED'
+		WHERE id = #{id}
+		  AND aftersales_status IS NULL
+	</update>
+</mapper>

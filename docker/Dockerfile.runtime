@@ -1,0 +1,35 @@
+# syntax=docker/dockerfile:1
+# ECShopX Java app runtime base: Temurin 17 JRE + Node 20 + OpenResty + gettext.
+#
+# Default image:
+#   registry.cn-hangzhou.aliyuncs.com/shopex_company/ecshopx-java:17-node20-openresty
+#
+# Build / push / save:
+#   ./docker/build-runtime-base.sh
+#   ./docker/build-runtime-base.sh --push
+#   ./docker/build-runtime-base.sh --save docker/images/ecshopx-java-17-node20-openresty.tar
+
+FROM eclipse-temurin:17-jre-jammy
+
+LABEL org.opencontainers.image.title="ecshopx-java-runtime" \
+      org.opencontainers.image.description="Temurin 17 JRE + Node 20 + OpenResty for ecshopx-app"
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    TZ=Asia/Shanghai
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      curl ca-certificates gnupg tzdata gettext-base \
+    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y --no-install-recommends nodejs \
+    && curl -fsSL https://openresty.org/package/pubkey.gpg | gpg --dearmor -o /usr/share/keyrings/openresty.gpg \
+    && echo "deb [signed-by=/usr/share/keyrings/openresty.gpg] http://openresty.org/package/ubuntu jammy main" \
+         > /etc/apt/sources.list.d/openresty.list \
+    && apt-get update && apt-get install -y --no-install-recommends openresty \
+    && ln -snf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
+    && echo Asia/Shanghai > /etc/timezone \
+    && apt-get clean && rm -rf /var/lib/apt/lists/* \
+    && java -version \
+    && node -v \
+    && openresty -v
+
+WORKDIR /app

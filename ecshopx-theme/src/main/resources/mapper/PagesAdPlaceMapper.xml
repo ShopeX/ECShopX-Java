@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.theme.mapper.PagesAdPlaceMapper">
+
+	<resultMap id="pagesAdPlaceWxappNestedPlace" type="cn.shopex.ecshopx.theme.domain.PagesAdPlace">
+		<id column="id" property="id"/>
+		<result column="company_id" property="companyId"/>
+		<result column="regionauth_id" property="regionauthId"/>
+		<result column="use_bound" property="useBound"/>
+		<result column="ad_type" property="adType"/>
+		<result column="name" property="name"/>
+		<result column="pages" property="pages"/>
+		<result column="start_time" property="startTime"/>
+		<result column="end_time" property="endTime"/>
+		<result column="setting" property="setting"/>
+		<result column="auto_play" property="autoPlay"/>
+		<result column="play_interval" property="playInterval"/>
+		<result column="auto_close" property="autoClose"/>
+		<result column="close_delay" property="closeDelay"/>
+		<result column="source_id" property="sourceId"/>
+		<result column="created" property="created"/>
+		<result column="updated" property="updated"/>
+		<result column="audit_status" property="auditStatus"/>
+		<result column="audit_remark" property="auditRemark"/>
+		<result column="sort" property="sort"/>
+		<result column="tracking_code" property="trackingCode"/>
+	</resultMap>
+
+	<resultMap id="pagesAdPlaceWxappListRowMap" type="cn.shopex.ecshopx.theme.service.dto.PagesAdPlaceWxappListRow">
+		<result column="rad_ad_place_id" property="adPlaceIdFromJoin"/>
+		<result column="rad_distributor_id" property="distributorIdFromJoin"/>
+		<association property="place" resultMap="pagesAdPlaceWxappNestedPlace"/>
+	</resultMap>
+
+	<sql id="listFromJoin">
+		FROM pages_ad_place p
+		<if test="c.distributorIdForJoin != null and c.distributorIdForJoin &gt; 0">
+			LEFT JOIN pages_ad_place_rel_distributors rad ON rad.ad_place_id = p.id
+		</if>
+	</sql>
+
+	<sql id="listWhere">
+		<where>
+			p.company_id = #{c.companyId}
+			<if test="c.distributorIdForJoin != null and c.distributorIdForJoin &gt; 0">
+				AND rad.distributor_id = #{c.distributorIdForJoin}
+			</if>
+			<if test="c.sourceId != null">
+				AND p.source_id = #{c.sourceId}
+			</if>
+			<if test="c.useBound != null">
+				AND p.use_bound = #{c.useBound}
+			</if>
+			<if test="c.regionauthId != null">
+				AND p.regionauth_id = #{c.regionauthId}
+			</if>
+			<if test="c.id != null">
+				AND p.id = #{c.id}
+			</if>
+			<if test="c.nameContains != null">
+				AND p.name LIKE CONCAT('%', #{c.nameContains}, '%')
+			</if>
+			<if test="c.adType != null">
+				AND p.ad_type = #{c.adType}
+			</if>
+			<if test="c.pagesExact != null">
+				AND p.pages = #{c.pagesExact}
+			</if>
+			<if test="c.auditStatus != null">
+				AND p.audit_status = #{c.auditStatus}
+			</if>
+			<if test="c.endTimeGt != null">
+				AND p.end_time &gt; #{c.endTimeGt}
+			</if>
+			<if test="c.startTimeGt != null">
+				AND p.start_time &gt; #{c.startTimeGt}
+			</if>
+			<if test="c.startTimeLte != null">
+				AND p.start_time &lt;= #{c.startTimeLte}
+			</if>
+			<if test="c.endTimeGte != null">
+				AND p.end_time &gt;= #{c.endTimeGte}
+			</if>
+			<if test="c.endTimeLt != null">
+				AND p.end_time &lt; #{c.endTimeLt}
+			</if>
+		</where>
+	</sql>
+
+	<select id="countByListCriteria" resultType="long">
+		SELECT COUNT(*)
+		<include refid="listFromJoin"/>
+		<include refid="listWhere"/>
+	</select>
+
+	<select id="selectPageByListCriteria" resultType="cn.shopex.ecshopx.theme.domain.PagesAdPlace">
+		SELECT p.*
+		<include refid="listFromJoin"/>
+		<include refid="listWhere"/>
+		ORDER BY p.sort DESC, p.id DESC
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+
+	<select id="selectAllByListCriteria" resultType="cn.shopex.ecshopx.theme.domain.PagesAdPlace">
+		SELECT p.*
+		<include refid="listFromJoin"/>
+		<include refid="listWhere"/>
+		ORDER BY p.sort DESC, p.id DESC
+	</select>
+
+	<select id="selectWxappAdListRowsByCriteria" resultMap="pagesAdPlaceWxappListRowMap">
+		SELECT
+			p.*,
+			<choose>
+				<when test="c.distributorIdForJoin != null and c.distributorIdForJoin &gt; 0">
+					rad.ad_place_id AS rad_ad_place_id,
+					rad.distributor_id AS rad_distributor_id
+				</when>
+				<otherwise>
+					NULL AS rad_ad_place_id,
+					NULL AS rad_distributor_id
+				</otherwise>
+			</choose>
+		<include refid="listFromJoin"/>
+		<include refid="listWhere"/>
+		ORDER BY p.sort DESC, p.id DESC
+	</select>
+
+	<select id="selectOneForAdminGetInfo" resultType="cn.shopex.ecshopx.theme.domain.PagesAdPlace">
+		SELECT p.* FROM pages_ad_place p
+		WHERE p.company_id = #{companyId}
+		AND p.id = #{id}
+		<choose>
+			<when test="sourceId == null">
+				AND p.source_id IS NULL
+			</when>
+			<otherwise>
+				AND p.source_id = #{sourceId}
+			</otherwise>
+		</choose>
+		LIMIT 1
+	</select>
+</mapper>

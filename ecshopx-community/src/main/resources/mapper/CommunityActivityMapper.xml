@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.community.mapper.CommunityActivityMapper">
+
+	<sql id="chiefActivityOrderNumAgg">
+		SELECT activity.activity_id,
+		       COUNT(DISTINCT rel.order_id) AS all_order_num
+		FROM community_activity AS activity
+				 LEFT JOIN community_order_rel_activity AS rel ON activity.activity_id = rel.activity_id
+		WHERE activity.chief_id = #{chiefId}
+		<if test="activityStatus != null and activityStatus != ''">
+			AND activity.activity_status = #{activityStatus}
+		</if>
+		GROUP BY activity.activity_id
+	</sql>
+
+	<select id="countChiefActivitiesByOrderNum" resultType="long">
+		SELECT COUNT(1)
+		FROM (
+		<include refid="chiefActivityOrderNumAgg"/>
+		) AS t
+	</select>
+
+	<select id="selectChiefActivityIdsPageByOrderNum" resultType="long">
+		SELECT agg.activity_id
+		FROM (
+		<include refid="chiefActivityOrderNumAgg"/>
+		) AS agg
+		ORDER BY agg.all_order_num DESC, agg.activity_id DESC
+		LIMIT #{offset}, #{limit}
+	</select>
+
+	<sql id="memberActivityListWhere">
+		activity.company_id = #{q.companyId}
+		<if test="q.chiefId != null">
+			AND activity.chief_id = #{q.chiefId}
+		</if>
+		<choose>
+			<when test='q.tabStatus == "all"'>
+				AND activity.activity_status IN ('public', 'success', 'fail')
+			</when>
+			<when test='q.tabStatus == "waiting"'>
+				AND activity.activity_status = 'public'
+				AND activity.start_time &gt; #{q.now}
+			</when>
+			<when test='q.tabStatus == "end"'>
+				AND activity.activity_status IN ('public', 'success', 'fail')
+				AND activity.end_time &lt; #{q.now}
+			</when>
+			<when test='q.tabStatus == "running"'>
+				AND activity.activity_status = 'public'
+				AND activity.start_time &lt;= #{q.now}
+				AND activity.end_time &gt;= #{q.now}
+			</when>
+			<otherwise>
+				AND activity.activity_status IN ('public', 'success', 'fail')
+			</otherwise>
+		</choose>
+		<if test="q.activityNameLikeOrNull != null and q.activityNameLikeOrNull != ''">
+			AND activity.activity_name LIKE #{q.activityNameLikeOrNull}
+		</if>
+	</sql>
+
+	<sql id="memberActivityOrderNumAgg">
+		SELECT activity.activity_id,
+		       COUNT(DISTINCT rel.order_id) AS all_order_num
+		FROM community_activity AS activity
+				 LEFT JOIN community_order_rel_activity AS rel ON activity.activity_id = rel.activity_id
+		WHERE
+		<include refid="memberActivityListWhere"/>
+		GROUP BY activity.activity_id
+	</sql>
+
+	<select id="countMemberActivitiesByOrderNum" resultType="long">
+		SELECT COUNT(1)
+		FROM (
+		<include refid="memberActivityOrderNumAgg"/>
+		) AS t
+	</select>
+
+	<select id="selectMemberActivityIdsPageByOrderNum" resultType="long">
+		SELECT agg.activity_id
+		FROM (
+		<include refid="memberActivityOrderNumAgg"/>
+		) AS agg
+		ORDER BY agg.all_order_num DESC, agg.activity_id DESC
+		LIMIT #{offset}, #{limit}
+	</select>
+</mapper>

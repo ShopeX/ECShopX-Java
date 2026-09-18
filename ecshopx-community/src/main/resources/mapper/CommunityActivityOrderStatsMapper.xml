@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.community.mapper.CommunityActivityOrderStatsMapper">
+
+	<select id="sumOrderStats" resultType="cn.shopex.ecshopx.community.dto.ActivityOrderAggRow">
+		SELECT rel.activity_id AS activityId,
+		       COALESCE(SUM(CAST(`orders`.total_fee AS DECIMAL(20,2))), 0) AS totalFee,
+		       COUNT(`orders`.order_id) AS orderNum,
+		       COUNT(DISTINCT `orders`.user_id) AS userNum
+		FROM community_order_rel_activity AS rel
+				 INNER JOIN orders_normal_orders AS `orders` ON rel.order_id = `orders`.order_id
+		WHERE rel.activity_id IN
+		<foreach collection="activityIds" item="id" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+		  AND `orders`.order_status IN ('PAYED', 'WAIT_BUYER_CONFIRM', 'DONE')
+		  AND `orders`.cancel_status IN ('NO_APPLY_CANCEL', 'FAILS')
+		GROUP BY rel.activity_id
+	</select>
+
+	<select id="countPayedWritable" resultType="cn.shopex.ecshopx.community.dto.ActivityWriteOffRow">
+		SELECT rel.activity_id AS activityId,
+		       COUNT(`orders`.order_id) AS orderNum
+		FROM community_order_rel_activity AS rel
+				 INNER JOIN orders_normal_orders AS `orders` ON rel.order_id = `orders`.order_id
+		WHERE rel.activity_id IN
+		<foreach collection="activityIds" item="id" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+		  AND `orders`.order_status = 'PAYED'
+		  AND `orders`.cancel_status IN ('NO_APPLY_CANCEL', 'FAILS')
+		GROUP BY rel.activity_id
+	</select>
+
+	<select id="staticsActivityItemNums" resultType="cn.shopex.ecshopx.community.dto.ActivityItemNumRow">
+		SELECT oi.item_id AS itemId,
+		       COALESCE(SUM(COALESCE(oi.num, 0)), 0) AS itemNum
+		FROM community_order_rel_activity AS rel
+				 INNER JOIN orders_normal_orders AS ord ON rel.order_id = ord.order_id
+				 LEFT JOIN orders_normal_orders_items AS oi ON ord.order_id = oi.order_id
+		WHERE rel.activity_id = #{activityId}
+		  AND ord.order_status IN ('PAYED', 'WAIT_BUYER_CONFIRM', 'DONE')
+		  AND ord.cancel_status IN ('NO_APPLY_CANCEL', 'FAILS')
+		GROUP BY oi.item_id
+		HAVING oi.item_id IS NOT NULL
+	</select>
+
+	<!-- 与 PHP schedule 聚合条件一致：仅已支付、按 goods 聚合并含起送量 -->
+	<select id="listScheduleFinishGoodsForActivity" resultType="cn.shopex.ecshopx.community.dto.ScheduleFinishGoodsRow">
+		SELECT oi.goods_id AS goodsId,
+		       COALESCE(SUM(COALESCE(oi.num, 0)), 0) AS buyNum,
+		       COALESCE(SUM(COALESCE(oi.total_fee, 0)), 0) AS totalFeeCents,
+		       COALESCE(MIN(COALESCE(ci.min_delivery_num, 0)), 0) AS minDeliveryNum
+		FROM orders_normal_orders_items oi
+				 INNER JOIN orders_normal_orders AS ord ON oi.order_id = ord.order_id
+				 INNER JOIN community_activity ca ON ca.activity_id = #{activityId}
+				 INNER JOIN items it ON oi.item_id = it.item_id
+				 LEFT JOIN community_items AS ci
+						   ON it.goods_id = ci.goods_id AND ci.company_id = ca.company_id
+		WHERE ord.order_type = 'normal'
+		  AND ord.order_class = 'community'
+		  AND ord.act_id = #{activityId}
+		  AND ord.order_status = 'PAYED'
+		  AND ord.cancel_status IN ('NO_APPLY_CANCEL', 'FAILS')
+		GROUP BY oi.goods_id
+	</select>
+
+	<select id="sumCommunityGoodsBuyForActivity" resultType="cn.shopex.ecshopx.community.dto.ActivityGoodsBuyRow">
+		SELECT oi.goods_id AS goodsId,
+		       COALESCE(SUM(COALESCE(oi.num, 0)), 0) AS buyNum,
+		       COALESCE(SUM(CAST(COALESCE(oi.item_fee, 0) AS DECIMAL(20, 2))), 0) / 100 AS totalFee
+		FROM orders_normal_orders_items AS oi
+				 INNER JOIN orders_normal_orders AS ord ON oi.order_id = ord.order_id
+				 INNER JOIN community_activity AS ca ON ca.activity_id = #{activityId}
+				 INNER JOIN items AS it ON it.item_id = oi.item_id
+				 INNER JOIN community_items AS ci
+							ON ci.goods_id = it.goods_id AND ci.company_id = ca.company_id
+		WHERE ord.order_class = 'community'
+		  AND ord.act_id = #{activityId}
+		  AND ord.order_status IN ('PAYED', 'WAIT_BUYER_CONFIRM', 'DONE')
+		  AND ord.cancel_status IN ('NO_APPLY_CANCEL', 'FAILS')
+		GROUP BY oi.goods_id
+	</select>
+</mapper>

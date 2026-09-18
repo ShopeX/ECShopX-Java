@@ -1,0 +1,2 @@
+# 本文件仅在 spring.profiles.active 包含 test-cron 时生效（由 orchestrator 衔接步骤 3 启动参数激活）。
+# 如需覆盖某些 bean 的配置项（如数据源、第三方 endpoint），按需追加；默认留空即可。

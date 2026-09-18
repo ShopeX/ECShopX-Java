@@ -1,0 +1,61 @@
+/**
+ * Copyright 2019-2026 ShopeX
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package cn.shopex.ecshopx.distribution.openapi;
+
+import cn.shopex.ecshopx.common.openapi.OpenapiDistributorCreatePort;
+import cn.shopex.ecshopx.distribution.openapi.thirdapi.v2.OpenapiThirdApiV2DistributorCreateService;
+import java.util.Map;
+import org.springframework.stereotype.Component;
+
+@Component
+public class OpenapiDistributorCreatePortImpl implements OpenapiDistributorCreatePort {
+
+	private final OpenapiThirdApiV2DistributorCreateService createService;
+
+	public OpenapiDistributorCreatePortImpl(OpenapiThirdApiV2DistributorCreateService createService) {
+		this.createService = createService;
+	}
+
+	@Override
+	public Map<String, Object> create(
+			long companyId,
+			String shopCodeRaw,
+			String distributorNameRaw,
+			String contactUsernameRaw,
+			String contactMobileRaw,
+			String hourRaw,
+			String isZitiRaw,
+			String isDeliveryRaw,
+			String isAutoSyncGoodsRaw,
+			String isDadaRaw,
+			String isDefaultRaw,
+			String logoRaw) {
+		return createService.executeOpenapiCreate(
+				companyId,
+				shopCodeRaw,
+				distributorNameRaw,
+				contactUsernameRaw,
+				contactMobileRaw,
+				hourRaw,
+				isZitiRaw,
+				isDeliveryRaw,
+				isAutoSyncGoodsRaw,
+				isDadaRaw,
+				isDefaultRaw,
+				logoRaw);
+	}
+}

@@ -1,0 +1,5 @@
+# ecshopx-aliyunsms — module-local config (optional profile: spring.config.import)
+aliyunsms:
+  sign:
+    # 修改签名异步任务在无上传文件时使用的默认图（classpath 或绝对路径）
+    default-image-path: ""

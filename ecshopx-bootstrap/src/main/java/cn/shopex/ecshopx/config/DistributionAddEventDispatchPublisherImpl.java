@@ -1,0 +1,60 @@
+/**
+ * Copyright 2019-2026 ShopeX
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package cn.shopex.ecshopx.config;
+
+import cn.shopex.ecshopx.common.dispatch.DistributionAddEventDispatchPublisher;
+import cn.shopex.ecshopx.common.dispatch.DistributionDispatchEventNames;
+import cn.shopex.ecshopx.dispatch.DispatchFacade;
+import cn.shopex.ecshopx.dispatch.DispatchMode;
+import cn.shopex.ecshopx.dispatch.DispatchDriverType;
+import cn.shopex.ecshopx.dispatch.DispatchOptions;
+import cn.shopex.ecshopx.dispatch.RetryPolicy;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import org.springframework.stereotype.Component;
+
+@Component
+public class DistributionAddEventDispatchPublisherImpl implements DistributionAddEventDispatchPublisher {
+
+	private static final DispatchOptions DISTRIBUTION_ADD_FANOUT_PARENT_OPTIONS =
+			new DispatchOptions(
+					DispatchMode.ASYNC,
+					DispatchDriverType.REDIS,
+					null,
+					null,
+					RetryPolicy.platformDefault());
+
+	private final DispatchFacade dispatchFacade;
+
+	public DistributionAddEventDispatchPublisherImpl(DispatchFacade dispatchFacade) {
+		this.dispatchFacade = dispatchFacade;
+	}
+
+	@Override
+	public void publish(Map<String, Object> row) {
+		Map<String, Object> payload = new LinkedHashMap<>();
+		payload.put("entities", row != null ? new LinkedHashMap<>(row) : Map.of());
+		dispatchFacade.publishEvent(
+				DistributionDispatchEventNames.EVENT_DISTRIBUTION_ADD,
+				payload,
+				DISTRIBUTION_ADD_FANOUT_PARENT_OPTIONS);
+		dispatchFacade.publishEvent(
+				DistributionDispatchEventNames.EVENT_DISTRIBUTION_ADD_CSV289,
+				payload,
+				DISTRIBUTION_ADD_FANOUT_PARENT_OPTIONS);
+	}
+}

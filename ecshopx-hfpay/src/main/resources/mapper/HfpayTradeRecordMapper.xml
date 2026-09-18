@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.hfpay.mapper.HfpayTradeRecordMapper">
+
+	<!-- fin_type 库内可能为字符串 500 或整型 500，条件两侧均匹配 -->
+	<select id="sumOutcomeFenByWithdrawalFilter" resultType="java.lang.Long">
+		SELECT IFNULL(SUM(CAST(outcome AS SIGNED)), 0)
+		FROM hfpay_trade_record
+		WHERE company_id = #{companyId}
+		AND distributor_id = #{distributorId}
+		AND (fin_type = '500' OR fin_type = 500)
+		AND trade_type = 0
+		AND CAST(trade_time AS UNSIGNED) &lt;= #{endUnix}
+	</select>
+
+	<select id="selectLatestSuccessTradeForHfpayPaySuccess" resultType="cn.shopex.ecshopx.hfpay.dto.TradePayGateRow">
+		SELECT
+			pay_type AS payType,
+			company_id AS companyId,
+			distributor_id AS distributorId,
+			pay_fee AS payFee,
+			user_id AS userId
+		FROM trade
+		WHERE order_id = #{orderId}
+		AND trade_state = 'SUCCESS'
+		ORDER BY trade_id DESC
+		LIMIT 1
+	</select>
+
+	<select id="countPaySuccessFinRecordsByOuterOrderId" resultType="long">
+		SELECT COUNT(1)
+		FROM hfpay_trade_record
+		WHERE outer_order_id = #{orderId}
+		AND (fin_type = '100' OR fin_type = 100)
+	</select>
+
+	<select id="selectRefundLedgerContext" resultType="cn.shopex.ecshopx.hfpay.dto.HfpayRefundLedgerContextRow">
+		SELECT
+			o.pay_type AS orderPayType,
+			o.is_profitsharing AS isProfitsharing,
+			r.order_id AS refundOrderId,
+			r.pay_type AS refundPayType,
+			r.refund_fee AS refundFeeFen,
+			r.company_id AS companyId,
+			t.distributor_id AS tradeDistributorId,
+			t.user_id AS tradeUserId,
+			t.pay_fee AS tradePayFeeFen
+		FROM aftersales_refund r
+		INNER JOIN trade t
+			ON t.trade_id = r.trade_id
+			AND t.trade_state = 'SUCCESS'
+			AND t.order_id = CAST(r.order_id AS CHAR)
+		INNER JOIN orders_normal_orders o
+			ON o.order_id = r.order_id
+			AND o.company_id = r.company_id
+		WHERE r.refund_bn = #{refundBn}
+		AND CAST(r.order_id AS CHAR) = #{orderId}
+		LIMIT 1
+	</select>
+
+	<select id="countRefundSeriesLedgerByOuterOrderAndRefund" resultType="long">
+		SELECT COUNT(1)
+		FROM hfpay_trade_record
+		WHERE outer_order_id = #{outerOrderId}
+		AND trade_id = CAST(#{refundBn} AS CHAR)
+		AND (
+			fin_type IN ('600','610','620')
+			OR fin_type IN (600,610,620)
+		)
+	</select>
+
+	<select id="selectProfitOrderContext" resultType="cn.shopex.ecshopx.hfpay.dto.HfpayProfitOrderContextRow">
+		SELECT
+			pay_type AS payType,
+			is_distribution AS isDistribution,
+			company_id AS companyId,
+			CAST(distributor_id AS CHAR) AS distributorId,
+			is_profitsharing AS isProfitsharing
+		FROM orders_normal_orders
+		WHERE order_id = #{orderId}
+		LIMIT 1
+	</select>
+
+	<select id="selectProfitBrokerageRows" resultType="cn.shopex.ecshopx.hfpay.dto.HfpayProfitBrokerageRow">
+		SELECT
+			CAST(user_id AS CHAR) AS userId,
+			rebate AS rebate
+		FROM popularize_brokerage
+		WHERE company_id = #{companyId}
+		AND order_id = #{orderId}
+		ORDER BY created DESC
+	</select>
+</mapper>

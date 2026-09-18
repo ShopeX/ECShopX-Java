@@ -1,0 +1,42 @@
+# ecshopx-members — 信任登录默认模板（可被 spring.config.import 引入以覆盖代码内置值）
+ecshopx:
+  trustlogin:
+    default:
+      standard:
+        - type: weixin
+          app_id: ""
+          secret: ""
+          name: "微信"
+          status: "false"
+          extra_config: ""
+      touch:
+        - type: weixin
+          app_id: ""
+          secret: ""
+          name: "微信"
+          status: "false"
+          extra_config: ""
+        - type: apple
+          app_id: ""
+          secret: ""
+          name: "Apple"
+          status: "false"
+          extra_config: ""
+        - type: google
+          app_id: ""
+          secret: ""
+          name: "Google"
+          status: "false"
+          extra_config: ""
+        - type: facebook
+          app_id: ""
+          secret: ""
+          name: "Facebook"
+          status: "false"
+          extra_config: ""
+        - type: line
+          app_id: ""
+          secret: ""
+          name: "Line"
+          status: "false"
+          extra_config: ""

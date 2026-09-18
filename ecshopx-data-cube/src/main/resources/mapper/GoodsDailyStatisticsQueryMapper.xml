@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.datacube.mapper.GoodsDailyStatisticsQueryMapper">
+
+	<select id="countKernelJoinWindow" resultType="long">
+		SELECT COUNT(*)
+		FROM trade t
+		LEFT JOIN orders_normal_orders_items onoi ON onoi.order_id = t.order_id
+		WHERE onoi.create_time &gt;= #{createTimeStart}
+		AND onoi.create_time &lt;= #{createTimeEnd}
+		AND t.trade_state IN
+		<foreach collection="tradeStates" item="s" open="(" separator="," close=")">
+			#{s}
+		</foreach>
+	</select>
+
+	<select id="selectKernelJoinPage"
+			resultType="cn.shopex.ecshopx.datacube.service.goodsdata.GoodsDailyStatLineKey">
+		SELECT onoi.order_id AS orderId, onoi.id AS lineId
+		FROM trade t
+		LEFT JOIN orders_normal_orders_items onoi ON onoi.order_id = t.order_id
+		WHERE onoi.create_time &gt;= #{createTimeStart}
+		AND onoi.create_time &lt;= #{createTimeEnd}
+		AND t.trade_state IN
+		<foreach collection="tradeStates" item="s" open="(" separator="," close=")">
+			#{s}
+		</foreach>
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+
+	<select id="countEmployeePurchaseJoinWindow" resultType="long">
+		SELECT COUNT(*)
+		FROM trade t
+		LEFT JOIN orders_normal_orders_items onoi ON onoi.order_id = t.order_id
+		LEFT JOIN orders_normal_orders o ON o.order_id = t.order_id
+		WHERE onoi.create_time &gt;= #{createTimeStart}
+		AND onoi.create_time &lt;= #{createTimeEnd}
+		AND t.trade_state IN
+		<foreach collection="tradeStates" item="s" open="(" separator="," close=")">
+			#{s}
+		</foreach>
+		AND o.order_class = 'employee_purchase'
+		AND o.act_id = #{actId}
+	</select>
+
+	<select id="selectEmployeePurchaseJoinPage"
+			resultType="cn.shopex.ecshopx.datacube.service.goodsdata.GoodsDailyStatLineKey">
+		SELECT onoi.order_id AS orderId, onoi.id AS lineId
+		FROM trade t
+		LEFT JOIN orders_normal_orders_items onoi ON onoi.order_id = t.order_id
+		LEFT JOIN orders_normal_orders o ON o.order_id = t.order_id
+		WHERE onoi.create_time &gt;= #{createTimeStart}
+		AND onoi.create_time &lt;= #{createTimeEnd}
+		AND t.trade_state IN
+		<foreach collection="tradeStates" item="s" open="(" separator="," close=")">
+			#{s}
+		</foreach>
+		AND o.order_class = 'employee_purchase'
+		AND o.act_id = #{actId}
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+</mapper>

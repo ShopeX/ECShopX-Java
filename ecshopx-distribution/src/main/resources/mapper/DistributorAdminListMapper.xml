@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.distribution.mapper.DistributorAdminListMapper">
+
+	<sql id="adminFromJoin">
+		FROM distribution_distributor d
+		<choose>
+			<when test="f.includeMerchantJoin != null and f.includeMerchantJoin == false">
+			</when>
+			<otherwise>
+		LEFT JOIN merchant m ON m.id = d.merchant_id AND m.company_id = d.company_id
+			</otherwise>
+		</choose>
+	</sql>
+
+	<sql id="adminWhere">
+		WHERE d.company_id = #{f.companyId}
+		<if test="f.distributorSelfEq != null">
+			AND d.distributor_self = #{f.distributorSelfEq}
+		</if>
+		<if test="f.isDistributorEq != null">
+			AND d.is_distributor = #{f.isDistributorEq}
+		</if>
+		<if test="f.merchantIdEq != null">
+			AND d.merchant_id = #{f.merchantIdEq}
+		</if>
+		<if test="f.unbound != null and f.unbound == true">
+			AND d.wechat_work_department_id = 0
+		</if>
+		<if test="f.distributorIdIn != null and f.distributorIdIn.size() &gt; 0">
+			AND d.distributor_id IN
+			<foreach collection="f.distributorIdIn" item="id" open="(" separator="," close=")">#{id}</foreach>
+		</if>
+		<if test="f.nameContains != null and f.nameContains != ''">
+			AND d.name LIKE CONCAT('%', #{f.nameContains}, '%')
+		</if>
+		<if test="f.shopCodeContains != null and f.shopCodeContains != ''">
+			AND d.shop_code LIKE CONCAT('%', #{f.shopCodeContains}, '%')
+		</if>
+		<if test="f.openDivided != null">
+			AND d.open_divided = #{f.openDivided}
+		</if>
+		<if test="f.provinceEq != null and f.provinceEq != ''">
+			AND d.province = #{f.provinceEq}
+		</if>
+		<if test="f.cityEq != null and f.cityEq != ''">
+			AND d.city = #{f.cityEq}
+		</if>
+		<if test="f.areaEq != null and f.areaEq != ''">
+			AND d.area = #{f.areaEq}
+		</if>
+		<if test="f.provinceContains != null and f.provinceContains != ''">
+			AND d.province LIKE CONCAT('%', #{f.provinceContains}, '%')
+		</if>
+		<if test="f.cityContains != null and f.cityContains != ''">
+			AND d.city LIKE CONCAT('%', #{f.cityContains}, '%')
+		</if>
+		<if test="f.areaContains != null and f.areaContains != ''">
+			AND d.area LIKE CONCAT('%', #{f.areaContains}, '%')
+		</if>
+		<if test="f.mobileExact != null and f.mobileExact != ''">
+			AND d.mobile = #{f.mobileExact}
+		</if>
+		<if test="f.merchantNameLike != null and f.merchantNameLike != ''">
+			AND m.merchant_name LIKE CONCAT('%', #{f.merchantNameLike}, '%')
+		</if>
+		<if test="f.distributionType != null">
+			AND d.distribution_type = #{f.distributionType}
+		</if>
+		<if test="f.paymentSubject != null">
+			AND d.payment_subject = #{f.paymentSubject}
+		</if>
+		<if test="f.distributorCategoryIdEq != null">
+			AND d.distributor_category_id = #{f.distributorCategoryIdEq}
+		</if>
+		<if test="f.isValidIn != null and f.isValidIn.size() &gt; 0">
+			AND d.is_valid IN
+			<foreach collection="f.isValidIn" item="v" open="(" separator="," close=")">#{v}</foreach>
+		</if>
+		<if test="(f.isValidIn == null or f.isValidIn.size() == 0) and f.isValid != null and f.isValid != ''">
+			AND d.is_valid = #{f.isValid}
+		</if>
+		<if test="f.offlineAftersalesOtherEq != null and f.offlineAftersalesOtherEq == 1">
+			AND d.offline_aftersales_other = 1
+		</if>
+		<if test="f.distributorIdNeq != null">
+			AND d.distributor_id &lt;&gt; #{f.distributorIdNeq}
+		</if>
+		<if test="f.distributorIdInConstraint != null and f.distributorIdInConstraint.size() &gt; 0">
+			AND d.distributor_id IN
+			<foreach collection="f.distributorIdInConstraint" item="id" open="(" separator="," close=")">#{id}</foreach>
+		</if>
+		<if test="f.forceEmptyResult != null and f.forceEmptyResult == true">
+			AND 1 = 0
+		</if>
+	</sql>
+
+	<select id="countByFilter" resultType="long">
+		SELECT COUNT(DISTINCT d.distributor_id)
+		<include refid="adminFromJoin"/>
+		<include refid="adminWhere"/>
+	</select>
+
+	<select id="selectPageByFilter" resultType="cn.shopex.ecshopx.distribution.domain.Distributor">
+		SELECT
+			d.distributor_id,
+			d.is_distributor,
+			d.company_id,
+			d.mobile,
+			d.address,
+			d.house_number,
+			d.name AS name,
+			d.first_letter,
+			d.auto_sync_goods,
+			d.logo AS logo,
+			d.contract_phone,
+			d.banner,
+			d.contact AS contact,
+			d.is_valid,
+			d.lng,
+			d.lat,
+			d.child_count,
+			d.is_default,
+			d.is_audit_goods,
+			d.is_ziti,
+			d.regions_id,
+			d.regions,
+			d.is_domestic,
+			d.is_direct_store,
+			d.province AS province,
+			d.is_delivery,
+			d.city AS city,
+			d.area AS area,
+			d.hour,
+			d.created,
+			d.updated,
+			d.shop_code,
+			d.wechat_work_department_id,
+			d.distributor_self,
+			d.regionauth_id,
+			d.is_open,
+			d.rate,
+			d.is_dada,
+			d.business,
+			d.dada_shop_create,
+			d.shansong_shop_create,
+			d.shansong_store_id,
+			d.introduce AS introduce,
+			d.merchant_id,
+			<choose>
+				<when test="f.includeMerchantJoin != null and f.includeMerchantJoin == false">
+				</when>
+				<otherwise>
+			m.merchant_name AS merchantName,
+				</otherwise>
+			</choose>
+			d.distribution_type,
+			d.is_require_subdistrict,
+			d.is_require_building,
+			d.delivery_distance,
+			d.offline_aftersales,
+			d.offline_aftersales_self,
+			d.offline_aftersales_distributor_id,
+			d.offline_aftersales_other,
+			d.is_self_delivery,
+			d.freight_time,
+			d.is_refund_freight,
+			d.wdt_shop_no,
+			d.wdt_shop_id,
+			d.jst_shop_id,
+			d.kuaizhen_store_id,
+			d.open_divided,
+			d.payment_subject,
+			d.distributor_category_id,
+			d.review_status,
+			d.dealer_id,
+			d.split_ledger_info,
+			d.bspay_split_ledger_info,
+			d.source_from,
+			d.is_open_salesman,
+			d.show_salesperson,
+			d.fixed_salesperson_qrcode_url,
+			d.shop_id
+		<include refid="adminFromJoin"/>
+		<include refid="adminWhere"/>
+		ORDER BY d.created DESC, d.distributor_id ASC
+		LIMIT #{f.limit} OFFSET #{f.offset}
+	</select>
+
+	<select id="selectRelWithTagsByCompanyAndDistributorIds" resultType="cn.shopex.ecshopx.distribution.dto.DistributorTagRelRow">
+		SELECT
+			r.distributor_id AS distributorId,
+			t.tag_id AS tagId,
+			t.company_id AS companyId,
+			t.tag_name AS tagName,
+			t.tag_color AS tagColor,
+			t.font_color AS fontColor,
+			t.description AS description,
+			t.tag_icon AS tagIcon,
+			t.front_show AS frontShow,
+			t.created AS created,
+			t.updated AS updated
+		FROM distributor_rel_tags r
+		INNER JOIN distributor_tags t ON t.tag_id = r.tag_id AND t.company_id = r.company_id
+		WHERE r.company_id = #{companyId}
+		<if test="distributorIds != null and distributorIds.size() &gt; 0">
+			AND r.distributor_id IN
+			<foreach collection="distributorIds" item="id" open="(" separator="," close=")">#{id}</foreach>
+		</if>
+	</select>
+</mapper>

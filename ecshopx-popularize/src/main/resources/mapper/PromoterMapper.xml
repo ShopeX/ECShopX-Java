@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.popularize.mapper.PromoterMapper">
+
+	<select id="selectPromoterDownstreamUserIdsForAdminMemberList" resultType="long">
+		WITH pm AS (
+			SELECT user_id FROM members WHERE company_id = #{companyId} AND mobile = #{mobileEnc} LIMIT 1
+		),
+		root AS (
+			SELECT p.id AS promoter_id, p.pid AS parent_pid
+			FROM popularize_promoter p
+			INNER JOIN pm ON p.user_id = pm.user_id AND p.company_id = #{companyId}
+			WHERE p.is_promoter = 1
+			LIMIT 1
+		),
+		non_top_children AS (
+			SELECT c.user_id AS user_id
+			FROM popularize_promoter c
+			CROSS JOIN root r
+			WHERE r.parent_pid &gt; 0
+			AND c.company_id = #{companyId}
+			AND c.pid = r.promoter_id
+			AND c.is_promoter = 0
+			AND c.disabled = 0
+		),
+		top_l1 AS (
+			SELECT c.user_id AS user_id, c.is_promoter AS is_promoter, c.id AS id
+			FROM popularize_promoter c
+			CROSS JOIN root r
+			WHERE r.parent_pid = 0
+			AND c.company_id = #{companyId}
+			AND c.pid = r.promoter_id
+			AND c.disabled = 0
+		),
+		top_l2 AS (
+			SELECT c2.user_id AS user_id
+			FROM popularize_promoter c2
+			INNER JOIN top_l1 l1 ON l1.is_promoter = 1 AND c2.company_id = #{companyId}
+				AND c2.pid = l1.id AND c2.is_promoter = 0 AND c2.disabled = 0
+		)
+		SELECT user_id FROM non_top_children
+		UNION
+		SELECT user_id FROM top_l1
+		UNION
+		SELECT user_id FROM top_l2
+	</select>
+</mapper>

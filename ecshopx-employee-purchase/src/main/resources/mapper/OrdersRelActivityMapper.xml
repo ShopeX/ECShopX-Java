@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.employeepurchase.mapper.OrdersRelActivityMapper">
+
+	<select id="selectDetailForOrder" resultType="map">
+		SELECT
+			op.order_id AS order_id,
+			op.company_id AS company_id,
+			op.user_id AS user_id,
+			op.enterprise_id AS enterprise_id,
+			op.activity_id AS activity_id,
+			op.if_share_store AS if_share_store,
+			op.close_modify_time AS close_modify_time,
+			op.purchase_mode AS purchase_mode,
+			act.name AS activity_name,
+			ep.name AS enterprise_name,
+			CASE
+				WHEN epe.id IS NOT NULL THEN 'employee'
+				WHEN epr.id IS NOT NULL THEN 'relative'
+				ELSE ''
+			END AS type,
+			CASE
+				WHEN epe.id IS NOT NULL THEN epe.name
+				WHEN epr.id IS NOT NULL THEN epe2.name
+				ELSE NULL
+			END AS employee_name
+		FROM employee_purchase_orders_rel_activity op
+		LEFT JOIN employee_purchase_activities act ON act.id = op.activity_id
+		LEFT JOIN employee_purchase_employees epe
+			ON epe.enterprise_id = op.enterprise_id AND epe.user_id = op.user_id
+		LEFT JOIN employee_purchase_relatives epr
+			ON epr.enterprise_id = op.enterprise_id
+			AND epr.user_id = op.user_id
+			AND epr.activity_id = op.activity_id
+		LEFT JOIN employee_purchase_employees epe2 ON epe2.id = epr.employee_id
+		LEFT JOIN employee_purchase_enterprises ep ON ep.id = op.enterprise_id
+		WHERE op.company_id = #{companyId} AND op.order_id = #{orderId}
+		LIMIT 1
+	</select>
+</mapper>

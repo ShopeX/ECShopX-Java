@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.companys.mapper.MerchantOperatorListMapper">
+
+	<sql id="operatorListFromWhere">
+		FROM merchant m
+		INNER JOIN operators o ON m.id = o.merchant_id
+		<where>
+			m.company_id = #{companyId}
+			AND o.operator_type = 'merchant'
+			<if test="merchantId != null">
+				AND o.merchant_id = #{merchantId}
+			</if>
+			<if test="onlyMerchantMain">
+				AND o.is_merchant_main = 1
+			</if>
+			<if test="mobileEnc != null and mobileEnc != ''">
+				AND o.mobile = #{mobileEnc}
+			</if>
+			<if test="merchantNameLike != null and merchantNameLike != ''">
+				AND m.merchant_name LIKE CONCAT('%', #{merchantNameLike}, '%')
+			</if>
+		</where>
+	</sql>
+
+	<select id="countByFilter" resultType="long">
+		SELECT COUNT(*)
+		<include refid="operatorListFromWhere"/>
+	</select>
+
+	<select id="selectPageByFilter" resultType="java.util.LinkedHashMap">
+		SELECT
+			o.operator_id AS operator_id,
+			o.mobile AS mobile,
+			o.password AS password,
+			m.merchant_name AS merchant_name,
+			m.settled_type AS settled_type,
+			o.is_merchant_main AS is_merchant_main,
+			m.id AS merchant_table_id
+		<include refid="operatorListFromWhere"/>
+		ORDER BY m.created DESC
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+</mapper>

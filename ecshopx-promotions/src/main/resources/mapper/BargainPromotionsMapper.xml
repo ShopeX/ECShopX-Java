@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.promotions.mapper.BargainPromotionsMapper">
+
+	<select id="countBargainList" resultType="int">
+		SELECT COUNT(*)
+		FROM promotions_bargain
+		WHERE company_id = #{companyId}
+		<if test="itemNameContains != null">
+			AND item_name LIKE CONCAT('%', #{itemNameContains}, '%')
+		</if>
+		<if test="titleContains != null">
+			AND title LIKE CONCAT('%', #{titleContains}, '%')
+		</if>
+	</select>
+
+	<select id="selectBargainListPage" resultType="cn.shopex.ecshopx.promotions.domain.BargainPromotions">
+		SELECT bargain_id, company_id, title, ad_pic, item_name, item_pics, item_intro, mkt_price, price,
+			limit_num, order_num, cutdown_rules, cutdown_range, people_range, min_price, begin_time, end_time,
+			share_msg, help_pics, item_id, created, updated
+		FROM promotions_bargain
+		WHERE company_id = #{companyId}
+		<if test="itemNameContains != null">
+			AND item_name LIKE CONCAT('%', #{itemNameContains}, '%')
+		</if>
+		<if test="titleContains != null">
+			AND title LIKE CONCAT('%', #{titleContains}, '%')
+		</if>
+		ORDER BY created DESC
+		LIMIT #{offset}, #{limit}
+	</select>
+
+	<select id="countBargainListActiveForFront" resultType="int">
+		SELECT COUNT(*)
+		FROM promotions_bargain
+		WHERE company_id = #{companyId}
+			AND end_time > #{nowEpochSeconds}
+			AND begin_time &lt;= #{nowEpochSeconds}
+	</select>
+
+	<select id="selectBargainListPageActiveForFront" resultType="cn.shopex.ecshopx.promotions.domain.BargainPromotions">
+		SELECT bargain_id, company_id, title, ad_pic, item_name, item_pics, item_intro, mkt_price, price,
+			limit_num, order_num, cutdown_rules, cutdown_range, people_range, min_price, begin_time, end_time,
+			share_msg, help_pics, item_id, created, updated
+		FROM promotions_bargain
+		WHERE company_id = #{companyId}
+			AND end_time > #{nowEpochSeconds}
+			AND begin_time &lt;= #{nowEpochSeconds}
+		ORDER BY created DESC
+		LIMIT #{offset}, #{limit}
+	</select>
+
+</mapper>

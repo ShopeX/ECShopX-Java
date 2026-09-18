@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.companys.mapper.DistributionDistributorSelfReadMapper">
+
+	<select id="selectSelfStoreRow" resultType="java.util.Map">
+		SELECT distributor_id AS distributor_id, name AS name, logo AS logo
+		FROM distribution_distributor
+		WHERE company_id = #{companyId}
+		  AND distributor_self = 1
+		LIMIT 1
+	</select>
+
+	<select id="listDistributorRowsByMerchant"
+			resultType="cn.shopex.ecshopx.companys.dto.DistributorMerchantRow">
+		SELECT distributor_id AS distributorId, merchant_id AS merchantId
+		FROM distribution_distributor
+		WHERE merchant_id = #{merchantId}
+		  AND company_id = #{companyId}
+	</select>
+
+	<select id="listDistributorIdsByCompanyAndRegionauthId" resultType="java.lang.Long">
+		SELECT distributor_id
+		FROM distribution_distributor
+		WHERE company_id = #{companyId}
+		  AND regionauth_id = #{regionauthId}
+	</select>
+
+	<select id="listDistributorNamesByCompanyAndIds" resultType="java.util.HashMap">
+		SELECT distributor_id AS distributor_id, name AS name
+		FROM distribution_distributor
+		WHERE company_id = #{companyId}
+		  AND distributor_id IN
+		<foreach collection="distributorIds" item="id" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</select>
+
+	<select id="listMerchantNamesByCompanyAndIds" resultType="java.util.HashMap">
+		SELECT id AS merchant_id, merchant_name AS merchant_name
+		FROM merchant
+		WHERE company_id = #{companyId}
+		  AND id IN
+		<foreach collection="merchantIds" item="id" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</select>
+</mapper>

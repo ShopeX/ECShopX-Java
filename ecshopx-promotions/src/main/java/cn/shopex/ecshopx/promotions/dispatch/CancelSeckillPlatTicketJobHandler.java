@@ -1,0 +1,75 @@
+/**
+ * Copyright 2019-2026 ShopeX
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package cn.shopex.ecshopx.promotions.dispatch;
+
+import cn.shopex.ecshopx.common.dispatch.DispatchHandler;
+import cn.shopex.ecshopx.promotions.service.wxapp.SeckillTicketHashidsSupport;
+import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
+@Component
+public class CancelSeckillPlatTicketJobHandler implements DispatchHandler {
+
+	private static final Logger log = LoggerFactory.getLogger(CancelSeckillPlatTicketJobHandler.class);
+
+	private final StringRedisTemplate redis;
+	private final SeckillTicketHashidsSupport hashids;
+
+	public CancelSeckillPlatTicketJobHandler(StringRedisTemplate stringRedisTemplate, SeckillTicketHashidsSupport hashids) {
+		this.redis = stringRedisTemplate;
+		this.hashids = hashids;
+	}
+
+	@Override
+	public void handle(Map<String, Object> payload) {
+		try {
+			String ticketKey = asString(payload.get("ticketkey"));
+			String seckillKey = asString(payload.get("seckillkey"));
+			String productField = asString(payload.get("productkey"));
+			long num = toLong(payload.get("num"));
+			String userIdStr = asString(payload.get("userId"));
+
+			Object ticket = redis.opsForHash().get(ticketKey, userIdStr);
+			if (ticket != null && StringUtils.hasText(ticket.toString())) {
+				long[] decoded = hashids.decode(ticket.toString());
+				if (decoded.length > 0 && decoded[0] == num) {
+					Long removed = redis.opsForHash().delete(ticketKey, userIdStr);
+					if (removed != null && removed > 0L) {
+						redis.opsForHash().increment(seckillKey, productField, num);
+					}
+				}
+			}
+		} catch (RuntimeException e) {
+			log.debug("seckill plat ticket cancel: {}", e.getMessage());
+		}
+	}
+
+	private static String asString(Object raw) {
+		return raw == null ? "" : String.valueOf(raw);
+	}
+
+	private static long toLong(Object raw) {
+		if (raw instanceof Number n) {
+			return n.longValue();
+		}
+		return Long.parseLong(String.valueOf(raw).trim());
+	}
+}

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.kaquan.mapper.RelMemberTagsMapper">
+	<insert id="insertBatch">
+		INSERT INTO kaquan_rel_member_tags (company_id, card_id, tag_id) VALUES
+		<foreach collection="rows" item="r" separator=",">
+			(#{r.companyId}, #{r.cardId}, #{r.tagId})
+		</foreach>
+	</insert>
+</mapper>

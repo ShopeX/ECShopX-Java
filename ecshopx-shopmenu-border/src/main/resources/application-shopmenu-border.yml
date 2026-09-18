@@ -1,0 +1,10 @@
+# ecshopx-shopmenu-border — 可选通过 spring.config.import 引入
+langue:
+  list:
+    - zh-CN
+    - en-CN
+    - ar-SA
+    - zh-TW
+  default: zh-CN
+shopmenu:
+  is-show-audit-log-path: logs/shopmenu_is_show_hidden.log

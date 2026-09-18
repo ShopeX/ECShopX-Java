@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.kujiale.mapper.KujialeDesignerWorksListQueryMapper">
+
+	<select id="countByKeyword" resultType="long">
+		SELECT COUNT(*)
+		FROM kujiale_designer_works
+		WHERE (design_name LIKE CONCAT('%', #{keyword}, '%') OR design_id LIKE CONCAT('%', #{keyword}, '%'))
+	</select>
+
+	<select id="selectPageByKeyword" resultType="map">
+		SELECT *
+		FROM kujiale_designer_works
+		WHERE (design_name LIKE CONCAT('%', #{keyword}, '%') OR design_id LIKE CONCAT('%', #{keyword}, '%'))
+		ORDER BY created DESC
+		<if test="applyPaging">
+			LIMIT #{limit} OFFSET #{offset}
+		</if>
+	</select>
+
+	<select id="countFiltered" resultType="long">
+		SELECT COUNT(id)
+		FROM kujiale_designer_works
+		<where>
+			<if test="designNameLike != null and designNameLike != ''">
+				AND design_name LIKE CONCAT('%', #{designNameLike}, '%')
+			</if>
+			<if test="designIdEq != null and designIdEq != ''">
+				AND design_id = #{designIdEq}
+			</if>
+		</where>
+	</select>
+
+	<select id="selectPageFiltered" resultType="map">
+		SELECT
+			id,
+			design_name,
+			cover_pic,
+			is_origin,
+			is_excellent,
+			is_real_excellent,
+			is_top,
+			design_id,
+			plan_id,
+			comm_name,
+			city,
+			name,
+			tag_id,
+			design_pano_url,
+			user_avatar,
+			email,
+			user_name,
+			user_id,
+			organization_id,
+			created,
+			updated,
+			view_count,
+			like_count,
+			ku_created
+		FROM kujiale_designer_works
+		<where>
+			<if test="designNameLike != null and designNameLike != ''">
+				AND design_name LIKE CONCAT('%', #{designNameLike}, '%')
+			</if>
+			<if test="designIdEq != null and designIdEq != ''">
+				AND design_id = #{designIdEq}
+			</if>
+		</where>
+		ORDER BY created DESC
+		<if test="applyPaging">
+			LIMIT #{limit} OFFSET #{offset}
+		</if>
+	</select>
+
+	<select id="selectRelsByDesignIds" resultType="map">
+		SELECT id, item_id, design_id, goods_bn, created, updated
+		FROM kujiale_designer_works_item_rel
+		WHERE design_id IN
+		<foreach collection="designIds" item="id" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</select>
+
+	<select id="selectItemsByItemIds" resultType="map">
+		SELECT item_id, item_name, item_bn, goods_bn
+		FROM items
+		WHERE item_id IN
+		<foreach collection="itemIds" item="iid" open="(" separator="," close=")">
+			#{iid}
+		</foreach>
+	</select>
+</mapper>

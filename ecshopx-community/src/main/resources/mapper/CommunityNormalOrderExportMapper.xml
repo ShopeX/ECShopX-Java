@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.community.mapper.CommunityNormalOrderExportMapper">
+
+	<select id="selectRowsForActivity" resultType="cn.shopex.ecshopx.community.dto.export.CommunityNormalOrderExportRow">
+		SELECT
+			o.order_id AS orderId,
+			o.user_id AS userId,
+			o.remark AS remark,
+			o.receipt_type AS receiptType,
+			o.receiver_name AS receiverName,
+			o.receiver_mobile AS receiverMobile,
+			o.receiver_state AS receiverState,
+			o.receiver_city AS receiverCity,
+			o.receiver_district AS receiverDistrict,
+			o.receiver_address AS receiverAddress,
+			o.order_status AS orderStatus,
+			o.delivery_status AS deliveryStatus,
+			o.ziti_status AS zitiStatus,
+			o.cancel_status AS cancelStatus,
+			o.create_time AS createTime,
+			i.item_name AS itemName,
+			i.item_spec_desc AS itemSpecDesc,
+			i.num AS num,
+			i.item_fee AS itemFee,
+			i.discount_fee AS discountFee,
+			i.total_fee AS totalFee,
+			i.price AS price,
+			i.item_id AS itemId,
+			i.item_bn AS itemBn,
+			r.activity_trade_no AS activityTradeNo,
+			r.ziti_name AS zitiName,
+			r.ziti_contact_user AS zitiContactUser,
+			r.ziti_contact_mobile AS zitiContactMobile,
+			r.ziti_address AS zitiAddress,
+			r.chief_name AS chiefName,
+			r.extra_data AS extraData,
+			u.username AS username,
+			c.chief_mobile AS chiefMobile
+		FROM orders_normal_orders_items i
+		LEFT JOIN orders_normal_orders o ON i.order_id = o.order_id
+		LEFT JOIN community_order_rel_activity r ON o.order_id = r.order_id
+		LEFT JOIN members_info u ON o.user_id = u.user_id
+		LEFT JOIN community_chief c ON r.chief_id = c.chief_id
+		WHERE o.order_type = 'normal'
+		  AND o.order_class = 'community'
+		  AND o.act_id = #{actId}
+		  AND o.order_status &lt;&gt; 'CANCEL'
+		  AND o.cancel_status IN ('NO_APPLY_CANCEL', 'FAILS')
+		  AND r.activity_trade_no IS NOT NULL
+		ORDER BY r.activity_id DESC, r.activity_trade_no DESC
+	</select>
+</mapper>

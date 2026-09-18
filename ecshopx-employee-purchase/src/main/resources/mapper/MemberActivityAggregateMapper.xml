@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.employeepurchase.mapper.MemberActivityAggregateMapper">
+
+	<select id="sumAggregateFeeByUserIds" resultType="java.lang.Long">
+		SELECT COALESCE(SUM(aggregate_fee), 0)
+		FROM employee_purchase_member_activity_aggregate
+		WHERE company_id = #{companyId}
+		  AND enterprise_id = #{enterpriseId}
+		  AND activity_id = #{activityId}
+		  AND user_id IN
+		<foreach collection="userIds" item="id" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</select>
+
+</mapper>

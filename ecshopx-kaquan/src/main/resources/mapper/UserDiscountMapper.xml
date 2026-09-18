@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.kaquan.mapper.UserDiscountMapper">
+
+	<sql id="NewUserCardListWhere">
+		kudc.company_id = #{f.companyId}
+		AND kudc.user_id = #{f.userId}
+		AND kudc.card_type IN
+		<foreach collection="f.cardTypes" item="ct" open="(" separator="," close=")">#{ct}</foreach>
+		AND kudc.use_platform = #{f.usePlatform}
+		<if test="f.useScenes != null and f.useScenes != ''">
+			AND kudc.use_scenes = #{f.useScenes}
+		</if>
+		<choose>
+			<when test="f.validOnly != null and f.validOnly == false">
+				AND (kudc.status = 2 OR kudc.begin_date &gt; #{f.nowEpoch} OR kudc.end_date &lt;= #{f.nowEpoch})
+			</when>
+			<otherwise>
+				AND kudc.status IN
+				<foreach collection="f.statuses" item="st" open="(" separator="," close=")">#{st}</foreach>
+				AND kudc.begin_date &lt;= #{f.nowEpoch}
+				AND kudc.end_date &gt; #{f.nowEpoch}
+			</otherwise>
+		</choose>
+		<if test="f.code != null and f.code != ''">
+			AND kudc.code = #{f.code}
+		</if>
+		<if test="f.cardId != null">
+			AND kudc.card_id = #{f.cardId}
+		</if>
+		<if test="f.leastCostLte != null">
+			AND kudc.least_cost &lt;= #{f.leastCostLte}
+		</if>
+		<if test="f.filterUserDiscountIds != null and f.filterUserDiscountIds.size() &gt; 0">
+			AND kudc.id IN
+			<foreach collection="f.filterUserDiscountIds" item="xid" open="(" separator="," close=")">#{xid}</foreach>
+		</if>
+		<choose>
+			<when test="f.distributorId != null and f.distributorId &gt; 0">
+				<choose>
+					<when test="f.productModel == 'platform'">
+						AND kudc.rel_distributor_ids LIKE CONCAT('%,', #{f.distributorId}, ',%')
+					</when>
+					<otherwise>
+						AND (kudc.rel_distributor_ids = 'all' OR kudc.rel_distributor_ids LIKE CONCAT('%,', #{f.distributorId}, ',%'))
+					</otherwise>
+				</choose>
+			</when>
+			<otherwise>
+				AND kudc.rel_distributor_ids = 'all'
+			</otherwise>
+		</choose>
+	</sql>
+
+	<sql id="MyUserCardListWhere">
+		kudc.company_id = #{f.companyId}
+		AND kudc.user_id = #{f.userId}
+		<choose>
+			<when test='f.statusFilterMode == "TAB1"'>
+				AND kudc.status IN (1, 4, 10)
+				AND kudc.end_date &gt; #{f.nowEpoch}
+			</when>
+			<when test='f.statusFilterMode == "TAB2"'>
+				AND kudc.status = 2
+			</when>
+			<when test='f.statusFilterMode == "TAB3"'>
+				AND kudc.status IN (1, 5, 6)
+				AND kudc.end_date &lt; #{f.nowEpoch}
+			</when>
+		</choose>
+		<if test="f.scopeTypeAll == null || f.scopeTypeAll == false">
+			<choose>
+				<when test="f.distributorId != null &amp;&amp; f.distributorId &gt; 0">
+					<choose>
+						<when test="f.productModel == 'platform'">
+							AND kudc.rel_distributor_ids LIKE CONCAT('%,', #{f.distributorId}, ',%')
+						</when>
+						<otherwise>
+							AND (kudc.rel_distributor_ids = 'all' OR kudc.rel_distributor_ids LIKE CONCAT('%,', #{f.distributorId}, ',%'))
+						</otherwise>
+					</choose>
+				</when>
+				<otherwise>
+					AND kudc.rel_distributor_ids = 'all'
+				</otherwise>
+			</choose>
+		</if>
+		<if test="f.cardTypeFilter != null &amp;&amp; f.cardTypeFilter != ''">
+			AND kudc.card_type = #{f.cardTypeFilter}
+		</if>
+		<if test="f.discountCardSourceType != null &amp;&amp; f.discountCardSourceType != ''">
+			AND kdc.source_type = #{f.discountCardSourceType}
+		</if>
+		<if test="f.discountCardSourceId != null">
+			AND kdc.source_id = #{f.discountCardSourceId}
+		</if>
+	</sql>
+
+	<select id="countMyUserCardListDistinct" resultType="long">
+		SELECT COUNT(DISTINCT kudc.id)
+		FROM kaquan_user_discount kudc
+		LEFT JOIN kaquan_discount_cards kdc ON kudc.card_id = kdc.card_id
+		WHERE
+		<include refid="MyUserCardListWhere"/>
+	</select>
+
+	<select id="selectMyUserCardListPage" resultType="map">
+		SELECT DISTINCT kudc.*,
+			kdc.description AS description,
+			kdc.source_type AS card_template_source_type,
+			kdc.source_id AS source_id
+		FROM kaquan_user_discount kudc
+		LEFT JOIN kaquan_discount_cards kdc ON kudc.card_id = kdc.card_id
+		WHERE
+		<include refid="MyUserCardListWhere"/>
+		ORDER BY kudc.end_date ASC, kudc.id DESC
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+
+	<select id="countNewUserCardListDistinct" resultType="long">
+		SELECT COUNT(DISTINCT kudc.id)
+		FROM kaquan_user_discount kudc
+		LEFT JOIN kaquan_discount_cards kdc ON kudc.card_id = kdc.card_id
+		WHERE
+		<include refid="NewUserCardListWhere"/>
+	</select>
+
+	<select id="selectNewUserCardListPage" resultType="map">
+		SELECT DISTINCT kudc.*,
+			kdc.description AS description,
+			kdc.source_type AS card_template_source_type,
+			kdc.source_id AS card_template_source_id
+		FROM kaquan_user_discount kudc
+		LEFT JOIN kaquan_discount_cards kdc ON kudc.card_id = kdc.card_id
+		WHERE
+		<include refid="NewUserCardListWhere"/>
+		ORDER BY kudc.end_date ASC, kudc.id DESC
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+
+	<select id="selectIdsUseBoundAll" resultType="long">
+		SELECT id FROM kaquan_user_discount
+		WHERE company_id = #{f.companyId} AND user_id = #{f.userId} AND use_bound = 0
+		<if test="f.cardId != null">
+			AND card_id = #{f.cardId}
+		</if>
+	</select>
+
+	<select id="selectIdsUseBoundNormal" resultType="long">
+		SELECT id FROM kaquan_user_discount
+		WHERE company_id = #{f.companyId} AND user_id = #{f.userId} AND use_bound = 1
+		AND (
+		<foreach collection="f.goodsItemIds" item="iid" separator=" OR ">
+			rel_item_ids LIKE CONCAT('%,', #{iid}, ',%')
+		</foreach>
+		)
+	</select>
+
+	<select id="selectIdsUseBoundNormalNeq" resultType="long">
+		SELECT id FROM kaquan_user_discount
+		WHERE company_id = #{f.companyId} AND user_id = #{f.userId} AND use_bound = 5
+		AND (
+		<foreach collection="f.goodsItemIds" item="iid" separator=" OR ">
+			rel_item_ids NOT LIKE CONCAT('%,', #{iid}, ',%')
+		</foreach>
+		)
+	</select>
+
+	<select id="selectIdsUseBoundCategory" resultType="long">
+		SELECT id FROM kaquan_user_discount
+		WHERE company_id = #{f.companyId} AND user_id = #{f.userId} AND use_bound = 2
+		AND (
+		<foreach collection="f.goodsItemIds" item="iid" separator=" OR ">
+			rel_item_ids LIKE CONCAT('%,', #{iid}, ',%')
+		</foreach>
+		)
+	</select>
+
+	<select id="selectIdsUseBoundTag" resultType="long">
+		SELECT id FROM kaquan_user_discount
+		WHERE company_id = #{f.companyId} AND user_id = #{f.userId} AND use_bound = 3
+		AND (
+		<foreach collection="f.goodsItemIds" item="iid" separator=" OR ">
+			rel_item_ids LIKE CONCAT('%,', #{iid}, ',%')
+		</foreach>
+		)
+	</select>
+
+	<select id="selectIdsUseBoundBrand" resultType="long">
+		SELECT id FROM kaquan_user_discount
+		WHERE company_id = #{f.companyId} AND user_id = #{f.userId} AND use_bound = 4
+		AND (
+		<foreach collection="f.goodsItemIds" item="iid" separator=" OR ">
+			rel_item_ids LIKE CONCAT('%,', #{iid}, ',%')
+		</foreach>
+		)
+	</select>
+
+	<select id="selectExpiredLockedCardIds" resultType="long">
+		SELECT id FROM kaquan_user_discount
+		WHERE expired_time &lt;= #{nowEpoch} AND status = 10
+		ORDER BY expired_time DESC
+		LIMIT #{limit}
+	</select>
+
+	<sql id="OpenapiUserDiscountListWhere">
+		kudc.company_id = #{f.companyId}
+		AND kudc.user_id = #{f.userId}
+		AND kudc.rel_distributor_ids = 'all'
+		<if test="f.code != null and f.code != ''">
+			AND kudc.code = #{f.code}
+		</if>
+	</sql>
+
+	<select id="countOpenapiUserDiscountListDistinct" resultType="long">
+		SELECT COUNT(DISTINCT kudc.id)
+		FROM kaquan_user_discount kudc
+		WHERE
+		<include refid="OpenapiUserDiscountListWhere"/>
+	</select>
+
+	<select id="selectOpenapiUserDiscountListPage" resultType="map">
+		SELECT DISTINCT kudc.*,
+			kdc.description AS description,
+			kdc.source_type AS source_type,
+			kdc.source_id AS source_id
+		FROM kaquan_user_discount kudc
+		LEFT JOIN kaquan_discount_cards kdc ON kudc.card_id = kdc.card_id
+		WHERE
+		<include refid="OpenapiUserDiscountListWhere"/>
+		ORDER BY kudc.end_date ASC, kudc.id DESC
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+</mapper>

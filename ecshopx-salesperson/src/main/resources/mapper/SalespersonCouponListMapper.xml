@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.salesperson.mapper.SalespersonCouponListMapper">
+
+	<select id="countJoinedByCompanyId" resultType="long">
+		SELECT COUNT(*)
+		FROM kaquan_discount_cards kdc
+		INNER JOIN salesperson_rel_coupon src ON kdc.card_id = src.coupon_id
+		WHERE kdc.company_id = #{companyId}
+	</select>
+
+	<select id="selectJoinedRows" resultType="map">
+		SELECT kdc.*, src.id, src.send_num
+		FROM kaquan_discount_cards kdc
+		INNER JOIN salesperson_rel_coupon src ON kdc.card_id = src.coupon_id
+		WHERE kdc.company_id = #{companyId}
+		ORDER BY src.coupon_id DESC
+		<if test="limit != null">
+			LIMIT #{limit} OFFSET #{offset}
+		</if>
+	</select>
+
+</mapper>

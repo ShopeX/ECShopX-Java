@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.theme.mapper.PagesAdPlaceRelMemberTagsMapper">
+
+	<select id="selectRelTagsByAdPlaceIds" resultType="cn.shopex.ecshopx.theme.mapper.dto.PagesAdPlaceTagJoinRow">
+		SELECT
+			r.ad_place_id AS ad_place_id,
+			r.tag_id AS tag_id,
+			t.tag_name AS tag_name
+		FROM pages_ad_place_rel_member_tags r
+		LEFT JOIN members_tags t ON r.tag_id = t.tag_id
+		WHERE r.ad_place_id IN
+		<foreach collection="ids" item="id" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</select>
+</mapper>

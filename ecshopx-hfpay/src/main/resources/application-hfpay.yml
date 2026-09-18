@@ -1,0 +1,2 @@
+# ecshopx-hfpay — optional profile fragment (spring.config.import=optional:classpath:application-hfpay.yml)
+# Defaults for local profile live in application-local.properties in this module.

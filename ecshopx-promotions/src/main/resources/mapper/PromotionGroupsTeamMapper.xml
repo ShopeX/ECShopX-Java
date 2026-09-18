@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.promotions.mapper.PromotionGroupsTeamMapper">
+
+	<sql id="wxappGroupOrderListWhere">
+		FROM promotion_groups_team p
+		INNER JOIN promotion_groups_team_member m ON p.team_id = m.team_id
+		WHERE m.member_id = #{memberId}
+		AND p.company_id = #{companyId}
+		AND m.disabled = 0
+		<if test="teamStatus != null">
+			AND p.team_status = #{teamStatus}
+		</if>
+		AND p.group_goods_type = #{groupGoodsType}
+	</sql>
+
+	<select id="countWxappGroupOrderListByMember" resultType="long">
+		SELECT COUNT(*)
+		<include refid="wxappGroupOrderListWhere"/>
+	</select>
+
+	<select id="selectWxappGroupOrderListByMemberPage" resultType="java.util.LinkedHashMap">
+		SELECT
+			p.id AS id,
+			p.team_id AS team_id,
+			p.company_id AS company_id,
+			p.act_id AS act_id,
+			p.head_mid AS head_mid,
+			p.begin_time AS begin_time,
+			p.end_time AS end_time,
+			p.join_person_num AS join_person_num,
+			p.team_status AS team_status,
+			p.group_goods_type AS group_goods_type,
+			p.disabled AS disabled,
+			p.created AS created,
+			p.updated AS updated,
+			m.order_id AS order_id,
+			m.member_info AS member_info
+		<include refid="wxappGroupOrderListWhere"/>
+		ORDER BY p.created DESC
+		LIMIT #{offset}, #{limit}
+	</select>
+
+	<sql id="scheduleAutoDoneBaseFrom">
+		FROM promotion_groups_team p
+		INNER JOIN promotion_groups_activity a ON p.act_id = a.groups_activity_id
+		WHERE p.team_status = 1
+		AND (p.disabled = 0 OR p.disabled IS NULL)
+		AND a.robot = 1
+		AND p.end_time &lt;= (#{nowSec} + #{secondWindow})
+	</sql>
+
+	<select id="countScheduleAutoDoneGroup" resultType="long">
+		SELECT COUNT(1)
+		<include refid="scheduleAutoDoneBaseFrom"/>
+	</select>
+
+	<select id="listScheduleAutoDoneGroupPage" resultType="cn.shopex.ecshopx.promotions.domain.ScheduleAutoDoneGroupTeamRow">
+		SELECT
+			p.id AS id,
+			p.team_id AS teamId,
+			p.company_id AS companyId,
+			p.act_id AS actId,
+			p.end_time AS endTime,
+			p.join_person_num AS joinPersonNum,
+			p.team_status AS teamStatus,
+			p.group_goods_type AS groupGoodsType,
+			p.disabled AS disabled,
+			p.created AS created,
+			a.person_num AS actPersonNum,
+			a.robot AS actRobot
+		<include refid="scheduleAutoDoneBaseFrom"/>
+		ORDER BY p.created DESC
+		LIMIT #{offset}, #{pageSize}
+	</select>
+
+	<sql id="scheduleNoStoreAutoDoneBaseFrom">
+		FROM promotion_groups_team p
+		INNER JOIN promotion_groups_activity a ON p.act_id = a.groups_activity_id
+		WHERE p.team_status = 1
+		AND (p.disabled = 0 OR p.disabled IS NULL)
+		AND a.robot = 1
+		AND a.store = 0
+	</sql>
+
+	<select id="countScheduleNoStoreAutoDoneGroup" resultType="long">
+		SELECT COUNT(1)
+		<include refid="scheduleNoStoreAutoDoneBaseFrom"/>
+	</select>
+
+	<select id="selectGroupsTeamByItemsPage" resultType="java.util.LinkedHashMap">
+		SELECT
+			p.id AS id,
+			p.team_id AS team_id,
+			p.company_id AS company_id,
+			p.act_id AS act_id,
+			p.head_mid AS head_mid,
+			p.begin_time AS begin_time,
+			p.end_time AS end_time,
+			p.join_person_num AS join_person_num,
+			p.group_goods_type AS group_goods_type,
+			p.team_status AS team_status,
+			p.disabled AS disabled,
+			p.created AS created,
+			p.updated AS updated,
+			m.order_id AS order_id,
+			m.member_info AS member_info
+		FROM promotion_groups_team p
+		LEFT JOIN promotion_groups_team_member m
+			ON p.team_id = m.team_id AND p.head_mid = m.member_id
+		WHERE p.act_id = #{actId}
+		AND p.company_id = #{companyId}
+		AND p.team_status = 1
+		AND p.disabled = 0
+		ORDER BY p.created ASC
+		LIMIT #{offset}, #{limit}
+	</select>
+
+	<select id="listScheduleNoStoreAutoDoneGroupPage" resultType="cn.shopex.ecshopx.promotions.domain.ScheduleAutoDoneGroupTeamRow">
+		SELECT
+			p.id AS id,
+			p.team_id AS teamId,
+			p.company_id AS companyId,
+			p.act_id AS actId,
+			p.end_time AS endTime,
+			p.join_person_num AS joinPersonNum,
+			p.team_status AS teamStatus,
+			p.group_goods_type AS groupGoodsType,
+			p.disabled AS disabled,
+			p.created AS created,
+			a.person_num AS actPersonNum,
+			a.robot AS actRobot
+		<include refid="scheduleNoStoreAutoDoneBaseFrom"/>
+		ORDER BY p.created DESC
+		LIMIT #{offset}, #{pageSize}
+	</select>
+</mapper>

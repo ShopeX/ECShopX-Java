@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.popularize.mapper.PromoterListMapper">
+
+	<sql id="promoterListWhere">
+		p.company_id = #{companyId}
+		AND p.is_promoter = 1
+		AND m.user_id IS NOT NULL
+		<if test="filter.user_id != null and filter.user_id.size() &gt; 0">
+			AND p.user_id IN
+			<foreach collection="filter.user_id" item="uid" open="(" separator="," close=")">
+				#{uid}
+			</foreach>
+		</if>
+		<if test="filter.identity_id != null">
+			AND p.identity_id = #{filter.identity_id}
+		</if>
+	</sql>
+
+	<select id="countPromoterListForExport" resultType="long">
+		SELECT COUNT(1)
+		FROM popularize_promoter p
+		LEFT JOIN members m ON p.user_id = m.user_id
+		<where>
+			<include refid="promoterListWhere"/>
+		</where>
+	</select>
+
+	<select id="selectPromoterListForExport" resultType="map">
+		SELECT p.*
+		FROM popularize_promoter p
+		LEFT JOIN members m ON p.user_id = m.user_id
+		<where>
+			<include refid="promoterListWhere"/>
+		</where>
+		ORDER BY p.created DESC
+		LIMIT #{offset}, #{limit}
+	</select>
+
+	<!-- Same projection as legacy admin member merge: members.* + members_info.username + members_info.sex -->
+	<select id="selectMemberRowsForAdminPromoterListMerge" resultType="map">
+		SELECT m.*, i.username, i.sex
+		FROM members m
+		LEFT JOIN members_info i ON m.company_id = i.company_id AND m.user_id = i.user_id
+		WHERE m.company_id = #{companyId}
+		AND m.user_id IN
+		<foreach collection="userIds" item="uid" open="(" separator="," close=")">
+			#{uid}
+		</foreach>
+	</select>
+</mapper>

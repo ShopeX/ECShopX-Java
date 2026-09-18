@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.distribution.mapper.DistributorWxappShopListMapper">
+
+	<sql id="wxappFromJoin">
+		FROM distribution_distributor d
+		LEFT JOIN merchant m ON m.id = d.merchant_id AND m.company_id = d.company_id
+	</sql>
+
+	<sql id="wxappWhereCore">
+		WHERE d.company_id = #{f.companyId}
+		AND d.distributor_self = 0
+		<if test="f.isValidIn != null and f.isValidIn.size() &gt; 0">
+			AND d.is_valid IN
+			<foreach collection="f.isValidIn" item="v" open="(" separator="," close=")">#{v}</foreach>
+		</if>
+		<if test="(f.isValidIn == null or f.isValidIn.size() == 0) and f.isValid != null and f.isValid != ''">
+			AND d.is_valid = #{f.isValid}
+		</if>
+		<if test="(f.isValidIn == null or f.isValidIn.size() == 0) and (f.isValid == null or f.isValid == '')">
+			AND d.is_valid = 'true'
+		</if>
+		<if test="f.openDivided != null">
+			AND d.open_divided = #{f.openDivided}
+		</if>
+		<if test="f.provinceLikeEscaped != null and f.provinceLikeEscaped != ''">
+			AND d.province LIKE CONCAT('%', #{f.provinceLikeEscaped}, '%') ESCAPE '\\'
+		</if>
+		<if test="f.cityLikeEscaped != null and f.cityLikeEscaped != ''">
+			AND d.city LIKE CONCAT('%', #{f.cityLikeEscaped}, '%') ESCAPE '\\'
+		</if>
+		<if test="f.areaLikeEscaped != null and f.areaLikeEscaped != ''">
+			AND d.area LIKE CONCAT('%', #{f.areaLikeEscaped}, '%') ESCAPE '\\'
+		</if>
+		<if test="f.isZiti != null">
+			AND d.is_ziti = #{f.isZiti}
+		</if>
+		<if test="f.isDelivery != null">
+			AND d.is_delivery = #{f.isDelivery}
+		</if>
+		<if test="f.isDada != null">
+			AND d.is_dada = #{f.isDada}
+		</if>
+		<if test="f.distributorCategoryIdEq != null">
+			AND d.distributor_category_id = #{f.distributorCategoryIdEq}
+		</if>
+		<if test="f.requireShopIdNonEmpty">
+			AND (d.shop_id IS NOT NULL AND d.shop_id &lt;&gt; 0 AND d.shop_id &lt;&gt; '')
+		</if>
+		<if test="f.distributorIdInList != null and f.distributorIdInList.size() &gt; 0">
+			AND d.distributor_id IN
+			<foreach collection="f.distributorIdInList" item="id" open="(" separator="," close=")">#{id}</foreach>
+		</if>
+		<if test="f.excludeDistributorIdList != null and f.excludeDistributorIdList.size() &gt; 0">
+			AND d.distributor_id NOT IN
+			<foreach collection="f.excludeDistributorIdList" item="xid" open="(" separator="," close=")">#{xid}</foreach>
+		</if>
+		<if test="f.searchType != null and f.searchType == 1 and f.nameLikeEscaped != null and f.nameLikeEscaped != ''">
+			AND (
+				d.name LIKE CONCAT('%', #{f.nameLikeEscaped}, '%') ESCAPE '\\'
+				OR (
+					<if test="f.orDistributorIdsFromItems != null and f.orDistributorIdsFromItems.size() &gt; 0">
+						d.distributor_id IN
+						<foreach collection="f.orDistributorIdsFromItems" item="iid" open="(" separator="," close=")">#{iid}</foreach>
+					</if>
+					<if test="f.orDistributorIdsFromItems == null or f.orDistributorIdsFromItems.size() == 0">
+						1 = 0
+					</if>
+				)
+			)
+		</if>
+		<if test="f.searchType != null and f.searchType == 2 and f.nameLikeEscaped != null and f.nameLikeEscaped != ''">
+			AND (
+				d.name LIKE CONCAT('%', #{f.nameLikeEscaped}, '%') ESCAPE '\\'
+				OR d.address LIKE CONCAT('%', #{f.nameLikeEscaped}, '%') ESCAPE '\\'
+			)
+		</if>
+		<if test="f.searchType != null and f.searchType != 1 and f.searchType != 2 and f.nameLikeEscaped != null and f.nameLikeEscaped != ''">
+			AND d.name LIKE CONCAT('%', #{f.nameLikeEscaped}, '%') ESCAPE '\\'
+		</if>
+	</sql>
+
+	<sql id="haversineKm">
+		(6371 * ACOS(LEAST(1.0, GREATEST(-1.0,
+			COS(RADIANS(#{f.userLat})) * COS(RADIANS(CAST(d.lat AS DECIMAL(18,10))))
+			* COS(RADIANS(CAST(d.lng AS DECIMAL(18,10))) - RADIANS(#{f.userLng}))
+			+ SIN(RADIANS(#{f.userLat})) * SIN(RADIANS(CAST(d.lat AS DECIMAL(18,10))))
+		))))
+	</sql>
+
+	<sql id="wxappGeoOuterWhere">
+		WHERE ((IFNULL(geo_filtered.delivery_distance, 0) &gt; 0 AND geo_filtered.distance &lt;= IFNULL(geo_filtered.delivery_distance, 0))
+			OR IFNULL(geo_filtered.delivery_distance, 0) = 0)
+	</sql>
+
+	<sql id="shopOrderBy">
+		<choose>
+			<when test="f.useFieldOrder and f.fieldOrderIds != null and f.fieldOrderIds.size() &gt; 0">
+				ORDER BY FIELD(distributor_id
+				<foreach collection="f.fieldOrderIds" item="oid" separator=",">,#{oid}</foreach>
+				) ASC, distributor_id DESC
+			</when>
+			<when test="f.orderByDistanceAsc">
+				ORDER BY distance ASC, distributor_id DESC
+			</when>
+			<when test="f.orderByDistanceDesc">
+				ORDER BY distance DESC, distributor_id DESC
+			</when>
+			<when test="f.orderByIsDefaultBranch">
+				ORDER BY is_default DESC, created DESC, distributor_id DESC
+			</when>
+			<otherwise>
+				ORDER BY created DESC, distributor_id DESC
+			</otherwise>
+		</choose>
+	</sql>
+
+	<select id="countByFilter" resultType="long">
+		<choose>
+			<when test="f.geoEnabled and !f.noHaving">
+				SELECT COUNT(*) FROM (
+					SELECT d.distributor_id,
+						IFNULL(d.delivery_distance, 0) AS delivery_distance,
+						<include refid="haversineKm"/> AS distance
+					<include refid="wxappFromJoin"/>
+					<include refid="wxappWhereCore"/>
+				) geo_filtered
+				<include refid="wxappGeoOuterWhere"/>
+			</when>
+			<when test="f.geoEnabled and f.noHaving">
+				SELECT COUNT(*) FROM (
+					SELECT d.distributor_id,
+						IFNULL(d.delivery_distance, 0) AS delivery_distance,
+						<include refid="haversineKm"/> AS distance
+					<include refid="wxappFromJoin"/>
+					<include refid="wxappWhereCore"/>
+				) geo_filtered
+			</when>
+			<otherwise>
+				SELECT COUNT(*)
+				<include refid="wxappFromJoin"/>
+				<include refid="wxappWhereCore"/>
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="selectPageByFilter" resultType="cn.shopex.ecshopx.distribution.domain.Distributor">
+		SELECT * FROM (
+		<choose>
+			<when test="f.geoEnabled and !f.noHaving">
+				SELECT * FROM (
+					SELECT d.*, m.merchant_name AS merchant_name,
+						<include refid="haversineKm"/> AS distance
+					<include refid="wxappFromJoin"/>
+					<include refid="wxappWhereCore"/>
+				) geo_filtered
+				<include refid="wxappGeoOuterWhere"/>
+			</when>
+			<when test="f.geoEnabled and f.noHaving">
+				SELECT d.*, m.merchant_name AS merchant_name,
+					<include refid="haversineKm"/> AS distance
+				<include refid="wxappFromJoin"/>
+				<include refid="wxappWhereCore"/>
+			</when>
+			<otherwise>
+				SELECT d.*, m.merchant_name AS merchant_name, CAST(NULL AS DECIMAL(18,10)) AS distance
+				<include refid="wxappFromJoin"/>
+				<include refid="wxappWhereCore"/>
+			</otherwise>
+		</choose>
+		) page_inner
+		<include refid="shopOrderBy"/>
+		LIMIT #{f.limit} OFFSET #{f.offset}
+	</select>
+</mapper>

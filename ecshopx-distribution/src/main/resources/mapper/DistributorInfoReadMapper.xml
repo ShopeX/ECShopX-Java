@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.distribution.mapper.DistributorInfoReadMapper">
+
+	<sql id="infoFromJoin">
+		FROM distribution_distributor d
+		LEFT JOIN merchant m ON m.id = d.merchant_id AND m.company_id = d.company_id
+	</sql>
+
+	<sql id="infoSelectColumns">
+		SELECT
+			d.distributor_id,
+			d.is_distributor,
+			d.company_id,
+			d.mobile,
+			d.address,
+			d.house_number,
+			d.name AS name,
+			d.first_letter,
+			d.auto_sync_goods,
+			d.logo AS logo,
+			d.contract_phone,
+			d.banner,
+			d.contact AS contact,
+			d.is_valid,
+			d.lng,
+			d.lat,
+			d.child_count,
+			d.is_default,
+			d.is_audit_goods,
+			d.is_ziti,
+			d.regions_id,
+			d.regions,
+			d.is_domestic,
+			d.is_direct_store,
+			d.province AS province,
+			d.is_delivery,
+			d.city AS city,
+			d.area AS area,
+			d.hour,
+			d.created,
+			d.updated,
+			d.shop_code,
+			d.wechat_work_department_id,
+			d.distributor_self,
+			d.regionauth_id,
+			d.is_open,
+			d.rate,
+			d.is_dada,
+			d.business,
+			d.dada_shop_create,
+			d.shansong_shop_create,
+			d.shansong_store_id,
+			d.introduce AS introduce,
+			d.merchant_id,
+			m.merchant_name AS merchantName,
+			d.distribution_type,
+			d.is_require_subdistrict,
+			d.is_require_building,
+			d.delivery_distance,
+			d.offline_aftersales,
+			d.offline_aftersales_self,
+			d.offline_aftersales_distributor_id,
+			d.offline_aftersales_other,
+			d.is_self_delivery,
+			d.freight_time,
+			d.is_refund_freight,
+			d.wdt_shop_no,
+			d.wdt_shop_id,
+			d.jst_shop_id,
+			d.kuaizhen_store_id,
+			d.open_divided,
+			d.payment_subject,
+			d.distributor_category_id,
+			d.review_status,
+			d.dealer_id,
+			d.split_ledger_info,
+			d.bspay_split_ledger_info,
+			d.source_from,
+			d.is_open_salesman,
+			d.show_salesperson,
+			d.fixed_salesperson_qrcode_url,
+			d.shop_id
+	</sql>
+
+	<select id="selectByCompanyAndDistributorId" resultType="cn.shopex.ecshopx.distribution.domain.Distributor">
+		<include refid="infoSelectColumns"/>
+		<include refid="infoFromJoin"/>
+		WHERE d.company_id = #{companyId} AND d.distributor_id = #{distributorId}
+		LIMIT 1
+	</select>
+
+	<select id="selectDefaultByCompany" resultType="cn.shopex.ecshopx.distribution.domain.Distributor">
+		<include refid="infoSelectColumns"/>
+		<include refid="infoFromJoin"/>
+		WHERE d.company_id = #{companyId} AND d.is_default = 1
+		ORDER BY d.created DESC
+		LIMIT 1
+	</select>
+
+	<select id="selectSelfByCompany" resultType="cn.shopex.ecshopx.distribution.domain.Distributor">
+		<include refid="infoSelectColumns"/>
+		<include refid="infoFromJoin"/>
+		WHERE d.company_id = #{companyId} AND d.distributor_self = 1
+		LIMIT 1
+	</select>
+</mapper>

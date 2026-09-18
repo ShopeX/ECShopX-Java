@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.distribution.mapper.DistributorOnsaleSkuListMapper">
+
+	<sql id="onsaleJoinWhere">
+		d.company_id = #{f.companyId}
+		AND d.is_can_sale = 1
+		AND i.company_id = #{f.companyId}
+		AND i.item_type = 'normal'
+		AND i.type = 0
+		AND (i.is_gift = 0 OR i.is_gift IS NULL)
+		AND i.audit_status = 'approved'
+		<if test="f.distributorIdEq != null">
+			AND d.distributor_id = #{f.distributorIdEq}
+		</if>
+		<if test="f.distributorIdIn != null and f.distributorIdIn.size() &gt; 0">
+			AND d.distributor_id IN
+			<foreach collection="f.distributorIdIn" item="id" open="(" separator="," close=")">
+				#{id}
+			</foreach>
+		</if>
+		<if test="f.defaultItemIds != null and f.defaultItemIds.size() &gt; 0">
+			AND i.default_item_id IN
+			<foreach collection="f.defaultItemIds" item="did" open="(" separator="," close=")">
+				#{did}
+			</foreach>
+		</if>
+	</sql>
+
+	<select id="countByFilter" resultType="long">
+		SELECT COUNT(1)
+		FROM distribution_distributor_items d
+		INNER JOIN items i ON d.item_id = i.item_id
+		WHERE
+		<include refid="onsaleJoinWhere"/>
+	</select>
+
+	<select id="selectItemIdsPageByFilter" resultType="long">
+		SELECT i.item_id
+		FROM distribution_distributor_items d
+		INNER JOIN items i ON d.item_id = i.item_id
+		WHERE
+		<include refid="onsaleJoinWhere"/>
+		ORDER BY i.default_item_id DESC, i.item_id DESC
+		LIMIT #{offset}, #{limit}
+	</select>
+</mapper>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.employeepurchase.mapper.EmployeePurchaseActivityGoodsListQueryMapper">
+
+	<sql id="goodsListFromWhere">
+		FROM employee_purchase_activity_goods g
+		LEFT JOIN items i ON g.goods_id = i.goods_id
+		LEFT JOIN goods_items_rel_cats c ON i.item_id = c.item_id
+		<if test="filter.requireCanSaleJoin != null and filter.requireCanSaleJoin == true">
+			LEFT JOIN distribution_distributor_items di ON i.item_id = di.item_id AND di.is_can_sale = 1
+		</if>
+		<if test="filter.shelfStatus != null">
+			INNER JOIN employee_purchase_activity_items epai
+				ON g.goods_id = epai.goods_id
+				AND g.activity_id = epai.activity_id
+				AND g.company_id = epai.company_id
+		</if>
+		<where>
+			<if test="filter.companyId != null">
+				AND g.company_id = #{filter.companyId}
+			</if>
+			<if test="filter.activityId != null">
+				AND g.activity_id = #{filter.activityId}
+			</if>
+			<if test="filter.shelfStatus != null">
+				AND epai.shelf_status = #{filter.shelfStatus}
+			</if>
+			<if test="filter.mainCatIds != null and !filter.mainCatIds.isEmpty()">
+				AND i.item_category IN
+				<foreach collection="filter.mainCatIds" item="id" open="(" separator="," close=")">
+					#{id}
+				</foreach>
+			</if>
+			<if test="filter.categoryIds != null and !filter.categoryIds.isEmpty()">
+				AND c.category_id IN
+				<foreach collection="filter.categoryIds" item="cid" open="(" separator="," close=")">
+					#{cid}
+				</foreach>
+			</if>
+			<if test="filter.approveStatusIn != null and !filter.approveStatusIn.isEmpty()">
+				AND i.approve_status IN
+				<foreach collection="filter.approveStatusIn" item="st" open="(" separator="," close=")">
+					#{st}
+				</foreach>
+			</if>
+			<if test="filter.requireCanSaleJoin != null and filter.requireCanSaleJoin == true">
+				AND di.item_id IS NOT NULL
+			</if>
+			<if test="filter.itemName != null and filter.itemName != ''">
+				AND i.item_name LIKE CONCAT('%', #{filter.itemName}, '%')
+			</if>
+			<if test="filter.itemBn != null and filter.itemBn != ''">
+				AND i.item_bn = #{filter.itemBn}
+			</if>
+			<if test="filter.keywords != null and filter.keywords != ''">
+				AND (
+					i.item_name LIKE CONCAT('%', #{filter.keywords}, '%')
+					OR i.item_bn LIKE CONCAT('%', #{filter.keywords}, '%')
+				)
+			</if>
+			AND i.goods_id IS NOT NULL
+		</where>
+	</sql>
+
+	<select id="countDistinctGoods" resultType="long">
+		SELECT COUNT(DISTINCT g.goods_id)
+		<include refid="goodsListFromWhere"/>
+	</select>
+
+	<select id="selectDistinctGoodsIdsPage" resultType="long">
+		SELECT DISTINCT g.goods_id
+		<include refid="goodsListFromWhere"/>
+		ORDER BY g.goods_id DESC
+		LIMIT #{offset}, #{limit}
+	</select>
+</mapper>

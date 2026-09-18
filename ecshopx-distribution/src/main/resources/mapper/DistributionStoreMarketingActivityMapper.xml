@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.distribution.mapper.DistributionStoreMarketingActivityMapper">
+
+	<select id="selectOngoingMarketingActivitiesForDistributor" resultType="java.util.LinkedHashMap">
+		SELECT
+			pma.marketing_id,
+			pma.marketing_type,
+			pma.marketing_name,
+			pma.condition_type,
+			pma.condition_value,
+			pma.promotion_tag,
+			pma.valid_grade,
+			pma.join_limit,
+			pma.start_time,
+			pma.end_time,
+			pma.canjoin_repeat,
+			pma.use_shop,
+			pma.in_proportion
+		FROM promotions_marketing_activity AS pma
+		WHERE pma.start_time &lt;= #{nowTs}
+		AND pma.end_time &gt;= #{nowTs}
+		AND pma.company_id = #{companyId}
+		AND pma.source_type = 'distributor'
+		AND pma.source_id = #{distributorId}
+		AND pma.check_status = 'agree'
+		AND pma.marketing_type IN ('full_discount', 'full_minus', 'full_gift')
+		ORDER BY pma.created DESC
+	</select>
+</mapper>

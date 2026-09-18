@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.adapay.mapper.DealerDistributorListMapper">
+
+	<sql id="fromJoin">
+		FROM distribution_distributor d
+		LEFT JOIN adapay_member m ON d.distributor_id = m.operator_id AND m.company_id = #{companyId} AND m.operator_type = 'distributor'
+		LEFT JOIN operators o ON d.dealer_id = o.operator_id
+	</sql>
+
+	<sql id="whereClause">
+		WHERE d.company_id = #{companyId}
+		<if test="dealerIdSet == true and dealerId != null">
+			AND d.dealer_id = #{dealerId}
+		</if>
+		<if test="nameLike != null">
+			AND d.name LIKE #{nameLike} ESCAPE '\\'
+		</if>
+		<if test="contact != null">
+			AND d.contact = #{contact}
+		</if>
+		<if test="mobile != null">
+			AND d.mobile = #{mobile}
+		</if>
+		<if test="province != null">
+			AND d.province = #{province}
+		</if>
+		<if test="city != null">
+			AND d.city = #{city}
+		</if>
+		<if test="area != null">
+			AND d.area = #{area}
+		</if>
+		<if test="adapayFeeMode != null">
+			AND JSON_EXTRACT(d.split_ledger_info, '$.adapay_fee_mode') = #{adapayFeeMode}
+		</if>
+		<if test="timeStart != null and timeEnd != null">
+			AND d.created &gt;= #{timeStart} AND d.created &lt;= #{timeEnd}
+		</if>
+		<choose>
+			<!-- OGNL: single-quoted literals are char, not String — use Yoda .equals for reliable match -->
+			<when test='"1".equals(auditStateGroup)'>
+				AND (m.audit_state IN ('B','C','D') OR m.audit_state IS NULL)
+			</when>
+			<when test='"2".equals(auditStateGroup)'>
+				AND m.audit_state IN ('A','0')
+			</when>
+			<when test='"3".equals(auditStateGroup)'>
+				AND m.audit_state = 'E'
+			</when>
+		</choose>
+	</sql>
+
+	<select id="countDistributors" resultType="long">
+		SELECT COUNT(*)
+		<include refid="fromJoin"/>
+		<include refid="whereClause"/>
+	</select>
+
+	<select id="selectDistributors" resultType="map">
+		SELECT
+			d.distributor_id AS distributor_id,
+			d.name AS name,
+			d.contact AS contact,
+			d.mobile AS mobile,
+			d.split_ledger_info AS split_ledger_info,
+			d.address AS address,
+			d.created AS created,
+			m.audit_state AS audit_state,
+			o.username AS username,
+			o.operator_id AS operator_id
+		<include refid="fromJoin"/>
+		<include refid="whereClause"/>
+		<if test="limit != null">
+			LIMIT #{offset}, #{limit}
+		</if>
+	</select>
+</mapper>

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.distribution.mapper.DistributorWxappAllListMapper">
+
+	<sql id="wxappFromJoin">
+		FROM distribution_distributor d
+		LEFT JOIN merchant m ON m.id = d.merchant_id AND m.company_id = d.company_id
+	</sql>
+
+	<sql id="wxappWhere">
+		WHERE d.company_id = #{f.companyId}
+		AND d.distributor_self = 0
+		AND d.is_valid IN ('true', 'false')
+		<if test="f.nameLikeEscaped != null and f.nameLikeEscaped != ''">
+			AND d.name LIKE CONCAT('%', #{f.nameLikeEscaped}, '%') ESCAPE '\\'
+		</if>
+		<if test="f.provinceLikeEscaped != null and f.provinceLikeEscaped != ''">
+			AND d.province LIKE CONCAT('%', #{f.provinceLikeEscaped}, '%') ESCAPE '\\'
+		</if>
+		<if test="f.cityLikeEscaped != null and f.cityLikeEscaped != ''">
+			AND d.city LIKE CONCAT('%', #{f.cityLikeEscaped}, '%') ESCAPE '\\'
+		</if>
+	</sql>
+
+	<sql id="haversineKm">
+		(6371 * ACOS(LEAST(1.0, GREATEST(-1.0,
+			COS(RADIANS(#{f.userLat})) * COS(RADIANS(CAST(d.lat AS DECIMAL(18,10))))
+			* COS(RADIANS(CAST(d.lng AS DECIMAL(18,10))) - RADIANS(#{f.userLng}))
+			+ SIN(RADIANS(#{f.userLat})) * SIN(RADIANS(CAST(d.lat AS DECIMAL(18,10))))
+		))))
+	</sql>
+
+	<!-- Geo filter on derived table: avoids MySQL rejecting HAVING references to SELECT aliases. -->
+	<sql id="wxappGeoOuterWhere">
+		WHERE ((IFNULL(geo_filtered.delivery_distance, 0) &gt; 0 AND geo_filtered.distance &lt;= IFNULL(geo_filtered.delivery_distance, 0))
+			OR IFNULL(geo_filtered.delivery_distance, 0) = 0)
+	</sql>
+
+	<select id="countByFilter" resultType="long">
+		<choose>
+			<when test="f.geoEnabled">
+				SELECT COUNT(*) FROM (
+					SELECT d.distributor_id,
+						IFNULL(d.delivery_distance, 0) AS delivery_distance,
+						<include refid="haversineKm"/> AS distance
+					<include refid="wxappFromJoin"/>
+					<include refid="wxappWhere"/>
+				) geo_filtered
+				<include refid="wxappGeoOuterWhere"/>
+			</when>
+			<otherwise>
+				SELECT COUNT(*)
+				<include refid="wxappFromJoin"/>
+				<include refid="wxappWhere"/>
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="selectPageByFilter" resultType="cn.shopex.ecshopx.distribution.domain.Distributor">
+		<choose>
+			<when test="f.geoEnabled">
+				SELECT * FROM (
+					SELECT d.*, m.merchant_name AS merchant_name,
+						<include refid="haversineKm"/> AS distance
+					<include refid="wxappFromJoin"/>
+					<include refid="wxappWhere"/>
+				) geo_filtered
+				<include refid="wxappGeoOuterWhere"/>
+			</when>
+			<otherwise>
+				SELECT d.*, m.merchant_name AS merchant_name
+				<include refid="wxappFromJoin"/>
+				<include refid="wxappWhere"/>
+			</otherwise>
+		</choose>
+		LIMIT #{f.limit} OFFSET #{f.offset}
+	</select>
+</mapper>

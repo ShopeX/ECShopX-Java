@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.orders.mapper.TradeRateMapper">
+
+	<sql id="tradeRateAdminListColumns">
+		t.rate_id, t.company_id, t.item_id, t.goods_id, t.order_id, t.user_id,
+		t.rate_pic, t.rate_pic_num, t.content, t.content_len, t.is_reply, t.disabled, t.anonymous,
+		t.star, t.created, t.updated, t.unionid, t.item_spec_desc, t.order_type
+	</sql>
+
+	<sql id="tradeRateAdminListWhere">
+		t.company_id = #{companyId}
+		<if test="q.orderId != null">
+			AND t.order_id = #{q.orderId}
+		</if>
+		<if test="q.itemId != null">
+			AND t.item_id = #{q.itemId}
+		</if>
+		<if test="q.orderType != null">
+			AND t.order_type = #{q.orderType}
+		</if>
+		<if test="q.isReply != null">
+			AND t.is_reply = #{q.isReply}
+		</if>
+		<if test="q.createdGte != null">
+			AND t.created &gt;= #{q.createdGte}
+		</if>
+		<if test="q.createdLte != null">
+			AND t.created &lt;= #{q.createdLte}
+		</if>
+	</sql>
+
+	<select id="countTradeRateListAdminSimple" resultType="long">
+		SELECT COUNT(1)
+		FROM trade_rate t
+		WHERE
+		<include refid="tradeRateAdminListWhere"/>
+	</select>
+
+	<select id="countTradeRateListAdminJoin" resultType="long">
+		SELECT COUNT(1)
+		FROM trade_rate t
+		LEFT JOIN orders_normal_orders o ON t.order_id = o.order_id AND t.company_id = o.company_id
+		WHERE
+		<include refid="tradeRateAdminListWhere"/>
+		AND o.distributor_id = #{distributorId}
+	</select>
+
+	<select id="selectTradeRateListAdminPageSimple"
+			resultType="cn.shopex.ecshopx.orders.service.admin.dto.TradeRateListRow">
+		SELECT
+		<include refid="tradeRateAdminListColumns"/>
+		FROM trade_rate t
+		WHERE
+		<include refid="tradeRateAdminListWhere"/>
+		ORDER BY t.created DESC
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+
+	<select id="selectTradeRateListAdminPageJoin"
+			resultType="cn.shopex.ecshopx.orders.service.admin.dto.TradeRateListRow">
+		SELECT
+		<include refid="tradeRateAdminListColumns"/>, o.distributor_id AS distributor_id
+		FROM trade_rate t
+		LEFT JOIN orders_normal_orders o ON t.order_id = o.order_id AND t.company_id = o.company_id
+		WHERE
+		<include refid="tradeRateAdminListWhere"/>
+		AND o.distributor_id = #{distributorId}
+		ORDER BY t.created DESC
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+
+	<select id="selectGoodsItemNameByItemIdAndCompanyId" resultType="string">
+		SELECT item_name
+		FROM items
+		WHERE item_id = #{itemId}
+		AND company_id = #{companyId}
+		LIMIT 1
+	</select>
+
+	<select id="selectPointsmallItemNameByItemIdAndCompanyId" resultType="string">
+		SELECT item_name
+		FROM pointsmall_items
+		WHERE item_id = #{itemId}
+		AND company_id = #{companyId}
+		LIMIT 1
+	</select>
+
+	<select id="selectItemsRowMapByItemIdAndCompanyId" resultType="map">
+		SELECT *
+		FROM items
+		WHERE item_id = #{itemId}
+		AND company_id = #{companyId}
+		LIMIT 1
+	</select>
+
+	<select id="selectPointsmallItemsRowMapByItemIdAndCompanyId" resultType="map">
+		SELECT *
+		FROM pointsmall_items
+		WHERE item_id = #{itemId}
+		AND company_id = #{companyId}
+		LIMIT 1
+	</select>
+
+	<select id="selectAvgStarByCompanyAndDistributor" resultType="java.math.BigDecimal">
+		SELECT AVG(COALESCE(tr.star, 5)) AS avg_star
+		FROM orders_normal_orders o
+		LEFT JOIN trade_rate tr
+			ON o.order_id = tr.order_id AND o.company_id = tr.company_id
+		WHERE o.company_id = #{companyId}
+		AND o.distributor_id = #{distributorId}
+	</select>
+
+	<select id="selectAvgStarBatchByCompanyAndDistributorIds" resultType="java.util.LinkedHashMap">
+		SELECT o.distributor_id AS distributor_id, AVG(COALESCE(tr.star, 5)) AS avg_star
+		FROM orders_normal_orders o
+		LEFT JOIN trade_rate tr ON o.order_id = tr.order_id AND o.company_id = tr.company_id
+		WHERE o.company_id = #{companyId}
+		AND o.distributor_id IN
+		<foreach collection="distributorIds" item="id" open="(" separator="," close=")">#{id}</foreach>
+		GROUP BY o.distributor_id
+	</select>
+</mapper>

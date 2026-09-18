@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.dispatch.FailedJobMapper">
+
+    <insert id="insert" parameterType="cn.shopex.ecshopx.dispatch.FailedJobEntity" useGeneratedKeys="true" keyProperty="id">
+        insert into failed_jobs (
+            message_name,
+            message_type,
+            listener_name,
+            queue_name,
+            payload_json,
+            retry_count,
+            exception_class,
+            exception_message,
+            driver_type,
+            delay,
+            consumer_id,
+            occurred_at,
+            failed_at
+        ) values (
+            #{messageName},
+            #{messageType},
+            #{listenerName},
+            #{queueName},
+            #{payloadJson},
+            #{retryCount},
+            #{exceptionClass},
+            #{exceptionMessage},
+            #{driverType},
+            #{delay},
+            #{consumerId},
+            #{occurredAt},
+            #{failedAt}
+        )
+    </insert>
+</mapper>

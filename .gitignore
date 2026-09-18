@@ -1,0 +1,43 @@
+HELP.md
+target/
+.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+ecshopx-bootstrap/src/main/resources/application-local.properties
+ecshopx-bootstrap/storage/
+ecshopx-bootstrap/logs/
+logs/
+.env
+docker-lite/.env
+
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+
+# 本机联调冒烟脚本（个人本地使用，不入库）
+scripts/local-api-smoke/

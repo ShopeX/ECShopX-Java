@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.adapay.mapper.AdapayTradeDivFeeBatchMapper">
+
+	<select id="sumDivFeeByTradeIds" resultType="map">
+		SELECT trade_id AS tradeId, SUM(div_fee) AS sumDivFee
+		FROM adapay_div_fee
+		WHERE company_id = #{companyId}
+		AND operator_type = #{operatorType}
+		<choose>
+			<when test="tradeIds != null and tradeIds.size() &gt; 0">
+				AND trade_id IN
+				<foreach collection="tradeIds" item="tid" open="(" separator="," close=")">
+					#{tid}
+				</foreach>
+			</when>
+			<otherwise>
+				AND 1 = 0
+			</otherwise>
+		</choose>
+		GROUP BY trade_id
+	</select>
+</mapper>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.orders.mapper.OrderProfitMapper">
+
+	<select id="countPendingFrozenProfitWithNormalOrderJoin" resultType="long">
+		SELECT COUNT(*)
+		FROM orders_rel_profit op
+		LEFT JOIN orders_normal_orders ono ON op.order_id = ono.order_id
+		WHERE op.plan_close_time &lt;= #{nowEpoch}
+			AND op.order_profit_status = 1
+	</select>
+
+	<select id="selectPageForSettle" resultType="cn.shopex.ecshopx.orders.domain.OrderProfit">
+		SELECT op.*
+		FROM orders_rel_profit op
+		WHERE op.plan_close_time &lt;= #{nowEpoch}
+			AND op.order_profit_status = 1
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+
+</mapper>

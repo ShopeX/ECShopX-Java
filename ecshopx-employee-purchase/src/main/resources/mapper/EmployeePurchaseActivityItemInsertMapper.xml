@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.employeepurchase.mapper.EmployeePurchaseActivityItemInsertMapper">
+
+	<insert id="insertIgnoreActivityItems">
+		INSERT IGNORE INTO employee_purchase_activity_items
+			(activity_id, item_id, goods_id, company_id, activity_price, activity_store, limit_fee, limit_num, sort, created)
+		VALUES
+		<foreach collection="rows" item="r" separator=",">
+			(#{r.activityId}, #{r.itemId}, #{r.goodsId}, #{r.companyId}, #{r.activityPrice}, #{r.activityStore},
+			 #{r.limitFee}, #{r.limitNum}, #{r.sort}, #{r.created})
+		</foreach>
+	</insert>
+
+	<insert id="insertIgnoreActivityGoods">
+		INSERT IGNORE INTO employee_purchase_activity_goods
+			(activity_id, goods_id, company_id)
+		VALUES
+		<foreach collection="rows" item="r" separator=",">
+			(#{r.activityId}, #{r.goodsId}, #{r.companyId})
+		</foreach>
+	</insert>
+</mapper>

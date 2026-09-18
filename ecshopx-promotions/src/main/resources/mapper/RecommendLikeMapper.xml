@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.promotions.mapper.RecommendLikeMapper">
+
+	<sql id="recommendLikeListFromWhere">
+		FROM promotions_recommend_like_items r_items
+		LEFT JOIN items ON r_items.item_id = items.item_id
+		<if test="useDistributorJoin">
+			INNER JOIN distribution_distributor_items d_items
+				ON r_items.item_id = d_items.item_id AND d_items.distributor_id = #{distributorId}
+		</if>
+		WHERE r_items.company_id = #{companyId}
+		<choose>
+			<when test="useDistributorJoin">
+				<if test="isCanSale == true">
+					AND d_items.is_can_sale = 1
+				</if>
+			</when>
+			<otherwise>
+				<if test="isCanSale == true">
+					AND items.approve_status = 'onsale'
+				</if>
+			</otherwise>
+		</choose>
+	</sql>
+
+	<select id="countRecommendLikeList" resultType="long">
+		SELECT COUNT(*)
+		<include refid="recommendLikeListFromWhere"/>
+	</select>
+
+	<select id="selectRecommendLikeList" resultType="java.util.LinkedHashMap">
+		SELECT
+		<choose>
+			<when test="useDistributorJoin">
+				d_items.distributor_id AS distributor_id,
+				d_items.price AS price,
+				d_items.store AS store,
+			</when>
+			<otherwise>
+				items.distributor_id AS distributor_id,
+				items.price AS price,
+				items.store AS store,
+			</otherwise>
+		</choose>
+			r_items.company_id AS company_id,
+			r_items.id AS id,
+			r_items.sort AS sort,
+			items.item_id AS item_id,
+			items.goods_id AS goods_id,
+			items.item_name AS item_name,
+			items.item_name AS itemName,
+			items.brief AS brief,
+			items.market_price AS market_price,
+			items.nospec AS nospec,
+			items.type AS type,
+			items.approve_status AS approve_status,
+			items.pics AS pics
+		<include refid="recommendLikeListFromWhere"/>
+		<if test="limit != null">
+			LIMIT #{offset}, #{limit}
+		</if>
+	</select>
+</mapper>

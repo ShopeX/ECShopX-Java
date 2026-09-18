@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.employeepurchase.mapper.EmployeePurchaseActivityItemsListQueryMapper">
+
+	<select id="selectActivityItemRows" resultType="java.util.LinkedHashMap">
+		SELECT
+			ai.activity_id AS activity_id,
+			ai.item_id AS item_id,
+			ai.goods_id AS goods_id,
+			ai.company_id AS company_id,
+			ai.activity_price AS activity_price,
+			ai.activity_store AS activity_store,
+			ai.limit_fee AS limit_fee,
+			ai.limit_num AS limit_num,
+			ai.sort AS sort,
+			ai.shelf_status AS shelf_status,
+			ai.created AS created,
+			ai.updated AS updated,
+			it.item_name AS item_name,
+			it.goods_bn AS goods_bn,
+			it.item_bn AS item_bn,
+			it.nospec AS nospec,
+			it.store AS store,
+			it.price AS price,
+			it.pics AS pics,
+			it.default_item_id AS default_item_id,
+			it.is_medicine AS is_medicine,
+			it.is_prescription AS is_prescription
+		FROM employee_purchase_activity_items ai
+		LEFT JOIN items it ON ai.item_id = it.item_id
+		WHERE ai.company_id = #{companyId}
+			AND ai.activity_id = #{activityId}
+			AND ai.goods_id IN
+			<foreach collection="goodsIds" item="gid" open="(" separator="," close=")">
+				#{gid}
+			</foreach>
+			<if test="shelfStatus != null">
+				AND ai.shelf_status = #{shelfStatus}
+			</if>
+			AND it.item_id IS NOT NULL
+		ORDER BY
+		<choose>
+			<when test="sortKey == @cn.shopex.ecshopx.employeepurchase.mapper.ActivityItemRowsSortKey@SALES">
+				it.sales DESC, ai.item_id DESC
+			</when>
+			<when test="sortKey == @cn.shopex.ecshopx.employeepurchase.mapper.ActivityItemRowsSortKey@ACTIVITY_PRICE_DESC">
+				ai.activity_price DESC, ai.item_id DESC
+			</when>
+			<when test="sortKey == @cn.shopex.ecshopx.employeepurchase.mapper.ActivityItemRowsSortKey@ACTIVITY_PRICE_ASC">
+				ai.activity_price ASC, ai.item_id DESC
+			</when>
+			<when test="sortKey == @cn.shopex.ecshopx.employeepurchase.mapper.ActivityItemRowsSortKey@SORT_DESC">
+				ai.sort DESC, ai.item_id DESC
+			</when>
+			<when test="sortKey == @cn.shopex.ecshopx.employeepurchase.mapper.ActivityItemRowsSortKey@ITEM_ID_DESC">
+				ai.item_id DESC
+			</when>
+			<otherwise>
+				ai.item_id DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="selectItemSpecAttributes" resultType="java.util.LinkedHashMap">
+		SELECT
+			r.item_id AS item_id,
+			v.attribuattribute_valuete_name AS attribuattribute_valuete_name,
+			r.custom_attribute_value AS custom_attribute_value
+		FROM items_rel_attributes r
+		LEFT JOIN items_attribute_values v ON r.attribute_value_id = v.attribute_value_id
+		WHERE r.item_id IN
+		<foreach collection="itemIds" item="iid" open="(" separator="," close=")">
+			#{iid}
+		</foreach>
+		AND r.attribute_type = 'item_spec'
+		ORDER BY r.item_id DESC, r.attribute_sort DESC
+	</select>
+</mapper>

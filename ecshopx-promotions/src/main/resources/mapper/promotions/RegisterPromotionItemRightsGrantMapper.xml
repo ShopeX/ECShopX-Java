@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.promotions.mapper.RegisterPromotionItemRightsGrantMapper">
+	<insert id="grantRightsForMembercardPromotionItem">
+		INSERT INTO orders_rights (
+			user_id, company_id, can_reservation, rights_name, rights_subname,
+			total_num, total_consum_num, start_time, end_time, order_id,
+			label_infos, rights_from, operator_desc, mobile, status, is_not_limit_num,
+			created, updated
+		)
+		SELECT * FROM (
+			SELECT
+				CAST(#{userId} AS UNSIGNED) AS user_id,
+				i.company_id AS company_id,
+				0 AS can_reservation,
+				i.item_name AS rights_name,
+				'' AS rights_subname,
+				IFNULL(CAST(#{itemRow.num,jdbcType=BIGINT} AS SIGNED), 1) AS total_num,
+				0 AS total_consum_num,
+				CASE i.date_type
+					WHEN 'DATE_TYPE_FIX_TIME_RANGE' THEN IFNULL(i.begin_date, 0)
+					ELSE UNIX_TIMESTAMP(CONCAT(CURDATE(), ' 00:00:00'))
+				END AS start_time,
+				CASE i.date_type
+					WHEN 'DATE_TYPE_FIX_TIME_RANGE' THEN IFNULL(i.end_date, 0)
+					ELSE UNIX_TIMESTAMP(CONCAT(DATE_ADD(CURDATE(), INTERVAL IFNULL(i.fixed_term, 0) DAY), ' 23:59:59'))
+				END AS end_time,
+				0 AS order_id,
+				CONCAT(
+					'[',
+					IFNULL(
+						(SELECT GROUP_CONCAT(JSON_OBJECT('label_id', r2.label_id, 'label_name', r2.label_name) SEPARATOR ',')
+						 FROM items_rel_type r2 WHERE r2.item_id = i.item_id),
+						''),
+					']'
+				) AS label_infos,
+				IFNULL(NULLIF(#{itemRow.rights_from,jdbcType=VARCHAR}, ''), '注册赠送') AS rights_from,
+				'' AS operator_desc,
+				#{mobilePlain} AS mobile,
+				'valid' AS status,
+				2 AS is_not_limit_num,
+				UNIX_TIMESTAMP() AS created,
+				UNIX_TIMESTAMP() AS updated
+			FROM items i
+			WHERE i.item_id = #{itemRow.item_id}
+			  AND i.company_id = #{companyId}
+			  AND i.item_type = 'services'
+			  AND i.consume_type = 'all'
+			UNION ALL
+			SELECT
+				CAST(#{userId} AS UNSIGNED),
+				i.company_id,
+				1,
+				i.item_name,
+				rt.label_name,
+				IFNULL(rt.num, 0) * IFNULL(CAST(#{itemRow.num,jdbcType=BIGINT} AS SIGNED), 1),
+				0,
+				UNIX_TIMESTAMP(CONCAT(CURDATE(), ' 00:00:00')),
+				UNIX_TIMESTAMP(CONCAT(DATE_ADD(CURDATE(), INTERVAL IFNULL(rt.limit_time, 0) DAY), ' 23:59:59')),
+				0,
+				CONCAT('[', JSON_OBJECT('label_id', rt.label_id, 'label_name', rt.label_name), ']'),
+				IFNULL(NULLIF(#{itemRow.rights_from,jdbcType=VARCHAR}, ''), '注册赠送'),
+				'',
+				#{mobilePlain},
+				'valid',
+				IFNULL(rt.is_not_limit_num, 2),
+				UNIX_TIMESTAMP(),
+				UNIX_TIMESTAMP()
+			FROM items i
+			INNER JOIN items_rel_type rt ON rt.item_id = i.item_id
+			WHERE i.item_id = #{itemRow.item_id}
+			  AND i.company_id = #{companyId}
+			  AND i.item_type = 'services'
+			  AND i.consume_type = 'every'
+		) u
+	</insert>
+</mapper>

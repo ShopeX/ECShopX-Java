@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.adapay.mapper.AdapayTradeExportQueryMapper">
+
+	<sql id="fromJoin">
+		FROM trade a
+		LEFT JOIN aftersales_refund b ON a.order_id = b.order_id AND b.refund_status = 'SUCCESS'
+		LEFT JOIN orders_normal_orders c ON a.order_id = c.order_id
+	</sql>
+
+	<sql id="whereFixed">
+		WHERE a.trade_state IN ('SUCCESS')
+		AND a.trade_source_type &lt;&gt; 'membercard'
+		<if test="f.company_id != null">
+			AND a.company_id = #{f.company_id}
+		</if>
+		<choose>
+			<when test="f.distributor_id != null and f.distributor_id instanceof java.util.Collection">
+				AND a.distributor_id IN
+				<foreach collection="f.distributor_id" item="did" open="(" separator="," close=")">
+					#{did}
+				</foreach>
+			</when>
+			<when test="f.distributor_id != null">
+				AND a.distributor_id = #{f.distributor_id}
+			</when>
+		</choose>
+		<if test="f.dealer_id != null">
+			AND a.dealer_id = #{f.dealer_id}
+		</if>
+		<if test="f.adapay_fee_mode != null and f.adapay_fee_mode != ''">
+			AND a.adapay_fee_mode = #{f.adapay_fee_mode}
+		</if>
+		<if test="f.adapay_div_status != null and f.adapay_div_status != ''">
+			AND a.adapay_div_status = #{f.adapay_div_status}
+		</if>
+		<if test="f.pay_channel != null and f.pay_channel != ''">
+			AND a.pay_channel = #{f.pay_channel}
+		</if>
+		<if test="f.trade_id != null and f.trade_id != ''">
+			AND a.trade_id = #{f.trade_id}
+		</if>
+		<if test="f.order_id != null and f.order_id != ''">
+			AND a.order_id = #{f.order_id}
+		</if>
+		<if test="f.timeStartGte != null and f.timeStartGte != ''">
+			AND a.time_start &gt;= #{f.timeStartGte,jdbcType=VARCHAR}
+		</if>
+		<if test="f.timeStartLte != null and f.timeStartLte != ''">
+			AND a.time_start &lt;= #{f.timeStartLte,jdbcType=VARCHAR}
+		</if>
+	</sql>
+
+	<sql id="groupBy">
+		GROUP BY a.trade_id
+	</sql>
+
+	<sql id="havingBlock">
+		HAVING TRUE
+		<if test="f.h_status != null and f.h_status != ''">
+			<choose>
+				<when test='f.h_status == "PARTIAL_REFUND"'>
+					AND (COALESCE(SUM(b.refunded_fee), 0) &gt; 0 AND COALESCE(SUM(b.refunded_fee), 0) &lt; MAX(a.pay_fee))
+				</when>
+				<when test='f.h_status == "FULL_REFUND"'>
+					AND (COALESCE(SUM(b.refunded_fee), 0) = MAX(a.pay_fee))
+				</when>
+				<when test='f.h_status == "SUCCESS"'>
+					AND (COALESCE(SUM(b.refunded_fee), 0) = 0)
+				</when>
+			</choose>
+		</if>
+		<if test="f.h_canDiv != null and f.h_canDiv == true">
+			AND (
+				COALESCE(SUM(b.refunded_fee), 0) &lt; MAX(a.pay_fee)
+				AND (
+					MAX(c.order_id) IS NULL
+					OR (
+						MAX(c.order_id) IS NOT NULL
+						AND MAX(c.order_auto_close_aftersales_time) &gt; 0
+						AND MAX(c.order_auto_close_aftersales_time) &lt; #{now}
+					)
+				)
+			)
+		</if>
+		<if test="f.h_canDiv != null and f.h_canDiv == false">
+			AND (
+				COALESCE(SUM(b.refunded_fee), 0) &gt;= MAX(a.pay_fee)
+				OR (
+					MAX(c.order_id) IS NOT NULL
+					AND (
+						MAX(c.order_auto_close_aftersales_time) IS NULL
+						OR MAX(c.order_auto_close_aftersales_time) = 0
+						OR MAX(c.order_auto_close_aftersales_time) &gt; #{now}
+					)
+				)
+			)
+		</if>
+	</sql>
+
+	<select id="countGrouped" resultType="long">
+		SELECT COUNT(1) FROM (
+			SELECT a.trade_id
+			<include refid="fromJoin"/>
+			<include refid="whereFixed"/>
+			<include refid="groupBy"/>
+			<include refid="havingBlock"/>
+		) cnt
+	</select>
+
+	<select id="selectGroupedPage" resultType="map">
+		SELECT
+			a.trade_id AS tradeId,
+			a.pay_type AS payType,
+			a.order_id AS orderId,
+			a.total_fee AS totalFee,
+			a.pay_fee AS payFee,
+			COALESCE(SUM(b.refunded_fee), 0) AS refundedFee,
+			a.adapay_div_status AS adapayDivStatus,
+			a.adapay_fee_mode AS adapayFeeMode,
+			a.adapay_fee AS adapayFee,
+			a.time_start AS timeStart,
+			a.distributor_id AS distributorId,
+			a.pay_channel AS payChannel,
+			MAX(c.order_auto_close_aftersales_time) AS closeAftersalesTime,
+			MAX(c.order_id) AS normalOrderId
+		<include refid="fromJoin"/>
+		<include refid="whereFixed"/>
+		<include refid="groupBy"/>
+		<include refid="havingBlock"/>
+		ORDER BY MAX(a.time_start) DESC
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+
+	<select id="selectGroupedAll" resultType="map">
+		SELECT
+			a.trade_id AS tradeId,
+			a.pay_type AS payType,
+			a.order_id AS orderId,
+			a.total_fee AS totalFee,
+			a.pay_fee AS payFee,
+			COALESCE(SUM(b.refunded_fee), 0) AS refundedFee,
+			a.adapay_div_status AS adapayDivStatus,
+			a.adapay_fee_mode AS adapayFeeMode,
+			a.adapay_fee AS adapayFee,
+			a.time_start AS timeStart,
+			a.distributor_id AS distributorId,
+			a.pay_channel AS payChannel,
+			MAX(c.order_auto_close_aftersales_time) AS closeAftersalesTime,
+			MAX(c.order_id) AS normalOrderId
+		<include refid="fromJoin"/>
+		<include refid="whereFixed"/>
+		<include refid="groupBy"/>
+		<include refid="havingBlock"/>
+		ORDER BY MAX(a.time_start) DESC
+	</select>
+</mapper>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.companys.mapper.EmployeeSelfDeliveryStaffMapper">
+
+	<select id="countByStaffNoAndCompanyId" resultType="long">
+		SELECT COUNT(1) FROM self_delivery_staff
+		WHERE company_id = #{companyId}
+		  AND staff_no = #{staffNo}
+	</select>
+
+	<select id="countByStaffNoAndCompanyIdExcludingOperatorId" resultType="long">
+		SELECT COUNT(1) FROM self_delivery_staff
+		WHERE company_id = #{companyId}
+		  AND staff_no = #{staffNo}
+		  AND operator_id != #{excludeOperatorId}
+	</select>
+
+	<delete id="deleteStaffRowByCompanyIdAndOperatorId">
+		DELETE FROM self_delivery_staff
+		WHERE company_id = #{companyId}
+		  AND operator_id = #{operatorId}
+	</delete>
+
+	<update id="updateStaffRowByOperatorId">
+		UPDATE self_delivery_staff SET
+			distributor_id = #{distributorId},
+			shop_id = #{shopId},
+			staff_attribute = #{staffAttribute},
+			staff_no = #{staffNo},
+			staff_type = #{staffType},
+			payment_method = #{paymentMethod},
+			payment_fee = #{paymentFee},
+			updated = #{updated}
+		WHERE operator_id = #{operatorId}
+		  AND company_id = #{companyId}
+	</update>
+
+	<insert id="insertStaffRow">
+		INSERT INTO self_delivery_staff (
+			company_id, operator_id, distributor_id, shop_id, staff_attribute, staff_no, staff_type,
+			payment_method, payment_fee, created, updated
+		) VALUES (
+			#{companyId}, #{operatorId}, #{distributorId}, #{shopId}, #{staffAttribute}, #{staffNo}, #{staffType},
+			#{paymentMethod}, #{paymentFee}, #{created}, #{updated}
+		)
+	</insert>
+
+	<select id="selectOperatorIdsByCompanyIdAndPaymentMethod" resultType="long">
+		SELECT operator_id
+		FROM self_delivery_staff
+		WHERE company_id = #{companyId}
+		  AND payment_method = #{paymentMethod}
+	</select>
+
+	<select id="selectOperatorIdsByCompanyIdAndStaffType" resultType="long">
+		SELECT operator_id
+		FROM self_delivery_staff
+		WHERE company_id = #{companyId}
+		  AND staff_type = #{staffType}
+	</select>
+
+	<select id="selectAccountListRowsByCompanyIdAndOperatorIds"
+			resultType="cn.shopex.ecshopx.companys.dto.SelfDeliveryStaffAccountListRow">
+		SELECT
+			operator_id AS operatorId,
+			distributor_id AS distributorId,
+			shop_id AS shopId,
+			staff_attribute AS staffAttribute,
+			staff_no AS staffNo,
+			staff_type AS staffType,
+			payment_method AS paymentMethod,
+			payment_fee AS paymentFee,
+			created AS created,
+			updated AS updated
+		FROM self_delivery_staff
+		WHERE company_id = #{companyId}
+		<if test="operatorIds != null and operatorIds.size() &gt; 0">
+			AND operator_id IN
+			<foreach collection="operatorIds" item="oid" open="(" separator="," close=")">#{oid}</foreach>
+		</if>
+	</select>
+</mapper>

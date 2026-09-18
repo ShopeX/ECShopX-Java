@@ -1,0 +1,473 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.members.mapper.MembersMapper">
+
+	<select id="selectMembersWithInfoForUserIds"
+			resultType="cn.shopex.ecshopx.members.service.admin.MembersContactByUserIdsLookupService$MemberContactRow">
+		SELECT m.user_id AS userId, m.mobile AS mobileEnc, i.username AS usernameEnc
+		FROM members m
+		LEFT JOIN members_info i ON m.company_id = i.company_id AND m.user_id = i.user_id
+		WHERE m.user_id IN
+		<foreach collection="userIds" item="id" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+		AND m.mobile IS NOT NULL
+		AND m.user_card_code IS NOT NULL
+		ORDER BY m.created DESC
+		LIMIT #{limit}
+	</select>
+
+	<select id="selectInviterMobileRowsByUserIds"
+			resultType="cn.shopex.ecshopx.members.service.admin.MembersContactByUserIdsLookupService$MemberContactRow">
+		SELECT m.user_id AS userId, m.mobile AS mobileEnc
+		FROM members m
+		WHERE m.company_id = #{companyId}
+		AND m.user_id IN
+		<foreach collection="userIds" item="id" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</select>
+
+	<select id="selectMembersForAliyunsmsRunTask"
+			resultType="cn.shopex.ecshopx.members.mapper.dto.AliyunsmsRunTaskMemberRow">
+		SELECT m.user_id AS userId, m.mobile AS mobileEnc
+		FROM members m
+		LEFT JOIN members_info info ON m.company_id = info.company_id AND m.user_id = info.user_id
+		WHERE m.company_id = #{companyId}
+		AND m.user_id IN
+		<foreach collection="userIds" item="id" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</select>
+
+	<select id="selectMemberRowForAdminByCompanyAndUserId" resultType="cn.shopex.ecshopx.members.domain.Members">
+		SELECT * FROM members WHERE company_id = #{companyId} AND user_id = #{userId} LIMIT 1
+	</select>
+
+	<select id="selectMemberRowForAdminByCompanyAndMobileEnc" resultType="cn.shopex.ecshopx.members.domain.Members">
+		SELECT * FROM members WHERE company_id = #{companyId} AND mobile = #{mobileEnc} LIMIT 1
+	</select>
+
+	<select id="selectMemberRowForAdminByCompanyUserIdAndMobileEnc" resultType="cn.shopex.ecshopx.members.domain.Members">
+		SELECT * FROM members WHERE company_id = #{companyId} AND user_id = #{userId} AND mobile = #{mobileEnc} LIMIT 1
+	</select>
+
+	<sql id="adminMemberListJoins">
+		FROM members m
+		LEFT JOIN members_info info ON m.company_id = info.company_id AND m.user_id = info.user_id
+		<if test="(f.shopIds != null and f.shopIds.size() &gt; 0) or (f.storeBnEq != null and f.storeBnEq != '')">
+			LEFT JOIN members_rel_shop shop ON shop.user_id = m.user_id AND shop.company_id = m.company_id
+			LEFT JOIN wxshops s ON shop.shop_id = s.wx_shop_id
+		</if>
+		<if test="f.tagIdEq != null or (f.tagIdIn != null and f.tagIdIn.size() &gt; 0)">
+			LEFT JOIN members_rel_tags reltags ON reltags.user_id = m.user_id AND reltags.company_id = m.company_id
+		</if>
+	</sql>
+
+	<sql id="adminMemberListWhere">
+		WHERE m.company_id = #{f.companyId}
+		<if test="f.userIdEq != null">
+			AND m.user_id = #{f.userIdEq}
+		</if>
+		<if test="f.userIdIn != null and f.userIdIn.size() &gt; 0">
+			AND m.user_id IN
+			<foreach collection="f.userIdIn" item="uid" open="(" separator="," close=")">#{uid}</foreach>
+		</if>
+		<if test="f.userIdNotIn != null and f.userIdNotIn.size() &gt; 0">
+			AND m.user_id NOT IN
+			<foreach collection="f.userIdNotIn" item="uid" open="(" separator="," close=")">#{uid}</foreach>
+		</if>
+		<if test="f.inviterId != null">
+			AND m.inviter_id = #{f.inviterId}
+		</if>
+		<if test="f.gradeIdEq != null">
+			AND m.grade_id = #{f.gradeIdEq}
+		</if>
+		<if test="f.vipPaidUserIds != null and f.vipPaidUserIds.size() &gt; 0">
+			AND m.user_id IN
+			<foreach collection="f.vipPaidUserIds" item="vid" open="(" separator="," close=")">#{vid}</foreach>
+		</if>
+		<if test="f.mobileEncEq != null and f.mobileEncEq != ''">
+			AND m.mobile = #{f.mobileEncEq}
+		</if>
+		<if test="f.remarksLike != null and f.remarksLike != ''">
+			AND m.remarks LIKE CONCAT('%', #{f.remarksLike}, '%')
+		</if>
+		<if test="f.usernameLike != null and f.usernameLike != ''">
+			AND info.username = #{f.usernameLike}
+		</if>
+		<if test="f.nameLike != null and f.nameLike != ''">
+			AND info.name LIKE CONCAT('%', #{f.nameLike}, '%')
+		</if>
+		<if test="f.sourceEq != null and f.sourceEq != ''">
+			AND m.source_from = #{f.sourceEq}
+		</if>
+		<if test="f.wechatNicknameLike != null and f.wechatNicknameLike != ''">
+			AND EXISTS (
+				SELECT 1 FROM members_associations ma
+				INNER JOIN members_wechatusers w ON w.company_id = ma.company_id AND w.unionid = ma.unionid
+				WHERE ma.company_id = m.company_id AND ma.user_id = m.user_id AND ma.user_type = 'wechat'
+				AND w.nickname LIKE CONCAT('%', #{f.wechatNicknameLike}, '%')
+				LIMIT 1
+			)
+		</if>
+		<if test="f.haveConsume != null and f.haveConsume != ''">
+			<if test='f.haveConsume == "true"'>
+				AND info.have_consume = 1
+			</if>
+			<if test='f.haveConsume == "false"'>
+				AND info.have_consume = 0
+			</if>
+		</if>
+		<if test="f.birthdayStart != null and f.birthdayStart != ''">
+			AND info.birthday &gt;= #{f.birthdayStart}
+		</if>
+		<if test="f.birthdayEnd != null and f.birthdayEnd != ''">
+			AND info.birthday &lt;= #{f.birthdayEnd}
+		</if>
+		<if test="f.timeStartBegin != null">
+			AND m.created &gt;= #{f.timeStartBegin}
+		</if>
+		<if test="f.timeStartEnd != null">
+			AND m.created &lt;= #{f.timeStartEnd}
+		</if>
+		<if test="f.storeBnEq != null and f.storeBnEq != ''">
+			AND s.store_bn = #{f.storeBnEq}
+		</if>
+		<if test="f.opDistributorEq != null">
+			AND m.op_distributor = #{f.opDistributorEq}
+		</if>
+		<if test="f.shopIds != null and f.shopIds.size() &gt; 0">
+			AND shop.shop_type = 'shop'
+			AND shop.shop_id IN
+			<foreach collection="f.shopIds" item="sid" open="(" separator="," close=")">#{sid}</foreach>
+		</if>
+		<if test="f.tagIdIn != null and f.tagIdIn.size() &gt; 0">
+			AND reltags.tag_id IN
+			<foreach collection="f.tagIdIn" item="tid" open="(" separator="," close=")">#{tid}</foreach>
+		</if>
+		<if test="(f.tagIdIn == null or f.tagIdIn.size() == 0) and f.tagIdEq != null">
+			AND reltags.tag_id = #{f.tagIdEq}
+		</if>
+	</sql>
+
+	<sql id="adminMemberListFrom">
+		<include refid="adminMemberListJoins"/>
+		<include refid="adminMemberListWhere"/>
+	</sql>
+
+	<select id="selectMemberListForAdmin" resultType="map">
+		SELECT DISTINCT
+			m.user_id,
+			m.company_id,
+			m.grade_id,
+			m.mobile,
+			m.user_card_code,
+			m.authorizer_appid,
+			m.wxa_appid,
+			m.source_id,
+			m.monitor_id,
+			m.latest_source_id,
+			m.latest_monitor_id,
+			m.created,
+			m.updated,
+			m.created_year,
+			m.created_month,
+			m.created_day,
+			m.offline_card_code,
+			m.inviter_id,
+			m.source_from,
+			m.password,
+			m.disabled,
+			m.use_point,
+			m.remarks,
+			m.third_data,
+			m.region_mobile,
+			m.mobile_country_code,
+			m.reg_distributor,
+			m.reg_salesperson,
+			m.fp_salesperson,
+			m.has_fp,
+			m.op_distributor,
+			info.username,
+			info.name,
+			info.sex,
+			info.birthday,
+			info.address,
+			info.email,
+			info.industry,
+			info.income,
+			info.edu_background,
+			info.habbit,
+			info.avatar,
+			wx.unionid AS unionid,
+			wx.open_id AS open_id
+			<if test="f.shopIds != null and f.shopIds.size() &gt; 0">
+				, shop.shop_id AS shop_id
+				, s.store_name AS store_name
+			</if>
+		<include refid="adminMemberListJoins"/>
+		LEFT JOIN (
+			SELECT ma.company_id, ma.user_id, ma.unionid, w.open_id
+			FROM members_associations ma
+			INNER JOIN (
+				SELECT company_id, user_id, MIN(id) AS id
+				FROM members_associations
+				WHERE user_type = 'wechat'
+				GROUP BY company_id, user_id
+			) ma_pick ON ma_pick.id = ma.id
+			LEFT JOIN members_wechatusers w
+				ON w.company_id = ma.company_id AND w.unionid = ma.unionid
+		) wx ON wx.company_id = m.company_id AND wx.user_id = m.user_id
+		<include refid="adminMemberListWhere"/>
+		ORDER BY m.user_id DESC
+	</select>
+
+	<select id="countMemberListForAdmin" resultType="long">
+		SELECT COUNT(DISTINCT m.user_id)
+		<include refid="adminMemberListFrom"/>
+	</select>
+
+	<sql id="openapiMemberListFrom">
+		FROM members m
+		LEFT JOIN members_info info ON m.company_id = info.company_id AND m.user_id = info.user_id
+		<if test="f.joinRelTags">
+			LEFT JOIN members_rel_tags reltags ON reltags.user_id = m.user_id AND reltags.company_id = m.company_id
+		</if>
+		<if test="f.joinPointMember">
+			LEFT JOIN point_member pm ON pm.user_id = m.user_id AND pm.company_id = m.company_id
+		</if>
+		WHERE m.company_id = #{f.companyId}
+		<if test="f.userIdIn != null and f.userIdIn.size() &gt; 0">
+			AND m.user_id IN
+			<foreach collection="f.userIdIn" item="uid" open="(" separator="," close=")">#{uid}</foreach>
+		</if>
+		<if test="f.gradeIdEq != null">
+			AND m.grade_id = #{f.gradeIdEq}
+		</if>
+		<if test="f.hasFpEq != null">
+			AND m.has_fp = #{f.hasFpEq}
+		</if>
+		<if test="f.isBecomeFriendEq != null">
+			AND m.is_become_friend = #{f.isBecomeFriendEq}
+		</if>
+		<if test="f.fpSalespersonEq != null and f.fpSalespersonEq != ''">
+			AND m.fp_salesperson = #{f.fpSalespersonEq}
+		</if>
+		<if test="f.opDistributorEq != null">
+			AND m.op_distributor = #{f.opDistributorEq}
+		</if>
+		<if test="f.birthdayStart != null and f.birthdayStart != ''">
+			AND info.birthday &gt;= #{f.birthdayStart}
+		</if>
+		<if test="f.birthdayEnd != null and f.birthdayEnd != ''">
+			AND info.birthday &lt;= #{f.birthdayEnd}
+		</if>
+		<if test="f.pointGte != null">
+			AND pm.point &gt;= #{f.pointGte}
+		</if>
+		<if test="f.pointLte != null">
+			AND pm.point &lt;= #{f.pointLte}
+		</if>
+		<if test="f.mobileLike != null and f.mobileLike != ''">
+			AND m.mobile LIKE CONCAT('%', #{f.mobileLike}, '%')
+		</if>
+		<if test="f.tagIdIn != null and f.tagIdIn.size() &gt; 0">
+			AND reltags.tag_id IN
+			<foreach collection="f.tagIdIn" item="tid" open="(" separator="," close=")">#{tid}</foreach>
+		</if>
+	</sql>
+
+	<sql id="openapiMemberListSelectColumns">
+		SELECT DISTINCT
+			m.user_id,
+			m.company_id,
+			m.grade_id,
+			m.mobile,
+			m.user_card_code,
+			m.authorizer_appid,
+			m.wxa_appid,
+			m.source_id,
+			m.monitor_id,
+			m.latest_source_id,
+			m.latest_monitor_id,
+			m.created,
+			m.updated,
+			m.created_year,
+			m.created_month,
+			m.created_day,
+			m.offline_card_code,
+			m.inviter_id,
+			m.source_from,
+			m.password,
+			m.disabled,
+			m.use_point,
+			m.remarks,
+			m.third_data,
+			m.region_mobile,
+			m.mobile_country_code,
+			m.reg_distributor,
+			m.reg_salesperson,
+			m.fp_salesperson,
+			m.has_fp,
+			m.op_distributor,
+			info.username,
+			info.name,
+			info.sex,
+			info.birthday,
+			info.address,
+			info.email,
+			info.industry,
+			info.income,
+			info.edu_background,
+			info.habbit,
+			info.avatar,
+			(SELECT ma.unionid FROM members_associations ma
+				WHERE ma.company_id = m.company_id AND ma.user_id = m.user_id AND ma.user_type = 'wechat'
+				LIMIT 1) AS unionid,
+			(SELECT w.open_id FROM members_associations ma2
+				INNER JOIN members_wechatusers w
+					ON w.company_id = ma2.company_id AND w.unionid = ma2.unionid
+				WHERE ma2.company_id = m.company_id AND ma2.user_id = m.user_id AND ma2.user_type = 'wechat'
+				LIMIT 1) AS open_id
+	</sql>
+
+	<select id="selectMemberListForOpenapi" resultType="map">
+		<include refid="openapiMemberListSelectColumns"/>
+		<include refid="openapiMemberListFrom"/>
+		ORDER BY m.user_id DESC
+	</select>
+
+	<select id="selectMemberListForOpenapiAll" resultType="map">
+		<include refid="openapiMemberListSelectColumns"/>
+		<include refid="openapiMemberListFrom"/>
+		ORDER BY m.user_id DESC
+	</select>
+
+	<select id="countMemberListForOpenapi" resultType="long">
+		SELECT count(*)
+		<include refid="openapiMemberListFrom"/>
+	</select>
+
+	<select id="selectOpenapiMemberBriefRowsByCompanyAndMobileEnc" resultType="map">
+		SELECT
+			member.user_id AS user_id,
+			member.mobile AS mobile,
+			info.username AS username
+		FROM members member
+		LEFT JOIN members_info info
+			ON member.company_id = info.company_id AND member.user_id = info.user_id
+		WHERE member.company_id = #{companyId}
+		AND member.mobile = #{mobileEnc}
+	</select>
+
+	<select id="selectOpenapiInviterBriefByUserIds" resultType="map">
+		SELECT
+			m.user_id AS user_id,
+			m.mobile AS mobile,
+			i.username AS username
+		FROM members m
+		LEFT JOIN members_info i ON m.company_id = i.company_id AND m.user_id = i.user_id
+		WHERE m.company_id = #{companyId}
+		AND m.user_id IN
+		<foreach collection="userIds" item="uid" open="(" separator="," close=")">#{uid}</foreach>
+	</select>
+
+	<sql id="openapiMemberV2ListFrom">
+		FROM members member
+		LEFT JOIN members_info info
+			ON member.company_id = info.company_id AND member.user_id = info.user_id
+		LEFT JOIN members_associations associations
+			ON member.company_id = associations.company_id AND member.user_id = associations.user_id
+		LEFT JOIN membercard_grade membercard_grade
+			ON member.grade_id = membercard_grade.grade_id
+		<if test="f.tagIdGt != null and f.tagIdGt > 0">
+		LEFT JOIN members_rel_tags rel_tag
+			ON rel_tag.company_id = member.company_id AND rel_tag.user_id = member.user_id
+		</if>
+		WHERE member.company_id = #{f.companyId}
+		<if test="f.inviterIdIn != null and f.inviterIdIn.size() &gt; 0">
+			AND member.inviter_id IN
+			<foreach collection="f.inviterIdIn" item="iid" open="(" separator="," close=")">#{iid}</foreach>
+		</if>
+		<if test="f.gradeIdEq != null">
+			AND member.grade_id = #{f.gradeIdEq}
+		</if>
+		<if test="f.mobileEq != null and f.mobileEq != ''">
+			AND member.mobile = #{f.mobileEq}
+		</if>
+		<if test="f.sourceFromEq != null and f.sourceFromEq != ''">
+			AND member.source_from = #{f.sourceFromEq}
+		</if>
+		<if test="f.disabledEq != null">
+			AND member.disabled = #{f.disabledEq}
+		</if>
+		<if test="f.cardCodeEq != null and f.cardCodeEq != ''">
+			AND member.user_card_code = #{f.cardCodeEq}
+		</if>
+		<if test="f.createdStart != null and f.createdEnd != null">
+			AND member.created BETWEEN #{f.createdStart} AND #{f.createdEnd}
+		</if>
+		<if test="f.createdStart != null and f.createdEnd == null">
+			AND member.created &gt;= #{f.createdStart}
+		</if>
+		<if test="f.createdStart == null and f.createdEnd != null">
+			AND member.created &lt;= #{f.createdEnd}
+		</if>
+		<if test="f.haveConsumeEq != null">
+			AND info.have_consume = #{f.haveConsumeEq}
+		</if>
+		<if test="f.salespersonIdGt != null and f.salespersonIdGt > 0">
+			AND rel_salesperson.salesperson_id = #{f.salespersonIdGt}
+			AND rel_salesperson.is_bind = 1
+			AND rel_salesperson.company_id = #{f.companyId}
+		</if>
+		<if test="f.tagIdGt != null and f.tagIdGt > 0">
+			AND rel_tag.tag_id = #{f.tagIdGt}
+			AND rel_tag.company_id = #{f.companyId}
+		</if>
+		<if test="f.vipGradeIdGt != null and f.vipGradeIdGt > 0">
+			AND vip_rel_user.vip_grade_id = #{f.vipGradeIdGt}
+			AND vip_rel_user.company_id = #{f.companyId}
+			AND vip_rel_user.end_date &gt; UNIX_TIMESTAMP()
+		</if>
+	</sql>
+
+	<sql id="openapiMemberV2ListSelectColumns">
+		SELECT DISTINCT
+			member.user_id AS user_id,
+			member.mobile AS mobile,
+			member.source_from AS source_from,
+			member.disabled AS disabled,
+			member.created AS created,
+			member.updated AS updated,
+			member.remarks AS remarks,
+			member.inviter_id AS inviter_id,
+			member.grade_id AS grade_id,
+			member.user_card_code AS user_card_code,
+			info.username AS username,
+			info.avatar AS avatar,
+			info.sex AS sex,
+			info.birthday AS birthday,
+			info.habbit AS habbit,
+			info.edu_background AS edu_background,
+			info.income AS income,
+			info.industry AS industry,
+			info.email AS email,
+			info.address AS address,
+			associations.unionid AS unionid,
+			membercard_grade.grade_name AS grade_name
+	</sql>
+
+	<select id="selectMemberV2ListForOpenapi" resultType="map">
+		<include refid="openapiMemberV2ListSelectColumns"/>
+		<include refid="openapiMemberV2ListFrom"/>
+		ORDER BY member.user_id DESC
+	</select>
+
+	<select id="countMemberV2ListForOpenapiDistinct" resultType="long">
+		SELECT COUNT(DISTINCT member.user_id)
+		<include refid="openapiMemberV2ListFrom"/>
+	</select>
+
+</mapper>

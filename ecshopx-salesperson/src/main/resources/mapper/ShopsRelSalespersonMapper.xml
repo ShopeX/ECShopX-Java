@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.salesperson.mapper.ShopsRelSalespersonMapper">
+
+	<select id="selectSalespersonIdsForDistributorBinding" resultType="long">
+		<bind name="expectedCount" value="shopIds == null ? 0 : shopIds.size()" />
+		<bind name="safePage" value="page &lt; 1 ? 1 : page" />
+		<bind name="relOffset" value="(safePage - 1) * pageSize" />
+		SELECT salesperson_id FROM shop_rel_salesperson
+		WHERE company_id = #{companyId}
+		  AND store_type = 'distributor'
+		  AND shop_id IN
+		<foreach collection="shopIds" item="sid" open="(" separator="," close=")">
+			#{sid}
+		</foreach>
+		GROUP BY salesperson_id
+		HAVING COUNT(salesperson_id) = #{expectedCount}
+		<if test="pageSize > 0">
+			LIMIT #{relOffset}, #{pageSize}
+		</if>
+	</select>
+</mapper>

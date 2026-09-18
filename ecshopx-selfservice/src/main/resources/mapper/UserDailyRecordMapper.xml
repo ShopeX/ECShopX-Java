@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.selfservice.mapper.UserDailyRecordMapper">
+
+  <sql id="udrDateListWhere">
+    company_id = #{companyId}
+    AND temp_id = #{tempId}
+    <if test="userId != null">
+      AND user_id = #{userId}
+    </if>
+  </sql>
+
+  <sql id="udrAllUserListWhere">
+    company_id = #{companyId}
+    AND temp_id = #{tempId}
+    <if test="userIds != null and userIds.size() > 0">
+      AND user_id IN
+      <foreach collection="userIds" item="uid" open="(" separator="," close=")">
+        #{uid}
+      </foreach>
+    </if>
+  </sql>
+
+  <select id="countDistinctUserIds" resultType="long">
+    SELECT COUNT(*) FROM (
+      SELECT user_id
+      FROM selfservice_user_daily_record
+      WHERE
+      <include refid="udrAllUserListWhere"/>
+      GROUP BY user_id
+    ) t
+  </select>
+
+  <select id="countDistinctRecordDates" resultType="long">
+    SELECT COUNT(*) FROM (
+      SELECT record_date
+      FROM selfservice_user_daily_record
+      WHERE
+      <include refid="udrDateListWhere"/>
+      GROUP BY record_date
+    ) t
+  </select>
+
+  <select id="selectDistinctRecordDatePage" resultType="java.lang.Integer">
+    SELECT record_date
+    FROM selfservice_user_daily_record
+    WHERE
+    <include refid="udrDateListWhere"/>
+    GROUP BY record_date
+    ORDER BY record_date DESC
+    <if test="limit != null">
+      LIMIT #{offset}, #{limit}
+    </if>
+  </select>
+
+  <select id="selectGroupByUserIdPage"
+      resultType="cn.shopex.ecshopx.selfservice.domain.UserDailyRecord">
+    SELECT r.*
+    FROM selfservice_user_daily_record r
+    INNER JOIN (
+      SELECT s.user_id, s.record_date, MAX(s.id) AS pick_id
+      FROM selfservice_user_daily_record s
+      INNER JOIN (
+        SELECT user_id, MAX(record_date) AS max_record_date
+        FROM selfservice_user_daily_record
+        WHERE
+        <include refid="udrAllUserListWhere"/>
+        GROUP BY user_id
+      ) m ON s.user_id = m.user_id AND s.record_date = m.max_record_date
+      WHERE
+      <include refid="udrAllUserListWhere"/>
+      GROUP BY s.user_id, s.record_date
+    ) x ON r.user_id = x.user_id AND r.record_date = x.record_date AND r.id = x.pick_id
+    ORDER BY r.record_date DESC
+    LIMIT #{offset}, #{limit}
+  </select>
+
+</mapper>

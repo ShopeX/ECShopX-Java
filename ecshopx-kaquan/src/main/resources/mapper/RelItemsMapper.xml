@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.kaquan.mapper.RelItemsMapper">
+	<insert id="insertBatch">
+		INSERT INTO kaquan_rel_items (item_id, card_id, item_type, company_id, is_show, use_limit) VALUES
+		<foreach collection="rows" item="r" separator=",">
+			(#{r.itemId}, #{r.cardId}, #{r.itemType}, #{r.companyId}, #{r.isShow}, #{r.useLimit})
+		</foreach>
+	</insert>
+
+	<select id="selectDistinctCardIdsByGoodsScope" resultType="long">
+		SELECT DISTINCT card_id FROM kaquan_rel_items
+		WHERE company_id = #{companyId} AND item_type = #{itemType}
+		AND item_id IN
+		<foreach collection="itemIds" item="iid" open="(" separator="," close=")">#{iid}</foreach>
+	</select>
+</mapper>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.hfpay.mapper.HfpayEnterapplyMapper">
+
+	<sql id="enterapplyApplyJoinWhere">
+		<where>
+			<if test="filter.companyId != null">
+				AND enterapply.company_id = #{filter.companyId}
+			</if>
+			<if test="filter.applyTypes != null and !filter.applyTypes.isEmpty()">
+				AND enterapply.apply_type IN
+				<foreach collection="filter.applyTypes" item="t" open="(" separator="," close=")">
+					#{t}
+				</foreach>
+			</if>
+			<if test="filter.nameContains != null and filter.nameContains != ''">
+				AND distributor.name LIKE CONCAT('%', #{filter.nameContains}, '%')
+			</if>
+			<if test="filter.distributorId != null">
+				AND distributor.distributor_id = #{filter.distributorId}
+			</if>
+			<if test="filter.province != null and filter.province != ''">
+				AND distributor.province = #{filter.province}
+			</if>
+			<if test="filter.city != null and filter.city != ''">
+				AND distributor.city = #{filter.city}
+			</if>
+			<if test="filter.area != null and filter.area != ''">
+				AND distributor.area = #{filter.area}
+			</if>
+		</where>
+	</sql>
+
+	<select id="countEnterapplyApplyJoinList" resultType="long">
+		SELECT COUNT(*)
+		FROM hfpay_enterapply enterapply
+		LEFT JOIN distribution_distributor distributor ON enterapply.distributor_id = distributor.distributor_id
+		<include refid="enterapplyApplyJoinWhere"/>
+	</select>
+
+	<select id="selectEnterapplyApplyJoinList" resultType="map">
+		SELECT
+			enterapply.hfpay_enterapply_id AS hfpay_enterapply_id,
+			enterapply.distributor_id AS distributor_id,
+			enterapply.status AS status,
+			distributor.name AS name
+		FROM hfpay_enterapply enterapply
+		LEFT JOIN distribution_distributor distributor ON enterapply.distributor_id = distributor.distributor_id
+		<include refid="enterapplyApplyJoinWhere"/>
+		ORDER BY enterapply.hfpay_enterapply_id DESC
+		<if test="filter.limit != null and filter.limit > 0">
+			LIMIT #{filter.limit} OFFSET #{filter.offset}
+		</if>
+	</select>
+
+	<select id="countStatisticsEnterapplyList" resultType="long">
+		SELECT COUNT(*)
+		FROM hfpay_enterapply e
+		WHERE e.company_id = #{companyId}
+		AND e.apply_type IN ('1', '2')
+		AND e.status = '3'
+		<if test="distributorId != null">
+			AND e.distributor_id = #{distributorId}
+		</if>
+	</select>
+
+	<select id="selectStatisticsEnterapplyList" resultType="map">
+		SELECT
+			e.company_id AS company_id,
+			e.distributor_id AS distributor_id,
+			distributor.name AS distributor_name
+		FROM hfpay_enterapply e
+		LEFT JOIN distribution_distributor distributor ON e.distributor_id = distributor.distributor_id
+		WHERE e.company_id = #{companyId}
+		AND e.apply_type IN ('1', '2')
+		AND e.status = '3'
+		<if test="distributorId != null">
+			AND e.distributor_id = #{distributorId}
+		</if>
+		<if test="pageSize > 0">
+			LIMIT #{pageSize} OFFSET #{offset}
+		</if>
+	</select>
+</mapper>

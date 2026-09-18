@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.employeepurchase.mapper.EmployeePurchaseActivitiesAdminListMapper">
+
+	<sql id="adminListWhere">
+		WHERE company_id = #{f.companyId}
+		<if test="f.distributorId != null">
+			AND distributor_id = #{f.distributorId}
+		</if>
+		<if test="f.nameContains != null and f.nameContains != ''">
+			AND name LIKE CONCAT('%', #{f.nameContains}, '%')
+		</if>
+		<if test="f.displayTimeGt != null">
+			AND display_time &gt; #{f.displayTimeGt}
+		</if>
+		<if test="f.buyTimeBegin != null and f.buyTimeEnd != null">
+			AND (
+				(employee_begin_time &lt; #{f.buyTimeBegin} AND employee_end_time &lt; #{f.buyTimeBegin})
+				OR (employee_begin_time &lt; #{f.buyTimeEnd} AND employee_end_time &lt; #{f.buyTimeEnd})
+				OR (relative_begin_time &lt; #{f.buyTimeBegin} AND relative_end_time &lt; #{f.buyTimeBegin})
+				OR (relative_begin_time &lt; #{f.buyTimeEnd} AND relative_end_time &lt; #{f.buyTimeEnd})
+			)
+		</if>
+		<if test="f.buyTimeBegin != null and f.buyTimeEnd == null">
+			AND (
+				employee_begin_time &gt; #{f.buyTimeBegin}
+				OR relative_begin_time &gt; #{f.buyTimeBegin}
+				OR (employee_begin_time &lt; #{f.buyTimeBegin} AND employee_end_time &gt; #{f.buyTimeBegin})
+				OR (relative_begin_time &lt; #{f.buyTimeBegin} AND relative_end_time &gt; #{f.buyTimeBegin})
+			)
+		</if>
+		<if test="f.buyTimeBegin == null and f.buyTimeEnd != null">
+			AND (
+				employee_end_time &lt; #{f.buyTimeEnd}
+				OR relative_end_time &lt; #{f.buyTimeEnd}
+				OR (employee_begin_time &lt; #{f.buyTimeEnd} AND employee_end_time &gt; #{f.buyTimeEnd})
+				OR (relative_begin_time &lt; #{f.buyTimeEnd} AND relative_end_time &gt; #{f.buyTimeEnd})
+			)
+		</if>
+		<if test="f.idIn != null and f.idIn.size() &gt; 0">
+			AND id IN
+			<foreach collection="f.idIn" item="aid" open="(" separator="," close=")">
+				#{aid}
+			</foreach>
+		</if>
+		<choose>
+			<when test='f.statusVirtual != null and "not_started".equals(f.statusVirtual)'>
+				AND display_time &gt; #{now}
+				AND status = 'active'
+			</when>
+			<when test='f.statusVirtual != null and "warm_up".equals(f.statusVirtual)'>
+				AND display_time &lt; #{now}
+				AND employee_begin_time &gt; #{now}
+				AND (relative_begin_time IS NULL OR relative_begin_time = 0 OR relative_begin_time &gt; #{now})
+				AND status = 'active'
+			</when>
+			<when test='f.statusVirtual != null and "ongoing".equals(f.statusVirtual)'>
+				AND (
+					employee_begin_time &lt; #{now}
+					OR (relative_begin_time &gt; 0 AND relative_begin_time &lt; #{now})
+				)
+				AND (
+					employee_end_time &gt; #{now}
+					OR relative_end_time &gt; #{now}
+				)
+				AND status = 'active'
+			</when>
+			<when test='f.statusVirtual != null and "pending".equals(f.statusVirtual)'>
+				AND (
+					employee_begin_time &lt; #{now}
+					OR relative_begin_time &lt; #{now}
+				)
+				AND (
+					employee_end_time &gt; #{now}
+					OR relative_end_time &gt; #{now}
+				)
+				AND status = 'pending'
+			</when>
+			<when test='f.statusVirtual != null and "over".equals(f.statusVirtual)'>
+				AND (
+					(employee_end_time &lt; #{now} AND relative_end_time &lt; #{now})
+					OR status = 'over'
+				)
+			</when>
+			<when test="f.statusDbEquals != null">
+				AND status = #{f.statusDbEquals}
+			</when>
+		</choose>
+	</sql>
+
+	<select id="countByFilter" resultType="long">
+		SELECT COUNT(*)
+		FROM employee_purchase_activities
+		<include refid="adminListWhere"/>
+	</select>
+
+	<select id="selectPageByFilter" resultType="cn.shopex.ecshopx.employeepurchase.domain.Activities">
+		SELECT *
+		FROM employee_purchase_activities
+		<include refid="adminListWhere"/>
+		ORDER BY created DESC
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+</mapper>

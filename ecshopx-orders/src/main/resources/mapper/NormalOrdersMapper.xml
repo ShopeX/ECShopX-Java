@@ -1,0 +1,409 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.orders.mapper.NormalOrdersMapper">
+
+	<select id="selectDeliveryStaffAggregates" resultType="cn.shopex.ecshopx.orders.domain.dto.DeliveryStaffOrderAggregateRow">
+		SELECT
+			self_delivery_operator_id AS selfDeliveryOperatorId,
+			COUNT(DISTINCT user_id) AS userCount,
+			COUNT(order_id) AS orderCount,
+			SUM(total_fee) AS totalFeeCount,
+			SUM(self_delivery_fee) AS selfDeliveryFeeCount
+		FROM orders_normal_orders
+		WHERE self_delivery_status = 'DONE'
+			AND company_id = #{companyId}
+			AND self_delivery_end_time &gt;= #{startEpoch}
+			AND self_delivery_end_time &lt;= #{endEpoch}
+		<if test="operatorIds != null and !operatorIds.isEmpty()">
+			AND self_delivery_operator_id IN
+			<foreach collection="operatorIds" item="oid" open="(" separator="," close=")">
+				#{oid}
+			</foreach>
+		</if>
+		<if test="distributorIds != null and !distributorIds.isEmpty()">
+			AND distributor_id IN
+			<foreach collection="distributorIds" item="did" open="(" separator="," close=")">
+				#{did}
+			</foreach>
+		</if>
+		<if test="merchantId != null and merchantId > 0">
+			AND merchant_id = #{merchantId}
+		</if>
+		GROUP BY self_delivery_operator_id
+	</select>
+
+	<select id="selectPaidAggsByMonitorSource" resultType="cn.shopex.ecshopx.orders.domain.dto.MonitorSourcePaidOrderAggRow">
+		SELECT
+			COALESCE(SUM(CAST(total_fee AS DECIMAL(20, 2))), 0) AS payAmount,
+			COUNT(DISTINCT user_id) AS payNum
+		FROM orders_normal_orders
+		WHERE company_id = #{companyId}
+			AND monitor_id = #{monitorId}
+			AND source_id = #{sourceId}
+			AND create_time &gt;= #{startEpoch}
+			AND create_time &lt;= #{endEpoch}
+			AND pay_status = 'PAYED'
+	</select>
+
+	<sql id="exportNormalOrderItemsWhere">
+			<if test="filter.company_id != null">
+				AND o.company_id = #{filter.company_id}
+			</if>
+			AND o.order_type = 'normal'
+			<if test="filter['order_class|notin'] != null and filter['order_class|notin'].size() &gt; 0">
+				AND o.order_class NOT IN
+				<foreach collection="filter['order_class|notin']" item="oc" open="(" separator="," close=")">
+					#{oc}
+				</foreach>
+			</if>
+			<if test="filter.order_class != null and filter.order_class != ''">
+				AND o.order_class = #{filter.order_class}
+			</if>
+			<if test="filter.merchant_id != null and filter.merchant_id != ''">
+				AND o.merchant_id = #{filter.merchant_id}
+			</if>
+			<if test="filter.supplier_id != null and filter.supplier_id != ''">
+				AND i.supplier_id = #{filter.supplier_id}
+			</if>
+			<if test="filter['create_time|gte'] != null">
+				AND o.create_time &gt;= #{filter[create_time|gte]}
+			</if>
+			<if test="filter['create_time|lte'] != null">
+				AND o.create_time &lt;= #{filter[create_time|lte]}
+			</if>
+			<if test="filter['delivery_time|gte'] != null">
+				AND o.delivery_time &gt;= #{filter[delivery_time|gte]}
+			</if>
+			<if test="filter['delivery_time|lte'] != null">
+				AND o.delivery_time &lt;= #{filter[delivery_time|lte]}
+			</if>
+			<if test="filter['order_status|in'] != null and filter['order_status|in'].size() &gt; 0">
+				AND o.order_status IN
+				<foreach collection="filter['order_status|in']" item="st" open="(" separator="," close=")">
+					#{st}
+				</foreach>
+			</if>
+			<if test="filter.order_status != null and filter.order_status != '' and (filter['order_status|in'] == null or filter['order_status|in'].size() == 0)">
+				AND o.order_status = #{filter.order_status}
+			</if>
+			<if test="filter.cancel_status != null and filter.cancel_status != ''">
+				AND o.cancel_status = #{filter.cancel_status}
+			</if>
+			<if test="filter.receipt_type != null and filter.receipt_type != ''">
+				AND o.receipt_type = #{filter.receipt_type}
+			</if>
+			<if test="filter.ziti_status != null and filter.ziti_status != ''">
+				AND o.ziti_status = #{filter.ziti_status}
+			</if>
+			<if test="filter.delivery_status != null and filter.delivery_status != ''">
+				AND o.delivery_status = #{filter.delivery_status}
+			</if>
+			<if test="filter.item_delivery_status != null and filter.item_delivery_status != ''">
+				AND i.delivery_status = #{filter.item_delivery_status}
+			</if>
+			<if test="filter.receiver_name != null and filter.receiver_name != ''">
+				AND o.receiver_name = #{filter.receiver_name}
+			</if>
+			<if test="filter.mobile != null and filter.mobile != ''">
+				AND o.mobile = #{filter.mobile}
+			</if>
+			<if test="filter.user_id != null and filter.user_id != ''">
+				AND o.user_id = #{filter.user_id}
+			</if>
+			<if test="filter.source_id != null and filter.source_id != ''">
+				AND o.source_id = #{filter.source_id}
+			</if>
+			<if test="filter.containsKey('distributor_id')">
+				AND o.distributor_id = CAST(#{filter.distributor_id} AS SIGNED)
+			</if>
+			<if test="filter['distributor_id|in'] != null and filter['distributor_id|in'].size() &gt; 0">
+				AND o.distributor_id IN
+				<foreach collection="filter['distributor_id|in']" item="did" open="(" separator="," close=")">
+					#{did}
+				</foreach>
+			</if>
+			<choose>
+				<when test="filter.shop_id != null and filter.shop_id instanceof java.util.Collection and filter.shop_id.size() &gt; 0">
+					AND o.shop_id IN
+					<foreach collection="filter.shop_id" item="sid" open="(" separator="," close=")">
+						#{sid}
+					</foreach>
+				</when>
+				<when test="filter.shop_id != null and filter.shop_id != ''">
+					AND o.shop_id = #{filter.shop_id}
+				</when>
+			</choose>
+			<if test="filter['cancel_status|in'] != null and filter['cancel_status|in'].size() &gt; 0">
+				AND o.cancel_status IN
+				<foreach collection="filter['cancel_status|in']" item="cs" open="(" separator="," close=")">
+					#{cs}
+				</foreach>
+			</if>
+			<if test="filter['delivery_status|in'] != null and filter['delivery_status|in'].size() &gt; 0">
+				AND o.delivery_status IN
+				<foreach collection="filter['delivery_status|in']" item="ds" open="(" separator="," close=")">
+					#{ds}
+				</foreach>
+			</if>
+			<if test="filter.invoice_not_empty != null and (filter.invoice_not_empty == true or filter.invoice_not_empty == 'true' or filter.invoice_not_empty == 1)">
+				AND o.invoice IS NOT NULL AND o.invoice != ''
+			</if>
+			<if test="filter.is_invoiced != null">
+				AND o.is_invoiced = #{filter.is_invoiced}
+			</if>
+			<if test="filter['order_id|like'] != null and filter['order_id|like'] != ''">
+				AND CAST(o.order_id AS CHAR) LIKE CONCAT('%', #{filter['order_id|like']}, '%')
+			</if>
+			<if test="filter['order_id|in'] != null and filter['order_id|in'].size() &gt; 0">
+				AND o.order_id IN
+				<foreach collection="filter['order_id|in']" item="oid" open="(" separator="," close=")">
+					#{oid}
+				</foreach>
+			</if>
+			<if test="filter.order_id != null and filter.order_id != '' and filter['order_id|like'] == null and (filter['order_id|in'] == null or filter['order_id|in'].size() == 0)">
+				AND o.order_id = #{filter.order_id}
+			</if>
+			<if test="filter['title|like'] != null and filter['title|like'] != ''">
+				AND o.title LIKE CONCAT('%', #{filter['title|like']}, '%')
+			</if>
+			<if test="filter.item_name != null and filter.item_name != ''">
+				AND i.item_name LIKE CONCAT('%', #{filter.item_name}, '%')
+			</if>
+			<if test="filter.act_id != null and filter.act_id instanceof java.util.Collection and filter.act_id.size() &gt; 0">
+				AND o.act_id IN
+				<foreach collection="filter.act_id" item="aid" open="(" separator="," close=")">
+					#{aid}
+				</foreach>
+			</if>
+			<if test="filter.act_id != null and !(filter.act_id instanceof java.util.Collection) and filter.act_id != ''">
+				AND o.act_id = #{filter.act_id}
+			</if>
+			<if test="filter.salesman_id != null">
+				AND o.salesman_id = #{filter.salesman_id}
+			</if>
+			<if test="filter.pay_type != null and filter.pay_type != ''">
+				AND o.pay_type = #{filter.pay_type}
+			</if>
+			<if test="filter.containsKey('subdistrict_parent_id')">
+				AND o.subdistrict_parent_id = #{filter.subdistrict_parent_id}
+			</if>
+			<if test="filter.containsKey('subdistrict_id')">
+				AND o.subdistrict_id = #{filter.subdistrict_id}
+			</if>
+			<if test="filter.promoter_mobile != null and filter.promoter_mobile != ''">
+				AND EXISTS (
+					SELECT 1 FROM popularize_promoter pp
+					INNER JOIN members_info mi ON mi.company_id = pp.company_id AND mi.user_id = pp.user_id
+					WHERE pp.company_id = o.company_id AND pp.user_id = o.user_id AND pp.is_promoter = 1
+					AND mi.mobile = #{filter.promoter_mobile})
+			</if>
+			<if test="filter.promoter_identity != null and filter.promoter_identity != ''">
+				AND EXISTS (
+					SELECT 1 FROM popularize_promoter pp
+					INNER JOIN popularize_promoter_identity pid ON pid.id = pp.identity_id AND pid.company_id = pp.company_id
+					WHERE pp.company_id = o.company_id AND pp.user_id = o.user_id AND pp.is_promoter = 1
+					AND pid.name LIKE CONCAT('%', #{filter.promoter_identity}, '%'))
+			</if>
+	</sql>
+
+	<select id="countExportNormalOrderItems" resultType="long">
+		SELECT COUNT(i.id)
+		FROM orders_normal_orders_items i
+		INNER JOIN orders_normal_orders o
+			ON i.order_id = o.order_id AND i.company_id = o.company_id
+		<where>
+			<include refid="exportNormalOrderItemsWhere"/>
+		</where>
+	</select>
+
+	<select id="selectExportNormalOrderItems" resultType="cn.shopex.ecshopx.orders.domain.dto.NormalOrderExportItemRow">
+		SELECT
+			i.id AS itemRowId,
+			i.order_id AS orderId,
+			i.item_id AS itemId,
+			i.item_name AS itemName,
+			i.item_bn AS itemBn,
+			i.price AS price,
+			i.cost_price AS costPrice,
+			i.num AS num,
+			i.item_fee AS itemFee,
+			i.commission_fee AS commissionFee,
+			i.cost_fee AS costFee,
+			i.point_fee AS itemPointFee,
+			i.total_fee AS itemTotalFee,
+			i.member_discount AS memberDiscount,
+			i.coupon_discount AS couponDiscount,
+			i.discount_fee AS itemDiscountFee,
+			i.discount_info AS discountInfo,
+			i.delivery_status AS deliveryStatus,
+			i.delivery_time AS itemDeliveryTime,
+			i.delivery_code AS itemDeliveryCode,
+			i.delivery_corp AS itemDeliveryCorp,
+			i.aftersales_status AS aftersalesStatus,
+			i.item_spec_desc AS itemSpecDesc,
+			i.supplier_id AS itemSupplierId,
+			o.mobile AS mobile,
+			o.user_id AS userId,
+			o.create_time AS orderCreateTime,
+			o.total_fee AS orderTotalFee,
+			o.freight_fee AS orderFreightFee,
+			o.distributor_id AS distributorId,
+			o.order_class AS orderClass,
+			o.order_status AS orderStatus,
+			o.pay_type AS payType,
+			o.pay_status AS payStatus,
+			o.receipt_type AS receiptType,
+			o.ziti_status AS zitiStatus,
+			o.receiver_name AS receiverName,
+			o.receiver_mobile AS receiverMobile,
+			o.receiver_zip AS receiverZip,
+			o.receiver_state AS receiverState,
+			o.receiver_city AS receiverCity,
+			o.receiver_district AS receiverDistrict,
+			o.receiver_address AS receiverAddress,
+			o.remark AS remark,
+			o.end_time AS endTime,
+			o.delivery_status AS orderDeliveryStatus,
+			o.delivery_time AS orderDeliveryTime,
+			o.delivery_corp AS orderDeliveryCorp,
+			o.delivery_code AS orderDeliveryCode,
+			o.cancel_status AS cancelStatus,
+			o.prescription_status AS prescriptionStatus
+		FROM orders_normal_orders_items i
+		INNER JOIN orders_normal_orders o
+			ON i.order_id = o.order_id AND i.company_id = o.company_id
+		<where>
+			<include refid="exportNormalOrderItemsWhere"/>
+		</where>
+		ORDER BY o.distributor_id DESC, o.order_id DESC, o.create_time ASC, i.id DESC
+		LIMIT #{offset}, #{limit}
+	</select>
+
+	<select id="countOfflinePayCancelable" resultType="long">
+		SELECT COUNT(*)
+		FROM orders_normal_orders o
+		LEFT JOIN offline_payment of ON o.order_id = of.order_id
+		WHERE CAST(o.auto_cancel_time AS UNSIGNED) &lt; #{threshold}
+		  AND o.order_status = 'NOTPAY'
+		  AND o.order_class IN ('normal', 'shopguide', 'employee_purchase')
+		  AND o.pay_type = 'offline_pay'
+		  AND (of.check_status IS NULL OR of.check_status != 0)
+	</select>
+
+	<select id="selectOfflinePayCancelable" resultType="cn.shopex.ecshopx.orders.domain.NormalOrders">
+		SELECT o.*
+		FROM orders_normal_orders o
+		LEFT JOIN offline_payment of ON o.order_id = of.order_id
+		WHERE CAST(o.auto_cancel_time AS UNSIGNED) &lt; #{threshold}
+		  AND o.order_status = 'NOTPAY'
+		  AND o.order_class IN ('normal', 'shopguide', 'employee_purchase')
+		  AND o.pay_type = 'offline_pay'
+		  AND (of.check_status IS NULL OR of.check_status != 0)
+		LIMIT #{limit}
+	</select>
+
+	<select id="selectConsumptionCandidatePage" resultType="cn.shopex.ecshopx.orders.domain.NormalOrders">
+		SELECT o.*
+		FROM orders_normal_orders o
+		WHERE o.order_auto_close_aftersales_time &lt; #{timeSec}
+		  AND o.order_status = 'DONE'
+		  AND o.is_consumption = 0
+		<if test="excludeOrderIds != null and excludeOrderIds.size() &gt; 0">
+			AND o.order_id NOT IN
+			<foreach collection="excludeOrderIds" item="eid" open="(" separator="," close=")">
+				#{eid}
+			</foreach>
+		</if>
+		ORDER BY o.create_time DESC
+		LIMIT #{limit}
+	</select>
+
+	<update id="updateIsConsumptionWhenZero">
+		UPDATE orders_normal_orders
+		SET is_consumption = 1
+		WHERE is_consumption = 0
+		<if test="orderIds != null and orderIds.size() &gt; 0">
+			AND order_id IN
+			<foreach collection="orderIds" item="oid" open="(" separator="," close=")">
+				#{oid}
+			</foreach>
+		</if>
+	</update>
+
+	<select id="countAutoFinishCandidates" resultType="long">
+		SELECT COUNT(*)
+		FROM orders_normal_orders o
+		WHERE CAST(o.auto_finish_time AS UNSIGNED) &lt; #{finishBeforeSec}
+		  AND o.order_status = 'WAIT_BUYER_CONFIRM'
+		  AND o.delivery_status = 'DONE'
+		  AND o.cancel_status IN ('NO_APPLY_CANCEL', 'FAILS')
+		  AND o.order_class IN ('normal', 'seckill', 'groups', 'shopguide', 'employee_purchase')
+		  AND (o.receipt_type IS NULL OR o.receipt_type != 'dada')
+	</select>
+
+	<select id="selectAutoFinishCandidatePage" resultType="cn.shopex.ecshopx.orders.domain.NormalOrders">
+		SELECT o.*
+		FROM orders_normal_orders o
+		WHERE CAST(o.auto_finish_time AS UNSIGNED) &lt; #{finishBeforeSec}
+		  AND o.order_status = 'WAIT_BUYER_CONFIRM'
+		  AND o.delivery_status = 'DONE'
+		  AND o.cancel_status IN ('NO_APPLY_CANCEL', 'FAILS')
+		  AND o.order_class IN ('normal', 'seckill', 'groups', 'shopguide', 'employee_purchase')
+		  AND (o.receipt_type IS NULL OR o.receipt_type != 'dada')
+		ORDER BY o.order_id ASC
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+
+	<select id="sumOrderTotalFeeCentsForYoushu" resultType="java.lang.Long">
+		SELECT SUM(CAST(total_fee AS SIGNED))
+		FROM orders_normal_orders
+		WHERE company_id = #{companyId}
+			AND create_time &gt;= #{startSec}
+			AND create_time &lt;= #{endSec}
+	</select>
+
+	<select id="countOrdersForYoushu" resultType="long">
+		SELECT COUNT(*)
+		FROM orders_normal_orders
+		WHERE company_id = #{companyId}
+			AND create_time &gt;= #{startSec}
+			AND create_time &lt;= #{endSec}
+	</select>
+
+	<sql id="openapiMemberOrderListWhere">
+		<if test="filter.company_id != null">
+			AND company_id = #{filter.company_id}
+		</if>
+		<if test="filter.user_id != null">
+			AND user_id = #{filter.user_id}
+		</if>
+		<if test="filter.order_type != null and filter.order_type != ''">
+			AND order_type = #{filter.order_type}
+		</if>
+		<if test="filter['order_status|notin'] != null and filter['order_status|notin'].size() &gt; 0">
+			AND order_status NOT IN
+			<foreach collection="filter['order_status|notin']" item="st" open="(" separator="," close=")">
+				#{st}
+			</foreach>
+		</if>
+		<if test="filter.order_class != null and filter.order_class != ''">
+			AND order_class = #{filter.order_class}
+		</if>
+	</sql>
+
+	<select id="sumTotalFeeGroupByUserId" resultType="java.util.LinkedHashMap">
+		SELECT user_id AS user_id, SUM(CAST(total_fee AS SIGNED)) AS fee
+		FROM orders_normal_orders
+		WHERE 1 = 1
+		<include refid="openapiMemberOrderListWhere"/>
+		GROUP BY user_id
+	</select>
+
+	<select id="sumTotalFeeCentsByFilter" resultType="java.lang.Long">
+		SELECT COALESCE(SUM(CAST(total_fee AS SIGNED)), 0)
+		FROM orders_normal_orders
+		WHERE company_id = #{companyId}
+			AND user_id = #{userId}
+	</select>
+
+</mapper>

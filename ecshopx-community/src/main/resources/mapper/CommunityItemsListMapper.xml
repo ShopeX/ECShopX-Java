@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.community.mapper.CommunityItemsListMapper">
+
+	<sql id="joinItemsFrom">
+		FROM community_items c
+		LEFT JOIN items i ON i.goods_id = c.goods_id
+		<if test="p.useActivityJoin">
+			LEFT JOIN (
+				SELECT MIN(item_id) AS item_id, goods_id, activity_id
+				FROM community_activity_item
+				GROUP BY activity_id, goods_id
+			) t ON c.goods_id = t.goods_id
+			LEFT JOIN community_activity a ON t.activity_id = a.activity_id
+		</if>
+	</sql>
+
+	<sql id="joinItemsWhere">
+		WHERE i.item_id IS NOT NULL
+		AND c.company_id = #{p.companyId}
+		AND i.company_id = #{p.companyId}
+		AND i.item_type = 'normal'
+		AND i.is_default = 1
+		<choose>
+			<when test="p.distributorIds != null and p.distributorIds.size() &gt; 0">
+				AND i.distributor_id IN
+				<foreach collection="p.distributorIds" item="did" open="(" separator="," close=")">
+					#{did}
+				</foreach>
+			</when>
+			<otherwise>
+				AND i.distributor_id = #{p.distributorId}
+			</otherwise>
+		</choose>
+		<if test="p.itemNameContains != null and p.itemNameContains != ''">
+			AND i.item_name LIKE CONCAT('%', #{p.itemNameContains}, '%')
+		</if>
+		<if test="p.itemIdOrDefaultIds != null and p.itemIdOrDefaultIds.size() &gt; 0">
+			AND (
+			i.item_id IN
+			<foreach collection="p.itemIdOrDefaultIds" item="vid" open="(" separator="," close=")">
+				#{vid}
+			</foreach>
+			OR i.default_item_id IN
+			<foreach collection="p.itemIdOrDefaultIds" item="vid2" open="(" separator="," close=")">
+				#{vid2}
+			</foreach>
+			)
+		</if>
+		<if test="p.auditStatus != null and p.auditStatus != ''">
+			AND i.audit_status = #{p.auditStatus}
+		</if>
+		<if test="p.approveStatus != null and p.approveStatus != ''">
+			AND i.approve_status = #{p.approveStatus}
+		</if>
+		<if test="p.brandId != null and p.brandId != 0">
+			AND i.brand_id = #{p.brandId}
+		</if>
+		<if test="p.goodsIdEq != null">
+			AND c.goods_id = #{p.goodsIdEq}
+		</if>
+		<if test="p.useActivityJoin and p.applyActivityTimeWindow">
+			AND a.start_time &lt; #{p.nowEpochSec}
+			AND a.end_time &gt; #{p.nowEpochSec}
+			AND a.activity_status NOT IN ('fail', 'success')
+		</if>
+		<if test="p.useActivityJoin and p.activityIdEq != null">
+			AND a.activity_id = #{p.activityIdEq}
+		</if>
+	</sql>
+
+	<select id="selectJoinItemsListPage" resultType="map">
+		SELECT i.*, c.min_delivery_num, c.sort AS community_item_sort
+		<include refid="joinItemsFrom"/>
+		<include refid="joinItemsWhere"/>
+		ORDER BY i.item_id DESC
+	</select>
+</mapper>
