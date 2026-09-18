@@ -1,7 +1,7 @@
-<p align="center"><img width="600" height="auto" alt="logo" src="../logo.png" /></p>
+<p align="center"><img width="600" height="auto" alt="logo" src="logo.png" /></p>
 
 # 
-<p align="center"><a href="README.md">English</a> / 简体中文</p>
+<p align="center"><a href="readme.md">English</a> / 简体中文</p>
 
 ECShopX-Java 的 Java 后端工程：一套基于 Spring Boot 3 + Java 17 的多模块（1 Bundle = 1 Maven Module）服务端实现，承载从商品、订单、会员、营销到支付与第三方集成的完整业务能力，配合 ECShopX-Java 前端可快速构建多端、多模式的官方商城基座。
 
@@ -398,7 +398,7 @@ docker compose -f docker-compose.dev.yml down -v
 
 ## 💬 开源社群
 欢迎扫码加入 ECShopX-Java 开源交流社群，获取更新动态、使用交流与问题互助。
-<p align="center"><img width="300" height="auto" alt="workwechat" src="../workwechat.png" /></p>
+<p align="center"><img width="300" height="auto" alt="workwechat" src="workwechat.png" /></p>
 
 ## 致谢
 感谢所有为 ECShopX-Java 做出贡献的开发者、用户以及商派背后的全球品牌客户们！
