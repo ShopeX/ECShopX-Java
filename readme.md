@@ -6,7 +6,7 @@
 ECShopX Java backend: a Spring Boot 3 + Java 17 server implementation built as a multi-module architecture (1 Bundle = 1 Maven Module). It covers the full business stack—from products, orders, members, and marketing to payments and third-party integrations—and works with the ECShopX frontend to quickly build an official commerce foundation across multiple channels and business models.
 
 ## Project Overview
-`ecshopx-java` is the Java server-side implementation of the ECShopX commerce system. It keeps business semantics aligned with the legacy PHP version (see the repository root [`README`](../readme_cn.md)) and maps configuration items one-to-one, while reorganizing the codebase into a highly modular, multi-Bundle architecture following modern Java engineering practices. Each business domain (products, orders, marketing, members, payments, third-party integrations, etc.) is split into an independent Maven module and managed under the parent project `cn.shopex:ecshopx`. At runtime, `ecshopx-bootstrap` serves as the Spring Boot entrypoint and assembles all Bundles on demand.
+`ecshopx-java` is the Java server-side implementation of the ECShopX commerce system. It keeps business semantics aligned with the legacy PHP version (see the repository root README) and maps configuration items one-to-one, while reorganizing the codebase into a highly modular, multi-Bundle architecture following modern Java engineering practices. Each business domain (products, orders, marketing, members, payments, third-party integrations, etc.) is split into an independent Maven module and managed under the parent project `cn.shopex:ecshopx`. At runtime, `ecshopx-bootstrap` serves as the Spring Boot entrypoint and assembles all Bundles on demand.
 
 ## Use Cases
 * **B2C private-domain brand store**: a unified backend for official mini-programs, apps, PC websites, H5, and other DTC commerce channels.
@@ -42,7 +42,7 @@ ECShopX Java backend: a Spring Boot 3 + Java 17 server implementation built as a
 * **Maven** ≥ 3.9 (use the bundled `./mvnw` wrapper in the repository root)
 * **MySQL** ≥ 5.7 (8.0 recommended, `utf8mb4` charset, `Asia/Shanghai` timezone)
 * **Redis** ≥ 4.0
-* **XXL-JOB Admin** (optional, but required for scheduled jobs; see the deployment manifest in `../docs/migration/infra/xxl-job/`)
+* **XXL-JOB Admin** (optional, but required for scheduled jobs; see the deployment manifest in `docs/migration/infra/xxl-job/`)
 
 ## Project Structure
 ```
@@ -330,7 +330,7 @@ The default admin credentials carry over from the PHP version:
 > Password: `Shopex123`
 
 ### 5. NGINX Reverse Proxy (Optional)
-To expose the API and frontend under a unified domain, refer to the NGINX template in the repository root [`readme_cn.md`](../readme_cn.md) and point `proxy_pass` to `http://localhost:18080`.
+To expose the API and frontend under a unified domain, refer to the NGINX template in the repository root [`readme_cn.md`](https://github.com/ShopeX/ECShopX/blob/main/README_cn.md) and point `proxy_pass` to `http://localhost:18080`.
 
 ## Common Development Commands
 
@@ -388,7 +388,7 @@ See the root `LICENSE.txt` for the full text of the Apache 2.0 license.
 
 ## Contributing
 We welcome contributions of all kinds!  
-Read the repository root [`CONTRIBUTING.md`](../CONTRIBUTING.md) to learn how to get involved. Before submitting Java-side changes:
+Read the repository root [`CONTRIBUTING.md`](CONTRIBUTING.md) to learn how to get involved. Before submitting Java-side changes:
 1. Keep analysis / plan / test artifacts under `docs/migration/` (when related to PHP → Java migration);
 2. Make sure `./mvnw -pl <module> -am verify` passes;
 3. Follow the repository's existing package structure and layering conventions (`controller` / `service` / `mapper` / `integration` / `port`).

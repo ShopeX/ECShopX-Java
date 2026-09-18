@@ -6,7 +6,7 @@
 ECShopX-Java 的 Java 后端工程：一套基于 Spring Boot 3 + Java 17 的多模块（1 Bundle = 1 Maven Module）服务端实现，承载从商品、订单、会员、营销到支付与第三方集成的完整业务能力，配合 ECShopX-Java 前端可快速构建多端、多模式的官方商城基座。
 
 ## 项目介绍
-`ecshopx-java` 是 ECShopX-Java 商城系统的 Java 服务端，与历史 PHP 版（参见仓库根目录 [`README`](../readme_cn.md)）业务语义对齐、配置项一一映射，并按现代 Java 工程实践重新组织为高度模块化的多 Bundle 架构。各业务域（商品、订单、营销、会员、支付、第三方对接等）被拆分为独立 Maven Module，统一在父工程 `cn.shopex:ecshopx` 下管理；运行时由 `ecshopx-bootstrap` 作为 Spring Boot 启动入口，按需聚合所有 Bundle。
+`ecshopx-java` 是 ECShopX-Java 商城系统的 Java 服务端，与历史 PHP 版（参见仓库根目录readme_cn）业务语义对齐、配置项一一映射，并按现代 Java 工程实践重新组织为高度模块化的多 Bundle 架构。各业务域（商品、订单、营销、会员、支付、第三方对接等）被拆分为独立 Maven Module，统一在父工程 `cn.shopex:ecshopx` 下管理；运行时由 `ecshopx-bootstrap` 作为 Spring Boot 启动入口，按需聚合所有 Bundle。
 
 ## 适用场景
 * **B2C 品牌私域商城**：作为官方小程序、APP、PC 官网、H5 等多端 DTC 商城的统一后端。
@@ -42,7 +42,7 @@ ECShopX-Java 的 Java 后端工程：一套基于 Spring Boot 3 + Java 17 的多
 * **Maven** ≥ 3.9（推荐使用根目录自带的 `./mvnw`）
 * **MySQL** ≥ 5.7（建议 8.0，字符集 `utf8mb4`，时区 `Asia/Shanghai`）
 * **Redis** ≥ 4.0
-* **XXL-JOB Admin**（可选，启用定时任务时必需，部署清单见 `../docs/migration/infra/xxl-job/`）
+* **XXL-JOB Admin**（可选，启用定时任务时必需，部署清单见 `docs/migration/infra/xxl-job/`）
 
 ## 工程结构
 ```
@@ -339,7 +339,7 @@ kill "$(cat ecshopx.pid)"
 > 密码：`Shopex123`
 
 ### 5. NGINX 反向代理（可选）
-若需以统一域名对外暴露 API 与前端，可参考根目录 [`readme_cn.md`](../readme_cn.md) 中的 NGINX 模板，将 `proxy_pass` 指向 `http://localhost:18080`。
+若需以统一域名对外暴露 API 与前端，可参PHP版本考根目录readme_cn.md 中的 NGINX 模板，将 `proxy_pass` 指向 `http://localhost:18080`。
 
 ## 常用开发命令
 
@@ -387,7 +387,7 @@ docker compose -f docker-compose.dev.yml down -v
 
 ## 贡献
 我们欢迎所有形式的贡献！  
-请阅读根目录 [`CONTRIBUTING.md`](../CONTRIBUTING.md) 了解如何参与；提交 Java 侧变更前请：
+请阅读根目录 [`CONTRIBUTING.md`](CONTRIBUTING.md) 了解如何参与；提交 Java 侧变更前请：
 1. 在 `docs/migration/` 下保留分析 / 计划 / 测试工件（如涉及 PHP → Java 迁移）；
 2. `./mvnw -pl <module> -am verify` 通过；
 3. 遵循本仓库现有的包结构与分层约定（`controller` / `service` / `mapper` / `integration` / `port`）。
