@@ -16,6 +16,18 @@ ECShopX Java backend: a Spring Boot 3 + Java 17 server implementation built as a
 * **O2O brand cloud store + instant retail**: online ordering with nearby-store pickup and instant delivery.
 * **O2O dealer cloud store**: aggregates dealer store resources to support online ordering with store fulfillment and pickup.
 
+## Quick Installation
+```bash
+curl -fsSL https://oss.shopex.cn/ecx/ECX-Java_install.sh | bash
+```
+Follow the prompts provided by the script to deploy the system. 
+The script will automatically:
+* Check the Docker environment
+* Clone the frontend projects if they do not already exist
+* Start Docker containers (PHP, Nginx, MySQL, Redis)
+* Configure the Java application (install dependencies, run database migrations, and initialize the administrator password)
+* Build the frontend projects (Admin Console, H5, and Web Store)
+
 ## Key Features
 ### Modular Architecture
 * **1 Bundle = 1 Maven Module**: 50+ business Bundles (`ecshopx-goods`, `ecshopx-orders`, `ecshopx-promotions`, `ecshopx-members`, `ecshopx-payment`, etc.) are packaged and evolve independently and can be included as needed.
