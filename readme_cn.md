@@ -16,6 +16,19 @@ ECShopX-Java 的 Java 后端工程：一套基于 Spring Boot 3 + Java 17 的多
 * **O2O 品牌云店 + 即时零售**：线上下单、附近门店自提与即时配送。
 * **O2O 经销商云店**：聚合所有经销商门店资源，实现「线上下单、门店发货 / 自提」。
 
+## 快速安装
+```bash
+curl -fsSL https://oss.shopex.cn/ecx/ECX-Java_install.sh | bash
+```
+依据脚本提示部署系统
+脚本会自动完成：
+
+* 检测 Docker 环境
+* 克隆前端项目（如不存在）
+* 启动 Docker 容器（PHP、Nginx、MySQL、Redis）
+* 配置 Java 应用（安装依赖、数据库迁移、初始化管理员密码）
+* 编译前端项目（管理后台、H5、web商城）
+
 ## 核心特性
 ### 模块化架构
 * **1 Bundle = 1 Maven Module**：50+ 业务 Bundle（`ecshopx-goods`、`ecshopx-orders`、`ecshopx-promotions`、`ecshopx-members`、`ecshopx-payment` 等）独立打包、独立演进，按需引入。
