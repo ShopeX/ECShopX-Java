@@ -16,6 +16,15 @@ ECShopX Java backend: a Spring Boot 3 + Java 17 server implementation built as a
 * **O2O brand cloud store + instant retail**: online ordering with nearby-store pickup and instant delivery.
 * **O2O dealer cloud store**: aggregates dealer store resources to support online ordering with store fulfillment and pickup.
 
+## Project Structure
+
+The project follows a front-end and back-end separated architecture and consists of several repositories, including the Java backend service, admin dashboard frontend, mobile storefront frontend, and web storefront frontend.
+
+* [Admin Dashboard >](https://github.com/ShopeX/ECShopX-Java_Admin)
+* [Mobile Storefront (WeChat Mini Program / H5) >](https://github.com/ShopeX/ECShopX-Java_Mobile)
+* [Web Storefront >](https://github.com/ShopeX/ECShopX-Java_web)
+
+
 ## Quick Installation
 ```bash
 curl -fsSL https://oss.shopex.cn/ecx/ECX-Java_install.sh | bash
