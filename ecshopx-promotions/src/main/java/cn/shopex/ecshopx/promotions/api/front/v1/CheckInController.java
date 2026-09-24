@@ -18,10 +18,13 @@ package cn.shopex.ecshopx.promotions.api.front.v1;
 
 import cn.shopex.ecshopx.common.annotation.DingoResponse;
 import cn.shopex.ecshopx.common.annotation.FrontAuth;
+import cn.shopex.ecshopx.common.companys.language.CompanyLanguageResolver;
+import cn.shopex.ecshopx.common.config.LangueProperties;
 import cn.shopex.ecshopx.common.core.domain.ApiResult;
 import cn.shopex.ecshopx.common.exception.UnauthorizedException;
 import cn.shopex.ecshopx.common.util.ValuePresence;
 import cn.shopex.ecshopx.common.web.H5FrontAuthAttributes;
+import cn.shopex.ecshopx.common.web.locale.RequestMessageLocale;
 import cn.shopex.ecshopx.promotions.service.checkin.CheckInFrontCreateService;
 import cn.shopex.ecshopx.promotions.service.checkin.CheckInFrontListService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,7 +37,6 @@ import java.time.format.DateTimeParseException;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
@@ -58,12 +60,18 @@ public class CheckInController {
 
 	private final CheckInFrontCreateService checkInFrontCreateService;
 	private final CheckInFrontListService checkInFrontListService;
+	private final LangueProperties langueProperties;
+	private final CompanyLanguageResolver companyLanguageResolver;
 
 	public CheckInController(
 			CheckInFrontCreateService checkInFrontCreateService,
-			CheckInFrontListService checkInFrontListService) {
+			CheckInFrontListService checkInFrontListService,
+			LangueProperties langueProperties,
+			CompanyLanguageResolver companyLanguageResolver) {
 		this.checkInFrontCreateService = checkInFrontCreateService;
 		this.checkInFrontListService = checkInFrontListService;
+		this.langueProperties = langueProperties;
+		this.companyLanguageResolver = companyLanguageResolver;
 	}
 
 	@PostMapping(value = "/create", name = "签到", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -75,7 +83,8 @@ public class CheckInController {
 		if (userId <= 0L) {
 			throw new UnauthorizedException("Unable to authenticate user.");
 		}
-		Locale locale = LocaleContextHolder.getLocale();
+		Locale locale = RequestMessageLocale.messageLocale(
+				langueProperties, request, null, companyLanguageResolver.getDefaultLanguage(companyId));
 		String checkDayYmd = normalizeCheckDayYmd(checkDay);
 		Map<String, Object> row = checkInFrontCreateService.createCheckIn(companyId, userId, checkDayYmd, locale);
 		return ResponseEntity.ok(ApiResult.ok(row));

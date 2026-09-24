@@ -19,6 +19,7 @@ package cn.shopex.ecshopx.orders.service.front.wxapp;
 import cn.shopex.ecshopx.orders.domain.Cart;
 import cn.shopex.ecshopx.orders.mapper.CartMapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import java.util.List;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -32,13 +33,21 @@ public class WxappUpdateCartCheckStatusService {
 
 	public int updateCartCheckStatus(
 			long companyId, long effectiveUserId, long cartId, boolean isCheckedForDb) {
+		return updateCartCheckStatus(companyId, effectiveUserId, List.of(cartId), isCheckedForDb);
+	}
+
+	public int updateCartCheckStatus(
+			long companyId, long effectiveUserId, List<Long> cartIds, boolean isCheckedForDb) {
+		if (cartIds == null || cartIds.isEmpty()) {
+			return 0;
+		}
 		LambdaUpdateWrapper<Cart> wrapper =
 				new LambdaUpdateWrapper<Cart>()
-						.eq(Cart::getCartId, cartId)
+						.in(Cart::getCartId, cartIds)
 						.eq(Cart::getUserId, effectiveUserId)
 						.eq(Cart::getCompanyId, companyId)
-						.set(Cart::getIsChecked, isCheckedForDb)
-						.set(Cart::getUpdated, (int) (System.currentTimeMillis() / 1000L));
+						.ne(Cart::getIsChecked, isCheckedForDb)
+						.set(Cart::getIsChecked, isCheckedForDb);
 		return cartMapper.update(null, wrapper);
 	}
 }

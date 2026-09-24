@@ -18,19 +18,20 @@ package cn.shopex.ecshopx.promotions.api.front.v1;
 
 import cn.shopex.ecshopx.common.annotation.DingoResponse;
 import cn.shopex.ecshopx.common.annotation.FrontNoAuth;
+import cn.shopex.ecshopx.common.companys.language.CompanyLanguageResolver;
+import cn.shopex.ecshopx.common.config.LangueProperties;
 import cn.shopex.ecshopx.common.core.domain.ApiResult;
 import cn.shopex.ecshopx.common.exception.BadRequestException;
 import cn.shopex.ecshopx.common.exception.UnauthorizedException;
 import cn.shopex.ecshopx.common.web.FlexibleHttpServletParameterMap;
 import cn.shopex.ecshopx.common.web.H5FrontAuthAttributes;
+import cn.shopex.ecshopx.common.web.locale.RequestMessageLocale;
 import cn.shopex.ecshopx.promotions.service.LiveRoomListService;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
@@ -51,10 +52,18 @@ public class LiveBroadcastController {
 
 	private final LiveRoomListService liveRoomListService;
 	private final MessageSource messageSource;
+	private final LangueProperties langueProperties;
+	private final CompanyLanguageResolver companyLanguageResolver;
 
-	public LiveBroadcastController(LiveRoomListService liveRoomListService, MessageSource messageSource) {
+	public LiveBroadcastController(
+			LiveRoomListService liveRoomListService,
+			MessageSource messageSource,
+			LangueProperties langueProperties,
+			CompanyLanguageResolver companyLanguageResolver) {
 		this.liveRoomListService = liveRoomListService;
 		this.messageSource = messageSource;
+		this.langueProperties = langueProperties;
+		this.companyLanguageResolver = companyLanguageResolver;
 	}
 
 	@GetMapping(value = "/live/list", name = "直播列表", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -63,8 +72,8 @@ public class LiveBroadcastController {
 			@RequestParam(name = "page", required = false) String pageRaw,
 			@RequestParam(name = "page_size", required = false) String pageSizeRaw) {
 		long companyId = parseCompanyIdFromRequest(request);
-		Locale locale =
-				Optional.ofNullable(LocaleContextHolder.getLocale()).orElse(Locale.SIMPLIFIED_CHINESE);
+		Locale locale = RequestMessageLocale.messageLocale(
+				langueProperties, request, null, companyLanguageResolver.getDefaultLanguage(companyId));
 		Object h5AuthClaimsAttr = request.getAttribute(H5FrontAuthAttributes.H5_AUTH_CLAIMS);
 		final String authorizer;
 		if (h5AuthClaimsAttr instanceof Map<?, ?> m && !m.isEmpty()) {
@@ -98,8 +107,8 @@ public class LiveBroadcastController {
 			@RequestParam(name = "page_size", required = false) String pageSizeRaw,
 			@RequestParam(name = "room_id", required = false) String roomIdRaw) {
 		long companyId = parseCompanyIdFromRequest(request);
-		Locale locale =
-				Optional.ofNullable(LocaleContextHolder.getLocale()).orElse(Locale.SIMPLIFIED_CHINESE);
+		Locale locale = RequestMessageLocale.messageLocale(
+				langueProperties, request, null, companyLanguageResolver.getDefaultLanguage(companyId));
 		Object h5AuthClaimsAttr = request.getAttribute(H5FrontAuthAttributes.H5_AUTH_CLAIMS);
 		final String authorizer;
 		if (h5AuthClaimsAttr instanceof Map<?, ?> m && !m.isEmpty()) {

@@ -270,16 +270,25 @@ public class WxappH5CartListService {
 				.eq(Cart::getUserId, userId)
 				.eq(Cart::getShopType, shopType)
 				.eq(Cart::getShopId, shopId);
+		if (isCheckout && "cart".equals(cartType)) {
+			w.eq(Cart::getIsChecked, true);
+		}
 		long totalCount = cartMapper.selectCount(w);
 		out.put("total_count", totalCount);
 		List<Cart> rows = cartMapper.selectList(w);
 		rows.sort(Comparator.comparing(Cart::getCartId, Comparator.nullsLast(Comparator.reverseOrder())));
 		if (rows.isEmpty()) {
+			if (isCheckout) {
+				throw new ResourceException("购物车选中商品为空");
+			}
 			wxappH5CartListTotalAndPromotionAggregator.apply(companyId, out);
 			return out;
 		}
 		assembleCartLinesIntoOut(
 				companyId, userId, shopId, shopType, isCheckout, iscrossborder, isShopScreen, userDevice, inputData, rows, out);
+		if (isCheckout && countLinesInValidCartBlocks(out) == 0) {
+			throw new ResourceException("购物车商品不是来自同一个店铺");
+		}
 		return out;
 	}
 
@@ -690,6 +699,8 @@ public class WxappH5CartListService {
 		if (storeQuantityAdjustments != null && !storeQuantityAdjustments.isEmpty()) {
 			out.put("store_quantity_adjustments", storeQuantityAdjustments);
 		}
+		// 数量与商品库存都为 0 时不能按供应商库存留在有效列表
+		partitionCheckoutZeroNumZeroItemStore(isCheckout, validLines, invalidLines, skuByItem);
 		// 对齐 PHP：无可用库存（本地/供应商）的主品移入失效列表
 		partitionZeroStoreValidLines(companyId, validLines, invalidLines, invalidCarts, rows);
 		for (Cart c : invalidCarts) {
@@ -1080,6 +1091,42 @@ public class WxappH5CartListService {
 		validLines.clear();
 		validLines.addAll(stillValid);
 		return checked;
+	}
+
+	/**
+	 * 结算：购买数量与商品库存都为 0 的行移入失效列表。库存取商品 SKU {@code store}，不用供应商覆盖后的值。
+	 */
+	private static void partitionCheckoutZeroNumZeroItemStore(
+			boolean isCheckout,
+			List<Map<String, Object>> validLines,
+			List<Map<String, Object>> invalidLines,
+			Map<Long, Map<String, Object>> skuByItem) {
+		if (!isCheckout || validLines == null || validLines.isEmpty()) {
+			return;
+		}
+		List<Map<String, Object>> stillValid = new ArrayList<>(validLines.size());
+		for (Map<String, Object> line : validLines) {
+			if (line == null) {
+				continue;
+			}
+			int qty = intQty(line.get("num")) + intQty(line.get("logistics_num"));
+			if (qty > 0) {
+				stillValid.add(line);
+				continue;
+			}
+			long itemId = longObj(line.get("item_id"));
+			Map<String, Object> sku = skuByItem != null ? skuByItem.get(itemId) : null;
+			int itemStore = sku == null ? 0 : intQty(sku.get("store"));
+			if (itemStore <= 0) {
+				if (invalidLines != null) {
+					invalidLines.add(line);
+				}
+			} else {
+				stillValid.add(line);
+			}
+		}
+		validLines.clear();
+		validLines.addAll(stillValid);
 	}
 
 	/**

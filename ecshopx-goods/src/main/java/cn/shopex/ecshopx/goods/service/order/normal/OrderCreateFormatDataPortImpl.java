@@ -22,7 +22,7 @@ import cn.shopex.ecshopx.common.order.normal.NormalOrderCreateParams;
 import cn.shopex.ecshopx.common.order.normal.OrderCreateFormatDataPort;
 import cn.shopex.ecshopx.common.order.normal.OrderDirectedCrowdDiscountPort;
 import cn.shopex.ecshopx.deposit.service.UserDepositBalanceReadService;
-import cn.shopex.ecshopx.goods.service.recommend.GoodsRecommendCheckoutAddService;
+import cn.shopex.ecshopx.goods.service.recommend.GoodsRecommendCheckoutMergeService;
 import cn.shopex.ecshopx.goods.service.wxapp.WxappGoodsItemsListQueryOrchestrator;
 import cn.shopex.ecshopx.kaquan.service.order.normal.NormalOrderCheckoutCouponFacade;
 import java.math.BigDecimal;
@@ -195,7 +195,11 @@ public class OrderCreateFormatDataPortImpl implements OrderCreateFormatDataPort 
 				Map<String, Object> spec = (Map<String, Object>) pm;
 				long itemId = longVal(spec.get("item_id"), 0L);
 				int num = (int) Math.min(longVal(spec.get("num"), 1L), Integer.MAX_VALUE);
-				Map<String, Object> cartRow = cartByItem.getOrDefault(itemId, Map.of());
+				boolean recommendLine = GoodsRecommendCheckoutMergeService.isRecommendLine(spec);
+				Map<String, Object> cartRow =
+						recommendLine && hasPricedSpec(spec)
+								? spec
+								: cartByItem.getOrDefault(itemId, Map.of());
 				long cartActivityId = longVal(cartRow.get("activity_id"), 0L);
 				Object activityId =
 						cartActivityId > 0L
@@ -214,6 +218,9 @@ public class OrderCreateFormatDataPortImpl implements OrderCreateFormatDataPort 
 				Map<String, Object> mainLine =
 						buildOrderLineSkeleton(
 								itemId, num, companyId, userId, distributorId, cartRow, activityId, activityType);
+				if (recommendLine) {
+					mainLine.put(GoodsRecommendCheckoutMergeService.ITEM_IS_RECOMMEND, Boolean.TRUE);
+				}
 				if (isPackage && !childItemIds.isEmpty()) {
 					int mainPrice = intVal(cartRow.get("price"), 0);
 					long mainLineTotal = (long) mainPrice * num;
@@ -525,11 +532,14 @@ public class OrderCreateFormatDataPortImpl implements OrderCreateFormatDataPort 
 			if ("package".equals(stringVal(line.get("activity_type")))) {
 				continue;
 			}
+			if (GoodsRecommendCheckoutMergeService.isRecommendLine(line)) {
+				continue;
+			}
 			long itemId = longVal(line.get("item_id"), 0L);
 			Map<String, Object> cart = cartByItem.get(itemId);
 			if (cart == null || cart.isEmpty()) {
 				if (Boolean.TRUE.equals(
-						p.getParams().get(GoodsRecommendCheckoutAddService.CHECKOUT_RECOMMEND_MERGE_REQUEST_ITEMS))) {
+						p.getParams().get(GoodsRecommendCheckoutMergeService.CHECKOUT_RECOMMEND_MERGE_REQUEST_ITEMS))) {
 					continue;
 				}
 				throw new ResourceException(
@@ -812,6 +822,10 @@ public class OrderCreateFormatDataPortImpl implements OrderCreateFormatDataPort 
 			return;
 		}
 		od.put("order_holder", hasSelf ? "self_supplier" : "supplier");
+	}
+
+	private static boolean hasPricedSpec(Map<String, Object> spec) {
+		return spec != null && (spec.get("price") != null || spec.get("total_fee") != null);
 	}
 
 	private static int intVal(Object v, int def) {

@@ -59,6 +59,8 @@ class TurntableBe01SchemaTest {
 		assertThat(TurntableDrawStatus.SUCCESS).isEqualTo("SUCCESS");
 		assertThat(TurntableDrawStatus.GRANT_FAILED).isEqualTo("GRANT_FAILED");
 		assertThat(TurntableDrawStatus.COST_FAILED).isEqualTo("COST_FAILED");
+		assertThat(TurntableDrawStatus.VISIBLE_IN_DRAW_LOG)
+				.containsExactly(TurntableDrawStatus.SUCCESS, TurntableDrawStatus.GRANT_FAILED);
 
 		assertThat(TurntableProcessStep.CREATED).isEqualTo("CREATED");
 		assertThat(TurntableProcessStep.PRIZE_SELECTED).isEqualTo("PRIZE_SELECTED");

@@ -164,10 +164,6 @@ public class SeckillActivityCreateService {
 
 		List<Long> itemIds = validateSeckillItemsForAdminWrite(companyId, seckillTypeStr, items, locale);
 
-		if (Objects.equals("limited_time_sale", seckillTypeStr)) {
-			assertNoOverlappingLimitedTimeSaleForShops(companyId, activityStart, activityEnd, params);
-		}
-
 		List<Long> shopIds =
 				SeckillShopIdCsvParser.parsePositiveShopIdsFromCsv(Objects.toString(params.get("distributor_id"), "").trim());
 		LinkedHashMap<String, Object> guardParams = new LinkedHashMap<>();
@@ -402,10 +398,6 @@ public class SeckillActivityCreateService {
 		if ("normal".equals(seckillTypeStr) && !"waiting".equals(computedStatus)) {
 			throw new ResourceException(
 					messageSource.getMessage("promotions.seckill.current_activity_not_editable", null, locale));
-		}
-
-		if (Objects.equals("limited_time_sale", seckillTypeStr)) {
-			assertNoOverlappingLimitedTimeSaleForShops(companyId, activityStart, activityEnd, params);
 		}
 
 		List<Long> shopIds =
@@ -843,41 +835,6 @@ public class SeckillActivityCreateService {
 		m.put("updated", r.getUpdated());
 		m.put("disabled", r.getDisabled());
 		return m;
-	}
-
-	private void assertNoOverlappingLimitedTimeSaleForShops(
-			long companyId, int activityStart, int activityEnd, Map<String, Object> params) {
-		List<Long> shopIds =
-				SeckillShopIdCsvParser.parsePositiveShopIdsFromCsv(Objects.toString(params.get("distributor_id"), "").trim());
-		if (shopIds.isEmpty()) {
-			return;
-		}
-		int now = (int) (System.currentTimeMillis() / 1000L);
-		int overlapFloor = Math.max(activityStart, now);
-		LambdaQueryWrapper<SeckillActivity> w = new LambdaQueryWrapper<>();
-		w.eq(SeckillActivity::getCompanyId, companyId)
-				.eq(SeckillActivity::getSeckillType, "limited_time_sale")
-				.eq(SeckillActivity::getDisabled, false)
-				.le(SeckillActivity::getActivityStartTime, activityEnd)
-				.ge(SeckillActivity::getActivityEndTime, overlapFloor);
-		long seckillIdForExclude = readLongOrZero(params.get("seckill_id"));
-		if (seckillIdForExclude > 0L) {
-			w.ne(SeckillActivity::getSeckillId, seckillIdForExclude);
-		}
-		List<SeckillActivity> hits = seckillActivityMapper.selectList(w);
-		if (hits == null || hits.isEmpty()) {
-			return;
-		}
-		for (SeckillActivity row : hits) {
-			Set<Long> rowShops =
-					new LinkedHashSet<>(
-							SeckillShopIdCsvParser.parsePositiveShopIdsFromCsv(Objects.toString(row.getDistributorId(), "")));
-			for (Long sid : shopIds) {
-				if (rowShops.contains(sid)) {
-					throw new ResourceException("店铺id=" + sid + "已存在有效活动");
-				}
-			}
-		}
 	}
 
 	/**

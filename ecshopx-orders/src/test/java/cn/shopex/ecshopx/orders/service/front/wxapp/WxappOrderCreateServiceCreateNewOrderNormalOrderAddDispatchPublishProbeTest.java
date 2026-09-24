@@ -172,7 +172,8 @@ class WxappOrderCreateServiceCreateNewOrderNormalOrderAddDispatchPublishProbeTes
 						wxappNormalOrderTempInfoEnrichmentService,
 						wxappNormalOrderCreateTransactionalRunner,
 						normalOrderAddDispatchPublisher,
-						mock(cn.shopex.ecshopx.supplier.service.SupplierOrderSplitOnNormalOrderAddService.class));
+						mock(cn.shopex.ecshopx.supplier.service.SupplierOrderSplitOnNormalOrderAddService.class),
+						mock(cn.shopex.ecshopx.common.goods.GoodsRecommendCheckoutMergePort.class));
 		WxappPhysicalNormalOrderCreateSupport wxappPhysicalNormalOrderCreateSupport =
 				new WxappPhysicalNormalOrderCreateSupport(wxappNormalOrderCreateOrchestrator);
 		WxappNormalOrderCreateStrategy wxappNormalOrderCreateStrategy =

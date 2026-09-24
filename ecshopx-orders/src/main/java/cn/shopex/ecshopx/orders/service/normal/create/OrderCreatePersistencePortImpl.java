@@ -140,6 +140,8 @@ public class OrderCreatePersistencePortImpl implements OrderCreatePersistencePor
 		order.setPayType(stringVal(od.get("pay_type")));
 		order.setRemark(stringVal(od.get("remark")));
 		order.setFreightFee(intVal(od.get("freight_fee"), 0));
+		order.setFreightPoint(intVal(od.get("freight_point"), 0));
+		order.setFreightPointFee(intVal(od.get("freight_point_fee"), 0));
 		String freightType = stringVal(od.get("freight_type"));
 		order.setFreightType(freightType.isBlank() ? "cash" : freightType);
 		order.setItemPoint(intVal(od.get("item_point"), 0));

@@ -19,6 +19,7 @@ package cn.shopex.ecshopx.promotions.service;
 import cn.shopex.ecshopx.common.exception.BadRequestException;
 import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.promotions.domain.TurntableLog;
+import cn.shopex.ecshopx.promotions.domain.turntable.TurntableDrawStatus;
 import cn.shopex.ecshopx.promotions.mapper.TurntableLogMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import java.util.ArrayList;
@@ -74,8 +75,9 @@ public class TurntableFrontLuckyDrawLogService {
 
 		LambdaQueryWrapper<TurntableLog> w = new LambdaQueryWrapper<>();
 		w.eq(TurntableLog::getUserId, userId)
-				.eq(TurntableLog::getActId, actId)
-				.orderByAsc(TurntableLog::getId);
+				.eq(TurntableLog::getActId, actId);
+		applyDrawLogStatusFilter(w);
+		w.orderByAsc(TurntableLog::getId);
 		List<TurntableLog> rows = turntableLogMapper.selectList(w);
 		if (rows.isEmpty()) {
 			return Collections.emptyList();
@@ -100,5 +102,11 @@ public class TurntableFrontLuckyDrawLogService {
 			out.add(row);
 		}
 		return out;
+	}
+
+	/** 与后管日志列表一致的状态过滤，供单测断言。 */
+	static void applyDrawLogStatusFilter(LambdaQueryWrapper<TurntableLog> w) {
+		// 仅展示 SUCCESS / GRANT_FAILED（不含 PROCESSING、COST_FAILED）
+		w.in(TurntableLog::getStatus, (Object[]) TurntableDrawStatus.VISIBLE_IN_DRAW_LOG);
 	}
 }

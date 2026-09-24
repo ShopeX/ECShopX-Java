@@ -20,6 +20,7 @@ import cn.shopex.ecshopx.espier.service.ExportCsvFileService;
 import cn.shopex.ecshopx.espier.service.ExportLogCreateService;
 import cn.shopex.ecshopx.members.service.account.MemberAccountService;
 import cn.shopex.ecshopx.promotions.domain.TurntableLog;
+import cn.shopex.ecshopx.promotions.domain.turntable.TurntableDrawStatus;
 import cn.shopex.ecshopx.promotions.mapper.TurntableLogMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -65,8 +66,9 @@ public class TurntableLuckyDrawLogExportAsyncService {
 	}
 
 	public void runExport(LuckyDrawLogExportJobContext ctx) {
-		LambdaQueryWrapper<TurntableLog> countWrapper =
-				new LambdaQueryWrapper<TurntableLog>().eq(TurntableLog::getActId, ctx.actId());
+		LambdaQueryWrapper<TurntableLog> countWrapper = new LambdaQueryWrapper<>();
+		countWrapper.eq(TurntableLog::getActId, ctx.actId());
+		applyVisibleDrawLogStatus(countWrapper);
 		long total = turntableLogMapper.selectCount(countWrapper);
 		if (total == 0L) {
 			return;
@@ -79,9 +81,10 @@ public class TurntableLuckyDrawLogExportAsyncService {
 		titles.put("prize_title", "获取奖品");
 		titles.put("created", "中奖时间");
 		List<Map<String, String>> allRows = new ArrayList<>();
-		LambdaQueryWrapper<TurntableLog> pageWrapper = new LambdaQueryWrapper<TurntableLog>()
-				.eq(TurntableLog::getActId, ctx.actId())
-				.orderByAsc(TurntableLog::getId);
+		LambdaQueryWrapper<TurntableLog> pageWrapper = new LambdaQueryWrapper<>();
+		pageWrapper.eq(TurntableLog::getActId, ctx.actId());
+		applyVisibleDrawLogStatus(pageWrapper);
+		pageWrapper.orderByAsc(TurntableLog::getId);
 		int pages = (int) Math.ceil(total / (double) BATCH);
 		for (int page = 1; page <= pages; page++) {
 			Page<TurntableLog> mpPage = new Page<>(page, BATCH, false);
@@ -157,5 +160,10 @@ public class TurntableLuckyDrawLogExportAsyncService {
 				uploaded.getOrDefault("filename", fileBaseName + ".csv"),
 				uploaded.get("url"),
 				Instant.now().getEpochSecond());
+	}
+
+	/** 与列表同一套展示状态，供单测断言。 */
+	static void applyVisibleDrawLogStatus(LambdaQueryWrapper<TurntableLog> w) {
+		w.in(TurntableLog::getStatus, (Object[]) TurntableDrawStatus.VISIBLE_IN_DRAW_LOG);
 	}
 }

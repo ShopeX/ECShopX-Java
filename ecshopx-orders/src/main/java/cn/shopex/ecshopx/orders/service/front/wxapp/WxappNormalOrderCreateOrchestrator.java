@@ -19,6 +19,7 @@ package cn.shopex.ecshopx.orders.service.front.wxapp;
 import cn.shopex.ecshopx.common.dispatch.NormalOrderAddDispatchPublisher;
 import cn.shopex.ecshopx.common.exception.BadRequestException;
 import cn.shopex.ecshopx.common.exception.ResourceException;
+import cn.shopex.ecshopx.common.goods.GoodsRecommendCheckoutMergePort;
 import cn.shopex.ecshopx.common.order.normal.OrderCheckoutCartPort;
 import cn.shopex.ecshopx.common.order.normal.OrderCheckoutEmployeePurchaseCartPort;
 import cn.shopex.ecshopx.common.order.normal.OrderCreateDistributorCheckPort;
@@ -55,6 +56,7 @@ public class WxappNormalOrderCreateOrchestrator {
 	private final WxappNormalOrderCreateTransactionalRunner wxappNormalOrderCreateTransactionalRunner;
 	private final NormalOrderAddDispatchPublisher normalOrderAddDispatchPublisher;
 	private final SupplierOrderSplitOnNormalOrderAddService supplierOrderSplitOnNormalOrderAddService;
+	private final GoodsRecommendCheckoutMergePort goodsRecommendCheckoutMergePort;
 
 	public WxappNormalOrderCreateOrchestrator(
 			OrderCreateNeedParamsPort orderCreateNeedParamsPort,
@@ -68,7 +70,8 @@ public class WxappNormalOrderCreateOrchestrator {
 			WxappNormalOrderTempInfoEnrichmentService wxappNormalOrderTempInfoEnrichmentService,
 			WxappNormalOrderCreateTransactionalRunner wxappNormalOrderCreateTransactionalRunner,
 			NormalOrderAddDispatchPublisher normalOrderAddDispatchPublisher,
-			SupplierOrderSplitOnNormalOrderAddService supplierOrderSplitOnNormalOrderAddService) {
+			SupplierOrderSplitOnNormalOrderAddService supplierOrderSplitOnNormalOrderAddService,
+			GoodsRecommendCheckoutMergePort goodsRecommendCheckoutMergePort) {
 		this.orderCreateNeedParamsPort = orderCreateNeedParamsPort;
 		this.orderCheckoutCartPort = orderCheckoutCartPort;
 		this.orderCheckoutEmployeePurchaseCartPort = orderCheckoutEmployeePurchaseCartPort;
@@ -81,11 +84,13 @@ public class WxappNormalOrderCreateOrchestrator {
 		this.wxappNormalOrderCreateTransactionalRunner = wxappNormalOrderCreateTransactionalRunner;
 		this.normalOrderAddDispatchPublisher = normalOrderAddDispatchPublisher;
 		this.supplierOrderSplitOnNormalOrderAddService = supplierOrderSplitOnNormalOrderAddService;
+		this.goodsRecommendCheckoutMergePort = goodsRecommendCheckoutMergePort;
 	}
 
 	public Map<String, Object> create(NormalOrderCreateState state, HttpServletRequest request, String expectedOrderType) {
 		assertKnownOrderType(state, expectedOrderType);
 		orderCreateNeedParamsPort.validate(state);
+		applyRecommendCheckoutMerge(state);
 		fillCheckoutCart(state, request, expectedOrderType);
 		if (isStoreAdjustBlockCheckout(state)) {
 			Object tip = state.getParams().get("store_quantity_adjust_tip");
@@ -116,6 +121,7 @@ public class WxappNormalOrderCreateOrchestrator {
 			NormalOrderCreateState state, HttpServletRequest request, String expectedOrderType) {
 		assertKnownOrderType(state, expectedOrderType);
 		orderCreateNeedParamsPort.checkCreateOrderNeedParamsForTempInfo(state.getParams(), false);
+		applyRecommendCheckoutMerge(state);
 		fillCheckoutCart(state, request, expectedOrderType);
 		if (isStoreAdjustBlockCheckout(state)) {
 			return buildStoreAdjustBlockPayload(state);
@@ -137,6 +143,28 @@ public class WxappNormalOrderCreateOrchestrator {
 		Map<String, Object> res = buildTempInfoPayload(state);
 		enrichTempInfoInvoiceKeys(state, res);
 		return res;
+	}
+
+	private void applyRecommendCheckoutMerge(NormalOrderCreateState state) {
+		Map<String, Object> params = state.getParams();
+		if (params == null) {
+			return;
+		}
+		goodsRecommendCheckoutMergePort.apply(longVal(params.get("company_id")), params);
+	}
+
+	private static long longVal(Object raw) {
+		if (raw instanceof Number n) {
+			return n.longValue();
+		}
+		if (raw == null) {
+			return 0L;
+		}
+		try {
+			return Long.parseLong(raw.toString().trim());
+		} catch (NumberFormatException e) {
+			return 0L;
+		}
 	}
 
 	private void fillCheckoutCart(NormalOrderCreateState state, HttpServletRequest request, String expectedOrderType) {

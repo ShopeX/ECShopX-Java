@@ -178,7 +178,7 @@ Environment:
   ADMIN_PASSWORD       Same as --admin-password
   JWT_SECRET           Reuse existing JWT secret if set
 
-Configure image tags in docker-lite/images.env
+Configure DOCKER_IMAGES_BUNDLE_URL / image tags in docker-lite/images.env
 EOF
 }
 
@@ -224,9 +224,11 @@ configure_docker_publish_env() {
   export NUXT_PUBLIC_API_BASE="$PC_API_URL"
   export NUXT_PUBLIC_DECORATION_ADMIN_ORIGINS
   export JWT_SECRET
+  export PRODUCT_MODEL
   release_log_info "Docker 发布环境："
   release_log_info "  HTTP: ${HTTP_HOST_PORT}->80  XXL: ${XXL_HOST_PORT}->8080"
   release_log_info "  Hosts: ADMIN=${ADMIN_HOST} H5=${H5_HOST} PC=${PC_HOST}"
+  [ -n "${PRODUCT_MODEL:-}" ] && release_log_info "  PRODUCT_MODEL=${PRODUCT_MODEL}"
 }
 
 configure_install_secrets() {
@@ -411,12 +413,20 @@ compose_up() {
     release_log_error "后台管理员密码更新失败"
     return 1
   fi
+
+  release_log_info "同步业务模式到 companys.menu_type..."
+  if install_apply_company_menu_type "ecshopx-mysql" "$MODE"; then
+    release_log_success "companys.menu_type 已按模式 $MODE 更新"
+  else
+    release_log_error "更新 companys.menu_type 失败"
+    return 1
+  fi
 }
 
 # Wait until Java HTTP answers (Flyway migrate runs during Spring Boot startup).
 wait_for_java_ready() {
   local url="${1:-http://127.0.0.1:18080/}"
-  local max_attempts="${2:-90}"
+  local max_attempts="${2:-120}"
   local attempt=1
   local code=""
 
@@ -517,6 +527,9 @@ main() {
       ;;
   esac
 
+  install_persist_product_model "$COMPOSE_ENV_FILE" "$MODE" || exit 1
+  release_log_info "业务模式 $MODE → PRODUCT_MODEL=${PRODUCT_MODEL}"
+
   release_require_cmds docker || exit 1
   detect_docker_compose
 
@@ -535,7 +548,7 @@ main() {
   sync_nuxt_public_env
   release_activate_frontend_dist "$MODE" || exit 1
 
-  release_log_info "拉取远程运行时镜像（docker pull）..."
+  release_log_info "从 CDN 下载并导入 Docker 镜像..."
   release_ensure_runtime_images || exit 1
 
   ensure_app_jar || exit 1

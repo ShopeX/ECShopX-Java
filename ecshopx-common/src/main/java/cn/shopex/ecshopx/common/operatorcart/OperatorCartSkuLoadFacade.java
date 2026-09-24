@@ -16,6 +16,7 @@
 
 package cn.shopex.ecshopx.common.operatorcart;
 
+import cn.shopex.ecshopx.common.operatorcart.dto.CouponCartItemScope;
 import cn.shopex.ecshopx.common.operatorcart.dto.OperatorCartSkuRowDto;
 import java.util.Collection;
 import java.util.List;
@@ -34,6 +35,11 @@ public interface OperatorCartSkuLoadFacade {
 	void applyMemberPrices(long companyId, long targetUserId, List<OperatorCartSkuRowDto> rows);
 
 	List<Long> listTagIdsByItemIds(long companyId, Collection<Long> defaultItemIds);
+
+	/**
+	 * 按购物车 SKU 加载券门槛匹配所需的类目、品牌、标签（标签关联键为 SKU 或 SPU {@code default_item_id}）。
+	 */
+	Map<Long, CouponCartItemScope> loadCouponCartItemScopes(long companyId, Collection<Long> cartItemIds);
 
 	/**
 	 * 按购物车 SKU 批量补全主商品、主类目、品牌等，写入 {@code filter} 的 {@code default_item_id}、{@code item_main_cat_id}、{@code brand_id} 列表键（与卡券筛选约定一致）。

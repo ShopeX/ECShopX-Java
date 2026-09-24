@@ -9,7 +9,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
 
 import cn.shopex.ecshopx.common.dispatch.EspierDispatchJobNames;
 import cn.shopex.ecshopx.config.OrderListExportFileJobDispatchHandler;
@@ -25,8 +24,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
-import org.springframework.core.env.Environment;
-import org.springframework.core.env.Profiles;
 
 class OrderListExportFileJobDispatchFlowTest {
 
@@ -337,10 +334,8 @@ class OrderListExportFileJobDispatchFlowTest {
 	@Test
 	void dispatchJob_publishPayloadMatchesOrderListEnvelope() {
 		DispatchFacade facade = mock(DispatchFacade.class);
-		Environment env = mock(Environment.class);
-		when(env.acceptsProfiles(Profiles.of("local"))).thenReturn(false);
 		OrderListExportFileJobDispatchPublisherImpl publisher =
-				new OrderListExportFileJobDispatchPublisherImpl(facade, env);
+				new OrderListExportFileJobDispatchPublisherImpl(facade);
 
 		LinkedHashMap<String, Object> exportFilter = new LinkedHashMap<>();
 		exportFilter.put("company_id", 601L);
@@ -386,10 +381,8 @@ class OrderListExportFileJobDispatchFlowTest {
 	@Test
 	void dispatchJob_publishInvoicePayloadUsesTypeInvoice() {
 		DispatchFacade facade = mock(DispatchFacade.class);
-		Environment env = mock(Environment.class);
-		when(env.acceptsProfiles(Profiles.of("local"))).thenReturn(false);
 		OrderListExportFileJobDispatchPublisherImpl publisher =
-				new OrderListExportFileJobDispatchPublisherImpl(facade, env);
+				new OrderListExportFileJobDispatchPublisherImpl(facade);
 
 		LinkedHashMap<String, Object> exportFilter = new LinkedHashMap<>();
 		exportFilter.put("company_id", 601L);
@@ -432,10 +425,8 @@ class OrderListExportFileJobDispatchFlowTest {
 	@Test
 	void dispatchJob_publishRightsPayloadUsesTypeRight() {
 		DispatchFacade facade = mock(DispatchFacade.class);
-		Environment env = mock(Environment.class);
-		when(env.acceptsProfiles(Profiles.of("local"))).thenReturn(false);
 		OrderListExportFileJobDispatchPublisherImpl publisher =
-				new OrderListExportFileJobDispatchPublisherImpl(facade, env);
+				new OrderListExportFileJobDispatchPublisherImpl(facade);
 
 		LinkedHashMap<String, Object> exportFilter = new LinkedHashMap<>();
 		exportFilter.put("company_id", 601L);
@@ -476,12 +467,10 @@ class OrderListExportFileJobDispatchFlowTest {
 	}
 
 	@Test
-	void dispatchJob_publishRights_localProfile_usesSyncOptions() {
+	void dispatchJob_publishRights_localProfile_usesAsyncOptions() {
 		DispatchFacade facade = mock(DispatchFacade.class);
-		Environment env = mock(Environment.class);
-		when(env.acceptsProfiles(Profiles.of("local"))).thenReturn(true);
 		OrderListExportFileJobDispatchPublisherImpl publisher =
-				new OrderListExportFileJobDispatchPublisherImpl(facade, env);
+				new OrderListExportFileJobDispatchPublisherImpl(facade);
 
 		LinkedHashMap<String, Object> exportFilter = new LinkedHashMap<>();
 		exportFilter.put("company_id", 640L);
@@ -504,9 +493,9 @@ class OrderListExportFileJobDispatchFlowTest {
 						argThat(
 								opts ->
 										opts != null
-												&& opts.mode() == DispatchMode.SYNC
-												&& opts.driverOverride() == DispatchDriverType.SYNC
-												&& opts.queue() == null
+												&& opts.mode() == DispatchMode.ASYNC
+												&& opts.driverOverride() == DispatchDriverType.REDIS
+												&& "slow".equals(opts.queue())
 												&& opts.delay() == null
 												&& RetryPolicy.platformDefault().equals(opts.retryPolicy())));
 	}

@@ -1,4 +1,3 @@
-# syntax=docker/dockerfile:1
 # ECShopX Java app runtime base: Temurin 17 JRE + Node 20 + OpenResty + gettext.
 #
 # Default image:

@@ -22,7 +22,7 @@ import cn.shopex.ecshopx.common.order.normal.NormalOrderCreateParams;
 import cn.shopex.ecshopx.common.order.normal.OrderCheckoutCartPort;
 import cn.shopex.ecshopx.goods.service.cart.wxapp.CheckoutCartLogisticsSupplierStoreClampService;
 import cn.shopex.ecshopx.goods.service.cart.wxapp.WxappH5CartListService;
-import cn.shopex.ecshopx.goods.service.recommend.GoodsRecommendCheckoutAddService;
+import cn.shopex.ecshopx.goods.service.recommend.GoodsRecommendCheckoutMergeService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,7 +31,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -189,12 +188,137 @@ public class OrderCheckoutCartPortImpl implements OrderCheckoutCartPort {
 			}
 			throw new ResourceException("购物车商品为空");
 		}
-		if (Boolean.TRUE.equals(pr.get(GoodsRecommendCheckoutAddService.CHECKOUT_RECOMMEND_MERGE_REQUEST_ITEMS))) {
-			mergeCheckoutRecommendRequestItems(items, requestItemRows);
+		if (Boolean.TRUE.equals(pr.get(GoodsRecommendCheckoutMergeService.CHECKOUT_RECOMMEND_MERGE_REQUEST_ITEMS))) {
+			List<Map<String, Object>> recommendRows =
+					extractMapList(pr.get(GoodsRecommendCheckoutMergeService.CHECKOUT_RECOMMEND_REQUEST_ITEMS));
+			if (!recommendRows.isEmpty()) {
+				if ("cart".equals(cartType) || "fastbuy".equals(cartType)) {
+					List<Map<String, Object>> priced =
+							loadPricedRecommendCheckoutLines(
+									companyId,
+									userId,
+									shopId,
+									iscrossborder,
+									isShopScreen,
+									userDevice,
+									pr,
+									recommendRows);
+					if (!priced.isEmpty()) {
+						items.addAll(priced);
+					} else {
+						mergeCheckoutRecommendRequestItems(items, recommendRows);
+					}
+				} else {
+					markTrailingRecommendLines(items, recommendRows.size());
+				}
+			}
 		}
 		pr.put("items", items);
 		pr.put("_checkout_cart_meta", cartlist);
 		attachStoreQuantityAdjustments(pr, cart);
+	}
+
+	private List<Map<String, Object>> loadPricedRecommendCheckoutLines(
+			long companyId,
+			long userId,
+			long shopId,
+			int iscrossborder,
+			int isShopScreen,
+			String userDevice,
+			Map<String, Object> pr,
+			List<Map<String, Object>> recommendRows) {
+		Map<String, Object> pricedCart =
+				wxappH5CartListService.getCartList(
+						companyId,
+						userId,
+						shopId,
+						"offline",
+						"distributor",
+						true,
+						iscrossborder,
+						isShopScreen,
+						userDevice,
+						recommendRows,
+						pr);
+		@SuppressWarnings("unchecked")
+		List<Map<String, Object>> validCart = (List<Map<String, Object>>) pricedCart.get("valid_cart");
+		if (validCart == null || validCart.isEmpty()) {
+			return List.of();
+		}
+		@SuppressWarnings("unchecked")
+		List<Map<String, Object>> list = (List<Map<String, Object>>) validCart.get(0).get("list");
+		if (list == null || list.isEmpty()) {
+			return List.of();
+		}
+		return checkoutLinesFromCartRows(list, true);
+	}
+
+	private static List<Map<String, Object>> checkoutLinesFromCartRows(
+			List<Map<String, Object>> list, boolean recommend) {
+		List<Map<String, Object>> items = new ArrayList<>();
+		for (Map<String, Object> cartRow : list) {
+			if (!recommend && !Boolean.TRUE.equals(cartRow.get("is_checked"))) {
+				continue;
+			}
+			long num = longVal(cartRow.get("num"), 0L);
+			if (num <= 0L) {
+				continue;
+			}
+			Map<String, Object> line = new LinkedHashMap<>();
+			line.put("item_id", longVal(cartRow.get("item_id"), 0L));
+			line.put("num", (int) Math.min(num, Integer.MAX_VALUE));
+			line.put("activity_id", cartRow.get("activity_id"));
+			line.put("activity_type", cartRow.get("activity_type") != null ? cartRow.get("activity_type") : "normal");
+			line.put("items_id", cartRow.get("items_id") != null ? cartRow.get("items_id") : List.of());
+			line.put("is_logistics", normalizeIsLogistics(cartRow.get("is_logistics")));
+			if (recommend) {
+				line.put(GoodsRecommendCheckoutMergeService.ITEM_IS_RECOMMEND, Boolean.TRUE);
+				copyCartPriceFields(line, cartRow);
+			}
+			if (cartRow.containsKey("is_medicine")) {
+				line.put("is_medicine", cartRow.get("is_medicine"));
+			}
+			if (cartRow.containsKey("is_prescription")) {
+				line.put("is_prescription", cartRow.get("is_prescription"));
+			}
+			items.add(line);
+		}
+		return items;
+	}
+
+	private static void copyCartPriceFields(Map<String, Object> line, Map<String, Object> cartRow) {
+		for (String key :
+				List.of(
+						"price",
+						"total_fee",
+						"discount_fee",
+						"item_name",
+						"pics",
+						"pic",
+						"goods_id",
+						"member_price",
+						"activity_price",
+						"templates_id",
+						"template_id",
+						"weight",
+						"volume",
+						"item_bn",
+						"goods_bn",
+						"market_price",
+						"cost_price")) {
+			if (cartRow.get(key) != null) {
+				line.put(key, cartRow.get(key));
+			}
+		}
+	}
+
+	static void markTrailingRecommendLines(List<Map<String, Object>> items, int recommendCount) {
+		if (items == null || recommendCount <= 0 || items.size() < recommendCount) {
+			return;
+		}
+		for (int i = items.size() - recommendCount; i < items.size(); i++) {
+			items.get(i).put(GoodsRecommendCheckoutMergeService.ITEM_IS_RECOMMEND, Boolean.TRUE);
+		}
 	}
 
 	static void mergeCheckoutRecommendRequestItems(
@@ -202,16 +326,9 @@ public class OrderCheckoutCartPortImpl implements OrderCheckoutCartPort {
 		if (cartItems == null || requestItemRows == null || requestItemRows.isEmpty()) {
 			return;
 		}
-		Set<Long> existingItemIds = new java.util.HashSet<>();
-		for (Map<String, Object> line : cartItems) {
-			long itemId = longVal(line.get("item_id"), 0L);
-			if (itemId > 0L) {
-				existingItemIds.add(itemId);
-			}
-		}
 		for (Map<String, Object> req : requestItemRows) {
 			long itemId = longVal(req.get("item_id"), 0L);
-			if (itemId <= 0L || existingItemIds.contains(itemId)) {
+			if (itemId <= 0L) {
 				continue;
 			}
 			Map<String, Object> line = new LinkedHashMap<>();
@@ -221,6 +338,7 @@ public class OrderCheckoutCartPortImpl implements OrderCheckoutCartPort {
 			line.put("activity_type", req.get("activity_type") != null ? req.get("activity_type") : "normal");
 			line.put("items_id", req.get("items_id") != null ? req.get("items_id") : List.of());
 			line.put("is_logistics", normalizeIsLogistics(req.get("is_logistics")));
+			line.put(GoodsRecommendCheckoutMergeService.ITEM_IS_RECOMMEND, Boolean.TRUE);
 			if (req.containsKey("is_medicine")) {
 				line.put("is_medicine", req.get("is_medicine"));
 			}
@@ -228,7 +346,6 @@ public class OrderCheckoutCartPortImpl implements OrderCheckoutCartPort {
 				line.put("is_prescription", req.get("is_prescription"));
 			}
 			cartItems.add(line);
-			existingItemIds.add(itemId);
 		}
 	}
 

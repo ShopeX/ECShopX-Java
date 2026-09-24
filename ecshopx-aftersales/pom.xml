@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>cn.shopex</groupId>
 		<artifactId>ecshopx</artifactId>
-		<version>5.0.0</version>
+		<version>${revision}</version>
 	</parent>
 	<artifactId>ecshopx-aftersales</artifactId>
 	<name>ecshopx-aftersales</name>

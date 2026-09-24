@@ -18,6 +18,7 @@ package cn.shopex.ecshopx.goods.service.operatorcart;
 
 import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.common.operatorcart.OperatorCartSkuLoadFacade;
+import cn.shopex.ecshopx.common.operatorcart.dto.CouponCartItemScope;
 import cn.shopex.ecshopx.common.operatorcart.dto.OperatorCartSkuRowDto;
 import cn.shopex.ecshopx.distribution.domain.DistributorItems;
 import cn.shopex.ecshopx.distribution.mapper.DistributorItemsMapper;
@@ -30,6 +31,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -167,6 +169,91 @@ public class OperatorCartSkuLoadFacadeImpl implements OperatorCartSkuLoadFacade 
 			return list.subList(0, MAX_TAG_IDS);
 		}
 		return list;
+	}
+
+	@Override
+	public Map<Long, CouponCartItemScope> loadCouponCartItemScopes(long companyId, Collection<Long> cartItemIds) {
+		if (cartItemIds == null || cartItemIds.isEmpty()) {
+			return Map.of();
+		}
+		List<Long> ids = new ArrayList<>(new LinkedHashSet<>(cartItemIds));
+		LambdaQueryWrapper<Items> w = new LambdaQueryWrapper<>();
+		w.eq(Items::getCompanyId, companyId).in(Items::getItemId, ids);
+		List<Items> rows = itemsMapper.selectList(w);
+		Map<Long, Items> byId = new HashMap<>();
+		if (rows != null) {
+			for (Items it : rows) {
+				if (it.getItemId() != null) {
+					byId.put(it.getItemId(), it);
+				}
+			}
+		}
+		Set<Long> tagLookupIds = new LinkedHashSet<>();
+		for (Long id : ids) {
+			if (id == null || id <= 0L) {
+				continue;
+			}
+			tagLookupIds.add(id);
+			Items it = byId.get(id);
+			if (it != null) {
+				long def = it.getDefaultItemId() != null && it.getDefaultItemId() > 0 ? it.getDefaultItemId() : id;
+				tagLookupIds.add(def);
+			}
+		}
+		Map<Long, Set<Long>> tagsByGoodsId = new HashMap<>();
+		if (!tagLookupIds.isEmpty()) {
+			List<ItemsRelTags> rels = itemsRelTagsRepository.getLists(companyId, tagLookupIds);
+			if (rels != null) {
+				for (ItemsRelTags rt : rels) {
+					if (rt.getItemId() == null || rt.getTagId() == null) {
+						continue;
+					}
+					tagsByGoodsId.computeIfAbsent(rt.getItemId(), k -> new LinkedHashSet<>()).add(rt.getTagId());
+				}
+			}
+		}
+		Map<Long, CouponCartItemScope> out = new LinkedHashMap<>();
+		for (Long id : ids) {
+			if (id == null || id <= 0L) {
+				continue;
+			}
+			Items it = byId.get(id);
+			long def = id;
+			Long categoryId = null;
+			Integer brandId = null;
+			if (it != null) {
+				def = it.getDefaultItemId() != null && it.getDefaultItemId() > 0 ? it.getDefaultItemId() : id;
+				categoryId = parseCategoryId(it.getItemCategory());
+				if (it.getBrandId() != null && it.getBrandId() > 0) {
+					brandId = it.getBrandId();
+				}
+			}
+			Set<Long> tags = new LinkedHashSet<>();
+			Set<Long> skuTags = tagsByGoodsId.get(id);
+			if (skuTags != null) {
+				tags.addAll(skuTags);
+			}
+			if (def != id) {
+				Set<Long> spuTags = tagsByGoodsId.get(def);
+				if (spuTags != null) {
+					tags.addAll(spuTags);
+				}
+			}
+			out.put(id, new CouponCartItemScope(id, def, categoryId, brandId, tags));
+		}
+		return out;
+	}
+
+	private static Long parseCategoryId(String raw) {
+		if (raw == null || raw.isBlank()) {
+			return null;
+		}
+		try {
+			long v = Long.parseLong(raw.trim());
+			return v > 0L ? v : null;
+		} catch (NumberFormatException e) {
+			return null;
+		}
 	}
 
 	@Override

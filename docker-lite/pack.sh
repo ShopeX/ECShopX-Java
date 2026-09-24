@@ -78,9 +78,20 @@ release_build_jar_host() {
 
 release_build_jar_docker() {
   local tmpdir jar_src
+  local maven_img="${MAVEN_BUILD_IMAGE:-maven:3.9-eclipse-temurin-17}"
+  local runtime_img="${RUNTIME_BASE_IMAGE:-ecshopx-java:17-node20-openresty}"
   release_log_info "build jar via docker (docker/Dockerfile.app builder stage)"
   release_require_cmds docker || return 1
-  docker build -f "$RELEASE_ECSHOPX_ROOT/docker/Dockerfile.app" --target builder -t ecshopx-pack-builder "$RELEASE_ECSHOPX_ROOT"
+  if ! docker image inspect "$maven_img" >/dev/null 2>&1; then
+    release_log_error "缺少 Maven 编译镜像: $maven_img（请先 CDN 导入或 docker pull）"
+    return 1
+  fi
+  docker build -f "$RELEASE_ECSHOPX_ROOT/docker/Dockerfile.app" \
+    --target builder \
+    --build-context "maven-builder=docker-image://${maven_img}" \
+    --build-context "runtime-base=docker-image://${runtime_img}" \
+    -t ecshopx-pack-builder \
+    "$RELEASE_ECSHOPX_ROOT"
   tmpdir=$(mktemp -d)
   local cid
   cid=$(docker create ecshopx-pack-builder)
@@ -136,8 +147,7 @@ main() {
         cat <<'EOF'
 Usage: ./pack.sh [--with-images]
 
-  --with-images   Download image tars from docker-lite/images.env URLs
-                  into docker-lite/images/ and include them in the archive
+  --with-images   Download CDN Docker image bundle into docker-lite/images/
 EOF
         exit 0
         ;;

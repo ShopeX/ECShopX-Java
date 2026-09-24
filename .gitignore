@@ -1,5 +1,6 @@
 HELP.md
 target/
+.flattened-pom.xml
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
@@ -9,6 +10,8 @@ ecshopx-bootstrap/logs/
 logs/
 .env
 docker-lite/.env
+docker/images/*.tar
+docker/images/*.zip
 
 
 ### STS ###

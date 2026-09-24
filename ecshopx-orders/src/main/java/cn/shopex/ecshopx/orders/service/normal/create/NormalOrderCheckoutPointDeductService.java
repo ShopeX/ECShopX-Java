@@ -101,14 +101,23 @@ public class NormalOrderCheckoutPointDeductService {
 			applyPointCapsFromOrderMaxPoint(orderData, pointRule, memberPoint, companyId);
 		}
 
-		// PHP: if pay_type==point, require full_amount then force point_use=max_point
+		// PHP: if pay_type==point with no amount, require full_amount then force max_point.
+		// If the client already sent point_use (manual input), honor it instead of overwriting
+		// to max_point — checkout may stamp pay_type=point from a previous full-deduct remaining=0.
 		String payType = stringPayType(params, orderData);
 		int pointUseRequested;
 		if ("point".equals(payType)) {
 			if (!isFullAmountDeductRule(orderData.get("deduct_point_rule"))) {
 				throw new ResourceException("当前" + pointLabel(pointRule) + "不足以支付本次订单费用!");
 			}
-			pointUseRequested = Math.max(0, intVal(orderData.get("max_point"), 0));
+			int maxPoint = Math.max(0, intVal(orderData.get("max_point"), 0));
+			int explicitUse =
+					Math.max(
+							0,
+							intVal(
+									params != null ? params.get("point_use") : null,
+									intVal(orderData.get("point_use"), 0)));
+			pointUseRequested = explicitUse > 0 ? Math.min(explicitUse, maxPoint) : maxPoint;
 			orderData.put("point_use", pointUseRequested);
 			if (params != null) {
 				try {
@@ -141,6 +150,7 @@ public class NormalOrderCheckoutPointDeductService {
 		}
 		orderData.put("point", orderData.get("real_use_point"));
 		rewritePayTypeToPointIfFullyPointDeducted(orderData, params);
+		restoreCashPayTypeIfPartialPointDeduct(orderData, params);
 	}
 
 	/**
@@ -161,6 +171,40 @@ public class NormalOrderCheckoutPointDeductService {
 		if (params != null) {
 			try {
 				params.put("pay_type", "point");
+			} catch (UnsupportedOperationException ignored) {
+				// immutable params map — orderData alone drives persistence
+			}
+		}
+	}
+
+	/**
+	 * 积分未抵完应付现金时，不能再落成纯积分支付。收银台实际选中的现金方式在 {@code pay_channel}。
+	 */
+	static void restoreCashPayTypeIfPartialPointDeduct(
+			Map<String, Object> orderData, Map<String, Object> params) {
+		if (orderData == null) {
+			return;
+		}
+		if (!"point".equals(stringPayType(params, orderData))) {
+			return;
+		}
+		if (longVal(orderData.get("total_fee"), 0L) <= 0L) {
+			return;
+		}
+		String cashPayType = "";
+		if (params != null && params.get("pay_channel") != null) {
+			cashPayType = String.valueOf(params.get("pay_channel")).trim();
+		}
+		if (!StringUtils.hasText(cashPayType) && orderData.get("pay_channel") != null) {
+			cashPayType = String.valueOf(orderData.get("pay_channel")).trim();
+		}
+		if (!StringUtils.hasText(cashPayType) || "point".equals(cashPayType)) {
+			return;
+		}
+		orderData.put("pay_type", cashPayType);
+		if (params != null) {
+			try {
+				params.put("pay_type", cashPayType);
 			} catch (UnsupportedOperationException ignored) {
 				// immutable params map — orderData alone drives persistence
 			}

@@ -18,7 +18,6 @@ package cn.shopex.ecshopx.goods.api.front.v1;
 
 import cn.shopex.ecshopx.common.annotation.Activated;
 import cn.shopex.ecshopx.common.annotation.DingoResponse;
-import cn.shopex.ecshopx.common.annotation.FrontAuth;
 import cn.shopex.ecshopx.common.annotation.FrontNoAuth;
 import cn.shopex.ecshopx.common.config.LangueProperties;
 import cn.shopex.ecshopx.common.core.domain.ApiResult;
@@ -27,7 +26,6 @@ import cn.shopex.ecshopx.common.exception.UnauthorizedException;
 import cn.shopex.ecshopx.common.web.FlexibleBody;
 import cn.shopex.ecshopx.common.web.H5FrontAuthAttributes;
 import cn.shopex.ecshopx.common.web.locale.RequestLangTag;
-import cn.shopex.ecshopx.goods.service.recommend.GoodsRecommendCheckoutAddService;
 import cn.shopex.ecshopx.goods.service.recommend.GoodsRecommendErrorCodes;
 import cn.shopex.ecshopx.goods.service.recommend.GoodsRecommendErrorMessages;
 import cn.shopex.ecshopx.goods.service.recommend.GoodsRecommendMatchService;
@@ -35,7 +33,6 @@ import cn.shopex.ecshopx.goods.service.recommend.GoodsRecommendRequestParser;
 import cn.shopex.ecshopx.goods.service.recommend.GoodsRecommendSalabilityResolver;
 import cn.shopex.ecshopx.goods.service.recommend.GoodsRecommendScene;
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,8 +57,6 @@ public class GoodsRecommendFrontController {
 
 	private final GoodsRecommendMatchService matchService;
 
-	private final GoodsRecommendCheckoutAddService checkoutAddService;
-
 	private final GoodsRecommendSalabilityResolver salabilityResolver;
 
 	private final MessageSource messageSource;
@@ -70,12 +65,10 @@ public class GoodsRecommendFrontController {
 
 	public GoodsRecommendFrontController(
 			GoodsRecommendMatchService matchService,
-			GoodsRecommendCheckoutAddService checkoutAddService,
 			GoodsRecommendSalabilityResolver salabilityResolver,
 			MessageSource messageSource,
 			LangueProperties langueProperties) {
 		this.matchService = matchService;
-		this.checkoutAddService = checkoutAddService;
 		this.salabilityResolver = salabilityResolver;
 		this.messageSource = messageSource;
 		this.langueProperties = langueProperties;
@@ -113,26 +106,6 @@ public class GoodsRecommendFrontController {
 		return ResponseEntity.ok(ApiResult.ok(data));
 	}
 
-	@FrontAuth
-	@Activated(routeAlias = "goods.recommend.checkout_add")
-	@PostMapping(value = "/checkout-add", name = "结算页推荐加购", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<ApiResult<Map<String, Object>>> checkoutAdd(
-			HttpServletRequest request, @FlexibleBody(required = false) Map<String, Object> body) {
-		long companyId = parseCompanyId(request);
-		Map<String, Object> input = mergeInput(request, body);
-		GoodsRecommendRequestParser.CheckoutAddDistributorIdResult distributorResult =
-				GoodsRecommendRequestParser.resolveDistributorIdForCheckoutAdd(
-						salabilityResolver.resolveProductModel(companyId), input.get("distributor_id"));
-		if (!distributorResult.isOk()) {
-			throw badRequest(distributorResult.errorCode());
-		}
-		Map<String, Object> claims = readH5AuthClaims(request);
-		Map<String, Object> data =
-				checkoutAddService.checkoutAdd(
-						request, companyId, input, claims, distributorResult.distributorId());
-		return ResponseEntity.ok(ApiResult.ok(data));
-	}
-
 	private List<Long> parseItemIds(Object raw) {
 		try {
 			return GoodsRecommendRequestParser.parseItemIds(raw);
@@ -163,15 +136,6 @@ public class GoodsRecommendFrontController {
 			}
 		}
 		throw new UnauthorizedException("无权访问该API,非法访问！");
-	}
-
-	@SuppressWarnings("unchecked")
-	private static Map<String, Object> readH5AuthClaims(HttpServletRequest request) {
-		Object raw = request.getAttribute(H5FrontAuthAttributes.H5_AUTH_CLAIMS);
-		if (raw instanceof Map<?, ?> m) {
-			return (Map<String, Object>) m;
-		}
-		return Collections.emptyMap();
 	}
 
 	private static Map<String, Object> mergeInput(HttpServletRequest request, Map<String, Object> body) {

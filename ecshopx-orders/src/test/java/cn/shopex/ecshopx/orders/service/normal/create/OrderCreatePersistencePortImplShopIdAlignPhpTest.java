@@ -130,6 +130,56 @@ class OrderCreatePersistencePortImplShopIdAlignPhpTest {
 	}
 
 	@Test
+	void persistOrder_writesFreightPointAndFreightPointFee() {
+		when(normalOrderNumericIdService.generate(anyLong())).thenReturn(90003L);
+		CurrencyExchangeRate cny = new CurrencyExchangeRate();
+		cny.setCurrency("CNY");
+		cny.setRate(1.0);
+		cny.setSymbol("￥");
+		when(companyDefaultCurrencyService.getCur(1L)).thenReturn(cny);
+
+		NormalOrderCreateParams p = new NormalOrderCreateParams();
+		Map<String, Object> od = p.getOrderData();
+		od.put("company_id", 1L);
+		od.put("user_id", 45097L);
+		od.put("mobile", "15601636091");
+		od.put("distributor_id", 0L);
+		od.put("shop_id", 0L);
+		od.put("order_type", "normal");
+		od.put("order_class", "normal");
+		od.put("receipt_type", "logistics");
+		od.put("order_source", "member");
+		od.put("title", "365暴瘦裤");
+		od.put("total_fee", 300);
+		od.put("item_fee", 3000);
+		od.put("freight_fee", 300);
+		od.put("freight_point", 200);
+		od.put("freight_point_fee", 200);
+		od.put("point_use", 3200);
+		od.put("point_fee", 3200);
+		od.put("pay_type", "offline_pay");
+		od.put("pay_channel", "offline_pay");
+		Map<String, Object> item = new LinkedHashMap<>();
+		item.put("item_id", 2446L);
+		item.put("goods_id", 2446L);
+		item.put("item_name", "365暴瘦裤");
+		item.put("num", 1);
+		item.put("price", 3000);
+		item.put("total_fee", 0);
+		item.put("item_fee", 3000);
+		od.put("items", List.of(item));
+
+		port.persistOrder(p);
+
+		ArgumentCaptor<NormalOrders> orderCaptor = ArgumentCaptor.forClass(NormalOrders.class);
+		verify(normalOrdersMapper).insert(orderCaptor.capture());
+		assertThat(orderCaptor.getValue().getFreightFee()).isEqualTo(300);
+		assertThat(orderCaptor.getValue().getFreightPoint()).isEqualTo(200);
+		assertThat(orderCaptor.getValue().getFreightPointFee()).isEqualTo(200);
+		assertThat(orderCaptor.getValue().getPointUse()).isEqualTo(3200);
+	}
+
+	@Test
 	void persistOrder_usesDefaultCurrencyWhenOrderDataMissingFeeType() {
 		when(normalOrderNumericIdService.generate(anyLong())).thenReturn(90002L);
 		CurrencyExchangeRate usd = new CurrencyExchangeRate();

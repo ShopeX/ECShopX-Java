@@ -21,6 +21,8 @@ import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.companys.service.operatorcart.OperatorCartAdminSubmitDataService;
 import cn.shopex.ecshopx.kaquan.service.discount.dto.UserDiscountNewGetCardListRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +45,10 @@ public class UserDiscountValidItemsResolver {
 
 	@SuppressWarnings("unchecked")
 	public Map<Long, Map<String, Object>> resolve(long companyId, long userId, UserDiscountNewGetCardListRequest req) {
+		Map<Long, Map<String, Object>> payloadItems = fromItemsPayload(req.parseItemsOrEmpty(objectMapper));
+		if (!payloadItems.isEmpty()) {
+			return payloadItems;
+		}
 		if (req.isCheckoutRequired()) {
 			Map<Long, Map<String, Object>> items;
 			if ("cxd".equalsIgnoreCase(nullSafeTrim(req.getCartType())) && req.parseCxdidOrZero() > 0L) {
@@ -55,15 +61,13 @@ public class UserDiscountValidItemsResolver {
 			}
 			return items;
 		}
-		Map<Long, Map<String, Object>> items = fromItemsPayload(req.parseItemsOrEmpty(objectMapper));
-		if (items.isEmpty()) {
-			String itemId = nullSafeTrim(req.getItemId());
-			long singleId = parseLongOrZero(itemId);
-			if (singleId > 0L) {
-				Map<String, Object> line = new LinkedHashMap<>();
-				line.put("item_id", singleId);
-				items.put(singleId, line);
-			}
+		Map<Long, Map<String, Object>> items = new LinkedHashMap<>();
+		String itemId = nullSafeTrim(req.getItemId());
+		long singleId = parseLongOrZero(itemId);
+		if (singleId > 0L) {
+			Map<String, Object> line = new LinkedHashMap<>();
+			line.put("item_id", singleId);
+			items.put(singleId, line);
 		}
 		return items;
 	}
@@ -145,10 +149,65 @@ public class UserDiscountValidItemsResolver {
 			Map<String, Object> normalized = new LinkedHashMap<>();
 			normalized.put("item_id", itemId);
 			normalized.put("num", line.getOrDefault("num", 1));
-			normalized.put("total_fee", line.getOrDefault("total_fee", line.getOrDefault("totalFee", 0)));
+			normalized.put("total_fee", resolveLineTotalFeeFen(line));
 			out.put(itemId, normalized);
 		}
 		return out;
+	}
+
+	private static long resolveLineTotalFeeFen(Map<String, Object> line) {
+		long totalFee = parseDecimalToLong(line.getOrDefault("total_fee", line.get("totalFee")));
+		if (totalFee > 0L) {
+			return totalFee;
+		}
+		BigDecimal price = toDecimal(line.getOrDefault("price", line.get("item_fee")));
+		if (price.compareTo(BigDecimal.ZERO) <= 0) {
+			return 0L;
+		}
+		BigDecimal num = toDecimal(line.getOrDefault("num", 1));
+		if (num.compareTo(BigDecimal.ZERO) <= 0) {
+			num = BigDecimal.ONE;
+		}
+		return price.multiply(num).multiply(BigDecimal.valueOf(100)).setScale(0, RoundingMode.HALF_UP).longValue();
+	}
+
+	private static long parseDecimalToLong(Object raw) {
+		if (raw == null) {
+			return 0L;
+		}
+		if (raw instanceof Number n) {
+			return n.longValue();
+		}
+		String s = String.valueOf(raw).trim();
+		if (s.isEmpty()) {
+			return 0L;
+		}
+		try {
+			return new BigDecimal(s).setScale(0, RoundingMode.DOWN).longValue();
+		} catch (NumberFormatException e) {
+			return 0L;
+		}
+	}
+
+	private static BigDecimal toDecimal(Object raw) {
+		if (raw == null) {
+			return BigDecimal.ZERO;
+		}
+		if (raw instanceof BigDecimal bd) {
+			return bd;
+		}
+		if (raw instanceof Number n) {
+			return new BigDecimal(n.toString());
+		}
+		String s = String.valueOf(raw).trim();
+		if (s.isEmpty()) {
+			return BigDecimal.ZERO;
+		}
+		try {
+			return new BigDecimal(s);
+		} catch (NumberFormatException e) {
+			return BigDecimal.ZERO;
+		}
 	}
 
 	private static String nullSafeTrim(String value) {

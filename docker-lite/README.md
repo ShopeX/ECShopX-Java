@@ -60,7 +60,7 @@ cd ECShopX-Java
 ./pack.sh --with-images
 ```
 
-`--with-images` downloads image tars into `docker-lite/images/` (needs URLs in `images.env`).
+`--with-images` downloads the CDN Docker image bundle into `docker-lite/images/`.
 
 **Build steps:**
 
@@ -72,25 +72,24 @@ cd ECShopX-Java
 
 **Excluded from tarball:** `.git`, project-root `node_modules/`, Maven `target/`, `.env`, prior `ecshopx-*.tar.gz`. **Kept:** `ECShopX-Java_Web/.output/server/node_modules` (required for Nuxt SSR).
 
-## Configure image tars
+## Configure images
 
 Edit `docker-lite/images.env` (see `images.env.example`):
 
 ```bash
-APP_IMAGE=ecshopx-app:latest
-APP_IMAGE_TAR_URL=https://your-cdn/ecshopx-app.tar
+DOCKER_IMAGES_BUNDLE_URL=https://shopex-onex-yundian-image.yuanyuanke.cn/ecx-java-docker-image-base/ecx-java-docker-images.zip
+APP_IMAGE=ecshopx-java:17-node20-openresty
 MYSQL_IMAGE=mysql:8.0
 # ...
 ```
 
-If a tar already exists under `docker-lite/images/<basename>`, deploy skips download and loads it directly.
+Deploy downloads the CDN gzip bundle and imports with `gunzip -c … | docker load` (no registry pull).
 
 ## Deploy (`deploy.sh`)
 
 ```bash
 tar xzf ecshopx-java-0.0.1-SNAPSHOT.tar.gz
 cd ecshopx-java-0.0.1-SNAPSHOT/ECShopX-Java/docker-lite
-# fill images.env tags first (APP_IMAGE points at registry)
 ./deploy.sh --mode b2c \
   --http-port 80 \
   --admin-host admin.example.com \
@@ -107,7 +106,7 @@ What it does:
 1. Validate prebuilt frontend `dist-*`, PC `.output`, and packaged jar
 2. Copy packaged `ecshopx-bootstrap.jar` → `app.jar`
 3. Activate `dist-b2c` or `dist-bbc` for admin/mobile
-4. Ensure runtime images (`docker pull`)
+4. Download CDN image bundle and `gunzip -c … | docker load`
 5. `docker compose -f docker-lite/docker-compose.yml up -d`
 
 Does **not** run Maven, npm, pnpm, or frontend builds.

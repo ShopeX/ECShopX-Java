@@ -95,12 +95,13 @@ public class GoodsRecommendMatchService {
 		}
 
 		List<Long> orderedMainIds = dedupePreserveOrder(mainItemIds);
+		List<Long> orderedExcludeIds =
+				excludeItemIds == null ? List.of() : dedupePreserveOrder(excludeItemIds);
 		Set<Long> contextItemIds = new LinkedHashSet<>(orderedMainIds);
-		if (excludeItemIds != null) {
-			contextItemIds.addAll(excludeItemIds);
-		}
+		contextItemIds.addAll(orderedExcludeIds);
 		Map<Long, Items> contextItemsById = loadItems(companyId, contextItemIds);
-		Set<Long> excludeGoodsIds = goodsIdResolver.resolveGoodsIdSet(contextItemsById, contextItemIds);
+		// ECX-10357：已加购/当前页主商品不再从推荐结果排除；无货/下架仍由可售过滤丢掉。
+		Set<Long> excludeGoodsIds = goodsIdResolver.resolveGoodsIdSet(contextItemsById, orderedExcludeIds);
 
 		Map<Long, Long> mainItemToGoodsId = goodsIdResolver.itemIdsToGoodsIds(contextItemsById, orderedMainIds);
 		Map<Long, Long> mainGoodsToRuleId = loadMainGoodsRuleMap(companyId, mainItemToGoodsId.values());
@@ -228,6 +229,7 @@ public class GoodsRecommendMatchService {
 		view.put("item_id", item.getItemId());
 		view.put("item_name", item.getItemName());
 		view.put("price", salabilityResolver.resolvePrice(item, di));
+		view.put("market_price", item.getMarketPrice() != null ? item.getMarketPrice() : 0);
 		view.put("sales", salabilityResolver.resolveSales(item, di));
 		view.put("pics", firstPicUrl(item.getPics()));
 		view.put("distributor_id", item.getDistributorId());

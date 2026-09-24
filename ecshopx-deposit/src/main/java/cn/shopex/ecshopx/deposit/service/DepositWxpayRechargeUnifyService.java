@@ -104,7 +104,8 @@ public class DepositWxpayRechargeUnifyService {
 		String cfgAppId = stringVal(cfg.get("app_id"));
 		String payTypeLc = normalizePayType(payType);
 		String tradeType = resolveTradeType(payTypeLc);
-		boolean h5OrJsPay = "wxpayh5".equals(payTypeLc) || "wxpayjs".equals(payTypeLc);
+		boolean useMerchantAppId =
+				"wxpayh5".equals(payTypeLc) || "wxpayjs".equals(payTypeLc) || "wxpaypc".equals(payTypeLc);
 		String passbackInner =
 				"company_id="
 						+ urlEncodeUtf8(String.valueOf(companyId))
@@ -118,7 +119,7 @@ public class DepositWxpayRechargeUnifyService {
 		String openIdVal = openId == null ? "" : openId.trim();
 		String wxaVal = wxaAppId == null ? "" : wxaAppId.trim();
 		String woaVal = woaAppId == null ? "" : woaAppId.trim();
-		String miniAppIdForUnified = h5OrJsPay && StringUtils.hasText(cfgAppId) ? cfgAppId : wxaVal;
+		String miniAppIdForUnified = useMerchantAppId && StringUtils.hasText(cfgAppId) ? cfgAppId : wxaVal;
 
 		TreeMap<String, String> unify = new TreeMap<>();
 		if (servicer) {
@@ -135,7 +136,7 @@ public class DepositWxpayRechargeUnifyService {
 				putIfHasText(unify, "sub_openid", openIdVal);
 			}
 		} else {
-			String appIdForUnified = resolveAppIdForUnified(tradeType, h5OrJsPay, wxaVal, woaVal, cfg);
+			String appIdForUnified = resolveAppIdForUnified(tradeType, useMerchantAppId, wxaVal, woaVal, cfg);
 			if (!StringUtils.hasText(appIdForUnified)) {
 				throw new BadRequestException("不支持支付服务，请联系商家");
 			}
@@ -152,6 +153,9 @@ public class DepositWxpayRechargeUnifyService {
 		unify.put("spbill_create_ip", ip);
 		unify.put("notify_url", wechatNotifyUrl);
 		unify.put("trade_type", tradeType);
+		if ("NATIVE".equals(tradeType)) {
+			unify.put("product_id", depositTradeId);
+		}
 		unify.put("attach", attachOuter);
 		if (detail != null && !detail.isEmpty()) {
 			unify.put("detail", detail);
@@ -159,10 +163,10 @@ public class DepositWxpayRechargeUnifyService {
 		unify.put("sign", signParams(unify, apiKey));
 
 		String xml = buildUnifiedOrderXml(unify);
-		ResponseEntity<String> resp =
-				restTemplate.postForEntity(UNIFIED_ORDER_URL, xmlEntity(xml), String.class);
-		String respXml = resp.getBody();
-		if (respXml == null || respXml.isEmpty()) {
+		ResponseEntity<byte[]> resp =
+				restTemplate.postForEntity(UNIFIED_ORDER_URL, xmlEntity(xml), byte[].class);
+		String respXml = utf8Xml(resp.getBody());
+		if (respXml.isEmpty()) {
 			throw new BadRequestException("支付失败");
 		}
 		String returnCode = xmlText(respXml, "return_code");
@@ -186,6 +190,17 @@ public class DepositWxpayRechargeUnifyService {
 			}
 			Map<String, Object> out = new LinkedHashMap<>();
 			out.put("mweb_url", mwebUrl);
+			out.put("trade_info", tradeInfo);
+			return out;
+		}
+
+		if ("NATIVE".equals(tradeType)) {
+			String codeUrl = xmlText(respXml, "code_url");
+			if (codeUrl == null || codeUrl.isEmpty()) {
+				throw new BadRequestException("支付失败");
+			}
+			Map<String, Object> out = new LinkedHashMap<>();
+			out.put("code_url", codeUrl);
 			out.put("trade_info", tradeInfo);
 			return out;
 		}
@@ -249,6 +264,7 @@ public class DepositWxpayRechargeUnifyService {
 		return switch (payTypeLc) {
 			case "wxpayh5" -> "MWEB";
 			case "wxpayapp" -> "APP";
+			case "wxpaypc" -> "NATIVE";
 			default -> "JSAPI";
 		};
 	}
@@ -322,6 +338,17 @@ public class DepositWxpayRechargeUnifyService {
 
 	private static String cdataSafe(String v) {
 		return v.replace("]]>", "]]]]><![CDATA[>");
+	}
+
+	/**
+	 * 微信统一下单返回 UTF-8 XML，但 Content-Type 经常不带 charset，或标成 ISO-8859-1。
+	 * 按字符串读取时 RestTemplate 会按错误字符集解码，中文 err_code_des 就会变成乱码。
+	 */
+	private static String utf8Xml(byte[] body) {
+		if (body == null || body.length == 0) {
+			return "";
+		}
+		return new String(body, StandardCharsets.UTF_8);
 	}
 
 	private static HttpEntity<String> xmlEntity(String xml) {

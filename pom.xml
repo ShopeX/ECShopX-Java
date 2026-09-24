@@ -12,12 +12,13 @@
 
 	<groupId>cn.shopex</groupId>
 	<artifactId>ecshopx</artifactId>
-	<version>5.0.0</version>
+	<version>${revision}</version>
 	<packaging>pom</packaging>
 	<name>ecshopx</name>
 	<description>Ecshopx Java</description>
 
 	<properties>
+		<revision>5.1.0</revision>
 		<java.version>17</java.version>
 		<mybatis-plus.version>3.5.16</mybatis-plus.version>
 		<lombok.version>1.18.36</lombok.version>
@@ -430,6 +431,31 @@
 				<configuration>
 					<skip>true</skip>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>flatten-maven-plugin</artifactId>
+				<version>1.6.0</version>
+				<configuration>
+					<updatePomFile>true</updatePomFile>
+					<flattenMode>resolveCiFriendliesOnly</flattenMode>
+				</configuration>
+				<executions>
+					<execution>
+						<id>flatten</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>flatten</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>flatten.clean</id>
+						<phase>clean</phase>
+						<goals>
+							<goal>clean</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

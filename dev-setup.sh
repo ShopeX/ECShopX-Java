@@ -14,12 +14,16 @@ PARENT_DIR="$(cd "$PROJECT_ROOT/.." && pwd)"
 DOCKER_COMPOSE_FILE="$PROJECT_ROOT/docker-compose.dev.yml"
 COMPOSE_ENV_FILE="$PROJECT_ROOT/.env"
 APP_PROPERTIES="$PROJECT_ROOT/ecshopx-bootstrap/src/main/resources/application.properties"
-RUNTIME_BASE_IMAGE="${RUNTIME_BASE_IMAGE:-registry.cn-hangzhou.aliyuncs.com/shopex_company/ecshopx-java:17-node20-openresty}"
+RUNTIME_BASE_IMAGE="${RUNTIME_BASE_IMAGE:-ecshopx-java:17-node20-openresty}"
 # Frontend builds reuse the same runtime base image (Node 20 already included).
 NODE_BUILD_IMAGE="${NODE_BUILD_IMAGE:-$RUNTIME_BASE_IMAGE}"
+# Full-install Java compile stage (must be in CDN docker-save bundle).
+MAVEN_BUILD_IMAGE="${MAVEN_BUILD_IMAGE:-maven:3.9-eclipse-temurin-17}"
 
 # shellcheck source=docker/install-secrets.sh
 source "$PROJECT_ROOT/docker/install-secrets.sh"
+# shellcheck source=docker/install-docker-images.sh
+source "$PROJECT_ROOT/docker/install-docker-images.sh"
 
 PUBLIC_REPO_BASE_URL="${PUBLIC_REPO_BASE_URL:-https://gitee.com/ShopeX}"
 
@@ -212,30 +216,38 @@ configure_docker_publish_env() {
     export NUXT_PUBLIC_DECORATION_ADMIN_ORIGINS
     export JWT_SECRET
     export RUNTIME_BASE_IMAGE
+    export MAVEN_BUILD_IMAGE
+    export PRODUCT_MODEL
     log_info "Docker 发布环境："
     log_info "  HTTP: ${HTTP_HOST_PORT}->80  XXL: ${XXL_HOST_PORT}->8080"
     log_info "  Hosts: ADMIN=${ADMIN_HOST} H5=${H5_HOST} PC=${PC_HOST}"
+    [ -n "${PRODUCT_MODEL:-}" ] && log_info "  PRODUCT_MODEL=${PRODUCT_MODEL}"
 }
 
 ensure_runtime_base_image() {
     export RUNTIME_BASE_IMAGE
-    if docker image inspect "$RUNTIME_BASE_IMAGE" >/dev/null 2>&1; then
-        log_info "运行时基础镜像已存在: $RUNTIME_BASE_IMAGE"
-        return 0
-    fi
+    export MAVEN_BUILD_IMAGE
+    local images_dir="$PROJECT_ROOT/docker/images"
 
-    log_step "拉取运行时基础镜像: $RUNTIME_BASE_IMAGE ..."
-    if docker pull "$RUNTIME_BASE_IMAGE"; then
-        log_success "已拉取: $RUNTIME_BASE_IMAGE"
-        return 0
-    fi
-
-    log_step "拉取失败，本地构建 $RUNTIME_BASE_IMAGE ..."
-    if ! bash "$PROJECT_ROOT/docker/build-runtime-base.sh" --tag "$RUNTIME_BASE_IMAGE"; then
-        log_error "无法获取 $RUNTIME_BASE_IMAGE（pull/build 均失败）"
+    log_step "从 CDN 下载并导入 Docker 镜像（不从仓库 pull）..."
+    if ! install_ensure_docker_images_from_cdn "$images_dir"; then
+        log_error "Docker 镜像导入失败（CDN: $(install_docker_images_bundle_url)）"
         return 1
     fi
-    log_success "已就绪: $RUNTIME_BASE_IMAGE"
+
+    if ! docker image inspect "$RUNTIME_BASE_IMAGE" >/dev/null 2>&1; then
+        log_error "CDN 包导入后未找到镜像: $RUNTIME_BASE_IMAGE"
+        log_error "请确认 ecx-java-docker-images.zip 内包含该 tag"
+        return 1
+    fi
+    log_success "运行时基础镜像已就绪: $RUNTIME_BASE_IMAGE"
+
+    if ! docker image inspect "$MAVEN_BUILD_IMAGE" >/dev/null 2>&1; then
+        log_error "CDN 包导入后未找到 Maven 编译镜像: $MAVEN_BUILD_IMAGE"
+        log_error "完整安装编译 Java 需要该镜像；请将其打入 CDN 包后重新发布"
+        return 1
+    fi
+    log_success "Maven 编译镜像已就绪: $MAVEN_BUILD_IMAGE"
 }
 
 configure_install_secrets() {
@@ -495,14 +507,12 @@ run_docker_compose() {
     cd "$PROJECT_ROOT"
     [ -f "$DOCKER_COMPOSE_FILE" ] || { log_error "未找到 docker-compose.dev.yml"; exit 1; }
 
-    ensure_runtime_base_image || exit 1
-
     if [ "$REBUILD" = true ]; then
         log_info "强制重新构建镜像 (--no-cache)..."
-        $DOCKER_COMPOSE_CMD -f "$DOCKER_COMPOSE_FILE" build --no-cache
+        DOCKER_BUILDKIT=0 COMPOSE_DOCKER_CLI_BUILD=1 $DOCKER_COMPOSE_CMD -f "$DOCKER_COMPOSE_FILE" build --no-cache
     fi
 
-    $DOCKER_COMPOSE_CMD -f "$DOCKER_COMPOSE_FILE" up -d --build
+    DOCKER_BUILDKIT=0 COMPOSE_DOCKER_CLI_BUILD=1 $DOCKER_COMPOSE_CMD -f "$DOCKER_COMPOSE_FILE" up -d --build
     log_success "Docker Compose 服务已启动"
 
     log_step "更新后台管理员登录密码..."
@@ -512,12 +522,20 @@ run_docker_compose() {
         log_error "后台管理员密码更新失败"
         exit 1
     fi
+
+    log_step "同步业务模式到 companys.menu_type..."
+    if install_apply_company_menu_type "ecshopx-dev-mysql" "$MODE"; then
+        log_success "companys.menu_type 已按模式 $MODE 更新"
+    else
+        log_error "更新 companys.menu_type 失败"
+        exit 1
+    fi
 }
 
 # Wait until Java HTTP answers (Flyway migrate runs during Spring Boot startup).
 wait_for_java_ready() {
     local url="${1:-http://127.0.0.1:18080/}"
-    local max_attempts="${2:-90}"
+    local max_attempts="${2:-120}"
     local attempt=1
     local code=""
 
@@ -664,8 +682,14 @@ build_web_if_needed() {
     [ -d "$WEB_DIR" ] || { log_error "ECShopX-Java_Web 不存在（未使用 --skip-pc）"; return 1; }
     log_step "编译 ECShopX-Java_Web (Nuxt)..."
     configure_frontend_env "$WEB_DIR" "ECShopX-Java_Web" "$PC_API_URL"
+    local web_node_modules_volume="ecshopx-web-node-modules"
+    local web_pnpm_store_volume="ecshopx-web-pnpm-store"
+    docker volume create "$web_node_modules_volume" >/dev/null
+    docker volume create "$web_pnpm_store_volume" >/dev/null
     docker run --rm \
         -v "$PARENT_DIR:/data/httpd" \
+        -v "$web_node_modules_volume:/data/httpd/ECShopX-Java_Web/node_modules" \
+        -v "$web_pnpm_store_volume:/pnpm-store" \
         -w /data/httpd/ECShopX-Java_Web \
         -e npm_config_registry="${NPM_REGISTRY:-https://registry.npmmirror.com}" \
         -e COREPACK_NPM_REGISTRY="${NPM_REGISTRY:-https://registry.npmmirror.com}" \
@@ -673,7 +697,7 @@ build_web_if_needed() {
         -e NUXT_API_BASE_INTERNAL=http://127.0.0.1:18080/api/v1/h5app \
         -e NUXT_PUBLIC_API_BASE="${PC_API_URL:-http://admin.ecshopx.test/api/v1/h5app}" \
         "$NODE_BUILD_IMAGE" \
-        sh -c 'corepack enable && pnpm install --registry "$npm_config_registry" && pnpm build'
+        sh -c 'corepack enable && pnpm install --store-dir /pnpm-store --registry "$npm_config_registry" && pnpm build'
     [ -f "$WEB_DIR/.output/server/index.mjs" ] || { log_error "Nuxt .output 缺失"; return 1; }
     log_success "ECShopX-Java_Web Nuxt 编译完成 (.output/)"
     INSTALLED_PC=true
@@ -734,6 +758,8 @@ main() {
 
     check_docker
     resolve_business_mode
+    install_persist_product_model "$COMPOSE_ENV_FILE" "$MODE" || exit 1
+    log_info "业务模式 $MODE → PRODUCT_MODEL=${PRODUCT_MODEL}"
     configure_public_urls
     configure_install_secrets
     ensure_runtime_base_image || exit 1

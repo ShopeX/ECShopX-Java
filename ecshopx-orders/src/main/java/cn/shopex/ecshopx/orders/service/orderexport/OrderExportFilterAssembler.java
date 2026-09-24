@@ -16,9 +16,13 @@
 
 package cn.shopex.ecshopx.orders.service.orderexport;
 
+import cn.shopex.ecshopx.common.auth.OperatorJwtRequestAttributes;
 import cn.shopex.ecshopx.common.orders.port.OrderExportActivityIdsLookupPort;
 import cn.shopex.ecshopx.common.util.DateExpressionParser;
+import cn.shopex.ecshopx.common.web.ActivatedRequestAttributes;
 import cn.shopex.ecshopx.orders.service.invoice.export.InvoiceExportSalesmanResolver;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -26,6 +30,7 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -107,6 +112,8 @@ public class OrderExportFilterAssembler {
 					}
 				} else if ("supplier".equalsIgnoreCase(op)) {
 					filter.put("supplier_id", Long.valueOf(operatorId));
+				} else if ("distributor".equalsIgnoreCase(op)) {
+					applyCurrentDistributorScope(filter, request, distributorIdsFromJwt);
 				} else {
 					if (request.getParameter("distributor_id") != null) {
 						filter.put("distributor_id", String.valueOf(request.getParameter("distributor_id")));
@@ -172,6 +179,116 @@ public class OrderExportFilterAssembler {
 		}
 
 		return new OrderExportAssemblyResult(filter, exportTypeForJob, orderTypeTrim);
+	}
+
+	/**
+	 * 店铺账号只导出当前选中店铺的订单。选中店铺来自登录态；没有选中店铺时，退回到账号可管理的店铺，避免导出全公司订单。
+	 */
+	private static void applyCurrentDistributorScope(
+			LinkedHashMap<String, Object> filter, HttpServletRequest request, List<Long> distributorIdsFromJwt) {
+		long selected = positiveLong(request.getAttribute(ActivatedRequestAttributes.DISTRIBUTOR_ID));
+		if (selected <= 0L) {
+			selected = positiveLong(jwtClaim(request, "distributor_id"));
+		}
+		if (selected > 0L) {
+			filter.put("distributor_id", Long.valueOf(selected));
+			return;
+		}
+		List<Long> allowed = new ArrayList<>();
+		if (distributorIdsFromJwt != null) {
+			for (Long id : distributorIdsFromJwt) {
+				if (id != null && id.longValue() > 0L && !allowed.contains(id)) {
+					allowed.add(id);
+				}
+			}
+		}
+		for (Long id : distributorIdsFromJwtClaim(jwtClaim(request, "distributor_ids"))) {
+			if (id != null && id.longValue() > 0L && !allowed.contains(id)) {
+				allowed.add(id);
+			}
+		}
+		if (allowed.size() == 1) {
+			filter.put("distributor_id", allowed.get(0));
+		} else if (!allowed.isEmpty()) {
+			filter.put("distributor_id|in", allowed);
+		} else {
+			filter.put("distributor_id", Long.valueOf(-1L));
+		}
+	}
+
+	private static Object jwtClaim(HttpServletRequest request, String key) {
+		Object raw = request.getAttribute(OperatorJwtRequestAttributes.OPERATOR_JWT_USER_DATA);
+		if (!(raw instanceof Map<?, ?> jwt)) {
+			return null;
+		}
+		return jwt.get(key);
+	}
+
+	private static long positiveLong(Object raw) {
+		if (raw == null) {
+			return 0L;
+		}
+		if (raw instanceof Number number) {
+			long value = number.longValue();
+			return value > 0L ? value : 0L;
+		}
+		String text = String.valueOf(raw).trim();
+		if (!StringUtils.hasText(text)) {
+			return 0L;
+		}
+		try {
+			long value = Long.parseLong(text);
+			return value > 0L ? value : 0L;
+		} catch (NumberFormatException e) {
+			return 0L;
+		}
+	}
+
+	private static List<Long> distributorIdsFromJwtClaim(Object raw) {
+		if (raw instanceof List<?> list) {
+			List<Long> ids = new ArrayList<>();
+			for (Object row : list) {
+				if (row instanceof Map<?, ?> map) {
+					long id = positiveLong(map.get("distributor_id"));
+					if (id > 0L) {
+						ids.add(Long.valueOf(id));
+					}
+				} else {
+					long id = positiveLong(row);
+					if (id > 0L) {
+						ids.add(Long.valueOf(id));
+					}
+				}
+			}
+			return ids;
+		}
+		if (!(raw instanceof String text) || !StringUtils.hasText(text)) {
+			return List.of();
+		}
+		try {
+			JsonNode arr = new ObjectMapper().readTree(text);
+			if (!arr.isArray()) {
+				return List.of();
+			}
+			List<Long> ids = new ArrayList<>();
+			for (JsonNode node : arr) {
+				long id = 0L;
+				if (node.isObject()) {
+					JsonNode idNode = node.get("distributor_id");
+					if (idNode != null && !idNode.isNull()) {
+						id = idNode.isNumber() ? positiveLong(idNode.numberValue()) : positiveLong(idNode.asText());
+					}
+				} else {
+					id = positiveLong(node.asText());
+				}
+				if (id > 0L) {
+					ids.add(Long.valueOf(id));
+				}
+			}
+			return ids;
+		} catch (Exception ignored) {
+			return List.of();
+		}
 	}
 
 	private static void applyOrderId(LinkedHashMap<String, Object> filter, String raw) {

@@ -162,6 +162,19 @@ public class TurntableFrontJoinTurntableService {
 					TurntableErrorMessages.message(messageSource, TurntableErrorCodes.NOT_STARTED, locale));
 		}
 
+		// 插单前次数预检：已超限直接拒绝，不落抽奖记录（避免无效点击产生带随机奖品的失败记录）
+		String exceededLimit =
+				countReserve.findExceededLimit(
+						companyId,
+						userId,
+						actId,
+						dayKeyResolver.dayKey(companyId),
+						act.getLimitTotal() == null ? 0L : act.getLimitTotal(),
+						act.getLimitDay() == null ? 0L : act.getLimitDay());
+		if (exceededLimit != null) {
+			throw new BadRequestException(TurntableErrorMessages.message(messageSource, exceededLimit, locale));
+		}
+
 		PointMember row =
 				pointMemberMapper.selectOne(
 						new LambdaQueryWrapper<PointMember>()

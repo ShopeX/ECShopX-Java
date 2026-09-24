@@ -18,8 +18,10 @@ package cn.shopex.ecshopx.promotions.service;
 
 import cn.shopex.ecshopx.promotions.domain.TurntableUserCount;
 import cn.shopex.ecshopx.promotions.domain.TurntableUserDayCount;
+import cn.shopex.ecshopx.promotions.domain.turntable.TurntableErrorCodes;
 import cn.shopex.ecshopx.promotions.mapper.TurntableUserCountMapper;
 import cn.shopex.ecshopx.promotions.mapper.TurntableUserDayCountMapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -72,6 +74,42 @@ public class TurntableCountReserveService {
 		int now = (int) Math.min(System.currentTimeMillis() / 1000L, Integer.MAX_VALUE);
 		releaseDay(companyId, userId, actId, dayKey, now);
 		releaseTotal(companyId, userId, actId, now);
+	}
+
+	/**
+	 * 插单前的只读预检：已超限返回对应错误码（LUCKY_DRAW_TOTAL_LIMIT / LUCKY_DRAW_DAILY_LIMIT），未超限返回 null。
+	 * 仅用于在落抽奖记录前提前拒绝无效点击，避免产生带随机奖品的失败记录；竞态边界仍由 reserve() 的 CAS 兜底。
+	 */
+	public String findExceededLimit(
+			long companyId, long userId, long actId, String dayKey, long limitTotal, long limitDay) {
+		if (limitTotal > 0L) {
+			TurntableUserCount totalRow =
+					userCountMapper.selectOne(
+							new LambdaQueryWrapper<TurntableUserCount>()
+									.eq(TurntableUserCount::getCompanyId, companyId)
+									.eq(TurntableUserCount::getUserId, userId)
+									.eq(TurntableUserCount::getActId, actId)
+									.last("LIMIT 1"));
+			long usedTotal = totalRow == null || totalRow.getTotalCount() == null ? 0L : totalRow.getTotalCount();
+			if (usedTotal >= limitTotal) {
+				return TurntableErrorCodes.TOTAL_LIMIT;
+			}
+		}
+		if (limitDay > 0L) {
+			TurntableUserDayCount dayRow =
+					userDayCountMapper.selectOne(
+							new LambdaQueryWrapper<TurntableUserDayCount>()
+									.eq(TurntableUserDayCount::getCompanyId, companyId)
+									.eq(TurntableUserDayCount::getUserId, userId)
+									.eq(TurntableUserDayCount::getActId, actId)
+									.eq(TurntableUserDayCount::getDayKey, dayKey)
+									.last("LIMIT 1"));
+			long usedDay = dayRow == null || dayRow.getDayCount() == null ? 0L : dayRow.getDayCount();
+			if (usedDay >= limitDay) {
+				return TurntableErrorCodes.DAILY_LIMIT;
+			}
+		}
+		return null;
 	}
 
 	private boolean reserveTotal(long companyId, long userId, long actId, long limitTotal, int now) {

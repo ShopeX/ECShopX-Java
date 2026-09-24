@@ -18,6 +18,7 @@ package cn.shopex.ecshopx.promotions.service;
 
 import cn.shopex.ecshopx.members.service.account.MemberAccountService;
 import cn.shopex.ecshopx.promotions.domain.TurntableLog;
+import cn.shopex.ecshopx.promotions.domain.turntable.TurntableDrawStatus;
 import cn.shopex.ecshopx.promotions.mapper.TurntableLogMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -55,6 +56,8 @@ public class TurntableLuckyDrawLogListService {
 		LambdaQueryWrapper<TurntableLog> pageWrapper =
 				new LambdaQueryWrapper<TurntableLog>()
 						.eq(TurntableLog::getActId, actId)
+						// 与 countAllByActId / C 端 getLuckyDrawLog 对齐：仅 SUCCESS / GRANT_FAILED
+						.in(TurntableLog::getStatus, (Object[]) TurntableDrawStatus.VISIBLE_IN_DRAW_LOG)
 						.orderByAsc(TurntableLog::getId);
 		Page<TurntableLog> mpPage = new Page<>(page, pageSize, false);
 		turntableLogMapper.selectPage(mpPage, pageWrapper);

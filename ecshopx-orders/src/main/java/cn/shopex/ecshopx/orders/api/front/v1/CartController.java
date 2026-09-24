@@ -38,6 +38,7 @@ import cn.shopex.ecshopx.orders.service.front.wxapp.WxappUpdateCartItemPromotion
 import cn.shopex.ecshopx.orders.service.front.wxapp.WxappUpdateCartNumService;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -249,15 +250,7 @@ public class CartController {
 		return ResponseEntity.ok(ApiResult.ok(Map.of("status", Boolean.TRUE)));
 	}
 
-	@PutMapping(
-			value = "/cartupdate/checkstatus",
-			name = "选中状态",
-			consumes = {
-				MediaType.APPLICATION_JSON_VALUE,
-				MediaType.MULTIPART_FORM_DATA_VALUE,
-				MediaType.APPLICATION_FORM_URLENCODED_VALUE
-			},
-			produces = MediaType.APPLICATION_JSON_VALUE)
+	@PutMapping(value = "/cartupdate/checkstatus", name = "选中状态", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ApiResult<Map<String, Object>>> updateCartCheckStatus(
 			HttpServletRequest request, @FlexibleBody(required = false) Map<String, Object> body) {
 		Object rawAuth = request.getAttribute(WxappMemberAuthAttributes.REQUEST_ATTR);
@@ -279,12 +272,12 @@ public class CartController {
 		long authUserId = longVal(auth.get("user_id"));
 		long buyUserId = longVal(merged.get("buy_user_id"));
 		long effectiveUserId = (buyUserId != 0L) ? buyUserId : authUserId;
-		long cartId = parseCartIdStrictLong(merged.get("cart_id"));
+		List<Long> cartIds = parseCartIdsStrictLong(merged.get("cart_id"));
 		int rows =
 				wxappUpdateCartCheckStatusService.updateCartCheckStatus(
 						companyId,
 						effectiveUserId,
-						cartId,
+						cartIds,
 						resolveIsCheckedLoose(merged.get("is_checked")));
 		return ResponseEntity.ok(ApiResult.ok(Map.of("status", rows)));
 	}
@@ -685,6 +678,36 @@ public class CartController {
 		} catch (NumberFormatException e) {
 			throw new ResourceException("商品促销id错误");
 		}
+	}
+
+	/**
+	 * 单值 {@code cart_id=1}、数组 {@code cart_id[0]=1&cart_id[1]=2}、逗号串 {@code cart_id=1,2} 均接受；
+	 * 空集合或无有效 id 抛参数错误。
+	 */
+	private static List<Long> parseCartIdsStrictLong(Object raw) {
+		List<Object> elements = new ArrayList<>();
+		if (raw instanceof Collection<?> c) {
+			elements.addAll(c);
+		} else if (raw instanceof Object[] arr) {
+			elements.addAll(List.of(arr));
+		} else if (raw != null) {
+			String t = String.valueOf(raw).trim();
+			if (t.indexOf(',') >= 0) {
+				for (String p : t.split(",", -1)) {
+					elements.add(p);
+				}
+			} else {
+				elements.add(raw);
+			}
+		}
+		List<Long> out = new ArrayList<>(elements.size());
+		for (Object el : elements) {
+			out.add(parseCartIdStrictLong(el));
+		}
+		if (out.isEmpty()) {
+			throw new ResourceException("购物车参数错误");
+		}
+		return out;
 	}
 
 	private static long parseCartIdStrictLong(Object raw) {

@@ -26,5 +26,10 @@ public final class TurntableDrawStatus {
 	public static final String GRANT_FAILED = "GRANT_FAILED";
 	public static final String COST_FAILED = "COST_FAILED";
 
+	/**
+	 * C 端抽奖记录、后管日志列表与导出统一口径：仅 SUCCESS / GRANT_FAILED（不含 PROCESSING、COST_FAILED）。
+	 */
+	public static final String[] VISIBLE_IN_DRAW_LOG = {SUCCESS, GRANT_FAILED};
+
 	private TurntableDrawStatus() {}
 }

@@ -16,9 +16,11 @@
 
 package cn.shopex.ecshopx.kaquan.service.discount;
 
+import cn.shopex.ecshopx.common.operatorcart.dto.CouponCartItemScope;
 import cn.shopex.ecshopx.kaquan.service.discount.dto.CartItemMoneyRow;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -28,6 +30,12 @@ import org.springframework.stereotype.Service;
 public class UserDiscountCardValidCheckService {
 
 	private static final int POINT_FEE_FEN = 0;
+
+	private final UserDiscountCardMatchedAmountService userDiscountCardMatchedAmountService;
+
+	public UserDiscountCardValidCheckService(UserDiscountCardMatchedAmountService userDiscountCardMatchedAmountService) {
+		this.userDiscountCardMatchedAmountService = userDiscountCardMatchedAmountService;
+	}
 
 	@SuppressWarnings("unchecked")
 	public void apply(long companyId, Map<String, Object> cardLists, long distributorId, Map<Long, CartItemMoneyRow> items) {
@@ -39,13 +47,23 @@ public class UserDiscountCardValidCheckService {
 			return;
 		}
 		List<Long> itemIds = new ArrayList<>(items.keySet());
+		Map<Long, Long> itemFees = new LinkedHashMap<>();
+		for (Map.Entry<Long, CartItemMoneyRow> e : items.entrySet()) {
+			if (e.getKey() == null) {
+				continue;
+			}
+			CartItemMoneyRow row = e.getValue();
+			itemFees.put(e.getKey(), row == null ? 0L : row.getTotalFeeFen());
+		}
+		Map<Long, CouponCartItemScope> scopes = userDiscountCardMatchedAmountService.loadScopes(companyId, itemFees.keySet());
 		for (Object el : rawList) {
 			if (!(el instanceof Map<?, ?> card)) {
 				continue;
 			}
 			Map<String, Object> cardMap = (Map<String, Object>) card;
 			Object relItem = cardMap.get("rel_item_ids");
-			long amount = countItemAmount(itemIds, relItem, items);
+			int useBound = UserDiscountCardMatchedAmount.useBoundOf(cardMap);
+			long amount = UserDiscountCardMatchedAmount.feeFen(useBound, relItem, itemFees, scopes);
 			if (amount == 0) {
 				setInvalid(cardMap);
 				continue;
@@ -68,9 +86,9 @@ public class UserDiscountCardValidCheckService {
 				cardMap.put("rel_item_ids", filtered);
 			}
 			Object ub = cardMap.get("use_bound");
-			int useBound = ub instanceof Number n ? n.intValue() : 0;
+			int useBoundAfter = ub instanceof Number n ? n.intValue() : 0;
 			Object relAfter = cardMap.get("rel_item_ids");
-			if (relAfter instanceof List<?> relList && useBound == 5) {
+			if (relAfter instanceof List<?> relList && useBoundAfter == 5) {
 				Set<String> hash = new HashSet<>();
 				for (Object x : relList) {
 					if (x != null) {
@@ -110,44 +128,6 @@ public class UserDiscountCardValidCheckService {
 		if (coupon instanceof Map<?, ?> cm) {
 			((Map<String, Object>) cm).put("valid", false);
 		}
-	}
-
-	private static long countItemAmount(List<Long> itemList, Object cardItem, Map<Long, CartItemMoneyRow> inputItem) {
-		long amount = 0;
-		if (cardItem instanceof List<?> arr) {
-			for (Long itemId : itemList) {
-				String sid = String.valueOf(itemId);
-				for (Object x : arr) {
-					if (x != null && sid.equals(String.valueOf(x))) {
-						CartItemMoneyRow row = inputItem.get(itemId);
-						if (row != null && row.getTotalFeeFen() > 0) {
-							amount += row.getTotalFeeFen();
-						}
-						break;
-					}
-				}
-			}
-		} else {
-			String s = cardItem == null ? "" : String.valueOf(cardItem).trim();
-			if (s.isEmpty() || "all".equalsIgnoreCase(s)) {
-				for (Long itemId : itemList) {
-					CartItemMoneyRow row = inputItem.get(itemId);
-					if (row != null && row.getTotalFeeFen() > 0) {
-						amount += row.getTotalFeeFen();
-					}
-				}
-				return amount;
-			}
-			for (Long itemId : itemList) {
-				if (s.contains("," + itemId + ",")) {
-					CartItemMoneyRow row = inputItem.get(itemId);
-					if (row != null && row.getTotalFeeFen() > 0) {
-						amount += row.getTotalFeeFen();
-					}
-				}
-			}
-		}
-		return amount;
 	}
 
 	private static int intVal(Object o) {

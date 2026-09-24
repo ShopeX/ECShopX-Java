@@ -18,6 +18,7 @@ package cn.shopex.ecshopx.orders.service.front.wxapp;
 
 import cn.shopex.ecshopx.common.distribution.DistributorWhiteListCheckUserValidPort;
 import cn.shopex.ecshopx.common.exception.ResourceException;
+import cn.shopex.ecshopx.common.goods.GoodsRecommendCheckoutMergePort;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,13 +38,17 @@ public class WxappOrderFreightFeeService {
 
 	private final DistributorWhiteListCheckUserValidPort distributorWhiteListCheckUserValidPort;
 
+	private final GoodsRecommendCheckoutMergePort goodsRecommendCheckoutMergePort;
+
 	public WxappOrderFreightFeeService(
 			WxappOrderTypeRegistry wxappOrderTypeRegistry,
 			OrderCheckoutInvoiceStatusService orderCheckoutInvoiceStatusService,
-			DistributorWhiteListCheckUserValidPort distributorWhiteListCheckUserValidPort) {
+			DistributorWhiteListCheckUserValidPort distributorWhiteListCheckUserValidPort,
+			GoodsRecommendCheckoutMergePort goodsRecommendCheckoutMergePort) {
 		this.wxappOrderTypeRegistry = wxappOrderTypeRegistry;
 		this.orderCheckoutInvoiceStatusService = orderCheckoutInvoiceStatusService;
 		this.distributorWhiteListCheckUserValidPort = distributorWhiteListCheckUserValidPort;
+		this.goodsRecommendCheckoutMergePort = goodsRecommendCheckoutMergePort;
 	}
 
 	public Map<String, Object> getOrderFreightFeeInfo(
@@ -80,6 +85,7 @@ public class WxappOrderFreightFeeService {
 		}
 
 		long companyId = longVal(params.get("company_id"));
+		goodsRecommendCheckoutMergePort.apply(companyId, params);
 		long userId = longVal(params.get("user_id"));
 		WxappOrderCreateContext ctx = new WxappOrderCreateContext();
 		ctx.setRequest(request);
@@ -123,8 +129,28 @@ public class WxappOrderFreightFeeService {
 				nonLogistics.add(item);
 			}
 		}
-		result.put("items", nonLogistics);
-		result.put("logistics_items", logistics);
+		result.put("items", sinkRecommendToBottom(nonLogistics));
+		result.put("logistics_items", sinkRecommendToBottom(logistics));
+	}
+
+	private static List<Map<String, Object>> sinkRecommendToBottom(List<Map<String, Object>> lines) {
+		if (lines == null || lines.size() < 2) {
+			return lines;
+		}
+		List<Map<String, Object>> original = new ArrayList<>();
+		List<Map<String, Object>> recommend = new ArrayList<>();
+		for (Map<String, Object> line : lines) {
+			if (Boolean.TRUE.equals(line.get("is_recommend"))) {
+				recommend.add(line);
+			} else {
+				original.add(line);
+			}
+		}
+		if (recommend.isEmpty()) {
+			return lines;
+		}
+		original.addAll(recommend);
+		return original;
 	}
 
 	private static boolean normalizeIsLogistics(Object v) {

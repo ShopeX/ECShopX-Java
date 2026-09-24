@@ -24,12 +24,14 @@ import cn.shopex.ecshopx.common.exception.UnauthorizedException;
 import cn.shopex.ecshopx.common.util.LeadingNumberParser;
 import cn.shopex.ecshopx.common.web.H5FrontAuthAttributes;
 import cn.shopex.ecshopx.common.config.LangueProperties;
+import cn.shopex.ecshopx.common.companys.language.CompanyLanguageResolver;
 import cn.shopex.ecshopx.common.web.locale.RequestLangTag;
+import cn.shopex.ecshopx.common.web.locale.RequestMessageLocale;
 import cn.shopex.ecshopx.promotions.service.PromotionGroupsActivityListService;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.Locale;
 import java.util.Map;
 import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
@@ -51,14 +53,17 @@ public class PromotionGroupsActivityController {
 	private final PromotionGroupsActivityListService promotionGroupsActivityListService;
 	private final MessageSource messageSource;
 	private final LangueProperties langueProperties;
+	private final CompanyLanguageResolver companyLanguageResolver;
 
 	public PromotionGroupsActivityController(
 			PromotionGroupsActivityListService promotionGroupsActivityListService,
 			MessageSource messageSource,
-			LangueProperties langueProperties) {
+			LangueProperties langueProperties,
+			CompanyLanguageResolver companyLanguageResolver) {
 		this.promotionGroupsActivityListService = promotionGroupsActivityListService;
 		this.messageSource = messageSource;
 		this.langueProperties = langueProperties;
+		this.companyLanguageResolver = companyLanguageResolver;
 	}
 
 	@GetMapping(value = "/groups", name = "拼团列表", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -69,31 +74,33 @@ public class PromotionGroupsActivityController {
 			@RequestParam(value = "keywords", required = false) String keywords,
 			@RequestParam(value = "view", required = false) String viewRaw,
 			@RequestParam(value = "group_goods_type", required = false) String groupGoodsTypeRaw) {
+		long companyId = parseCompanyIdFromRequest(request);
+		Locale locale = RequestMessageLocale.messageLocale(
+				langueProperties, request, null, companyLanguageResolver.getDefaultLanguage(companyId));
 		int viewCheck;
 		if (viewRaw == null) {
 			viewCheck = 1;
 		} else if (!StringUtils.hasText(viewRaw.trim())) {
 			throw new ResourceException(
 					messageSource.getMessage(
-							"promotions.groups.activity_list_failed", null, LocaleContextHolder.getLocale()));
+							"promotions.groups.activity_list_failed", null, locale));
 		} else {
 			try {
 				viewCheck = Integer.parseInt(LeadingNumberParser.parseAsString(viewRaw.trim()));
 			} catch (NumberFormatException e) {
 				throw new ResourceException(
 						messageSource.getMessage(
-								"promotions.groups.activity_list_failed", null, LocaleContextHolder.getLocale()));
+								"promotions.groups.activity_list_failed", null, locale));
 			}
 			if (viewCheck != 1 && viewCheck != 2) {
 				throw new ResourceException(
 						messageSource.getMessage(
-								"promotions.groups.activity_list_failed", null, LocaleContextHolder.getLocale()));
+								"promotions.groups.activity_list_failed", null, locale));
 			}
 		}
 		Integer viewForTimeFilter = viewRaw == null ? null : Integer.valueOf(viewCheck);
 		String effectiveType =
 				StringUtils.hasText(groupGoodsTypeRaw) ? groupGoodsTypeRaw.trim() : "services";
-		long companyId = parseCompanyIdFromRequest(request);
 		String requestLangTag = RequestLangTag.current(langueProperties);
 		Map<String, Object> data =
 				promotionGroupsActivityListService.getPromotionGroupsActivityList(

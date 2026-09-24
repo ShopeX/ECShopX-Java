@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 class GoodsRecommendRequestParserTest {
@@ -65,33 +66,102 @@ class GoodsRecommendRequestParserTest {
 	}
 
 	@Test
-	void resolveDistributorIdForCheckoutAdd_standardRequiresPositive() {
+	void resolveDistributorIdForRecommendMerge_standardRequiresPositive() {
 		assertFalse(
-				GoodsRecommendRequestParser.resolveDistributorIdForCheckoutAdd("standard", null).isOk());
+				GoodsRecommendRequestParser.resolveDistributorIdForRecommendMerge("standard", null).isOk());
 		assertEquals(
 				GoodsRecommendErrorCodes.DISTRIBUTOR_REQUIRED,
-				GoodsRecommendRequestParser.resolveDistributorIdForCheckoutAdd("standard", null)
+				GoodsRecommendRequestParser.resolveDistributorIdForRecommendMerge("standard", null)
 						.errorCode());
 		assertEquals(
 				GoodsRecommendErrorCodes.DISTRIBUTOR_INVALID,
-				GoodsRecommendRequestParser.resolveDistributorIdForCheckoutAdd("standard", 0).errorCode());
+				GoodsRecommendRequestParser.resolveDistributorIdForRecommendMerge("standard", 0).errorCode());
 		assertEquals(
 				1001L,
-				GoodsRecommendRequestParser.resolveDistributorIdForCheckoutAdd("standard", 1001)
+				GoodsRecommendRequestParser.resolveDistributorIdForRecommendMerge("standard", 1001)
 						.distributorId());
 	}
 
 	@Test
-	void resolveDistributorIdForCheckoutAdd_platformOptionalDefaultsZero() {
+	void parseRecommendItemLines_null_returnsEmpty() {
+		assertEquals(List.of(), GoodsRecommendRequestParser.parseRecommendItemLines(null));
+	}
+
+	@Test
+	void parseRecommendItemLines_objectsOnly() {
+		List<GoodsRecommendRequestParser.RecommendAddLine> lines =
+				GoodsRecommendRequestParser.parseRecommendItemLines(
+						List.of(Map.of("item_id", 5, "num", 1), Map.of("item_id", 8, "num", 2)));
+		assertEquals(2, lines.size());
+		assertEquals(5L, lines.get(0).itemId());
+		assertEquals(1, lines.get(0).num());
+		assertEquals(8L, lines.get(1).itemId());
+		assertEquals(2, lines.get(1).num());
+	}
+
+	@Test
+	void parseRecommendItemLines_sameItemId_accumulates() {
+		List<GoodsRecommendRequestParser.RecommendAddLine> lines =
+				GoodsRecommendRequestParser.parseRecommendItemLines(
+						List.of(Map.of("item_id", 5, "num", 1), Map.of("item_id", 5, "num", 3)));
+		assertEquals(1, lines.size());
+		assertEquals(5L, lines.get(0).itemId());
+		assertEquals(4, lines.get(0).num());
+	}
+
+	@Test
+	void parseRecommendItemLines_bareId_throws() {
+		assertThrows(
+				IllegalArgumentException.class,
+				() -> GoodsRecommendRequestParser.parseRecommendItemLines(List.of(5)));
+	}
+
+	@Test
+	void parseRecommendItemLines_missingNum_throws() {
+		assertThrows(
+				IllegalArgumentException.class,
+				() -> GoodsRecommendRequestParser.parseRecommendItemLines(List.of(Map.of("item_id", 5))));
+	}
+
+	@Test
+	void parseRecommendItemLines_scalar_throws() {
+		assertThrows(
+				IllegalArgumentException.class, () -> GoodsRecommendRequestParser.parseRecommendItemLines(5));
+	}
+
+	@Test
+	void parseRecommendItemLines_jsonString_parsesArray() {
+		List<GoodsRecommendRequestParser.RecommendAddLine> lines =
+				GoodsRecommendRequestParser.parseRecommendItemLines("[{\"item_id\":6729,\"num\":1}]");
+		assertEquals(1, lines.size());
+		assertEquals(6729L, lines.get(0).itemId());
+		assertEquals(1, lines.get(0).num());
+	}
+
+	@Test
+	void parseRecommendItemLines_emptyJsonString_returnsEmpty() {
+		assertEquals(List.of(), GoodsRecommendRequestParser.parseRecommendItemLines("[]"));
+		assertEquals(List.of(), GoodsRecommendRequestParser.parseRecommendItemLines(""));
+	}
+
+	@Test
+	void parseRecommendItemLines_invalidJsonString_throws() {
+		assertThrows(
+				IllegalArgumentException.class,
+				() -> GoodsRecommendRequestParser.parseRecommendItemLines("{\"item_id\":6729}"));
+	}
+
+	@Test
+	void resolveDistributorIdForRecommendMerge_platformOptionalDefaultsZero() {
 		assertTrue(
-				GoodsRecommendRequestParser.resolveDistributorIdForCheckoutAdd("platform", null).isOk());
+				GoodsRecommendRequestParser.resolveDistributorIdForRecommendMerge("platform", null).isOk());
 		assertEquals(
 				0L,
-				GoodsRecommendRequestParser.resolveDistributorIdForCheckoutAdd("platform", null)
+				GoodsRecommendRequestParser.resolveDistributorIdForRecommendMerge("platform", null)
 						.distributorId());
 		assertEquals(
 				GoodsRecommendErrorCodes.DISTRIBUTOR_INVALID,
-				GoodsRecommendRequestParser.resolveDistributorIdForCheckoutAdd("platform", 1001)
+				GoodsRecommendRequestParser.resolveDistributorIdForRecommendMerge("platform", 1001)
 						.errorCode());
 	}
 }

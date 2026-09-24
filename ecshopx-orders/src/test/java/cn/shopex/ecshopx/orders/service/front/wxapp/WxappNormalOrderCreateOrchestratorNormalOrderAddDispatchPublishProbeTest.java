@@ -3,12 +3,15 @@ package cn.shopex.ecshopx.orders.service.front.wxapp;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import cn.shopex.ecshopx.common.dispatch.NormalOrderAddDispatchPublisher;
 import cn.shopex.ecshopx.common.dispatch.OrdersDispatchEventNames;
+import cn.shopex.ecshopx.common.goods.GoodsRecommendCheckoutMergePort;
 import cn.shopex.ecshopx.common.order.normal.OrderCheckoutCartPort;
 import cn.shopex.ecshopx.common.order.normal.OrderCheckoutEmployeePurchaseCartPort;
 import cn.shopex.ecshopx.common.order.normal.OrderCreateDistributorCheckPort;
@@ -75,6 +78,9 @@ class WxappNormalOrderCreateOrchestratorNormalOrderAddDispatchPublishProbeTest {
 	@Mock
 	private WxappNormalOrderCreateTransactionalRunner wxappNormalOrderCreateTransactionalRunner;
 
+	@Mock
+	private GoodsRecommendCheckoutMergePort goodsRecommendCheckoutMergePort;
+
 	private DispatchFacade dispatchFacade;
 
 	private DispatchCore dispatchCore;
@@ -115,7 +121,8 @@ class WxappNormalOrderCreateOrchestratorNormalOrderAddDispatchPublishProbeTest {
 						wxappNormalOrderTempInfoEnrichmentService,
 						wxappNormalOrderCreateTransactionalRunner,
 						publisher,
-						mock(cn.shopex.ecshopx.supplier.service.SupplierOrderSplitOnNormalOrderAddService.class));
+						mock(cn.shopex.ecshopx.supplier.service.SupplierOrderSplitOnNormalOrderAddService.class),
+						goodsRecommendCheckoutMergePort);
 	}
 
 	@Test
@@ -152,5 +159,24 @@ class WxappNormalOrderCreateOrchestratorNormalOrderAddDispatchPublishProbeTest {
 		assertEquals(OrdersDispatchEventNames.EVENT_NORMAL_ORDER_ADD, published.get(0).messageName());
 		assertNotNull(published.get(0).traceId());
 		verify(dispatchCore, times(1)).dispatch(any(DispatchMessage.class));
+	}
+
+	@Test
+	@DisplayName("order_new 在填购物车前 merge recommend_item_id")
+	void create_appliesRecommendMergeBeforeFillCart() {
+		NormalOrderCreateState state = new NormalOrderCreateState();
+		state.getParams().put("company_id", 9L);
+		state.getParams().put("order_type", "normal");
+		state.getOrderData().put("pay_type", "wxpay");
+		state.getOrdersInsertResult().put("company_id", 9L);
+		state.getOrdersInsertResult().put("order_id", 1001L);
+		state.getOrdersInsertResult().put("pay_type", "wxpay");
+
+		HttpServletRequest request = mock(HttpServletRequest.class);
+		orchestrator.create(state, request, "normal");
+
+		var order = inOrder(goodsRecommendCheckoutMergePort, orderCheckoutCartPort);
+		order.verify(goodsRecommendCheckoutMergePort).apply(eq(9L), eq(state.getParams()));
+		order.verify(orderCheckoutCartPort).fillItemsFromMemberDistributorCart(eq(state), eq(request));
 	}
 }

@@ -181,8 +181,7 @@ public class TurntableFrontLuckyDrawActInfoService {
 						q ->
 								q.in(
 												TurntableLog::getStatus,
-												TurntableDrawStatus.SUCCESS,
-												TurntableDrawStatus.GRANT_FAILED)
+												(Object[]) TurntableDrawStatus.VISIBLE_IN_DRAW_LOG)
 										.or()
 										.isNull(TurntableLog::getStatus));
 		if (createdFrom != null) {

@@ -19,12 +19,15 @@ package cn.shopex.ecshopx.promotions.api.front.v1;
 import cn.shopex.ecshopx.common.annotation.DingoResponse;
 import cn.shopex.ecshopx.common.annotation.FrontAuth;
 import cn.shopex.ecshopx.common.annotation.FrontNoAuth;
+import cn.shopex.ecshopx.common.companys.language.CompanyLanguageResolver;
+import cn.shopex.ecshopx.common.config.LangueProperties;
 import cn.shopex.ecshopx.common.core.domain.ApiResult;
 import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.common.exception.UnauthorizedException;
 import cn.shopex.ecshopx.common.goods.MarketingActivityCatalogAccess;
 import cn.shopex.ecshopx.common.util.LeadingNumberParser;
 import cn.shopex.ecshopx.common.web.H5FrontAuthAttributes;
+import cn.shopex.ecshopx.common.web.locale.RequestMessageLocale;
 import cn.shopex.ecshopx.companys.domain.CurrencyExchangeRate;
 import cn.shopex.ecshopx.companys.service.currency.CompanyDefaultCurrencyService;
 import cn.shopex.ecshopx.promotions.service.MarketingActivityItemListService;
@@ -37,7 +40,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
@@ -62,6 +64,8 @@ public class MarketingActivityController {
 	private final MarketingActivityCatalogAccess marketingActivityCatalogAccess;
 	private final SkuValidMarketingActivityService skuValidMarketingActivityService;
 	private final PlusPriceBuyItemListService plusPriceBuyItemListService;
+	private final LangueProperties langueProperties;
+	private final CompanyLanguageResolver companyLanguageResolver;
 
 	public MarketingActivityController(
 			MarketingActivityItemListService marketingActivityItemListService,
@@ -69,13 +73,17 @@ public class MarketingActivityController {
 			MessageSource messageSource,
 			MarketingActivityCatalogAccess marketingActivityCatalogAccess,
 			SkuValidMarketingActivityService skuValidMarketingActivityService,
-			PlusPriceBuyItemListService plusPriceBuyItemListService) {
+			PlusPriceBuyItemListService plusPriceBuyItemListService,
+			LangueProperties langueProperties,
+			CompanyLanguageResolver companyLanguageResolver) {
 		this.marketingActivityItemListService = marketingActivityItemListService;
 		this.companyDefaultCurrencyService = companyDefaultCurrencyService;
 		this.messageSource = messageSource;
 		this.marketingActivityCatalogAccess = marketingActivityCatalogAccess;
 		this.skuValidMarketingActivityService = skuValidMarketingActivityService;
 		this.plusPriceBuyItemListService = plusPriceBuyItemListService;
+		this.langueProperties = langueProperties;
+		this.companyLanguageResolver = companyLanguageResolver;
 	}
 
 	@FrontAuth
@@ -135,7 +143,8 @@ public class MarketingActivityController {
 		long companyId = parseCompanyIdFromRequest(request);
 		Long marketingId = parseOptionalLong(marketingIdRaw);
 		if (marketingId == null || marketingId <= 0L) {
-			Locale locale = LocaleContextHolder.getLocale();
+			Locale locale = RequestMessageLocale.messageLocale(
+					langueProperties, request, null, companyLanguageResolver.getDefaultLanguage(companyId));
 			throw new ResourceException(
 					messageSource.getMessage("promotions.marketing.activity_expired", null, locale));
 		}

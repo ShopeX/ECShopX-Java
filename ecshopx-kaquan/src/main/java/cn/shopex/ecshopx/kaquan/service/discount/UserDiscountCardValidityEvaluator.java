@@ -16,6 +16,7 @@
 
 package cn.shopex.ecshopx.kaquan.service.discount;
 
+import cn.shopex.ecshopx.common.operatorcart.dto.CouponCartItemScope;
 import cn.shopex.ecshopx.kaquan.service.discount.dto.UserDiscountNewGetCardListRequest;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -23,8 +24,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -32,9 +31,13 @@ import org.springframework.util.StringUtils;
 public class UserDiscountCardValidityEvaluator {
 
 	private final WxShopsListForUserDiscountService wxShopsListForUserDiscountService;
+	private final UserDiscountCardMatchedAmountService userDiscountCardMatchedAmountService;
 
-	public UserDiscountCardValidityEvaluator(WxShopsListForUserDiscountService wxShopsListForUserDiscountService) {
+	public UserDiscountCardValidityEvaluator(
+			WxShopsListForUserDiscountService wxShopsListForUserDiscountService,
+			UserDiscountCardMatchedAmountService userDiscountCardMatchedAmountService) {
 		this.wxShopsListForUserDiscountService = wxShopsListForUserDiscountService;
+		this.userDiscountCardMatchedAmountService = userDiscountCardMatchedAmountService;
 	}
 
 	public void evaluate(long companyId, long userId, UserDiscountNewGetCardListRequest req, Map<Long, Map<String, Object>> items,
@@ -46,6 +49,9 @@ public class UserDiscountCardValidityEvaluator {
 		long distributorId = req.parseDistributorIdOrZero();
 		long shopId = parseLong(req.getShopId());
 		long orderAmountFen = parseLong(req.parseAmountLteOrNull());
+		Map<Long, Long> itemFees = toItemFees(items);
+		Map<Long, CouponCartItemScope> scopes =
+				userDiscountCardMatchedAmountService.loadScopes(companyId, itemFees.keySet());
 		for (Map<String, Object> card : cards) {
 			String tagClass = computeTagClass(card, nowEpoch);
 			boolean valid = isCardCurrentlyValid(card, nowEpoch);
@@ -56,39 +62,23 @@ public class UserDiscountCardValidityEvaluator {
 			}
 
 			Object relItemRaw = first(card, "rel_item_ids", "relItemIds");
-			boolean relAll = isRelAllItems(relItemRaw);
-			List<Long> relItemIds = parseCsvIds(relItemRaw);
-			List<Long> reqItemIds = new ArrayList<>(items.keySet());
-			List<Long> amountItemIds;
-			List<Long> itemList;
-			boolean itemIfall = true;
-			if (relAll) {
-				amountItemIds = reqItemIds;
-				itemList = List.of();
-			} else if (!reqItemIds.isEmpty()) {
-				Set<Long> reqSet = reqItemIds.stream().collect(Collectors.toSet());
-				amountItemIds = relItemIds.stream().filter(reqSet::contains).toList();
-				itemList = amountItemIds;
-				itemIfall = itemList.isEmpty();
-			} else {
-				amountItemIds = relItemIds;
-				itemList = List.of();
-				itemIfall = relItemIds.isEmpty();
-			}
+			int useBound = UserDiscountCardMatchedAmount.useBoundOf(card);
+			boolean relAll = useBound <= 0 || isRelAllItems(relItemRaw);
+			List<Long> amountItemIds =
+					UserDiscountCardMatchedAmount.itemIds(useBound, relItemRaw, itemFees.keySet(), scopes);
+			List<Long> itemList = relAll ? List.of() : amountItemIds;
+			boolean itemIfall = relAll;
 			card.put("rel_item_ids", toRelItemIdTokens(relItemRaw));
 			card.put("itemList", itemList);
 			card.put("itemIfall", itemIfall);
 
 			Object relShops = card.get("rel_shops_ids");
 			Map<String, Object> poi = wxShopsListForUserDiscountService.listShopsPoi(companyId, relShops);
-			Object shopListObj = poi.get("list");
+			Object shopListObj = poi == null ? null : poi.get("list");
 			card.put("storeList", shopListObj instanceof List<?> list ? list : List.of());
 			card.put("ifall", isAllShops(relShops));
 			if (valid) {
-				// Non-list rel_item_ids (tag/category/brand scope ids as CSV) count full cart fee
-				long matchedAmount = (relItemRaw instanceof List<?> && !relAll)
-						? countMatchedItemAmount(amountItemIds, false, items)
-						: countMatchedItemAmount(reqItemIds, true, items);
+				long matchedAmount = UserDiscountCardMatchedAmount.feeFen(useBound, relItemRaw, itemFees, scopes);
 				if (matchedAmount <= 0L) {
 					valid = false;
 					invalidDesc = "订单金额需有大于0元";
@@ -100,7 +90,7 @@ public class UserDiscountCardValidityEvaluator {
 					valid = false;
 					invalidDesc = "订单金额需满" + fenToYuan(leastCost) + "元";
 				}
-				if (valid && orderAmountFen > 0L && reqItemIds.isEmpty() && leastCost > orderAmountFen) {
+				if (valid && orderAmountFen > 0L && itemFees.isEmpty() && leastCost > orderAmountFen) {
 					valid = false;
 					invalidDesc = "订单金额需满" + fenToYuan(leastCost) + "元";
 				}
@@ -171,28 +161,20 @@ public class UserDiscountCardValidityEvaluator {
 				.toPlainString();
 	}
 
-	private static long countMatchedItemAmount(List<Long> matchedItemIds, boolean relAll, Map<Long, Map<String, Object>> items) {
-		long amount = 0L;
-		if (relAll) {
-			for (Map<String, Object> row : items.values()) {
-				long fee = parseLong(first(row, "total_fee", "totalFee"));
-				if (fee > 0L) {
-					amount += fee;
-				}
-			}
-			return amount;
+	private static Map<Long, Long> toItemFees(Map<Long, Map<String, Object>> items) {
+		Map<Long, Long> fees = new LinkedHashMap<>();
+		if (items == null || items.isEmpty()) {
+			return fees;
 		}
-		for (Long itemId : matchedItemIds) {
-			Map<String, Object> row = items.get(itemId);
-			if (row == null) {
+		for (Map.Entry<Long, Map<String, Object>> e : items.entrySet()) {
+			if (e.getKey() == null || e.getKey() <= 0L) {
 				continue;
 			}
-			long fee = parseLong(first(row, "total_fee", "totalFee"));
-			if (fee > 0L) {
-				amount += fee;
-			}
+			Map<String, Object> row = e.getValue();
+			long fee = row == null ? 0L : parseLong(first(row, "total_fee", "totalFee"));
+			fees.put(e.getKey(), fee);
 		}
-		return amount;
+		return fees;
 	}
 
 	private static boolean isRelAllItems(Object raw) {
@@ -267,27 +249,6 @@ public class UserDiscountCardValidityEvaluator {
 			return "all".equalsIgnoreCase(s.trim());
 		}
 		return relShops == null;
-	}
-
-	private static List<Long> parseCsvIds(Object raw) {
-		if (!(raw instanceof String s)) {
-			return List.of();
-		}
-		String trimmed = s.trim();
-		if (trimmed.isEmpty() || "all".equalsIgnoreCase(trimmed)) {
-			return List.of();
-		}
-		List<Long> out = new ArrayList<>();
-		for (String part : trimmed.split(",")) {
-			if (part == null || part.isBlank()) {
-				continue;
-			}
-			long v = parseLong(part.trim());
-			if (v > 0L) {
-				out.add(v);
-			}
-		}
-		return out;
 	}
 
 	private static Object first(Map<String, Object> row, String... keys) {

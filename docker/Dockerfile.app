@@ -1,27 +1,20 @@
-# syntax=docker/dockerfile:1
-#
 # App image: Maven build + runtime base (Temurin 17 + Node 20 + OpenResty).
-# Runtime base (default private registry):
-#   registry.cn-hangzhou.aliyuncs.com/shopex_company/ecshopx-java:17-node20-openresty
-# Build/push locally:
-#   ./docker/build-runtime-base.sh
-#   ./docker/build-runtime-base.sh --push
 #
-# Override base:
+# Manual build example:
 #   docker build -f docker/Dockerfile.app \
-#     --build-arg RUNTIME_BASE_IMAGE=registry.cn-hangzhou.aliyuncs.com/shopex_company/ecshopx-java:17-node20-openresty \
+#     --build-arg MAVEN_BUILD_IMAGE=maven:3.9-eclipse-temurin-17 \
+#     --build-arg RUNTIME_BASE_IMAGE=ecshopx-java:17-node20-openresty \
 #     -t ecshopx-app:latest .
 
-ARG RUNTIME_BASE_IMAGE=registry.cn-hangzhou.aliyuncs.com/shopex_company/ecshopx-java:17-node20-openresty
+ARG MAVEN_BUILD_IMAGE=maven:3.9-eclipse-temurin-17
+ARG RUNTIME_BASE_IMAGE=ecshopx-java:17-node20-openresty
 
-FROM maven:3.9-eclipse-temurin-17 AS builder
+FROM ${MAVEN_BUILD_IMAGE} AS builder
 WORKDIR /build
 COPY docker/maven-settings.xml /tmp/maven-settings.xml
 COPY . .
-RUN --mount=type=cache,target=/root/.m2 \
-    mvn -B -s /tmp/maven-settings.xml -pl ecshopx-bootstrap -am package -DskipTests
+RUN mvn -B -s /tmp/maven-settings.xml -pl ecshopx-bootstrap -am package -DskipTests
 
-# Runtime: prebuilt base (no apt install of Node/OpenResty here). Lite can use --target runtime + jar mount.
 FROM ${RUNTIME_BASE_IMAGE} AS runtime
 WORKDIR /app
 

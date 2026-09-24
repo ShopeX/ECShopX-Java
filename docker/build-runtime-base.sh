@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 # Build (and optionally save / push) the app runtime base image.
-# Default tag: registry.cn-hangzhou.aliyuncs.com/shopex_company/ecshopx-java:17-node20-openresty
+# Default tag: ecshopx-java:17-node20-openresty
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-IMAGE_NAME="${RUNTIME_BASE_IMAGE:-registry.cn-hangzhou.aliyuncs.com/shopex_company/ecshopx-java:17-node20-openresty}"
+IMAGE_NAME="${RUNTIME_BASE_IMAGE:-ecshopx-java:17-node20-openresty}"
 SAVE_PATH=""
 PUSH=false
 
@@ -15,7 +15,7 @@ usage() {
 Usage: ./docker/build-runtime-base.sh [options]
 
 Options:
-  --tag NAME           Image tag (default Aliyun registry image, or env RUNTIME_BASE_IMAGE)
+  --tag NAME           Image tag (default ecshopx-java:17-node20-openresty, or env RUNTIME_BASE_IMAGE)
   --save PATH          docker save -o PATH after build
   --push               docker push the image tag
   -h, --help           Show help

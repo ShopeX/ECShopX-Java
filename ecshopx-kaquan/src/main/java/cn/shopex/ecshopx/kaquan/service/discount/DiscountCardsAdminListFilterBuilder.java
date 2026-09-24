@@ -106,24 +106,30 @@ public class DiscountCardsAdminListFilterBuilder {
 			return;
 		}
 		int now = (int) Math.min(nowEpochSeconds, Integer.MAX_VALUE);
+		// 悬空 q.or() 后接嵌套 and(...) 会被 MP 拼成 AND，多值筛选恒为空；每个 date_status 分支须整体参与 OR。
 		w.and(q -> {
 			boolean first = true;
 			for (Integer ds : statuses) {
-				if (!first) {
-					q.or();
-				}
-				first = false;
-				switch (ds) {
-					case 1 -> q.and(n -> n.gt(DiscountCards::getBeginDate, 0).gt(DiscountCards::getBeginDate, now));
-					case 2 -> q.and(n -> n.and(m -> m.lt(DiscountCards::getBeginDate, now).gt(DiscountCards::getEndDate, now))
-							.or()
-							.eq(DiscountCards::getEndDate, 0));
-					case 3 -> q.and(n -> n.gt(DiscountCards::getEndDate, 0).lt(DiscountCards::getEndDate, now));
-					default -> {
-					}
+				if (first) {
+					appendDateStatusBranch(q, ds, now);
+					first = false;
+				} else {
+					q.or(n -> appendDateStatusBranch(n, ds, now));
 				}
 			}
 		});
+	}
+
+	private static void appendDateStatusBranch(LambdaQueryWrapper<DiscountCards> q, int ds, int now) {
+		switch (ds) {
+			case 1 -> q.and(n -> n.gt(DiscountCards::getBeginDate, 0).gt(DiscountCards::getBeginDate, now));
+			case 2 -> q.and(n -> n.and(m -> m.lt(DiscountCards::getBeginDate, now).gt(DiscountCards::getEndDate, now))
+					.or()
+					.eq(DiscountCards::getEndDate, 0));
+			case 3 -> q.and(n -> n.gt(DiscountCards::getEndDate, 0).lt(DiscountCards::getEndDate, now));
+			default -> {
+			}
+		}
 	}
 
 	private static void applyCardType(LambdaQueryWrapper<DiscountCards> w, Object raw) {

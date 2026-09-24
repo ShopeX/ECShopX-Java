@@ -375,7 +375,8 @@ public class OrdersExternalPayParamBuildService {
 			wxaAppId = str(data.get("wxa_appid"));
 		}
 		String cfgAppId = str(cfg.get("app_id"));
-		boolean h5OrJsPay = "wxpayh5".equals(payTypeLc) || "wxpayjs".equals(payTypeLc);
+		boolean h5OrJsPay =
+				"wxpayh5".equals(payTypeLc) || "wxpayjs".equals(payTypeLc) || "wxpaypc".equals(payTypeLc);
 		String miniAppIdForUnified =
 				h5OrJsPay && StringUtils.hasText(cfgAppId) ? cfgAppId : wxaAppId;
 		String openId = str(data.get("open_id"));
@@ -440,6 +441,7 @@ public class OrdersExternalPayParamBuildService {
 				switch (payTypeLc) {
 					case "wxpayh5" -> "MWEB";
 					case "wxpayapp" -> "APP";
+					case "wxpaypc" -> "NATIVE";
 					default -> "JSAPI";
 				};
 
@@ -467,6 +469,9 @@ public class OrdersExternalPayParamBuildService {
 						attachOuter,
 						timeExpire,
 						nonceUnify);
+		if ("NATIVE".equals(tradeType)) {
+			unifyReq.setProductId(tradeId);
+		}
 		logWxPayUnifiedOrderRequest(companyId, orderId, payTypeLc, unifyReq);
 		if (servicer
 				&& (!StringUtils.hasText(unifyReq.getAppid())
@@ -485,6 +490,16 @@ public class OrdersExternalPayParamBuildService {
 			String mwebUrl = unifyRes.getMwebUrl();
 			Map<String, Object> out = new LinkedHashMap<>();
 			out.put("mweb_url", mwebUrl);
+			attachTradeInfo(out, orderId, tradeId, str(data.get("trade_source_type")));
+			return out;
+		}
+		if ("NATIVE".equals(tradeType)) {
+			String codeUrl = unifyRes.getCodeURL();
+			if (!StringUtils.hasText(codeUrl)) {
+				throw new ResourceException("支付失败");
+			}
+			Map<String, Object> out = new LinkedHashMap<>();
+			out.put("code_url", codeUrl);
 			attachTradeInfo(out, orderId, tradeId, str(data.get("trade_source_type")));
 			return out;
 		}

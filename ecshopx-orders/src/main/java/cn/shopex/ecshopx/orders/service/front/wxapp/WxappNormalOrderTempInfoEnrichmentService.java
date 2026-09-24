@@ -186,7 +186,7 @@ public class WxappNormalOrderTempInfoEnrichmentService {
 
 		applyDefaultCurrency(state);
 
-		applyLogisticsReceiverAndFreightFromParams(state, pointsmall);
+		applyLogisticsReceiverAndFreightFromParams(state, pointsmall, false);
 		if (!pointsmall) {
 			orderCreateFormatDataPort.applyCheckoutCouponAfterFreight(state);
 
@@ -323,11 +323,12 @@ public class WxappNormalOrderTempInfoEnrichmentService {
 				&& !"normal_employee_purchase".equals(ot)) {
 			return;
 		}
-		applyLogisticsReceiverAndFreightFromParams(state, pointsmall);
+		applyLogisticsReceiverAndFreightFromParams(state, pointsmall, true);
 	}
 
 	@SuppressWarnings("unchecked")
-	private void applyLogisticsReceiverAndFreightFromParams(NormalOrderCreateState state, boolean pointsmall) {
+	private void applyLogisticsReceiverAndFreightFromParams(
+			NormalOrderCreateState state, boolean pointsmall, boolean isCheck) {
 		Map<String, Object> pr = state.getParams();
 		if (!Boolean.TRUE.equals(pr.get("is_online_order"))) {
 			return;
@@ -379,7 +380,7 @@ public class WxappNormalOrderTempInfoEnrichmentService {
 							stringVal(od.get("receiver_state")),
 							stringVal(od.get("receiver_city")),
 							stringVal(od.get("receiver_district")),
-							false,
+							isCheck,
 							supplierFreight);
 			od.put("supplier_freight_fee", supplierFreight);
 			int freightInt = (int) Math.min(freightFen, Integer.MAX_VALUE);
@@ -428,7 +429,7 @@ public class WxappNormalOrderTempInfoEnrichmentService {
 								stringVal(od.get("receiver_state")),
 								stringVal(od.get("receiver_city")),
 								stringVal(od.get("receiver_district")),
-								false,
+								isCheck,
 								supplierFreight);
 				od.put("supplier_freight_fee", supplierFreight);
 				freightInt = (int) Math.min(freightFen, Integer.MAX_VALUE);

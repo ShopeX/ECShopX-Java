@@ -122,6 +122,23 @@ class NormalOrderCheckoutPointDeductPayTypeRewriteTest {
 	}
 
 	@Test
+	@DisplayName("部分积分抵扣后剩余现金：pay_type=point 回退为 pay_channel")
+	void restoreHelper_whenRemainingCash_rewritesPointPayTypeToChannel() {
+		Map<String, Object> orderData = new LinkedHashMap<>();
+		orderData.put("total_fee", 30000L);
+		orderData.put("point_use", 3200);
+		orderData.put("pay_type", "point");
+		Map<String, Object> params = new LinkedHashMap<>();
+		params.put("pay_type", "point");
+		params.put("pay_channel", "offline_pay");
+
+		NormalOrderCheckoutPointDeductService.restoreCashPayTypeIfPartialPointDeduct(orderData, params);
+
+		assertThat(orderData.get("pay_type")).isEqualTo("offline_pay");
+		assertThat(params.get("pay_type")).isEqualTo("offline_pay");
+	}
+
+	@Test
 	@DisplayName("pay_type=point 且可全额抵扣：强制 point_use=max_point 并抵扣到 0")
 	void applyCheckoutPointDeduct_whenPayTypePointAndFullAmount_forcesMaxPointAndDeducts() {
 		Map<String, Object> orderData = baseOrder("point", 14000L);
@@ -155,6 +172,45 @@ class NormalOrderCheckoutPointDeductPayTypeRewriteTest {
 		assertThat(params.get("point_use")).isEqualTo(140);
 		assertThat(orderData.get("total_fee")).isEqualTo(0L);
 		assertThat(orderData.get("pay_type")).isEqualTo("point");
+	}
+
+	@Test
+	@DisplayName("pay_type=point 但明确指定少于 max_point 的 point_use：按手动输入抵扣，不强制全额")
+	void applyCheckoutPointDeduct_whenPayTypePointAndExplicitPartialPointUse_honorsRequestedAmount() {
+		Map<String, Object> orderData = baseOrder("point", 350000L);
+		Map<String, Object> params = new LinkedHashMap<>();
+		params.put("point_use", 3200);
+		params.put("pay_type", "point");
+		params.put("pay_channel", "offline_pay");
+		Map<String, Object> rule = openPointRule();
+
+		when(moneyToPointService.moneyToPoint(anyLong(), anyLong()))
+				.thenAnswer(inv -> Math.max(1L, (longVal(inv.getArgument(1)) + 99L) / 100L));
+		when(pointToMoneyService.pointToMoney(anyLong(), anyLong()))
+				.thenAnswer(inv -> (int) Math.min(Integer.MAX_VALUE, longVal(inv.getArgument(1)) * 100L));
+
+		doAnswer(
+						inv -> {
+							Map<String, Object> od = inv.getArgument(0);
+							int use = inv.getArgument(1);
+							long remain = Math.max(0L, 350000L - use * 100L);
+							od.put("total_fee", remain);
+							od.put("point_fee", use * 100L);
+							od.put("point_use", use);
+							od.put("real_use_point", use);
+							od.put("point", String.valueOf(use));
+							return null;
+						})
+				.when(deductionApplyService)
+				.apply(any(), anyInt(), anyLong(), anyLong(), any());
+
+		service.applyCheckoutPointDeduct(orderData, params, 1L, 45097L, rule, 99999L);
+
+		assertThat(orderData.get("point_use")).isEqualTo(3200);
+		assertThat(params.get("point_use")).isEqualTo(3200);
+		assertThat(orderData.get("total_fee")).isEqualTo(30000L);
+		assertThat(orderData.get("pay_type")).isEqualTo("offline_pay");
+		assertThat(params.get("pay_type")).isEqualTo("offline_pay");
 	}
 
 	@Test

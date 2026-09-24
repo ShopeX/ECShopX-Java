@@ -212,7 +212,7 @@ docker compose -f docker-compose.dev.yml logs -f ecshopx-app
 1. 拉起 `mysql:8.0`，导入 `docker/tables_xxl_job.sql` 与 `docker/ecshopx.sql`；
 2. 拉起 `redis:7-alpine`；
 3. 拉起 `xuxueli/xxl-job-admin:2.5.0`；
-4. 基于 `docker/Dockerfile.app` 构建 `ecshopx-app:latest`（依赖私有仓基础镜像 `registry.cn-hangzhou.aliyuncs.com/shopex_company/ecshopx-java:17-node20-openresty`）。
+4. 基于 `docker/Dockerfile.app` 构建 `ecshopx-app:latest`（依赖 CDN 导入的基础镜像 `ecshopx-java:17-node20-openresty`）。
 
 ### 访问地址
 | 服务 | URL / 端口 | 默认账号 |

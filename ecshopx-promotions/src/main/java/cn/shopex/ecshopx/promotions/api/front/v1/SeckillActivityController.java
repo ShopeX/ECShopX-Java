@@ -24,7 +24,9 @@ import cn.shopex.ecshopx.common.exception.BadRequestException;
 import cn.shopex.ecshopx.common.exception.UnauthorizedException;
 import cn.shopex.ecshopx.common.web.H5FrontAuthAttributes;
 import cn.shopex.ecshopx.common.config.LangueProperties;
+import cn.shopex.ecshopx.common.companys.language.CompanyLanguageResolver;
 import cn.shopex.ecshopx.common.web.locale.RequestLangTag;
+import cn.shopex.ecshopx.common.web.locale.RequestMessageLocale;
 import cn.shopex.ecshopx.promotions.service.wxapp.WxappSeckillActivityInfoService;
 import cn.shopex.ecshopx.promotions.service.wxapp.WxappSeckillActivityListService;
 import cn.shopex.ecshopx.promotions.service.wxapp.WxappSeckillItemTicketService;
@@ -36,7 +38,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
@@ -62,6 +63,7 @@ public class SeckillActivityController {
 	private final WxappSeckillStoreTicketService wxappSeckillStoreTicketService;
 	private final MessageSource messageSource;
 	private final LangueProperties langueProperties;
+	private final CompanyLanguageResolver companyLanguageResolver;
 
 	public SeckillActivityController(
 			WxappSeckillItemTicketService wxappSeckillItemTicketService,
@@ -69,13 +71,15 @@ public class SeckillActivityController {
 			WxappSeckillActivityListService wxappSeckillActivityListService,
 			WxappSeckillStoreTicketService wxappSeckillStoreTicketService,
 			MessageSource messageSource,
-			LangueProperties langueProperties) {
+			LangueProperties langueProperties,
+			CompanyLanguageResolver companyLanguageResolver) {
 		this.wxappSeckillItemTicketService = wxappSeckillItemTicketService;
 		this.wxappSeckillActivityInfoService = wxappSeckillActivityInfoService;
 		this.wxappSeckillActivityListService = wxappSeckillActivityListService;
 		this.wxappSeckillStoreTicketService = wxappSeckillStoreTicketService;
 		this.messageSource = messageSource;
 		this.langueProperties = langueProperties;
+		this.companyLanguageResolver = companyLanguageResolver;
 	}
 
 	@GetMapping(value = "/geticket", name = "秒杀资格", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -84,11 +88,9 @@ public class SeckillActivityController {
 			@RequestParam(value = "seckill_id", required = false) String seckillIdRaw,
 			@RequestParam(value = "item_id", required = false) String itemIdRaw,
 			@RequestParam(value = "num", required = false, defaultValue = "1") String numRaw) {
-		Locale locale = LocaleContextHolder.getLocale();
-		if (locale == null) {
-			locale = Locale.SIMPLIFIED_CHINESE;
-		}
 		long companyId = parseCompanyIdFromRequest(request);
+		Locale locale = RequestMessageLocale.messageLocale(
+				langueProperties, request, null, companyLanguageResolver.getDefaultLanguage(companyId));
 		long userId = parseAuthUserIdFromClaims(readH5AuthClaimsMap(request));
 		if (userId <= 0L) {
 			throw new UnauthorizedException("无权访问该API,非法访问！");

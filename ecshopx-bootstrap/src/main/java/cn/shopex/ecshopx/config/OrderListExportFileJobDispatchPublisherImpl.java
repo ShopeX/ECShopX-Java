@@ -26,8 +26,6 @@ import cn.shopex.ecshopx.dispatch.RetryPolicy;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.springframework.context.annotation.Profile;
-import org.springframework.core.env.Environment;
-import org.springframework.core.env.Profiles;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -35,11 +33,9 @@ import org.springframework.stereotype.Component;
 public class OrderListExportFileJobDispatchPublisherImpl implements OrderListExportFileJobDispatchPublisher {
 
 	private final DispatchFacade dispatchFacade;
-	private final Environment environment;
 
-	public OrderListExportFileJobDispatchPublisherImpl(DispatchFacade dispatchFacade, Environment environment) {
+	public OrderListExportFileJobDispatchPublisherImpl(DispatchFacade dispatchFacade) {
 		this.dispatchFacade = dispatchFacade;
-		this.environment = environment;
 	}
 
 	@Override
@@ -50,24 +46,13 @@ public class OrderListExportFileJobDispatchPublisherImpl implements OrderListExp
 		payload.put("company_id", companyId);
 		payload.put("operator_id", operatorId);
 		payload.put("filter", new LinkedHashMap<>(filter));
-		DispatchOptions options;
-		if (environment.acceptsProfiles(Profiles.of("local"))) {
-			options =
-					new DispatchOptions(
-							DispatchMode.SYNC,
-							DispatchDriverType.SYNC,
-							null,
-							null,
-							RetryPolicy.platformDefault());
-		} else {
-			options =
-					new DispatchOptions(
-							DispatchMode.ASYNC,
-							DispatchDriverType.REDIS,
-							"slow",
-							null,
-							RetryPolicy.platformDefault());
-		}
+		DispatchOptions options =
+				new DispatchOptions(
+						DispatchMode.ASYNC,
+						DispatchDriverType.REDIS,
+						"slow",
+						null,
+						RetryPolicy.platformDefault());
 		dispatchFacade.dispatchJob(EspierDispatchJobNames.EXPORT_FILE_JOB_ORDER_LIST, payload, options);
 	}
 

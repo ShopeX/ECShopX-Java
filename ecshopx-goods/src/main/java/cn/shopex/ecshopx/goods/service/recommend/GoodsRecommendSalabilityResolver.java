@@ -329,7 +329,7 @@ public class GoodsRecommendSalabilityResolver {
 
 	/**
 	 * C 端 match（PRD F-014）：仅过滤推荐商品的可售/库存/主图；主商品库存不参与 match 过滤。
-	 * checkout-add 仍使用 {@link #isPairSellable} 做双向校验。
+	 * 结算推荐加购使用 {@link #isSellable} 校验推荐品可售。
 	 */
 	public boolean isRecommendSellableForMatch(
 			Items mainItem,

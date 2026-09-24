@@ -17,15 +17,20 @@
 package cn.shopex.ecshopx.kaquan.service.order.normal;
 
 import cn.shopex.ecshopx.common.order.normal.NormalOrderCreateParams;
+import cn.shopex.ecshopx.common.operatorcart.dto.CouponCartItemScope;
 import cn.shopex.ecshopx.kaquan.service.discount.AdminUserCardListFacadeService;
+import cn.shopex.ecshopx.kaquan.service.discount.UserDiscountCardMatchedAmount;
+import cn.shopex.ecshopx.kaquan.service.discount.UserDiscountCardMatchedAmountService;
 import cn.shopex.ecshopx.kaquan.service.discount.dto.CartItemMoneyRow;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -37,9 +42,13 @@ public class NormalOrderCheckoutCouponFacade {
 	private static final Logger log = LoggerFactory.getLogger(NormalOrderCheckoutCouponFacade.class);
 
 	private final AdminUserCardListFacadeService adminUserCardListFacadeService;
+	private final UserDiscountCardMatchedAmountService userDiscountCardMatchedAmountService;
 
-	public NormalOrderCheckoutCouponFacade(AdminUserCardListFacadeService adminUserCardListFacadeService) {
+	public NormalOrderCheckoutCouponFacade(
+			AdminUserCardListFacadeService adminUserCardListFacadeService,
+			UserDiscountCardMatchedAmountService userDiscountCardMatchedAmountService) {
 		this.adminUserCardListFacadeService = adminUserCardListFacadeService;
+		this.userDiscountCardMatchedAmountService = userDiscountCardMatchedAmountService;
 	}
 
 	public void applyOptimalCouponAndSilentDeduction(NormalOrderCreateParams p) {
@@ -87,18 +96,29 @@ public class NormalOrderCheckoutCouponFacade {
 							companyId, operatorId, userId, distributorId, goodsTotalForCoupon, cartMoney, pr);
 		}
 		if (chosen == null) {
+			if (explicitRequested) {
+				pr.put("coupon_discount", "0");
+			}
 			return;
 		}
 		String code = explicitRequested ? explicitCode : stringVal(firstKey(chosen, "code")).trim();
 		if (!StringUtils.hasText(code)) {
 			return;
 		}
-		pr.put("coupon_discount", code);
-
 		try {
-			applyDeductionToOrderData(od, chosen, totalBefore, explicitRequested ? explicitCode : null);
+			boolean applied =
+					applyDeductionToOrderData(
+							od, chosen, totalBefore, explicitRequested ? explicitCode : null, companyId, cartMoney);
+			if (applied) {
+				pr.put("coupon_discount", code);
+			} else if (explicitRequested) {
+				pr.put("coupon_discount", "0");
+			}
 		} catch (RuntimeException e) {
 			log.debug("checkout coupon deduction skipped: {}", e.toString());
+			if (explicitRequested) {
+				pr.put("coupon_discount", "0");
+			}
 		}
 	}
 
@@ -125,6 +145,9 @@ public class NormalOrderCheckoutCouponFacade {
 			}
 			@SuppressWarnings("unchecked")
 			Map<String, Object> row = (Map<String, Object>) m;
+			if (!isCardUsable(row)) {
+				continue;
+			}
 			return row;
 		}
 		return null;
@@ -154,10 +177,10 @@ public class NormalOrderCheckoutCouponFacade {
 			}
 			@SuppressWarnings("unchecked")
 			Map<String, Object> row = (Map<String, Object>) m;
-			if (Boolean.FALSE.equals(row.get("valid"))) {
+			if (!isCardUsable(row)) {
 				continue;
 			}
-			long saving = estimateSavingFen(row, totalBefore, cartMoney);
+			long saving = estimateSavingFen(row, totalBefore, cartMoney, companyId);
 			if (saving > bestSaving) {
 				bestSaving = saving;
 				best = row;
@@ -183,13 +206,24 @@ public class NormalOrderCheckoutCouponFacade {
 		return cartMoney;
 	}
 
-	private static long estimateSavingFen(Map<String, Object> row, long orderTotalFen, Map<Long, CartItemMoneyRow> cartMoney) {
+	private static boolean isCardUsable(Map<String, Object> row) {
+		if (Boolean.FALSE.equals(row.get("valid"))) {
+			return false;
+		}
+		Object coupon = row.get("coupon");
+		if (coupon instanceof Map<?, ?> cm && Boolean.FALSE.equals(cm.get("valid"))) {
+			return false;
+		}
+		return true;
+	}
+
+	private long estimateSavingFen(Map<String, Object> row, long orderTotalFen, Map<Long, CartItemMoneyRow> cartMoney, long companyId) {
 		String cardType = stringVal(firstKey(row, "card_type"));
 		int leastCost = intVal(firstKey(row, "least_cost"));
-		if (leastCost > 0 && orderTotalFen < leastCost) {
+		long matched = matchedAmountForCard(row, cartMoney, orderTotalFen, companyId);
+		if (leastCost > 0 && matched < leastCost) {
 			return 0L;
 		}
-		long matched = matchedAmountForCard(row, cartMoney, orderTotalFen);
 		if (matched <= 0L && !cartMoney.isEmpty()) {
 			return 0L;
 		}
@@ -211,95 +245,69 @@ public class NormalOrderCheckoutCouponFacade {
 		return 0L;
 	}
 
-	private static long matchedAmountForCard(Map<String, Object> row, Map<Long, CartItemMoneyRow> cartMoney, long orderTotalFen) {
+	private long matchedAmountForCard(
+			Map<String, Object> row, Map<Long, CartItemMoneyRow> cartMoney, long orderTotalFen, long companyId) {
 		if (cartMoney.isEmpty()) {
 			return orderTotalFen;
 		}
-		Object rel = firstKey(row, "rel_item_ids");
-		if (rel == null || "all".equals(stringVal(rel))) {
-			long sum = 0L;
-			for (CartItemMoneyRow r : cartMoney.values()) {
-				sum += r.getTotalFeeFen();
+		Map<Long, Long> fees = new LinkedHashMap<>();
+		for (Map.Entry<Long, CartItemMoneyRow> e : cartMoney.entrySet()) {
+			if (e.getKey() == null) {
+				continue;
 			}
-			return sum;
+			CartItemMoneyRow r = e.getValue();
+			fees.put(e.getKey(), r == null ? 0L : r.getTotalFeeFen());
 		}
-		if (rel instanceof List<?> list) {
-			long sum = 0L;
-			for (Object o : list) {
-				long iid = parseLongFlexible(o);
-				CartItemMoneyRow r = cartMoney.get(iid);
-				if (r != null) {
-					sum += r.getTotalFeeFen();
-				}
-			}
-			return sum;
-		}
-		if (rel instanceof String s && StringUtils.hasText(s) && !"all".equals(s.trim())) {
-			long sum = 0L;
-			for (String part : s.split(",")) {
-				if (!StringUtils.hasText(part)) {
-					continue;
-				}
-				long iid = parseLongFlexible(part.trim());
-				CartItemMoneyRow r = cartMoney.get(iid);
-				if (r != null) {
-					sum += r.getTotalFeeFen();
-				}
-			}
-			return sum;
-		}
-		long sum = 0L;
-		for (CartItemMoneyRow r : cartMoney.values()) {
-			sum += r.getTotalFeeFen();
-		}
-		return sum;
+		int useBound = UserDiscountCardMatchedAmount.useBoundOf(row);
+		Object rel = UserDiscountCardMatchedAmount.relItemIdsOf(row);
+		Map<Long, CouponCartItemScope> scopes = userDiscountCardMatchedAmountService.loadScopes(companyId, fees.keySet());
+		return UserDiscountCardMatchedAmount.feeFen(useBound, rel, fees, scopes);
 	}
 
-	private static long parseLongFlexible(Object o) {
-		if (o instanceof Number n) {
-			return n.longValue();
-		}
-		if (o == null) {
-			return 0L;
-		}
-		try {
-			return Long.parseLong(o.toString().trim());
-		} catch (NumberFormatException e) {
-			return 0L;
-		}
-	}
-
-	private void applyDeductionToOrderData(
-			Map<String, Object> od, Map<String, Object> cardRow, long totalBefore, String explicitCouponCode) {
+	private boolean applyDeductionToOrderData(
+			Map<String, Object> od,
+			Map<String, Object> cardRow,
+			long totalBefore,
+			String explicitCouponCode,
+			long companyId,
+			Map<Long, CartItemMoneyRow> cartMoney) {
 		String cardType = stringVal(firstKey(cardRow, "card_type"));
 		long freightFen = longVal(od.get("freight_fee"), 0L);
 		long goodsTotal = Math.max(0L, totalBefore - freightFen);
+		long matched = matchedAmountForCard(cardRow, cartMoney, goodsTotal, companyId);
 		int leastCost = intVal(firstKey(cardRow, "least_cost"));
-		if (leastCost > 0 && goodsTotal > 0L && leastCost > goodsTotal) {
-			return;
+		if (leastCost > 0 && matched < leastCost) {
+			return false;
 		}
+		Set<Long> matchedItemIds = matchedItemIdSet(cardRow, cartMoney, companyId);
 		long deduct;
 		Map<String, Object> orderCouponDesc;
 		if ("discount".equals(cardType)) {
-			DiscountApplyResult applied = applyDiscountCouponToLines(od, cardRow, explicitCouponCode);
+			DiscountApplyResult applied = applyDiscountCouponToLines(od, cardRow, explicitCouponCode, matchedItemIds);
 			if (applied.deductFen() <= 0L) {
-				return;
+				return false;
 			}
 			deduct = applied.deductFen();
 			orderCouponDesc = applied.orderDiscountDesc();
 		} else if ("cash".equals(cardType)) {
 			int reduce = intVal(firstKey(cardRow, "reduce_cost"));
 			if (reduce <= 0) {
-				return;
+				return false;
+			}
+			if (matched <= 0L) {
+				return false;
 			}
 			if (reduce >= goodsTotal && goodsTotal > 0L) {
-				return;
+				return false;
 			}
-			deduct = Math.min(reduce, goodsTotal);
+			deduct = Math.min(reduce, matched);
+			if (deduct <= 0L) {
+				return false;
+			}
 			orderCouponDesc = buildCashOrderCouponDesc(cardRow, deduct, explicitCouponCode);
-			applyCashCouponToLines(od, cardRow, deduct, goodsTotal, explicitCouponCode);
+			applyCashCouponToLines(od, cardRow, deduct, matched, explicitCouponCode, matchedItemIds);
 		} else {
-			return;
+			return false;
 		}
 		long newTotal = Math.max(0L, totalBefore - deduct);
 		od.put("total_fee", newTotal);
@@ -308,13 +316,28 @@ public class NormalOrderCheckoutCouponFacade {
 		od.put("discount_fee", intVal(od.get("discount_fee"), 0) + add);
 		od.put("coupon_info", orderCouponDesc);
 		appendOrderDiscountInfo(od, orderCouponDesc);
+		return true;
+	}
+
+	private Set<Long> matchedItemIdSet(Map<String, Object> cardRow, Map<Long, CartItemMoneyRow> cartMoney, long companyId) {
+		if (cartMoney == null || cartMoney.isEmpty()) {
+			return Set.of();
+		}
+		int useBound = UserDiscountCardMatchedAmount.useBoundOf(cardRow);
+		Object rel = UserDiscountCardMatchedAmount.relItemIdsOf(cardRow);
+		Map<Long, CouponCartItemScope> scopes =
+				userDiscountCardMatchedAmountService.loadScopes(companyId, cartMoney.keySet());
+		return new HashSet<>(UserDiscountCardMatchedAmount.itemIds(useBound, rel, cartMoney.keySet(), scopes));
 	}
 
 	private record DiscountApplyResult(long deductFen, Map<String, Object> orderDiscountDesc) {}
 
 	@SuppressWarnings("unchecked")
 	private static DiscountApplyResult applyDiscountCouponToLines(
-			Map<String, Object> od, Map<String, Object> cardRow, String explicitCouponCode) {
+			Map<String, Object> od,
+			Map<String, Object> cardRow,
+			String explicitCouponCode,
+			Set<Long> matchedItemIds) {
 		int disc = intVal(firstKey(cardRow, "discount"));
 		if (disc <= 0 || disc >= 100) {
 			return new DiscountApplyResult(0L, Map.of());
@@ -334,6 +357,9 @@ public class NormalOrderCheckoutCouponFacade {
 				continue;
 			}
 			if (Boolean.FALSE.equals(line.get("coupon_valid"))) {
+				continue;
+			}
+			if (!matchedItemIds.contains(longVal(line.get("item_id"), 0L))) {
 				continue;
 			}
 			long payFee = longVal(line.get("total_fee"), 0L);
@@ -422,7 +448,8 @@ public class NormalOrderCheckoutCouponFacade {
 			Map<String, Object> cardRow,
 			long deduct,
 			long goodsTotal,
-			String explicitCouponCode) {
+			String explicitCouponCode,
+			Set<Long> matchedItemIds) {
 		Object itemsRaw = od.get("items");
 		if (!(itemsRaw instanceof List<?> itemList) || goodsTotal <= 0L) {
 			return;
@@ -435,6 +462,9 @@ public class NormalOrderCheckoutCouponFacade {
 			}
 			Map<String, Object> line = (Map<String, Object>) lineRaw;
 			if ("gift".equals(stringVal(line.get("order_item_type")))) {
+				continue;
+			}
+			if (!matchedItemIds.contains(longVal(line.get("item_id"), 0L))) {
 				continue;
 			}
 			long payFee = longVal(line.get("total_fee"), 0L);

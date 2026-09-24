@@ -28,7 +28,9 @@ import cn.shopex.ecshopx.common.util.LeadingNumberParser;
 import cn.shopex.ecshopx.common.web.FlexibleHttpServletParameterMap;
 import cn.shopex.ecshopx.common.web.H5FrontAuthAttributes;
 import cn.shopex.ecshopx.common.config.LangueProperties;
+import cn.shopex.ecshopx.common.companys.language.CompanyLanguageResolver;
 import cn.shopex.ecshopx.common.web.locale.RequestLangTag;
+import cn.shopex.ecshopx.common.web.locale.RequestMessageLocale;
 import cn.shopex.ecshopx.promotions.service.bargain.UserBargainCreateBargainLogService;
 import cn.shopex.ecshopx.promotions.service.bargain.UserBargainCreateUserBargainService;
 import cn.shopex.ecshopx.promotions.service.bargain.UserBargainFriendWxaCodeService;
@@ -66,6 +68,7 @@ public class UserBargainsController {
 	private final UserBargainGetUserBargainService userBargainGetUserBargainService;
 	private final MessageSource messageSource;
 	private final LangueProperties langueProperties;
+	private final CompanyLanguageResolver companyLanguageResolver;
 
 	public UserBargainsController(
 			UserBargainCreateBargainLogService userBargainCreateBargainLogService,
@@ -73,13 +76,15 @@ public class UserBargainsController {
 			UserBargainFriendWxaCodeService userBargainFriendWxaCodeService,
 			UserBargainGetUserBargainService userBargainGetUserBargainService,
 			MessageSource messageSource,
-			LangueProperties langueProperties) {
+			LangueProperties langueProperties,
+			CompanyLanguageResolver companyLanguageResolver) {
 		this.userBargainCreateBargainLogService = userBargainCreateBargainLogService;
 		this.userBargainCreateUserBargainService = userBargainCreateUserBargainService;
 		this.userBargainFriendWxaCodeService = userBargainFriendWxaCodeService;
 		this.userBargainGetUserBargainService = userBargainGetUserBargainService;
 		this.messageSource = messageSource;
 		this.langueProperties = langueProperties;
+		this.companyLanguageResolver = companyLanguageResolver;
 	}
 
 	@FrontAuth
@@ -100,7 +105,7 @@ public class UserBargainsController {
 		}
 		String authorizerAppid = Objects.toString(claims.get("woa_appid"), "").trim();
 		String wxaAppid = Objects.toString(claims.get("wxapp_appid"), "").trim();
-		Locale locale = request.getLocale();
+		Locale locale = messageLocale(request, body, companyId);
 		Map<String, Object> row =
 				userBargainCreateUserBargainService.createUserBargain(
 						companyId, userId, authorizerAppid, wxaAppid, bargainIdRaw, locale);
@@ -142,7 +147,7 @@ public class UserBargainsController {
 		long companyId = parseCompanyIdFromRequest(request);
 		Map<String, Object> claims = readH5AuthClaimsMap(request);
 		long authUserId = parseAuthUserIdFromClaims(claims);
-		Locale locale = request.getLocale();
+		Locale locale = messageLocale(request, null, companyId);
 
 		List<String> bargainParts = new ArrayList<>();
 		Object rawBargainId = query.get("bargain_id");
@@ -173,6 +178,11 @@ public class UserBargainsController {
 		return ResponseEntity.ok(ApiResult.ok(data));
 	}
 
+	private Locale messageLocale(HttpServletRequest request, Map<String, Object> body, long companyId) {
+		return RequestMessageLocale.messageLocale(
+				langueProperties, request, body, companyLanguageResolver.getDefaultLanguage(companyId));
+	}
+
 	private static String trimTrailingCommaSeparators(String joined) {
 		String s = joined;
 		while (s.endsWith("，") || s.endsWith(",")) {
@@ -199,7 +209,7 @@ public class UserBargainsController {
 			merged.put("nickname", firstNonBlankString(merged.get("nickname"), claims.get("nickname")));
 			merged.put("headimgurl", firstNonBlankString(merged.get("headimgurl"), claims.get("headimgurl")));
 		}
-		Locale locale = request.getLocale();
+		Locale locale = messageLocale(request, body, companyId);
 		Map<String, Object> row = userBargainCreateBargainLogService.createBargainLog(merged, locale);
 		return ResponseEntity.ok(ApiResult.ok(row));
 	}

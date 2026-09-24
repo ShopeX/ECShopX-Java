@@ -18,12 +18,15 @@ package cn.shopex.ecshopx.distribution.api.front.v1;
 
 import cn.shopex.ecshopx.common.annotation.DingoResponse;
 import cn.shopex.ecshopx.common.annotation.FrontAuth;
+import cn.shopex.ecshopx.common.companys.language.CompanyLanguageResolver;
+import cn.shopex.ecshopx.common.config.LangueProperties;
 import cn.shopex.ecshopx.common.core.domain.ApiResult;
 import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.common.exception.UnauthorizedException;
 import cn.shopex.ecshopx.common.web.FlexibleBody;
 import cn.shopex.ecshopx.common.web.FlexibleHttpServletParameterMap;
 import cn.shopex.ecshopx.common.web.H5FrontAuthAttributes;
+import cn.shopex.ecshopx.common.web.locale.RequestMessageLocale;
 import cn.shopex.ecshopx.distribution.service.CashWithdrawalApplyService;
 import cn.shopex.ecshopx.distribution.service.CashWithdrawalSalesmanApplyService;
 import cn.shopex.ecshopx.distribution.service.CashWithdrawalWxappListService;
@@ -56,16 +59,22 @@ public class CashWithdrawalController {
 	private final CashWithdrawalSalesmanApplyService cashWithdrawalSalesmanApplyService;
 	private final CashWithdrawalWxappListService cashWithdrawalWxappListService;
 	private final MessageSource messageSource;
+	private final LangueProperties langueProperties;
+	private final CompanyLanguageResolver companyLanguageResolver;
 
 	public CashWithdrawalController(
 			CashWithdrawalApplyService cashWithdrawalApplyService,
 			CashWithdrawalSalesmanApplyService cashWithdrawalSalesmanApplyService,
 			CashWithdrawalWxappListService cashWithdrawalWxappListService,
-			MessageSource messageSource) {
+			MessageSource messageSource,
+			LangueProperties langueProperties,
+			CompanyLanguageResolver companyLanguageResolver) {
 		this.cashWithdrawalApplyService = cashWithdrawalApplyService;
 		this.cashWithdrawalSalesmanApplyService = cashWithdrawalSalesmanApplyService;
 		this.cashWithdrawalWxappListService = cashWithdrawalWxappListService;
 		this.messageSource = messageSource;
+		this.langueProperties = langueProperties;
+		this.companyLanguageResolver = companyLanguageResolver;
 	}
 
 	@PostMapping(value = "/wxapp/cash_withdrawal", name = "佣金提现申请", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -78,7 +87,7 @@ public class CashWithdrawalController {
 		Object moneyRaw = merged.get("money");
 		Map<String, Object> claims = readH5AuthClaimsMap(request);
 		long companyId = resolveCompanyId(request, claims);
-		Locale locale = request.getLocale();
+		Locale locale = messageLocale(request, body, companyId);
 		Map<String, Object> row =
 				cashWithdrawalApplyService.applyCashWithdrawal(companyId, claims, moneyRaw, locale);
 		return ResponseEntity.ok(ApiResult.ok(row));
@@ -95,7 +104,7 @@ public class CashWithdrawalController {
 		if (!StringUtils.hasText(userId)) {
 			throw new UnauthorizedException("Unable to authenticate user.");
 		}
-		Locale locale = request.getLocale();
+		Locale locale = messageLocale(request, null, companyId);
 		Map<String, Object> data =
 				cashWithdrawalWxappListService.getCashWithdrawalList(companyId, userId, pageObj, pageSizeObj, locale);
 		return ResponseEntity.ok(ApiResult.ok(data));
@@ -113,7 +122,7 @@ public class CashWithdrawalController {
 		}
 		Map<String, Object> claims = readH5AuthClaimsMap(request);
 		long companyId = resolveCompanyId(request, claims);
-		Locale locale = request.getLocale();
+		Locale locale = messageLocale(request, body, companyId);
 		long distributorId = parsePositiveLongOrZero(merged.get("distributor_id"));
 		if (distributorId <= 0L) {
 			throw new ResourceException(
@@ -141,10 +150,15 @@ public class CashWithdrawalController {
 		if (!StringUtils.hasText(userId)) {
 			throw new UnauthorizedException("Unable to authenticate user.");
 		}
-		Locale locale = request.getLocale();
+		Locale locale = messageLocale(request, null, companyId);
 		Map<String, Object> data = cashWithdrawalWxappListService.salesmanGetCashWithdrawalList(
 				companyId, userId, pageObj, pageSizeObj, distributorIdObj, locale);
 		return ResponseEntity.ok(ApiResult.ok(data));
+	}
+
+	private Locale messageLocale(HttpServletRequest request, Map<String, Object> body, long companyId) {
+		return RequestMessageLocale.messageLocale(
+				langueProperties, request, body, companyLanguageResolver.getDefaultLanguage(companyId));
 	}
 
 	@SuppressWarnings("unchecked")

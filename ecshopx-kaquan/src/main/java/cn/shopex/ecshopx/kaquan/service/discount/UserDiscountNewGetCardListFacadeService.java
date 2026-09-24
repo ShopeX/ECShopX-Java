@@ -87,6 +87,7 @@ public class UserDiscountNewGetCardListFacadeService {
 			Map<String, Object> page = userDiscountNewCardListService.loadPage(filter, req.getPageNo(), req.getPageSize());
 			List<Map<String, Object>> list = castCardList(page.get("list"));
 			userDiscountCardValidityEvaluator.evaluate(companyId, userId, req, validItems, list);
+			list = retainUsableCards(page, list);
 			return newGetCardListBody(companyId, page, list);
 		}
 
@@ -108,6 +109,32 @@ public class UserDiscountNewGetCardListFacadeService {
 		out.put("total_count", responseFormatter.formatTotalCount(count));
 		out.put("cur", responseFormatter.formatCur(companyDefaultCurrencyService.toCurResponseMap(curRow)));
 		return out;
+	}
+
+	private static List<Map<String, Object>> retainUsableCards(Map<String, Object> page, List<Map<String, Object>> list) {
+		List<Map<String, Object>> usable = new ArrayList<>();
+		int dropped = 0;
+		for (Map<String, Object> card : list) {
+			if (Boolean.TRUE.equals(card.get("valid"))) {
+				usable.add(card);
+			} else {
+				dropped++;
+			}
+		}
+		if (dropped > 0) {
+			Object totalRaw = page.get("total_count");
+			long total = 0L;
+			if (totalRaw instanceof Number n) {
+				total = n.longValue();
+			} else if (totalRaw != null) {
+				try {
+					total = Long.parseLong(String.valueOf(totalRaw).trim());
+				} catch (NumberFormatException ignored) {
+				}
+			}
+			page.put("total_count", Math.max(0L, total - dropped));
+		}
+		return usable;
 	}
 
 	@SuppressWarnings("unchecked")

@@ -18,6 +18,8 @@ package cn.shopex.ecshopx.selfservice.api.front.v1;
 
 import cn.shopex.ecshopx.common.annotation.DingoResponse;
 import cn.shopex.ecshopx.common.annotation.FrontAuth;
+import cn.shopex.ecshopx.common.companys.language.CompanyLanguageResolver;
+import cn.shopex.ecshopx.common.config.LangueProperties;
 import cn.shopex.ecshopx.common.core.domain.ApiResult;
 import cn.shopex.ecshopx.common.exception.BadRequestException;
 import cn.shopex.ecshopx.common.exception.ResourceException;
@@ -33,6 +35,7 @@ import cn.shopex.ecshopx.selfservice.service.RegistrationActivityFrontGetRegistr
 import cn.shopex.ecshopx.selfservice.service.RegistrationActivityFrontGetRegistrationRecordInfoService;
 import cn.shopex.ecshopx.selfservice.service.RegistrationActivityFrontRegistrationSubmitService;
 import cn.shopex.ecshopx.selfservice.support.RegistrationActivityFrontCancelRecordMessageKeys;
+import cn.shopex.ecshopx.selfservice.support.RegistrationActivityFrontRequestLocale;
 import cn.shopex.ecshopx.selfservice.support.RegistrationActivityFrontSubmitMessageKeys;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Locale;
@@ -60,6 +63,8 @@ public class RegistrationActivityController {
 	private final RegistrationActivityFrontCancelRecordService registrationActivityFrontCancelRecordService;
 	private final RegistrationActivityFrontGetRegistrationActivityService registrationActivityFrontGetRegistrationActivityService;
 	private final MessageSource messageSource;
+	private final LangueProperties langueProperties;
+	private final CompanyLanguageResolver companyLanguageResolver;
 	private final MemberAccountService memberAccountService;
 	private final RegistrationActivityFrontGetRegistrationActivityListService registrationActivityFrontGetRegistrationActivityListService;
 	private final RegistrationActivityFrontGetRegistrationRecordInfoService registrationActivityFrontGetRegistrationRecordInfoService;
@@ -70,6 +75,8 @@ public class RegistrationActivityController {
 			RegistrationActivityFrontCancelRecordService registrationActivityFrontCancelRecordService,
 			RegistrationActivityFrontGetRegistrationActivityService registrationActivityFrontGetRegistrationActivityService,
 			MessageSource messageSource,
+			LangueProperties langueProperties,
+			CompanyLanguageResolver companyLanguageResolver,
 			MemberAccountService memberAccountService,
 			RegistrationActivityFrontGetRegistrationActivityListService registrationActivityFrontGetRegistrationActivityListService,
 			RegistrationActivityFrontGetRegistrationRecordInfoService registrationActivityFrontGetRegistrationRecordInfoService,
@@ -78,6 +85,8 @@ public class RegistrationActivityController {
 		this.registrationActivityFrontCancelRecordService = registrationActivityFrontCancelRecordService;
 		this.registrationActivityFrontGetRegistrationActivityService = registrationActivityFrontGetRegistrationActivityService;
 		this.messageSource = messageSource;
+		this.langueProperties = langueProperties;
+		this.companyLanguageResolver = companyLanguageResolver;
 		this.memberAccountService = memberAccountService;
 		this.registrationActivityFrontGetRegistrationActivityListService = registrationActivityFrontGetRegistrationActivityListService;
 		this.registrationActivityFrontGetRegistrationRecordInfoService = registrationActivityFrontGetRegistrationRecordInfoService;
@@ -88,9 +97,8 @@ public class RegistrationActivityController {
 	public ResponseEntity<ApiResult<Map<String, Object>>> getRegistrationActivity(
 			HttpServletRequest request,
 			@RequestParam(name = "activity_id", defaultValue = "0") long activityId) {
-		Locale locale = request.getLocale();
-		String tag = locale.toLanguageTag();
-		String requestLangTag = (tag == null || tag.isBlank()) ? "zh-CN" : tag;
+		Locale locale = messageLocale(request, null);
+		String requestLangTag = requestLangTag(request, null);
 		long companyId = resolveCompanyId(request);
 		long userId = parseClaimsUserId(request);
 		Map<String, Object> data = registrationActivityFrontGetRegistrationActivityService.getRegistrationActivity(
@@ -105,9 +113,8 @@ public class RegistrationActivityController {
 			@RequestParam(name = "page", required = false) String pageRaw,
 			@RequestParam(name = "pageSize", required = false) String pageSizeRaw,
 			@RequestParam(name = "activity_id", required = false) String activityIdRaw) {
-		Locale locale = request.getLocale();
-		String tag = locale.toLanguageTag();
-		String requestLangTag = (tag == null || tag.isBlank()) ? "zh-CN" : tag;
+		Locale locale = messageLocale(request, null);
+		String requestLangTag = requestLangTag(request, null);
 		long authCompanyId = resolveCompanyId(request);
 		long authUserId = parseClaimsUserId(request);
 		int page = parseRegistrationRecordListPage(pageRaw);
@@ -121,9 +128,8 @@ public class RegistrationActivityController {
 	public ResponseEntity<ApiResult<Map<String, Object>>> getRegistrationRecordInfo(
 			HttpServletRequest request,
 			@RequestParam(name = "record_id", required = false) String recordIdRaw) {
-		Locale locale = request.getLocale();
-		String tag = locale.toLanguageTag();
-		String requestLangTag = (tag == null || tag.isBlank()) ? "zh-CN" : tag;
+		Locale locale = messageLocale(request, null);
+		String requestLangTag = requestLangTag(request, null);
 		String trimmed = recordIdRaw == null ? "" : recordIdRaw.trim();
 		long recordId = LeadingNumberParser.parseAsLong(trimmed);
 		long authUserId = parseClaimsUserId(request);
@@ -140,7 +146,7 @@ public class RegistrationActivityController {
 			@RequestParam(name = "distributor_id", defaultValue = "0") long distributorIdParam,
 			@RequestParam(name = "true_name", required = false) String trueName,
 			@FlexibleBody(required = false) Map<String, Object> body) {
-		Locale locale = request.getLocale();
+		Locale locale = messageLocale(request, body);
 		long activityId = coalesceLong(activityIdParam, body, "activity_id");
 		long recordId = coalesceLong(recordIdParam, body, "record_id");
 		long distributorId = coalesceLong(distributorIdParam, body, "distributor_id");
@@ -186,7 +192,7 @@ public class RegistrationActivityController {
 			@RequestParam(name = "record_id", defaultValue = "0") long recordIdParam,
 			@RequestParam(name = "distributor_id", defaultValue = "0") long distributorIdParam,
 			@FlexibleBody(required = false) Map<String, Object> body) {
-		Locale locale = request.getLocale();
+		Locale locale = messageLocale(request, body);
 		long userId = parseClaimsUserId(request);
 		long companyId = resolveCompanyId(request);
 		long activityId = coalesceLong(activityIdParam, body, "activity_id");
@@ -222,7 +228,7 @@ public class RegistrationActivityController {
 			HttpServletRequest request,
 			@RequestParam(name = "record_id", required = false) String recordIdQueryOrForm,
 			@FlexibleBody(required = false) Map<String, Object> body) {
-		Locale locale = request.getLocale();
+		Locale locale = messageLocale(request, body);
 		long userId = parseClaimsUserId(request);
 		if (userId == 0L) {
 			throw new UnauthorizedException(
@@ -248,9 +254,8 @@ public class RegistrationActivityController {
 			@RequestParam(name = "pageSize", required = false) String pageSizeRaw,
 			@RequestParam(name = "status", required = false) String statusRaw,
 			@RequestParam(name = "activity_name", required = false) String activityName) {
-		Locale locale = request.getLocale();
-		String tag = locale.toLanguageTag();
-		String requestLangTag = (tag == null || tag.isBlank()) ? "zh-CN" : tag;
+		Locale locale = messageLocale(request, null);
+		String requestLangTag = requestLangTag(request, null);
 		int page = pageRaw == null ? 1 : (int) LeadingNumberParser.parseAsLong(pageRaw.trim());
 		int pageSize = pageSizeRaw == null ? 1 : (int) LeadingNumberParser.parseAsLong(pageSizeRaw.trim());
 		int status = statusRaw == null ? 0 : (int) LeadingNumberParser.parseAsLong(statusRaw.trim());
@@ -338,6 +343,20 @@ public class RegistrationActivityController {
 			return m.get("content");
 		}
 		return null;
+	}
+
+	private Locale messageLocale(HttpServletRequest request, Map<String, Object> body) {
+		return RegistrationActivityFrontRequestLocale.messageLocale(
+				langueProperties, request, body, companyDefaultLanguage(request));
+	}
+
+	private String requestLangTag(HttpServletRequest request, Map<String, Object> body) {
+		return RegistrationActivityFrontRequestLocale.langTag(
+				langueProperties, request, body, companyDefaultLanguage(request));
+	}
+
+	private String companyDefaultLanguage(HttpServletRequest request) {
+		return companyLanguageResolver.getDefaultLanguage(resolveCompanyId(request));
 	}
 
 	private static long parseClaimsUserId(HttpServletRequest request) {
