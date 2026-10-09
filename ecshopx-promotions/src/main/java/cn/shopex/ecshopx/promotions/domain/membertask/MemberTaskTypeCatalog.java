@@ -88,4 +88,13 @@ public final class MemberTaskTypeCatalog {
 		}
 		return cat + " / " + det;
 	}
+
+	/** 一级+二级是否为已知任务类型对。 */
+	public static boolean isKnownPair(String categoryCode, String detailCode) {
+		if (categoryCode == null || detailCode == null) {
+			return false;
+		}
+		Map<String, String> details = DETAIL_LABELS.get(categoryCode);
+		return details != null && details.containsKey(detailCode);
+	}
 }

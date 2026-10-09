@@ -26,6 +26,7 @@ import cn.shopex.ecshopx.common.util.LeadingNumberParser;
 import cn.shopex.ecshopx.common.config.LangueProperties;
 import cn.shopex.ecshopx.common.web.locale.RequestLangTag;
 import cn.shopex.ecshopx.promotions.service.membertask.MemberTaskListService;
+import cn.shopex.ecshopx.promotions.service.membertask.MemberTaskSaveService;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.LinkedHashMap;
 import java.util.Locale;
@@ -34,6 +35,10 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -53,11 +58,15 @@ public class MemberTasksController {
 			"cn.shopex.ecshopx.espier.security.OperatorJwtAuthenticationFilter.OPERATOR_JWT_USER_DATA";
 
 	private final MemberTaskListService memberTaskListService;
+	private final MemberTaskSaveService memberTaskSaveService;
 	private final LangueProperties langueProperties;
 
 	public MemberTasksController(
-			MemberTaskListService memberTaskListService, LangueProperties langueProperties) {
+			MemberTaskListService memberTaskListService,
+			MemberTaskSaveService memberTaskSaveService,
+			LangueProperties langueProperties) {
 		this.memberTaskListService = memberTaskListService;
+		this.memberTaskSaveService = memberTaskSaveService;
 		this.langueProperties = langueProperties;
 	}
 
@@ -93,6 +102,38 @@ public class MemberTasksController {
 						page,
 						pageSize,
 						locale);
+		return ResponseEntity.ok(ApiResult.ok(result));
+	}
+
+	@Activated(routeAlias = "promotions.member_task.create.post")
+	@PostMapping(value = "/member-tasks", name = "新建会员任务")
+	public ResponseEntity<ApiResult<Map<String, Object>>> create(
+			HttpServletRequest request, @RequestBody(required = false) Map<String, Object> body) {
+		Map<String, Object> jwt = readOperatorJwtMap(request);
+		long companyId = readCompanyIdFromOperatorJwtMap(jwt);
+		Locale locale = LocaleContextHolder.getLocale();
+		RequestLangTag.current(langueProperties);
+		long now = System.currentTimeMillis() / 1000L;
+		Map<String, Object> result =
+				memberTaskSaveService.create(
+						companyId, body == null ? Map.of() : body, now, locale);
+		return ResponseEntity.ok(ApiResult.ok(result));
+	}
+
+	@Activated(routeAlias = "promotions.member_task.update.put")
+	@PutMapping(value = "/member-tasks/{taskId}", name = "编辑会员任务")
+	public ResponseEntity<ApiResult<Map<String, Object>>> update(
+			HttpServletRequest request,
+			@PathVariable("taskId") long taskId,
+			@RequestBody(required = false) Map<String, Object> body) {
+		Map<String, Object> jwt = readOperatorJwtMap(request);
+		long companyId = readCompanyIdFromOperatorJwtMap(jwt);
+		Locale locale = LocaleContextHolder.getLocale();
+		RequestLangTag.current(langueProperties);
+		long now = System.currentTimeMillis() / 1000L;
+		Map<String, Object> result =
+				memberTaskSaveService.update(
+						companyId, taskId, body == null ? Map.of() : body, now, locale);
 		return ResponseEntity.ok(ApiResult.ok(result));
 	}
 
