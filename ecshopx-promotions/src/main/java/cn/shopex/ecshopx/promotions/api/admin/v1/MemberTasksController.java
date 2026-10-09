@@ -25,6 +25,7 @@ import cn.shopex.ecshopx.common.exception.UnauthorizedException;
 import cn.shopex.ecshopx.common.util.LeadingNumberParser;
 import cn.shopex.ecshopx.common.config.LangueProperties;
 import cn.shopex.ecshopx.common.web.locale.RequestLangTag;
+import cn.shopex.ecshopx.promotions.service.membertask.MemberTaskLifecycleService;
 import cn.shopex.ecshopx.promotions.service.membertask.MemberTaskListService;
 import cn.shopex.ecshopx.promotions.service.membertask.MemberTaskSaveService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -59,14 +60,17 @@ public class MemberTasksController {
 
 	private final MemberTaskListService memberTaskListService;
 	private final MemberTaskSaveService memberTaskSaveService;
+	private final MemberTaskLifecycleService memberTaskLifecycleService;
 	private final LangueProperties langueProperties;
 
 	public MemberTasksController(
 			MemberTaskListService memberTaskListService,
 			MemberTaskSaveService memberTaskSaveService,
+			MemberTaskLifecycleService memberTaskLifecycleService,
 			LangueProperties langueProperties) {
 		this.memberTaskListService = memberTaskListService;
 		this.memberTaskSaveService = memberTaskSaveService;
+		this.memberTaskLifecycleService = memberTaskLifecycleService;
 		this.langueProperties = langueProperties;
 	}
 
@@ -135,6 +139,32 @@ public class MemberTasksController {
 				memberTaskSaveService.update(
 						companyId, taskId, body == null ? Map.of() : body, now, locale);
 		return ResponseEntity.ok(ApiResult.ok(result));
+	}
+
+	@Activated(routeAlias = "promotions.member_task.publish.post")
+	@PostMapping(value = "/member-tasks/{taskId}/publish", name = "发布会员任务")
+	public ResponseEntity<ApiResult<Map<String, Object>>> publish(
+			HttpServletRequest request, @PathVariable("taskId") long taskId) {
+		Map<String, Object> jwt = readOperatorJwtMap(request);
+		long companyId = readCompanyIdFromOperatorJwtMap(jwt);
+		Locale locale = LocaleContextHolder.getLocale();
+		RequestLangTag.current(langueProperties);
+		long now = System.currentTimeMillis() / 1000L;
+		return ResponseEntity.ok(
+				ApiResult.ok(memberTaskLifecycleService.publish(companyId, taskId, now, locale)));
+	}
+
+	@Activated(routeAlias = "promotions.member_task.off_shelf.post")
+	@PostMapping(value = "/member-tasks/{taskId}/off-shelf", name = "下架会员任务")
+	public ResponseEntity<ApiResult<Map<String, Object>>> offShelf(
+			HttpServletRequest request, @PathVariable("taskId") long taskId) {
+		Map<String, Object> jwt = readOperatorJwtMap(request);
+		long companyId = readCompanyIdFromOperatorJwtMap(jwt);
+		Locale locale = LocaleContextHolder.getLocale();
+		RequestLangTag.current(langueProperties);
+		long now = System.currentTimeMillis() / 1000L;
+		return ResponseEntity.ok(
+				ApiResult.ok(memberTaskLifecycleService.offShelf(companyId, taskId, now, locale)));
 	}
 
 	private static Integer parseOptionalEpoch(String raw) {
