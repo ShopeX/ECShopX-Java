@@ -18,7 +18,6 @@ package cn.shopex.ecshopx.orders.service.admin;
 
 import cn.shopex.ecshopx.aftersales.domain.AftersalesRefund;
 import cn.shopex.ecshopx.aftersales.service.AftersalesRefundService;
-import cn.shopex.ecshopx.common.saaserp.inbound.SaasErpInboundRefundSideEffects;
 import cn.shopex.ecshopx.common.dispatch.JushuitanTradeCancelDispatchPublisher;
 import cn.shopex.ecshopx.common.dispatch.ThirdPartyTradeRefundCancelSaasErpDispatchPublisher;
 import cn.shopex.ecshopx.common.dispatch.ThirdPartyTradeUpdateDispatchPublisher;
@@ -475,29 +474,6 @@ public class AdminOrderPassRefundService {
 	@Transactional(rollbackFor = Exception.class)
 	public void updateMainOrderCancelSuccess(
 			long companyId, long orderId, long supplierScope, AftersalesRefund refund) {
-		if (supplierScope == 0L
-				&& refund != null
-				&& platformSelfSubCancelSupport.isShopRemainingFullCancelRefund(companyId, orderId, refund)) {
-			normalOrderFullCancelItemStoreRestoreService.restoreRemainingUnshippedItemsOnCancelSuccess(
-					companyId, orderId);
-			platformSelfSubCancelSupport.markRemainingUnshippedItemsCancelled(companyId, orderId);
-			platformSelfSubCancelSupport.finalizeSupplierOrdersAfterRemainingCancelPass(companyId, orderId);
-			reconcileMainOrderCancelStatus(companyId, orderId);
-			partialDeliveryFulfillmentReconcileService.reconcileIfFullyProcessed(companyId, orderId);
-			restoreDiscountIfMainCancelSuccess(companyId, orderId);
-			return;
-		}
-		if (supplierScope == 0L
-				&& refund != null
-				&& platformSelfSubCancelSupport.isPlatformSelfSubCancelRefund(companyId, orderId, refund)) {
-			platformSelfSubCancelSupport.markPlatformSelfItemsCancelled(companyId, orderId);
-			normalOrderFullCancelItemStoreRestoreService.restorePlatformSelfItemsOnCancelSuccess(
-					companyId, orderId);
-			reconcileMainOrderCancelStatus(companyId, orderId);
-			partialDeliveryFulfillmentReconcileService.reconcileIfFullyProcessed(companyId, orderId);
-			restoreDiscountIfMainCancelSuccess(companyId, orderId);
-			return;
-		}
 		boolean mainUpdated =
 				normalOrderStatusUpdateService.applyStatusUpdate(
 						companyId, orderId, supplierScope, "CANCEL", "SUCCESS");
@@ -611,9 +587,6 @@ public class AdminOrderPassRefundService {
 
 	private void scheduleThirdPartyTradeUpdateDispatchAfterCommit(
 			long companyId, long orderId, long refundSupplierId) {
-		if (SaasErpInboundRefundSideEffects.suppressOutboundTradeUpdate()) {
-			return;
-		}
 		Map<String, Object> payload =
 				buildThirdPartyTradeUpdatePayloadForPassRefund(companyId, orderId, refundSupplierId);
 		if (payload == null || payload.isEmpty()) {
@@ -633,9 +606,6 @@ public class AdminOrderPassRefundService {
 	}
 
 	private void scheduleSaasErpOrderSyncAfterCommit(long companyId, long orderId) {
-		if (SaasErpInboundRefundSideEffects.suppressOutboundTradeUpdate()) {
-			return;
-		}
 		final Object source = this;
 		TransactionSynchronizationManager.registerSynchronization(
 				new TransactionSynchronization() {

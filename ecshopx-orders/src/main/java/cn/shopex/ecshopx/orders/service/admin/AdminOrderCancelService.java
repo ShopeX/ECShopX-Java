@@ -16,7 +16,6 @@
 
 package cn.shopex.ecshopx.orders.service.admin;
 
-import cn.shopex.ecshopx.common.auth.PosOrderDocAccessPort;
 import cn.shopex.ecshopx.common.exception.BadRequestException;
 import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.orders.domain.OrderAssociations;
@@ -24,12 +23,9 @@ import cn.shopex.ecshopx.orders.mapper.OrderAssociationsMapper;
 import cn.shopex.ecshopx.supplier.domain.SupplierOrder;
 import cn.shopex.ecshopx.supplier.mapper.SupplierOrderMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import jakarta.servlet.http.HttpServletRequest;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 @Service
 public class AdminOrderCancelService {
@@ -39,24 +35,18 @@ public class AdminOrderCancelService {
 	private final OrderCancelReasonConfig orderCancelReasonConfig;
 	private final AdminNormalOrderFullCancelService adminNormalOrderFullCancelService;
 	private final AdminNormalOrderPartialCancelService adminNormalOrderPartialCancelService;
-	private final PlatformSelfSubCancelSupport platformSelfSubCancelSupport;
-	private final PosOrderDocAccessPort posOrderDocAccessPort;
 
 	public AdminOrderCancelService(
 			OrderAssociationsMapper orderAssociationsMapper,
 			SupplierOrderMapper supplierOrderMapper,
 			OrderCancelReasonConfig orderCancelReasonConfig,
 			AdminNormalOrderFullCancelService adminNormalOrderFullCancelService,
-			AdminNormalOrderPartialCancelService adminNormalOrderPartialCancelService,
-			PlatformSelfSubCancelSupport platformSelfSubCancelSupport,
-			PosOrderDocAccessPort posOrderDocAccessPort) {
+			AdminNormalOrderPartialCancelService adminNormalOrderPartialCancelService) {
 		this.orderAssociationsMapper = orderAssociationsMapper;
 		this.supplierOrderMapper = supplierOrderMapper;
 		this.orderCancelReasonConfig = orderCancelReasonConfig;
 		this.adminNormalOrderFullCancelService = adminNormalOrderFullCancelService;
 		this.adminNormalOrderPartialCancelService = adminNormalOrderPartialCancelService;
-		this.platformSelfSubCancelSupport = platformSelfSubCancelSupport;
-		this.posOrderDocAccessPort = posOrderDocAccessPort;
 	}
 
 	/**
@@ -64,7 +54,9 @@ public class AdminOrderCancelService {
 	 * with {@code cancelFrom} {@code "shop"} (same service as wxapp whole-order cancel); a copy of the merged request
 	 * map is used so {@code cancel_from} is set to {@code "shop"} for downstream order-process-log payloads. Jushuitan
 	 * trade-cancel Bus dispatch is performed only inside that service, not here. Non-{@code PENDING} uses
-	 * {@link AdminNormalOrderPartialCancelService} and does not carry this event path.
+	 * {@link AdminNormalOrderPartialCancelService} (ONLY_REFUND aftersales for remaining unshipped). Supplier cancel
+	 * uses {@code supplier_order.delivery_status} so a PENDING sub-order still takes FullCancel when the main order is
+	 * already PARTAIL.
 	 */
 	public Map<String, Object> cancelOrder(
 			long companyId,
@@ -77,10 +69,6 @@ public class AdminOrderCancelService {
 			orderIdNum = Long.parseLong(orderIdFromPath == null ? "" : orderIdFromPath.trim());
 		} catch (NumberFormatException e) {
 			throw new BadRequestException("订单号格式错误");
-		}
-		HttpServletRequest request = currentRequestOrNull();
-		if (request != null) {
-			posOrderDocAccessPort.assertWriteAccess(request, companyId, orderIdNum);
 		}
 		OrderAssociations assoc =
 				orderAssociationsMapper.selectOne(
@@ -108,15 +96,6 @@ public class AdminOrderCancelService {
 		if ("PENDING".equalsIgnoreCase(delivery)) {
 			LinkedHashMap<String, Object> fullCancelParams = new LinkedHashMap<>(mergedRequestParams);
 			fullCancelParams.put("cancel_from", "shop");
-			if (supplierId <= 0L
-					&& platformSelfSubCancelSupport.isShopRemainingFullCancelScope(
-							companyId, orderIdNum, safe(assoc.getDeliveryStatus()))) {
-				fullCancelParams.put(PlatformSelfSubCancelSupport.SHOP_REMAINING_FULL_CANCEL_PARAM, true);
-			} else if (supplierId <= 0L
-					&& platformSelfSubCancelSupport.isScope(
-							companyId, orderIdNum, safe(assoc.getDeliveryStatus()))) {
-				fullCancelParams.put(PlatformSelfSubCancelSupport.PLATFORM_SELF_SUB_CANCEL_PARAM, true);
-			}
 			return adminNormalOrderFullCancelService.execute(
 					companyId,
 					operatorType,
@@ -135,17 +114,11 @@ public class AdminOrderCancelService {
 
 	/**
 	 * 供应商取消未发货子单：按 supplier_order.delivery_status 判断，不能因主单已部分发货而走入部分取消售后。
+	 * 平台/店铺取消：按主单 delivery_status；PARTAIL 走部分取消售后。
 	 */
 	private String resolveCancelDeliveryStatus(
 			long companyId, long orderId, long supplierId, OrderAssociations assoc) {
 		if (supplierId <= 0L) {
-			if (platformSelfSubCancelSupport.isShopRemainingFullCancelScope(
-					companyId, orderId, safe(assoc.getDeliveryStatus()))) {
-				return "PENDING";
-			}
-			if (platformSelfSubCancelSupport.isScope(companyId, orderId, safe(assoc.getDeliveryStatus()))) {
-				return "PENDING";
-			}
 			return safe(assoc.getDeliveryStatus());
 		}
 		if (supplierId > Integer.MAX_VALUE) {
@@ -181,13 +154,5 @@ public class AdminOrderCancelService {
 
 	private static String safe(String s) {
 		return s == null ? "" : s.trim();
-	}
-
-	private static HttpServletRequest currentRequestOrNull() {
-		var attrs = RequestContextHolder.getRequestAttributes();
-		if (attrs instanceof ServletRequestAttributes sra) {
-			return sra.getRequest();
-		}
-		return null;
 	}
 }

@@ -154,7 +154,45 @@ public class AdminNormalOrderPartialCancelService {
 		}
 
 		if (supplierId > 0) {
-			// 只收口当前供应商子单；主单是否进待收货由整单明细是否全部处理完决定（见下方 reconcile）
+			List<NormalOrdersItems> itemsAfter =
+					normalOrdersItemsMapper.selectList(
+							new LambdaQueryWrapper<NormalOrdersItems>()
+									.eq(NormalOrdersItems::getCompanyId, companyId)
+									.eq(NormalOrdersItems::getOrderId, orderId));
+			String orderStatusWait = "WAIT_BUYER_CONFIRM";
+			for (NormalOrdersItems it : itemsAfter) {
+				int n = it.getNum() == null ? 0 : it.getNum();
+				int delivered = it.getDeliveryItemNum() == null ? 0 : it.getDeliveryItemNum();
+				int cancelled = it.getCancelItemNum() == null ? 0 : it.getCancelItemNum();
+				if (delivered + cancelled < n) {
+					orderStatusWait = "";
+					break;
+				}
+			}
+			if ("WAIT_BUYER_CONFIRM".equals(orderStatusWait)) {
+				Map<String, Object> setting = orderValiditySettingRedisReadService.readPlatformSetting(companyId);
+				int finishDays = 7;
+				Object ot = setting.get("order_finish_time");
+				if (ot instanceof Number n) {
+					finishDays = n.intValue();
+				} else if (ot != null) {
+					try {
+						finishDays = Integer.parseInt(String.valueOf(ot).trim());
+					} catch (NumberFormatException ignored) {
+						finishDays = 7;
+					}
+				}
+				int finishSec = finishDays * 24 * 3600;
+				int now = (int) (System.currentTimeMillis() / 1000L);
+				LambdaUpdateWrapper<NormalOrders> ou = new LambdaUpdateWrapper<>();
+				ou.eq(NormalOrders::getCompanyId, companyId)
+						.eq(NormalOrders::getOrderId, orderId)
+						.eq(NormalOrders::getSupplierId, supplierId)
+						.set(NormalOrders::getAutoFinishTime, String.valueOf(now + finishSec))
+						.set(NormalOrders::getOrderStatus, "WAIT_BUYER_CONFIRM");
+				normalOrdersMapper.update(null, ou);
+			}
+
 			String supOrderStatus = "CANCEL";
 			for (NormalOrdersItems it : items) {
 				if ((it.getSupplierId() == null ? 0L : it.getSupplierId()) != supplierId) {
@@ -173,11 +211,10 @@ public class AdminNormalOrderPartialCancelService {
 					.set(SupplierOrder::getOrderStatus, supOrderStatus);
 			supplierOrderMapper.update(null, su);
 		} else {
-			// 平台/店铺取消剩余未发：收口各供应商子单
+			// 平台/店铺取消剩余未发：收口各供应商子单，并由 reconcile 推进主单待收货（保持 PAYED 直到全部处理完）
 			platformSelfSubCancelSupport.finalizeSupplierOrdersAfterRemainingCancelPass(companyId, orderId);
+			partialDeliveryFulfillmentReconcileService.reconcileIfFullyProcessed(companyId, orderId);
 		}
-		// 单供/多供统一：仅当全部明细已发或已取消时，reconcile 才把主单推进待收货
-		partialDeliveryFulfillmentReconcileService.reconcileIfFullyProcessed(companyId, orderId);
 
 		boolean auto =
 				Boolean.TRUE.equals(orderValiditySettingRedisReadService.readPlatformSetting(companyId).get("auto_aftersales"));

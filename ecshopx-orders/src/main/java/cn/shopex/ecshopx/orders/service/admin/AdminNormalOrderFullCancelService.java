@@ -78,11 +78,6 @@ public class AdminNormalOrderFullCancelService {
 	private final WdtErpTradeCancelDispatchPublisher wdtErpTradeCancelDispatchPublisher;
 	private final NormalOrderCancelDispatchPublisher normalOrderCancelDispatchPublisher;
 	private final TradeRefundDispatchPublisher tradeRefundDispatchPublisher;
-	/**
-	 * PHP {@code cancelOrder} does not emit {@code TradeUpdateEvent}. Agree-cancel republish lives on
-	 * {@code AdminOrderPassRefundService}. Kept so existing wiring stays explicit.
-	 */
-	@SuppressWarnings("unused")
 	private final ThirdPartyTradeUpdateDispatchPublisher thirdPartyTradeUpdateDispatchPublisher;
 	private final NormalOrderFullCancelItemStoreRestoreService normalOrderFullCancelItemStoreRestoreService;
 	private final NormalOrderStatusUpdateService normalOrderStatusUpdateService;
@@ -175,8 +170,6 @@ public class AdminNormalOrderFullCancelService {
 			Map<String, Object> mergedRequestParams,
 			String cancelFromForRecord) {
 		boolean supplierMode = supplierId > 0;
-		boolean platformSelfSubCancel = false;
-		boolean shopRemainingFullCancel = false;
 		NormalOrders normalOrder = null;
 		SupplierOrder supplierOrder = null;
 		if (supplierMode) {
@@ -201,22 +194,6 @@ public class AdminNormalOrderFullCancelService {
 									.last("LIMIT 1"));
 			if (normalOrder == null) {
 				throw new ResourceException("订单号为" + orderId + "的订单不存在");
-			}
-			platformSelfSubCancel =
-					platformSelfSubCancelSupport.isScope(
-							companyId, orderId, safe(normalOrder.getDeliveryStatus()));
-			shopRemainingFullCancel =
-					platformSelfSubCancelSupport.isShopRemainingFullCancelScope(
-							companyId, orderId, safe(normalOrder.getDeliveryStatus()));
-			if (mergedRequestParams != null
-					&& Boolean.TRUE.equals(
-							mergedRequestParams.get(PlatformSelfSubCancelSupport.SHOP_REMAINING_FULL_CANCEL_PARAM))) {
-				shopRemainingFullCancel = true;
-			}
-			if (!platformSelfSubCancel
-					&& mergedRequestParams != null
-					&& Boolean.TRUE.equals(mergedRequestParams.get(PlatformSelfSubCancelSupport.PLATFORM_SELF_SUB_CANCEL_PARAM))) {
-				platformSelfSubCancel = true;
 			}
 		}
 
@@ -243,18 +220,7 @@ public class AdminNormalOrderFullCancelService {
 				throw new ResourceException("订单状态已不能申请取消");
 			}
 			if (!"PENDING".equalsIgnoreCase(deliveryStatus)) {
-				if (!platformSelfSubCancel && !shopRemainingFullCancel) {
-					throw new ResourceException("已发货订单不能取消");
-				}
-				if (shopRemainingFullCancel
-						&& !platformSelfSubCancelSupport.hasRemainingUnshippedItems(companyId, orderId)) {
-					throw new ResourceException("已发货订单不能取消");
-				}
-				if (platformSelfSubCancel
-						&& !shopRemainingFullCancel
-						&& !platformSelfSubCancelSupport.hasUndeliveredPlatformSelfItems(companyId, orderId)) {
-					throw new ResourceException("已发货订单不能取消");
-				}
+				throw new ResourceException("已发货订单不能取消");
 			}
 		}
 
@@ -308,6 +274,7 @@ public class AdminNormalOrderFullCancelService {
 							reasonText,
 							cancelFromNorm);
 			closeNotPayOrder(companyId, orderId, supplierMode, supplierId, normalOrder);
+			maybeScheduleThirdPartyTradeUpdateAfterOrderAssociationCancel(companyId, orderId, orderStatus);
 			Map<String, Object> od = orderDataForPoints(supplierMode, normalOrder, supplierOrder, orderId);
 			pointMemberCancelOrderReturnPointsService.cancelOrderReturnBackPoints(od);
 			if (!supplierMode
@@ -329,8 +296,6 @@ public class AdminNormalOrderFullCancelService {
 							userId,
 							supplierId,
 							supplierMode,
-							platformSelfSubCancel,
-							shopRemainingFullCancel,
 							normalOrder,
 							supplierOrder,
 							reasonText,
@@ -340,8 +305,6 @@ public class AdminNormalOrderFullCancelService {
 					userId,
 					orderId,
 					supplierMode,
-					platformSelfSubCancel,
-					shopRemainingFullCancel,
 					normalOrder,
 					supplierOrder,
 					cancelRow);
@@ -358,6 +321,7 @@ public class AdminNormalOrderFullCancelService {
 				long supplierScope = supplierMode ? supplierId : 0L;
 				normalOrderStatusUpdateService.applyStatusUpdate(
 						companyId, orderId, supplierScope, null, "WAIT_PROCESS");
+				maybeScheduleThirdPartyTradeUpdateAfterOrderAssociationCancel(companyId, orderId, orderStatus);
 			}
 		}
 
@@ -463,6 +427,64 @@ public class AdminNormalOrderFullCancelService {
 			});
 		} else {
 			normalOrderCancelDispatchPublisher.publish(payload);
+		}
+	}
+
+	/**
+	 * When the pre-cancel order status is not {@code PART_PAYMENT}, schedules a third-party trade update dispatch
+	 * after {@code order_associations} writes and a re-read: {@link ThirdPartyTradeUpdateDispatchPublisher} runs on
+	 * {@code afterCommit} so external systems only observe updates once the transaction has committed.
+	 */
+	private void maybeScheduleThirdPartyTradeUpdateAfterOrderAssociationCancel(
+			long companyId, long orderId, String preCancelOrderStatus) {
+		if ("PART_PAYMENT".equalsIgnoreCase(safe(preCancelOrderStatus))) {
+			return;
+		}
+		OrderAssociations assocRow =
+				orderAssociationsMapper.selectOne(
+						new LambdaQueryWrapper<OrderAssociations>()
+								.eq(OrderAssociations::getCompanyId, companyId)
+								.eq(OrderAssociations::getOrderId, orderId)
+								.last("LIMIT 1"));
+		Map<String, Object> payload = buildThirdPartyTradeUpdatePayload(companyId, orderId, assocRow);
+		if (payload == null || payload.isEmpty()) {
+			return;
+		}
+		scheduleThirdPartyTradeUpdateDispatchAfterCommit(payload);
+	}
+
+	private Map<String, Object> buildThirdPartyTradeUpdatePayload(
+			long companyId, long orderId, OrderAssociations assocRow) {
+		if (assocRow == null) {
+			return null;
+		}
+		LinkedHashMap<String, Object> erp = new LinkedHashMap<>();
+		erp.put("company_id", companyId);
+		erp.put("order_id", String.valueOf(orderId));
+		erp.put("user_id", assocRow.getUserId() == null ? 0L : assocRow.getUserId());
+		String orderClass = safe(assocRow.getOrderClass());
+		if (!StringUtils.hasText(orderClass)) {
+			orderClass = "normal";
+		}
+		erp.put("order_class", orderClass);
+		Optional<Map<String, Object>> tradeOpt = orderSuccessTradeReadPort.primarySuccessTrade(companyId, orderId);
+		if (tradeOpt.isPresent()) {
+			erp.put("trade_id", String.valueOf(tradeOpt.get().get("trade_id")));
+		}
+		erp.put("order_status", "CANCEL");
+		return erp;
+	}
+
+	private void scheduleThirdPartyTradeUpdateDispatchAfterCommit(Map<String, Object> payload) {
+		if (TransactionSynchronizationManager.isSynchronizationActive()) {
+			TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+				@Override
+				public void afterCommit() {
+					thirdPartyTradeUpdateDispatchPublisher.publish(payload);
+				}
+			});
+		} else {
+			thirdPartyTradeUpdateDispatchPublisher.publish(payload);
 		}
 	}
 
@@ -588,8 +610,6 @@ public class AdminNormalOrderFullCancelService {
 			long userId,
 			long supplierId,
 			boolean supplierMode,
-			boolean platformSelfSubCancel,
-			boolean shopRemainingFullCancel,
 			NormalOrders normalOrder,
 			SupplierOrder supplierOrder,
 			String reasonText,
@@ -609,16 +629,6 @@ public class AdminNormalOrderFullCancelService {
 
 		int now = (int) (System.currentTimeMillis() / 1000L);
 		CancelOrders data = new CancelOrders();
-		PlatformSelfSubCancelSupport.PlatformSelfCancelAmounts platformAmounts = null;
-		if (shopRemainingFullCancel) {
-			platformAmounts =
-					platformSelfSubCancelSupport.computeRemainingItemsCancelAmounts(
-							companyId, normalOrder.getOrderId() == null ? 0L : normalOrder.getOrderId());
-		} else if (platformSelfSubCancel) {
-			platformAmounts =
-					platformSelfSubCancelSupport.computeCancelAmounts(
-							companyId, normalOrder.getOrderId() == null ? 0L : normalOrder.getOrderId());
-		}
 		if (supplierMode) {
 			data.setOrderId(supplierOrder.getOrderId());
 			data.setCompanyId(supplierOrder.getCompanyId());
@@ -638,13 +648,8 @@ public class AdminNormalOrderFullCancelService {
 			data.setUserId(normalOrder.getUserId());
 			data.setDistributorId(normalOrder.getDistributorId() == null ? 0L : normalOrder.getDistributorId());
 			data.setOrderType(safe(normalOrder.getOrderType()));
-			if (platformAmounts != null) {
-				data.setTotalFee((long) platformAmounts.totalFee());
-				data.setPoint(platformAmounts.refundPoint());
-			} else {
-				data.setTotalFee(parseMoneyLong(normalOrder.getTotalFee()));
-				data.setPoint(normalOrder.getPoint() == null ? 0 : normalOrder.getPoint());
-			}
+			data.setTotalFee(parseMoneyLong(normalOrder.getTotalFee()));
+			data.setPoint(normalOrder.getPoint() == null ? 0 : normalOrder.getPoint());
 			data.setPayType(safe(normalOrder.getPayType()));
 		}
 		data.setProgress(0);
@@ -703,8 +708,6 @@ public class AdminNormalOrderFullCancelService {
 			long userId,
 			long orderId,
 			boolean supplierMode,
-			boolean platformSelfSubCancel,
-			boolean shopRemainingFullCancel,
 			NormalOrders normalOrder,
 			SupplierOrder supplierOrder,
 			CancelOrders cancelRow) {
@@ -725,39 +728,19 @@ public class AdminNormalOrderFullCancelService {
 						? (supplierOrder.getDistributorId() == null ? 0L : supplierOrder.getDistributorId())
 						: (normalOrder.getDistributorId() == null ? 0L : normalOrder.getDistributorId());
 
-		int totalFee;
-		int freightFee;
-		int refundFee;
-		int refundPoint;
-		if (shopRemainingFullCancel) {
-			PlatformSelfSubCancelSupport.PlatformSelfCancelAmounts amounts =
-					platformSelfSubCancelSupport.computeRemainingItemsCancelAmounts(companyId, orderId);
-			totalFee = amounts.totalFee();
-			freightFee = amounts.freightFee();
-			refundFee = amounts.refundFee();
-			refundPoint = amounts.refundPoint();
-		} else if (platformSelfSubCancel) {
-			PlatformSelfSubCancelSupport.PlatformSelfCancelAmounts amounts =
-					platformSelfSubCancelSupport.computeCancelAmounts(companyId, orderId);
-			totalFee = amounts.totalFee();
-			freightFee = amounts.freightFee();
-			refundFee = amounts.refundFee();
-			refundPoint = amounts.refundPoint();
-		} else {
-			totalFee =
-					supplierMode
-							? parseMoneyInt(supplierOrder.getTotalFee())
-							: parseMoneyInt(normalOrder.getTotalFee());
-			freightFee =
-					supplierMode
-							? (supplierOrder.getFreightFee() == null ? 0 : supplierOrder.getFreightFee())
-							: (normalOrder.getFreightFee() == null ? 0 : normalOrder.getFreightFee());
-			refundFee = Math.max(0, totalFee - freightFee);
-			refundPoint =
-					supplierMode
-							? (supplierOrder.getPoint() == null ? 0 : supplierOrder.getPoint())
-							: (normalOrder.getPoint() == null ? 0 : normalOrder.getPoint());
-		}
+		int totalFee =
+				supplierMode
+						? parseMoneyInt(supplierOrder.getTotalFee())
+						: parseMoneyInt(normalOrder.getTotalFee());
+		int freightFee =
+				supplierMode
+						? (supplierOrder.getFreightFee() == null ? 0 : supplierOrder.getFreightFee())
+						: (normalOrder.getFreightFee() == null ? 0 : normalOrder.getFreightFee());
+		int refundFee = Math.max(0, totalFee - freightFee);
+		int refundPoint =
+				supplierMode
+						? (supplierOrder.getPoint() == null ? 0 : supplierOrder.getPoint())
+						: (normalOrder.getPoint() == null ? 0 : normalOrder.getPoint());
 		String payType =
 				supplierMode ? safe(supplierOrder.getPayType()) : safe(normalOrder.getPayType());
 		String refundChannel = "offline_pay".equalsIgnoreCase(tradePayType) ? "offline" : "original";
@@ -772,7 +755,7 @@ public class AdminNormalOrderFullCancelService {
 		p.put("supplier_id", refundSupplierId);
 		p.put("refund_fee", refundFee);
 		p.put("refund_point", refundPoint);
-		p.put("return_freight", shopRemainingFullCancel || platformSelfSubCancel ? 0 : 1);
+		p.put("return_freight", 1);
 		p.put("freight", freightFee);
 		p.put("freight_type", freightType);
 		p.put("pay_type", payType);

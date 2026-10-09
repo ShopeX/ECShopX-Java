@@ -250,6 +250,8 @@ public class AftersalesRefundService {
 			w.eq(AftersalesRefund::getRefundBn, refundBn);
 		} else {
 			w.eq(AftersalesRefund::getRefundType, "1");
+			// 挂售后单的部分取消售前退款走售后审核，不进订单 confirmcancel
+			w.isNull(AftersalesRefund::getAftersalesBn);
 			if (supplierId > 0L) {
 				w.eq(AftersalesRefund::getSupplierId, supplierId);
 			}
@@ -267,6 +269,7 @@ public class AftersalesRefundService {
 						.eq(AftersalesRefund::getOrderId, orderId)
 						.eq(AftersalesRefund::getRefundType, "1")
 						.eq(AftersalesRefund::getRefundStatus, "READY")
+						.isNull(AftersalesRefund::getAftersalesBn)
 						.gt(AftersalesRefund::getSupplierId, 0L));
 	}
 
@@ -277,6 +280,7 @@ public class AftersalesRefundService {
 								.eq(AftersalesRefund::getOrderId, orderId)
 								.eq(AftersalesRefund::getRefundType, "1")
 								.eq(AftersalesRefund::getSupplierId, 0L)
+								.isNull(AftersalesRefund::getAftersalesBn)
 								.in(
 										AftersalesRefund::getRefundStatus,
 										List.of("AUDIT_SUCCESS", "SUCCESS", "PROCESSING")))
@@ -289,7 +293,8 @@ public class AftersalesRefundService {
 						.eq(AftersalesRefund::getCompanyId, companyId)
 						.eq(AftersalesRefund::getOrderId, orderId)
 						.eq(AftersalesRefund::getRefundType, "1")
-						.eq(AftersalesRefund::getRefundStatus, "READY");
+						.eq(AftersalesRefund::getRefundStatus, "READY")
+						.isNull(AftersalesRefund::getAftersalesBn);
 		if (supplierId > 0L) {
 			w.eq(AftersalesRefund::getSupplierId, supplierId);
 		}
@@ -305,6 +310,7 @@ public class AftersalesRefundService {
 						.eq(AftersalesRefund::getOrderId, orderId)
 						.eq(AftersalesRefund::getRefundType, "1")
 						.eq(AftersalesRefund::getRefundStatus, "READY")
+						.isNull(AftersalesRefund::getAftersalesBn)
 						.eq(AftersalesRefund::getSupplierId, supplierId)
 						.orderByAsc(AftersalesRefund::getCreateTime));
 	}
@@ -316,6 +322,7 @@ public class AftersalesRefundService {
 						.eq(AftersalesRefund::getCompanyId, companyId)
 						.eq(AftersalesRefund::getOrderId, orderId)
 						.eq(AftersalesRefund::getRefundType, "1")
+						.isNull(AftersalesRefund::getAftersalesBn)
 						.eq(AftersalesRefund::getSupplierId, supplierId)
 						.in(
 								AftersalesRefund::getRefundStatus,
@@ -336,6 +343,7 @@ public class AftersalesRefundService {
 			w.eq(AftersalesRefund::getRefundBn, refundBn);
 		} else {
 			w.eq(AftersalesRefund::getRefundType, "1");
+			w.isNull(AftersalesRefund::getAftersalesBn);
 			if (refundStatusIn != null && !refundStatusIn.isEmpty()) {
 				w.in(AftersalesRefund::getRefundStatus, refundStatusIn);
 			}

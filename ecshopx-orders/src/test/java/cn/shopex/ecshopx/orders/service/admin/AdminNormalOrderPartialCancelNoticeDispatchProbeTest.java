@@ -58,6 +58,12 @@ class AdminNormalOrderPartialCancelNoticeDispatchProbeTest {
 	@Mock
 	SendAfterSaleWaitDealNoticeJobDispatchPublisher noticePublisher;
 
+	@Mock
+	PlatformSelfSubCancelSupport platformSelfSubCancelSupport;
+
+	@Mock
+	PartialDeliveryFulfillmentReconcileService partialDeliveryFulfillmentReconcileService;
+
 	@InjectMocks
 	AdminNormalOrderPartialCancelService adminNormalOrderPartialCancelService;
 
@@ -86,19 +92,9 @@ class AdminNormalOrderPartialCancelNoticeDispatchProbeTest {
 		lineBefore.setSupplierId(0);
 		lineBefore.setCancelItemNum(0);
 
-		NormalOrdersItems lineAfter = new NormalOrdersItems();
-		lineAfter.setCompanyId(companyId);
-		lineAfter.setOrderId(orderId);
-		lineAfter.setId(501L);
-		lineAfter.setNum(10);
-		lineAfter.setDeliveryItemNum(5);
-		lineAfter.setSupplierId(0);
-		lineAfter.setCancelItemNum(5);
-
-		when(normalOrdersItemsMapper.selectList(any())).thenReturn(List.of(lineBefore)).thenReturn(List.of(lineAfter));
+		when(normalOrdersItemsMapper.selectList(any())).thenReturn(List.of(lineBefore));
 		when(normalOrdersItemsMapper.selectOne(any())).thenReturn(lineBefore);
 		when(normalOrdersItemsMapper.update(any(), any())).thenReturn(1);
-		when(normalOrdersMapper.update(any(), any())).thenReturn(1);
 
 		Map<String, Object> createOut = new LinkedHashMap<>();
 		createOut.put("aftersales_bn", expectedAftersalesBn);
@@ -116,12 +112,15 @@ class AdminNormalOrderPartialCancelNoticeDispatchProbeTest {
 				.thenReturn(createOut);
 
 		Map<String, Object> setting = new LinkedHashMap<>();
-		setting.put("order_finish_time", 7);
 		when(orderValiditySettingRedisReadService.readPlatformSetting(eq(companyId))).thenReturn(setting);
 
 		adminNormalOrderPartialCancelService.execute(companyId, "admin", 2L, 0L, userId, orderId, "买家取消");
 
 		verify(noticePublisher, times(1)).publish(eq(companyId), eq(expectedAftersalesBn));
+		verify(platformSelfSubCancelSupport, times(1))
+				.finalizeSupplierOrdersAfterRemainingCancelPass(eq(companyId), eq(orderId));
+		verify(partialDeliveryFulfillmentReconcileService, times(1))
+				.reconcileIfFullyProcessed(eq(companyId), eq(orderId));
 	}
 
 	@Test
@@ -151,19 +150,9 @@ class AdminNormalOrderPartialCancelNoticeDispatchProbeTest {
 		lineBefore.setSupplierId(0);
 		lineBefore.setCancelItemNum(0);
 
-		NormalOrdersItems lineAfter = new NormalOrdersItems();
-		lineAfter.setCompanyId(companyId);
-		lineAfter.setOrderId(orderId);
-		lineAfter.setId(501L);
-		lineAfter.setNum(10);
-		lineAfter.setDeliveryItemNum(5);
-		lineAfter.setSupplierId(0);
-		lineAfter.setCancelItemNum(5);
-
-		when(normalOrdersItemsMapper.selectList(any())).thenReturn(List.of(lineBefore)).thenReturn(List.of(lineAfter));
+		when(normalOrdersItemsMapper.selectList(any())).thenReturn(List.of(lineBefore));
 		when(normalOrdersItemsMapper.selectOne(any())).thenReturn(lineBefore);
 		when(normalOrdersItemsMapper.update(any(), any())).thenReturn(1);
-		when(normalOrdersMapper.update(any(), any())).thenReturn(1);
 
 		Map<String, Object> createOut = new LinkedHashMap<>();
 		createOut.put("aftersales_bn", expectedAftersalesBn);
@@ -181,7 +170,6 @@ class AdminNormalOrderPartialCancelNoticeDispatchProbeTest {
 				.thenReturn(createOut);
 
 		Map<String, Object> setting = new LinkedHashMap<>();
-		setting.put("order_finish_time", 7);
 		setting.put("auto_aftersales", Boolean.TRUE);
 		when(orderValiditySettingRedisReadService.readPlatformSetting(eq(companyId))).thenReturn(setting);
 
@@ -208,6 +196,10 @@ class AdminNormalOrderPartialCancelNoticeDispatchProbeTest {
 						eq(2L),
 						eq(userId));
 		verify(noticePublisher, times(1)).publish(eq(companyId), eq(expectedAftersalesBn));
+		verify(platformSelfSubCancelSupport, times(1))
+				.finalizeSupplierOrdersAfterRemainingCancelPass(eq(companyId), eq(orderId));
+		verify(partialDeliveryFulfillmentReconcileService, times(1))
+				.reconcileIfFullyProcessed(eq(companyId), eq(orderId));
 		verifyNoMoreInteractions(aftersalesShopPartialCancelCreateService);
 	}
 }
