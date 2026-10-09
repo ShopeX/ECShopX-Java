@@ -185,6 +185,30 @@ public class MemberTasksController {
 		return ResponseEntity.ok(ApiResult.ok(Map.of()));
 	}
 
+	/** 切片 0 骨架（ECX-10433）：统计概览。 */
+	@Activated(routeAlias = "promotions.member_task.stats.get")
+	@GetMapping(value = "/member-tasks/{taskId}/stats", name = "会员任务统计")
+	public ResponseEntity<ApiResult<Map<String, Object>>> stats(
+			HttpServletRequest request, @PathVariable("taskId") long taskId) {
+		readCompanyIdFromOperatorJwtMap(readOperatorJwtMap(request));
+		Locale locale = LocaleContextHolder.getLocale();
+		RequestLangTag.current(langueProperties);
+		memberTaskSkeletonService.throwNotImplemented(locale);
+		return ResponseEntity.ok(ApiResult.ok(Map.of()));
+	}
+
+	/** 切片 0 骨架（ECX-10433）：CSV 导出。 */
+	@Activated(routeAlias = "promotions.member_task.export.get")
+	@GetMapping(value = "/member-tasks/{taskId}/export", name = "会员任务导出")
+	public ResponseEntity<ApiResult<Map<String, Object>>> export(
+			HttpServletRequest request, @PathVariable("taskId") long taskId) {
+		readCompanyIdFromOperatorJwtMap(readOperatorJwtMap(request));
+		Locale locale = LocaleContextHolder.getLocale();
+		RequestLangTag.current(langueProperties);
+		memberTaskSkeletonService.throwNotImplemented(locale);
+		return ResponseEntity.ok(ApiResult.ok(Map.of()));
+	}
+
 	private static Integer parseOptionalEpoch(String raw) {
 		if (!StringUtils.hasText(raw)) {
 			return null;
