@@ -28,6 +28,7 @@ import cn.shopex.ecshopx.common.web.locale.RequestLangTag;
 import cn.shopex.ecshopx.promotions.service.membertask.MemberTaskLifecycleService;
 import cn.shopex.ecshopx.promotions.service.membertask.MemberTaskListService;
 import cn.shopex.ecshopx.promotions.service.membertask.MemberTaskSaveService;
+import cn.shopex.ecshopx.promotions.service.membertask.MemberTaskSkeletonService;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.LinkedHashMap;
 import java.util.Locale;
@@ -61,16 +62,19 @@ public class MemberTasksController {
 	private final MemberTaskListService memberTaskListService;
 	private final MemberTaskSaveService memberTaskSaveService;
 	private final MemberTaskLifecycleService memberTaskLifecycleService;
+	private final MemberTaskSkeletonService memberTaskSkeletonService;
 	private final LangueProperties langueProperties;
 
 	public MemberTasksController(
 			MemberTaskListService memberTaskListService,
 			MemberTaskSaveService memberTaskSaveService,
 			MemberTaskLifecycleService memberTaskLifecycleService,
+			MemberTaskSkeletonService memberTaskSkeletonService,
 			LangueProperties langueProperties) {
 		this.memberTaskListService = memberTaskListService;
 		this.memberTaskSaveService = memberTaskSaveService;
 		this.memberTaskLifecycleService = memberTaskLifecycleService;
+		this.memberTaskSkeletonService = memberTaskSkeletonService;
 		this.langueProperties = langueProperties;
 	}
 
@@ -165,6 +169,20 @@ public class MemberTasksController {
 		long now = System.currentTimeMillis() / 1000L;
 		return ResponseEntity.ok(
 				ApiResult.ok(memberTaskLifecycleService.offShelf(companyId, taskId, now, locale)));
+	}
+
+	/** 切片 0 骨架（ECX-10431）：人工补发，类型片再打通实发。 */
+	@Activated(routeAlias = "promotions.member_task.grant_retry.post")
+	@PostMapping(value = "/member-tasks/{taskId}/grants/{grantId}/retry", name = "会员任务补发奖励")
+	public ResponseEntity<ApiResult<Map<String, Object>>> retryGrant(
+			HttpServletRequest request,
+			@PathVariable("taskId") long taskId,
+			@PathVariable("grantId") long grantId) {
+		readCompanyIdFromOperatorJwtMap(readOperatorJwtMap(request));
+		Locale locale = LocaleContextHolder.getLocale();
+		RequestLangTag.current(langueProperties);
+		memberTaskSkeletonService.throwNotImplemented(locale);
+		return ResponseEntity.ok(ApiResult.ok(Map.of()));
 	}
 
 	private static Integer parseOptionalEpoch(String raw) {
