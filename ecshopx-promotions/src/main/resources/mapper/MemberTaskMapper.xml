@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.promotions.mapper.MemberTaskMapper">
+
+	<sql id="displayStatusSql">
+		<choose>
+			<when test='displayStatus == "draft"'>
+				AND published = 0
+				AND off_shelf = 0
+				AND (end_time = 0 OR end_time &gt;= #{now})
+			</when>
+			<when test='displayStatus == "expired"'>
+				AND (off_shelf = 1 OR (end_time &gt; 0 AND end_time &lt; #{now}))
+			</when>
+			<when test='displayStatus == "pending_start"'>
+				AND published = 1
+				AND off_shelf = 0
+				AND (end_time = 0 OR end_time &gt;= #{now})
+				AND begin_time &gt; 0
+				AND begin_time &gt; #{now}
+			</when>
+			<when test='displayStatus == "in_progress"'>
+				AND published = 1
+				AND off_shelf = 0
+				AND (end_time = 0 OR end_time &gt;= #{now})
+				AND (begin_time = 0 OR begin_time &lt;= #{now})
+			</when>
+		</choose>
+	</sql>
+
+	<sql id="adminListWhere">
+		<where>
+			company_id = #{companyId}
+			<if test="taskIdKeyword != null and taskIdKeyword != ''">
+				AND CAST(task_id AS CHAR) LIKE CONCAT('%', #{taskIdKeyword}, '%')
+			</if>
+			<if test="nameKeyword != null and nameKeyword != ''">
+				AND name LIKE CONCAT('%', #{nameKeyword}, '%')
+			</if>
+			<if test="typeDetail != null and typeDetail != ''">
+				AND type_detail = #{typeDetail}
+			</if>
+			<if test="filterBegin != null and filterEnd != null">
+				AND begin_time &gt; 0
+				AND end_time &gt; 0
+				AND begin_time &lt;= #{filterEnd}
+				AND end_time &gt;= #{filterBegin}
+			</if>
+			<include refid="displayStatusSql"/>
+		</where>
+	</sql>
+
+	<select id="countAdminList" resultType="long">
+		SELECT COUNT(*) FROM member_task
+		<include refid="adminListWhere"/>
+	</select>
+
+	<select id="selectAdminListPage" resultType="cn.shopex.ecshopx.promotions.domain.membertask.MemberTask">
+		SELECT task_id, company_id, name, type_category, type_detail, begin_time, end_time,
+			published, off_shelf, reward_summary, created, updated
+		FROM member_task
+		<include refid="adminListWhere"/>
+		ORDER BY task_id DESC
+		LIMIT #{offset}, #{limit}
+	</select>
+</mapper>
