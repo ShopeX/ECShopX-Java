@@ -213,7 +213,9 @@ class MemberTaskSaveServiceTest {
 		reward.put("points", 100);
 		reward.put("coupon_id", null);
 		body.put("reward_config", reward);
-		body.put("rule_config", Map.of());
+		body.put(
+				"rule_config",
+				Map.of("goods_scope", "unlimited", "amount_fen", 0, "need_receipt", false));
 		return body;
 	}
 }

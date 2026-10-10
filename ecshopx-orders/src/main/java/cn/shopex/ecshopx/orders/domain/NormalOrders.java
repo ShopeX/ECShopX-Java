@@ -60,6 +60,10 @@ public class NormalOrders {
     @MpField(value = "act_id", columnType = "bigint", nullable = true, comment = "营销活动ID，团购ID，社区拼团ID，秒杀活动ID等")
     private Long actId;
 
+    /** 会员任务归因（下单事务写入，禁止支付/签收补写） */
+    @MpField(value = "member_task_id", columnType = "bigint", comment = "会员任务归因", defaultValue = "0")
+    private Long memberTaskId = 0L;
+
     /** 手机号 */
     @MpField(value = "mobile", columnType = "string", length = 255, nullable = true, comment = "手机号")
     private String mobile;

@@ -19,6 +19,7 @@ package cn.shopex.ecshopx.orders.service.normal.shopadmin;
 import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.common.order.normal.NormalOrderCreateParams;
 import cn.shopex.ecshopx.common.order.normal.OrderCreateInventoryPort;
+import cn.shopex.ecshopx.common.order.normal.OrderCreateMemberTaskExtendPort;
 import cn.shopex.ecshopx.common.order.normal.OrderCreatePersistencePort;
 import cn.shopex.ecshopx.common.order.normal.OrderCreatePostCommitPort;
 import jakarta.servlet.http.HttpServletRequest;
@@ -40,6 +41,7 @@ public class ShopadminNormalOrderCreateTransactionalRunner {
 	private final NormalOrderMarkdownApplyService normalOrderMarkdownApplyService;
 	private final NormalOrderCreatePrePersistEnrichmentService normalOrderCreatePrePersistEnrichmentService;
 	private final OrderCreatePersistencePort orderCreatePersistencePort;
+	private final OrderCreateMemberTaskExtendPort orderCreateMemberTaskExtendPort;
 	private final OrderCreateInventoryPort orderCreateInventoryPort;
 	private final OrderCreatePostCommitPort orderCreatePostCommitPort;
 
@@ -48,12 +50,14 @@ public class ShopadminNormalOrderCreateTransactionalRunner {
 			NormalOrderMarkdownApplyService normalOrderMarkdownApplyService,
 			NormalOrderCreatePrePersistEnrichmentService normalOrderCreatePrePersistEnrichmentService,
 			OrderCreatePersistencePort orderCreatePersistencePort,
+			OrderCreateMemberTaskExtendPort orderCreateMemberTaskExtendPort,
 			OrderCreateInventoryPort orderCreateInventoryPort,
 			OrderCreatePostCommitPort orderCreatePostCommitPort) {
 		this.normalOrderPointDeductFormatter = normalOrderPointDeductFormatter;
 		this.normalOrderMarkdownApplyService = normalOrderMarkdownApplyService;
 		this.normalOrderCreatePrePersistEnrichmentService = normalOrderCreatePrePersistEnrichmentService;
 		this.orderCreatePersistencePort = orderCreatePersistencePort;
+		this.orderCreateMemberTaskExtendPort = orderCreateMemberTaskExtendPort;
 		this.orderCreateInventoryPort = orderCreateInventoryPort;
 		this.orderCreatePostCommitPort = orderCreatePostCommitPort;
 	}
@@ -70,6 +74,7 @@ public class ShopadminNormalOrderCreateTransactionalRunner {
 		normalOrderPointDeductFormatter.applyIfNeeded(p);
 		normalOrderMarkdownApplyService.applyIfMarkdownPresent(p);
 		normalOrderCreatePrePersistEnrichmentService.applyBeforePersist(p);
+		orderCreateMemberTaskExtendPort.applyBeforePersist(p);
 	}
 
 	@Transactional(rollbackFor = Exception.class)

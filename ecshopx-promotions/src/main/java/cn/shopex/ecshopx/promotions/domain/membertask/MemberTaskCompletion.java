@@ -53,7 +53,7 @@ public class MemberTaskCompletion {
 	@MpField(value = "completed_at", columnType = "integer")
 	private Integer completedAt;
 
-	@MpField(value = "order_id", columnType = "bigint", defaultValue = "0")
+	@MpField(value = "order_id", columnType = "bigint", nullable = true)
 	private Long orderId;
 
 	@MpField(value = "invitee_user_id", columnType = "bigint", defaultValue = "0")

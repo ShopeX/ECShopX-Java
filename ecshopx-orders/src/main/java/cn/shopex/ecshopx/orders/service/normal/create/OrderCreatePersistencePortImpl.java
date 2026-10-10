@@ -166,6 +166,7 @@ public class OrderCreatePersistencePortImpl implements OrderCreatePersistencePor
 		if (actIdVal > 0L) {
 			order.setActId(actIdVal);
 		}
+		order.setMemberTaskId(longVal(od.get("member_task_id"), 0L));
 		Object autoCancelRaw = od.get("auto_cancel_time");
 		if (autoCancelRaw != null && !stringVal(autoCancelRaw).isEmpty()) {
 			order.setAutoCancelTime(stringVal(autoCancelRaw));

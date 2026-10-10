@@ -30,6 +30,9 @@ public final class ThirdPartyDispatchEventNames {
 
 	public static final String EVENT_TRADE_REFUND_FINISH = "event:thirdparty:trade_refund_finish";
 
+	public static final String LISTENER_MEMBER_TASK_TRADE_REFUND_FINISH =
+			"listener:promotions.member_task.trade_refund_finish";
+
 	/** 数云开放平台：退款完成 SUCCESS → refund.sync */
 	public static final String LISTENER_SHUYUN_OPEN_PLATFORM_REFUND_SYNC_ON_TRADE_REFUND_FINISH =
 			"listener:shuyun.open_platform.refund_sync_on_trade_refund_finish";

@@ -20,6 +20,7 @@ import cn.shopex.ecshopx.common.exception.BadRequestException;
 import cn.shopex.ecshopx.common.order.normal.NormalOrderCreateParams;
 import cn.shopex.ecshopx.common.order.normal.OrderCreateEmployeePurchaseExtendPort;
 import cn.shopex.ecshopx.common.order.normal.OrderCreateGroupsExtendPort;
+import cn.shopex.ecshopx.common.order.normal.OrderCreateMemberTaskExtendPort;
 import cn.shopex.ecshopx.common.order.normal.OrderCreateGroupsInventoryPort;
 import cn.shopex.ecshopx.common.order.normal.OrderCreateInventoryPort;
 import cn.shopex.ecshopx.common.order.normal.OrderCreatePersistencePort;
@@ -44,6 +45,7 @@ public class WxappNormalOrderCreateTransactionalRunner {
 	private final NormalOrderCreatePrePersistEnrichmentService normalOrderCreatePrePersistEnrichmentService;
 	private final OrderCreatePersistencePort orderCreatePersistencePort;
 	private final OrderCreateGroupsExtendPort orderCreateGroupsExtendPort;
+	private final OrderCreateMemberTaskExtendPort orderCreateMemberTaskExtendPort;
 	private final OrderCreateEmployeePurchaseExtendPort orderCreateEmployeePurchaseExtendPort;
 	private final OrderCreateInventoryPort orderCreateInventoryPort;
 	private final OrderCreateGroupsInventoryPort orderCreateGroupsInventoryPort;
@@ -55,6 +57,7 @@ public class WxappNormalOrderCreateTransactionalRunner {
 			NormalOrderCreatePrePersistEnrichmentService normalOrderCreatePrePersistEnrichmentService,
 			OrderCreatePersistencePort orderCreatePersistencePort,
 			OrderCreateGroupsExtendPort orderCreateGroupsExtendPort,
+			OrderCreateMemberTaskExtendPort orderCreateMemberTaskExtendPort,
 			OrderCreateEmployeePurchaseExtendPort orderCreateEmployeePurchaseExtendPort,
 			OrderCreateInventoryPort orderCreateInventoryPort,
 			OrderCreateGroupsInventoryPort orderCreateGroupsInventoryPort,
@@ -64,6 +67,7 @@ public class WxappNormalOrderCreateTransactionalRunner {
 		this.normalOrderCreatePrePersistEnrichmentService = normalOrderCreatePrePersistEnrichmentService;
 		this.orderCreatePersistencePort = orderCreatePersistencePort;
 		this.orderCreateGroupsExtendPort = orderCreateGroupsExtendPort;
+		this.orderCreateMemberTaskExtendPort = orderCreateMemberTaskExtendPort;
 		this.orderCreateEmployeePurchaseExtendPort = orderCreateEmployeePurchaseExtendPort;
 		this.orderCreateInventoryPort = orderCreateInventoryPort;
 		this.orderCreateGroupsInventoryPort = orderCreateGroupsInventoryPort;
@@ -76,6 +80,7 @@ public class WxappNormalOrderCreateTransactionalRunner {
 		normalOrderPointDeductFormatter.applyIfNeeded(p);
 		normalOrderMarkdownApplyService.applyIfMarkdownPresent(p);
 		normalOrderCreatePrePersistEnrichmentService.applyBeforePersist(p);
+		orderCreateMemberTaskExtendPort.applyBeforePersist(p);
 		orderCreatePersistencePort.persistOrder(p);
 		orderCreateGroupsExtendPort.applyAfterOrderInsert(p);
 		orderCreateEmployeePurchaseExtendPort.applyAfterOrderInsert(p);

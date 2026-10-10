@@ -41,6 +41,12 @@ public final class OrdersDispatchEventNames {
 	public static final String LISTENER_MEMBERS_NORMAL_ORDER_PAY_SUCCESS_NEW_CUSTOMER =
 			"listener:members.normal_order_pay_success_new_customer";
 
+	public static final String LISTENER_MEMBER_TASK_NORMAL_ORDER_PAY_SUCCESS =
+			"listener:promotions.member_task.normal_order_pay_success";
+
+	public static final String LISTENER_MEMBER_TASK_NORMAL_ORDER_CONFIRM_RECEIPT =
+			"listener:promotions.member_task.normal_order_confirm_receipt";
+
 	public static final String LISTENER_WSUGC_BUNDLE_ORDERS_NORMAL_ORDER_PAY_SUCCESS =
 			"listener:WsugcBundle\\Listeners\\Order";
 

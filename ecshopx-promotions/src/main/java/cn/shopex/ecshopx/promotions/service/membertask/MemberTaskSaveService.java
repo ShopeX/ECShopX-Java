@@ -250,7 +250,7 @@ public class MemberTaskSaveService {
 
 		String rewardConfigJson = normalizeRewardConfig(body.get("reward_config"), locale);
 		String rewardSummary = buildRewardSummary(rewardConfigJson);
-		String ruleConfigJson = normalizeRuleConfigStub(body.get("rule_config"), locale);
+		String ruleConfigJson = normalizeRuleConfigStub(body.get("rule_config"), typeDetail, locale);
 		String jumpPage = asTrimmedString(body.get("jump_page"));
 		if (!StringUtils.hasText(jumpPage)) {
 			jumpPage = null;
@@ -342,12 +342,19 @@ public class MemberTaskSaveService {
 		return writeJson(node, locale);
 	}
 
-	/** 切片 0：仅要求为空或缺省，或为 JSON 对象；类型专属校验器后续补。 */
-	private String normalizeRuleConfigStub(Object raw, Locale locale) {
+	private String normalizeRuleConfigStub(Object raw, String typeDetail, Locale locale) {
 		if (raw == null) {
+			if ("first_order".equals(typeDetail)) {
+				throw new BadRequestException(
+						msg("promotions.member_task.rule_config_invalid", "任务规则配置无效", locale));
+			}
 			return "{}";
 		}
 		if (raw instanceof String s && !StringUtils.hasText(s)) {
+			if ("first_order".equals(typeDetail)) {
+				throw new BadRequestException(
+						msg("promotions.member_task.rule_config_invalid", "任务规则配置无效", locale));
+			}
 			return "{}";
 		}
 		JsonNode node =
@@ -355,6 +362,24 @@ public class MemberTaskSaveService {
 		if (node == null || !node.isObject()) {
 			throw new BadRequestException(
 					msg("promotions.member_task.rule_config_invalid", "任务规则配置无效", locale));
+		}
+		if ("first_order".equals(typeDetail)) {
+			String scope = node.path("goods_scope").asText("");
+			if (!"unlimited".equals(scope) && !"items".equals(scope) && !"category".equals(scope)) {
+				throw new BadRequestException(
+						msg("promotions.member_task.rule_config_invalid", "任务规则配置无效", locale));
+			}
+			if (!node.has("need_receipt")
+					|| (!node.get("need_receipt").isBoolean() && !node.get("need_receipt").isNumber())) {
+				throw new BadRequestException(
+						msg("promotions.member_task.rule_config_invalid", "任务规则配置无效", locale));
+			}
+			if (node.has("amount_fen")
+					&& !node.get("amount_fen").isNull()
+					&& (!node.get("amount_fen").isNumber() || node.get("amount_fen").asLong() < 0L)) {
+				throw new BadRequestException(
+						msg("promotions.member_task.rule_config_invalid", "任务规则配置无效", locale));
+			}
 		}
 		return writeJson(node, locale);
 	}

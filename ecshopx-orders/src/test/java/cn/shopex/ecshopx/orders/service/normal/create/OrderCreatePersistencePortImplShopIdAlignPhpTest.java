@@ -302,4 +302,34 @@ class OrderCreatePersistencePortImplShopIdAlignPhpTest {
 		verify(normalOrdersItemsMapper).insert(itemCaptor.capture());
 		assertThat(itemCaptor.getValue().getItemSpecDesc()).isEqualTo("规格:1880张/提");
 	}
+
+	@Test
+	void persistOrder_writesMemberTaskId() {
+		when(normalOrderNumericIdService.generate(anyLong())).thenReturn(90002L);
+		CurrencyExchangeRate cny = new CurrencyExchangeRate();
+		cny.setCurrency("CNY");
+		cny.setRate(1.0);
+		cny.setSymbol("￥");
+		when(companyDefaultCurrencyService.getCur(141L)).thenReturn(cny);
+
+		NormalOrderCreateParams p = new NormalOrderCreateParams();
+		Map<String, Object> od = p.getOrderData();
+		od.put("company_id", 141L);
+		od.put("user_id", 7L);
+		od.put("distributor_id", 0L);
+		od.put("shop_id", 0L);
+		od.put("order_type", "normal");
+		od.put("order_class", "normal");
+		od.put("receipt_type", "logistics");
+		od.put("total_fee", 100);
+		od.put("item_fee", 100);
+		od.put("member_task_id", 10L);
+		od.put("items", List.of());
+
+		port.persistOrder(p);
+
+		ArgumentCaptor<NormalOrders> orderCaptor = ArgumentCaptor.forClass(NormalOrders.class);
+		verify(normalOrdersMapper).insert(orderCaptor.capture());
+		assertThat(orderCaptor.getValue().getMemberTaskId()).isEqualTo(10L);
+	}
 }
