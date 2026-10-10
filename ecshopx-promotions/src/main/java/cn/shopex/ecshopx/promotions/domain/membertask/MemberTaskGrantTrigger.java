@@ -19,5 +19,6 @@ package cn.shopex.ecshopx.promotions.domain.membertask;
 public enum MemberTaskGrantTrigger {
 	CONFIRM_RECEIPT,
 	PAY_SUCCESS_AFTER_DONE,
-	PAY_SUCCESS_IMMEDIATE
+	PAY_SUCCESS_IMMEDIATE,
+	PROFILE_COMPLETE
 }

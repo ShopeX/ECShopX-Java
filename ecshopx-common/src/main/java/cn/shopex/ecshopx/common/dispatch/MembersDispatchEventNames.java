@@ -22,6 +22,10 @@ public final class MembersDispatchEventNames {
 
 	public static final String EVENT_UPDATE_MEMBER_SUCCESS = "event:members:update_member_success";
 
+	/** 会员任务：资料更新成功后判定 profile 任务完成。 */
+	public static final String LISTENER_MEMBER_TASK_UPDATE_MEMBER_SUCCESS =
+			"listener:promotions.member_task.update_member_success";
+
 	/** Queued listener syncing new members to Shopex CRM after registration success. */
 	public static final String LISTENER_THIRDPARTY_SHOPEX_CRM_SYNC_ADD_MEMBER =
 			"listener:thirdparty.shopex_crm.sync_add_member";

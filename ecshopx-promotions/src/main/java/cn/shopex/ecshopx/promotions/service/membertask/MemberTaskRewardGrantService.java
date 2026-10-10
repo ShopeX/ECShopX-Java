@@ -85,6 +85,28 @@ public class MemberTaskRewardGrantService {
 		return executePendingForOrder(order, MemberTaskGrantTrigger.PAY_SUCCESS_IMMEDIATE, false);
 	}
 
+	/** 非订单完成（profile 等）：按 completion 实发 pending grant，order_id=0。 */
+	public MemberTaskGrantAttemptResult grantPendingImmediateForCompletion(
+			long companyId, long userId, long completionId) {
+		MemberTaskRewardGrant grant =
+				memberTaskRewardGrantMapper.selectOne(
+						new QueryWrapper<MemberTaskRewardGrant>()
+								.eq("completion_id", completionId)
+								.last("LIMIT 1"));
+		if (grant == null) {
+			return MemberTaskGrantAttemptResult.SKIPPED_NO_PENDING;
+		}
+		if ("granted".equals(grant.getStatus())) {
+			return MemberTaskGrantAttemptResult.ALREADY_GRANTED;
+		}
+		if (!"pending".equals(grant.getStatus())) {
+			return MemberTaskGrantAttemptResult.SKIPPED_NO_PENDING;
+		}
+		MemberTaskOrderSnapshot snap =
+				new MemberTaskOrderSnapshot(companyId, 0L, userId, grant.getTaskId(), "DONE", 1L, 0L, 0L);
+		return executeGrant(grant, snap, MemberTaskGrantTrigger.PROFILE_COMPLETE);
+	}
+
 	private MemberTaskGrantAttemptResult executePendingForOrder(
 			MemberTaskOrderSnapshot order, MemberTaskGrantTrigger trigger, boolean requireDone) {
 		MemberTaskCompletion completion =
