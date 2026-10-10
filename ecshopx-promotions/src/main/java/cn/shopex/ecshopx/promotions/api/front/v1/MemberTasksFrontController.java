@@ -25,7 +25,7 @@ import cn.shopex.ecshopx.common.util.LeadingNumberParser;
 import cn.shopex.ecshopx.common.web.H5FrontAuthAttributes;
 import cn.shopex.ecshopx.common.web.locale.RequestLangTag;
 import cn.shopex.ecshopx.promotions.service.membertask.MemberTaskBrowseCompletionService;
-import cn.shopex.ecshopx.promotions.service.membertask.MemberTaskSkeletonService;
+import cn.shopex.ecshopx.promotions.service.membertask.MemberTaskFrontListService;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import java.util.Locale;
@@ -52,25 +52,30 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/h5app/wxapp/promotion/member-tasks")
 public class MemberTasksFrontController {
 
-	private final MemberTaskSkeletonService memberTaskSkeletonService;
+	private final MemberTaskFrontListService memberTaskFrontListService;
 	private final MemberTaskBrowseCompletionService memberTaskBrowseCompletionService;
 	private final LangueProperties langueProperties;
 
 	public MemberTasksFrontController(
-			MemberTaskSkeletonService memberTaskSkeletonService,
+			MemberTaskFrontListService memberTaskFrontListService,
 			MemberTaskBrowseCompletionService memberTaskBrowseCompletionService,
 			LangueProperties langueProperties) {
-		this.memberTaskSkeletonService = memberTaskSkeletonService;
+		this.memberTaskFrontListService = memberTaskFrontListService;
 		this.memberTaskBrowseCompletionService = memberTaskBrowseCompletionService;
 		this.langueProperties = langueProperties;
 	}
 
 	@GetMapping(name = "C端会员任务列表")
-	public ResponseEntity<ApiResult<Map<String, Object>>> list() {
+	public ResponseEntity<ApiResult<Map<String, Object>>> list(HttpServletRequest request) {
 		Locale locale = LocaleContextHolder.getLocale();
 		RequestLangTag.current(langueProperties);
-		memberTaskSkeletonService.throwNotImplemented(locale);
-		return ResponseEntity.ok(ApiResult.ok(Map.of()));
+		long companyId = parseCompanyIdFromRequest(request);
+		long userId = parseAuthUserIdFromClaims(readH5AuthClaimsMap(request));
+		if (userId <= 0L) {
+			throw new UnauthorizedException("Unable to authenticate user.");
+		}
+		return ResponseEntity.ok(
+				ApiResult.ok(memberTaskFrontListService.list(companyId, userId, locale)));
 	}
 
 	@PostMapping(value = "/browse-report", name = "浏览任务进度上报")
