@@ -383,6 +383,11 @@ public class MemberTaskSaveService {
 						msg("promotions.member_task.rule_config_invalid", "任务规则配置无效", locale));
 			}
 		}
+		if ("share_order".equals(typeDetail) || "invite_register".equals(typeDetail)) {
+			requireNonBlankText(node, "share_cover", locale);
+			requireNonBlankText(node, "share_title", locale);
+			requireNonBlankText(node, "share_jump_page", locale);
+		}
 		return writeJson(node, locale);
 	}
 
@@ -514,6 +519,14 @@ public class MemberTaskSaveService {
 			return b == null;
 		}
 		return a.equals(b);
+	}
+
+	private void requireNonBlankText(JsonNode node, String field, Locale locale) {
+		JsonNode v = node.get(field);
+		if (v == null || v.isNull() || !StringUtils.hasText(v.asText())) {
+			throw new BadRequestException(
+					msg("promotions.member_task.rule_config_invalid", "任务规则配置无效", locale));
+		}
 	}
 
 	private String msg(String key, String defaultZh, Locale locale) {

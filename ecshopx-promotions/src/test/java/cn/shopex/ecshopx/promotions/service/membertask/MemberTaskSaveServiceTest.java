@@ -95,6 +95,43 @@ class MemberTaskSaveServiceTest {
 	}
 
 	@Test
+	void create_shareOrder_requiresShareCardFields() {
+		long now = 1_700_000_000L;
+		when(memberTaskMapper.insert(any(MemberTask.class)))
+				.thenAnswer(
+						inv -> {
+							inv.getArgument(0, MemberTask.class).setTaskId(45L);
+							return 1;
+						});
+
+		Map<String, Object> body = validBody();
+		body.put("type_category", "share");
+		body.put("type_detail", "share_order");
+		body.put("name", "分享下单");
+		body.put("begin_time", (int) (now + 100));
+		body.put("end_time", (int) (now + 1000));
+		body.put(
+				"rule_config",
+				Map.of(
+						"goods_scope",
+						"unlimited",
+						"amount_fen",
+						0,
+						"need_receipt",
+						true,
+						"share_cover",
+						"https://cdn/cover.png",
+						"share_title",
+						"标题",
+						"share_jump_page",
+						"/pages/index"));
+
+		Map<String, Object> out = service.create(9L, body, now, Locale.SIMPLIFIED_CHINESE);
+
+		assertThat(out.get("task_id")).isEqualTo(45L);
+	}
+
+	@Test
 	void create_totalSpend_requiresPurchaseRuleConfig() {
 		long now = 1_700_000_000L;
 		when(memberTaskMapper.insert(any(MemberTask.class)))

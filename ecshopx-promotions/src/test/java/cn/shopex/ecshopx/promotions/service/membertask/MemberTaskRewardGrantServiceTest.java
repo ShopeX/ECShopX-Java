@@ -106,6 +106,28 @@ class MemberTaskRewardGrantServiceTest {
 	}
 
 	@Test
+	void shareOrderGrant_usesGrantUserIdNotBuyer() {
+		when(memberTaskOrderReadPort.get(1L, 9L))
+				.thenReturn(new MemberTaskOrderSnapshot(1L, 9L, 7L, 10L, "DONE", 100L, 100L, 0L));
+		MemberTaskCompletion c = new MemberTaskCompletion();
+		c.setCompletionId(3L);
+		when(memberTaskCompletionMapper.selectOne(any(QueryWrapper.class))).thenReturn(c);
+		MemberTaskRewardGrant g = new MemberTaskRewardGrant();
+		g.setGrantId(5L);
+		g.setCompletionId(3L);
+		g.setTaskId(10L);
+		g.setUserId(55L);
+		g.setStatus("pending");
+		g.setRewardSnapshot("{\"points\":80}");
+		when(memberTaskRewardGrantMapper.selectOne(any(QueryWrapper.class))).thenReturn(g);
+		when(memberTaskRewardGrantMapper.update(eq(null), any(UpdateWrapper.class))).thenReturn(1);
+
+		service.grantPendingIfOrderDone(1L, 9L, MemberTaskGrantTrigger.CONFIRM_RECEIPT);
+
+		verify(memberTaskPointGrantPort).grantPoints(1L, 55L, 80, 9L);
+	}
+
+	@Test
 	void portThrows_marksFailed() {
 		when(memberTaskOrderReadPort.get(1L, 9L))
 				.thenReturn(new MemberTaskOrderSnapshot(1L, 9L, 7L, 10L, "DONE", 100L, 100L, 0L));

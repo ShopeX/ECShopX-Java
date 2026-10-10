@@ -196,16 +196,20 @@ public class MemberTaskRewardGrantService {
 		if (snap == null || snap.isBlank()) {
 			return;
 		}
+		long rewardUserId =
+				grant.getUserId() != null && grant.getUserId() > 0L
+						? grant.getUserId()
+						: order.userId();
 		try {
 			JsonNode node = objectMapper.readTree(snap);
 			JsonNode points = node.get("points");
 			if (points != null && !points.isNull() && points.isNumber() && points.asInt() > 0) {
 				memberTaskPointGrantPort.grantPoints(
-						order.companyId(), order.userId(), points.asInt(), order.orderId());
+						order.companyId(), rewardUserId, points.asInt(), order.orderId());
 			}
 			JsonNode coupon = node.get("coupon_id");
 			if (coupon != null && !coupon.isNull() && coupon.isNumber() && coupon.asLong() > 0L) {
-				memberTaskCouponGrantPort.grantCoupon(order.companyId(), order.userId(), coupon.asLong());
+				memberTaskCouponGrantPort.grantCoupon(order.companyId(), rewardUserId, coupon.asLong());
 			}
 		} catch (RuntimeException e) {
 			throw e;

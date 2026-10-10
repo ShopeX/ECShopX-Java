@@ -46,6 +46,7 @@ public class MemberTaskPaySuccessService {
 	private final MemberTaskFirstOrderCompletionPolicy firstOrderCompletionPolicy;
 	private final MemberTaskRewardGrantService memberTaskRewardGrantService;
 	private final MemberTaskTotalSpendService memberTaskTotalSpendService;
+	private final MemberTaskShareOrderService memberTaskShareOrderService;
 	private final ObjectMapper objectMapper;
 
 	public MemberTaskPaySuccessService(
@@ -56,6 +57,7 @@ public class MemberTaskPaySuccessService {
 			MemberTaskFirstOrderCompletionPolicy firstOrderCompletionPolicy,
 			MemberTaskRewardGrantService memberTaskRewardGrantService,
 			MemberTaskTotalSpendService memberTaskTotalSpendService,
+			MemberTaskShareOrderService memberTaskShareOrderService,
 			ObjectMapper objectMapper) {
 		this.memberTaskOrderReadPort = memberTaskOrderReadPort;
 		this.memberTaskMapper = memberTaskMapper;
@@ -64,6 +66,7 @@ public class MemberTaskPaySuccessService {
 		this.firstOrderCompletionPolicy = firstOrderCompletionPolicy;
 		this.memberTaskRewardGrantService = memberTaskRewardGrantService;
 		this.memberTaskTotalSpendService = memberTaskTotalSpendService;
+		this.memberTaskShareOrderService = memberTaskShareOrderService;
 		this.objectMapper = objectMapper;
 	}
 
@@ -111,6 +114,10 @@ public class MemberTaskPaySuccessService {
 		MemberTaskPurchaseRule rule = MemberTaskPurchaseRule.parse(task.getRuleConfig(), objectMapper);
 		if ("total_spend".equals(task.getTypeDetail())) {
 			memberTaskTotalSpendService.onPaySuccess(task, order, rule, (int) now);
+			return;
+		}
+		if ("share_order".equals(task.getTypeDetail())) {
+			memberTaskShareOrderService.onPaySuccess(task, order, rule, (int) now);
 			return;
 		}
 		if ("once".equals(task.getFrequencyType())
