@@ -24,6 +24,7 @@ import cn.shopex.ecshopx.common.dispatch.ThirdPartyTradeAftersalesCancelSaasErpD
 import cn.shopex.ecshopx.common.dispatch.ThirdPartyTradeAftersalesSaasErpDispatchPublisher;
 import cn.shopex.ecshopx.common.dispatch.TradeAftersalesDispatchPublisher;
 import cn.shopex.ecshopx.common.dispatch.WdtErpTradeAfterSaleDispatchPublisher;
+import cn.shopex.ecshopx.common.port.aftersales.AftersalesAgreedCouponRestorePort;
 import cn.shopex.ecshopx.common.port.aftersales.AftersalesBrokeragePort;
 import cn.shopex.ecshopx.common.port.distribution.DistributorAftersalesAddressDetailReadPort;
 import cn.shopex.ecshopx.common.port.order.NormalOrderLeftAftersalesWritePort;
@@ -167,7 +168,8 @@ class AftersalesReviewServiceRejectTradeAftersalesBusPublishProbeTest {
 						thirdPartyTradeAftersalesCancelSaasErpDispatchPublisher,
 						thirdPartyTradeAftersalesSaasErpDispatchPublisher,
 						tradeAftersalesDispatchPublisher,
-				mock(AftersalesRefuseWxaNotifyService.class));
+						mock(AftersalesAgreedCouponRestorePort.class),
+						mock(AftersalesRefuseWxaNotifyService.class));
 
 		Map<String, Object> param = new LinkedHashMap<>();
 		param.put("company_id", companyId);

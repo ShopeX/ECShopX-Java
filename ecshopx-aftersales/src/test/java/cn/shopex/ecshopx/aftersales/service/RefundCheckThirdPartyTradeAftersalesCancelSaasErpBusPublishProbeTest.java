@@ -23,6 +23,7 @@ import cn.shopex.ecshopx.common.dispatch.JushuitanTradeAftersalesDispatchPublish
 import cn.shopex.ecshopx.common.dispatch.ThirdPartyTradeAftersalesCancelSaasErpDispatchPublisher;
 import cn.shopex.ecshopx.common.dispatch.ThirdPartyTradeAftersalesSaasErpDispatchPublisher;
 import cn.shopex.ecshopx.common.dispatch.WdtErpTradeAfterSaleDispatchPublisher;
+import cn.shopex.ecshopx.common.port.aftersales.AftersalesAgreedCouponRestorePort;
 import cn.shopex.ecshopx.common.port.aftersales.AftersalesBrokeragePort;
 import cn.shopex.ecshopx.common.port.order.JushuitanSettingReadPort;
 import cn.shopex.ecshopx.common.port.order.NormalOrderLeftAftersalesWritePort;
@@ -163,6 +164,7 @@ class RefundCheckThirdPartyTradeAftersalesCancelSaasErpBusPublishProbeTest {
 						wdtPayloadBuilder,
 						thirdPartyTradeAftersalesCancelSaasErpPublisher,
 						thirdPartyTradeAftersalesSaasErpDispatchPublisher,
+						mock(AftersalesAgreedCouponRestorePort.class),
 						mock(cn.shopex.ecshopx.common.auth.PosOrderDocAccessPort.class),
 						mock(AftersalesRefuseWxaNotifyService.class));
 
@@ -284,6 +286,7 @@ class RefundCheckThirdPartyTradeAftersalesCancelSaasErpBusPublishProbeTest {
 						wdtPayloadBuilder,
 						thirdPartyTradeAftersalesCancelSaasErpPublisher,
 						thirdPartyTradeAftersalesSaasErpDispatchPublisher,
+						mock(AftersalesAgreedCouponRestorePort.class),
 						mock(cn.shopex.ecshopx.common.auth.PosOrderDocAccessPort.class),
 						mock(AftersalesRefuseWxaNotifyService.class));
 
@@ -407,6 +410,7 @@ class RefundCheckThirdPartyTradeAftersalesCancelSaasErpBusPublishProbeTest {
 						wdtPayloadBuilder,
 						thirdPartyTradeAftersalesCancelSaasErpPublisher,
 						thirdPartyTradeAftersalesSaasErpDispatchPublisher,
+						mock(AftersalesAgreedCouponRestorePort.class),
 						mock(cn.shopex.ecshopx.common.auth.PosOrderDocAccessPort.class),
 						mock(AftersalesRefuseWxaNotifyService.class));
 
@@ -426,8 +430,8 @@ class RefundCheckThirdPartyTradeAftersalesCancelSaasErpBusPublishProbeTest {
 		verify(thirdPartyTradeAftersalesSaasErpDispatchPublisher, times(1)).publish(updateCaptor.capture());
 		Map<String, Object> updatePayload = updateCaptor.getValue();
 		assertThat(updatePayload.get("aftersales_action")).isEqualTo("update");
-		assertThat(updatePayload.get("aftersales_status")).isEqualTo(2);
-		assertThat(updatePayload.get("progress")).isEqualTo(4);
+		assertThat(updatePayload.get("aftersales_status")).isEqualTo(1);
+		assertThat(updatePayload.get("progress")).isEqualTo(9);
 		verify(applicationEventPublisher, never()).publishEvent(any(SaasErpAftersalesSpringEvent.class));
 	}
 }

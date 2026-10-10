@@ -34,6 +34,7 @@ import cn.shopex.ecshopx.common.config.LangueProperties;
 import cn.shopex.ecshopx.common.exception.BadRequestException;
 import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.common.exception.UnauthorizedException;
+import cn.shopex.ecshopx.common.port.aftersales.AftersalesAgreedCouponRestorePort;
 import cn.shopex.ecshopx.common.port.aftersales.AftersalesBrokeragePort;
 import cn.shopex.ecshopx.common.port.distribution.DistributorAftersalesAddressDetailReadPort;
 import cn.shopex.ecshopx.common.port.order.NormalOrderLeftAftersalesWritePort;
@@ -96,6 +97,7 @@ public class AftersalesReviewService {
 	private final ThirdPartyTradeAftersalesSaasErpDispatchPublisher
 			thirdPartyTradeAftersalesSaasErpDispatchPublisher;
 	private final TradeAftersalesDispatchPublisher tradeAftersalesDispatchPublisher;
+	private final AftersalesAgreedCouponRestorePort aftersalesAgreedCouponRestorePort;
 	private final AftersalesRefuseWxaNotifyService aftersalesRefuseWxaNotifyService;
 
 	public AftersalesReviewService(
@@ -122,6 +124,7 @@ public class AftersalesReviewService {
 			ThirdPartyTradeAftersalesSaasErpDispatchPublisher
 					thirdPartyTradeAftersalesSaasErpDispatchPublisher,
 			TradeAftersalesDispatchPublisher tradeAftersalesDispatchPublisher,
+			AftersalesAgreedCouponRestorePort aftersalesAgreedCouponRestorePort,
 			AftersalesRefuseWxaNotifyService aftersalesRefuseWxaNotifyService) {
 		this.aftersalesMapper = aftersalesMapper;
 		this.aftersalesDetailMapper = aftersalesDetailMapper;
@@ -146,6 +149,7 @@ public class AftersalesReviewService {
 		this.thirdPartyTradeAftersalesSaasErpDispatchPublisher =
 				thirdPartyTradeAftersalesSaasErpDispatchPublisher;
 		this.tradeAftersalesDispatchPublisher = tradeAftersalesDispatchPublisher;
+		this.aftersalesAgreedCouponRestorePort = aftersalesAgreedCouponRestorePort;
 		this.aftersalesRefuseWxaNotifyService = aftersalesRefuseWxaNotifyService;
 	}
 
@@ -334,6 +338,15 @@ public class AftersalesReviewService {
 			}
 			persistMainAndDetailsAndErp(companyId, aftersalesBn, a, approved, now, param, null);
 			registerOnlyRefundApprovePostCommit(companyId, orderId, aftersalesToSnakeMap(a));
+			try {
+				aftersalesAgreedCouponRestorePort.restoreOnRefundAgreed(companyId, orderId);
+			} catch (RuntimeException ex) {
+				log.debug(
+						"[aftersalesReview] coupon restore failed companyId={} orderId={}",
+						companyId,
+						orderId,
+						ex);
+			}
 			return;
 		}
 		a.setProgress(1);

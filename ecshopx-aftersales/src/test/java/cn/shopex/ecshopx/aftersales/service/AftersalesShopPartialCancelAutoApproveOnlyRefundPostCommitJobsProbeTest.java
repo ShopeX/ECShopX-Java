@@ -32,6 +32,7 @@ import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.common.port.order.OrderNormalOrderHeaderReadPort;
 import cn.shopex.ecshopx.common.port.order.OrderNormalOrderItemsReadPort;
 import cn.shopex.ecshopx.common.port.order.OrderProcessLogPublishPort;
+import cn.shopex.ecshopx.common.port.aftersales.AftersalesAgreedCouponRestorePort;
 import cn.shopex.ecshopx.common.port.order.OrderSuccessTradeReadPort;
 import com.baomidou.mybatisplus.core.MybatisConfiguration;
 import com.baomidou.mybatisplus.core.metadata.TableInfoHelper;
@@ -185,7 +186,8 @@ class AftersalesShopPartialCancelAutoApproveOnlyRefundPostCommitJobsProbeTest {
 						wdtErpTradeAfterSaleDispatchPublisher,
 						wdtErpTradeAfterSaleBusPayloadBuilder,
 						tradeRefundDispatchPublisher,
-						tradeRefundPayloadMapper);
+						tradeRefundPayloadMapper,
+						mock(AftersalesAgreedCouponRestorePort.class));
 
 		TransactionTemplate transactionTemplate = new TransactionTemplate(txMgr);
 		transactionTemplate.executeWithoutResult(
@@ -362,7 +364,8 @@ class AftersalesShopPartialCancelAutoApproveOnlyRefundPostCommitJobsProbeTest {
 						wdtErpTradeAfterSaleDispatchPublisher,
 						wdtErpTradeAfterSaleBusPayloadBuilder,
 						tradeRefundDispatchPublisherForCreate,
-						tradeRefundPayloadMapperForCreate);
+						tradeRefundPayloadMapperForCreate,
+						mock(AftersalesAgreedCouponRestorePort.class));
 
 		TransactionTemplate requiresNew = new TransactionTemplate(txMgr);
 		requiresNew.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
@@ -436,7 +439,8 @@ class AftersalesShopPartialCancelAutoApproveOnlyRefundPostCommitJobsProbeTest {
 						wdtErpTradeAfterSaleDispatchPublisher,
 						wdtErpTradeAfterSaleBusPayloadBuilder,
 						tradeRefundDispatchPublisherReject,
-						tradeRefundPayloadMapperReject);
+						tradeRefundPayloadMapperReject,
+						mock(AftersalesAgreedCouponRestorePort.class));
 
 		assertThatThrownBy(
 						() ->

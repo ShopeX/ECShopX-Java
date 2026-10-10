@@ -23,6 +23,7 @@ import cn.shopex.ecshopx.common.dispatch.JushuitanTradeAftersalesDispatchPublish
 import cn.shopex.ecshopx.common.dispatch.ThirdPartyTradeAftersalesCancelSaasErpDispatchPublisher;
 import cn.shopex.ecshopx.common.dispatch.ThirdPartyTradeAftersalesSaasErpDispatchPublisher;
 import cn.shopex.ecshopx.common.dispatch.WdtErpTradeAfterSaleDispatchPublisher;
+import cn.shopex.ecshopx.common.port.aftersales.AftersalesAgreedCouponRestorePort;
 import cn.shopex.ecshopx.common.port.aftersales.AftersalesBrokeragePort;
 import cn.shopex.ecshopx.common.auth.OperatorJwtRequestAttributes;
 import cn.shopex.ecshopx.common.port.order.JushuitanSettingReadPort;
@@ -166,6 +167,7 @@ class RefundCheckThirdPartyTradeAftersalesSaasErpBusPublishProbeTest {
 						wdtPayloadBuilder,
 						thirdPartyTradeAftersalesCancelSaasErpPublisher,
 						thirdPartyTradeAftersalesSaasErpDispatchPublisher,
+						mock(AftersalesAgreedCouponRestorePort.class),
 						mock(cn.shopex.ecshopx.common.auth.PosOrderDocAccessPort.class),
 						mock(AftersalesRefuseWxaNotifyService.class));
 
@@ -192,8 +194,8 @@ class RefundCheckThirdPartyTradeAftersalesSaasErpBusPublishProbeTest {
 		assertThat(published.get("aftersales_bn")).isEqualTo(AFTERSALES_BN);
 		assertThat(published.get("order_id")).isEqualTo(ORDER_ID);
 		assertThat(published.get("aftersales_type")).isEqualTo("ONLY_REFUND");
-		assertThat(published.get("aftersales_status")).isEqualTo(2);
-		assertThat(published.get("progress")).isEqualTo(4);
+		assertThat(published.get("aftersales_status")).isEqualTo(1);
+		assertThat(published.get("progress")).isEqualTo(9);
 		assertThat(published.get("aftersales_action")).isEqualTo("update");
 
 		verify(applicationEventPublisher, never()).publishEvent(any(SaasErpAftersalesSpringEvent.class));
@@ -299,6 +301,7 @@ class RefundCheckThirdPartyTradeAftersalesSaasErpBusPublishProbeTest {
 						wdtPayloadBuilder,
 						thirdPartyTradeAftersalesCancelSaasErpPublisher,
 						thirdPartyTradeAftersalesSaasErpDispatchPublisher,
+						mock(AftersalesAgreedCouponRestorePort.class),
 						mock(cn.shopex.ecshopx.common.auth.PosOrderDocAccessPort.class),
 						mock(AftersalesRefuseWxaNotifyService.class));
 
@@ -333,8 +336,8 @@ class RefundCheckThirdPartyTradeAftersalesSaasErpBusPublishProbeTest {
 		assertThat(published.get("aftersales_bn")).isEqualTo(AFTERSALES_BN);
 		assertThat(published.get("order_id")).isEqualTo(ORDER_ID);
 		assertThat(published.get("aftersales_type")).isEqualTo("ONLY_REFUND");
-		assertThat(published.get("aftersales_status")).isEqualTo(2);
-		assertThat(published.get("progress")).isEqualTo(4);
+		assertThat(published.get("aftersales_status")).isEqualTo(1);
+		assertThat(published.get("progress")).isEqualTo(9);
 		assertThat(published.get("aftersales_action")).isEqualTo("update");
 
 		verify(applicationEventPublisher, never()).publishEvent(any(SaasErpAftersalesSpringEvent.class));
@@ -427,6 +430,7 @@ class RefundCheckThirdPartyTradeAftersalesSaasErpBusPublishProbeTest {
 						wdtPayloadBuilder,
 						thirdPartyTradeAftersalesCancelSaasErpPublisher,
 						thirdPartyTradeAftersalesSaasErpDispatchPublisher,
+						mock(AftersalesAgreedCouponRestorePort.class),
 						mock(cn.shopex.ecshopx.common.auth.PosOrderDocAccessPort.class),
 						mock(AftersalesRefuseWxaNotifyService.class));
 

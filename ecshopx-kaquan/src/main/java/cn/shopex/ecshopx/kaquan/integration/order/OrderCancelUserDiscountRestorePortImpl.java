@@ -55,6 +55,9 @@ public class OrderCancelUserDiscountRestorePortImpl implements OrderCancelUserDi
 		if (discount == null) {
 			return;
 		}
+		if (discount.getStatus() != null && discount.getStatus() == 1) {
+			return;
+		}
 		int now = (int) (System.currentTimeMillis() / 1000L);
 		userDiscountMapper.update(
 				null,
