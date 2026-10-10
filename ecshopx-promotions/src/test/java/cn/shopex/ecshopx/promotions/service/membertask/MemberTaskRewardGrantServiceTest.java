@@ -149,4 +149,29 @@ class MemberTaskRewardGrantServiceTest {
 		assertThat(service.grantPendingIfOrderDone(1L, 9L, MemberTaskGrantTrigger.CONFIRM_RECEIPT))
 				.isEqualTo(MemberTaskGrantAttemptResult.FAILED);
 	}
+
+	@Test
+	void adminRetry_failedGrant_callsPortOnce() {
+		MemberTaskCompletion completion = new MemberTaskCompletion();
+		completion.setCompanyId(1L);
+		completion.setUserId(7L);
+		completion.setOrderId(9L);
+		MemberTaskRewardGrant g = new MemberTaskRewardGrant();
+		g.setGrantId(5L);
+		g.setCompanyId(1L);
+		g.setTaskId(10L);
+		g.setUserId(7L);
+		g.setStatus("failed");
+		g.setRetryCount(0);
+		g.setRewardSnapshot("{\"points\":50}");
+		when(memberTaskOrderReadPort.get(1L, 9L))
+				.thenReturn(new MemberTaskOrderSnapshot(1L, 9L, 7L, 10L, "DONE", 100L, 100L, 0L));
+		when(memberTaskRewardGrantMapper.update(eq(null), any(UpdateWrapper.class)))
+				.thenReturn(1)
+				.thenReturn(1);
+
+		assertThat(service.retryAdminFailedGrant(g, completion))
+				.isEqualTo(MemberTaskGrantAttemptResult.GRANTED);
+		verify(memberTaskPointGrantPort).grantPoints(1L, 7L, 50, 9L);
+	}
 }

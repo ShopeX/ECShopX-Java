@@ -86,6 +86,30 @@ public class MemberTaskRewardGrantService {
 	}
 
 	/** 非订单完成（profile 等）：按 completion 实发 pending grant，order_id=0。 */
+	/** Admin 补发：`failed` → 实发，同行 grant，`retry_count` +1。 */
+	@Transactional
+	public MemberTaskGrantAttemptResult retryAdminFailedGrant(
+			MemberTaskRewardGrant grant, MemberTaskCompletion completion) {
+		int now = (int) (System.currentTimeMillis() / 1000L);
+		int reset =
+				memberTaskRewardGrantMapper.update(
+						null,
+						new UpdateWrapper<MemberTaskRewardGrant>()
+								.eq("grant_id", grant.getGrantId())
+								.eq("status", "failed")
+								.set("status", "pending")
+								.set("error_message", null)
+								.setSql("retry_count = retry_count + 1")
+								.set("updated", now));
+		if (reset == 0) {
+			return MemberTaskGrantAttemptResult.SKIPPED_NO_PENDING;
+		}
+		grant.setStatus("pending");
+		grant.setRetryCount((grant.getRetryCount() != null ? grant.getRetryCount() : 0) + 1);
+		MemberTaskOrderSnapshot snap = orderSnapshotForRetry(grant, completion);
+		return executeGrant(grant, snap, MemberTaskGrantTrigger.ADMIN_RETRY);
+	}
+
 	public MemberTaskGrantAttemptResult grantPendingImmediateForCompletion(
 			long companyId, long userId, long completionId) {
 		MemberTaskRewardGrant grant =
@@ -189,6 +213,28 @@ public class MemberTaskRewardGrantService {
 					msg);
 			return MemberTaskGrantAttemptResult.FAILED;
 		}
+	}
+
+	private MemberTaskOrderSnapshot orderSnapshotForRetry(
+			MemberTaskRewardGrant grant, MemberTaskCompletion completion) {
+		long companyId =
+				grant.getCompanyId() != null ? grant.getCompanyId() : completion.getCompanyId();
+		long orderId =
+				completion.getOrderId() != null && completion.getOrderId() > 0L
+						? completion.getOrderId()
+						: 0L;
+		if (orderId > 0L) {
+			MemberTaskOrderSnapshot order = memberTaskOrderReadPort.get(companyId, orderId);
+			if (order != null) {
+				return order;
+			}
+		}
+		long userId =
+				grant.getUserId() != null && grant.getUserId() > 0L
+						? grant.getUserId()
+						: completion.getUserId() != null ? completion.getUserId() : 0L;
+		long taskId = grant.getTaskId() != null ? grant.getTaskId() : completion.getTaskId();
+		return new MemberTaskOrderSnapshot(companyId, orderId, userId, taskId, "DONE", 1L, 0L, 0L);
 	}
 
 	private void applyRewards(MemberTaskRewardGrant grant, MemberTaskOrderSnapshot order) {

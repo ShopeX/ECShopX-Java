@@ -25,6 +25,7 @@ import cn.shopex.ecshopx.common.exception.UnauthorizedException;
 import cn.shopex.ecshopx.common.util.LeadingNumberParser;
 import cn.shopex.ecshopx.common.config.LangueProperties;
 import cn.shopex.ecshopx.common.web.locale.RequestLangTag;
+import cn.shopex.ecshopx.promotions.service.membertask.MemberTaskGrantRetryService;
 import cn.shopex.ecshopx.promotions.service.membertask.MemberTaskLifecycleService;
 import cn.shopex.ecshopx.promotions.service.membertask.MemberTaskListService;
 import cn.shopex.ecshopx.promotions.service.membertask.MemberTaskSaveService;
@@ -62,6 +63,7 @@ public class MemberTasksController {
 	private final MemberTaskListService memberTaskListService;
 	private final MemberTaskSaveService memberTaskSaveService;
 	private final MemberTaskLifecycleService memberTaskLifecycleService;
+	private final MemberTaskGrantRetryService memberTaskGrantRetryService;
 	private final MemberTaskSkeletonService memberTaskSkeletonService;
 	private final LangueProperties langueProperties;
 
@@ -69,11 +71,13 @@ public class MemberTasksController {
 			MemberTaskListService memberTaskListService,
 			MemberTaskSaveService memberTaskSaveService,
 			MemberTaskLifecycleService memberTaskLifecycleService,
+			MemberTaskGrantRetryService memberTaskGrantRetryService,
 			MemberTaskSkeletonService memberTaskSkeletonService,
 			LangueProperties langueProperties) {
 		this.memberTaskListService = memberTaskListService;
 		this.memberTaskSaveService = memberTaskSaveService;
 		this.memberTaskLifecycleService = memberTaskLifecycleService;
+		this.memberTaskGrantRetryService = memberTaskGrantRetryService;
 		this.memberTaskSkeletonService = memberTaskSkeletonService;
 		this.langueProperties = langueProperties;
 	}
@@ -171,18 +175,18 @@ public class MemberTasksController {
 				ApiResult.ok(memberTaskLifecycleService.offShelf(companyId, taskId, now, locale)));
 	}
 
-	/** 切片 0 骨架（ECX-10431）：人工补发，类型片再打通实发。 */
 	@Activated(routeAlias = "promotions.member_task.grant_retry.post")
 	@PostMapping(value = "/member-tasks/{taskId}/grants/{grantId}/retry", name = "会员任务补发奖励")
 	public ResponseEntity<ApiResult<Map<String, Object>>> retryGrant(
 			HttpServletRequest request,
 			@PathVariable("taskId") long taskId,
 			@PathVariable("grantId") long grantId) {
-		readCompanyIdFromOperatorJwtMap(readOperatorJwtMap(request));
+		long companyId = readCompanyIdFromOperatorJwtMap(readOperatorJwtMap(request));
 		Locale locale = LocaleContextHolder.getLocale();
 		RequestLangTag.current(langueProperties);
-		memberTaskSkeletonService.throwNotImplemented(locale);
-		return ResponseEntity.ok(ApiResult.ok(Map.of()));
+		Map<String, Object> result =
+				memberTaskGrantRetryService.retry(companyId, taskId, grantId, locale);
+		return ResponseEntity.ok(ApiResult.ok(result));
 	}
 
 	/** 切片 0 骨架（ECX-10433）：统计概览。 */
