@@ -28,6 +28,7 @@ import cn.shopex.ecshopx.promotions.domain.UserSignInRules;
 import cn.shopex.ecshopx.promotions.mapper.UserSignInLogsMapper;
 import cn.shopex.ecshopx.promotions.mapper.UserSignInMapper;
 import cn.shopex.ecshopx.promotions.mapper.UserSignInRulesMapper;
+import cn.shopex.ecshopx.promotions.service.membertask.MemberTaskSignInCompletionService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -60,6 +61,7 @@ public class UserSignFrontSignInService {
 	private final UserDiscountReceiveCardService userDiscountReceiveCardService;
 	private final CardPackageReceivesPackageService cardPackageReceivesPackageService;
 	private final MessageSource messageSource;
+	private final MemberTaskSignInCompletionService memberTaskSignInCompletionService;
 
 	public UserSignFrontSignInService(
 			UserSignInMapper userSignInMapper,
@@ -70,7 +72,8 @@ public class UserSignFrontSignInService {
 			PointMemberAddPointService pointMemberAddPointService,
 			UserDiscountReceiveCardService userDiscountReceiveCardService,
 			CardPackageReceivesPackageService cardPackageReceivesPackageService,
-			MessageSource messageSource) {
+			MessageSource messageSource,
+			MemberTaskSignInCompletionService memberTaskSignInCompletionService) {
 		this.userSignInMapper = userSignInMapper;
 		this.userSignInRulesMapper = userSignInRulesMapper;
 		this.userSignInLogsMapper = userSignInLogsMapper;
@@ -80,6 +83,7 @@ public class UserSignFrontSignInService {
 		this.userDiscountReceiveCardService = userDiscountReceiveCardService;
 		this.cardPackageReceivesPackageService = cardPackageReceivesPackageService;
 		this.messageSource = messageSource;
+		this.memberTaskSignInCompletionService = memberTaskSignInCompletionService;
 	}
 
 	@Transactional(rollbackFor = Exception.class)
@@ -103,6 +107,7 @@ public class UserSignFrontSignInService {
 		row.setCreated(now);
 		row.setUpdated(now);
 		userSignInMapper.insert(row);
+		memberTaskSignInCompletionService.onSignInSuccess(companyId, userId);
 
 		int consecutiveDays = countConsecutiveDays(userId, today);
 		UserSignInRules rule =

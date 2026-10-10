@@ -18,6 +18,7 @@ package cn.shopex.ecshopx.members.service.itemsfav;
 
 import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.common.members.port.MemberItemsFavSkuSnapshotPort;
+import cn.shopex.ecshopx.common.promotions.membertask.MemberTaskOnItemFavoritePort;
 import cn.shopex.ecshopx.common.members.port.MemberItemsFavSkuSnapshotPort.SkuSnapshot;
 import cn.shopex.ecshopx.members.domain.MemberItemsFav;
 import cn.shopex.ecshopx.members.mapper.MemberItemsFavMapper;
@@ -33,11 +34,15 @@ public class MemberItemsFavAddService {
 	private final MemberItemsFavMapper memberItemsFavMapper;
 
 	private final MemberItemsFavSkuSnapshotPort skuSnapshotPort;
+	private final MemberTaskOnItemFavoritePort memberTaskOnItemFavoritePort;
 
 	public MemberItemsFavAddService(
-			MemberItemsFavMapper memberItemsFavMapper, MemberItemsFavSkuSnapshotPort skuSnapshotPort) {
+			MemberItemsFavMapper memberItemsFavMapper,
+			MemberItemsFavSkuSnapshotPort skuSnapshotPort,
+			MemberTaskOnItemFavoritePort memberTaskOnItemFavoritePort) {
 		this.memberItemsFavMapper = memberItemsFavMapper;
 		this.skuSnapshotPort = skuSnapshotPort;
+		this.memberTaskOnItemFavoritePort = memberTaskOnItemFavoritePort;
 	}
 
 	public Map<String, Object> addItemsFav(long companyId, long userId, long itemId, String itemTypeParam) {
@@ -79,6 +84,7 @@ public class MemberItemsFavAddService {
 		row.setCreated(now);
 		row.setUpdated(now);
 		memberItemsFavMapper.insert(row);
+		memberTaskOnItemFavoritePort.onItemFavorited(companyId, userId, itemId);
 		return toRowMap(row);
 	}
 

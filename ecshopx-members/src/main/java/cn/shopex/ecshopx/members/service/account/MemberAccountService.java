@@ -390,6 +390,7 @@ public class MemberAccountService {
 		eventData.put("monitor_id", monitorId);
 		eventData.put("salesperson_id", salespersonIdForEvent);
 		eventData.put("if_register_promotion", ifRegisterPromotion);
+		putMemberTaskIdOnRegisterEvent(eventData, requestExtras);
 
 		if (!TransactionSynchronizationManager.isSynchronizationActive()) {
 			throw new BadRequestException("createMemberForWxappBind requires active transaction synchronization");
@@ -446,6 +447,13 @@ public class MemberAccountService {
 		} catch (NumberFormatException e) {
 			return 0L;
 		}
+	}
+
+	private static void putMemberTaskIdOnRegisterEvent(
+			Map<String, Object> eventData, Map<String, Object> registerExtras) {
+		eventData.put(
+				"member_task_id",
+				registerExtras == null ? 0L : longParam(registerExtras.get("member_task_id")));
 	}
 
 	@Transactional(rollbackFor = Exception.class)
@@ -619,6 +627,7 @@ public class MemberAccountService {
 		eventData.put("monitor_id", monitorId);
 		eventData.put("salesperson_id", salespersonIdForEvent);
 		eventData.put("if_register_promotion", ifRegisterPromotion);
+		putMemberTaskIdOnRegisterEvent(eventData, ext);
 
 		if (!TransactionSynchronizationManager.isSynchronizationActive()) {
 			throw new BadRequestException("createMemberLocalAutoRegister requires active transaction synchronization");
@@ -1966,6 +1975,7 @@ public class MemberAccountService {
 		eventData.put("monitor_id", monitorIdEvent);
 		eventData.put("salesperson_id", salespersonIdForEvent);
 		eventData.put("if_register_promotion", ifRegisterPromotion);
+		putMemberTaskIdOnRegisterEvent(eventData, params);
 
 		if (!TransactionSynchronizationManager.isSynchronizationActive()) {
 			throw new BadRequestException("registerShuyunMember requires active transaction synchronization");
@@ -2474,6 +2484,7 @@ public class MemberAccountService {
 		eventData.put("monitor_id", monitorId);
 		eventData.put("salesperson_id", salespersonId);
 		eventData.put("if_register_promotion", ifRegisterPromotion);
+		putMemberTaskIdOnRegisterEvent(eventData, postData);
 
 		if (!TransactionSynchronizationManager.isSynchronizationActive()) {
 			throw new BadRequestException("creatMemberForH5Post requires active transaction synchronization");

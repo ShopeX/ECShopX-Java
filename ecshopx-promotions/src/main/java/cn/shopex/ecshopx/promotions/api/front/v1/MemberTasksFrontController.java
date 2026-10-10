@@ -20,20 +20,27 @@ import cn.shopex.ecshopx.common.annotation.DingoResponse;
 import cn.shopex.ecshopx.common.annotation.FrontAuth;
 import cn.shopex.ecshopx.common.config.LangueProperties;
 import cn.shopex.ecshopx.common.core.domain.ApiResult;
+import cn.shopex.ecshopx.common.exception.UnauthorizedException;
+import cn.shopex.ecshopx.common.util.LeadingNumberParser;
+import cn.shopex.ecshopx.common.web.H5FrontAuthAttributes;
 import cn.shopex.ecshopx.common.web.locale.RequestLangTag;
+import cn.shopex.ecshopx.promotions.service.membertask.MemberTaskBrowseCompletionService;
 import cn.shopex.ecshopx.promotions.service.membertask.MemberTaskSkeletonService;
+import jakarta.servlet.http.HttpServletRequest;
+import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * C 端会员任务（SSOT G24 / §11.6 · ECX-10434 切片 0 骨架）。
- *
- * <p>前缀：{@code /api/v1/h5app/wxapp/promotion/member-tasks}
+ * C 端会员任务（SSOT G24 / §11.6 · ECX-10434 列表仍为骨架；browse 上报 ECX-10467）。
  */
 @DingoResponse(
 		resource = DingoResponse.ResourceStyle.DINGO,
@@ -46,11 +53,15 @@ import org.springframework.web.bind.annotation.RestController;
 public class MemberTasksFrontController {
 
 	private final MemberTaskSkeletonService memberTaskSkeletonService;
+	private final MemberTaskBrowseCompletionService memberTaskBrowseCompletionService;
 	private final LangueProperties langueProperties;
 
 	public MemberTasksFrontController(
-			MemberTaskSkeletonService memberTaskSkeletonService, LangueProperties langueProperties) {
+			MemberTaskSkeletonService memberTaskSkeletonService,
+			MemberTaskBrowseCompletionService memberTaskBrowseCompletionService,
+			LangueProperties langueProperties) {
 		this.memberTaskSkeletonService = memberTaskSkeletonService;
+		this.memberTaskBrowseCompletionService = memberTaskBrowseCompletionService;
 		this.langueProperties = langueProperties;
 	}
 
@@ -60,5 +71,71 @@ public class MemberTasksFrontController {
 		RequestLangTag.current(langueProperties);
 		memberTaskSkeletonService.throwNotImplemented(locale);
 		return ResponseEntity.ok(ApiResult.ok(Map.of()));
+	}
+
+	@PostMapping(value = "/browse-report", name = "浏览任务进度上报")
+	public ResponseEntity<ApiResult<Map<String, Object>>> browseReport(
+			HttpServletRequest request, @RequestBody(required = false) Map<String, Object> body) {
+		Locale locale = LocaleContextHolder.getLocale();
+		RequestLangTag.current(langueProperties);
+		long companyId = parseCompanyIdFromRequest(request);
+		long userId = parseAuthUserIdFromClaims(readH5AuthClaimsMap(request));
+		if (userId <= 0L) {
+			throw new UnauthorizedException("Unable to authenticate user.");
+		}
+		Map<String, Object> payload = body == null ? Map.of() : body;
+		long taskId = longVal(payload.get("task_id"));
+		String page = payload.get("page") == null ? "" : payload.get("page").toString().trim();
+		int staySeconds = (int) Math.min(Integer.MAX_VALUE, longVal(payload.get("stay_seconds")));
+		memberTaskBrowseCompletionService.reportBrowse(companyId, userId, taskId, page, staySeconds);
+		return ResponseEntity.ok(ApiResult.ok(Map.of("accepted", true)));
+	}
+
+	@SuppressWarnings("unchecked")
+	private static Map<String, Object> readH5AuthClaimsMap(HttpServletRequest request) {
+		Object raw = request.getAttribute(H5FrontAuthAttributes.H5_AUTH_CLAIMS);
+		if (raw instanceof Map<?, ?> m) {
+			return (Map<String, Object>) m;
+		}
+		return Collections.emptyMap();
+	}
+
+	private static long parseAuthUserIdFromClaims(Map<String, Object> claims) {
+		Object v = claims == null ? null : claims.get("user_id");
+		if (v == null) {
+			return 0L;
+		}
+		try {
+			long id = (v instanceof Number n) ? n.longValue() : Long.parseLong(String.valueOf(v).trim());
+			return id > 0L ? id : 0L;
+		} catch (NumberFormatException e) {
+			return 0L;
+		}
+	}
+
+	private static long parseCompanyIdFromRequest(HttpServletRequest request) {
+		Object companyAttr = request.getAttribute(H5FrontAuthAttributes.H5_COMPANY_ID);
+		long companyId;
+		if (companyAttr instanceof Number n) {
+			companyId = n.longValue();
+		} else if (companyAttr instanceof String s && StringUtils.hasText(s)) {
+			companyId = Long.parseLong(s.trim());
+		} else {
+			throw new UnauthorizedException("无权访问该API,非法访问！");
+		}
+		if (companyId <= 0L) {
+			throw new UnauthorizedException("无权访问该API,非法访问！");
+		}
+		return companyId;
+	}
+
+	private static long longVal(Object raw) {
+		if (raw == null) {
+			return 0L;
+		}
+		if (raw instanceof Number n) {
+			return n.longValue();
+		}
+		return LeadingNumberParser.parseAsLong(raw.toString().trim());
 	}
 }
