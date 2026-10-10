@@ -70,6 +70,7 @@ class MemberTaskCheckoutServiceTest {
 		MemberTask task = new MemberTask();
 		task.setTaskId(10L);
 		task.setTypeDetail("first_order");
+		task.setFrequencyType("once");
 		task.setPublished(1);
 		task.setOffShelf(0);
 		task.setBeginTime((int) (now - 10));

@@ -123,6 +123,35 @@ class MemberTaskPaySuccessServiceTest {
 	}
 
 	@Test
+	void singleSpend_needReceiptFalse_immediateGrant() {
+		long now = System.currentTimeMillis() / 1000L;
+		when(memberTaskOrderReadPort.get(1L, 9L))
+				.thenReturn(new MemberTaskOrderSnapshot(1L, 9L, 7L, 10L, "PAYED", 0L, 500L, 0L));
+		MemberTask task = new MemberTask();
+		task.setTaskId(10L);
+		task.setCompanyId(1L);
+		task.setTypeDetail("single_spend");
+		task.setFrequencyType("once");
+		task.setPublished(1);
+		task.setOffShelf(0);
+		task.setBeginTime((int) (now - 10));
+		task.setEndTime((int) (now + 3600));
+		task.setRuleConfig("{\"need_receipt\":false,\"amount_fen\":100,\"goods_scope\":\"unlimited\"}");
+		task.setRewardConfig("{\"points\":10}");
+		when(memberTaskMapper.selectOne(any(QueryWrapper.class))).thenReturn(task);
+		when(firstOrderCompletionPolicy.hasActiveFirstOrderCompletion(10L, 7L)).thenReturn(false);
+		when(memberTaskCompletionMapper.insert(any(MemberTaskCompletion.class)))
+				.thenAnswer(
+						inv -> {
+							inv.getArgument(0, MemberTaskCompletion.class).setCompletionId(3L);
+							return 1;
+						});
+
+		service.apply(Map.of("company_id", 1L, "order_id", 9L));
+
+		verify(memberTaskRewardGrantService).grantPendingImmediate(1L, 9L);
+	}
+
 	void selfPickupAlreadyDone_callsGrantPendingIfOrderDone() {
 		long now = System.currentTimeMillis() / 1000L;
 		stubHappyPath(now, true, "DONE", now);
@@ -147,6 +176,7 @@ class MemberTaskPaySuccessServiceTest {
 		task.setTaskId(10L);
 		task.setCompanyId(1L);
 		task.setTypeDetail("first_order");
+		task.setFrequencyType("once");
 		task.setPublished(1);
 		task.setOffShelf(0);
 		task.setBeginTime((int) (now - 10));

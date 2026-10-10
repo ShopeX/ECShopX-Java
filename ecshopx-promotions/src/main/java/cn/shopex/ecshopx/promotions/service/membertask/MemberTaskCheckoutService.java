@@ -83,15 +83,16 @@ public class MemberTaskCheckoutService implements OrderCreateMemberTaskExtendPor
 					messageSource.getMessage(
 							"promotions.member_task.checkout_task_invalid", null, "当前任务不可用于下单", locale));
 		}
-		if ("first_order".equals(task.getTypeDetail())
+		if ("once".equals(task.getFrequencyType())
 				&& userId > 0L
 				&& firstOrderCompletionPolicy.hasActiveFirstOrderCompletion(taskId, userId)) {
-			throw new BadRequestException(
-					messageSource.getMessage(
-							"promotions.member_task.checkout_first_order_done",
-							null,
-							"您已完成该首单任务",
-							locale));
+			String msgKey =
+					"first_order".equals(task.getTypeDetail())
+							? "promotions.member_task.checkout_first_order_done"
+							: "promotions.member_task.checkout_task_done";
+			String defaultMsg =
+					"first_order".equals(task.getTypeDetail()) ? "您已完成该首单任务" : "您已完成该任务";
+			throw new BadRequestException(messageSource.getMessage(msgKey, null, defaultMsg, locale));
 		}
 		od.put("member_task_id", taskId);
 	}

@@ -16,13 +16,16 @@
 
 package cn.shopex.ecshopx.promotions.service.membertask;
 
+import cn.shopex.ecshopx.promotions.domain.membertask.MemberTask;
 import cn.shopex.ecshopx.promotions.domain.membertask.MemberTaskCompletion;
 import cn.shopex.ecshopx.promotions.domain.membertask.MemberTaskOrderSnapshot;
 import cn.shopex.ecshopx.promotions.domain.membertask.MemberTaskRewardGrant;
 import cn.shopex.ecshopx.promotions.mapper.MemberTaskCompletionMapper;
+import cn.shopex.ecshopx.promotions.mapper.MemberTaskMapper;
 import cn.shopex.ecshopx.promotions.mapper.MemberTaskRewardGrantMapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,35 +39,58 @@ public class MemberTaskRefundVoidService {
 	private static final Logger log = LoggerFactory.getLogger(MemberTaskRefundVoidService.class);
 
 	private final MemberTaskOrderReadPort memberTaskOrderReadPort;
+	private final MemberTaskMapper memberTaskMapper;
 	private final MemberTaskCompletionMapper memberTaskCompletionMapper;
 	private final MemberTaskRewardGrantMapper memberTaskRewardGrantMapper;
+	private final ObjectMapper objectMapper;
 
 	public MemberTaskRefundVoidService(
 			MemberTaskOrderReadPort memberTaskOrderReadPort,
+			MemberTaskMapper memberTaskMapper,
 			MemberTaskCompletionMapper memberTaskCompletionMapper,
-			MemberTaskRewardGrantMapper memberTaskRewardGrantMapper) {
+			MemberTaskRewardGrantMapper memberTaskRewardGrantMapper,
+			ObjectMapper objectMapper) {
 		this.memberTaskOrderReadPort = memberTaskOrderReadPort;
+		this.memberTaskMapper = memberTaskMapper;
 		this.memberTaskCompletionMapper = memberTaskCompletionMapper;
 		this.memberTaskRewardGrantMapper = memberTaskRewardGrantMapper;
+		this.objectMapper = objectMapper;
 	}
 
 	public void apply(Map<String, Object> payload) {
-		if (payload.get("refund_success_time") == null
-				&& !StringUtils.hasText(String.valueOf(payload.getOrDefault("refund_status", "")))) {
-			// 仍允许有 company/order 的成功态退款；无 order 直接返回
-		}
 		long companyId = longVal(payload.get("company_id"));
 		long orderId = longVal(payload.get("order_id"));
 		if (companyId <= 0L || orderId <= 0L) {
 			return;
 		}
-		voidPendingIfNeeded(companyId, orderId);
+		if (!StringUtils.hasText(String.valueOf(payload.getOrDefault("refund_success_time", "")).trim())) {
+			return;
+		}
+		voidPendingIfNeeded(companyId, orderId, longVal(payload.get("refunded_fee")));
 	}
 
 	@Transactional
-	public void voidPendingIfNeeded(long companyId, long orderId) {
+	public void voidPendingIfNeeded(long companyId, long orderId, long refundedFeeFen) {
 		MemberTaskOrderSnapshot order = memberTaskOrderReadPort.get(companyId, orderId);
 		if (order == null || order.memberTaskId() <= 0L) {
+			return;
+		}
+		MemberTask task =
+				memberTaskMapper.selectOne(
+						new QueryWrapper<MemberTask>()
+								.eq("task_id", order.memberTaskId())
+								.eq("company_id", companyId)
+								.last("LIMIT 1"));
+		MemberTaskPurchaseRule rule =
+				task == null
+						? new MemberTaskPurchaseRule(false, 0L)
+						: MemberTaskPurchaseRule.parse(task.getRuleConfig(), objectMapper);
+		if (rule.matchesRemainingAfterRefund(order.totalFeeFen(), refundedFeeFen)) {
+			log.debug(
+					"member_task refund skip void companyId={} orderId={} reason=still_meets_amount remaining={}",
+					companyId,
+					orderId,
+					Math.max(0L, order.totalFeeFen() - Math.max(0L, refundedFeeFen)));
 			return;
 		}
 		MemberTaskCompletion completion =

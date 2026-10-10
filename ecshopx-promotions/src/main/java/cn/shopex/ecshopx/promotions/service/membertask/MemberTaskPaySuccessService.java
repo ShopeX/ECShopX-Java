@@ -105,10 +105,10 @@ public class MemberTaskPaySuccessService {
 		if (!MemberTaskDisplayStatus.IN_PROGRESS.equals(display)) {
 			return;
 		}
-		if ("first_order".equals(task.getTypeDetail())
+		if ("once".equals(task.getFrequencyType())
 				&& firstOrderCompletionPolicy.hasActiveFirstOrderCompletion(task.getTaskId(), order.userId())) {
 			log.debug(
-					"member_task pay_success skip companyId={} orderId={} reason=first_order_already_done",
+					"member_task pay_success skip companyId={} orderId={} reason=once_already_done",
 					order.companyId(),
 					order.orderId());
 			return;

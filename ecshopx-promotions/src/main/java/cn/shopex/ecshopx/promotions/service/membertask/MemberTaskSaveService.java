@@ -21,6 +21,7 @@ import cn.shopex.ecshopx.common.exception.ConflictException;
 import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.promotions.domain.membertask.MemberTask;
 import cn.shopex.ecshopx.promotions.domain.membertask.MemberTaskDisplayStatus;
+import cn.shopex.ecshopx.promotions.domain.membertask.MemberTaskPurchaseTypes;
 import cn.shopex.ecshopx.promotions.domain.membertask.MemberTaskTypeCatalog;
 import cn.shopex.ecshopx.promotions.mapper.MemberTaskMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -343,15 +344,16 @@ public class MemberTaskSaveService {
 	}
 
 	private String normalizeRuleConfigStub(Object raw, String typeDetail, Locale locale) {
+		boolean purchaseRule = MemberTaskPurchaseTypes.usesPurchaseRule(typeDetail);
 		if (raw == null) {
-			if ("first_order".equals(typeDetail)) {
+			if (purchaseRule) {
 				throw new BadRequestException(
 						msg("promotions.member_task.rule_config_invalid", "任务规则配置无效", locale));
 			}
 			return "{}";
 		}
 		if (raw instanceof String s && !StringUtils.hasText(s)) {
-			if ("first_order".equals(typeDetail)) {
+			if (purchaseRule) {
 				throw new BadRequestException(
 						msg("promotions.member_task.rule_config_invalid", "任务规则配置无效", locale));
 			}
@@ -363,7 +365,7 @@ public class MemberTaskSaveService {
 			throw new BadRequestException(
 					msg("promotions.member_task.rule_config_invalid", "任务规则配置无效", locale));
 		}
-		if ("first_order".equals(typeDetail)) {
+		if (purchaseRule) {
 			String scope = node.path("goods_scope").asText("");
 			if (!"unlimited".equals(scope) && !"items".equals(scope) && !"category".equals(scope)) {
 				throw new BadRequestException(

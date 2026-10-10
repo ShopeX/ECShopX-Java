@@ -41,4 +41,10 @@ public record MemberTaskPurchaseRule(boolean needReceipt, long amountFen) {
 	public boolean matchesAmount(long totalFeeFen) {
 		return amountFen <= 0L || totalFeeFen >= amountFen;
 	}
+
+	/** 签收前部分退：按订单剩余应付（实付累计退后）是否仍达门槛。 */
+	public boolean matchesRemainingAfterRefund(long orderTotalFeeFen, long refundedFeeFen) {
+		long remaining = Math.max(0L, orderTotalFeeFen - Math.max(0L, refundedFeeFen));
+		return matchesAmount(remaining);
+	}
 }

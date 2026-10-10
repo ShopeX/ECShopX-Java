@@ -95,6 +95,35 @@ class MemberTaskSaveServiceTest {
 	}
 
 	@Test
+	void create_singleSpend_requiresPurchaseRuleConfig() {
+		long now = 1_700_000_000L;
+		when(memberTaskMapper.insert(any(MemberTask.class)))
+				.thenAnswer(
+						inv -> {
+							inv.getArgument(0, MemberTask.class).setTaskId(43L);
+							return 1;
+						});
+
+		Map<String, Object> body = validBody();
+		body.put("type_category", "purchase");
+		body.put("type_detail", "single_spend");
+		body.put("name", "单笔满100");
+		body.put("begin_time", (int) (now + 100));
+		body.put("end_time", (int) (now + 1000));
+		body.put(
+				"rule_config",
+				Map.of("goods_scope", "unlimited", "amount_fen", 10000, "need_receipt", true));
+
+		Map<String, Object> out = service.create(9L, body, now, Locale.SIMPLIFIED_CHINESE);
+
+		assertThat(out.get("task_id")).isEqualTo(43L);
+		ArgumentCaptor<MemberTask> cap = ArgumentCaptor.forClass(MemberTask.class);
+		verify(memberTaskMapper).insert(cap.capture());
+		assertThat(cap.getValue().getTypeDetail()).isEqualTo("single_spend");
+		assertThat(cap.getValue().getRuleConfig()).contains("amount_fen");
+	}
+
+	@Test
 	void update_rejectsNonDraft() {
 		long now = 1_700_000_000L;
 		MemberTask existing = draftEntity(now);
