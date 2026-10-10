@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.promotions.mapper.MemberTaskStatsMapper">
+
+	<select id="countCompletions" resultType="long">
+		SELECT COUNT(*)
+		FROM member_task_completion
+		WHERE company_id = #{companyId}
+		  AND task_id = #{taskId}
+		  AND voided = 0
+	</select>
+
+	<select id="countCompletionUsers" resultType="long">
+		SELECT COUNT(DISTINCT user_id)
+		FROM member_task_completion
+		WHERE company_id = #{companyId}
+		  AND task_id = #{taskId}
+		  AND voided = 0
+	</select>
+
+	<select id="countGrantsByStatus" resultType="map">
+		SELECT g.status AS status, COUNT(*) AS cnt
+		FROM member_task_reward_grant g
+		INNER JOIN member_task_completion c ON c.completion_id = g.completion_id AND c.voided = 0
+		WHERE g.company_id = #{companyId}
+		  AND g.task_id = #{taskId}
+		GROUP BY g.status
+	</select>
+</mapper>

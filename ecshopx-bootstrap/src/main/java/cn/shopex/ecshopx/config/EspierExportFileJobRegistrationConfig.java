@@ -75,6 +75,8 @@ public class EspierExportFileJobRegistrationConfig {
 		dispatchRegistry.registerJob(
 				EspierDispatchJobNames.EXPORT_FILE_JOB_LUCKDRAW_LOG, espierExportFileJobDispatchHandler);
 		dispatchRegistry.registerJob(
+				EspierDispatchJobNames.EXPORT_FILE_JOB_MEMBER_TASK, espierExportFileJobDispatchHandler);
+		dispatchRegistry.registerJob(
 				EspierDispatchJobNames.EXPORT_FILE_JOB_DELIVERY_STAFF_DATA, espierExportFileJobDispatchHandler);
 		dispatchRegistry.registerJob(
 				EspierDispatchJobNames.EXPORT_FILE_JOB_CHINAUMS_DIVISION, espierExportFileJobDispatchHandler);

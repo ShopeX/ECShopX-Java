@@ -25,11 +25,12 @@ import cn.shopex.ecshopx.common.exception.UnauthorizedException;
 import cn.shopex.ecshopx.common.util.LeadingNumberParser;
 import cn.shopex.ecshopx.common.config.LangueProperties;
 import cn.shopex.ecshopx.common.web.locale.RequestLangTag;
+import cn.shopex.ecshopx.promotions.service.export.MemberTaskCompletionExportService;
 import cn.shopex.ecshopx.promotions.service.membertask.MemberTaskGrantRetryService;
 import cn.shopex.ecshopx.promotions.service.membertask.MemberTaskLifecycleService;
 import cn.shopex.ecshopx.promotions.service.membertask.MemberTaskListService;
 import cn.shopex.ecshopx.promotions.service.membertask.MemberTaskSaveService;
-import cn.shopex.ecshopx.promotions.service.membertask.MemberTaskSkeletonService;
+import cn.shopex.ecshopx.promotions.service.membertask.MemberTaskStatsService;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.LinkedHashMap;
 import java.util.Locale;
@@ -64,7 +65,8 @@ public class MemberTasksController {
 	private final MemberTaskSaveService memberTaskSaveService;
 	private final MemberTaskLifecycleService memberTaskLifecycleService;
 	private final MemberTaskGrantRetryService memberTaskGrantRetryService;
-	private final MemberTaskSkeletonService memberTaskSkeletonService;
+	private final MemberTaskStatsService memberTaskStatsService;
+	private final MemberTaskCompletionExportService memberTaskCompletionExportService;
 	private final LangueProperties langueProperties;
 
 	public MemberTasksController(
@@ -72,13 +74,15 @@ public class MemberTasksController {
 			MemberTaskSaveService memberTaskSaveService,
 			MemberTaskLifecycleService memberTaskLifecycleService,
 			MemberTaskGrantRetryService memberTaskGrantRetryService,
-			MemberTaskSkeletonService memberTaskSkeletonService,
+			MemberTaskStatsService memberTaskStatsService,
+			MemberTaskCompletionExportService memberTaskCompletionExportService,
 			LangueProperties langueProperties) {
 		this.memberTaskListService = memberTaskListService;
 		this.memberTaskSaveService = memberTaskSaveService;
 		this.memberTaskLifecycleService = memberTaskLifecycleService;
 		this.memberTaskGrantRetryService = memberTaskGrantRetryService;
-		this.memberTaskSkeletonService = memberTaskSkeletonService;
+		this.memberTaskStatsService = memberTaskStatsService;
+		this.memberTaskCompletionExportService = memberTaskCompletionExportService;
 		this.langueProperties = langueProperties;
 	}
 
@@ -189,28 +193,31 @@ public class MemberTasksController {
 		return ResponseEntity.ok(ApiResult.ok(result));
 	}
 
-	/** 切片 0 骨架（ECX-10433）：统计概览。 */
 	@Activated(routeAlias = "promotions.member_task.stats.get")
 	@GetMapping(value = "/member-tasks/{taskId}/stats", name = "会员任务统计")
 	public ResponseEntity<ApiResult<Map<String, Object>>> stats(
 			HttpServletRequest request, @PathVariable("taskId") long taskId) {
-		readCompanyIdFromOperatorJwtMap(readOperatorJwtMap(request));
+		long companyId = readCompanyIdFromOperatorJwtMap(readOperatorJwtMap(request));
 		Locale locale = LocaleContextHolder.getLocale();
 		RequestLangTag.current(langueProperties);
-		memberTaskSkeletonService.throwNotImplemented(locale);
-		return ResponseEntity.ok(ApiResult.ok(Map.of()));
+		return ResponseEntity.ok(
+				ApiResult.ok(memberTaskStatsService.stats(companyId, taskId, locale)));
 	}
 
-	/** 切片 0 骨架（ECX-10433）：CSV 导出。 */
 	@Activated(routeAlias = "promotions.member_task.export.get")
 	@GetMapping(value = "/member-tasks/{taskId}/export", name = "会员任务导出")
 	public ResponseEntity<ApiResult<Map<String, Object>>> export(
 			HttpServletRequest request, @PathVariable("taskId") long taskId) {
-		readCompanyIdFromOperatorJwtMap(readOperatorJwtMap(request));
+		Map<String, Object> jwt = readOperatorJwtMap(request);
+		long companyId = readCompanyIdFromOperatorJwtMap(jwt);
+		long operatorId = readOperatorId(jwt);
+		long merchantId = readMerchantId(jwt);
 		Locale locale = LocaleContextHolder.getLocale();
 		RequestLangTag.current(langueProperties);
-		memberTaskSkeletonService.throwNotImplemented(locale);
-		return ResponseEntity.ok(ApiResult.ok(Map.of()));
+		String datapass = request.getHeader("x-datapass-block");
+		memberTaskCompletionExportService.exportCompletions(
+				companyId, operatorId, merchantId, taskId, datapass, locale);
+		return ResponseEntity.ok(ApiResult.ok(Map.of("status", Boolean.TRUE)));
 	}
 
 	private static Integer parseOptionalEpoch(String raw) {
@@ -251,6 +258,30 @@ public class MemberTasksController {
 			}
 		}
 		return out;
+	}
+
+	private static long readOperatorId(Map<String, Object> ud) {
+		Object v = ud.get("operator_id");
+		if (v == null) {
+			return 0L;
+		}
+		try {
+			return v instanceof Number n ? n.longValue() : Long.parseLong(v.toString().trim());
+		} catch (NumberFormatException e) {
+			return 0L;
+		}
+	}
+
+	private static long readMerchantId(Map<String, Object> ud) {
+		Object v = ud.get("merchant_id");
+		if (v == null) {
+			return 0L;
+		}
+		try {
+			return v instanceof Number n ? n.longValue() : Long.parseLong(v.toString().trim());
+		} catch (NumberFormatException e) {
+			return 0L;
+		}
 	}
 
 	private static long readCompanyIdFromOperatorJwtMap(Map<String, Object> ud) {

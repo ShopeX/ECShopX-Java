@@ -59,6 +59,8 @@ public final class EspierDispatchJobNames {
 
 	public static final String EXPORT_FILE_JOB_LUCKDRAW_LOG = "job:159:EspierBundle\\Jobs\\ExportFileJob";
 
+	public static final String EXPORT_FILE_JOB_MEMBER_TASK = "job:200:EspierBundle\\Jobs\\ExportFileJob";
+
 	public static final String EXPORT_FILE_JOB_DELIVERY_STAFF_DATA = "job:165:EspierBundle\\Jobs\\ExportFileJob";
 
 	public static final String EXPORT_FILE_JOB_CHINAUMS_DIVISION = "job:166:EspierBundle\\Jobs\\ExportFileJob";
