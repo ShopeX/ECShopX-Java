@@ -42,6 +42,7 @@ public class MemberTaskRefundVoidService {
 	private final MemberTaskMapper memberTaskMapper;
 	private final MemberTaskCompletionMapper memberTaskCompletionMapper;
 	private final MemberTaskRewardGrantMapper memberTaskRewardGrantMapper;
+	private final MemberTaskTotalSpendService memberTaskTotalSpendService;
 	private final ObjectMapper objectMapper;
 
 	public MemberTaskRefundVoidService(
@@ -49,11 +50,13 @@ public class MemberTaskRefundVoidService {
 			MemberTaskMapper memberTaskMapper,
 			MemberTaskCompletionMapper memberTaskCompletionMapper,
 			MemberTaskRewardGrantMapper memberTaskRewardGrantMapper,
+			MemberTaskTotalSpendService memberTaskTotalSpendService,
 			ObjectMapper objectMapper) {
 		this.memberTaskOrderReadPort = memberTaskOrderReadPort;
 		this.memberTaskMapper = memberTaskMapper;
 		this.memberTaskCompletionMapper = memberTaskCompletionMapper;
 		this.memberTaskRewardGrantMapper = memberTaskRewardGrantMapper;
+		this.memberTaskTotalSpendService = memberTaskTotalSpendService;
 		this.objectMapper = objectMapper;
 	}
 
@@ -66,11 +69,15 @@ public class MemberTaskRefundVoidService {
 		if (!StringUtils.hasText(String.valueOf(payload.getOrDefault("refund_success_time", "")).trim())) {
 			return;
 		}
-		voidPendingIfNeeded(companyId, orderId, longVal(payload.get("refunded_fee")));
+		long refundFee = longVal(payload.get("refund_fee"));
+		if (refundFee <= 0L) {
+			refundFee = longVal(payload.get("refunded_fee"));
+		}
+		voidPendingIfNeeded(companyId, orderId, refundFee, longVal(payload.get("refunded_fee")));
 	}
 
 	@Transactional
-	public void voidPendingIfNeeded(long companyId, long orderId, long refundedFeeFen) {
+	public void voidPendingIfNeeded(long companyId, long orderId, long refundFeeFen, long refundedFeeFen) {
 		MemberTaskOrderSnapshot order = memberTaskOrderReadPort.get(companyId, orderId);
 		if (order == null || order.memberTaskId() <= 0L) {
 			return;
@@ -85,6 +92,11 @@ public class MemberTaskRefundVoidService {
 				task == null
 						? new MemberTaskPurchaseRule(false, 0L)
 						: MemberTaskPurchaseRule.parse(task.getRuleConfig(), objectMapper);
+		int now = (int) (System.currentTimeMillis() / 1000L);
+		if (task != null && "total_spend".equals(task.getTypeDetail())) {
+			memberTaskTotalSpendService.onRefund(task, order, rule, refundFeeFen, now);
+			return;
+		}
 		if (rule.matchesRemainingAfterRefund(order.totalFeeFen(), refundedFeeFen)) {
 			log.debug(
 					"member_task refund skip void companyId={} orderId={} reason=still_meets_amount remaining={}",
@@ -111,7 +123,6 @@ public class MemberTaskRefundVoidService {
 		if (grant != null && !"pending".equals(grant.getStatus())) {
 			return;
 		}
-		int now = (int) (System.currentTimeMillis() / 1000L);
 		int rows =
 				memberTaskCompletionMapper.update(
 						null,

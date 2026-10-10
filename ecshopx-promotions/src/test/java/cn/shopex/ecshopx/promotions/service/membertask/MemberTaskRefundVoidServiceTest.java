@@ -38,6 +38,9 @@ class MemberTaskRefundVoidServiceTest {
 	@Mock
 	private MemberTaskRewardGrantMapper memberTaskRewardGrantMapper;
 
+	@Mock
+	private MemberTaskTotalSpendService memberTaskTotalSpendService;
+
 	private MemberTaskRefundVoidService service;
 
 	@BeforeEach
@@ -48,6 +51,7 @@ class MemberTaskRefundVoidServiceTest {
 						memberTaskMapper,
 						memberTaskCompletionMapper,
 						memberTaskRewardGrantMapper,
+						memberTaskTotalSpendService,
 						new ObjectMapper());
 	}
 

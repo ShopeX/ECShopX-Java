@@ -45,6 +45,7 @@ public class MemberTaskPaySuccessService {
 	private final MemberTaskRewardGrantMapper memberTaskRewardGrantMapper;
 	private final MemberTaskFirstOrderCompletionPolicy firstOrderCompletionPolicy;
 	private final MemberTaskRewardGrantService memberTaskRewardGrantService;
+	private final MemberTaskTotalSpendService memberTaskTotalSpendService;
 	private final ObjectMapper objectMapper;
 
 	public MemberTaskPaySuccessService(
@@ -54,6 +55,7 @@ public class MemberTaskPaySuccessService {
 			MemberTaskRewardGrantMapper memberTaskRewardGrantMapper,
 			MemberTaskFirstOrderCompletionPolicy firstOrderCompletionPolicy,
 			MemberTaskRewardGrantService memberTaskRewardGrantService,
+			MemberTaskTotalSpendService memberTaskTotalSpendService,
 			ObjectMapper objectMapper) {
 		this.memberTaskOrderReadPort = memberTaskOrderReadPort;
 		this.memberTaskMapper = memberTaskMapper;
@@ -61,6 +63,7 @@ public class MemberTaskPaySuccessService {
 		this.memberTaskRewardGrantMapper = memberTaskRewardGrantMapper;
 		this.firstOrderCompletionPolicy = firstOrderCompletionPolicy;
 		this.memberTaskRewardGrantService = memberTaskRewardGrantService;
+		this.memberTaskTotalSpendService = memberTaskTotalSpendService;
 		this.objectMapper = objectMapper;
 	}
 
@@ -105,6 +108,11 @@ public class MemberTaskPaySuccessService {
 		if (!MemberTaskDisplayStatus.IN_PROGRESS.equals(display)) {
 			return;
 		}
+		MemberTaskPurchaseRule rule = MemberTaskPurchaseRule.parse(task.getRuleConfig(), objectMapper);
+		if ("total_spend".equals(task.getTypeDetail())) {
+			memberTaskTotalSpendService.onPaySuccess(task, order, rule, (int) now);
+			return;
+		}
 		if ("once".equals(task.getFrequencyType())
 				&& firstOrderCompletionPolicy.hasActiveFirstOrderCompletion(task.getTaskId(), order.userId())) {
 			log.debug(
@@ -113,7 +121,6 @@ public class MemberTaskPaySuccessService {
 					order.orderId());
 			return;
 		}
-		MemberTaskPurchaseRule rule = MemberTaskPurchaseRule.parse(task.getRuleConfig(), objectMapper);
 		if (!rule.matchesAmount(order.totalFeeFen())) {
 			return;
 		}

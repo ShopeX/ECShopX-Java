@@ -45,6 +45,9 @@ class MemberTaskPaySuccessServiceTest {
 	@Mock
 	private MemberTaskRewardGrantService memberTaskRewardGrantService;
 
+	@Mock
+	private MemberTaskTotalSpendService memberTaskTotalSpendService;
+
 	private MemberTaskPaySuccessService service;
 
 	@BeforeEach
@@ -57,6 +60,7 @@ class MemberTaskPaySuccessServiceTest {
 						memberTaskRewardGrantMapper,
 						firstOrderCompletionPolicy,
 						memberTaskRewardGrantService,
+						memberTaskTotalSpendService,
 						new ObjectMapper());
 	}
 
