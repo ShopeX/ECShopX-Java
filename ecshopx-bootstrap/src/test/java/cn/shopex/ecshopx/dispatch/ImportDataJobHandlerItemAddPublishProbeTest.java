@@ -134,7 +134,8 @@ class ImportDataJobHandlerItemAddPublishProbeTest {
 		when(txManager.getTransaction(any()))
 				.thenReturn(mock(org.springframework.transaction.TransactionStatus.class));
 		UploadFileImportDataService uploadImport =
-				new UploadFileImportDataService(uploadRepo, new ObjectMapper(), fileRegistry, fileStorage, txManager);
+				new UploadFileImportDataService(
+						uploadRepo, new ObjectMapper(), fileRegistry, fileStorage, txManager, List.of());
 		ImportDataJobHandler jobHandler = new ImportDataJobHandler(uploadImport);
 		registry.registerJob(EspierDispatchJobNames.IMPORT_DATA_JOB, jobHandler);
 

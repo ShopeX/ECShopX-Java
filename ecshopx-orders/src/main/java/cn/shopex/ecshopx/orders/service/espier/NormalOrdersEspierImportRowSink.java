@@ -16,17 +16,24 @@
 
 package cn.shopex.ecshopx.orders.service.espier;
 
+import cn.shopex.ecshopx.common.espier.upload.EspierImportBatchResult;
+import cn.shopex.ecshopx.common.espier.upload.EspierImportBatchSink;
+import cn.shopex.ecshopx.common.espier.upload.EspierImportRowError;
 import cn.shopex.ecshopx.common.espier.upload.EspierImportRowSink;
+import cn.shopex.ecshopx.orders.service.espier.NormalOrdersUploadSegmentService.NormalOrdersUploadImportResult;
+import cn.shopex.ecshopx.orders.service.espier.NormalOrdersUploadSegmentService.RowFailure;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import org.springframework.stereotype.Component;
 
 @Component
-public class NormalOrdersEspierImportRowSink implements EspierImportRowSink {
+public class NormalOrdersEspierImportRowSink implements EspierImportRowSink, EspierImportBatchSink {
 
-	private final NormalOrdersUploadImportRowService normalOrdersUploadImportRowService;
+	private final NormalOrdersUploadSegmentService normalOrdersUploadSegmentService;
 
-	public NormalOrdersEspierImportRowSink(NormalOrdersUploadImportRowService normalOrdersUploadImportRowService) {
-		this.normalOrdersUploadImportRowService = normalOrdersUploadImportRowService;
+	public NormalOrdersEspierImportRowSink(NormalOrdersUploadSegmentService normalOrdersUploadSegmentService) {
+		this.normalOrdersUploadSegmentService = normalOrdersUploadSegmentService;
 	}
 
 	@Override
@@ -43,7 +50,25 @@ public class NormalOrdersEspierImportRowSink implements EspierImportRowSink {
 			long merchantId,
 			Map<String, Object> row,
 			String operatorType) {
-		normalOrdersUploadImportRowService.acceptRow(
-				companyId, operatorId, distributorId, supplierId, merchantId, row, operatorType);
+		throw new IllegalStateException("normal_orders 必须整文件导入");
+	}
+
+	@Override
+	public EspierImportBatchResult acceptRows(
+			long companyId,
+			long operatorId,
+			long distributorId,
+			long supplierId,
+			long merchantId,
+			List<Map<String, Object>> rows,
+			String operatorType) {
+		NormalOrdersUploadImportResult result =
+				normalOrdersUploadSegmentService.importRows(
+						companyId, operatorId, distributorId, supplierId, merchantId, rows, operatorType);
+		List<EspierImportRowError> errors = new ArrayList<>();
+		for (RowFailure failure : result.failures()) {
+			errors.add(new EspierImportRowError(failure.row(), failure.message()));
+		}
+		return new EspierImportBatchResult(result.successLine(), errors);
 	}
 }

@@ -29,6 +29,14 @@ public final class NormalOrdersHeaderInfo {
 		map.put("订单号", new UploadHeaderColumnInfo(32, "不得重复，订单号如果大于11位时，请关闭excel单元格的科学记数法，常用禁用方法：“单元格格式”-“自定义”-“类型”改为“0”", true));
 		map.put("快递单号", new UploadHeaderColumnInfo(255, "", true));
 		map.put("快递公司", new UploadHeaderColumnInfo(255, "", true));
+		map.put(
+				"子订单号",
+				new UploadHeaderColumnInfo(
+						32,
+						"订单商品行 id，与订单导出的子订单号相同。大于 11 位时请关闭 Excel 科学计数法，单元格格式使用文本。拆单时必填",
+						false));
+		map.put("商品编码", new UploadHeaderColumnInfo(255, "须与该子订单号的商品编码一致。拆单时必填", false));
+		map.put("发货数量", new UploadHeaderColumnInfo(11, "正整数，不能大于该子订单剩余可发数量。拆单时必填", false));
 		return Collections.unmodifiableMap(map);
 	}
 }
