@@ -76,9 +76,15 @@ public class MemberTaskStatsService {
 		}
 		Map<String, Object> out = new LinkedHashMap<>();
 		out.put("task_id", taskId);
+		long attributedSpendFen =
+				memberTaskStatsMapper.sumAttributedOrderSpendFen(companyId, taskId);
+		long attributedJoinCount =
+				memberTaskStatsMapper.countAttributedJoinUsers(companyId, taskId);
 		out.put("completion_count", completionCount);
 		out.put("completion_user_count", completionUserCount);
 		out.put("grant_status_counts", grantByStatus);
+		out.put("attributed_spend_fen", attributedSpendFen);
+		out.put("attributed_join_count", attributedJoinCount);
 		return out;
 	}
 }

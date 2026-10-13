@@ -30,4 +30,12 @@ public interface MemberTaskStatsMapper {
 
 	List<Map<String, Object>> countGrantsByStatus(
 			@Param("companyId") long companyId, @Param("taskId") long taskId);
+
+	/** 订单列 {@code member_task_id} 归因且已支付金额（分，{@code total_fee} 之和）。 */
+	long sumAttributedOrderSpendFen(
+			@Param("companyId") long companyId, @Param("taskId") long taskId);
+
+	/** 邀请注册等：completion 上 {@code invitee_user_id} 去重人数。 */
+	long countAttributedJoinUsers(
+			@Param("companyId") long companyId, @Param("taskId") long taskId);
 }

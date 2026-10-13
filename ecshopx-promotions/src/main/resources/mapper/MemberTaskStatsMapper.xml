@@ -26,4 +26,22 @@
 		  AND g.task_id = #{taskId}
 		GROUP BY g.status
 	</select>
+
+	<select id="sumAttributedOrderSpendFen" resultType="long">
+		SELECT COALESCE(SUM(CAST(o.total_fee AS SIGNED)), 0)
+		FROM orders_normal_orders o
+		WHERE o.company_id = #{companyId}
+		  AND o.member_task_id = #{taskId}
+		  AND o.pay_status = 'PAYED'
+		  AND o.order_status &lt;&gt; 'CANCEL'
+	</select>
+
+	<select id="countAttributedJoinUsers" resultType="long">
+		SELECT COUNT(DISTINCT c.invitee_user_id)
+		FROM member_task_completion c
+		WHERE c.company_id = #{companyId}
+		  AND c.task_id = #{taskId}
+		  AND c.voided = 0
+		  AND c.invitee_user_id &gt; 0
+	</select>
 </mapper>

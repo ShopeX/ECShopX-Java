@@ -22,6 +22,7 @@ import cn.shopex.ecshopx.promotions.domain.membertask.MemberTask;
 import cn.shopex.ecshopx.promotions.domain.membertask.MemberTaskTypeCatalog;
 import cn.shopex.ecshopx.promotions.mapper.MemberTaskMapper;
 import cn.shopex.ecshopx.promotions.mapper.MemberTaskStatsMapper;
+import cn.shopex.ecshopx.promotions.service.membertask.MemberTaskAttributedMetricsDisplay;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -98,6 +99,10 @@ public class MemberTaskOverviewExportAsyncService {
 					memberTaskStatsMapper.countCompletions(ctx.companyId(), taskId);
 			long completionUserCount =
 					memberTaskStatsMapper.countCompletionUsers(ctx.companyId(), taskId);
+			long attributedSpendFen =
+					memberTaskStatsMapper.sumAttributedOrderSpendFen(ctx.companyId(), taskId);
+			long attributedJoinCount =
+					memberTaskStatsMapper.countAttributedJoinUsers(ctx.companyId(), taskId);
 			int begin = task.getBeginTime() != null ? task.getBeginTime() : 0;
 			int end = task.getEndTime() != null ? task.getEndTime() : 0;
 			String timeRange = formatTimeRange(begin, end);
@@ -111,8 +116,10 @@ public class MemberTaskOverviewExportAsyncService {
 			row.put("reward_summary", task.getRewardSummary() == null ? "" : task.getRewardSummary());
 			row.put("completion_count", String.valueOf(completionCount));
 			row.put("completion_user_count", String.valueOf(completionUserCount));
-			row.put("attributed_spend", "");
-			row.put("attributed_join_count", "");
+			row.put(
+					"attributed_spend",
+					MemberTaskAttributedMetricsDisplay.spendYuanText(attributedSpendFen));
+			row.put("attributed_join_count", String.valueOf(attributedJoinCount));
 			rows.add(row);
 		}
 		if (rows.isEmpty()) {
