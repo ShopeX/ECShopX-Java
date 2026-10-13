@@ -26,6 +26,7 @@ import cn.shopex.ecshopx.common.util.LeadingNumberParser;
 import cn.shopex.ecshopx.common.config.LangueProperties;
 import cn.shopex.ecshopx.common.web.locale.RequestLangTag;
 import cn.shopex.ecshopx.promotions.service.export.MemberTaskCompletionExportService;
+import cn.shopex.ecshopx.promotions.service.membertask.MemberTaskDetailService;
 import cn.shopex.ecshopx.promotions.service.membertask.MemberTaskGrantRetryService;
 import cn.shopex.ecshopx.promotions.service.membertask.MemberTaskLifecycleService;
 import cn.shopex.ecshopx.promotions.service.membertask.MemberTaskListService;
@@ -62,6 +63,7 @@ public class MemberTasksController {
 			"cn.shopex.ecshopx.espier.security.OperatorJwtAuthenticationFilter.OPERATOR_JWT_USER_DATA";
 
 	private final MemberTaskListService memberTaskListService;
+	private final MemberTaskDetailService memberTaskDetailService;
 	private final MemberTaskSaveService memberTaskSaveService;
 	private final MemberTaskLifecycleService memberTaskLifecycleService;
 	private final MemberTaskGrantRetryService memberTaskGrantRetryService;
@@ -71,6 +73,7 @@ public class MemberTasksController {
 
 	public MemberTasksController(
 			MemberTaskListService memberTaskListService,
+			MemberTaskDetailService memberTaskDetailService,
 			MemberTaskSaveService memberTaskSaveService,
 			MemberTaskLifecycleService memberTaskLifecycleService,
 			MemberTaskGrantRetryService memberTaskGrantRetryService,
@@ -78,6 +81,7 @@ public class MemberTasksController {
 			MemberTaskCompletionExportService memberTaskCompletionExportService,
 			LangueProperties langueProperties) {
 		this.memberTaskListService = memberTaskListService;
+		this.memberTaskDetailService = memberTaskDetailService;
 		this.memberTaskSaveService = memberTaskSaveService;
 		this.memberTaskLifecycleService = memberTaskLifecycleService;
 		this.memberTaskGrantRetryService = memberTaskGrantRetryService;
@@ -119,6 +123,17 @@ public class MemberTasksController {
 						pageSize,
 						locale);
 		return ResponseEntity.ok(ApiResult.ok(result));
+	}
+
+	@Activated(routeAlias = "promotions.member_task.detail.get")
+	@GetMapping(value = "/member-tasks/{taskId}", name = "会员任务详情")
+	public ResponseEntity<ApiResult<Map<String, Object>>> detail(
+			HttpServletRequest request, @PathVariable("taskId") long taskId) {
+		long companyId = readCompanyIdFromOperatorJwtMap(readOperatorJwtMap(request));
+		Locale locale = LocaleContextHolder.getLocale();
+		RequestLangTag.current(langueProperties);
+		return ResponseEntity.ok(
+				ApiResult.ok(memberTaskDetailService.detail(companyId, taskId, locale)));
 	}
 
 	@Activated(routeAlias = "promotions.member_task.create.post")
