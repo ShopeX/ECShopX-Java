@@ -20,5 +20,7 @@ public final class MemberTaskExportFileJobTypes {
 
 	public static final String TYPE_EXPORT_MEMBER_TASK_COMPLETION = "export_member_task_completion";
 
+	public static final String TYPE_EXPORT_MEMBER_TASK_OVERVIEW = "export_member_task_overview";
+
 	private MemberTaskExportFileJobTypes() {}
 }

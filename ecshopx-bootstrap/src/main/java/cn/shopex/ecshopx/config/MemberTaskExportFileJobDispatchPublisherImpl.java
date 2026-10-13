@@ -52,7 +52,8 @@ public class MemberTaskExportFileJobDispatchPublisherImpl
 			long merchantId,
 			long supplierId,
 			long taskId,
-			String datapassBlockHeader) {
+			String datapassBlockHeader,
+			String grantStatusFilter) {
 		Map<String, Object> payload = new LinkedHashMap<>();
 		payload.put("type", MemberTaskExportFileJobTypes.TYPE_EXPORT_MEMBER_TASK_COMPLETION);
 		payload.put("company_id", companyId);
@@ -61,6 +62,60 @@ public class MemberTaskExportFileJobDispatchPublisherImpl
 		payload.put("supplier_id", supplierId);
 		LinkedHashMap<String, Object> filter = new LinkedHashMap<>();
 		filter.put("task_id", taskId);
+		filter.put("datapass_block", datapassBlockHeader);
+		filter.put("grant_status", grantStatusFilter);
+		payload.put("filter", filter);
+		DispatchOptions options;
+		if (environment.acceptsProfiles(Profiles.of("local"))) {
+			options =
+					new DispatchOptions(
+							DispatchMode.SYNC,
+							DispatchDriverType.SYNC,
+							null,
+							null,
+							RetryPolicy.platformDefault());
+		} else {
+			options =
+					new DispatchOptions(
+							DispatchMode.ASYNC,
+							DispatchDriverType.REDIS,
+							"slow",
+							null,
+							RetryPolicy.platformDefault());
+		}
+		dispatchFacade.dispatchJob(EspierDispatchJobNames.EXPORT_FILE_JOB_MEMBER_TASK, payload, options);
+	}
+
+	@Override
+	public void enqueueOverview(
+			long companyId,
+			long operatorId,
+			long merchantId,
+			long supplierId,
+			String taskIdKeyword,
+			String nameKeyword,
+			String typeDetail,
+			String displayStatus,
+			Integer filterBegin,
+			Integer filterEnd,
+			String datapassBlockHeader) {
+		Map<String, Object> payload = new LinkedHashMap<>();
+		payload.put("type", MemberTaskExportFileJobTypes.TYPE_EXPORT_MEMBER_TASK_OVERVIEW);
+		payload.put("company_id", companyId);
+		payload.put("operator_id", operatorId);
+		payload.put("merchant_id", merchantId);
+		payload.put("supplier_id", supplierId);
+		LinkedHashMap<String, Object> filter = new LinkedHashMap<>();
+		filter.put("task_id", taskIdKeyword);
+		filter.put("name", nameKeyword);
+		filter.put("type_detail", typeDetail);
+		filter.put("display_status", displayStatus);
+		if (filterBegin != null) {
+			filter.put("filter_begin", filterBegin);
+		}
+		if (filterEnd != null) {
+			filter.put("filter_end", filterEnd);
+		}
 		filter.put("datapass_block", datapassBlockHeader);
 		payload.put("filter", filter);
 		DispatchOptions options;

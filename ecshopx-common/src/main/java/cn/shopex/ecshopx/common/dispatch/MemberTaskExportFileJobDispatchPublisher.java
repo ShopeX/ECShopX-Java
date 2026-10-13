@@ -24,5 +24,19 @@ public interface MemberTaskExportFileJobDispatchPublisher {
 			long merchantId,
 			long supplierId,
 			long taskId,
+			String datapassBlockHeader,
+			String grantStatusFilter);
+
+	void enqueueOverview(
+			long companyId,
+			long operatorId,
+			long merchantId,
+			long supplierId,
+			String taskIdKeyword,
+			String nameKeyword,
+			String typeDetail,
+			String displayStatus,
+			Integer filterBegin,
+			Integer filterEnd,
 			String datapassBlockHeader);
 }

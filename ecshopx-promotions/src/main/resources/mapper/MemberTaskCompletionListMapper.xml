@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.shopex.ecshopx.promotions.mapper.MemberTaskCompletionListMapper">
+
+	<sql id="completionDetailFrom">
+		FROM member_task_completion c
+		LEFT JOIN member_task_reward_grant g
+			ON g.completion_id = c.completion_id AND g.company_id = c.company_id
+		WHERE c.company_id = #{companyId}
+		  AND c.task_id = #{taskId}
+		  AND c.voided = 0
+		<if test='grantStatusFilter == "granted"'>
+			AND g.status = 'granted'
+		</if>
+		<if test='grantStatusFilter == "failed"'>
+			AND g.status = 'failed'
+		</if>
+	</sql>
+
+	<select id="countCompletionDetails" resultType="long">
+		SELECT COUNT(*)
+		<include refid="completionDetailFrom"/>
+	</select>
+
+	<select id="selectCompletionDetailsPage" resultType="map">
+		SELECT c.completion_id AS completion_id,
+			c.user_id AS user_id,
+			c.completed_at AS completed_at,
+			g.grant_id AS grant_id,
+			g.status AS grant_status,
+			g.error_message AS error_message
+		<include refid="completionDetailFrom"/>
+		ORDER BY c.completion_id DESC
+		LIMIT #{offset}, #{limit}
+	</select>
+</mapper>

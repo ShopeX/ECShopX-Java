@@ -17,6 +17,8 @@
 package cn.shopex.ecshopx.promotions.dispatch;
 
 import cn.shopex.ecshopx.promotions.service.export.MemberTaskCompletionExportJobContext;
+import cn.shopex.ecshopx.promotions.service.export.MemberTaskOverviewExportJobContext;
+import cn.shopex.ecshopx.promotions.service.membertask.MemberTaskGrantStatusDisplay;
 import java.util.Map;
 
 public final class MemberTaskExportFileJobPayloadSupport {
@@ -32,8 +34,44 @@ public final class MemberTaskExportFileJobPayloadSupport {
 		Map<?, ?> fm = rawFilter instanceof Map<?, ?> m ? m : Map.of();
 		long taskId = longFrom(fm.get("task_id"));
 		String datapassBlock = stringOrNull(fm.get("datapass_block"));
+		String grantStatus =
+				MemberTaskGrantStatusDisplay.normalizeGrantStatusFilter(
+						stringOrNull(fm.get("grant_status")));
 		return new MemberTaskCompletionExportJobContext(
-				companyId, operatorId, merchantId, supplierId, taskId, datapassBlock);
+				companyId, operatorId, merchantId, supplierId, taskId, datapassBlock, grantStatus);
+	}
+
+	public static MemberTaskOverviewExportJobContext overviewContextFromPayload(
+			Map<String, Object> payload) {
+		long companyId = longFrom(payload.get("company_id"));
+		long operatorId = longFrom(payload.get("operator_id"));
+		long merchantId = longFrom(payload.get("merchant_id"));
+		long supplierId = longFrom(payload.get("supplier_id"));
+		Object rawFilter = payload.get("filter");
+		Map<?, ?> fm = rawFilter instanceof Map<?, ?> m ? m : Map.of();
+		return new MemberTaskOverviewExportJobContext(
+				companyId,
+				operatorId,
+				merchantId,
+				supplierId,
+				stringOrNull(fm.get("task_id")),
+				stringOrNull(fm.get("name")),
+				stringOrNull(fm.get("type_detail")),
+				stringOrNull(fm.get("display_status")),
+				intOrNull(fm.get("filter_begin")),
+				intOrNull(fm.get("filter_end")),
+				stringOrNull(fm.get("datapass_block")));
+	}
+
+	private static Integer intOrNull(Object o) {
+		if (o == null) {
+			return null;
+		}
+		long v = longFrom(o);
+		if (v <= 0L || v > Integer.MAX_VALUE) {
+			return null;
+		}
+		return (int) v;
 	}
 
 	private static String stringOrNull(Object o) {

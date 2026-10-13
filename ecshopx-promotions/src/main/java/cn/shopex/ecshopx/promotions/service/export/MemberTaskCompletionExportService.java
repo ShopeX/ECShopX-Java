@@ -21,6 +21,7 @@ import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.companys.service.OperatorsQueryService;
 import cn.shopex.ecshopx.promotions.domain.membertask.MemberTask;
 import cn.shopex.ecshopx.promotions.mapper.MemberTaskMapper;
+import cn.shopex.ecshopx.promotions.service.membertask.MemberTaskGrantStatusDisplay;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import java.util.LinkedHashMap;
 import java.util.Locale;
@@ -52,6 +53,7 @@ public class MemberTaskCompletionExportService {
 			long operatorId,
 			long merchantId,
 			long taskId,
+			String grantStatusRaw,
 			String datapassBlockHeader,
 			Locale locale) {
 		MemberTask task =
@@ -76,7 +78,15 @@ public class MemberTaskCompletionExportService {
 			Map<String, Object> supplier = operatorsQueryService.getInfo(filter);
 			supplierId = (supplier != null && !supplier.isEmpty()) ? operatorId : 0L;
 		}
+		String grantStatus =
+				MemberTaskGrantStatusDisplay.normalizeGrantStatusFilter(grantStatusRaw);
 		memberTaskExportFileJobDispatchPublisher.enqueue(
-				companyId, operatorId, merchantId, supplierId, taskId, datapassBlockHeader);
+				companyId,
+				operatorId,
+				merchantId,
+				supplierId,
+				taskId,
+				datapassBlockHeader,
+				grantStatus);
 	}
 }

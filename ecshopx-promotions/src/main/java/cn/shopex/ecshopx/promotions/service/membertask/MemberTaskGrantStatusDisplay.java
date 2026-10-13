@@ -1,0 +1,47 @@
+/**
+ * Copyright 2019-2026 ShopeX
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package cn.shopex.ecshopx.promotions.service.membertask;
+
+public final class MemberTaskGrantStatusDisplay {
+
+	private MemberTaskGrantStatusDisplay() {}
+
+	public static String labelForStatus(String status) {
+		if (status == null || status.isBlank()) {
+			return "";
+		}
+		return switch (status) {
+			case "pending" -> "待发放";
+			case "granted" -> "已发放";
+			case "failed" -> "发放失败";
+			case "cancelled" -> "已作废";
+			default -> status;
+		};
+	}
+
+	/** Admin 明细 Tab：`all` / `granted` / `failed` */
+	public static String normalizeGrantStatusFilter(String raw) {
+		if (raw == null || raw.isBlank()) {
+			return "all";
+		}
+		String s = raw.trim().toLowerCase();
+		return switch (s) {
+			case "all", "granted", "failed" -> s;
+			default -> "all";
+		};
+	}
+}

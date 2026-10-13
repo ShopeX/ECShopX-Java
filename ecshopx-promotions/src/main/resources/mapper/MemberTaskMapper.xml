@@ -63,4 +63,12 @@
 		ORDER BY task_id DESC
 		LIMIT #{offset}, #{limit}
 	</select>
+
+	<select id="selectAdminListForExport" resultType="cn.shopex.ecshopx.promotions.domain.membertask.MemberTask">
+		SELECT task_id, company_id, name, type_category, type_detail, begin_time, end_time,
+			published, off_shelf, reward_summary, created, updated
+		FROM member_task
+		<include refid="adminListWhere"/>
+		ORDER BY task_id DESC
+	</select>
 </mapper>

@@ -46,4 +46,15 @@ public interface MemberTaskMapper extends BaseMapper<MemberTask> {
 			@Param("now") long now,
 			@Param("offset") long offset,
 			@Param("limit") int limit);
+
+	/** 与列表相同筛选条件，导出概览用（不分页）。 */
+	List<MemberTask> selectAdminListForExport(
+			@Param("companyId") long companyId,
+			@Param("taskIdKeyword") String taskIdKeyword,
+			@Param("nameKeyword") String nameKeyword,
+			@Param("typeDetail") String typeDetail,
+			@Param("displayStatus") String displayStatus,
+			@Param("filterBegin") Integer filterBegin,
+			@Param("filterEnd") Integer filterEnd,
+			@Param("now") long now);
 }

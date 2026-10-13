@@ -22,4 +22,16 @@ public record MemberTaskCompletionExportJobContext(
 		long merchantId,
 		long supplierId,
 		long taskId,
-		String datapassBlockRaw) {}
+		String datapassBlockRaw,
+		String grantStatusFilter) {
+
+	public MemberTaskCompletionExportJobContext(
+			long companyId,
+			long operatorId,
+			long merchantId,
+			long supplierId,
+			long taskId,
+			String datapassBlockRaw) {
+		this(companyId, operatorId, merchantId, supplierId, taskId, datapassBlockRaw, "all");
+	}
+}

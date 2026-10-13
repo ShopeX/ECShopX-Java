@@ -19,12 +19,8 @@ package cn.shopex.ecshopx.promotions.service.export;
 import cn.shopex.ecshopx.espier.service.ExportCsvFileService;
 import cn.shopex.ecshopx.espier.service.ExportLogCreateService;
 import cn.shopex.ecshopx.members.service.account.MemberAccountService;
-import cn.shopex.ecshopx.promotions.domain.membertask.MemberTaskCompletion;
-import cn.shopex.ecshopx.promotions.domain.membertask.MemberTaskRewardGrant;
-import cn.shopex.ecshopx.promotions.mapper.MemberTaskCompletionMapper;
-import cn.shopex.ecshopx.promotions.mapper.MemberTaskRewardGrantMapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import cn.shopex.ecshopx.promotions.mapper.MemberTaskCompletionListMapper;
+import cn.shopex.ecshopx.promotions.service.membertask.MemberTaskGrantStatusDisplay;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -52,20 +48,17 @@ public class MemberTaskCompletionExportAsyncService {
 	private static final DateTimeFormatter ROW_TS =
 			DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(SHANGHAI);
 
-	private final MemberTaskCompletionMapper memberTaskCompletionMapper;
-	private final MemberTaskRewardGrantMapper memberTaskRewardGrantMapper;
+	private final MemberTaskCompletionListMapper memberTaskCompletionListMapper;
 	private final MemberAccountService memberAccountService;
 	private final ExportCsvFileService exportCsvFileService;
 	private final ExportLogCreateService exportLogCreateService;
 
 	public MemberTaskCompletionExportAsyncService(
-			MemberTaskCompletionMapper memberTaskCompletionMapper,
-			MemberTaskRewardGrantMapper memberTaskRewardGrantMapper,
+			MemberTaskCompletionListMapper memberTaskCompletionListMapper,
 			MemberAccountService memberAccountService,
 			ExportCsvFileService exportCsvFileService,
 			ExportLogCreateService exportLogCreateService) {
-		this.memberTaskCompletionMapper = memberTaskCompletionMapper;
-		this.memberTaskRewardGrantMapper = memberTaskRewardGrantMapper;
+		this.memberTaskCompletionListMapper = memberTaskCompletionListMapper;
 		this.memberAccountService = memberAccountService;
 		this.exportCsvFileService = exportCsvFileService;
 		this.exportLogCreateService = exportLogCreateService;
@@ -75,12 +68,11 @@ public class MemberTaskCompletionExportAsyncService {
 		if (ctx.taskId() <= 0L) {
 			return;
 		}
-		QueryWrapper<MemberTaskCompletion> countWrapper = new QueryWrapper<>();
-		countWrapper
-				.eq("company_id", ctx.companyId())
-				.eq("task_id", ctx.taskId())
-				.eq("voided", 0);
-		long total = memberTaskCompletionMapper.selectCount(countWrapper);
+		String grantFilter =
+				MemberTaskGrantStatusDisplay.normalizeGrantStatusFilter(ctx.grantStatusFilter());
+		long total =
+				memberTaskCompletionListMapper.countCompletionDetails(
+						ctx.companyId(), ctx.taskId(), grantFilter);
 		if (total == 0L) {
 			return;
 		}
@@ -91,23 +83,20 @@ public class MemberTaskCompletionExportAsyncService {
 		titles.put("grant_status", "奖励发放状态");
 		titles.put("error_message", "发放失败原因");
 		List<Map<String, String>> allRows = new ArrayList<>();
-		QueryWrapper<MemberTaskCompletion> pageWrapper = new QueryWrapper<>();
-		pageWrapper
-				.eq("company_id", ctx.companyId())
-				.eq("task_id", ctx.taskId())
-				.eq("voided", 0)
-				.orderByAsc("completion_id");
 		int pages = (int) Math.ceil(total / (double) BATCH);
 		for (int page = 1; page <= pages; page++) {
-			Page<MemberTaskCompletion> mpPage = new Page<>(page, BATCH, false);
-			memberTaskCompletionMapper.selectPage(mpPage, pageWrapper);
-			List<MemberTaskCompletion> records = mpPage.getRecords();
-			List<Long> pageUserIds =
-					records.stream()
-							.map(MemberTaskCompletion::getUserId)
-							.filter(Objects::nonNull)
-							.distinct()
-							.toList();
+			long offset = (long) (page - 1) * (long) BATCH;
+			List<Map<String, Object>> records =
+					memberTaskCompletionListMapper.selectCompletionDetailsPage(
+							ctx.companyId(), ctx.taskId(), grantFilter, offset, BATCH);
+			List<Long> pageUserIds = new ArrayList<>();
+			for (Map<String, Object> row : records) {
+				long uid = longVal(row.get("user_id"));
+				if (uid > 0L) {
+					pageUserIds.add(uid);
+				}
+			}
+			pageUserIds = pageUserIds.stream().distinct().toList();
 			Map<Long, Map<String, Object>> memberByUserId = new HashMap<>();
 			if (!pageUserIds.isEmpty()) {
 				List<Map<String, Object>> summaries =
@@ -122,28 +111,25 @@ public class MemberTaskCompletionExportAsyncService {
 					memberByUserId.put(uid, s);
 				}
 			}
-			for (MemberTaskCompletion completion : records) {
-				MemberTaskRewardGrant grant =
-						memberTaskRewardGrantMapper.selectOne(
-								new QueryWrapper<MemberTaskRewardGrant>()
-										.eq("completion_id", completion.getCompletionId())
-										.last("LIMIT 1"));
+			for (Map<String, Object> detail : records) {
 				Map<String, String> row = new LinkedHashMap<>();
-				long userId = completion.getUserId() != null ? completion.getUserId() : 0L;
+				long userId = longVal(detail.get("user_id"));
 				row.put("user_id", userId > 0L ? String.valueOf(userId) : "");
 				Map<String, Object> mem = userId > 0L ? memberByUserId.get(userId) : null;
 				row.put("nickname", mem == null ? "" : Objects.toString(mem.get("nickname"), ""));
-				int completedAt =
-						completion.getCompletedAt() != null ? completion.getCompletedAt() : 0;
+				int completedAt = intVal(detail.get("completed_at"));
 				row.put(
 						"completed_at",
 						completedAt > 0
 								? ROW_TS.format(Instant.ofEpochSecond(completedAt))
 								: "");
-				row.put("grant_status", grantStatusLabel(grant));
-				row.put(
-						"error_message",
-						grant == null || grant.getErrorMessage() == null ? "" : grant.getErrorMessage());
+				String grantStatus =
+						detail.get("grant_status") == null
+								? ""
+								: detail.get("grant_status").toString();
+				row.put("grant_status", MemberTaskGrantStatusDisplay.labelForStatus(grantStatus));
+				Object err = detail.get("error_message");
+				row.put("error_message", err == null ? "" : err.toString());
 				allRows.add(row);
 			}
 		}
@@ -164,16 +150,28 @@ public class MemberTaskCompletionExportAsyncService {
 				Instant.now().getEpochSecond());
 	}
 
-	private static String grantStatusLabel(MemberTaskRewardGrant grant) {
-		if (grant == null || grant.getStatus() == null) {
-			return "";
+	private static long longVal(Object raw) {
+		if (raw == null) {
+			return 0L;
 		}
-		return switch (grant.getStatus()) {
-			case "pending" -> "待发放";
-			case "granted" -> "已发放";
-			case "failed" -> "发放失败";
-			case "cancelled" -> "已作废";
-			default -> grant.getStatus();
-		};
+		if (raw instanceof Number n) {
+			return n.longValue();
+		}
+		try {
+			return Long.parseLong(raw.toString().trim());
+		} catch (NumberFormatException e) {
+			return 0L;
+		}
+	}
+
+	private static int intVal(Object raw) {
+		long v = longVal(raw);
+		if (v > Integer.MAX_VALUE) {
+			return Integer.MAX_VALUE;
+		}
+		if (v < Integer.MIN_VALUE) {
+			return Integer.MIN_VALUE;
+		}
+		return (int) v;
 	}
 }
