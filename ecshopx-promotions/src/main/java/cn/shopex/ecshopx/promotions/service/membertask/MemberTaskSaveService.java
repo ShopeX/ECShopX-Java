@@ -382,6 +382,21 @@ public class MemberTaskSaveService {
 				throw new BadRequestException(
 						msg("promotions.member_task.rule_config_invalid", "任务规则配置无效", locale));
 			}
+			if ("items".equals(scope)) {
+				requireNonEmptyIdArray(node.get("item_ids"), locale);
+			} else if ("category".equals(scope)) {
+				requireNonEmptyIdArray(node.get("category_ids"), locale);
+			}
+			validateOptionalIdArray(node.get("item_ids"), locale);
+			validateOptionalIdArray(node.get("category_ids"), locale);
+			validateOptionalIdArray(node.get("distributor_ids"), locale);
+		}
+		if ("profile".equals(typeDetail) || "sign_in".equals(typeDetail)) {
+			if (node.size() > 0) {
+				throw new BadRequestException(
+						msg("promotions.member_task.rule_config_invalid", "任务规则配置无效", locale));
+			}
+			return "{}";
 		}
 		if ("share_order".equals(typeDetail) || "invite_register".equals(typeDetail)) {
 			requireNonBlankText(node, "share_cover", locale);
@@ -532,6 +547,19 @@ public class MemberTaskSaveService {
 			return b == null;
 		}
 		return a.equals(b);
+	}
+
+	private void requireNonEmptyIdArray(JsonNode arr, Locale locale) {
+		if (arr == null || arr.isNull() || !arr.isArray() || arr.isEmpty()) {
+			throw new BadRequestException(
+					msg("promotions.member_task.rule_config_invalid", "任务规则配置无效", locale));
+		}
+		for (JsonNode n : arr) {
+			if (n == null || !n.isNumber() || n.asLong() <= 0L) {
+				throw new BadRequestException(
+						msg("promotions.member_task.rule_config_invalid", "任务规则配置无效", locale));
+			}
+		}
 	}
 
 	private void validateOptionalIdArray(JsonNode arr, Locale locale) {

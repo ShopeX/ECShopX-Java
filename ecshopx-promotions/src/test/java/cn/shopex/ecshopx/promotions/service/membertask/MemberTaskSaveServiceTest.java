@@ -15,6 +15,7 @@ import cn.shopex.ecshopx.promotions.mapper.MemberTaskMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -92,6 +93,59 @@ class MemberTaskSaveServiceTest {
 		assertThat(saved.getConfigVersion()).isEqualTo(1L);
 		assertThat(saved.getTypeDetail()).isEqualTo("first_order");
 		assertThat(saved.getRewardSummary()).contains("积分");
+	}
+
+	@Test
+	void create_purchaseItemsScope_requiresItemIds() {
+		long now = 1_700_000_000L;
+		when(messageSource.getMessage(
+						eq("promotions.member_task.rule_config_invalid"),
+						eq(null),
+						eq("任务规则配置无效"),
+						eq(Locale.SIMPLIFIED_CHINESE)))
+				.thenReturn("任务规则配置无效");
+
+		Map<String, Object> body = validBody();
+		body.put("begin_time", (int) (now + 100));
+		body.put("end_time", (int) (now + 1000));
+		body.put(
+				"rule_config",
+				Map.of(
+						"goods_scope",
+						"items",
+						"item_ids",
+						List.of(),
+						"amount_fen",
+						0,
+						"need_receipt",
+						false));
+
+		assertThatThrownBy(() -> service.create(1L, body, now, Locale.SIMPLIFIED_CHINESE))
+				.isInstanceOf(BadRequestException.class)
+				.hasMessage("任务规则配置无效");
+	}
+
+	@Test
+	void create_profile_rejectsNonEmptyRuleConfig() {
+		long now = 1_700_000_000L;
+		when(messageSource.getMessage(
+						eq("promotions.member_task.rule_config_invalid"),
+						eq(null),
+						eq("任务规则配置无效"),
+						eq(Locale.SIMPLIFIED_CHINESE)))
+				.thenReturn("任务规则配置无效");
+
+		Map<String, Object> body = validBody();
+		body.put("type_category", "newcomer");
+		body.put("type_detail", "profile");
+		body.remove("rule_config");
+		body.put("begin_time", (int) (now + 100));
+		body.put("end_time", (int) (now + 1000));
+		body.put("rule_config", Map.of("unexpected", 1));
+
+		assertThatThrownBy(() -> service.create(1L, body, now, Locale.SIMPLIFIED_CHINESE))
+				.isInstanceOf(BadRequestException.class)
+				.hasMessage("任务规则配置无效");
 	}
 
 	@Test
