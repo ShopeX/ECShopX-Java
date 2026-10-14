@@ -19,8 +19,12 @@ package cn.shopex.ecshopx.promotions.service.export;
 import cn.shopex.ecshopx.espier.service.ExportCsvFileService;
 import cn.shopex.ecshopx.espier.service.ExportLogCreateService;
 import cn.shopex.ecshopx.members.service.account.MemberAccountService;
+import cn.shopex.ecshopx.promotions.domain.membertask.MemberTask;
 import cn.shopex.ecshopx.promotions.mapper.MemberTaskCompletionListMapper;
+import cn.shopex.ecshopx.promotions.mapper.MemberTaskMapper;
+import cn.shopex.ecshopx.promotions.mapper.MemberTaskStatsMapper;
 import cn.shopex.ecshopx.promotions.service.membertask.MemberTaskGrantStatusDisplay;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -40,7 +44,7 @@ public class MemberTaskCompletionExportAsyncService {
 
 	private static final Logger log = LoggerFactory.getLogger(MemberTaskCompletionExportAsyncService.class);
 
-	private static final String EXPORT_TYPE = "export_member_task_completion";
+	private static final String EXPORT_TYPE = MemberTaskExportCsvTemplates.EXPORT_TYPE_COMPLETION;
 	private static final int BATCH = 100;
 	private static final ZoneId SHANGHAI = ZoneId.of("Asia/Shanghai");
 	private static final DateTimeFormatter FILE_TS =
@@ -48,16 +52,22 @@ public class MemberTaskCompletionExportAsyncService {
 	private static final DateTimeFormatter ROW_TS =
 			DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(SHANGHAI);
 
+	private final MemberTaskMapper memberTaskMapper;
+	private final MemberTaskStatsMapper memberTaskStatsMapper;
 	private final MemberTaskCompletionListMapper memberTaskCompletionListMapper;
 	private final MemberAccountService memberAccountService;
 	private final ExportCsvFileService exportCsvFileService;
 	private final ExportLogCreateService exportLogCreateService;
 
 	public MemberTaskCompletionExportAsyncService(
+			MemberTaskMapper memberTaskMapper,
+			MemberTaskStatsMapper memberTaskStatsMapper,
 			MemberTaskCompletionListMapper memberTaskCompletionListMapper,
 			MemberAccountService memberAccountService,
 			ExportCsvFileService exportCsvFileService,
 			ExportLogCreateService exportLogCreateService) {
+		this.memberTaskMapper = memberTaskMapper;
+		this.memberTaskStatsMapper = memberTaskStatsMapper;
 		this.memberTaskCompletionListMapper = memberTaskCompletionListMapper;
 		this.memberAccountService = memberAccountService;
 		this.exportCsvFileService = exportCsvFileService;
@@ -68,6 +78,14 @@ public class MemberTaskCompletionExportAsyncService {
 		if (ctx.taskId() <= 0L) {
 			return;
 		}
+		MemberTask task =
+				memberTaskMapper.selectOne(
+						new QueryWrapper<MemberTask>()
+								.eq("task_id", ctx.taskId())
+								.eq("company_id", ctx.companyId()));
+		if (task == null) {
+			return;
+		}
 		String grantFilter =
 				MemberTaskGrantStatusDisplay.normalizeGrantStatusFilter(ctx.grantStatusFilter());
 		long total =
@@ -76,12 +94,21 @@ public class MemberTaskCompletionExportAsyncService {
 		if (total == 0L) {
 			return;
 		}
-		LinkedHashMap<String, String> titles = new LinkedHashMap<>();
-		titles.put("user_id", "会员编号");
-		titles.put("nickname", "完成会员");
-		titles.put("completed_at", "完成时间");
-		titles.put("grant_status", "奖励发放状态");
-		titles.put("error_message", "发放失败原因");
+		long completionCount =
+				memberTaskStatsMapper.countCompletions(ctx.companyId(), ctx.taskId());
+		long completionUserCount =
+				memberTaskStatsMapper.countCompletionUsers(ctx.companyId(), ctx.taskId());
+		int begin = task.getBeginTime() != null ? task.getBeginTime() : 0;
+		int end = task.getEndTime() != null ? task.getEndTime() : 0;
+		List<String> preamble =
+				MemberTaskExportCsvTemplates.completionPreambleLines(
+						task.getName(),
+						ctx.taskId(),
+						formatTimeRange(begin, end),
+						completionCount,
+						completionUserCount);
+		LinkedHashMap<String, String> titles =
+				MemberTaskExportCsvTemplates.completionDataColumnKeysToHeader();
 		List<Map<String, String>> allRows = new ArrayList<>();
 		int pages = (int) Math.ceil(total / (double) BATCH);
 		for (int page = 1; page <= pages; page++) {
@@ -114,9 +141,9 @@ public class MemberTaskCompletionExportAsyncService {
 			for (Map<String, Object> detail : records) {
 				Map<String, String> row = new LinkedHashMap<>();
 				long userId = longVal(detail.get("user_id"));
-				row.put("user_id", userId > 0L ? String.valueOf(userId) : "");
 				Map<String, Object> mem = userId > 0L ? memberByUserId.get(userId) : null;
 				row.put("nickname", mem == null ? "" : Objects.toString(mem.get("nickname"), ""));
+				row.put("user_id", userId > 0L ? String.valueOf(userId) : "");
 				int completedAt = intVal(detail.get("completed_at"));
 				row.put(
 						"completed_at",
@@ -134,7 +161,8 @@ public class MemberTaskCompletionExportAsyncService {
 			}
 		}
 		String fileBaseName = FILE_TS.format(Instant.now()) + ctx.companyId() + "会员任务完成明细";
-		Map<String, String> uploaded = exportCsvFileService.exportCsv(fileBaseName, titles, allRows);
+		Map<String, String> uploaded =
+				exportCsvFileService.exportCsv(fileBaseName, preamble, titles, allRows);
 		if (uploaded.isEmpty() || !StringUtils.hasText(uploaded.get("url"))) {
 			log.debug("member_task export: csv upload failed taskId={}", ctx.taskId());
 			return;
@@ -148,6 +176,21 @@ public class MemberTaskCompletionExportAsyncService {
 				uploaded.getOrDefault("filename", fileBaseName + ".csv"),
 				uploaded.get("url"),
 				Instant.now().getEpochSecond());
+	}
+
+	private static String formatTimeRange(int begin, int end) {
+		if (begin <= 0 && end <= 0) {
+			return "";
+		}
+		String b = begin > 0 ? ROW_TS.format(Instant.ofEpochSecond(begin)) : "";
+		String e = end > 0 ? ROW_TS.format(Instant.ofEpochSecond(end)) : "";
+		if (b.isEmpty()) {
+			return e;
+		}
+		if (e.isEmpty()) {
+			return b;
+		}
+		return b + " ~ " + e;
 	}
 
 	private static long longVal(Object raw) {

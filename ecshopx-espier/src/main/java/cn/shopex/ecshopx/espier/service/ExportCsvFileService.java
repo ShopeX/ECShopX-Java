@@ -49,6 +49,17 @@ public class ExportCsvFileService {
 	 */
 	public Map<String, String> exportCsv(String fileBaseName, LinkedHashMap<String, String> titleKeysToHeader,
 			List<Map<String, String>> rows) {
+		return exportCsv(fileBaseName, List.of(), titleKeysToHeader, rows);
+	}
+
+	/**
+	 * @param preambleLines 数据表头行之前写入的整行文本（每元素一行，不再拆列）
+	 */
+	public Map<String, String> exportCsv(
+			String fileBaseName,
+			List<String> preambleLines,
+			LinkedHashMap<String, String> titleKeysToHeader,
+			List<Map<String, String>> rows) {
 		if (!StringUtils.hasText(fileBaseName)) {
 			log.debug("队列导出: 执行导出时失败");
 			return Map.of();
@@ -58,7 +69,7 @@ public class ExportCsvFileService {
 		Path temp = null;
 		try {
 			temp = Files.createTempFile("epidemic-export-", ".csv");
-			writeCsvFile(temp, titleKeysToHeader, rows);
+			writeCsvFile(temp, preambleLines, titleKeysToHeader, rows);
 			byte[] content = Files.readAllBytes(temp);
 			fileStorageService.put("file", objectKey, content);
 			String url = fileStorageService.privateDownloadUrl("file", objectKey, 3600);
@@ -80,11 +91,23 @@ public class ExportCsvFileService {
 		}
 	}
 
-	private void writeCsvFile(Path temp, LinkedHashMap<String, String> titleKeysToHeader,
-			List<Map<String, String>> rows) throws IOException {
+	private void writeCsvFile(
+			Path temp,
+			List<String> preambleLines,
+			LinkedHashMap<String, String> titleKeysToHeader,
+			List<Map<String, String>> rows)
+			throws IOException {
 		try (BufferedWriter w = new BufferedWriter(
 				new OutputStreamWriter(Files.newOutputStream(temp), StandardCharsets.UTF_8))) {
 			w.write('\uFEFF');
+			if (preambleLines != null) {
+				for (String line : preambleLines) {
+					if (line != null) {
+						w.write(line);
+					}
+					w.write('\n');
+				}
+			}
 			writeCsvLine(w, titleKeysToHeader.values());
 			for (Map<String, String> row : rows) {
 				List<String> cells = titleKeysToHeader.keySet().stream().map(k -> row.getOrDefault(k, "--")).toList();

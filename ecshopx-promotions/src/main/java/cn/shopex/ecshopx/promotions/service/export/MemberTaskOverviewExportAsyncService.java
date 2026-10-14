@@ -40,7 +40,7 @@ public class MemberTaskOverviewExportAsyncService {
 
 	private static final Logger log = LoggerFactory.getLogger(MemberTaskOverviewExportAsyncService.class);
 
-	public static final String EXPORT_TYPE = "export_member_task_overview";
+	public static final String EXPORT_TYPE = MemberTaskExportCsvTemplates.EXPORT_TYPE_OVERVIEW;
 
 	private static final ZoneId SHANGHAI = ZoneId.of("Asia/Shanghai");
 	private static final DateTimeFormatter FILE_TS =
@@ -79,16 +79,7 @@ public class MemberTaskOverviewExportAsyncService {
 		if (tasks == null || tasks.isEmpty()) {
 			return;
 		}
-		LinkedHashMap<String, String> titles = new LinkedHashMap<>();
-		titles.put("task_id", "任务ID");
-		titles.put("name", "任务名称");
-		titles.put("type_label", "任务类型");
-		titles.put("task_time", "任务时间");
-		titles.put("reward_summary", "任务奖励");
-		titles.put("completion_count", "任务完成次数");
-		titles.put("completion_user_count", "任务完成人数");
-		titles.put("attributed_spend", "通过任务累计消费");
-		titles.put("attributed_join_count", "通过任务累计入会");
+		LinkedHashMap<String, String> titles = MemberTaskExportCsvTemplates.overviewDataColumnKeysToHeader();
 		List<Map<String, String>> rows = new ArrayList<>();
 		for (MemberTask task : tasks) {
 			long taskId = task.getTaskId() != null ? task.getTaskId() : 0L;
