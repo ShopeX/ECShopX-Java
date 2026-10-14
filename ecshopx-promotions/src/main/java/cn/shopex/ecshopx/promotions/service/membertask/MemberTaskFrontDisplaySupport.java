@@ -47,13 +47,6 @@ public final class MemberTaskFrontDisplaySupport {
 		};
 	}
 
-	public static String audienceBadgeText(String typeDetail) {
-		if ("first_order".equals(typeDetail)) {
-			return "限新会员";
-		}
-		return null;
-	}
-
 	public static Map<String, String> shareFieldsFromRuleConfig(String ruleConfigJson, ObjectMapper objectMapper) {
 		Map<String, String> out = new LinkedHashMap<>();
 		if (!StringUtils.hasText(ruleConfigJson)) {

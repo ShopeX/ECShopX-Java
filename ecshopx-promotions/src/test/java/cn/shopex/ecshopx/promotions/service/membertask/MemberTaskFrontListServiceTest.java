@@ -77,6 +77,6 @@ class MemberTaskFrontListServiceTest {
 		assertThat(list.get(0).get("user_task_status")).isEqualTo(MemberTaskUserTaskStatus.TODO);
 		assertThat(list.get(0).get("frequency_text")).isEqualTo("任务周期内仅可完成一次");
 		assertThat(list.get(0).get("task_rule")).isEqualTo("完成首单即得奖励");
-		assertThat(list.get(0).get("audience_badge_text")).isEqualTo("限新会员");
+		assertThat(list.get(0)).doesNotContainKey("audience_badge_text");
 	}
 }

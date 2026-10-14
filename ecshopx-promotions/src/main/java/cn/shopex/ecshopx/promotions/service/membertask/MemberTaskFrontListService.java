@@ -158,10 +158,6 @@ public class MemberTaskFrontListService {
 		if (task.getTaskRule() != null && !task.getTaskRule().isBlank()) {
 			item.put("task_rule", task.getTaskRule().trim());
 		}
-		String badge = MemberTaskFrontDisplaySupport.audienceBadgeText(task.getTypeDetail());
-		if (badge != null) {
-			item.put("audience_badge_text", badge);
-		}
 		Map<String, String> share =
 				MemberTaskFrontDisplaySupport.shareFieldsFromRuleConfig(
 						task.getRuleConfig(), objectMapper);
