@@ -26,6 +26,8 @@ import cn.shopex.ecshopx.common.web.H5FrontAuthAttributes;
 import cn.shopex.ecshopx.common.web.locale.RequestLangTag;
 import cn.shopex.ecshopx.promotions.service.membertask.MemberTaskBrowseCompletionService;
 import cn.shopex.ecshopx.promotions.service.membertask.MemberTaskFrontListService;
+import cn.shopex.ecshopx.promotions.service.membertask.MemberTaskFrontParticipationService;
+import cn.shopex.ecshopx.promotions.service.membertask.MemberTaskFrontRulePageService;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import java.util.Locale;
@@ -37,10 +39,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * C 端会员任务（SSOT G24 / §11.6 · ECX-10434 列表仍为骨架；browse 上报 ECX-10467）。
+ * C 端会员任务（SSOT G24 / §11.6 · ECX-10434；browse 上报 ECX-10467）。
  */
 @DingoResponse(
 		resource = DingoResponse.ResourceStyle.DINGO,
@@ -53,14 +56,20 @@ import org.springframework.web.bind.annotation.RestController;
 public class MemberTasksFrontController {
 
 	private final MemberTaskFrontListService memberTaskFrontListService;
+	private final MemberTaskFrontParticipationService memberTaskFrontParticipationService;
+	private final MemberTaskFrontRulePageService memberTaskFrontRulePageService;
 	private final MemberTaskBrowseCompletionService memberTaskBrowseCompletionService;
 	private final LangueProperties langueProperties;
 
 	public MemberTasksFrontController(
 			MemberTaskFrontListService memberTaskFrontListService,
+			MemberTaskFrontParticipationService memberTaskFrontParticipationService,
+			MemberTaskFrontRulePageService memberTaskFrontRulePageService,
 			MemberTaskBrowseCompletionService memberTaskBrowseCompletionService,
 			LangueProperties langueProperties) {
 		this.memberTaskFrontListService = memberTaskFrontListService;
+		this.memberTaskFrontParticipationService = memberTaskFrontParticipationService;
+		this.memberTaskFrontRulePageService = memberTaskFrontRulePageService;
 		this.memberTaskBrowseCompletionService = memberTaskBrowseCompletionService;
 		this.langueProperties = langueProperties;
 	}
@@ -76,6 +85,31 @@ public class MemberTasksFrontController {
 		}
 		return ResponseEntity.ok(
 				ApiResult.ok(memberTaskFrontListService.list(companyId, userId, locale)));
+	}
+
+	@GetMapping(value = "/participations", name = "历史参与任务")
+	public ResponseEntity<ApiResult<Map<String, Object>>> participations(
+			HttpServletRequest request,
+			@RequestParam(value = "page_no", defaultValue = "1") int pageNo,
+			@RequestParam(value = "page_size", defaultValue = "20") int pageSize) {
+		long companyId = parseCompanyIdFromRequest(request);
+		long userId = parseAuthUserIdFromClaims(readH5AuthClaimsMap(request));
+		if (userId <= 0L) {
+			throw new UnauthorizedException("Unable to authenticate user.");
+		}
+		return ResponseEntity.ok(
+				ApiResult.ok(
+						memberTaskFrontParticipationService.list(companyId, userId, pageNo, pageSize)));
+	}
+
+	@GetMapping(value = "/rule-page", name = "任务中心规则页")
+	public ResponseEntity<ApiResult<Map<String, Object>>> rulePage(HttpServletRequest request) {
+		long companyId = parseCompanyIdFromRequest(request);
+		long userId = parseAuthUserIdFromClaims(readH5AuthClaimsMap(request));
+		if (userId <= 0L) {
+			throw new UnauthorizedException("Unable to authenticate user.");
+		}
+		return ResponseEntity.ok(ApiResult.ok(memberTaskFrontRulePageService.rulePage(companyId)));
 	}
 
 	@PostMapping(value = "/browse-report", name = "浏览任务进度上报")

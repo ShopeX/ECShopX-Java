@@ -33,4 +33,34 @@
 		ORDER BY c.completion_id DESC
 		LIMIT #{offset}, #{limit}
 	</select>
+
+	<sql id="userParticipationFrom">
+		FROM member_task_completion c
+		LEFT JOIN member_task_reward_grant g
+			ON g.completion_id = c.completion_id AND g.company_id = c.company_id
+		INNER JOIN member_task t
+			ON t.task_id = c.task_id AND t.company_id = c.company_id
+		WHERE c.company_id = #{companyId}
+		  AND c.user_id = #{userId}
+		  AND c.voided = 0
+	</sql>
+
+	<select id="countUserParticipations" resultType="long">
+		SELECT COUNT(*)
+		<include refid="userParticipationFrom"/>
+	</select>
+
+	<select id="selectUserParticipationsPage" resultType="map">
+		SELECT c.completion_id AS completion_id,
+			c.task_id AS task_id,
+			c.completed_at AS completed_at,
+			g.status AS grant_status,
+			t.name AS task_name,
+			t.type_category AS type_category,
+			t.type_detail AS type_detail,
+			t.reward_summary AS reward_summary
+		<include refid="userParticipationFrom"/>
+		ORDER BY c.completed_at DESC, c.completion_id DESC
+		LIMIT #{offset}, #{limit}
+	</select>
 </mapper>

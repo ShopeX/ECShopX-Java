@@ -111,7 +111,7 @@ public class MemberTaskFrontListService {
 					activityDisplay, userTaskStatus)) {
 				continue;
 			}
-			list.add(toListItem(task, activityDisplay, userTaskStatus, readJumpPage(task)));
+			list.add(toListItem(task, activityDisplay, userTaskStatus, readJumpPage(task), objectMapper));
 		}
 		Map<String, Object> out = new LinkedHashMap<>();
 		out.put("list", list);
@@ -120,7 +120,11 @@ public class MemberTaskFrontListService {
 	}
 
 	private static Map<String, Object> toListItem(
-			MemberTask task, String activityDisplay, String userTaskStatus, String jumpPage) {
+			MemberTask task,
+			String activityDisplay,
+			String userTaskStatus,
+			String jumpPage,
+			ObjectMapper objectMapper) {
 		Map<String, Object> item = new LinkedHashMap<>();
 		item.put("task_id", task.getTaskId());
 		item.put("name", task.getName());
@@ -145,6 +149,23 @@ public class MemberTaskFrontListService {
 		if (jumpPage != null) {
 			item.put("jump_page", jumpPage);
 		}
+		String frequencyType = task.getFrequencyType();
+		item.put("frequency_type", frequencyType);
+		item.put("frequency_period", task.getFrequencyPeriod());
+		item.put(
+				"frequency_text",
+				MemberTaskFrontDisplaySupport.frequencyText(frequencyType, task.getFrequencyPeriod()));
+		if (task.getTaskRule() != null && !task.getTaskRule().isBlank()) {
+			item.put("task_rule", task.getTaskRule().trim());
+		}
+		String badge = MemberTaskFrontDisplaySupport.audienceBadgeText(task.getTypeDetail());
+		if (badge != null) {
+			item.put("audience_badge_text", badge);
+		}
+		Map<String, String> share =
+				MemberTaskFrontDisplaySupport.shareFieldsFromRuleConfig(
+						task.getRuleConfig(), objectMapper);
+		share.forEach(item::put);
 		return item;
 	}
 

@@ -35,4 +35,13 @@ public interface MemberTaskCompletionListMapper {
 			@Param("grantStatusFilter") String grantStatusFilter,
 			@Param("offset") long offset,
 			@Param("limit") int limit);
+
+	long countUserParticipations(
+			@Param("companyId") long companyId, @Param("userId") long userId);
+
+	List<Map<String, Object>> selectUserParticipationsPage(
+			@Param("companyId") long companyId,
+			@Param("userId") long userId,
+			@Param("offset") long offset,
+			@Param("limit") int limit);
 }

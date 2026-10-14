@@ -64,6 +64,8 @@ class MemberTaskFrontListServiceTest {
 		task.setFrequencyType("once");
 		task.setAudienceMode("unlimited");
 		task.setRewardSummary("100积分");
+		task.setFrequencyType("once");
+		task.setTaskRule("完成首单即得奖励");
 		when(memberTaskMapper.selectList(any(QueryWrapper.class))).thenReturn(List.of(task));
 		when(memberTaskCompletionMapper.selectOne(any(QueryWrapper.class))).thenReturn(null);
 
@@ -73,5 +75,8 @@ class MemberTaskFrontListServiceTest {
 		@SuppressWarnings("unchecked")
 		List<Map<String, Object>> list = (List<Map<String, Object>>) data.get("list");
 		assertThat(list.get(0).get("user_task_status")).isEqualTo(MemberTaskUserTaskStatus.TODO);
+		assertThat(list.get(0).get("frequency_text")).isEqualTo("任务周期内仅可完成一次");
+		assertThat(list.get(0).get("task_rule")).isEqualTo("完成首单即得奖励");
+		assertThat(list.get(0).get("audience_badge_text")).isEqualTo("限新会员");
 	}
 }
