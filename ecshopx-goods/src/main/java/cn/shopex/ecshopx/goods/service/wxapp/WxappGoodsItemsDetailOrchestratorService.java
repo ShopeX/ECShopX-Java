@@ -165,10 +165,8 @@ public class WxappGoodsItemsDetailOrchestratorService {
 		wxappGoodsItemsDetailPostEnrichmentService.runPostSteps16Through28(result, companyId, userId, distributorId, gradeId, needTdk, promotionActivityData,
 				effectiveItemId, groupMinBaselineStore, request);
 		if (!preview) {
-			// 拼团/秒杀跳过配送合成；限时特惠按归属方配送能力合成 logistics_store
-			boolean applyDisplayTotal = !ItemLogisticsStoreEnricher.isActivitySkipDisplay(Map.of("activity_type", activityType));
-			itemLogisticsStoreEnricher.enrichDetailAndApplyDisplayTotal(
-					companyId, distributorId, result, applyDisplayTotal);
+			boolean shopScreen = ItemLogisticsStoreEnricher.isShopScreenParam(request.getParameter("isShopScreen"));
+			itemLogisticsStoreEnricher.enrichDetailForWxapp(companyId, distributorId, result, shopScreen);
 		}
 		return result;
 	}

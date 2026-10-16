@@ -24,6 +24,7 @@ import cn.shopex.ecshopx.common.core.domain.ApiResult;
 import cn.shopex.ecshopx.common.exception.UnauthorizedException;
 import cn.shopex.ecshopx.common.config.LangueProperties;
 import cn.shopex.ecshopx.common.web.FlexibleBody;
+import cn.shopex.ecshopx.common.web.locale.RequestCountryCode;
 import cn.shopex.ecshopx.common.web.locale.RequestLangTag;
 import cn.shopex.ecshopx.companys.dto.CreateDataRoleRequest;
 import cn.shopex.ecshopx.companys.dto.UpdateDataRoleRequest;
@@ -94,7 +95,8 @@ public class RolesController {
 			throw new UnauthorizedException(
 					"Failed to authenticate because of bad credentials or an invalid authorization header.");
 		}
-		String requestLang = RequestLangTag.current(langueProperties);
+		String requestLang =
+				RequestCountryCode.resolve(langueProperties, request.getParameter("country_code"));
 		List<Map<String, Object>> data = rolesPermissionQueryService.getPermission(version, jwt, requestLang);
 		return ResponseEntity.ok(ApiResult.ok(data));
 	}

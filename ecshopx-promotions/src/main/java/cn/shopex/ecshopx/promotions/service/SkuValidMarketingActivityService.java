@@ -158,7 +158,8 @@ public class SkuValidMarketingActivityService {
 			effectiveMarketingIds =
 					marketingActivityCatalogAccess.listMarketingIdsHitBySkuItem(companyId, itemId, marketingIdOrder, now);
 		}
-		Map<Long, Map<String, Object>> relItemArr = loadRelItemMaps(companyId, effectiveMarketingIds, now);
+		Map<Long, Map<String, Object>> relItemArr =
+				loadRelItemMapsForSkuItem(companyId, effectiveMarketingIds, now, itemId);
 		Set<Long> allMarketingIds = activityList.stream()
 				.map(MarketingActivity::getMarketingId)
 				.filter(Objects::nonNull)
@@ -361,6 +362,20 @@ public class SkuValidMarketingActivityService {
 			}
 		}
 		return out;
+	}
+
+	private Map<Long, Map<String, Object>> loadRelItemMapsForSkuItem(
+			long companyId, List<Long> marketingIds, int now, @Nullable Long skuItemId) {
+		if (skuItemId != null && skuItemId > 0L && marketingIds != null && !marketingIds.isEmpty()) {
+			Map<Long, List<Long>> relItemIdsByMarketing = new LinkedHashMap<>();
+			for (Long mid : marketingIds) {
+				if (mid != null) {
+					relItemIdsByMarketing.put(mid, List.of(skuItemId));
+				}
+			}
+			return loadRelItemMapsForGoodsDetail(companyId, marketingIds, now, relItemIdsByMarketing);
+		}
+		return loadRelItemMaps(companyId, marketingIds, now);
 	}
 
 	private Map<Long, Map<String, Object>> loadRelItemMaps(long companyId, List<Long> marketingIds, int now) {

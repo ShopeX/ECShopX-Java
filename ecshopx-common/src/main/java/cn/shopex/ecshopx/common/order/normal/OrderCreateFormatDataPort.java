@@ -20,5 +20,12 @@ public interface OrderCreateFormatDataPort {
 
 	void format(NormalOrderCreateParams p);
 
+	/**
+	 * 储值（pay_type=deposit）余额校验：仅在真实创建订单路径调用。
+	 * 结算页预览（wxapp getOrderTempInfo / shopadmin checkout）不得调用，
+	 * 余额不足由提交订单时拦截（ECX-10469）。
+	 */
+	void assertDepositBalance(NormalOrderCreateParams p);
+
 	void applyCheckoutCouponAfterFreight(NormalOrderCreateParams p);
 }

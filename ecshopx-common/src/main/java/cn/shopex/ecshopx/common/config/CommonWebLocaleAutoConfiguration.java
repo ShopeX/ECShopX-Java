@@ -39,7 +39,8 @@ public class CommonWebLocaleAutoConfiguration {
 			CountryCodeLocaleFilter countryCodeLocaleFilter) {
 		FilterRegistrationBean<CountryCodeLocaleFilter> reg = new FilterRegistrationBean<>(countryCodeLocaleFilter);
 		reg.addUrlPatterns("/*");
-		reg.setOrder(Ordered.HIGHEST_PRECEDENCE + 10);
+		// 晚于多数 Filter，确保 Undertow 已解析 query 再读 country_code
+		reg.setOrder(Ordered.LOWEST_PRECEDENCE - 50);
 		return reg;
 	}
 }

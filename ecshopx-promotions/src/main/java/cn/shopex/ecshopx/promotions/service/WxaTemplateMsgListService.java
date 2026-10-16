@@ -43,6 +43,7 @@ public class WxaTemplateMsgListService implements WxaNewTmplListPort {
 		m.put("member", List.of("memberCreateSucc"));
 		m.put("coupon", List.of("userGetCardSucc"));
 		m.put("goods", List.of("goodsArrivalNotice"));
+		m.put("member_signin", List.of("member_signin_reminder"));
 		SOURCE_TYPE_TO_SCENES = Collections.unmodifiableMap(m);
 	}
 

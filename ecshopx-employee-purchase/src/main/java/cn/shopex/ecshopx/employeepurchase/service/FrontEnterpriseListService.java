@@ -22,12 +22,10 @@ import cn.shopex.ecshopx.distribution.service.DistributorInfoResolveService;
 import cn.shopex.ecshopx.distribution.service.DistributorSelfMetaService;
 import cn.shopex.ecshopx.employeepurchase.domain.ActivityEnterprises;
 import cn.shopex.ecshopx.employeepurchase.domain.Employees;
-import cn.shopex.ecshopx.employeepurchase.domain.EnterpriseEmailBox;
 import cn.shopex.ecshopx.employeepurchase.domain.Enterprises;
 import cn.shopex.ecshopx.employeepurchase.domain.Relatives;
 import cn.shopex.ecshopx.employeepurchase.mapper.ActivityEnterprisesMapper;
 import cn.shopex.ecshopx.employeepurchase.mapper.EmployeesMapper;
-import cn.shopex.ecshopx.employeepurchase.mapper.EnterpriseEmailBoxMapper;
 import cn.shopex.ecshopx.employeepurchase.mapper.EnterprisesMapper;
 import cn.shopex.ecshopx.employeepurchase.mapper.RelativesMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -50,7 +48,6 @@ import org.springframework.util.StringUtils;
 public class FrontEnterpriseListService {
 
 	private final EnterprisesMapper enterprisesMapper;
-	private final EnterpriseEmailBoxMapper enterpriseEmailBoxMapper;
 	private final EmployeesMapper employeesMapper;
 	private final RelativesMapper relativesMapper;
 	private final ActivityEnterprisesMapper activityEnterprisesMapper;
@@ -60,7 +57,6 @@ public class FrontEnterpriseListService {
 
 	public FrontEnterpriseListService(
 			EnterprisesMapper enterprisesMapper,
-			EnterpriseEmailBoxMapper enterpriseEmailBoxMapper,
 			EmployeesMapper employeesMapper,
 			RelativesMapper relativesMapper,
 			ActivityEnterprisesMapper activityEnterprisesMapper,
@@ -68,7 +64,6 @@ public class FrontEnterpriseListService {
 			DistributorSelfMetaService distributorSelfMetaService,
 			DistributorInfoResolveService distributorInfoResolveService) {
 		this.enterprisesMapper = enterprisesMapper;
-		this.enterpriseEmailBoxMapper = enterpriseEmailBoxMapper;
 		this.employeesMapper = employeesMapper;
 		this.relativesMapper = relativesMapper;
 		this.activityEnterprisesMapper = activityEnterprisesMapper;
@@ -104,21 +99,6 @@ public class FrontEnterpriseListService {
 			return empty;
 		}
 
-		List<Long> enterpriseIds =
-				records.stream().map(Enterprises::getId).filter(Objects::nonNull).distinct().toList();
-		Map<Long, EnterpriseEmailBox> emailMap = new LinkedHashMap<>();
-		if (!enterpriseIds.isEmpty()) {
-			List<EnterpriseEmailBox> boxes =
-					enterpriseEmailBoxMapper.selectList(
-							new LambdaQueryWrapper<EnterpriseEmailBox>()
-									.eq(EnterpriseEmailBox::getCompanyId, companyId)
-									.in(EnterpriseEmailBox::getEnterpriseId, enterpriseIds));
-			emailMap =
-					boxes.stream()
-							.collect(
-									Collectors.toMap(EnterpriseEmailBox::getEnterpriseId, Function.identity(), (a, b) -> a));
-		}
-
 		Set<Integer> storeIds = new LinkedHashSet<>();
 		for (Enterprises row : records) {
 			Integer did = row.getDistributorId();
@@ -137,7 +117,7 @@ public class FrontEnterpriseListService {
 
 		List<Map<String, Object>> list = new ArrayList<>();
 		for (Enterprises row : records) {
-			list.add(toListRowMap(row, emailMap, idToName, selfName));
+			list.add(toListRowMap(row, idToName, selfName));
 		}
 
 		Map<String, Object> result = new LinkedHashMap<>();
@@ -353,7 +333,6 @@ public class FrontEnterpriseListService {
 
 	private static Map<String, Object> toListRowMap(
 			Enterprises row,
-			Map<Long, EnterpriseEmailBox> emailMap,
 			Map<Integer, String> idToName,
 			String selfName) {
 		LinkedHashMap<String, Object> m = new LinkedHashMap<>();
@@ -372,13 +351,8 @@ public class FrontEnterpriseListService {
 		m.put("updated", row.getUpdated());
 		m.put("is_employee_check_enabled", Boolean.TRUE.equals(row.getIsEmployeeCheckEnabled()) ? "true" : "false");
 
-		boolean emailAuth = "email".equals(row.getAuthType());
-		EnterpriseEmailBox box = emailAuth && row.getId() != null ? emailMap.get(row.getId()) : null;
-		m.put("relay_host", box != null && box.getRelayHost() != null ? box.getRelayHost() : "");
-		m.put("smtp_port", box != null && box.getSmtpPort() != null ? box.getSmtpPort() : "");
-		m.put("email_user", box != null && box.getUser() != null ? box.getUser() : "");
-		m.put("email_password", box != null && box.getPassword() != null ? box.getPassword() : "");
-		m.put("email_suffix", box != null && box.getSuffix() != null ? box.getSuffix() : "");
+		// C端（免登录）列表不返回企业发件邮箱 SMTP 配置（relay_host/smtp_port/email_user/password/suffix），
+		// 避免向未登录调用方暴露服务器地址与发件账号；管理端仍可见（密码已脱敏）
 
 		int distId = row.getDistributorId() != null ? row.getDistributorId() : -1;
 		String distributorName;

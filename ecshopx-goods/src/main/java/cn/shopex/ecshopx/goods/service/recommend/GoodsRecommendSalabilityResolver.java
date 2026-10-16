@@ -593,8 +593,15 @@ public class GoodsRecommendSalabilityResolver {
 		return Math.max(fromDefault, maxSibling);
 	}
 
+	/**
+	 * 与 {@link cn.shopex.ecshopx.goods.service.items.DistributorItemsDetailMergeService} 一致：
+	 * {@code is_total_store=true} 时展示平台 {@code items.price}，不用门店行上的价。
+	 */
 	public int resolvePrice(Items item, DistributorItems distributorRow) {
-		if (distributorRow != null && distributorRow.getPrice() != null && distributorRow.getPrice() > 0) {
+		if (distributorRow != null
+				&& !Boolean.TRUE.equals(distributorRow.getIsTotalStore())
+				&& distributorRow.getPrice() != null
+				&& distributorRow.getPrice() > 0) {
 			return distributorRow.getPrice().intValue();
 		}
 		return item.getPrice() != null ? item.getPrice() : 0;

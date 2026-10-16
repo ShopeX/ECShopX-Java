@@ -126,7 +126,8 @@ public class ShopMenuController {
 				return ResponseEntity.ok(ApiResult.ok(Map.of("tree", List.of(), "list", List.of())));
 			}
 		}
-		String requestLang = RequestLangTag.current(langueProperties);
+		String requestLang =
+				RequestCountryCode.resolve(langueProperties, request.getParameter("country_code"));
 		Map<String, Object> result = shopMenuQueryService.getBorderShopMenu(version, requestLang);
 		return ResponseEntity.ok(ApiResult.ok(result));
 	}

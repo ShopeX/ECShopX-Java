@@ -16,10 +16,13 @@ class LanguageCanonicalCodesTest {
 	}
 
 	@Test
-	@DisplayName("固定四种顺序与展示名")
+	@DisplayName("固定六种顺序与展示名")
 	void fixedOrderAndDisplayNames() {
-		assertThat(LanguageCanonicalCodes.FIXED_ORDER).containsExactly("zh-CN", "en-CN", "ar-SA", "zh-TW");
+		assertThat(LanguageCanonicalCodes.FIXED_ORDER)
+				.containsExactly("zh-CN", "en-CN", "ar-SA", "zh-TW", "ja-JP", "ru-RU");
 		assertThat(LanguageCanonicalCodes.displayName("en-CN")).isEqualTo("English");
+		assertThat(LanguageCanonicalCodes.displayName("ja-JP")).isEqualTo("日本語");
 		assertThat(LanguageCanonicalCodes.sortOf("zh-TW")).isEqualTo(4);
+		assertThat(LanguageCanonicalCodes.sortOf("ru-RU")).isEqualTo(6);
 	}
 }

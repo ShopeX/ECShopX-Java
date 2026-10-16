@@ -16,22 +16,31 @@
 
 package cn.shopex.ecshopx.companys.service.statistics;
 
+import cn.shopex.ecshopx.common.web.locale.RequestMessageLocale;
 import cn.shopex.ecshopx.companys.mapper.CompanysNoticeStatisticsReadMapper;
 import java.time.Instant;
 import java.util.LinkedHashMap;
+import java.util.Locale;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class CompanysNoticeStatisticsService {
 
+	private static final String WARNING_GOODS_COUNT_KEY = "companys.notice.warning_goods_count";
+
 	private final CompanysNoticeStatisticsReadMapper companysNoticeStatisticsReadMapper;
 	private final CompanysItemWarningStoreReader companysItemWarningStoreReader;
+	private final MessageSource messageSource;
 
 	public CompanysNoticeStatisticsService(
 			CompanysNoticeStatisticsReadMapper companysNoticeStatisticsReadMapper,
-			CompanysItemWarningStoreReader companysItemWarningStoreReader) {
+			CompanysItemWarningStoreReader companysItemWarningStoreReader,
+			MessageSource messageSource) {
 		this.companysNoticeStatisticsReadMapper = companysNoticeStatisticsReadMapper;
 		this.companysItemWarningStoreReader = companysItemWarningStoreReader;
+		this.messageSource = messageSource;
 	}
 
 	public LinkedHashMap<String, Object> getOrderStatusCount(long companyId) {
@@ -82,7 +91,13 @@ public class CompanysNoticeStatisticsService {
 		long refundLong = companysNoticeStatisticsReadMapper.countRefundErrorLogsNotResubmit(companyId);
 		int refundErrorlogsCount = clampToInt(refundLong);
 
-		String warningGoodsCount = plat + " (自营) / " + all + " (全部)  ";
+		Locale locale = messageLocaleFromContext();
+		String warningGoodsCount =
+				messageSource.getMessage(
+						WARNING_GOODS_COUNT_KEY,
+						new Object[] {plat, all},
+						defaultWarningGoodsCount(plat, all),
+						locale);
 
 		out.put("wait_delivery_count", waitDeliveryCount);
 		out.put("warning_goods_count", warningGoodsCount);
@@ -91,6 +106,18 @@ public class CompanysNoticeStatisticsService {
 		out.put("started_gtoups_count", startedGtoupsCount);
 		out.put("aftersales_count", aftersalesCount);
 		out.put("refund_errorlogs_count", refundErrorlogsCount);
+	}
+
+	private static Locale messageLocaleFromContext() {
+		Locale holder = LocaleContextHolder.getLocale();
+		if (holder == null) {
+			return Locale.SIMPLIFIED_CHINESE;
+		}
+		return RequestMessageLocale.toMessageLocale(holder.toLanguageTag());
+	}
+
+	private static String defaultWarningGoodsCount(int plat, int all) {
+		return plat + " (自营) / " + all + " (全部)  ";
 	}
 
 	private static int clampToInt(long v) {

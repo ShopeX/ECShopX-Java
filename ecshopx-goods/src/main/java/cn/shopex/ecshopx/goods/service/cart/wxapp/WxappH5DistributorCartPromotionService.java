@@ -17,6 +17,7 @@
 package cn.shopex.ecshopx.goods.service.cart.wxapp;
 
 import cn.shopex.ecshopx.common.exception.ResourceException;
+import cn.shopex.ecshopx.common.goods.MarketingActivityCatalogAccess;
 import cn.shopex.ecshopx.common.util.PlusBuyCartRedisKeys;
 import cn.shopex.ecshopx.goods.service.wxapp.WxappGoodsItemsDetailPromotionActivityService;
 import cn.shopex.ecshopx.kaquan.service.vipgrade.VipGradeUserVipGradeGetService;
@@ -48,6 +49,7 @@ public class WxappH5DistributorCartPromotionService {
 	private final VipGradeUserVipGradeGetService vipGradeUserVipGradeGetService;
 	private final LimitPersonBuyService limitPersonBuyService;
 	private final SeckillUserBuysStoreService seckillUserBuysStoreService;
+	private final MarketingActivityCatalogAccess marketingActivityCatalogAccess;
 	private final StringRedisTemplate stringRedisTemplate;
 
 	public WxappH5DistributorCartPromotionService(
@@ -59,6 +61,7 @@ public class WxappH5DistributorCartPromotionService {
 			VipGradeUserVipGradeGetService vipGradeUserVipGradeGetService,
 			LimitPersonBuyService limitPersonBuyService,
 			SeckillUserBuysStoreService seckillUserBuysStoreService,
+			MarketingActivityCatalogAccess marketingActivityCatalogAccess,
 			@Qualifier("sharedStringRedisTemplate") StringRedisTemplate stringRedisTemplate) {
 		this.skuValidMarketingActivityService = skuValidMarketingActivityService;
 		this.marketingActivityApplyRulesService = marketingActivityApplyRulesService;
@@ -68,6 +71,7 @@ public class WxappH5DistributorCartPromotionService {
 		this.vipGradeUserVipGradeGetService = vipGradeUserVipGradeGetService;
 		this.limitPersonBuyService = limitPersonBuyService;
 		this.seckillUserBuysStoreService = seckillUserBuysStoreService;
+		this.marketingActivityCatalogAccess = marketingActivityCatalogAccess;
 		this.stringRedisTemplate = stringRedisTemplate;
 	}
 
@@ -476,6 +480,7 @@ public class WxappH5DistributorCartPromotionService {
 		if (activityData.isEmpty()) {
 			return;
 		}
+		int nowEpochSeconds = (int) (System.currentTimeMillis() / 1000L);
 		String productModel = shopMenuService.resolveProductModelKeyForCompany(companyId);
 		for (Map<String, Object> activity : activityData) {
 			long activityId = longVal(activity.get("marketing_id"));
@@ -520,11 +525,20 @@ public class WxappH5DistributorCartPromotionService {
 				if (useBound == 0 && relItems.isEmpty()) {
 					boundOk = true;
 				} else if (useBound > 0) {
-					Object rel = relItems.get(String.valueOf(longVal(cart.get("item_id"))));
-					if (rel instanceof Map<?, ?> rm && !rm.isEmpty()) {
-						boundOk = true;
-					} else if (rel instanceof List<?> rl && !rl.isEmpty()) {
-						boundOk = true;
+					long cartItemId = longVal(cart.get("item_id"));
+					if (cartItemId > 0L) {
+						List<Long> hit =
+								marketingActivityCatalogAccess.listMarketingIdsHitBySkuItem(
+										companyId, cartItemId, List.of(activityId), nowEpochSeconds);
+						boundOk = hit != null && hit.contains(activityId);
+					}
+					if (!boundOk) {
+						Object rel = relItems.get(String.valueOf(cartItemId));
+						if (rel instanceof Map<?, ?> rm && !rm.isEmpty()) {
+							boundOk = true;
+						} else if (rel instanceof List<?> rl && !rl.isEmpty()) {
+							boundOk = true;
+						}
 					}
 				}
 				if (!boundOk) {

@@ -242,8 +242,8 @@ public class WxappGoodsItemsListServiceImpl implements WxappGoodsItemsListServic
 		}
 
 		if (!list.isEmpty()) {
-			long listDistributorId = resolvePrimaryDistributorIdFromParams(params.get("distributor_id"));
-			itemLogisticsStoreEnricher.enrichListRowsAndApplyDisplayTotal(companyId, listDistributorId, list);
+			boolean shopScreen = ItemLogisticsStoreEnricher.isShopScreenParam(request.getParameter("isShopScreen"));
+			itemLogisticsStoreEnricher.enrichWxappListRows(companyId, list, shopScreen);
 		}
 
 		LinkedHashMap<String, Object> body = new LinkedHashMap<>(result);

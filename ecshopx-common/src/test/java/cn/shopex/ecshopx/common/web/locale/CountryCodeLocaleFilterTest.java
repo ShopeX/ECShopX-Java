@@ -31,7 +31,7 @@ class CountryCodeLocaleFilterTest {
 		AtomicReference<Locale> during = new AtomicReference<>();
 		FilterChain chain = (req, res) -> during.set(LocaleContextHolder.getLocale());
 		filter.doFilter(request, response, chain);
-		assertThat(during.get()).isEqualTo(Locale.forLanguageTag("en-CN"));
+		assertThat(during.get()).isEqualTo(Locale.forLanguageTag("en-US"));
 		assertThat(LocaleContextHolder.getLocaleContext()).isNull();
 	}
 
@@ -58,7 +58,7 @@ class CountryCodeLocaleFilterTest {
 		AtomicReference<Locale> during = new AtomicReference<>();
 		FilterChain chain = (req, res) -> during.set(LocaleContextHolder.getLocale());
 		filter.doFilter(request, response, chain);
-		assertThat(during.get()).isEqualTo(Locale.forLanguageTag("en-CN"));
+		assertThat(during.get()).isEqualTo(Locale.forLanguageTag("en-US"));
 	}
 
 	@Test
@@ -82,5 +82,28 @@ class CountryCodeLocaleFilterTest {
 		assertThat(CountryCodeLocaleFilter.firstAcceptLanguageTag("en-CN;q=0.8")).isEqualTo("en-CN");
 		assertThat(CountryCodeLocaleFilter.firstAcceptLanguageTag(null)).isNull();
 		assertThat(CountryCodeLocaleFilter.firstAcceptLanguageTag("")).isNull();
+	}
+
+	@Test
+	void countryCodeFromQueryStringParsesEncodedValue() {
+		assertThat(CountryCodeLocaleFilter.countryCodeFromQueryString("version=1&country_code=en-CN"))
+				.isEqualTo("en-CN");
+		assertThat(CountryCodeLocaleFilter.countryCodeFromQueryString("country_code=en%2DCN"))
+				.isEqualTo("en-CN");
+		assertThat(CountryCodeLocaleFilter.countryCodeFromQueryString("version=1")).isNull();
+	}
+
+	@Test
+	void setsLocaleFromQueryStringWhenParameterMapEmpty() throws ServletException, IOException {
+		LangueProperties props = new LangueProperties();
+		CountryCodeLocaleFilter filter = new CountryCodeLocaleFilter(props);
+		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/api/v1/shopmenu");
+		request.setQueryString("version=1&country_code=en-CN");
+		request.addHeader("Accept-Language", "zh-CN");
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		AtomicReference<Locale> during = new AtomicReference<>();
+		FilterChain chain = (req, res) -> during.set(LocaleContextHolder.getLocale());
+		filter.doFilter(request, response, chain);
+		assertThat(during.get()).isEqualTo(Locale.forLanguageTag("en-US"));
 	}
 }

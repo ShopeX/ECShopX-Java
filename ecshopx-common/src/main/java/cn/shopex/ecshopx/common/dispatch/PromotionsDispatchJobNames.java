@@ -46,6 +46,9 @@ public final class PromotionsDispatchJobNames {
 	public static final String ALI_TEMPLATE_MSG_SEND =
 			"job:136:PromotionsBundle\\Jobs\\AliTemplateMsgSend";
 
+	public static final String MEMBER_SIGNIN_REMINDER_SEND =
+			"job:member-signin-reminder-send";
+
 	private PromotionsDispatchJobNames() {
 	}
 }

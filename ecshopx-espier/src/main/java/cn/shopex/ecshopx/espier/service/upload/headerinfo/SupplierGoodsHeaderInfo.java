@@ -30,7 +30,6 @@ public final class SupplierGoodsHeaderInfo {
 		map.put("商品名称", new UploadHeaderColumnInfo(255, "", true));
 		map.put("SPU编码", new UploadHeaderColumnInfo(32, "平台唯一自动生成", false));
 		map.put("SKU编码", new UploadHeaderColumnInfo(32, "平台唯一自动生成\t", false));
-		map.put("供应商货号", new UploadHeaderColumnInfo(32, "", false));
 		map.put("简介", new UploadHeaderColumnInfo(20, "", false));
 		map.put("销售价", new UploadHeaderColumnInfo(255, "单位为(元)，最多两位小数", true));
 		map.put("市场价", new UploadHeaderColumnInfo(255, "单位为(元)，最多两位小数", false));

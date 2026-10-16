@@ -103,6 +103,7 @@ public class WxappNormalOrderCreateOrchestrator {
 		orderCreateItemCheckPort.check(state);
 		orderCreateDistributorCheckPort.check(state);
 		orderCreateFormatDataPort.format(state);
+		orderCreateFormatDataPort.assertDepositBalance(state);
 		applyEmployeePurchaseFormatIfNeeded(state, expectedOrderType, true);
 		if ("normal_groups".equals(expectedOrderType)) {
 			orderCreateGroupsNormalCheckoutPort.applyAfterFormat(state);

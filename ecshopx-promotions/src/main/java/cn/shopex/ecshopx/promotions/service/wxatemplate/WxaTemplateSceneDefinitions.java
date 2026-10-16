@@ -46,6 +46,7 @@ public final class WxaTemplateSceneDefinitions {
 		tmp.put("registrationResultNotice", WxaTemplateSceneDefinition.REGISTRATION_RESULT_NOTICE);
 		tmp.put("registrationActivityNotice", WxaTemplateSceneDefinition.REGISTRATION_ACTIVITY_NOTICE);
 		tmp.put("goodsArrivalNotice", WxaTemplateSceneDefinition.GOODS_ARRIVAL_NOTICE);
+		tmp.put("member_signin_reminder", WxaTemplateSceneDefinition.MEMBER_SIGNIN_REMINDER);
 		BY_NAME = Map.copyOf(tmp);
 		List<Map.Entry<String, WxaTemplateSceneDefinition>> order = new ArrayList<>();
 		for (Map.Entry<String, WxaTemplateSceneDefinition> e : tmp.entrySet()) {
@@ -191,15 +192,15 @@ public final class WxaTemplateSceneDefinitions {
 
 		public static final WxaTemplateSceneDefinition AFTERSALES_SUCCESS =
 				new WxaTemplateSceneDefinition(
-						"4499",
-						List.of(1, 5, 6),
+						"5049",
+						List.of(2, 12, 5),
 						List.of("yykweishop", "appleweishop"),
 						"售后进度通知",
 						"退货回寄提醒",
 						List.of(
-								row("order_id", "订单编号", "character_string1"),
-								row("refund_fee", "退款金额", "amount5"),
-								row("remarks", "备注", "thing6")),
+								row("order_id", "订单编号", "character_string2"),
+								row("refund_fee", "退款金额", "amount12"),
+								row("remarks", "温馨提示", "thing5")),
 						"交易提醒",
 						desc("商家同意退货等待买家寄回时触发"));
 
@@ -258,6 +259,19 @@ public final class WxaTemplateSceneDefinitions {
 								row("notice", "温馨提示", "thing2")),
 						"会员提醒",
 						desc("缺货商品到货通知到会员"));
+
+		public static final WxaTemplateSceneDefinition MEMBER_SIGNIN_REMINDER =
+				new WxaTemplateSceneDefinition(
+						"6240",
+						List.of(5, 3),
+						List.of("yykweishop", "appleweishop"),
+						"签到提醒",
+						"签到提醒",
+						List.of(
+								row("activity_name", "活动名称", "thing5"),
+								row("notice", "温馨提示", "thing3")),
+						"会员提醒",
+						desc("会员签到漏签提醒"));
 
 		private final String id;
 		private final List<Integer> keywordIdList;

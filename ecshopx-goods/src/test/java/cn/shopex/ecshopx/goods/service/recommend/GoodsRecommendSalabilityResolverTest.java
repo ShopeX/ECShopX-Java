@@ -176,6 +176,26 @@ class GoodsRecommendSalabilityResolverTest {
 	}
 
 	@Test
+	void resolvePrice_totalStore_usesPlatformItemPrice() {
+		Items item = item(6932L, 0, "onsale", 10, null);
+		item.setPrice(40);
+		DistributorItems di = distributorRow(6932L, true, 10);
+		di.setIsTotalStore(true);
+		di.setPrice(29900L);
+		assertEquals(40, resolver.resolvePrice(item, di));
+	}
+
+	@Test
+	void resolvePrice_localStore_usesDistributorPrice() {
+		Items item = item(6729L, 0, "onsale", 10, null);
+		item.setPrice(850100);
+		DistributorItems di = distributorRow(6729L, true, 10);
+		di.setIsTotalStore(false);
+		di.setPrice(80L);
+		assertEquals(80, resolver.resolvePrice(item, di));
+	}
+
+	@Test
 	void isSellable_emptyPics_stillSellableWhenInStock() {
 		when(productModelResolver.resolveProductModel(1L)).thenReturn("standard");
 		Items item = item(6749L, 0, "onsale", 10, null);

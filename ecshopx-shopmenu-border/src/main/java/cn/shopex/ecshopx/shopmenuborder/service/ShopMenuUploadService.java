@@ -235,7 +235,7 @@ public class ShopMenuUploadService {
 					}
 					Map<String, String> bag = new LinkedHashMap<>();
 					bag.put("name", translated);
-					commonLangModWriteService.saveLang(
+					commonLangModWriteService.updateLangData(
 							BORDER_COMPANY_ID, bag, "shop_menu", (int) newId, "shop_menu", langue);
 				}
 			}

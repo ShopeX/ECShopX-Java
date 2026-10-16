@@ -35,6 +35,9 @@ import org.springframework.util.StringUtils;
 @Service
 public class EnterpriseCreateService {
 
+	/** 邮箱密码脱敏掩码：接口统一返回该值；更新时传该值表示沿用库中原密码 */
+	public static final String EMAIL_PASSWORD_MASK = "******";
+
 	private final EnterprisesMapper enterprisesMapper;
 	private final EnterpriseEmailBoxMapper enterpriseEmailBoxMapper;
 
@@ -73,7 +76,8 @@ public class EnterpriseCreateService {
 				result.put("relay_host", nullToEmpty(relData.get("relay_host")));
 				result.put("smtp_port", nullToEmpty(relData.get("smtp_port")));
 				result.put("email_user", nullToEmpty(relData.get("user")));
-				result.put("email_password", nullToEmpty(relData.get("password")));
+				// 脱敏：新建响应不回显明文 SMTP 密码
+				result.put("email_password", EMAIL_PASSWORD_MASK);
 				result.put("email_suffix", nullToEmpty(relData.get("suffix")));
 			}
 
@@ -122,6 +126,26 @@ public class EnterpriseCreateService {
 			params.put("is_employee_check_enabled", isEmployeeCheckEnabled);
 
 			params.put("enterprise_id", parsedEnterpriseId);
+
+			// 编辑表单会回填脱敏密码(******)：传掩码时沿用库中原密码，避免掩码被当成真实密码入库导致发件失效
+			Object submittedPassword = params.get("email_password");
+			if ("email".equals(params.get("auth_type"))
+					&& submittedPassword != null
+					&& EMAIL_PASSWORD_MASK.equals(submittedPassword.toString())) {
+				EnterpriseEmailBox oldBox =
+						enterpriseEmailBoxMapper.selectOne(
+								new LambdaQueryWrapper<EnterpriseEmailBox>()
+										.eq(EnterpriseEmailBox::getCompanyId, companyId)
+										.eq(EnterpriseEmailBox::getEnterpriseId, parsedEnterpriseId)
+										.last("LIMIT 1"));
+				if (oldBox == null
+						|| oldBox.getPassword() == null
+						|| oldBox.getPassword().isEmpty()) {
+					throw new ResourceException("邮箱密码已失效，请重新输入");
+				}
+				params.put("email_password", oldBox.getPassword());
+			}
+
 			checkExist(params, parsedEnterpriseId);
 
 			Enterprises existing =
@@ -191,7 +215,8 @@ public class EnterpriseCreateService {
 				result.put("relay_host", nullToEmpty(relData.get("relay_host")));
 				result.put("smtp_port", nullToEmpty(relData.get("smtp_port")));
 				result.put("email_user", nullToEmpty(relData.get("user")));
-				result.put("email_password", nullToEmpty(relData.get("password")));
+				// 脱敏：更新响应不回显明文 SMTP 密码
+				result.put("email_password", EMAIL_PASSWORD_MASK);
 				result.put("email_suffix", nullToEmpty(relData.get("suffix")));
 			}
 

@@ -351,6 +351,10 @@ public class AdminOrderListFilterBuilder {
 				f.put("delivery_status|in", List.of("DONE", "PARTAIL"));
 				f.put("receipt_type", "logistics");
 			}
+			case "payed_partial" -> {
+				f.put("order_status", "PAYED");
+				f.put("delivery_status", "PARTAIL");
+			}
 			case "finish" -> f.put("order_status", "DONE");
 			case "reviewpass" -> f.put("order_status", "REVIEW_PASS");
 			case "done_noinvoice" -> {

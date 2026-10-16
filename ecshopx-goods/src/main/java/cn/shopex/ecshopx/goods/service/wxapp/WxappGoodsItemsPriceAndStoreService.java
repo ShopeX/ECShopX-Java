@@ -112,10 +112,8 @@ public class WxappGoodsItemsPriceAndStoreService {
 		}
 		Object mergedStore = data.get("item_total_store") != null ? data.get("item_total_store") : data.get("store");
 		data.put("store", mergedStore);
-		// 拼团/秒杀跳过配送合成；限时特惠按归属方配送能力合成
-		boolean applyDisplayTotal = !ItemLogisticsStoreEnricher.isActivitySkipDisplay(Map.of("activity_type", activityType));
-		itemLogisticsStoreEnricher.enrichDetailAndApplyDisplayTotal(
-				companyId, distributorId, data, applyDisplayTotal);
+		boolean shopScreen = ItemLogisticsStoreEnricher.isShopScreenParam(request.getParameter("isShopScreen"));
+		itemLogisticsStoreEnricher.enrichDetailForWxapp(companyId, distributorId, data, shopScreen);
 		applyGroupStoreMin(data, promotionActivityData, effectiveItemId, baselineStore);
 		return projectPriceAndStoreWhitelist(data);
 	}

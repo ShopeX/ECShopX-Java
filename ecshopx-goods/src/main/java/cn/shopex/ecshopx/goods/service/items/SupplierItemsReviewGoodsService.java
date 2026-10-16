@@ -98,6 +98,12 @@ public class SupplierItemsReviewGoodsService
 		params.put("supplier_id", supplierGoods.getSupplierId());
 		params.put("goods_id", supplierGoods.getGoodsId());
 		params.put("is_market", supplierGoods.getIsMarket());
+
+		// 对齐 PHP reviewGoods(approved)：审核通过后自动入商品池（无 draft 时等价 merge 空操作后再 sync）
+		if ("approved".equals(auditStatus)) {
+			SupplierItems approvedGoods = requireSupplierItem(pathItemId);
+			syncApprovedGoodsToPool(approvedGoods, pathItemId);
+		}
 	}
 
 	@Override
@@ -171,6 +177,7 @@ public class SupplierItemsReviewGoodsService
 				}
 				itemsRepository.updateByItemId(rsItem.getItemId(), companyId, patch);
 				syncItemSpec(rsItem.getItemId(), supplierSkuId, companyId);
+				persistPoolItemStore(rsItem.getItemId(), v);
 				if (Boolean.TRUE.equals(v.getIsDefault())) {
 					defaultItemId = rsItem.getItemId();
 				}
@@ -181,6 +188,7 @@ public class SupplierItemsReviewGoodsService
 				itemsRepository.insert(row);
 				rsItem = row;
 				syncItemSpec(rsItem.getItemId(), supplierSkuId, companyId);
+				persistPoolItemStore(rsItem.getItemId(), v);
 				if (Boolean.TRUE.equals(v.getIsDefault())) {
 					defaultItemId = rsItem.getItemId();
 				}
@@ -408,7 +416,16 @@ public class SupplierItemsReviewGoodsService
 		p.setStartNum(v.getStartNum());
 		p.setSpecialType(v.getSpecialType());
 		p.setItemUnit(v.getItemUnit());
+		p.setStore(v.getStore() != null ? v.getStore() : 0);
 		return p;
+	}
+
+	private void persistPoolItemStore(long poolItemId, SupplierItems supplierSku) {
+		if (poolItemId <= 0L || supplierSku == null) {
+			return;
+		}
+		int store = supplierSku.getStore() != null ? supplierSku.getStore() : 0;
+		itemStoreService.saveItemStore(poolItemId, store, 0L);
 	}
 
 	private Items mapSupplierToNewPoolItem(SupplierItems v, long supplierSkuId, long companyId) {

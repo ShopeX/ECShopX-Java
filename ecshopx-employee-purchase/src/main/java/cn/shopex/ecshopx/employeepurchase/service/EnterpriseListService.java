@@ -203,7 +203,12 @@ public class EnterpriseListService {
 		m.put("relay_host", box != null && box.getRelayHost() != null ? box.getRelayHost() : "");
 		m.put("smtp_port", box != null && box.getSmtpPort() != null ? box.getSmtpPort() : "");
 		m.put("email_user", box != null && box.getUser() != null ? box.getUser() : "");
-		m.put("email_password", box != null && box.getPassword() != null ? box.getPassword() : "");
+		// 脱敏：列表不返回明文 SMTP 密码，统一返回掩码；更新时传掩码表示沿用原密码
+		m.put(
+				"email_password",
+				box != null && box.getPassword() != null && !box.getPassword().isEmpty()
+						? EnterpriseCreateService.EMAIL_PASSWORD_MASK
+						: "");
 		m.put("email_suffix", box != null && box.getSuffix() != null ? box.getSuffix() : "");
 
 		int distId = row.getDistributorId() != null ? row.getDistributorId() : -1;

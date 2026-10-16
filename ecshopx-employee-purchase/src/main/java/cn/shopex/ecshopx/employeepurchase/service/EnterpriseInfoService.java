@@ -93,7 +93,12 @@ public class EnterpriseInfoService {
 				data.put("relay_host", box.getRelayHost());
 				data.put("smtp_port", box.getSmtpPort());
 				data.put("email_user", box.getUser());
-				data.put("email_password", box.getPassword());
+				// 脱敏：详情返回掩码；更新时传掩码表示沿用原密码（见 EnterpriseCreateService.updateEnterprise）
+				data.put(
+						"email_password",
+						box.getPassword() != null && !box.getPassword().isEmpty()
+								? EnterpriseCreateService.EMAIL_PASSWORD_MASK
+								: "");
 				data.put("email_suffix", box.getSuffix());
 			}
 		}

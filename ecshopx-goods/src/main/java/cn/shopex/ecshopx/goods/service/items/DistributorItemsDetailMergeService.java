@@ -128,6 +128,10 @@ public class DistributorItemsDetailMergeService {
 	private void applyShopOverlay(Map<String, Object> target, DistributorItems di, long distributorId, boolean mainRow, boolean replaceApprove) {
 		boolean totalStore = truthy(di.getIsTotalStore());
 		if (!totalStore) {
+			// 对齐 PHP DistributorItemsService::replaceItemInfo：替换店存前保留总部/池子可补货量到 logistics_store
+			if ("onsale".equals(str(target.get("approve_status")))) {
+				target.put("logistics_store", toInt(target.get("store")));
+			}
 			if (di.getStore() != null) {
 				target.put("store", di.getStore().intValue());
 			}

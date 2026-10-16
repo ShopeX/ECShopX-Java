@@ -25,13 +25,18 @@ release_init_paths() {
 
 release_read_product_version() {
   local pom_xml=$1
-  local ver=""
+  local ver="" prop=""
   if [ ! -f "$pom_xml" ]; then
     release_log_error "pom.xml not found: $pom_xml"
     return 1
   fi
   # sed only — lite deploy must not invoke host mvn/java (may be broken/unrelated on PATH).
   ver=$(sed -n '/<artifactId>ecshopx<\/artifactId>/,/<packaging>/{/<version>/{s/.*<version>\([^<]*\)<\/version>.*/\1/p;q}}' "$pom_xml")
+  # Resolve Maven CI-friendly placeholders like ${revision} from <properties>.
+  if [[ "$ver" =~ ^\$\{([A-Za-z0-9._-]+)\}$ ]]; then
+    prop="${BASH_REMATCH[1]}"
+    ver=$(sed -n "s|.*<${prop}>\\([^<]*\\)</${prop}>.*|\\1|p" "$pom_xml" | head -1)
+  fi
   if [ -z "$ver" ]; then
     release_log_error "cannot parse version from $pom_xml"
     return 1

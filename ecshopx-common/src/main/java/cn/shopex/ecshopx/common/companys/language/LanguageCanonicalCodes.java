@@ -22,26 +22,32 @@ import java.util.Locale;
 import java.util.Map;
 import org.springframework.util.StringUtils;
 
-/** 公司语言设置固定四种 canonical code 与展示名（ECX-10021 §2.3）。 */
+/** 公司语言设置固定 canonical code 与展示名（与 {@code langue.list} 六种对齐）。 */
 public final class LanguageCanonicalCodes {
 
 	public static final List<String> FIXED_ORDER =
-			List.of("zh-CN", "en-CN", "ar-SA", "zh-TW");
+			List.of("zh-CN", "en-CN", "ar-SA", "zh-TW", "ja-JP", "ru-RU");
 
 	private static final Map<String, String> ALIASES =
 			Map.of(
 					"en-us", "en-CN",
 					"en", "en-CN",
 					"ar", "ar-SA",
-					"ar-sa", "ar-SA");
+					"ar-sa", "ar-SA",
+					"ja", "ja-JP",
+					"ru", "ru-RU");
 
-	private static final Map<String, String> DISPLAY_NAMES =
-			new LinkedHashMap<>(
-					Map.of(
-							"zh-CN", "中文",
-							"en-CN", "English",
-							"ar-SA", "العربية",
-							"zh-TW", "中文繁体"));
+	private static final Map<String, String> DISPLAY_NAMES;
+
+	static {
+		DISPLAY_NAMES = new LinkedHashMap<>();
+		DISPLAY_NAMES.put("zh-CN", "中文");
+		DISPLAY_NAMES.put("en-CN", "English");
+		DISPLAY_NAMES.put("ar-SA", "العربية");
+		DISPLAY_NAMES.put("zh-TW", "中文繁体");
+		DISPLAY_NAMES.put("ja-JP", "日本語");
+		DISPLAY_NAMES.put("ru-RU", "Русский");
+	}
 
 	private LanguageCanonicalCodes() {}
 

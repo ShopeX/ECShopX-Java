@@ -169,10 +169,14 @@ public class GoodsRecommendMatchService {
 				continue;
 			}
 			seenRecommendGoods.add(recommendGoodsId);
-			resolved.add(new ResolvedMatch(candidate.mainItemId(), recommendItem, distributorItemsById.get(recommendItem.getItemId())));
+			resolved.add(
+					new ResolvedMatch(
+							candidate.mainItemId(),
+							recommendItem,
+							resolveDistributorRow(recommendItem, distributorItemsById)));
 		}
 
-		sortResolved(resolved, config.sort(), itemsById, distributorItemsById);
+		sortResolved(resolved, config.sort(), distributorItemsById);
 		if (resolved.size() > config.limit()) {
 			resolved = resolved.subList(0, config.limit());
 		}
@@ -194,21 +198,17 @@ public class GoodsRecommendMatchService {
 	private void sortResolved(
 			List<ResolvedMatch> resolved,
 			String sort,
-			Map<Long, Items> itemsById,
 			Map<Long, DistributorItems> distributorItemsById) {
 		Comparator<ResolvedMatch> comparator;
 		if (GoodsRecommendDisplaySort.PRICE_ASC.equals(sort)) {
 			comparator =
 					Comparator.comparingInt(
-							(ResolvedMatch r) ->
-									salabilityResolver.resolvePrice(
-											r.item(), distributorItemsById.get(r.item().getItemId())));
+							(ResolvedMatch r) -> salabilityResolver.resolvePrice(r.item(), r.distributorRow()));
 		} else {
 			comparator =
 					Comparator.comparingLong(
 									(ResolvedMatch r) ->
-											salabilityResolver.resolveSales(
-													r.item(), distributorItemsById.get(r.item().getItemId())))
+											salabilityResolver.resolveSales(r.item(), r.distributorRow()))
 							.reversed();
 		}
 		comparator =
@@ -403,6 +403,19 @@ public class GoodsRecommendMatchService {
 		}
 		String s = raw.toString().trim();
 		return GoodsRecommendDisplaySort.isValid(s) ? s : GoodsRecommendDisplayDefaults.DEFAULT_SORT;
+	}
+
+	private static DistributorItems resolveDistributorRow(
+			Items item, Map<Long, DistributorItems> distributorItemsById) {
+		if (item == null || item.getItemId() == null) {
+			return null;
+		}
+		long spuId =
+				item.getDefaultItemId() != null && item.getDefaultItemId() > 0
+						? item.getDefaultItemId()
+						: item.getItemId();
+		return GoodsRecommendSalabilityResolver.resolveMainDistributorRow(
+				item.getItemId(), spuId, distributorItemsById);
 	}
 
 	private record SceneConfig(boolean enabled, int limit, String sort) {}

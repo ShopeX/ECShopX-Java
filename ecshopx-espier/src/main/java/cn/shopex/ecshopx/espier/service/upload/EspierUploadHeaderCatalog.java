@@ -593,7 +593,6 @@ public final class EspierUploadHeaderCatalog {
 		HDR_SUPPLIER_GOODS.put("商品名称", "item_name");
 		HDR_SUPPLIER_GOODS.put("SPU编码", "goods_bn");
 		HDR_SUPPLIER_GOODS.put("SKU编码", "item_bn");
-		HDR_SUPPLIER_GOODS.put("供应商货号", "supplier_goods_bn");
 		HDR_SUPPLIER_GOODS.put("简介", "brief");
 		HDR_SUPPLIER_GOODS.put("销售价", "price");
 		HDR_SUPPLIER_GOODS.put("市场价", "market_price");

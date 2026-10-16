@@ -50,7 +50,7 @@ class LanguageSettingRedisServiceTest {
 				.when(messageSource.getMessage(anyString(), eq(null), anyString(), any()))
 				.thenAnswer(inv -> inv.getArgument(2));
 		LangueProperties langueProperties = new LangueProperties();
-		langueProperties.setList(List.of("zh-CN", "en-CN", "ar-SA", "zh-TW"));
+		langueProperties.setList(List.of("zh-CN", "en-CN", "ar-SA", "zh-TW", "ja-JP", "ru-RU"));
 		langueProperties.setDefaultLang("zh-CN");
 		service =
 				new LanguageSettingRedisService(
@@ -70,7 +70,7 @@ class LanguageSettingRedisServiceTest {
 		assertThat(data.get("configValid")).isEqualTo(true);
 		@SuppressWarnings("unchecked")
 		List<Map<String, Object>> languages = (List<Map<String, Object>>) data.get("languages");
-		assertThat(languages).hasSize(4);
+		assertThat(languages).hasSize(6);
 		assertThat(languages.get(0).get("enabled")).isEqualTo(true);
 		assertThat(languages.get(1).get("enabled")).isEqualTo(false);
 	}
@@ -80,7 +80,7 @@ class LanguageSettingRedisServiceTest {
 	void firstSaveWritesVersionOne() {
 		when(valueOperations.get("languageSetting:1001")).thenReturn(null);
 
-		Map<String, Object> body = validSaveBody(null, "zh-CN", true, true, false, false);
+		Map<String, Object> body = validSaveBody(null, "zh-CN", true, true, false, false, false, false);
 		Map<String, Object> out = service.saveSetting(COMPANY_ID, body);
 
 		assertThat(out.get("version")).isEqualTo(1);
@@ -96,7 +96,7 @@ class LanguageSettingRedisServiceTest {
 	void rejectAllDisabled() {
 		when(valueOperations.get("languageSetting:1001")).thenReturn(null);
 
-		Map<String, Object> body = validSaveBody(null, "zh-CN", false, false, false, false);
+		Map<String, Object> body = validSaveBody(null, "zh-CN", false, false, false, false, false, false);
 
 		assertThatThrownBy(() -> service.saveSetting(COMPANY_ID, body))
 				.isInstanceOf(BadRequestException.class)
@@ -119,7 +119,7 @@ class LanguageSettingRedisServiceTest {
 		when(valueOperations.get("languageSetting:1001"))
 				.thenReturn(new ObjectMapper().writeValueAsString(stored));
 
-		Map<String, Object> body = validSaveBody(1, "zh-CN", true, false, false, false);
+		Map<String, Object> body = validSaveBody(1, "zh-CN", true, false, false, false, false, false);
 
 		assertThatThrownBy(() -> service.saveSetting(COMPANY_ID, body))
 				.isInstanceOf(BadRequestException.class)
@@ -177,7 +177,9 @@ class LanguageSettingRedisServiceTest {
 			boolean zhEnabled,
 			boolean enEnabled,
 			boolean arEnabled,
-			boolean twEnabled) {
+			boolean twEnabled,
+			boolean jaEnabled,
+			boolean ruEnabled) {
 		Map<String, Object> body = new LinkedHashMap<>();
 		if (version != null) {
 			body.put("version", version);
@@ -188,6 +190,8 @@ class LanguageSettingRedisServiceTest {
 		languages.add(langRow("en-CN", enEnabled));
 		languages.add(langRow("ar-SA", arEnabled));
 		languages.add(langRow("zh-TW", twEnabled));
+		languages.add(langRow("ja-JP", jaEnabled));
+		languages.add(langRow("ru-RU", ruEnabled));
 		body.put("languages", languages);
 		return body;
 	}

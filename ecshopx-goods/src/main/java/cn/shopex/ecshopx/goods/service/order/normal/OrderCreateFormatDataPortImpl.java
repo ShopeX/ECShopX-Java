@@ -355,20 +355,28 @@ public class OrderCreateFormatDataPortImpl implements OrderCreateFormatDataPort 
 			orderCheckoutFullGiftService.allocateFullGiftFees(p);
 			applyOrderHolderFromItems(od);
 		}
-		if ("deposit".equals(stringVal(pr.get("pay_type")))) {
-			long uid = longVal(pr.get("user_id"), 0L);
-			if (uid > 0L) {
-				long balance = userDepositBalanceReadService.getUserDepositTotal(companyId, uid);
-				long needPay = longVal(od.get("total_fee"), 0L);
-				if (balance < needPay) {
-					throw new ResourceException(
-							messageSource.getMessage(
-									MSG_INSUFFICIENT_BALANCE,
-									null,
-									DEFAULT_INSUFFICIENT_BALANCE,
-									resolveLocale()));
-				}
-			}
+	}
+
+	@Override
+	public void assertDepositBalance(NormalOrderCreateParams p) {
+		Map<String, Object> pr = p.getParams();
+		if (!"deposit".equals(stringVal(pr.get("pay_type")))) {
+			return;
+		}
+		long companyId = longVal(pr.get("company_id"), 0L);
+		long uid = longVal(pr.get("user_id"), 0L);
+		if (uid <= 0L) {
+			return;
+		}
+		long balance = userDepositBalanceReadService.getUserDepositTotal(companyId, uid);
+		long needPay = longVal(p.getOrderData().get("total_fee"), 0L);
+		if (balance < needPay) {
+			throw new ResourceException(
+					messageSource.getMessage(
+							MSG_INSUFFICIENT_BALANCE,
+							null,
+							DEFAULT_INSUFFICIENT_BALANCE,
+							resolveLocale()));
 		}
 	}
 

@@ -246,6 +246,73 @@ public class ItemLogisticsStoreEnricher {
 	}
 
 	/**
+	 * C 端商品列表：对齐 PHP FrontApi Items — 默认展示店存；仅 {@code isShopScreen=1} 时 {@code store += logistics_store}。
+	 */
+	public void enrichWxappListRows(long companyId, List<Map<String, Object>> rows, boolean shopScreen) {
+		enrichListRowsWithLogisticsStore(companyId, rows);
+		if (!shopScreen || rows == null) {
+			return;
+		}
+		for (Map<String, Object> row : rows) {
+			if (row == null || isActivitySkipDisplay(row)) {
+				continue;
+			}
+			row.put("store", toInt(row.get("store")) + toInt(row.get("logistics_store")));
+		}
+	}
+
+	/**
+	 * C 端商品详情：对齐 PHP V2 getItemsDetail — 门店 merge 后默认不改 {@code store}；大屏 {@code isShopScreen=1} 再累加 logistics。
+	 *
+	 * @param distributorId &gt; 0 时 logistics 已在 {@link DistributorItemsDetailMergeService} 写入，不再用 supplier 覆盖
+	 */
+	public void enrichDetailForWxapp(long companyId, long distributorId, Map<String, Object> detail, boolean shopScreen) {
+		if (detail == null || detail.isEmpty() || isActivitySkipDisplay(detail)) {
+			return;
+		}
+		if (distributorId <= 0) {
+			enrichDetailWithLogisticsStore(companyId, detail);
+		}
+		if (shopScreen) {
+			applyShopScreenStoreAdditive(detail);
+		}
+	}
+
+	/**
+	 * 对齐 PHP {@code isShopScreen} 分支（V2 Items.php）：主 SKU 与 spec_items 的 store 分别 += logistics_store。
+	 */
+	public void applyShopScreenStoreAdditive(Map<String, Object> detail) {
+		if (detail == null || detail.isEmpty()) {
+			return;
+		}
+		detail.put("store", toInt(detail.get("store")) + toInt(detail.get("logistics_store")));
+		int totalStore = toInt(detail.get("item_total_store"));
+		detail.put("item_total_store", toInt(detail.get("store")));
+		List<Map<String, Object>> specItems = extractSpecItems(detail.get("spec_items"));
+		if (specItems == null || specItems.isEmpty()) {
+			return;
+		}
+		for (Map<String, Object> row : specItems) {
+			row.put("store", toInt(row.get("store")) + toInt(row.get("logistics_store")));
+			totalStore += toInt(row.get("logistics_store"));
+		}
+		detail.put("item_total_store", totalStore);
+	}
+
+	public static boolean isShopScreenParam(Object raw) {
+		if (raw == null) {
+			return false;
+		}
+		if (raw instanceof Number n) {
+			return n.intValue() == 1;
+		}
+		String s = raw.toString().trim();
+		return "1".equals(s) || "true".equalsIgnoreCase(s);
+	}
+
+	/**
+	 * 购物车等场景仍按配送能力合成展示库存（非 C 端详情默认逻辑）。
+	 *
 	 * @param applyDisplayTotal false 时仅填充 logistics_store（活动商品用）
 	 * @param requestDistributorId 保留兼容，展示合成按详情内商品归属 {@code distributor_id}
 	 */

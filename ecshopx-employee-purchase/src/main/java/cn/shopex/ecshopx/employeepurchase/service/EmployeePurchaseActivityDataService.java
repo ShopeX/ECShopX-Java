@@ -116,11 +116,20 @@ public class EmployeePurchaseActivityDataService {
 		}
 
 		String mobile = memberMobile == null ? "" : memberMobile;
-		employeePassphraseService.ensurePassphraseEmployeeFromVerifiedActivity(
-				activity, companyId, activityId, enterpriseId, userId, mobile);
+		// 与 getFreightFee 一致：用户准入失败软失败，写 extraTips，不整包失败（保证 purchase_mode 等展示字段仍返回）
+		String extraTips = null;
+		try {
+			employeePassphraseService.ensurePassphraseEmployeeFromVerifiedActivity(
+					activity, companyId, activityId, enterpriseId, userId, mobile);
+		} catch (ResourceException e) {
+			extraTips = e.getMessage();
+		}
 
 		Map<String, Object> feePart;
-		if (activityPassphraseService.isPassphraseEnabled(activity)) {
+		if (extraTips != null) {
+			// 未准入成功时禁止走正常算费，避免错报额度
+			feePart = feeTriple(0, 0L, 0);
+		} else if (activityPassphraseService.isPassphraseEnabled(activity)) {
 			int limitFee = resolvePassphraseLimitFee(activity, companyId, activityId, enterpriseId);
 			feePart = getPassphraseAggregateFee(activity, companyId, enterpriseId, activityId, userId, limitFee);
 		} else {
@@ -168,6 +177,10 @@ public class EmployeePurchaseActivityDataService {
 				result.put("is_relative", 1);
 				result.put("enterprise_id", relative2.getEnterpriseId());
 			}
+		}
+
+		if (extraTips != null && !extraTips.isBlank()) {
+			result.put("extraTips", extraTips);
 		}
 
 		return result;

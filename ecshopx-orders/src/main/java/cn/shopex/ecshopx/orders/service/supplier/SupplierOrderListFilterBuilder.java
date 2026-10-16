@@ -166,6 +166,12 @@ public class SupplierOrderListFilterBuilder {
 				echo.put("delivery_status", List.of("DONE", "PARTAIL"));
 				echo.put("receipt_type", "logistics");
 			}
+			case "payed_partial" -> {
+				w.eq(SupplierOrder::getOrderStatus, "PAYED");
+				w.eq(SupplierOrder::getDeliveryStatus, "PARTAIL");
+				echo.put("order_status", "PAYED");
+				echo.put("delivery_status", "PARTAIL");
+			}
 			case "finish" -> {
 				w.eq(SupplierOrder::getOrderStatus, "DONE");
 				echo.put("order_status", "DONE");

@@ -49,6 +49,8 @@ public class WxaTemplateMsgActivityRemindSendService {
 
 	private static final String PAGE_AFTERSALES_DETAIL = "order/pages/aftersales/detail";
 
+	private static final String PAGE_MEMBER_SIGNIN = "subpages/member/sign-in/index";
+
 	private final WxaNoticeTemplateMapper wxaNoticeTemplateMapper;
 	private final WeappMapper weappMapper;
 	private final WxJavaMaRuntime wxJavaMaRuntime;
@@ -291,6 +293,7 @@ public class WxaTemplateMsgActivityRemindSendService {
 		return switch (scenesName) {
 			case "registrationActivityNotice" -> PAGE_REGISTRATION_ACTIVITY_DETAIL;
 			case "aftersalesSuccess" -> PAGE_AFTERSALES_DETAIL;
+			case "member_signin_reminder" -> PAGE_MEMBER_SIGNIN;
 			default -> "pages/index";
 		};
 	}

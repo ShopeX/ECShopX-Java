@@ -12,7 +12,6 @@ import cn.shopex.ecshopx.employeepurchase.domain.Employees;
 import cn.shopex.ecshopx.employeepurchase.domain.Enterprises;
 import cn.shopex.ecshopx.employeepurchase.mapper.ActivityEnterprisesMapper;
 import cn.shopex.ecshopx.employeepurchase.mapper.EmployeesMapper;
-import cn.shopex.ecshopx.employeepurchase.mapper.EnterpriseEmailBoxMapper;
 import cn.shopex.ecshopx.employeepurchase.mapper.EnterprisesMapper;
 import cn.shopex.ecshopx.employeepurchase.mapper.RelativesMapper;
 import java.util.List;
@@ -28,7 +27,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class FrontEnterpriseListServiceTest {
 
 	@Mock private EnterprisesMapper enterprisesMapper;
-	@Mock private EnterpriseEmailBoxMapper enterpriseEmailBoxMapper;
 	@Mock private EmployeesMapper employeesMapper;
 	@Mock private RelativesMapper relativesMapper;
 	@Mock private ActivityEnterprisesMapper activityEnterprisesMapper;
@@ -43,7 +41,6 @@ class FrontEnterpriseListServiceTest {
 		service =
 				new FrontEnterpriseListService(
 						enterprisesMapper,
-						enterpriseEmailBoxMapper,
 						employeesMapper,
 						relativesMapper,
 						activityEnterprisesMapper,

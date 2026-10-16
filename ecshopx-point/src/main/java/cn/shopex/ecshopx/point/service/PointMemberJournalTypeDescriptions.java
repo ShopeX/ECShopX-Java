@@ -36,7 +36,9 @@ public final class PointMemberJournalTypeDescriptions {
 			Map.entry(13, "开放接口"),
 			Map.entry(14, "分销佣金（积分）"),
 			Map.entry(15, "商家导入修改"),
-			Map.entry(16, "活动报名送积分"));
+			Map.entry(16, "活动报名送积分"),
+			Map.entry(17, "会员签到日常积分"),
+			Map.entry(18, "会员签到活动奖励"));
 
 	private PointMemberJournalTypeDescriptions() {
 	}

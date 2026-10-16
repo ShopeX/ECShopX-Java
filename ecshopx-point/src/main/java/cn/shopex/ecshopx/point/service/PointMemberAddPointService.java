@@ -56,6 +56,10 @@ public class PointMemberAddPointService {
 
 	private static final int JOURNAL_TYPE_REGISTRATION_ACTIVITY = 16;
 
+	private static final int JOURNAL_TYPE_MEMBER_SIGNIN_DAILY = 17;
+
+	private static final int JOURNAL_TYPE_MEMBER_SIGNIN_TIER = 18;
+
 	private static final int JOURNAL_TYPE_TURNTABLE_WIN = 11;
 
 	/** 订单消费送积分 */
@@ -664,6 +668,61 @@ public class PointMemberAddPointService {
 		pointMemberLogMapper.insert(logRow);
 
 		maybePushShuyunPoint(companyId, userId, point, plus, JOURNAL_TYPE_REGISTRATION_ACTIVITY, record, "", Map.of());
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	public void addPointForMemberSignInDaily(long userId, long companyId, int point) {
+		addMemberSignInPoints(userId, companyId, point, JOURNAL_TYPE_MEMBER_SIGNIN_DAILY, "会员签到日常积分");
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	public void addPointForMemberSignInActivityTier(long userId, long companyId, int point) {
+		addMemberSignInPoints(userId, companyId, point, JOURNAL_TYPE_MEMBER_SIGNIN_TIER, "会员签到活动奖励");
+	}
+
+	private void addMemberSignInPoints(
+			long userId, long companyId, int point, int journalType, String record) {
+		if (point <= 0) {
+			return;
+		}
+		boolean plus = true;
+		if (shouldUseDmPointIntegration(companyId)) {
+			changeDmPoint(userId, companyId, point, true, record);
+			return;
+		}
+		syncOpenPlatformPointFirst(companyId, userId, point, plus, journalType, record, "", Map.of());
+		pointMemberMapper.addPointDelta(userId, companyId, point);
+		PointMember row =
+				pointMemberMapper.selectOne(
+						new LambdaQueryWrapper<PointMember>()
+								.eq(PointMember::getUserId, userId)
+								.eq(PointMember::getCompanyId, companyId)
+								.last("LIMIT 1"));
+		if (row == null) {
+			throw new ResourceException("积分不足");
+		}
+		long remainingLong = row.getPoint() != null ? row.getPoint() : 0L;
+		if (remainingLong > Integer.MAX_VALUE) {
+			remainingLong = Integer.MAX_VALUE;
+		}
+		int remaining = (int) remainingLong;
+		String pointDesc = record + "，当前剩余积分：" + remaining;
+		int now = (int) Instant.now().getEpochSecond();
+		PointMemberLog logRow = new PointMemberLog();
+		logRow.setUserId(userId);
+		logRow.setCompanyId(companyId);
+		logRow.setJournalType(journalType);
+		logRow.setPointDesc(pointDesc);
+		logRow.setIncome(point);
+		logRow.setOutcome(0);
+		logRow.setOrderId("");
+		logRow.setExternalId("");
+		logRow.setOperater("");
+		logRow.setOperaterRemark("");
+		logRow.setCreated(now);
+		logRow.setUpdated(now);
+		pointMemberLogMapper.insert(logRow);
+		maybePushShuyunPoint(companyId, userId, point, plus, journalType, record, "", Map.of());
 	}
 
 	@Transactional(rollbackFor = Exception.class)

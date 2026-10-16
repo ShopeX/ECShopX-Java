@@ -68,6 +68,7 @@ public class ShopadminNormalOrderCreateOrchestrator {
 		orderCreateItemCheckPort.check(state);
 		orderCreateDistributorCheckPort.check(state);
 		orderCreateFormatDataPort.format(state);
+		orderCreateFormatDataPort.assertDepositBalance(state);
 		shopadminNormalOrderCreateTransactionalRunner.runInTransaction(state, request);
 		splitSupplierOrders(state);
 		normalOrderAddDispatchPublisher.publish(buildNormalOrderAddPayload(state));

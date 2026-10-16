@@ -70,4 +70,18 @@ class OrderExportFilterAssemblerDistributorScopeTest {
 
 		assertEquals(3046L, filter.get("distributor_id"));
 	}
+
+	@Test
+	void orderStatusPayedPartial_mapsToPayedWithPartialDeliveryStatus() {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		request.setParameter("order_type", "normal");
+		request.setParameter("order_status", "payed_partial");
+
+		LinkedHashMap<String, Object> filter =
+				assembler.assemble(1L, 9L, "admin", null, List.of(), List.of(), request).filter();
+
+		assertEquals("PAYED", filter.get("order_status"));
+		assertEquals("PARTAIL", filter.get("delivery_status"));
+		assertFalse(filter.containsKey("cancel_status"));
+	}
 }

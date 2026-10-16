@@ -269,6 +269,107 @@ class ItemLogisticsStoreEnricherDeliveryDisplayTest {
 		assertEquals(40, totalStore.get("store"));
 	}
 
+	@Test
+	void enrichDetailForWxapp_totalStoreSupplier_keepsPoolStoreWithoutShopScreen() {
+		Map<String, Object> detail = distributorDetailAfterMerge();
+		detail.put("is_total_store", true);
+		detail.put("store", 15);
+		detail.put("item_total_store", 15);
+		specAt(detail, 0).put("store", 11);
+		specAt(detail, 1).put("store", 4);
+		enricher.enrichDetailForWxapp(141L, 310L, detail, false);
+		assertEquals(15, detail.get("store"));
+		assertEquals(15, detail.get("item_total_store"));
+		assertEquals(11, specAt(detail, 0).get("store"));
+		verify(distributorDeliveryCapabilityService, never()).resolveForFront(anyLong(), anyLong());
+	}
+
+	@Test
+	void enrichDetailForWxapp_distributorShop_keepsLocalStoreWithoutShopScreen() {
+		Map<String, Object> detail = distributorDetailAfterMerge();
+		detail.put("is_total_store", false);
+		enricher.enrichDetailForWxapp(141L, 310L, detail, false);
+		assertEquals(30, detail.get("store"));
+		assertEquals(61, detail.get("item_total_store"));
+		assertEquals(30, specAt(detail, 0).get("store"));
+		verify(distributorDeliveryCapabilityService, never()).resolveForFront(anyLong(), anyLong());
+	}
+
+	@Test
+	void enrichDetailForWxapp_shopScreen_addsLogisticsLikePhp() {
+		Map<String, Object> detail = distributorDetailAfterMerge();
+		enricher.enrichDetailForWxapp(141L, 310L, detail, true);
+		assertEquals(60, detail.get("store"));
+		assertEquals(122, detail.get("item_total_store"));
+		assertEquals(60, specAt(detail, 0).get("store"));
+		assertEquals(40, specAt(detail, 1).get("store"));
+	}
+
+	@Test
+	void enrichWxappListRows_default_keepsLocalStore() {
+		Map<String, Object> row = wxappListRowWithLogistics25();
+		enricher.enrichWxappListRows(141L, List.of(row), false);
+		assertEquals(30, row.get("store"));
+		assertEquals(25, row.get("logistics_store"));
+	}
+
+	@Test
+	void enrichWxappListRows_shopScreen_addsLogisticsOnly() {
+		Map<String, Object> row = wxappListRowWithLogistics25();
+		enricher.enrichWxappListRows(141L, List.of(row), true);
+		assertEquals(55, row.get("store"));
+	}
+
+	private Map<String, Object> wxappListRowWithLogistics25() {
+		Items sku = new Items();
+		sku.setItemId(7724L);
+		sku.setSupplierItemId(88);
+		sku.setCompanyId(141L);
+		when(itemsRepository.listByCompanyAndItemIdsPreservingOrder(eq(141L), org.mockito.ArgumentMatchers.anyList()))
+				.thenReturn(List.of(sku));
+		cn.shopex.ecshopx.supplier.domain.SupplierItems si = new cn.shopex.ecshopx.supplier.domain.SupplierItems();
+		si.setItemId(88L);
+		si.setStore(25);
+		when(supplierItemsRepository.listByCompanyAndItemIds(eq(141L), org.mockito.ArgumentMatchers.anyCollection()))
+				.thenReturn(List.of(si));
+		Map<String, Object> row = supplierRow();
+		row.put("item_id", 7724L);
+		row.put("store", 30);
+		return row;
+	}
+
+	@SuppressWarnings("unchecked")
+	private static Map<String, Object> specAt(Map<String, Object> detail, int index) {
+		List<Map<String, Object>> specs = (List<Map<String, Object>>) detail.get("spec_items");
+		return specs.get(index);
+	}
+
+	private static Map<String, Object> distributorDetailAfterMerge() {
+		Map<String, Object> detail = new HashMap<>();
+		detail.put("item_id", 6935L);
+		detail.put("store", 30);
+		detail.put("logistics_store", 30);
+		detail.put("item_total_store", 61);
+		List<Map<String, Object>> specs = new ArrayList<>();
+		Map<String, Object> s1 = new HashMap<>();
+		s1.put("item_id", 6935L);
+		s1.put("store", 30);
+		s1.put("logistics_store", 30);
+		specs.add(s1);
+		Map<String, Object> s2 = new HashMap<>();
+		s2.put("item_id", 6936L);
+		s2.put("store", 20);
+		s2.put("logistics_store", 20);
+		specs.add(s2);
+		Map<String, Object> s3 = new HashMap<>();
+		s3.put("item_id", 6937L);
+		s3.put("store", 11);
+		s3.put("logistics_store", 11);
+		specs.add(s3);
+		detail.put("spec_items", specs);
+		return detail;
+	}
+
 	private static Map<String, Object> supplierRow() {
 		Map<String, Object> m = new HashMap<>();
 		m.put("supplier_id", 729);
