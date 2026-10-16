@@ -52,6 +52,7 @@ public class MemberTaskFrontListService {
 	private final MemberTaskCompletionMapper memberTaskCompletionMapper;
 	private final MemberTaskRewardGrantMapper memberTaskRewardGrantMapper;
 	private final MemberTaskMemberTagReadPort memberTaskMemberTagReadPort;
+	private final MemberTaskRewardsDisplayService memberTaskRewardsDisplayService;
 	private final ObjectMapper objectMapper;
 
 	public MemberTaskFrontListService(
@@ -59,11 +60,13 @@ public class MemberTaskFrontListService {
 			MemberTaskCompletionMapper memberTaskCompletionMapper,
 			MemberTaskRewardGrantMapper memberTaskRewardGrantMapper,
 			MemberTaskMemberTagReadPort memberTaskMemberTagReadPort,
+			MemberTaskRewardsDisplayService memberTaskRewardsDisplayService,
 			ObjectMapper objectMapper) {
 		this.memberTaskMapper = memberTaskMapper;
 		this.memberTaskCompletionMapper = memberTaskCompletionMapper;
 		this.memberTaskRewardGrantMapper = memberTaskRewardGrantMapper;
 		this.memberTaskMemberTagReadPort = memberTaskMemberTagReadPort;
+		this.memberTaskRewardsDisplayService = memberTaskRewardsDisplayService;
 		this.objectMapper = objectMapper;
 	}
 
@@ -111,7 +114,13 @@ public class MemberTaskFrontListService {
 					activityDisplay, userTaskStatus)) {
 				continue;
 			}
-			list.add(toListItem(task, activityDisplay, userTaskStatus, readJumpPage(task), objectMapper));
+			list.add(
+					toListItem(
+							companyId,
+							task,
+							activityDisplay,
+							userTaskStatus,
+							readJumpPage(task)));
 		}
 		Map<String, Object> out = new LinkedHashMap<>();
 		out.put("list", list);
@@ -119,12 +128,12 @@ public class MemberTaskFrontListService {
 		return out;
 	}
 
-	private static Map<String, Object> toListItem(
+	private Map<String, Object> toListItem(
+			long companyId,
 			MemberTask task,
 			String activityDisplay,
 			String userTaskStatus,
-			String jumpPage,
-			ObjectMapper objectMapper) {
+			String jumpPage) {
 		Map<String, Object> item = new LinkedHashMap<>();
 		item.put("task_id", task.getTaskId());
 		item.put("name", task.getName());
@@ -133,7 +142,9 @@ public class MemberTaskFrontListService {
 		item.put(
 				"type_label",
 				MemberTaskTypeCatalog.typeLabel(task.getTypeCategory(), task.getTypeDetail()));
-		item.put("reward_summary", task.getRewardSummary());
+		item.put(
+				"rewards",
+				memberTaskRewardsDisplayService.buildRewards(companyId, task.getRewardConfig()));
 		item.put("display_status", activityDisplay);
 		item.put("user_task_status", userTaskStatus);
 		int begin = task.getBeginTime() != null ? task.getBeginTime() : 0;
@@ -158,6 +169,8 @@ public class MemberTaskFrontListService {
 		if (task.getTaskRule() != null && !task.getTaskRule().isBlank()) {
 			item.put("task_rule", task.getTaskRule().trim());
 		}
+		MemberTaskFrontDisplaySupport.putBrowseRuleFields(
+				item, task.getTypeDetail(), task.getRuleConfig(), objectMapper);
 		Map<String, String> share =
 				MemberTaskFrontDisplaySupport.shareFieldsFromRuleConfig(
 						task.getRuleConfig(), objectMapper);

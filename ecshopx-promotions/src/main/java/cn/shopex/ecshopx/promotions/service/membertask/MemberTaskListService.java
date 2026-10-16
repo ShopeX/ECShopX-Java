@@ -42,10 +42,15 @@ public class MemberTaskListService {
 
 	private final MemberTaskMapper memberTaskMapper;
 	private final MessageSource messageSource;
+	private final MemberTaskRewardsDisplayService memberTaskRewardsDisplayService;
 
-	public MemberTaskListService(MemberTaskMapper memberTaskMapper, MessageSource messageSource) {
+	public MemberTaskListService(
+			MemberTaskMapper memberTaskMapper,
+			MessageSource messageSource,
+			MemberTaskRewardsDisplayService memberTaskRewardsDisplayService) {
 		this.memberTaskMapper = memberTaskMapper;
 		this.messageSource = messageSource;
+		this.memberTaskRewardsDisplayService = memberTaskRewardsDisplayService;
 	}
 
 	public Map<String, Object> list(
@@ -160,9 +165,10 @@ public class MemberTaskListService {
 		item.put("type_category", category);
 		item.put("type_detail", detail);
 		item.put("type_label", MemberTaskTypeCatalog.typeLabel(category, detail));
+		long companyId = row.getCompanyId() != null ? row.getCompanyId() : 0L;
 		item.put(
-				"reward_summary",
-				StringUtils.hasText(row.getRewardSummary()) ? row.getRewardSummary() : "");
+				"rewards",
+				memberTaskRewardsDisplayService.buildRewards(companyId, row.getRewardConfig()));
 		item.put(
 				"display_status",
 				MemberTaskDisplayStatus.resolve(published, offShelf, begin, end, now));

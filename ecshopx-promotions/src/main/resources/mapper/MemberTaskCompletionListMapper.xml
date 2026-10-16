@@ -58,7 +58,7 @@
 			t.name AS task_name,
 			t.type_category AS type_category,
 			t.type_detail AS type_detail,
-			t.reward_summary AS reward_summary
+			t.reward_config AS reward_config
 		<include refid="userParticipationFrom"/>
 		ORDER BY c.completed_at DESC, c.completion_id DESC
 		LIMIT #{offset}, #{limit}

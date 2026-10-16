@@ -10,6 +10,7 @@ import cn.shopex.ecshopx.promotions.domain.membertask.MemberTask;
 import cn.shopex.ecshopx.promotions.mapper.MemberTaskMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,11 +29,19 @@ class MemberTaskDetailServiceTest {
 	@Mock
 	private MessageSource messageSource;
 
+	@Mock
+	private MemberTaskRewardsDisplayService memberTaskRewardsDisplayService;
+
 	private MemberTaskDetailService service;
 
 	@BeforeEach
 	void setUp() {
-		service = new MemberTaskDetailService(memberTaskMapper, messageSource, new ObjectMapper());
+		service =
+				new MemberTaskDetailService(
+						memberTaskMapper,
+						messageSource,
+						new ObjectMapper(),
+						memberTaskRewardsDisplayService);
 	}
 
 	@Test
@@ -44,7 +53,7 @@ class MemberTaskDetailServiceTest {
 		row.setTypeCategory("newcomer");
 		row.setTypeDetail("first_order");
 		row.setBeginTime(1_760_000_000);
-		row.setEndTime(1_762_592_000);
+		row.setEndTime(Integer.MAX_VALUE);
 		row.setPublished(0);
 		row.setOffShelf(0);
 		row.setFrequencyType("once");
@@ -54,6 +63,8 @@ class MemberTaskDetailServiceTest {
 		row.setRuleConfig("{\"goods_scope\":\"unlimited\",\"need_receipt\":true}");
 		row.setConfigVersion(2L);
 		when(memberTaskMapper.selectOne(any(LambdaQueryWrapper.class))).thenReturn(row);
+		when(memberTaskRewardsDisplayService.buildRewards(1L, "{\"points\":100}"))
+				.thenReturn(List.of(Map.of("kind", "points", "points", 100L)));
 
 		Map<String, Object> data = service.detail(1L, 10L, Locale.SIMPLIFIED_CHINESE);
 

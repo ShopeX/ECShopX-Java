@@ -36,7 +36,7 @@ public final class MemberTaskExportCsvTemplates {
 		titles.put("name", "任务名称");
 		titles.put("type_label", "任务类型");
 		titles.put("task_time", "任务时间");
-		titles.put("reward_summary", "任务奖励");
+		titles.put("reward_text", "任务奖励");
 		titles.put("completion_count", "任务完成次数");
 		titles.put("completion_user_count", "任务完成人数");
 		titles.put("attributed_spend", "通过任务累计消费");

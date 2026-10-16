@@ -23,6 +23,7 @@ import cn.shopex.ecshopx.promotions.domain.membertask.MemberTaskTypeCatalog;
 import cn.shopex.ecshopx.promotions.mapper.MemberTaskMapper;
 import cn.shopex.ecshopx.promotions.mapper.MemberTaskStatsMapper;
 import cn.shopex.ecshopx.promotions.service.membertask.MemberTaskAttributedMetricsDisplay;
+import cn.shopex.ecshopx.promotions.service.membertask.MemberTaskRewardsDisplayService;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -52,16 +53,19 @@ public class MemberTaskOverviewExportAsyncService {
 	private final MemberTaskStatsMapper memberTaskStatsMapper;
 	private final ExportCsvFileService exportCsvFileService;
 	private final ExportLogCreateService exportLogCreateService;
+	private final MemberTaskRewardsDisplayService memberTaskRewardsDisplayService;
 
 	public MemberTaskOverviewExportAsyncService(
 			MemberTaskMapper memberTaskMapper,
 			MemberTaskStatsMapper memberTaskStatsMapper,
 			ExportCsvFileService exportCsvFileService,
-			ExportLogCreateService exportLogCreateService) {
+			ExportLogCreateService exportLogCreateService,
+			MemberTaskRewardsDisplayService memberTaskRewardsDisplayService) {
 		this.memberTaskMapper = memberTaskMapper;
 		this.memberTaskStatsMapper = memberTaskStatsMapper;
 		this.exportCsvFileService = exportCsvFileService;
 		this.exportLogCreateService = exportLogCreateService;
+		this.memberTaskRewardsDisplayService = memberTaskRewardsDisplayService;
 	}
 
 	public void runExport(MemberTaskOverviewExportJobContext ctx) {
@@ -104,7 +108,10 @@ public class MemberTaskOverviewExportAsyncService {
 					"type_label",
 					MemberTaskTypeCatalog.typeLabel(task.getTypeCategory(), task.getTypeDetail()));
 			row.put("task_time", timeRange);
-			row.put("reward_summary", task.getRewardSummary() == null ? "" : task.getRewardSummary());
+			long companyId = task.getCompanyId() != null ? task.getCompanyId() : ctx.companyId();
+			var rewards =
+					memberTaskRewardsDisplayService.buildRewards(companyId, task.getRewardConfig());
+			row.put("reward_text", memberTaskRewardsDisplayService.formatRewardsMultiline(rewards));
 			row.put("completion_count", String.valueOf(completionCount));
 			row.put("completion_user_count", String.valueOf(completionUserCount));
 			row.put(

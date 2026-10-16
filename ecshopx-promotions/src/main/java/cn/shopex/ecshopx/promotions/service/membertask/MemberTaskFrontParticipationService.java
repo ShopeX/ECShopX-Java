@@ -36,10 +36,13 @@ public class MemberTaskFrontParticipationService {
 			DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.of("Asia/Shanghai"));
 
 	private final MemberTaskCompletionListMapper memberTaskCompletionListMapper;
+	private final MemberTaskRewardsDisplayService memberTaskRewardsDisplayService;
 
 	public MemberTaskFrontParticipationService(
-			MemberTaskCompletionListMapper memberTaskCompletionListMapper) {
+			MemberTaskCompletionListMapper memberTaskCompletionListMapper,
+			MemberTaskRewardsDisplayService memberTaskRewardsDisplayService) {
 		this.memberTaskCompletionListMapper = memberTaskCompletionListMapper;
+		this.memberTaskRewardsDisplayService = memberTaskRewardsDisplayService;
 	}
 
 	public Map<String, Object> list(long companyId, long userId, int pageNo, int pageSize) {
@@ -60,13 +63,13 @@ public class MemberTaskFrontParticipationService {
 						companyId, userId, offset, safePageSize);
 		List<Map<String, Object>> list = new ArrayList<>();
 		for (Map<String, Object> row : rows) {
-			list.add(toItem(row));
+			list.add(toItem(companyId, row));
 		}
 		out.put("list", list);
 		return out;
 	}
 
-	private static Map<String, Object> toItem(Map<String, Object> row) {
+	private Map<String, Object> toItem(long companyId, Map<String, Object> row) {
 		Map<String, Object> item = new LinkedHashMap<>();
 		item.put("completion_id", longVal(row.get("completion_id")));
 		item.put("task_id", longVal(row.get("task_id")));
@@ -89,8 +92,11 @@ public class MemberTaskFrontParticipationService {
 		}
 		item.put("user_task_status", MemberTaskFrontDisplaySupport.historyUserTaskStatus(grantStatus));
 		item.put("grant_status_text", MemberTaskFrontDisplaySupport.frontGrantStatusText(grantStatus));
-		Object reward = row.get("reward_summary");
-		item.put("reward_summary", reward == null ? null : reward.toString());
+		Object rewardConfig = row.get("reward_config");
+		String rewardConfigJson = rewardConfig == null ? null : rewardConfig.toString();
+		item.put(
+				"rewards",
+				memberTaskRewardsDisplayService.buildRewards(companyId, rewardConfigJson));
 		return item;
 	}
 

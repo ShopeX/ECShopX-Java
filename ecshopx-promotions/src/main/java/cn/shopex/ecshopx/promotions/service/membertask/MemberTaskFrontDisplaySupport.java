@@ -47,6 +47,32 @@ public final class MemberTaskFrontDisplaySupport {
 		};
 	}
 
+	public static void putBrowseRuleFields(
+			Map<String, Object> item,
+			String typeDetail,
+			String ruleConfigJson,
+			ObjectMapper objectMapper) {
+		if (!"browse".equals(typeDetail) || !StringUtils.hasText(ruleConfigJson)) {
+			return;
+		}
+		try {
+			JsonNode node = objectMapper.readTree(ruleConfigJson);
+			JsonNode page = node.get("page");
+			if (page != null && !page.isNull() && page.isTextual()) {
+				String v = page.asText().trim();
+				if (!v.isEmpty()) {
+					item.put("page", v);
+				}
+			}
+			JsonNode stay = node.get("stay_seconds");
+			if (stay != null && !stay.isNull() && stay.isNumber()) {
+				item.put("stay_seconds", stay.asInt());
+			}
+		} catch (Exception ignored) {
+			// ignore malformed rule_config in list
+		}
+	}
+
 	public static Map<String, String> shareFieldsFromRuleConfig(String ruleConfigJson, ObjectMapper objectMapper) {
 		Map<String, String> out = new LinkedHashMap<>();
 		if (!StringUtils.hasText(ruleConfigJson)) {

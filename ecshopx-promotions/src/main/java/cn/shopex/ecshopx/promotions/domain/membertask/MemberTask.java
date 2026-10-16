@@ -58,9 +58,6 @@ public class MemberTask {
 	@MpField(value = "off_shelf", columnType = "integer", comment = "是否下架", defaultValue = "0")
 	private Integer offShelf;
 
-	@MpField(value = "reward_summary", columnType = "text", nullable = true, comment = "列表奖励摘要")
-	private String rewardSummary;
-
 	@MpField(value = "frequency_type", columnType = "string", length = 16, comment = "频次")
 	private String frequencyType;
 

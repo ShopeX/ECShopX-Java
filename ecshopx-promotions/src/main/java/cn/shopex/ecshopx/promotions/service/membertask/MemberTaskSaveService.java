@@ -124,7 +124,6 @@ public class MemberTaskSaveService {
 						.set(MemberTask::getRewardConfig, payload.rewardConfigJson)
 						.set(MemberTask::getRuleConfig, payload.ruleConfigJson)
 						.set(MemberTask::getJumpPage, payload.jumpPage)
-						.set(MemberTask::getRewardSummary, payload.rewardSummary)
 						.set(MemberTask::getUpdated, nowSec)
 						.set(MemberTask::getConfigVersion, dbVersion + 1L);
 		int rows = memberTaskMapper.update(null, uw);
@@ -147,7 +146,6 @@ public class MemberTaskSaveService {
 		existing.setRewardConfig(payload.rewardConfigJson);
 		existing.setRuleConfig(payload.ruleConfigJson);
 		existing.setJumpPage(payload.jumpPage);
-		existing.setRewardSummary(payload.rewardSummary);
 		existing.setConfigVersion(dbVersion + 1L);
 		existing.setUpdated(nowSec);
 		return toSaveResponse(existing, nowEpochSec);
@@ -250,7 +248,6 @@ public class MemberTaskSaveService {
 		}
 
 		String rewardConfigJson = normalizeRewardConfig(body.get("reward_config"), locale);
-		String rewardSummary = buildRewardSummary(rewardConfigJson);
 		String ruleConfigJson = normalizeRuleConfigStub(body.get("rule_config"), typeDetail, locale);
 		String jumpPage = asTrimmedString(body.get("jump_page"));
 		if (!StringUtils.hasText(jumpPage)) {
@@ -271,8 +268,7 @@ public class MemberTaskSaveService {
 				taskRule,
 				rewardConfigJson,
 				ruleConfigJson,
-				jumpPage,
-				rewardSummary);
+				jumpPage);
 	}
 
 	private void applyPayload(MemberTask row, ValidatedPayload payload) {
@@ -290,7 +286,6 @@ public class MemberTaskSaveService {
 		row.setRewardConfig(payload.rewardConfigJson);
 		row.setRuleConfig(payload.ruleConfigJson);
 		row.setJumpPage(payload.jumpPage);
-		row.setRewardSummary(payload.rewardSummary);
 	}
 
 	private Map<String, Object> toSaveResponse(MemberTask row, long nowEpochSec) {
@@ -442,25 +437,6 @@ public class MemberTaskSaveService {
 		}
 	}
 
-	private String buildRewardSummary(String rewardConfigJson) {
-		try {
-			JsonNode node = objectMapper.readTree(rewardConfigJson);
-			List<String> parts = new ArrayList<>();
-			JsonNode points = node.get("points");
-			if (points != null && !points.isNull() && points.isNumber() && points.asDouble() > 0) {
-				long p = points.asLong();
-				parts.add(p + "积分");
-			}
-			JsonNode coupon = node.get("coupon_id");
-			if (coupon != null && !coupon.isNull() && coupon.isNumber() && coupon.asLong() > 0) {
-				parts.add("优惠券");
-			}
-			return String.join("+", parts);
-		} catch (Exception e) {
-			return "";
-		}
-	}
-
 	private List<Long> parseTagIds(Object raw, Locale locale) {
 		List<Long> out = new ArrayList<>();
 		if (raw == null) {
@@ -604,6 +580,5 @@ public class MemberTaskSaveService {
 			String taskRule,
 			String rewardConfigJson,
 			String ruleConfigJson,
-			String jumpPage,
-			String rewardSummary) {}
+			String jumpPage) {}
 }

@@ -19,11 +19,16 @@ class MemberTaskFrontParticipationServiceTest {
 	@Mock
 	private MemberTaskCompletionListMapper memberTaskCompletionListMapper;
 
+	@Mock
+	private MemberTaskRewardsDisplayService memberTaskRewardsDisplayService;
+
 	private MemberTaskFrontParticipationService service;
 
 	@BeforeEach
 	void setUp() {
-		service = new MemberTaskFrontParticipationService(memberTaskCompletionListMapper);
+		service =
+				new MemberTaskFrontParticipationService(
+						memberTaskCompletionListMapper, memberTaskRewardsDisplayService);
 	}
 
 	@Test
@@ -47,8 +52,10 @@ class MemberTaskFrontParticipationServiceTest {
 										1_700_000_000,
 										"grant_status",
 										"granted",
-										"reward_summary",
-										"10积分")));
+										"reward_config",
+										"{\"points\":10}")));
+		when(memberTaskRewardsDisplayService.buildRewards(1L, "{\"points\":10}"))
+				.thenReturn(List.of(Map.of("kind", "points", "points", 10L)));
 
 		var data = service.list(1L, 9L, 1, 20);
 

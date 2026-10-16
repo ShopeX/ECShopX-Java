@@ -92,7 +92,7 @@ class MemberTaskSaveServiceTest {
 		assertThat(saved.getOffShelf()).isEqualTo(0);
 		assertThat(saved.getConfigVersion()).isEqualTo(1L);
 		assertThat(saved.getTypeDetail()).isEqualTo("first_order");
-		assertThat(saved.getRewardSummary()).contains("积分");
+		assertThat(saved.getRewardConfig()).contains("\"points\":100");
 	}
 
 	@Test

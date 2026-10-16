@@ -36,6 +36,9 @@ class MemberTaskFrontListServiceTest {
 	@Mock
 	private MemberTaskMemberTagReadPort memberTaskMemberTagReadPort;
 
+	@Mock
+	private MemberTaskRewardsDisplayService memberTaskRewardsDisplayService;
+
 	private MemberTaskFrontListService service;
 
 	@BeforeEach
@@ -46,6 +49,7 @@ class MemberTaskFrontListServiceTest {
 						memberTaskCompletionMapper,
 						memberTaskRewardGrantMapper,
 						memberTaskMemberTagReadPort,
+						memberTaskRewardsDisplayService,
 						new ObjectMapper());
 	}
 
@@ -63,9 +67,11 @@ class MemberTaskFrontListServiceTest {
 		task.setEndTime(Integer.MAX_VALUE);
 		task.setFrequencyType("once");
 		task.setAudienceMode("unlimited");
-		task.setRewardSummary("100积分");
+		task.setRewardConfig("{\"points\":100}");
 		task.setFrequencyType("once");
 		task.setTaskRule("完成首单即得奖励");
+		when(memberTaskRewardsDisplayService.buildRewards(1L, "{\"points\":100}"))
+				.thenReturn(List.of(Map.of("kind", "points", "points", 100L)));
 		when(memberTaskMapper.selectList(any(QueryWrapper.class))).thenReturn(List.of(task));
 		when(memberTaskCompletionMapper.selectOne(any(QueryWrapper.class))).thenReturn(null);
 

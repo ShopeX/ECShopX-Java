@@ -40,12 +40,17 @@ public class MemberTaskDetailService {
 	private final MemberTaskMapper memberTaskMapper;
 	private final MessageSource messageSource;
 	private final ObjectMapper objectMapper;
+	private final MemberTaskRewardsDisplayService memberTaskRewardsDisplayService;
 
 	public MemberTaskDetailService(
-			MemberTaskMapper memberTaskMapper, MessageSource messageSource, ObjectMapper objectMapper) {
+			MemberTaskMapper memberTaskMapper,
+			MessageSource messageSource,
+			ObjectMapper objectMapper,
+			MemberTaskRewardsDisplayService memberTaskRewardsDisplayService) {
 		this.memberTaskMapper = memberTaskMapper;
 		this.messageSource = messageSource;
 		this.objectMapper = objectMapper;
+		this.memberTaskRewardsDisplayService = memberTaskRewardsDisplayService;
 	}
 
 	public Map<String, Object> detail(long companyId, long taskId, Locale locale) {
@@ -82,9 +87,10 @@ public class MemberTaskDetailService {
 		out.put("type_category", category);
 		out.put("type_detail", detail);
 		out.put("type_label", MemberTaskTypeCatalog.typeLabel(category, detail));
+		long companyId = row.getCompanyId() != null ? row.getCompanyId() : 0L;
 		out.put(
-				"reward_summary",
-				StringUtils.hasText(row.getRewardSummary()) ? row.getRewardSummary() : "");
+				"rewards",
+				memberTaskRewardsDisplayService.buildRewards(companyId, row.getRewardConfig()));
 		out.put("begin_time", begin > 0 ? begin : null);
 		out.put("end_time", end > 0 ? end : null);
 		out.put("begin_time_text", begin > 0 ? MemberTaskListService.formatEpoch(begin) : "");

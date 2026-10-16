@@ -44,11 +44,16 @@ class MemberTaskListServiceTest {
 	@Mock
 	private MessageSource messageSource;
 
+	@Mock
+	private MemberTaskRewardsDisplayService memberTaskRewardsDisplayService;
+
 	private MemberTaskListService service;
 
 	@BeforeEach
 	void setUp() {
-		service = new MemberTaskListService(memberTaskMapper, messageSource);
+		service =
+				new MemberTaskListService(
+						memberTaskMapper, messageSource, memberTaskRewardsDisplayService);
 	}
 
 	@Test
