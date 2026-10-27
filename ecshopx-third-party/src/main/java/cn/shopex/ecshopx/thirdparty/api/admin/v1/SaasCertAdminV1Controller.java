@@ -70,6 +70,17 @@ public class SaasCertAdminV1Controller {
 		return ResponseEntity.ok(body);
 	}
 
+	@GetMapping(value = "/third/saascert/delete/certificate", name = "删除证书节点信息")
+	public ResponseEntity<Void> deleteCertificate(HttpServletRequest request) {
+		Object raw = request.getAttribute(OperatorJwtRequestAttributes.OPERATOR_JWT_USER_DATA);
+		if (!(raw instanceof Map<?, ?> ud)) {
+			throw new UnauthorizedException("未登录");
+		}
+		long companyId = readRequiredLong(ud, "company_id");
+		saasCertCertificateReadService.deleteCertSetting(companyId);
+		return ResponseEntity.ok().build();
+	}
+
 	@GetMapping(value = "/third/saascert/apply/bindrelation", name = "申请绑定节点")
 	public ResponseEntity<Map<String, Object>> applyBindRelation(HttpServletRequest request) {
 		Object raw = request.getAttribute(OperatorJwtRequestAttributes.OPERATOR_JWT_USER_DATA);

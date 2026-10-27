@@ -94,6 +94,12 @@ public class SaasCertCertificateReadService {
 		return data;
 	}
 
+	public void deleteCertSetting(long companyId) {
+		String shopexUid =
+				companyPassportUidByCompanyIdPort.findPassportUid(companyId).orElse("").trim();
+		prismRedisTemplate.delete(certRedisKey(shopexUid, companyId));
+	}
+
 	private static String textOrEmpty(JsonNode n, String field) {
 		if (n == null || !n.has(field) || n.get(field).isNull()) {
 			return "";
