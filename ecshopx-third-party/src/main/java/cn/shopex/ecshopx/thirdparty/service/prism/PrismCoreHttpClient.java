@@ -71,6 +71,10 @@ public class PrismCoreHttpClient {
 		String base = properties.getBaseUrl().replaceAll("/+$", "");
 		String rel = path.startsWith("/") ? path.substring(1) : path;
 		String fullUrl = base + "/" + rel;
+		if (path.startsWith("/oauth")) {
+			String prefix = base.contains("/api-sandbox") ? "/api-sandbox" : "/api";
+			fullUrl = fullUrl.replace(prefix, "");
+		}
 		URI uri = URI.create(fullUrl);
 		String pathForSign = uri.getRawPath() != null ? uri.getRawPath() : uri.getPath();
 		if (pathForSign == null || pathForSign.isEmpty()) {
