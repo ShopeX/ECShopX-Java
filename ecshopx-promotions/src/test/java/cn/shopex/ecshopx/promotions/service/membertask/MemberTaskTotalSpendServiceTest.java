@@ -52,7 +52,7 @@ class MemberTaskTotalSpendServiceTest {
 	@Test
 	void paySuccess_belowThreshold_onlyProgress() {
 		MemberTask task = task();
-		MemberTaskOrderSnapshot order = new MemberTaskOrderSnapshot(1L, 9L, 7L, 10L, "PAYED", 0L, 50L, 0L);
+		MemberTaskOrderSnapshot order = new MemberTaskOrderSnapshot(1L, 9L, 7L, 10L, "PAYED", 0L, 50L, 0L, 0L);
 		MemberTaskPurchaseRule rule = new MemberTaskPurchaseRule(false, 100L);
 		when(memberTaskCompletionMapper.selectCount(any(QueryWrapper.class))).thenReturn(0L);
 		when(memberTaskOnceCompletionPolicy.hasActiveFirstOrderCompletion(10L, 7L)).thenReturn(false);
@@ -66,7 +66,7 @@ class MemberTaskTotalSpendServiceTest {
 	@Test
 	void paySuccess_reachesThreshold_writesCompletion() {
 		MemberTask task = task();
-		MemberTaskOrderSnapshot order = new MemberTaskOrderSnapshot(1L, 9L, 7L, 10L, "PAYED", 0L, 60L, 0L);
+		MemberTaskOrderSnapshot order = new MemberTaskOrderSnapshot(1L, 9L, 7L, 10L, "PAYED", 0L, 60L, 0L, 0L);
 		MemberTaskPurchaseRule rule = new MemberTaskPurchaseRule(false, 100L);
 		when(memberTaskCompletionMapper.selectCount(any(QueryWrapper.class))).thenReturn(0L);
 		when(memberTaskOnceCompletionPolicy.hasActiveFirstOrderCompletion(10L, 7L)).thenReturn(false);
@@ -88,7 +88,7 @@ class MemberTaskTotalSpendServiceTest {
 	@Test
 	void refund_dropsBelowThreshold_voidsPending() {
 		MemberTask task = task();
-		MemberTaskOrderSnapshot order = new MemberTaskOrderSnapshot(1L, 9L, 7L, 10L, "PAYED", 0L, 100L, 0L);
+		MemberTaskOrderSnapshot order = new MemberTaskOrderSnapshot(1L, 9L, 7L, 10L, "PAYED", 0L, 100L, 0L, 0L);
 		MemberTaskPurchaseRule rule = new MemberTaskPurchaseRule(false, 100L);
 		when(memberTaskUserProgressService.deductAmountFen(10L, 7L, 30L, 100)).thenReturn(70L);
 		MemberTaskCompletion c = new MemberTaskCompletion();

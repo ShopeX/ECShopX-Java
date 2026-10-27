@@ -58,6 +58,7 @@ public class MemberTaskOrderReadPortImpl implements MemberTaskOrderReadPort {
 				row.getOrderStatus(),
 				row.getEndTime() == null ? 0L : row.getEndTime(),
 				totalFee,
-				row.getDistributorId() == null ? 0L : row.getDistributorId());
+				row.getDistributorId() == null ? 0L : row.getDistributorId(),
+				row.getMemberTaskSharerUserId() == null ? 0L : row.getMemberTaskSharerUserId());
 	}
 }

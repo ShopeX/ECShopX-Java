@@ -64,6 +64,10 @@ public class NormalOrders {
     @MpField(value = "member_task_id", columnType = "bigint", comment = "会员任务归因", defaultValue = "0")
     private Long memberTaskId = 0L;
 
+    /** 会员任务分享人（share_order；下单事务写入，禁止支付/签收补写） */
+    @MpField(value = "member_task_sharer_user_id", columnType = "bigint", comment = "会员任务分享人", defaultValue = "0")
+    private Long memberTaskSharerUserId = 0L;
+
     /** 手机号 */
     @MpField(value = "mobile", columnType = "string", length = 255, nullable = true, comment = "手机号")
     private String mobile;

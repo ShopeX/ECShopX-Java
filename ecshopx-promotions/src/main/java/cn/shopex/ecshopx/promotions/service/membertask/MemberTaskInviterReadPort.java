@@ -16,7 +16,7 @@
 
 package cn.shopex.ecshopx.promotions.service.membertask;
 
-/** H1/H2：下单会员的推荐人（members.inviter_id）。 */
+/** H2：注册邀请人（members.inviter_id）。share_order 不走此口。 */
 public interface MemberTaskInviterReadPort {
 
 	long findInviterUserId(long companyId, long userId);

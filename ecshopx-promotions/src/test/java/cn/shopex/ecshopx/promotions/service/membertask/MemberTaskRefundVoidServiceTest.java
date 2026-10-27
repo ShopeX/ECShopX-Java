@@ -59,7 +59,7 @@ class MemberTaskRefundVoidServiceTest {
 	void pendingGrant_voidsCompletion() {
 		stubTask("{\"amount_fen\":100,\"need_receipt\":true,\"goods_scope\":\"unlimited\"}");
 		when(memberTaskOrderReadPort.get(1L, 9L))
-				.thenReturn(new MemberTaskOrderSnapshot(1L, 9L, 7L, 10L, "PAYED", 0L, 100L, 0L));
+				.thenReturn(new MemberTaskOrderSnapshot(1L, 9L, 7L, 10L, "PAYED", 0L, 100L, 0L, 0L));
 		MemberTaskCompletion c = new MemberTaskCompletion();
 		c.setCompletionId(3L);
 		when(memberTaskCompletionMapper.selectOne(any(QueryWrapper.class))).thenReturn(c);
@@ -88,7 +88,7 @@ class MemberTaskRefundVoidServiceTest {
 	void partialRefund_stillMeetsAmount_doesNotVoid() {
 		stubTask("{\"amount_fen\":100,\"need_receipt\":true,\"goods_scope\":\"unlimited\"}");
 		when(memberTaskOrderReadPort.get(1L, 9L))
-				.thenReturn(new MemberTaskOrderSnapshot(1L, 9L, 7L, 10L, "PAYED", 0L, 200L, 0L));
+				.thenReturn(new MemberTaskOrderSnapshot(1L, 9L, 7L, 10L, "PAYED", 0L, 200L, 0L, 0L));
 
 		service.apply(
 				Map.of(
@@ -108,7 +108,7 @@ class MemberTaskRefundVoidServiceTest {
 	void alreadyGranted_doesNotVoid() {
 		stubTask("{\"amount_fen\":50,\"need_receipt\":true,\"goods_scope\":\"unlimited\"}");
 		when(memberTaskOrderReadPort.get(1L, 9L))
-				.thenReturn(new MemberTaskOrderSnapshot(1L, 9L, 7L, 10L, "DONE", 100L, 100L, 0L));
+				.thenReturn(new MemberTaskOrderSnapshot(1L, 9L, 7L, 10L, "DONE", 100L, 100L, 0L, 0L));
 		MemberTaskCompletion c = new MemberTaskCompletion();
 		c.setCompletionId(3L);
 		when(memberTaskCompletionMapper.selectOne(any(QueryWrapper.class))).thenReturn(c);

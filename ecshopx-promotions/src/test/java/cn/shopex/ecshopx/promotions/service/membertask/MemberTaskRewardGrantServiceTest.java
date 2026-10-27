@@ -60,7 +60,7 @@ class MemberTaskRewardGrantServiceTest {
 	@Test
 	void payedOrder_neverCallsPort() {
 		when(memberTaskOrderReadPort.get(1L, 9L))
-				.thenReturn(new MemberTaskOrderSnapshot(1L, 9L, 7L, 10L, "PAYED", 0L, 100L, 0L));
+				.thenReturn(new MemberTaskOrderSnapshot(1L, 9L, 7L, 10L, "PAYED", 0L, 100L, 0L, 0L));
 
 		assertThat(service.grantPendingIfOrderDone(1L, 9L, MemberTaskGrantTrigger.CONFIRM_RECEIPT))
 				.isEqualTo(MemberTaskGrantAttemptResult.SKIPPED_GATE);
@@ -70,7 +70,7 @@ class MemberTaskRewardGrantServiceTest {
 	@Test
 	void doneOrder_pendingGrant_callsPortOnce() {
 		when(memberTaskOrderReadPort.get(1L, 9L))
-				.thenReturn(new MemberTaskOrderSnapshot(1L, 9L, 7L, 10L, "DONE", 100L, 100L, 0L));
+				.thenReturn(new MemberTaskOrderSnapshot(1L, 9L, 7L, 10L, "DONE", 100L, 100L, 0L, 0L));
 		MemberTaskCompletion c = new MemberTaskCompletion();
 		c.setCompletionId(3L);
 		when(memberTaskCompletionMapper.selectOne(any(QueryWrapper.class))).thenReturn(c);
@@ -91,7 +91,7 @@ class MemberTaskRewardGrantServiceTest {
 	@Test
 	void secondCall_alreadyGranted_portNever() {
 		when(memberTaskOrderReadPort.get(1L, 9L))
-				.thenReturn(new MemberTaskOrderSnapshot(1L, 9L, 7L, 10L, "DONE", 100L, 100L, 0L));
+				.thenReturn(new MemberTaskOrderSnapshot(1L, 9L, 7L, 10L, "DONE", 100L, 100L, 0L, 0L));
 		MemberTaskCompletion c = new MemberTaskCompletion();
 		c.setCompletionId(3L);
 		when(memberTaskCompletionMapper.selectOne(any(QueryWrapper.class))).thenReturn(c);
@@ -108,7 +108,7 @@ class MemberTaskRewardGrantServiceTest {
 	@Test
 	void shareOrderGrant_usesGrantUserIdNotBuyer() {
 		when(memberTaskOrderReadPort.get(1L, 9L))
-				.thenReturn(new MemberTaskOrderSnapshot(1L, 9L, 7L, 10L, "DONE", 100L, 100L, 0L));
+				.thenReturn(new MemberTaskOrderSnapshot(1L, 9L, 7L, 10L, "DONE", 100L, 100L, 0L, 0L));
 		MemberTaskCompletion c = new MemberTaskCompletion();
 		c.setCompletionId(3L);
 		when(memberTaskCompletionMapper.selectOne(any(QueryWrapper.class))).thenReturn(c);
@@ -130,7 +130,7 @@ class MemberTaskRewardGrantServiceTest {
 	@Test
 	void portThrows_marksFailed() {
 		when(memberTaskOrderReadPort.get(1L, 9L))
-				.thenReturn(new MemberTaskOrderSnapshot(1L, 9L, 7L, 10L, "DONE", 100L, 100L, 0L));
+				.thenReturn(new MemberTaskOrderSnapshot(1L, 9L, 7L, 10L, "DONE", 100L, 100L, 0L, 0L));
 		MemberTaskCompletion c = new MemberTaskCompletion();
 		c.setCompletionId(3L);
 		when(memberTaskCompletionMapper.selectOne(any(QueryWrapper.class))).thenReturn(c);
@@ -165,7 +165,7 @@ class MemberTaskRewardGrantServiceTest {
 		g.setRetryCount(0);
 		g.setRewardSnapshot("{\"points\":50}");
 		when(memberTaskOrderReadPort.get(1L, 9L))
-				.thenReturn(new MemberTaskOrderSnapshot(1L, 9L, 7L, 10L, "DONE", 100L, 100L, 0L));
+				.thenReturn(new MemberTaskOrderSnapshot(1L, 9L, 7L, 10L, "DONE", 100L, 100L, 0L, 0L));
 		when(memberTaskRewardGrantMapper.update(eq(null), any(UpdateWrapper.class)))
 				.thenReturn(1)
 				.thenReturn(1);

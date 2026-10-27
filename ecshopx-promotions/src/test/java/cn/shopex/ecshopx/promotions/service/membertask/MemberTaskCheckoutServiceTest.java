@@ -44,6 +44,51 @@ class MemberTaskCheckoutServiceTest {
 		p.getOrderData().put("company_id", 1L);
 		service.applyBeforePersist(p);
 		assertThat(p.getOrderData().get("member_task_id")).isEqualTo(0L);
+		assertThat(p.getOrderData().get("member_task_sharer_user_id")).isEqualTo(0L);
+	}
+
+	@Test
+	void shareOrder_writesSharerUserId() {
+		long now = System.currentTimeMillis() / 1000L;
+		MemberTask task = new MemberTask();
+		task.setTaskId(10L);
+		task.setTypeDetail("share_order");
+		task.setFrequencyType("once");
+		task.setPublished(1);
+		task.setOffShelf(0);
+		task.setBeginTime((int) (now - 10));
+		task.setEndTime((int) (now + 1000));
+		when(memberTaskMapper.selectOne(any(QueryWrapper.class))).thenReturn(task);
+		NormalOrderCreateParams p = new NormalOrderCreateParams();
+		p.getOrderData().put("company_id", 1L);
+		p.getOrderData().put("user_id", 7L);
+		p.getParams().put("member_task_id", 10L);
+		p.getParams().put("member_task_sharer_user_id", 55L);
+		service.applyBeforePersist(p);
+		assertThat(p.getOrderData().get("member_task_id")).isEqualTo(10L);
+		assertThat(p.getOrderData().get("member_task_sharer_user_id")).isEqualTo(55L);
+	}
+
+	@Test
+	void shareOrder_selfSharer_writesZeroSharer() {
+		long now = System.currentTimeMillis() / 1000L;
+		MemberTask task = new MemberTask();
+		task.setTaskId(10L);
+		task.setTypeDetail("share_order");
+		task.setFrequencyType("once");
+		task.setPublished(1);
+		task.setOffShelf(0);
+		task.setBeginTime((int) (now - 10));
+		task.setEndTime((int) (now + 1000));
+		when(memberTaskMapper.selectOne(any(QueryWrapper.class))).thenReturn(task);
+		NormalOrderCreateParams p = new NormalOrderCreateParams();
+		p.getOrderData().put("company_id", 1L);
+		p.getOrderData().put("user_id", 7L);
+		p.getParams().put("member_task_id", 10L);
+		p.getParams().put("member_task_sharer_user_id", 7L);
+		service.applyBeforePersist(p);
+		assertThat(p.getOrderData().get("member_task_id")).isEqualTo(10L);
+		assertThat(p.getOrderData().get("member_task_sharer_user_id")).isEqualTo(0L);
 	}
 
 	@Test
@@ -83,5 +128,6 @@ class MemberTaskCheckoutServiceTest {
 		p.getParams().put("member_task_id", 10L);
 		service.applyBeforePersist(p);
 		assertThat(p.getOrderData().get("member_task_id")).isEqualTo(10L);
+		assertThat(p.getOrderData().get("member_task_sharer_user_id")).isEqualTo(0L);
 	}
 }

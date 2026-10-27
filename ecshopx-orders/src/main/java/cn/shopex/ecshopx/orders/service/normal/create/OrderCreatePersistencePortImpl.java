@@ -167,6 +167,7 @@ public class OrderCreatePersistencePortImpl implements OrderCreatePersistencePor
 			order.setActId(actIdVal);
 		}
 		order.setMemberTaskId(longVal(od.get("member_task_id"), 0L));
+		order.setMemberTaskSharerUserId(longVal(od.get("member_task_sharer_user_id"), 0L));
 		Object autoCancelRaw = od.get("auto_cancel_time");
 		if (autoCancelRaw != null && !stringVal(autoCancelRaw).isEmpty()) {
 			order.setAutoCancelTime(stringVal(autoCancelRaw));

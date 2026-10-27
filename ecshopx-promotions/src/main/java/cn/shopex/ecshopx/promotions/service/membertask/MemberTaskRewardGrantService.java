@@ -127,7 +127,8 @@ public class MemberTaskRewardGrantService {
 			return MemberTaskGrantAttemptResult.SKIPPED_NO_PENDING;
 		}
 		MemberTaskOrderSnapshot snap =
-				new MemberTaskOrderSnapshot(companyId, 0L, userId, grant.getTaskId(), "DONE", 1L, 0L, 0L);
+				new MemberTaskOrderSnapshot(
+						companyId, 0L, userId, grant.getTaskId(), "DONE", 1L, 0L, 0L, 0L);
 		return executeGrant(grant, snap, MemberTaskGrantTrigger.PROFILE_COMPLETE);
 	}
 
@@ -234,7 +235,7 @@ public class MemberTaskRewardGrantService {
 						? grant.getUserId()
 						: completion.getUserId() != null ? completion.getUserId() : 0L;
 		long taskId = grant.getTaskId() != null ? grant.getTaskId() : completion.getTaskId();
-		return new MemberTaskOrderSnapshot(companyId, orderId, userId, taskId, "DONE", 1L, 0L, 0L);
+		return new MemberTaskOrderSnapshot(companyId, orderId, userId, taskId, "DONE", 1L, 0L, 0L, 0L);
 	}
 
 	private void applyRewards(MemberTaskRewardGrant grant, MemberTaskOrderSnapshot order) {

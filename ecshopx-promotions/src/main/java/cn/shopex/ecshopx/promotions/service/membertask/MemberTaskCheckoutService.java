@@ -54,8 +54,14 @@ public class MemberTaskCheckoutService implements OrderCreateMemberTaskExtendPor
 		}
 		Object raw = pr != null && pr.get("member_task_id") != null ? pr.get("member_task_id") : od.get("member_task_id");
 		long taskId = longVal(raw);
+		Object sharerRaw =
+				pr != null && pr.get("member_task_sharer_user_id") != null
+						? pr.get("member_task_sharer_user_id")
+						: od.get("member_task_sharer_user_id");
+		long sharerUserId = longVal(sharerRaw);
 		if (taskId <= 0L) {
 			od.put("member_task_id", 0L);
+			od.put("member_task_sharer_user_id", 0L);
 			return;
 		}
 		long companyId = longVal(od.get("company_id"));
@@ -85,6 +91,7 @@ public class MemberTaskCheckoutService implements OrderCreateMemberTaskExtendPor
 		}
 		if ("once".equals(task.getFrequencyType())
 				&& userId > 0L
+				&& !"share_order".equals(task.getTypeDetail())
 				&& firstOrderCompletionPolicy.hasActiveFirstOrderCompletion(taskId, userId)) {
 			String msgKey =
 					"first_order".equals(task.getTypeDetail())
@@ -95,6 +102,11 @@ public class MemberTaskCheckoutService implements OrderCreateMemberTaskExtendPor
 			throw new BadRequestException(messageSource.getMessage(msgKey, null, defaultMsg, locale));
 		}
 		od.put("member_task_id", taskId);
+		if (sharerUserId > 0L && sharerUserId != userId) {
+			od.put("member_task_sharer_user_id", sharerUserId);
+		} else {
+			od.put("member_task_sharer_user_id", 0L);
+		}
 	}
 
 	private static long longVal(Object raw) {

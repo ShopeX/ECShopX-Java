@@ -24,4 +24,5 @@ public record MemberTaskOrderSnapshot(
 		String orderStatus,
 		long endTime,
 		long totalFeeFen,
-		long distributorId) {}
+		long distributorId,
+		long memberTaskSharerUserId) {}

@@ -1,5 +1,6 @@
 package cn.shopex.ecshopx.promotions.service.membertask;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
@@ -18,13 +19,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
 class MemberTaskShareOrderServiceTest {
-
-	@Mock
-	private MemberTaskInviterReadPort memberTaskInviterReadPort;
 
 	@Mock
 	private MemberTaskCompletionMapper memberTaskCompletionMapper;
@@ -44,7 +41,6 @@ class MemberTaskShareOrderServiceTest {
 	void setUp() {
 		service =
 				new MemberTaskShareOrderService(
-						memberTaskInviterReadPort,
 						memberTaskCompletionMapper,
 						memberTaskRewardGrantMapper,
 						memberTaskOnceCompletionPolicy,
@@ -52,10 +48,9 @@ class MemberTaskShareOrderServiceTest {
 	}
 
 	@Test
-	void noInviter_skips() {
+	void noSharerOnOrder_skips() {
 		MemberTask task = task();
-		MemberTaskOrderSnapshot order = new MemberTaskOrderSnapshot(1L, 9L, 7L, 10L, "PAYED", 0L, 100L, 0L);
-		when(memberTaskInviterReadPort.findInviterUserId(1L, 7L)).thenReturn(0L);
+		MemberTaskOrderSnapshot order = order(0L);
 
 		service.onPaySuccess(task, order, rule(false, 0L), 100);
 
@@ -63,10 +58,19 @@ class MemberTaskShareOrderServiceTest {
 	}
 
 	@Test
-	void happyPath_completionForSharer() {
+	void sharerEqualsBuyer_skips() {
 		MemberTask task = task();
-		MemberTaskOrderSnapshot order = new MemberTaskOrderSnapshot(1L, 9L, 7L, 10L, "PAYED", 0L, 100L, 0L);
-		when(memberTaskInviterReadPort.findInviterUserId(1L, 7L)).thenReturn(55L);
+		MemberTaskOrderSnapshot order = order(7L);
+
+		service.onPaySuccess(task, order, rule(false, 0L), 100);
+
+		verify(memberTaskCompletionMapper, never()).insert(any(MemberTaskCompletion.class));
+	}
+
+	@Test
+	void happyPath_completionForSharerFromOrder() {
+		MemberTask task = task();
+		MemberTaskOrderSnapshot order = order(55L);
 		when(memberTaskOnceCompletionPolicy.hasActiveFirstOrderCompletion(10L, 55L)).thenReturn(false);
 		when(memberTaskCompletionMapper.insert(any(MemberTaskCompletion.class)))
 				.thenAnswer(
@@ -87,8 +91,7 @@ class MemberTaskShareOrderServiceTest {
 	@Test
 	void needReceiptTrue_doesNotImmediateGrant() {
 		MemberTask task = task();
-		MemberTaskOrderSnapshot order = new MemberTaskOrderSnapshot(1L, 9L, 7L, 10L, "PAYED", 0L, 100L, 0L);
-		when(memberTaskInviterReadPort.findInviterUserId(1L, 7L)).thenReturn(55L);
+		MemberTaskOrderSnapshot order = order(55L);
 		when(memberTaskOnceCompletionPolicy.hasActiveFirstOrderCompletion(10L, 55L)).thenReturn(false);
 		when(memberTaskCompletionMapper.insert(any(MemberTaskCompletion.class)))
 				.thenAnswer(
@@ -101,6 +104,10 @@ class MemberTaskShareOrderServiceTest {
 		service.onPaySuccess(task, order, rule(true, 0L), 100);
 
 		verify(memberTaskRewardGrantService, never()).grantPendingImmediate(eq(1L), eq(9L));
+	}
+
+	private static MemberTaskOrderSnapshot order(long sharerUserId) {
+		return new MemberTaskOrderSnapshot(1L, 9L, 7L, 10L, "PAYED", 0L, 100L, 0L, sharerUserId);
 	}
 
 	private static MemberTask task() {

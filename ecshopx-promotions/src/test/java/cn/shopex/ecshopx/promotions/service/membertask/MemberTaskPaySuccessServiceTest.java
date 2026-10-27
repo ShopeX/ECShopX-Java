@@ -134,7 +134,7 @@ class MemberTaskPaySuccessServiceTest {
 	void singleSpend_needReceiptFalse_immediateGrant() {
 		long now = System.currentTimeMillis() / 1000L;
 		when(memberTaskOrderReadPort.get(1L, 9L))
-				.thenReturn(new MemberTaskOrderSnapshot(1L, 9L, 7L, 10L, "PAYED", 0L, 500L, 0L));
+				.thenReturn(new MemberTaskOrderSnapshot(1L, 9L, 7L, 10L, "PAYED", 0L, 500L, 0L, 0L));
 		MemberTask task = new MemberTask();
 		task.setTaskId(10L);
 		task.setCompanyId(1L);
@@ -179,7 +179,7 @@ class MemberTaskPaySuccessServiceTest {
 
 	private void stubHappyPath(long now, boolean needReceipt, String status, long endTime) {
 		when(memberTaskOrderReadPort.get(1L, 9L))
-				.thenReturn(new MemberTaskOrderSnapshot(1L, 9L, 7L, 10L, status, endTime, 500L, 0L));
+				.thenReturn(new MemberTaskOrderSnapshot(1L, 9L, 7L, 10L, status, endTime, 500L, 0L, 0L));
 		MemberTask task = new MemberTask();
 		task.setTaskId(10L);
 		task.setCompanyId(1L);

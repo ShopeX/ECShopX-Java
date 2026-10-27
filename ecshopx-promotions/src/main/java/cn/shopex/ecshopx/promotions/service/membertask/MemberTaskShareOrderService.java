@@ -29,25 +29,22 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/** SSOT §10 / H1 · share_order：好友订单达标，completion 记分享人。 */
+/** SSOT §10 / H1 · share_order：好友订单达标，completion 记分享人（仅认订单 member_task_sharer_user_id）。 */
 @Service
 public class MemberTaskShareOrderService {
 
 	private static final Logger log = LoggerFactory.getLogger(MemberTaskShareOrderService.class);
 
-	private final MemberTaskInviterReadPort memberTaskInviterReadPort;
 	private final MemberTaskCompletionMapper memberTaskCompletionMapper;
 	private final MemberTaskRewardGrantMapper memberTaskRewardGrantMapper;
 	private final MemberTaskFirstOrderCompletionPolicy memberTaskOnceCompletionPolicy;
 	private final MemberTaskRewardGrantService memberTaskRewardGrantService;
 
 	public MemberTaskShareOrderService(
-			MemberTaskInviterReadPort memberTaskInviterReadPort,
 			MemberTaskCompletionMapper memberTaskCompletionMapper,
 			MemberTaskRewardGrantMapper memberTaskRewardGrantMapper,
 			MemberTaskFirstOrderCompletionPolicy memberTaskOnceCompletionPolicy,
 			MemberTaskRewardGrantService memberTaskRewardGrantService) {
-		this.memberTaskInviterReadPort = memberTaskInviterReadPort;
 		this.memberTaskCompletionMapper = memberTaskCompletionMapper;
 		this.memberTaskRewardGrantMapper = memberTaskRewardGrantMapper;
 		this.memberTaskOnceCompletionPolicy = memberTaskOnceCompletionPolicy;
@@ -57,8 +54,7 @@ public class MemberTaskShareOrderService {
 	@Transactional
 	public void onPaySuccess(
 			MemberTask task, MemberTaskOrderSnapshot order, MemberTaskPurchaseRule rule, int nowSec) {
-		long sharerUserId =
-				memberTaskInviterReadPort.findInviterUserId(order.companyId(), order.userId());
+		long sharerUserId = order.memberTaskSharerUserId();
 		if (sharerUserId <= 0L || sharerUserId == order.userId()) {
 			log.debug(
 					"member_task share_order skip companyId={} orderId={} reason=no_sharer buyer={}",
