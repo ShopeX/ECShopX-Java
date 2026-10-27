@@ -16,26 +16,18 @@
 
 package cn.shopex.ecshopx.companys.service.shopex;
 
+import cn.shopex.ecshopx.thirdparty.service.prism.PrismCoreHttpClient;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.time.Duration;
+import java.util.LinkedHashMap;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
 
 /**
  * Fetches OAuth SaaS certificate metadata from the Prism gateway and caches the result under the {@code prism:} Redis
@@ -44,12 +36,9 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class ShopexOauthCertSyncService {
 
-	private static final int CONNECT_TIMEOUT_SEC = 10;
-	private static final int READ_TIMEOUT_SEC = 30;
-
 	private final StringRedisTemplate prismRedisTemplate;
 	private final ObjectMapper objectMapper;
-	private final RestTemplate restTemplate;
+	private final PrismCoreHttpClient prismCoreHttpClient;
 
 	@Value("${ecshopx.thirdparty.prism-core.base-url:}")
 	private String prismBaseUrl;
@@ -61,13 +50,12 @@ public class ShopexOauthCertSyncService {
 	private String storeKey;
 
 	public ShopexOauthCertSyncService(
-			@Qualifier("prismRedisTemplate") StringRedisTemplate prismRedisTemplate, ObjectMapper objectMapper) {
+			@Qualifier("prismRedisTemplate") StringRedisTemplate prismRedisTemplate,
+			ObjectMapper objectMapper,
+			PrismCoreHttpClient prismCoreHttpClient) {
 		this.prismRedisTemplate = prismRedisTemplate;
 		this.objectMapper = objectMapper;
-		SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
-		factory.setConnectTimeout((int) Duration.ofSeconds(CONNECT_TIMEOUT_SEC).toMillis());
-		factory.setReadTimeout((int) Duration.ofSeconds(READ_TIMEOUT_SEC).toMillis());
-		this.restTemplate = new RestTemplate(factory);
+		this.prismCoreHttpClient = prismCoreHttpClient;
 	}
 
 	public void syncAfterOauthLogin(long companyId, String passportUid, String accessToken) {
@@ -81,27 +69,21 @@ public class ShopexOauthCertSyncService {
 		if (!StringUtils.hasText(prismBaseUrl) || !StringUtils.hasText(certiBaseUrl) || !StringUtils.hasText(storeKey)) {
 			return;
 		}
-		String base = prismBaseUrl.replaceAll("/+$", "");
-		String url = base + "/auth/license.add";
 		String certiUrl = certiBaseUrl.replaceAll("/+$", "") + "/" + companyId + "/";
 		String validateUrl = certiBaseUrl.replaceAll("/+$", "") + "/api/third/saascert/cert/validate";
 
-		MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
-		form.add("certi_url", certiUrl);
-		form.add("certi_session", storeKey);
-		form.add("certi_validate_url", validateUrl);
-		form.add("shop_version", "1.0");
+		LinkedHashMap<String, Object> form = new LinkedHashMap<>();
+		form.put("certi_url", certiUrl);
+		form.put("certi_session", storeKey);
+		form.put("certi_validate_url", validateUrl);
+		form.put("shop_version", "1.0");
 
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-		headers.setBearerAuth(accessToken);
-		HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(form, headers);
 		try {
-			ResponseEntity<String> resp = restTemplate.postForEntity(url, entity, String.class);
-			if (!resp.getStatusCode().is2xxSuccessful() || resp.getBody() == null) {
+			String raw = prismCoreHttpClient.postSignedForm("/auth/license.add", form, accessToken);
+			if (!StringUtils.hasText(raw)) {
 				return;
 			}
-			JsonNode root = objectMapper.readTree(resp.getBody());
+			JsonNode root = objectMapper.readTree(raw);
 			if (root == null || !"success".equalsIgnoreCase(text(root, "status"))) {
 				return;
 			}

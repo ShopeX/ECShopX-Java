@@ -65,6 +65,14 @@ public class PrismCoreHttpClient {
 	 * @return response body text, or {@code null} on transport/HTTP failure
 	 */
 	public String postSignedForm(String path, LinkedHashMap<String, Object> postData) {
+		return postSignedForm(path, postData, null);
+	}
+
+	/**
+	 * Same as {@link #postSignedForm(String, LinkedHashMap)} and, when {@code accessToken} is present, sends
+	 * {@code Authorization: Bearer}.
+	 */
+	public String postSignedForm(String path, LinkedHashMap<String, Object> postData, String accessToken) {
 		if (!isConfigured()) {
 			return null;
 		}
@@ -100,6 +108,9 @@ public class PrismCoreHttpClient {
 		headers.put("Pragma", "no-cache");
 		headers.put("Cache-Control", "no-cache");
 		headers.put("Content-Type", "application/x-www-form-urlencoded");
+		if (StringUtils.hasText(accessToken)) {
+			headers.put("Authorization", "Bearer " + accessToken.trim());
+		}
 
 		String sign = PrismIshopexHttpClient.produceSign(
 				"POST", pathForSign, headers, query, postData, properties.getAppSecret());
@@ -123,6 +134,9 @@ public class PrismCoreHttpClient {
 		httpHeaders.set("Pragma", "no-cache");
 		httpHeaders.set("Cache-Control", "no-cache");
 		httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+		if (StringUtils.hasText(accessToken)) {
+			httpHeaders.set("Authorization", "Bearer " + accessToken.trim());
+		}
 		HttpEntity<String> entity = new HttpEntity<>(body, httpHeaders);
 		try {
 			ResponseEntity<String> resp = restTemplate.postForEntity(urlWithQuery, entity, String.class);
