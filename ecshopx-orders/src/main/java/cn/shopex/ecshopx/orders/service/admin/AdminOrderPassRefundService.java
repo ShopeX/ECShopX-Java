@@ -18,6 +18,7 @@ package cn.shopex.ecshopx.orders.service.admin;
 
 import cn.shopex.ecshopx.aftersales.domain.AftersalesRefund;
 import cn.shopex.ecshopx.aftersales.service.AftersalesRefundService;
+import cn.shopex.ecshopx.common.saaserp.inbound.SaasErpInboundRefundSideEffects;
 import cn.shopex.ecshopx.common.dispatch.JushuitanTradeCancelDispatchPublisher;
 import cn.shopex.ecshopx.common.dispatch.ThirdPartyTradeRefundCancelSaasErpDispatchPublisher;
 import cn.shopex.ecshopx.common.dispatch.ThirdPartyTradeUpdateDispatchPublisher;
@@ -610,6 +611,9 @@ public class AdminOrderPassRefundService {
 
 	private void scheduleThirdPartyTradeUpdateDispatchAfterCommit(
 			long companyId, long orderId, long refundSupplierId) {
+		if (SaasErpInboundRefundSideEffects.suppressOutboundTradeUpdate()) {
+			return;
+		}
 		Map<String, Object> payload =
 				buildThirdPartyTradeUpdatePayloadForPassRefund(companyId, orderId, refundSupplierId);
 		if (payload == null || payload.isEmpty()) {
@@ -629,6 +633,9 @@ public class AdminOrderPassRefundService {
 	}
 
 	private void scheduleSaasErpOrderSyncAfterCommit(long companyId, long orderId) {
+		if (SaasErpInboundRefundSideEffects.suppressOutboundTradeUpdate()) {
+			return;
+		}
 		final Object source = this;
 		TransactionSynchronizationManager.registerSynchronization(
 				new TransactionSynchronization() {
