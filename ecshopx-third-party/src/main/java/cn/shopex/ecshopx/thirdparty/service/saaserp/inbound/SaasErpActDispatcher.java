@@ -22,6 +22,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -44,6 +45,7 @@ public class SaasErpActDispatcher {
 	private final Map<String, String> targets;
 	private final List<SaasErpActHandler> handlers;
 
+	@Autowired
 	public SaasErpActDispatcher(List<SaasErpActHandler> handlers) {
 		this(PRODUCTION_TARGETS, handlers);
 	}
