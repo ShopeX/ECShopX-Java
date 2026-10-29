@@ -1,0 +1,4 @@
+# Files
+
+- [Configuration and Secrets Reference](configuration.md) - Where runtime configuration lives in ECShopX-Java — the ecshopx-bootstrap application.properties as the single central tracked file, the spring.config.import of per-domain ymls, the env overlays (JWT_SECRET, COMMON_H5_BASE_URL, …), and the install-secrets.sh flow that injects production values.
+- [Deployment: Compose, Full Dev, and Lite Offline](deployment.md) - How ECShopX-Java is run: the unified ecshopx-app container (OpenResty nginx + Java :18080 + Nuxt SSR :3000 behind host vhosts admin/h5/pc), the four-service compose stacks (mysql, redis, xxl-job-admin, ecshopx-app), the full-development path dev-setup.sh + docker-compose.dev.yml, the lite offline path pack.sh + docker-lite/deploy.sh with a prebuilt jar and dist bundles, and the install.sh --full/--lite bootstrap that hands off to each.

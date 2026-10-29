@@ -166,7 +166,8 @@ class AftersalesReviewServiceRejectTradeAftersalesBusPublishProbeTest {
 						new WdtErpTradeAfterSaleBusPayloadBuilder(),
 						thirdPartyTradeAftersalesCancelSaasErpDispatchPublisher,
 						thirdPartyTradeAftersalesSaasErpDispatchPublisher,
-						tradeAftersalesDispatchPublisher);
+						tradeAftersalesDispatchPublisher,
+				mock(AftersalesRefuseWxaNotifyService.class));
 
 		Map<String, Object> param = new LinkedHashMap<>();
 		param.put("company_id", companyId);

@@ -102,8 +102,10 @@ public class OrdersTradeFinishNormalOrderPaySuccessApplyService {
 		}
 
 		String targetOrderStatus = "normal_groups".equals(tradeSource) ? "WAIT_GROUPS_SUCCESS" : "PAYED";
+		// PHP：店务收银自提支付后 DONE；云仓立即购买（uses_platform_item_stock）保持 PAYED 待发货
 		if (!"WAIT_GROUPS_SUCCESS".equals(targetOrderStatus)
-				&& "shopadmin".equals(trim(existing.getOrderClass()))) {
+				&& "shopadmin".equals(trim(existing.getOrderClass()))
+				&& !usesPlatformItemStock(existing)) {
 			targetOrderStatus = "DONE";
 		}
 
@@ -257,6 +259,11 @@ public class OrdersTradeFinishNormalOrderPaySuccessApplyService {
 		if (from.containsKey(key)) {
 			to.put(key, from.get(key));
 		}
+	}
+
+	private static boolean usesPlatformItemStock(NormalOrders order) {
+		Integer v = order.getUsesPlatformItemStock();
+		return v != null && v != 0;
 	}
 
 	private static String normalizeSourceType(Object raw) {

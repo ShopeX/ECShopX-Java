@@ -123,6 +123,7 @@
 			d.is_default,
 			d.is_audit_goods,
 			d.is_ziti,
+			d.is_platform_store_buy,
 			d.regions_id,
 			d.regions,
 			d.is_domestic,

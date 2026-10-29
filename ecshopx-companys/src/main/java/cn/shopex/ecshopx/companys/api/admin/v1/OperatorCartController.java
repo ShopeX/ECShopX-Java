@@ -22,6 +22,7 @@ import cn.shopex.ecshopx.common.annotation.DingoResponse;
 import cn.shopex.ecshopx.common.core.domain.ApiResult;
 import cn.shopex.ecshopx.common.exception.UnauthorizedException;
 import cn.shopex.ecshopx.common.operatorcart.OperatorCartDataListFacade;
+import cn.shopex.ecshopx.common.operatorcart.OperatorCartFastBuyFacade;
 import cn.shopex.ecshopx.common.operatorcart.OperatorCartScanBarcodeFacade;
 import cn.shopex.ecshopx.common.web.FlexibleBody;
 import cn.shopex.ecshopx.companys.service.operatorcart.OperatorCartAddDataService;
@@ -56,14 +57,17 @@ public class OperatorCartController {
 	private final OperatorCartScanBarcodeFacade scanBarcodeFacade;
 	private final OperatorCartDataListFacade operatorCartDataListFacade;
 	private final OperatorCartDeleteDataService operatorCartDeleteDataService;
+	private final OperatorCartFastBuyFacade operatorCartFastBuyFacade;
 
 	public OperatorCartController(OperatorCartAddDataService operatorCartAddDataService,
 			OperatorCartScanBarcodeFacade scanBarcodeFacade, OperatorCartDataListFacade operatorCartDataListFacade,
-			OperatorCartDeleteDataService operatorCartDeleteDataService) {
+			OperatorCartDeleteDataService operatorCartDeleteDataService,
+			OperatorCartFastBuyFacade operatorCartFastBuyFacade) {
 		this.operatorCartAddDataService = operatorCartAddDataService;
 		this.scanBarcodeFacade = scanBarcodeFacade;
 		this.operatorCartDataListFacade = operatorCartDataListFacade;
 		this.operatorCartDeleteDataService = operatorCartDeleteDataService;
+		this.operatorCartFastBuyFacade = operatorCartFastBuyFacade;
 	}
 
 	@Activated(routeAlias = "companys.operator.cartdata.scanadd")
@@ -82,6 +86,24 @@ public class OperatorCartController {
 		if (columnMap.isEmpty()) {
 			return ResponseEntity.ok(ApiResult.ok(Collections.emptyList()));
 		}
+		return ResponseEntity.ok(ApiResult.ok(columnMap));
+	}
+
+	@Activated(routeAlias = "companys.operator.cartdata.fastbuyadd")
+	@PostMapping(value = "/cartfastbuyadd", name = "店务立即购买（云仓分桶）")
+	public ResponseEntity<ApiResult<Object>> cartFastBuyAdd(HttpServletRequest request,
+			@FlexibleBody(required = false) Map<String, Object> body) {
+		Map<String, Object> input = CompanysAdminRequestMerge.mergeInputLikeFlexibleResolver(request, body);
+		Map<String, Object> jwt = readOperatorJwtMap(request);
+		long companyId = readLongClaimRelaxed(jwt, "company_id");
+		long operatorId = readLongClaimRelaxed(jwt, "operator_id");
+		long itemId = longVal(input.get("item_id"), 0L);
+		long num = longVal(input.get("num"), 0L);
+		long distributorId = longVal(input.get("distributor_id"), 0L);
+		boolean accumulate = parseIsAccumulate(input.get("is_accumulate"));
+		Map<String, Object> columnMap =
+				operatorCartFastBuyFacade.addFastBuyCartData(
+						companyId, operatorId, distributorId, itemId, num, accumulate);
 		return ResponseEntity.ok(ApiResult.ok(columnMap));
 	}
 

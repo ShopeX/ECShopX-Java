@@ -162,7 +162,8 @@ class RefundCheckThirdPartyTradeAftersalesCancelSaasErpBusPublishProbeTest {
 						wdtPublisher,
 						wdtPayloadBuilder,
 						thirdPartyTradeAftersalesCancelSaasErpPublisher,
-						thirdPartyTradeAftersalesSaasErpDispatchPublisher);
+						thirdPartyTradeAftersalesSaasErpDispatchPublisher,
+				mock(AftersalesRefuseWxaNotifyService.class));
 
 		Map<String, Object> param = new LinkedHashMap<>();
 		param.put("company_id", COMPANY_ID);
@@ -281,7 +282,8 @@ class RefundCheckThirdPartyTradeAftersalesCancelSaasErpBusPublishProbeTest {
 						wdtPublisher,
 						wdtPayloadBuilder,
 						thirdPartyTradeAftersalesCancelSaasErpPublisher,
-						thirdPartyTradeAftersalesSaasErpDispatchPublisher);
+						thirdPartyTradeAftersalesSaasErpDispatchPublisher,
+				mock(AftersalesRefuseWxaNotifyService.class));
 
 		final String adminRefundMemo = "管理员拒绝备注";
 		Map<String, Object> param = new LinkedHashMap<>();
@@ -402,7 +404,8 @@ class RefundCheckThirdPartyTradeAftersalesCancelSaasErpBusPublishProbeTest {
 						wdtPublisher,
 						wdtPayloadBuilder,
 						thirdPartyTradeAftersalesCancelSaasErpPublisher,
-						thirdPartyTradeAftersalesSaasErpDispatchPublisher);
+						thirdPartyTradeAftersalesSaasErpDispatchPublisher,
+				mock(AftersalesRefuseWxaNotifyService.class));
 
 		Map<String, Object> param = new LinkedHashMap<>();
 		param.put("company_id", COMPANY_ID);

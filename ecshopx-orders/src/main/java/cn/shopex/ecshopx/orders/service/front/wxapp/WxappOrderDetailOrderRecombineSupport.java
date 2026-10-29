@@ -16,7 +16,7 @@
 
 package cn.shopex.ecshopx.orders.service.front.wxapp;
 
-import cn.shopex.ecshopx.aftersales.service.AftersalesDetailAggregateService;
+import cn.shopex.ecshopx.orders.service.admin.AdminOrderDetailAftersalesApplier;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -25,10 +25,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class WxappOrderDetailOrderRecombineSupport {
 
-	private final AftersalesDetailAggregateService aftersalesDetailAggregateService;
+	private final AdminOrderDetailAftersalesApplier adminOrderDetailAftersalesApplier;
 
-	public WxappOrderDetailOrderRecombineSupport(AftersalesDetailAggregateService aftersalesDetailAggregateService) {
-		this.aftersalesDetailAggregateService = aftersalesDetailAggregateService;
+	public WxappOrderDetailOrderRecombineSupport(
+			AdminOrderDetailAftersalesApplier adminOrderDetailAftersalesApplier) {
+		this.adminOrderDetailAftersalesApplier = adminOrderDetailAftersalesApplier;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -52,10 +53,6 @@ public class WxappOrderDetailOrderRecombineSupport {
 				isZitiOrder = true;
 			}
 		}
-		int canApplySum = 0;
-		orderInfo.put("can_apply_aftersales", 0);
-		String orderIdStr = str(orderInfo.get("order_id"));
-		long companyId = longVal(orderInfo.get("company_id"));
 		List<Map<String, Object>> itemList = new ArrayList<>();
 		for (Object el : rawItems) {
 			if (!(el instanceof Map<?, ?>)) {
@@ -63,31 +60,11 @@ public class WxappOrderDetailOrderRecombineSupport {
 			}
 			Map<String, Object> item = (Map<String, Object>) el;
 			itemList.add(item);
-			long subId = longVal(item.get("id"));
-			int appliedNum = aftersalesDetailAggregateService.getAppliedNum(companyId, orderIdStr, subId);
-			int num = intVal(item.get("num"));
-			int deliveryItemNum = intVal(item.get("delivery_item_num"));
 			if (isZitiOrder) {
-				item.put("delivery_item_num", num);
-				deliveryItemNum = num;
-			}
-			int cancelItemNum = intVal(item.get("cancel_item_num"));
-			int left = deliveryItemNum + cancelItemNum - appliedNum;
-			item.put("left_aftersales_num", left);
-			item.put("show_aftersales", appliedNum > cancelItemNum ? 1 : 0);
-			canApplySum += left;
-			if (canApplySum > 0) {
-				int autoClose = intVal(item.get("auto_close_aftersales_time"));
-				int now = (int) (System.currentTimeMillis() / 1000L);
-				if (autoClose > 0 && autoClose < now) {
-					continue;
-				}
-				orderInfo.put("can_apply_aftersales", 1);
-				if ("CANCEL".equals(str(orderInfo.get("order_status")))) {
-					orderInfo.put("can_apply_aftersales", 0);
-				}
+				item.put("delivery_item_num", intVal(item.get("num")));
 			}
 		}
+		adminOrderDetailAftersalesApplier.apply(orderInfo, itemList);
 		List<Map<String, Object>> logistics = new ArrayList<>();
 		List<Map<String, Object>> normal = new ArrayList<>();
 		for (Map<String, Object> item : itemList) {
@@ -136,17 +113,4 @@ public class WxappOrderDetailOrderRecombineSupport {
 		}
 	}
 
-	private static long longVal(Object o) {
-		if (o == null) {
-			return 0L;
-		}
-		if (o instanceof Number n) {
-			return n.longValue();
-		}
-		try {
-			return Long.parseLong(String.valueOf(o).trim());
-		} catch (NumberFormatException e) {
-			return 0L;
-		}
-	}
 }

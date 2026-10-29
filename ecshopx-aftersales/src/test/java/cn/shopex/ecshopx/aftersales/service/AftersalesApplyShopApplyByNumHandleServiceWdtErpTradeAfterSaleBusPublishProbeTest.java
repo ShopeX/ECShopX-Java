@@ -186,7 +186,8 @@ class AftersalesApplyShopApplyByNumHandleServiceWdtErpTradeAfterSaleBusPublishPr
 						new WdtErpTradeAfterSaleBusPayloadBuilder(),
 						tradeRefundDispatchPublisher,
 						tradeAftersalesDispatchPublisher,
-						mock(ThirdPartyTradeAftersalesSaasErpDispatchPublisher.class));
+						mock(ThirdPartyTradeAftersalesSaasErpDispatchPublisher.class),
+						AftersalesTestMessageSource.FALLBACK);
 	}
 
 	@Test

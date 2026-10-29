@@ -78,6 +78,7 @@ public class AftersalesRefundConfirmService {
 	private final WdtErpTradeAfterSaleBusPayloadBuilder wdtErpTradeAfterSaleBusPayloadBuilder;
 	private final ThirdPartyTradeAftersalesCancelSaasErpDispatchPublisher thirdPartyTradeAftersalesCancelSaasErpDispatchPublisher;
 	private final ThirdPartyTradeAftersalesSaasErpDispatchPublisher thirdPartyTradeAftersalesSaasErpDispatchPublisher;
+	private final AftersalesRefuseWxaNotifyService aftersalesRefuseWxaNotifyService;
 
 	public AftersalesRefundConfirmService(
 			AftersalesMapper aftersalesMapper,
@@ -96,7 +97,8 @@ public class AftersalesRefundConfirmService {
 			WdtErpTradeAfterSaleDispatchPublisher wdtErpTradeAfterSaleDispatchPublisher,
 			WdtErpTradeAfterSaleBusPayloadBuilder wdtErpTradeAfterSaleBusPayloadBuilder,
 			ThirdPartyTradeAftersalesCancelSaasErpDispatchPublisher thirdPartyTradeAftersalesCancelSaasErpDispatchPublisher,
-			ThirdPartyTradeAftersalesSaasErpDispatchPublisher thirdPartyTradeAftersalesSaasErpDispatchPublisher) {
+			ThirdPartyTradeAftersalesSaasErpDispatchPublisher thirdPartyTradeAftersalesSaasErpDispatchPublisher,
+			AftersalesRefuseWxaNotifyService aftersalesRefuseWxaNotifyService) {
 		this.aftersalesMapper = aftersalesMapper;
 		this.aftersalesDetailMapper = aftersalesDetailMapper;
 		this.aftersalesRefundService = aftersalesRefundService;
@@ -114,6 +116,7 @@ public class AftersalesRefundConfirmService {
 		this.wdtErpTradeAfterSaleBusPayloadBuilder = wdtErpTradeAfterSaleBusPayloadBuilder;
 		this.thirdPartyTradeAftersalesCancelSaasErpDispatchPublisher = thirdPartyTradeAftersalesCancelSaasErpDispatchPublisher;
 		this.thirdPartyTradeAftersalesSaasErpDispatchPublisher = thirdPartyTradeAftersalesSaasErpDispatchPublisher;
+		this.aftersalesRefuseWxaNotifyService = aftersalesRefuseWxaNotifyService;
 	}
 
 	/**
@@ -532,13 +535,7 @@ public class AftersalesRefundConfirmService {
 	}
 
 	private void sendWxaTemplateMsg(int newAftersalesStatus, Map<String, Object> templateData) {
-		log.info(
-				"wxa template (placeholder) aftersales_bn={} order_id={} status={} refuse_reason={} refund_amount={}",
-				templateData.get("aftersales_bn"),
-				templateData.get("order_id"),
-				newAftersalesStatus,
-				templateData.get("refuse_reason"),
-				templateData.get("refund_fee"));
+		aftersalesRefuseWxaNotifyService.sendByStatus(newAftersalesStatus, templateData);
 	}
 
 	/**

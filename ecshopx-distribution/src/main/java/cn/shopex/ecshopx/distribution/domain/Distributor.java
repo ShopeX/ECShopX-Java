@@ -136,6 +136,10 @@ public class Distributor {
     @MpField(value = "is_ziti", columnType = "boolean", nullable = true, comment = "是否支持自提", defaultValue = "False")
     private Boolean isZiti = false;
 
+    /** 是否开启云仓可购买（店务立即购买等） */
+    @MpField(value = "is_platform_store_buy", columnType = "boolean", comment = "是否开启云仓可购买（店务立即购买等）", defaultValue = "False")
+    private Boolean isPlatformStoreBuy = false;
+
     /** 是否支持配送 */
     @MpField(value = "is_delivery", columnType = "boolean", nullable = true, comment = "是否支持配送", defaultValue = "True")
     private Boolean isDelivery = true;

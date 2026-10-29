@@ -59,6 +59,7 @@ public class OrderCreateInventoryPortImpl implements OrderCreateInventoryPort {
 		long companyId = longVal(od.get("company_id"), 0L);
 		String receiptType = stringVal(od.get("receipt_type"));
 		boolean pointsmallOrder = "pointsmall".equals(stringVal(od.get("order_class")));
+		boolean usePlatformItemStock = truthyUsesPlatformItemStock(od.get("uses_platform_item_stock"));
 		Object itemsRaw = od.get("items");
 		if (!(itemsRaw instanceof List<?> list)) {
 			return;
@@ -75,7 +76,8 @@ public class OrderCreateInventoryPortImpl implements OrderCreateInventoryPort {
 				continue;
 			}
 			long distributorId = longVal(line.get("distributor_id"), 0L);
-			boolean isTotalStore = !Boolean.FALSE.equals(line.get("is_total_store"));
+			// PHP AbstractNormalOrder: uses_platform_item_stock || is_total_store
+			boolean isTotalStore = usePlatformItemStock || !Boolean.FALSE.equals(line.get("is_total_store"));
 			long supplierId = longVal(line.get("supplier_id"), 0L);
 			boolean ok = pointsmallOrder
 					? pointsmallPartialCancelItemStorePort.minusItemStore(companyId, itemId, num, isTotalStore)
@@ -194,6 +196,20 @@ public class OrderCreateInventoryPortImpl implements OrderCreateInventoryPort {
 			long userId = longVal(promo.get("user_id"), longVal(od.get("user_id"), 0L));
 			seckillUserBuysStoreService.setUserBuysStore(activityId, companyId, userId, itemId, store, price);
 		}
+	}
+
+	private static boolean truthyUsesPlatformItemStock(Object v) {
+		if (v == null) {
+			return false;
+		}
+		if (v instanceof Boolean b) {
+			return b;
+		}
+		if (v instanceof Number n) {
+			return n.intValue() != 0;
+		}
+		String s = v.toString().trim();
+		return "1".equals(s) || "true".equalsIgnoreCase(s);
 	}
 
 	private static String stringVal(Object v) {

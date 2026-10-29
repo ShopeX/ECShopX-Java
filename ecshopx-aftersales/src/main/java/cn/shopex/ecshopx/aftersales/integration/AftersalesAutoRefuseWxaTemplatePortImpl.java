@@ -16,24 +16,36 @@
 
 package cn.shopex.ecshopx.aftersales.integration;
 
+import cn.shopex.ecshopx.aftersales.service.AftersalesRefuseWxaNotifyService;
 import cn.shopex.ecshopx.common.port.aftersales.AftersalesAutoRefuseWxaTemplatePort;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
-/**
- * 小程序模板 I/O 占位；业务编排与 templateData 组装在 AftersalesService。
- */
 @Component
-@Slf4j
 public class AftersalesAutoRefuseWxaTemplatePortImpl implements AftersalesAutoRefuseWxaTemplatePort {
+
+	private static final String AUTO_REFUSE_REASON = "未收到商品自动驳回";
+
+	private final AftersalesRefuseWxaNotifyService aftersalesRefuseWxaNotifyService;
+
+	public AftersalesAutoRefuseWxaTemplatePortImpl(
+			AftersalesRefuseWxaNotifyService aftersalesRefuseWxaNotifyService) {
+		this.aftersalesRefuseWxaNotifyService = aftersalesRefuseWxaNotifyService;
+	}
 
 	@Override
 	public void sendSellerRefuseBuyer(Map<String, Object> templateData) {
-		log.info(
-				"wxa auto refuse template (placeholder) aftersales_bn={} order_id={} refuse_reason={}",
-				templateData.get("aftersales_bn"),
-				templateData.get("order_id"),
-				templateData.get("refuse_reason"));
+		Map<String, Object> copy =
+				templateData == null ? new LinkedHashMap<>() : new LinkedHashMap<>(templateData);
+		if (!StringUtils.hasText(stringVal(copy.get("refuse_reason")))) {
+			copy.put("refuse_reason", AUTO_REFUSE_REASON);
+		}
+		aftersalesRefuseWxaNotifyService.sendSellerRefuseBuyer(copy);
+	}
+
+	private static String stringVal(Object o) {
+		return o == null ? "" : String.valueOf(o).trim();
 	}
 }

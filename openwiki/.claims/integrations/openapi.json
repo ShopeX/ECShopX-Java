@@ -1,0 +1,346 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:b2af04ff157233356f12100e97e25aa2c888a9ef236be85b0a38cc8ac70988e2",
+  "claims": [
+    {
+      "id": "claim_e141deba2f1e4ba0894ebb2a18613af2",
+      "statement": "ecshopx-openapi is a standalone Maven module whose only Shopex dependency is ecshopx-common; it cannot reach business Bundles directly. All domain behavior is injected through the Openapi*Port interfaces declared in ecshopx-common/openapi/ and implemented in the owning Bundles' own openapi/ packages (dependency inversion), with the single exception of OpenapiDeveloperLookupPort, which is implemented inside ecshopx-openapi itself against the module's own openapi_developer table.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/openapi/OpenapiDeveloperLookupPort.java",
+          "version": "repo-file-v1:sha256:c2c97909299d3e7d0a0351d95d57b103324ce329aa3de6b770606668de7a969d"
+        },
+        {
+          "resource": "repo://ecshopx-openapi/pom.xml",
+          "version": "repo-file-v1:sha256:c5520b09364eee93c91d69e637227130e73dc51a6f98b49975b10db1d1648b0c"
+        },
+        {
+          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/integration/OpenapiDeveloperLookupPortImpl.java",
+          "version": "repo-file-v1:sha256:8ebebb9fba7c0be48c86f6b43f7c174adcd4936ba14dfca3d1007ad145bbce66"
+        }
+      ]
+    },
+    {
+      "id": "claim_1332f89f7889456d9878eb70ac5be068",
+      "statement": "OpenapiPathPatterns is the single source of truth for the path split: PUBLIC_PREFIX /api/openapi vs INTERNAL_PREFIX /api/openapi/internal. isInternalPath(uri) is a startsWith on the internal prefix, and isPublicOpenapiPath(uri) is startsWith on the public prefix AND not internal — simple predicates with no deeper path parsing.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/web/OpenapiPathPatterns.java#L21-L37",
+          "version": "repo-lines-v1:sha256:7cc7ce68454530b3dea96ba0739c81b0b2cb1c9b52e6524283b728a8c18130a9:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE0NmQzMDNmNDEzMTdkMTE2MGI1MzM1ZTE1M2NlZDc3MDlhNTQ0ZWE2YWZhNjQ0Yjk2MDZiYjI3OGQ0NjM3N2UiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhmOTdlYWI4MjBmMTg1OTZkNGI2OTYyOWU3YjNiZTRlZDU5MzNjNTJiOGU1NmE1NjZiNjQwMTUxMTNmMmE5M2UiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_50c0a43b33c346638b94ed33544ef1e9",
+      "statement": "Internal openapi paths are exempt from signature verification: OpenapiAuthInterceptor.preHandle returns true immediately for /api/openapi/internal/** URIs so the RequestDispatcher.forward from the gateway re-enters the chain without re-verifying. A direct external call to an internal path also skips signing; the actual guard is requireCompanyId → OpenapiAuthAttributes.requireCompanyId, which throws UnauthorizedException when the OPENAPI_AUTH request attribute is absent (rendered by OpenapiExceptionHandler as an E4004 fail envelope) — internal handlers fail closed on missing tenant context, not on a bad signature.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/openapi/OpenapiAuthAttributes.java#L38-L56",
+          "version": "repo-lines-v1:sha256:d0cbcb062e319e85405f0f6940840107b5d43adbff9d81044c1210d75c97e773:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQyYTliOTMxN2Y3MGY5MzA1NzU3YTY2NjIxNWViMzM2MDhiM2E5ZGZmZmZmZGUyNzlmOGNjNWYzYjk4NDljZTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ4M2IwZDk2YTgzNjBiZWYwMTc0NTJkMzljMjM3NmNkY2E0MTdmN2E1NGJiZGM0NDk3YjlmMGE5N2VjYTU0NjgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/web/OpenapiAuthInterceptor.java#L62-L69",
+          "version": "repo-lines-v1:sha256:a4659fdcf594d15850d0a28e91974563ea55d4766de30ac5e8aaef13e5e17abb:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMWUwOTg1N2VmZGU4OWQxZTk0YWQ5NDhiZTYxMzVhOTIwNDM3ZDM4MGRlMTgzMzEzZGY0ZGZmMTg2MGUyYjQzZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjRlZmM0OTQxOGQyNmRjZjEyOWIyMmE2YWEyMTEwOGNlZWMzNzY3N2EzMmQwOGU5ZDVmZWUzNWRkYTY2YmI5ZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTY4NzM4NjhkYTVjYWVkMjFjOWZkZjY5ODYyYjBkYTU0MDY5ZWNkZjE4ODJjMjE2NTM1NmM3NGY1YTdkMWQwMyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZGY5OGRmMDRmNDE5MzgzMzkwZTFmZDdkMGIzZjBkMGY3NmViNjA0MzcwNjNkN2FlMDRlMTAzZTBkZDg2MjczNiJ9"
+        },
+        {
+          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/web/OpenapiExceptionHandler.java#L66-L70",
+          "version": "repo-lines-v1:sha256:d1e9fe6dede5f748d6c1096ac93f0b556b6e72bc6fd55a1f37937602744bec9a:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzYzZjBiODc3YmI0MjE1NzQ1MzNkYmQyYWI5MjU1NTRhOWFhMDUwYzFlN2I4ZjMzY2NhZTU3ZTQyMGU1MjhlYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTY5NDVjYjViMTUyY2YwY2RiMTliNzJjN2UwZWRiOTk2ZmQ3NTc3NzYzZTJkYmVlYTljZDE3NjMxZTdhODczMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTUwMTg0M2MzYmIyNjczZmI3ZTBjYTM0MzRjMmY0NGRiY2UwOWIxYjhkZDBmMGE2ZjU1ZGU4MWQ3OTc5MGZiNSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_de69ba1d41f2416296efcb12a4dbc6d5",
+      "statement": "OpenapiWebMvcConfigurer registers OpenapiAuthInterceptor on both the public and internal path patterns, and the interceptor decides per request which case applies (internal → pass, non-openapi → pass, public → verify). The operator-JWT filter also carves this surface out: OperatorJwtAuthenticationFilter short-circuits every path starting with /api/openapi because it uses sign auth instead.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/OperatorJwtAuthenticationFilter.java#L195-L196",
+          "version": "repo-lines-v1:sha256:3243c48ae9a10ff8d5e7820459dc11bdbb877d54743877abcf4c8fc7662308d6:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMmZhYTBhZWNkOTIyNzYxYWNiZjVkOTFmYmY1MjRhYWNhYTU0OTVkZTU4MzRmZjBhMWY0OGM1YzFkNjQ2MjdjNyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDM3ODMyMTRlNjRjYTc1ZDQ3NDM5OTJjODQ1MWUyZmI0MmJjOGUzYmM5ZjJkODM2MDI0NjY0M2U0N2E0NDZmOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjM1ZDUyNGU4YjFhNmJjNzdkODI0ZGE0ZTAwOTA4MmI3ODgyM2M2ZmQyMDc4NzE4ODU3YmRkNjQ1NTQxZTcwZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiN2QyODUwZTI3N2JhYmJjZGVhMGU0ODczNDUyMzkxMmEyMzlmYzJkNmMxYTU5ZjgzZTJmYWM2MGYxNzQ1NzhmZiJ9"
+        },
+        {
+          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/web/OpenapiWebMvcConfigurer.java#L32-L36",
+          "version": "repo-lines-v1:sha256:2b8637aec24d2a3071b1c86e610d7b16b4287310d66647b23595419c5afefcbd:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjA4Y2MxNWQwNzU0YjZmMjFmNzFlMGIwM2I5ZGQ3ODZiYzk4ODAwM2IyYjU3NTY0YzYwNTBhODAyMjUxN2M1ZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDc5YmRkZGI4NjIyMWFmZGQ2YjJmZTBmMGIwY2Q1ZjE1MDgxNDU5Y2EyM2E0ZjM3YzI0YzAyYmNhYjU5NzZkNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_fb2cff4128cf498ca7d2a8360276d12c",
+      "statement": "Public-path auth verification order in OpenapiAuthInterceptor: required version/timestamp/app_key (E4001 VALIDATION_MISSING_PARAMS) → debug bypass → timestamp within a 600-second tolerance (E4002 VALIDATION_TIMESTAMP_ERROR) → sign present (E4004 SIGN_ERROR) → app_key resolves via OpenapiDeveloperLookupPort (E4003 VALIDATION_APPKEY_ERROR) → MD5 sign match (E4004) → set auth company_id via OpenapiAuthAttributes and pass. Every auth failure writes an HTTP 200 OpenapiEnvelope fail body and returns false to stop the chain.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/web/OpenapiAuthInterceptor.java#L71-L116",
+          "version": "repo-lines-v1:sha256:e0af4bba3adcac7c778b2c6bf4aee6b8c2adc764ebd0d90e5fb025e7ef95d4ea:eyJzZWxlY3RlZExpbmVDb3VudCI6NDYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRhN2Y3NjJkNzc4ZTkzOWExNDA2ZmQ4ODFiNjQ0MzNmZWUwYzMxZWU3MWVlMjkyMWQyYWU3NWFjOTVhOTI3NDQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI1MTJhZmQwN2Y1MTRmNzJhMTg3MTYyMmJkMjAzZTk0ODk5ZTgxYzdhNWVlOTcwMDVkZGU0Y2JiNDI3YjMwMmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ2OWFlYWM4ODM3MGU0MjZkYWZmMGNlMjZjNWE5NDI3YWEwNjM1NzZlNzAzNjdjMTUwMDNhZjE4OTU2OGE0YTcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_15f5bef4b5724affbc5c6fbe907efeaa",
+      "statement": "OpenapiSignSupport (ecshopx-common) is a byte-for-byte reimplementation of PHP OpenapiCheck gen_sign/assemble: keys sorted lexicographically, nulls skipped, booleans as 1/0, nested Maps assembled recursively and Iterables element-by-element, and the signature is MD5(token + assemble(params) + token) rendered as 32-char uppercase hex, compared over the params map with the sign key removed.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/openapi/OpenapiSignSupport.java",
+          "version": "repo-file-v1:sha256:ad61b65ee8e4ba3b038baeea5664bdd16ee1bcb99c63dfb75bb80bdb412d5db9"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/test/java/cn/shopex/ecshopx/common/openapi/OpenapiSignSupportTest.java",
+          "version": "repo-file-v1:sha256:385ffadd628821c40c60c793442dd1176a18bcd3fb33561798db1bf0738b515d"
+        }
+      ]
+    },
+    {
+      "id": "claim_9ad57853ef034d1d8ff041d737af8a54",
+      "statement": "openapi.debug=1 is a dev-only bypass: the interceptor skips both the timestamp window and the signature check entirely and stamps the auth context with the fixed company id from openapi.system-company-id (default ${common.system-companys-id:1}, i.e. 1), making every public OpenAPI call execute as the system company with no credentials. The default in application.properties is 0.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L318-L321",
+          "version": "repo-lines-v1:sha256:05e09b1abdb91b08a6950595825bb3417254252d737d64802fe3550bac2de941:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZGJkYjYwZGMwM2Q3M2IwNDliYjhmOWM2MzIwMGM3YzY4OWNiNWMwYTM1NTkyYWMxYzI5YjVkOWY5ODczZjE5YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNmJmNzU3Y2Q1MWEyMDMwYjc0YjE3MWU1MzE1NGY1NWU2MTM1NjYwMTMxMzQwNjkxOTlhNTVjMjMwODhhZjNjZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTU0OTk5NWViMTkwNmI2MDNhOTU1YmQwZjllMDE3NWNmY2VmYWEzZTQ2ZTVkZTNkYjRmNTM5MzVlYWQwODkyNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTMzMzQ4ZTgwOGY3NDA3YTg0M2YyNjU2ZWIwMzFiMzVjYzMzOGY2NzVhYzhiNGRiZTAwZjVlYjE5MzIwYWFhMyJ9"
+        },
+        {
+          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/web/OpenapiAuthInterceptor.java#L46-L50",
+          "version": "repo-lines-v1:sha256:3564bb1470388971bd86ef77a122b3cd97bf74ab1a2d2d9d3cd567d99bdd7da7:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTRmZGJlOTU2MTdhMmZkMjljZWJlMWZkODY3ZGU5Zjg5ODdiNGIzNDc5YTVmNjU3N2U0ZGNjMGM1YjdjYTRiMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYjMzYzNmOThkNDJiZjc1ZThmZmEzODFlNDI3YTU0OWE4MGZkODU5NzE4NmUwMmFlMDNkMjM3Y2I3YjA3ZjY1NiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMWNlN2UwM2IxZTQ4YmY2OTg3ODcxMGM2ZTI4NzZkNDAzMWFmYzY5ZDdlMzhlZmMyZDI1ZTcxNzI3MzdlNWNjZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZGE1NjlhZmRmOWM0N2NlNTNkZmY4ZTM2YTY2ZGZhNGNhMDdkMjM5MjY0OTAzZDFkZDllMDc3OTE5YTRiNDYxMCJ9"
+        },
+        {
+          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/web/OpenapiAuthInterceptor.java#L86-L89",
+          "version": "repo-lines-v1:sha256:3be0a4ee9bec42c17396f15c0657fdf8ddbc08d2d971cbda8cb70a0c39a8f869:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTk2YWY5MzliMWE1NjVlYTAwNGJhNzdiYzQ0OTAzYzUzNDVmZjc2NTExY2FlZDFlZDhkYjQyZmE5OTQ2NTMwMyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTY4MDZmMTU1YzVhYzFhZTI3MjJjYTA2ZjJhYzljYWRjYjg4MWI5MTIzY2I2MjRhM2MxMDQ3NWI0NDQ5ZGMyZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNzA0MjkwOGFhMDhkOWRkYTdkOTlhODk5N2VjYTNkMmI1NzExYjUyOGUzODQ1ZTQxZDAzYjZkM2M5ZDdjOGVlNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNGI3ZmE3MzRjYTQ5YTNiOTNiOTRlNWY1Njc5ZjFkYWM0MTM0NDg4YWJlYjNkZjMyNGE4ZjUxYzQwMDczODlmZCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_7d002d1cb19f4af7aa09f4e6c1bb6f8b",
+      "statement": "OpenapiRequestParamCollector.collect builds the single shared parameter map: query string + form fields (PHP bracket-array folding) as the base, JSON body merged on top, then method back-filled from the URI path if absent. The JSON body is only re-readable because OpenapiContentCachingFilter (order HIGHEST_PRECEDENCE + 20) wraps public openapi requests in a ContentCachingRequestWrapper before the stream is consumed — without it a JSON POST could not be both signature-verified and handler-bound. resolveMethod prefers the method parameter over the path suffix after /api/openapi/, and normalizeVersion maps v2/2/2.0 → 2.0 with missing/blank → 1.0.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/thirdapi/OpenapiRequestParamCollector.java",
+          "version": "repo-file-v1:sha256:4e55969a9ea2f9fe092c333305563e66ab2fcbf43ae8bcce1b5c9e3884f8b63e"
+        },
+        {
+          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/web/OpenapiContentCachingFilter.java#L30-L46",
+          "version": "repo-lines-v1:sha256:b007b1b2209927e1d4ecd082e04731d3c64d8f13cec5ad8f0149f9c51dcadca8:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlmZDYzNTEzY2VmYWJmMGExYzk0NzE0MDFjMmY3MjI2Njg2YWRjNjdlN2VhMzE1YmE0NDQ2ODhkMzVlNDU2OTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY4NjgwOWZjODNiZDlhODYyZTNjMzE4YWU4NDM0NTliZGY3MGRiYTk1OTM5MGY1MGYwNDQ1YTVjOGZlZmUyYmQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_3cf0fa2e111a4e728fe7aad3fcf81ab6",
+      "statement": "timestamp accepts three parseable formats — 10-digit epoch seconds, ISO-8601 (with a space→T repair), or yyyy-MM-dd HH:mm:ss in the server zone. An unparseable timestamp throws IllegalArgumentException from parseTimestampSeconds, which is not an OpenapiAuthException, so it escapes the interceptor's catch block instead of producing the clean E4002 envelope — only a parseable but stale/future timestamp yields E4002.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/thirdapi/OpenapiRequestParamCollector.java#L147-L174",
+          "version": "repo-lines-v1:sha256:42f7a70e6992d581bcefb8e3ffcaa5976fa9ae83da4481b72996e32655a0b55a:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBjMGNmYzUwNmM2YTIyYzhmMWQwZmFjYjhkY2Y3ZjM1MGE2Y2ZmYTdlZjJmN2EwYjgzNjdlNGY5MDVjYzAxNDEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE5NjQyN2Q1NTZhYmFkZTc1YzI4NjJmNjU2NTQzMjVhMGU1MzQ5MWQzY2JhMTdkNGNjNmY0NWMyMmU2ODljNWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFjMmFkZTc2Nzg1MDVlMDVkN2QxNTQxYTdmZjhhNTg3ZDgyNWI0YzQ4NDQ5MTQwYjNiNjEwMDEzMDE2NDZlZmIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_ba5762a1879e4e8eb99cf7c6eab46528",
+      "statement": "OpenapiGatewayController maps /api/openapi and /api/openapi/{method} for GET/POST/PUT/PATCH/DELETE/HEAD/OPTIONS and delegates to OpenapiGatewayDispatchService.dispatch, which: resolves the method (parameter first, path suffix second; missing → E4005 \"method 不存在\"), normalizes the version and uppercases the HTTP verb, resolves the forward path via OpenapiHandlerForwardRegistry (no entry → E4005 \"API 方法不存在\"), and forwards via RequestDispatcher. A registered path with no matching @RequestMapping throws OpenapiNotImplementedException, rendered as E0001 with {method, version} in data — the explicit \"not yet migrated from PHP\" signal.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/thirdapi/gateway/OpenapiGatewayController.java#L37-L60",
+          "version": "repo-lines-v1:sha256:42c53a71bdb8f94d6455995261c3ea4bab98f221152954b96e2c14a5591dce65:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBjMWU0Y2VjZWFiNzljMzhjZDkxY2MzOGMxMjVkOTE0YTUxYTM3NDQyMGE3YzBkNGE5MTFjNmZmYjdiYjI0MDIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU1ZDM4ZTM3OTE1ZDA4MTZkMzBhM2I2YWRkM2Y5YmE4Y2YzN2E1Y2U1NWZjMjlkM2RmZjJjNmU5YjBiNzJjNDQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/thirdapi/gateway/OpenapiGatewayDispatchService.java#L34-L79",
+          "version": "repo-lines-v1:sha256:bf1359a6aca7c44009d07d715c0bedf0f5867b21d35cafdffb9748be180cd8a8:eyJzZWxlY3RlZExpbmVDb3VudCI6NDYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdkMzcwN2E5NDBhMjJmOWM3Yzg1YmZhY2E0NWJjYTExNzE2Mzc2ZWZkYzA4MjM3NTg5ZjEwNTc3Y2VlMDhkMTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU1YTA3NjIwMTU0YjQ5NWNmNzZjYzJhYmY0ZDc5ZmQxNzliMGM5MmI1Y2Q0MTFiNWMwM2E1N2I1ZDVhZTMyYjMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_1cfe03278bdb44f19aaf22c36dcc90d8",
+      "statement": "OpenapiHandlerForwardRegistry is the authoritative routing table: 145 hard-coded register() calls in its constructor (44 v1.0 routes, 101 v2.0 routes; 80 POST, 45 GET, 9 DELETE, 8 PATCH, 3 PUT) filling a LinkedHashMap. The key is normalizeVersion(version) + \" \" + verb.toUpperCase() + \" \" + method.trim(), and the value is always /api/openapi/internal/v{n}/{method}. Version is part of the key, so the same method name can exist in both versions with different handlers (e.g. ecx.order.list and ecx.member.create are registered for both 1.0 and 2.0).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/thirdapi/OpenapiHandlerForwardRegistry.java",
+          "version": "repo-file-v1:sha256:8e377a45d305a7888a9bbabe2b542d0dfaa0c95ee37ff600dd91196af8843611"
+        },
+        {
+          "resource": "repo://ecshopx-openapi/src/test/java/cn/shopex/ecshopx/openapi/thirdapi/OpenapiHandlerForwardRegistryTest.java",
+          "version": "repo-file-v1:sha256:f7413bf61b6bcd4d04b22f4838d2d054574c8db8de60d96c4e9b2ec1b3ff3058"
+        }
+      ]
+    },
+    {
+      "id": "claim_aad63f6795674b0d8857c22c1940135a",
+      "statement": "OpenapiMethodRegistry is vestigial: it parses the classpath resource openapi/openapi_list.csv (one row per PHP method with fullname, PHP class, and Java class/method targets), but that CSV is not present in the repository, so byRouteKey is empty and lookup always returns Optional.empty(). The gateway never consults it — new methods must be registered with a register() line in OpenapiHandlerForwardRegistry, never by editing a CSV.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/thirdapi/OpenapiMethodRegistry.java#L34-L67",
+          "version": "repo-lines-v1:sha256:ee6e01ed3f08acd20f604a8d2ab370b5b535b9584e801977d3fe0afe936b846f:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4ZmExZTlmNDQ5NDlmYTg5YTNiNDJiMDQ5MmRkYmRmZmEyZWI3NjQ4NDhkMzU3NzhjOWZiNTNjMjA3ZWJkYmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY4ZjAxM2U0ZjJjYWM4ZmYxZWI0OWJhZmE1YTNjNGViZjVmMTdhNGI5N2NlY2Y3ZmY0MDNiYTlmNzY4MTU1MWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjcwZmYyNWU5ZmY5NTA3MzM0ODhkZDlhOTZlMTdlYjQwZDg1NGUwY2IzNWRjNDNjODBhYmY5MzI1YTVmYzVjZjQifQ"
+        },
+        {
+          "resource": "repo://ecshopx-openapi/src/test/java/cn/shopex/ecshopx/openapi/thirdapi/OpenapiMethodRegistryTest.java",
+          "version": "repo-file-v1:sha256:45ece45e8940b8516a74d6c49e6febca95b2bd4006b3aee2183e3e51aa8577f4"
+        }
+      ]
+    },
+    {
+      "id": "claim_d694e46d7a4d457191ef0bda1697336c",
+      "statement": "OpenapiEnvelope is the PHP OpenAPI response shape {status, code, message, data} with all fields always serialized: success → {status: success, code: E0000, message: 成功, data}, fail → {status: fail, ...}. OpenapiResponseBodyAdvice is a @ControllerAdvice scoped by basePackages to exactly the six handler packages (thirdapi.v1, v2.orders, v2.member, v2.items, v2.distributor, v2.kaquan) at HIGHEST_PRECEDENCE; supports() triggers on the @OpenapiResponse annotation (class or method level) and beforeBodyWrite wraps everything into the success envelope except bodies that are already an OpenapiEnvelope, a byte[], or a response with image/png content type (raw QR-code/image streaming).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/openapi/OpenapiEnvelope.java",
+          "version": "repo-file-v1:sha256:6f35ba7aa4a0c7deac7d8e651c0bb70e9f189a4ac6aa2adc8fa21a77167e24c2"
+        },
+        {
+          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/web/OpenapiResponseBodyAdvice.java#L31-L68",
+          "version": "repo-lines-v1:sha256:1f89279277b73bb6b7921baec7596bb9de725cceb429d82ac18a5d54c67838a1:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjllNTY2NzBkODUwMjA3YWUxOTdjMmMxMmM5MTZjMjRkNDg2OTQxMjFhNDA5NWI2M2NhMzQ2YzU3MTdmYTE3MzUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjUwOWU0Y2UxNzRlZjllZTU2ZjRkNDYyZGQzZDQyYWU2MjExYjc0NmMxOWVlMmViZmMzZWJiNWFmMmJiNzNmNmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d3e7ba150fb94ec191973e537944e98e",
+      "statement": "OpenapiExceptionHandler mirrors the advice's basePackages and HIGHEST_PRECEDENCE and renders every openapi failure as HTTP 200 with a fail envelope: ResourceException → E0001 BUSINESS_ERROR, UnauthorizedException → E4004 SIGN_ERROR (including a missing auth attribute), OpenapiNotImplementedException → E0001 NOT_IMPLEMENTED, OpenapiLegacyZeroCodeFailException → E0000 (a legacy PHP endpoint that reported failure with a success code), list-push failures (MemberCardGrades, MemberTagLibraryPush, CustomerUnionids) → E9999 with data [], and every Openapi*V2FailException → the code carried inside the exception.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/web/OpenapiExceptionHandler.java#L49-L130",
+          "version": "repo-lines-v1:sha256:988b238ce1a928210fee617439af8372d4476c23efbe7072130c069d3056f272:eyJzZWxlY3RlZExpbmVDb3VudCI6ODIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQwMjU2MGMyM2UxNGQxMmU5NmE1ZGU1YTIzZWMyOGVkM2Q0YzUzMTIzMzYzMTg2NTNhMDQxZGUyZDQ0MTVjMDciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIzOTdkYWFlMzQ1OWM4YzkyNzkzNjU2Y2Y4NTk2YzAyYTEwZWE3NWUzNDQ1OTUxMDgyYmQ4YzMwOTU0ZTVlMGMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVlMDk4MzBhMDUxMjBiZmZlYTJiMDI0OGU3NDZhZTcwNzgxYzAwMGE4NzE0YzRhZjNjMmFhZTM2ZjBkYzIwNzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk2OGZmMDA2MGVkNjNkNjI3NGQ3OTIzZDc5Y2UwMmYyZmRiY2I1Njg5MzY3YTEzMGU2Y2FiNGI0Nzg2OWI4NDgifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_091889706f8f49649c8277c2616be2de",
+      "statement": "OpenapiErrorCode (ecshopx-common) is the aligned copy of PHP OpenapiBundle\\Constants\\ErrorCode with 54 constants, each Javadoc'd with its PHP twin: E0000 success, E0001 deliberately reused for both business error and not-implemented, E9999 system error, the validation/auth family (E4001 missing params, E4002 timestamp, E4003 app_key, E4004 sign, E4005 method not found, E5001/E5002 service params), and per-domain E5xxx families (goods E51xx, orders E53xx, distributor E54xx, members E55xx, salesperson E5601/E5612, wechat E5700). When migrating a PHP endpoint the failure code is part of the contract.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/openapi/OpenapiErrorCode.java",
+          "version": "repo-file-v1:sha256:45355b204da0c7fbf443a4ebaa372b0fbec6651e0439432c5300fd45a536d1b9"
+        }
+      ]
+    },
+    {
+      "id": "claim_7fe5d8b28f49415eba4062fe4b0d493d",
+      "statement": "The v2 self-pickup write-off method ecx.order.writeoff demonstrates the registration pattern end to end: a register(\"2.0\", \"POST\", \"ecx.order.writeoff\", \"/api/openapi/internal/v2/ecx.order.writeoff\") line in the forward registry's constructor; a port interface OpenapiOrderWriteoffPort declared in ecshopx-common/openapi; a provider implementation in ecshopx-orders' openapi/ package that delegates to the bundle-local orchestration service OpenapiThirdApiV2OrderWriteoffService — the provider Bundle hosts PHP-parity class names under the cn.shopex.ecshopx.openapi.thirdapi.v2.orders namespace; and an internal handler on OrderController (openapiV2Order bean) under /api/openapi/internal/v2.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/openapi/OpenapiOrderWriteoffPort.java",
+          "version": "repo-file-v1:sha256:4ec7580d9032ec413dedde57c683a942df93d9917639e8ea1b36947063c56714"
+        },
+        {
+          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/thirdapi/OpenapiHandlerForwardRegistry.java#L251-L251",
+          "version": "repo-lines-v1:sha256:ddbf5949f37d62d5165bacd2c1b7ba4e3b80e42c04721fb64c507ac5eddbdf86:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZGRiZjU5NDlmMzdkNjJkNTE2NWJhY2QyYzFiN2JhNGUzYjgwZTQyYzA0NzIxZmI2NGM1MDdhYzVlZGRiZGY4NiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZGRiZjU5NDlmMzdkNjJkNTE2NWJhY2QyYzFiN2JhNGUzYjgwZTQyYzA0NzIxZmI2NGM1MDdhYzVlZGRiZGY4NiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzZkYjBlMjM4MTFkNmI0YjQzNDdlZmJjMzAxZGY4YTc4ZDhiMWU3Mjg4OGFmODI4Mjk2ZGI2ZjUxNjAyNTc2NiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiN2RjMmNkNzY3ZDUxNjZiMzg5YWIzNzU1Mzg2YTBkOTIwN2VjNjI5YzI5ZTBkMDdkODgxZjcwNWJlMDNmYTIwZCJ9"
+        },
+        {
+          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/thirdapi/v2/orders/OrderController.java#L121-L122",
+          "version": "repo-lines-v1:sha256:7eaa857484b0a2774cbda1bec30fed69954336be238748524cbc8e174990641c:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZWI5MjI5NWE4ZTlkZTY3MTczMDBhMjkyNTY1ZWExYmI3OTAyMzBhOTZmMDE5NmRlYTI3NTkwZjMxYTgzOTZhYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTY1ODAwYTVhZTA4NjZkNTlhNjBjNzE1MTQwYWE2NTcxMDllNmMwZWUzNDQyYmU1ODk4YjhlZGU1MzM2NWIyMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNmUzMjUzNzhhNjBhM2E3YjRjNDdiYjA1OGM2MmZlZDE1NzI5MTdkNmY1MTBkMDA3YmQzOGQ2ZjAyMmEwZDM5MSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNjI5MTBkNTRkYTFiMWMzMTI0MzQ3ZDk1YjIzOTc4NDAxYmRiNzJhMzlhZDgyNzEwNTViNjcxZTFmMzYzOGM3YyJ9"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/openapi/OpenapiOrderWriteoffPortImpl.java",
+          "version": "repo-file-v1:sha256:58db3a75dd1b48ed21699836089b4515c0e07ffa90a83befd9872b66407279f7"
+        }
+      ]
+    },
+    {
+      "id": "claim_1bd6d7727d334468b860d3b49bad5d76",
+      "statement": "OpenapiThirdApiV2OrderWriteoffService.executeOpenapiWriteoff maps every precondition to a PHP-parity OpenapiErrorCode via OpenapiOrderWriteoffV2FailException: blank order id → E5001 SERVICE_MISSING_PARAMS; unparseable/non-positive id or missing OrderAssociations row → E5301 ORDER_NOT_FOUND; unsupported effective order types (supplier_order, membercard, service types, or empty) → E5310 ORDER_HANDLE_ERROR \"无此类型订单！\"; a Redis pickup-code setting decides whether pickupcode is mandatory (E5001) and whether the SMS pickup code must be verified and consumed (mismatch → E5310 \"提货码验证错误！\"); ziti preconditions (receipt_type=ziti, order_status=PAYED, ziti_status=PENDING, pay_status=PAYED, cancel_status in NO_APPLY_CANCEL/FAILS) → E5301/E5310.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/openapi/thirdapi/v2/orders/OpenapiThirdApiV2OrderWriteoffService.java#L100-L218",
+          "version": "repo-lines-v1:sha256:c3f90602e3fc2328b6f8e034d1a5b6a2a5a3ee707bd52f4305746d14d1a4f92c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTE5LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJjNjMzZGY2YzA1Y2RlOTI1YTA5NTgyZDAzOTBlNWM3MDcxMjhiMjBjYjNjMDZkMTAwMGYxY2Q3ZGViM2RhZWVhIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI2N2NkYTgyZGE2MDYyMzhlMDVlNjIzOTk1NjljNWVlMDM5OTM0MTk2NDhhZTVkNDNhMmJmOGNkNjM0N2Y4MjYzIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJlZDkxMWZjNTdhNDU0NWUwYjFmOTc2NzM2MDU4YWIwZDcwYjAxZWY5YWQ2MWY4MDk5ODM1ZTljZjFjY2IzZmJiIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI2MmMzNmJhZWIyMTc4NWQ1MDhiZjJkODczYmIzYjc5ZDg0NzFmN2FiMDkyYTM5NDI3YTQyYmNkOThhZmM2OWM1In0"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/openapi/thirdapi/v2/orders/OpenapiThirdApiV2OrderWriteoffServiceFailMappingTest.java",
+          "version": "repo-file-v1:sha256:cca50f7aa8a8dbdf1d4713fd6c823aa1b4fee48d90ec4903615e28fe7b9722b3"
+        }
+      ]
+    },
+    {
+      "id": "claim_6be392b9a07840b8ac7ad6d926bacf04",
+      "statement": "NormalOrderZitiWriteoffService.orderZitiWriteoffForOpenapi performs the write-off transactionally (@Transactional(rollbackFor = Exception.class)) and serialized by an in-JVM static ConcurrentHashMap mutex keyed companyId:orderId, logging the operation with source \"openapi\" — the openapi write-off path cannot run concurrently for the same order within one JVM.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/NormalOrderZitiWriteoffService.java#L151-L187",
+          "version": "repo-lines-v1:sha256:dd004eaa9f283449a4f3b40b6da83bd366d699cc9d1a3f171468099ec1073195:eyJzZWxlY3RlZExpbmVDb3VudCI6MzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJkNzU0OGYwODFmM2Y0MjY0OTYxNzRiYjdmMTYwZjg3MDk0NDNjMWM1NmM2NmFmMzNmYjZmNmU4OTdjZjAzZjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYwMWRjOTQ2YTg0YWIwNGU3MjFmNzFkMGJkZjY0NTU4NTc5YTcyY2FhOTU3NDEzOTU5N2JjYzUxYzliYjNiNWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY1NjNkMDAzODBlNmM3MDFkMzBiZjgyYWFmNjk2MmYzYzM4ZDI5ZDljMDhlZjAxM2YyZjNlNWFiZmY1ZDVhZmMifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/NormalOrderZitiWriteoffService.java#L54-L58",
+          "version": "repo-lines-v1:sha256:bc31a6634f65381718bdfe7544d59292d4b69633effef6f111a5d54fb6931639:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFjZjA4ZDRjN2Q5NmIxY2M5YmVmNjE1YjUxN2Y2ZDM2MTIzZjE4MDU2MzRhNWMxM2RiZGU2NTY5NGUzM2U0NiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTNlNTY0MWM5NGNjMWFkYTc4ZGQzY2MyMjA3NjU4OGM5ZTBlNzNjNGE4MWY2NDI5NzgwMDc5ODJiNzBhNDMwMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTQ1MzIyNjdmNmYzYzdlNWExZGE3YzNlY2VkMWNkNzBmNTQxZTU0MzM5NDYwODM0MmU0Y2Q2ZjQ3ZmYyMTBkNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiM2UwZGYyOTlmNzA1Njg1MjAyNWNmYWZjMWZiNTIyYjE4YjQ5M2QxZmUzNGVjZDkxMjRiODBiNGY1YWYyY2IwNCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_1c8309f113514492957ecaadc9da4dde",
+      "statement": "The @Activated(routeAlias) annotations on openapi handlers (e.g. order.writeoff.set on ecx.order.writeoff) are dormant on this surface: ActivatedMiddlewareService.handle returns immediately when the operator-JWT user map is null, and nothing ever sets that context for /api/openapi paths because OperatorJwtAuthenticationFilter skips the prefix and no openapi controller carries @AdminAuth. The alias is PHP-parity scaffolding, not an authorization gate, on the openapi surface.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/activation/ActivatedMiddlewareService.java#L76-L79",
+          "version": "repo-lines-v1:sha256:c5647ed72c215983cca1955e0c7949ddbe9d4d217ad94a36c1a3bc0e276ab0ce:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzExMDU3ZDBiNWY2MmZmYmNjN2ViZWNkYjVlYWMzNDgyNWNlMDVmZDdkNjQxMjNmNDkwZjQ1MzNjM2ZmMmYzYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjRlZmM0OTQxOGQyNmRjZjEyOWIyMmE2YWEyMTEwOGNlZWMzNzY3N2EzMmQwOGU5ZDVmZWUzNWRkYTY2YmI5ZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDZiODJlZjRkNjllZjM3ZmEwMWY3NWY4Y2VmNjYxYjQyOWI0YWIzMmYxNTUwMDhjNTIyODk5NTU0NjhhMzg1YiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDgxOTQ4MGU2YTFhZDk5YzVlZGIwZGJmYjRlMGU4YTRiM2RlMzM2MjlmNjljYWU1YzE3MDYzZGU1YzU0YWYyOSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/thirdapi/v2/orders/OrderController.java#L121-L122",
+          "version": "repo-lines-v1:sha256:7eaa857484b0a2774cbda1bec30fed69954336be238748524cbc8e174990641c:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZWI5MjI5NWE4ZTlkZTY3MTczMDBhMjkyNTY1ZWExYmI3OTAyMzBhOTZmMDE5NmRlYTI3NTkwZjMxYTgzOTZhYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTY1ODAwYTVhZTA4NjZkNTlhNjBjNzE1MTQwYWE2NTcxMDllNmMwZWUzNDQyYmU1ODk4YjhlZGU1MzM2NWIyMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNmUzMjUzNzhhNjBhM2E3YjRjNDdiYjA1OGM2MmZlZDE1NzI5MTdkNmY1MTBkMDA3YmQzOGQ2ZjAyMmEwZDM5MSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNjI5MTBkNTRkYTFiMWMzMTI0MzQ3ZDk1YjIzOTc4NDAxYmRiNzJhMzlhZDgyNzEwNTViNjcxZTFmMzYzOGM3YyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_039a1a5f0a004ac091dbb88e27ae69ca",
+      "statement": "The openapi_developer table holds one row per company_id with inbound app_key/app_secret plus outbound external_base_uri/external_app_key/external_app_secret. OpenapiDeveloperLookupPortImpl implements the common OpenapiDeveloperLookupPort used by the auth interceptor: findByAppKey selects LIMIT 1 by trimmed app_key and returns OpenapiDeveloperCredentials(companyId, appSecret), or empty when the row, company id, or secret is missing — which the interceptor turns into E4003.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/domain/OpenapiDeveloper.java",
+          "version": "repo-file-v1:sha256:958d86d76700bd2aded8855faa3cd324cf9af03f190eee7aa1188853a53a3dcb"
+        },
+        {
+          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/integration/OpenapiDeveloperLookupPortImpl.java",
+          "version": "repo-file-v1:sha256:8ebebb9fba7c0be48c86f6b43f7c174adcd4936ba14dfca3d1007ad145bbce66"
+        }
+      ]
+    },
+    {
+      "id": "claim_12200110575442c59f2231b94712c00a",
+      "statement": "DeveloperInfoService materializes an openapi_developer row on first read: passport_uid comes from the company identity (or epochSeconds + companyId as fallback), eid from the company (or md5(passport_uid)), app_key = md5(passport_uid).substring(8, 24), and app_secret = md5(eid + common.openapi-rand-salt) — the salt (default \"ecshopx\") is fixed per environment and is only baked into newly generated secrets, so changing it never rewrites existing rows but silently desynchronizes environments that regenerate. The companys-bundle OpenapiDeveloperBootstrapService performs the same derivation for outbound credentials, with an app_key-collision fallback of md5(passport_uid + \"_\" + companyId).substring(8, 24) instead of failing.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L301-L301",
+          "version": "repo-lines-v1:sha256:621b6e8a9750a9f39aa4cb7d6ec7d9ba621394b61b45ddd837386de3f78e7c97:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjIxYjZlOGE5NzUwYTlmMzlhYTRjYjdkNmVjN2Q5YmE2MjEzOTRiNjFiNDVkZGQ4MzczODZkZTNmNzhlN2M5NyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjIxYjZlOGE5NzUwYTlmMzlhYTRjYjdkNmVjN2Q5YmE2MjEzOTRiNjFiNDVkZGQ4MzczODZkZTNmNzhlN2M5NyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjU3NjIzNjQ2YmMxMmQwMmQ5M2YzNzIyYzk0MTI3MGUzOTMxOWE4MzBmYmVmNjYxZGM2YjI5ZTdlNTk4MzJkZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYzYyZDNlYTQzOGQ2ZDgwOTRlZTI0MDRiZWNhNDBlNjBiZTgzYTY2ODFiODU4MDYxNzg0MjE4MmI3ODBmMjU3MiJ9"
+        },
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/openapi/OpenapiDeveloperBootstrapService.java#L61-L105",
+          "version": "repo-lines-v1:sha256:c71fe1f897227e710839ea39941f41e923414ae67302c2ab9c285cafb89f74d5:eyJzZWxlY3RlZExpbmVDb3VudCI6NDUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhY2Q3MTJmNTFmOGU1NzdkYTExNDZhOWI0OWJkMjdlM2ZhYzc3ODRkMDgzZmIxMDMwNzA3NzM1YmQ5MzZkZTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjczN2U1NzY1ZGZkNDRjODVmYTQ3OWYwYjEyZWU0Yzk3ZDFmMGJlZDhmNmQ1NmQzYjUwMjM0NTlhMjY1MTAxNjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg1Y2YyYjcwMjU3MDhlNjIwMGQ2NDdjMzEwZWU0YmE5NmIzNWZhZTA4ZTMzNDcyYzNjZDEzNGQ5OGU3N2EzMGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJkY2FiYTViOTZkOTgxODAxZDRmOGU3YWE4YzkxYTMyOTg2NDRkZmQ0N2U2MGZiZWYwZGFmZTVjYTg1MzljMGQifQ"
+        },
+        {
+          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/service/admin/DeveloperInfoService.java#L43-L136",
+          "version": "repo-lines-v1:sha256:2f545e5f986be516748a4a7f0d920998f0ef6a1c76ac3596ee4749086a6271d1:eyJzZWxlY3RlZExpbmVDb3VudCI6OTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3OTg0MjY4MzMwYTI0OTA1OTY2MWMyMjlmMjAzYmI4NWI4Yzg5NTc3YjNjNTEwMWUzYzU2MjgxMzBlMjI5ZTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI3MmI2NDQxMzUwMGQwZjBlNTI0YTVmNjRiNzhlYmU1NzY4NDZmYjhiYzRhYTk2YWRlNGE5Y2JiNzM5ZmQxMDIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdmYmQzNjYwYmNkOGU5N2M0NmQ2MjkxOTNhMWZlMzFhZmRhOWJiOWEzNDc0NGEyYWZhZGRhOGY5MjRiZDQxNWQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_28b23e1cff0043e2b65e3fc54f50acf8",
+      "statement": "MarketingCenterOpenApiSignedFormClient (ecshopx-third-party) is the outbound mirror of the gateway: it reads the external_* columns of the same openapi_developer row, builds {data, timestamp, app_key, version: \"1.0\", method}, computes sign = uppercase MD5(appSecret + assemble + appSecret) over the sorted keys, and form-POSTs to {external_base_uri}/api/openapi. Every marketing-center push processor goes through it and failures degrade to an empty map rather than an exception.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-third-party/src/main/java/cn/shopex/ecshopx/thirdparty/service/marketingcenter/MarketingCenterOpenApiSignedFormClient.java#L117-L127",
+          "version": "repo-lines-v1:sha256:1ae91332305edaa5bf25ba22f25747c5d58b973243c4c11b9c276a3908a55506:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ3NzEyY2Q5OTFhYTJiMTI1OTdiMDg2OGE1MTBmZmE1ODVjZTYxYWMxYTIyZWE2MjhmNTU5YTFkMjk5ZjJmYmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFmNThmZGYzODg5YzFjMWFjMGE3MWNjNDAxYjEyOTg4MDAxOWFkYWEyZDQxZmQxYjhjNmIxYmM4ZDM1NzgyZTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJjYjJiNGYxMTRlMDQ2OThlYWIwMTNkMDFhNTA5YzU0NDYxYWZjOTg2MGEyODgzNjU3ZTM2YWYwOTUxZDk3MjEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjcxMzg3YzE3OWQ4YTYwM2RjMzc5MTFhZGI2MmYyNmNkNjFhNzQzMjY2MTkxZmM2ZDQ1NzNkZTczMTgzY2JlMzIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_6475081bec724d0d9353f31169ddc7b1",
+      "statement": "Openapi handlers follow one uniform shape: @OpenapiResponse on the class, an explicit @RestController bean name (short names collide), @RequestMapping on the /api/openapi/internal/vN prefix, one @RequestParam(required = false) String per documented parameter plus @FlexibleBody Map merged via OpenapiRequestParams helpers (originalString body-wins, mergeString, PHP truthiness), requireCompanyId(request) for tenancy, and a Map/List return wrapped into the envelope by the advice (or an explicit OpenapiEnvelope passed through). Param-normalization helpers live in thirdapi/v1 and are reused by the v2 controllers.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/thirdapi/v2/orders/OrderController.java",
+          "version": "repo-file-v1:sha256:b766fc72401dc02c04b3c8e2d20a086d2e1e45389774cdd51e59082879ad07b5"
+        },
+        {
+          "resource": "repo://ecshopx-openapi/src/test/java/cn/shopex/ecshopx/openapi/thirdapi/v2/orders/OrderControllerWriteoffTest.java",
+          "version": "repo-file-v1:sha256:c5e0604cdf92dea64fc213305c2d4aa8ff44640e06192d8cbb989411c19ae998"
+        }
+      ]
+    },
+    {
+      "id": "claim_515cdfe030814511b8625cdb00e2bf8a",
+      "statement": "Openapi.debug, openapi.system-company-id, openapi.common-token (declared but read by no code), common.openapi-rand-salt, and common.external-baseuri are the module's operative configuration; ecshopx-openapi/src/main/resources/application-openapi.yml is an empty placeholder for an optional spring.config.import profile.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L318-L321",
+          "version": "repo-lines-v1:sha256:05e09b1abdb91b08a6950595825bb3417254252d737d64802fe3550bac2de941:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZGJkYjYwZGMwM2Q3M2IwNDliYjhmOWM2MzIwMGM3YzY4OWNiNWMwYTM1NTkyYWMxYzI5YjVkOWY5ODczZjE5YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNmJmNzU3Y2Q1MWEyMDMwYjc0YjE3MWU1MzE1NGY1NWU2MTM1NjYwMTMxMzQwNjkxOTlhNTVjMjMwODhhZjNjZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTU0OTk5NWViMTkwNmI2MDNhOTU1YmQwZjllMDE3NWNmY2VmYWEzZTQ2ZTVkZTNkYjRmNTM5MzVlYWQwODkyNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTMzMzQ4ZTgwOGY3NDA3YTg0M2YyNjU2ZWIwMzFiMzVjYzMzOGY2NzVhYzhiNGRiZTAwZjVlYjE5MzIwYWFhMyJ9"
+        },
+        {
+          "resource": "repo://ecshopx-openapi/src/main/resources/application-openapi.yml",
+          "version": "repo-file-v1:sha256:7d6a49ce58bf69df590350186a8844e81b870070f1810f10cfe33c3bec4c4337"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.2",
+    "at": "2026-10-21T12:26:22.580Z"
+  }
+}

@@ -339,11 +339,6 @@ public class CartController {
 	@PutMapping(
 			value = "/cartupdate/num",
 			name = "商品数量",
-			consumes = {
-				MediaType.APPLICATION_JSON_VALUE,
-				MediaType.MULTIPART_FORM_DATA_VALUE,
-				MediaType.APPLICATION_FORM_URLENCODED_VALUE
-			},
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ApiResult<Object>> updateCartNum(
 			HttpServletRequest request, @FlexibleBody(required = false) Map<String, Object> body) {

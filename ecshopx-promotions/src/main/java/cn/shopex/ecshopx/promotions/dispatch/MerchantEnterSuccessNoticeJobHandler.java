@@ -17,7 +17,7 @@
 package cn.shopex.ecshopx.promotions.dispatch;
 
 import cn.shopex.ecshopx.common.dispatch.DispatchHandler;
-import cn.shopex.ecshopx.promotions.service.SmsSendTestService;
+import cn.shopex.ecshopx.companys.service.operator.sms.CompanySceneSmsSendPort;
 import java.util.HashMap;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -29,10 +29,10 @@ public class MerchantEnterSuccessNoticeJobHandler implements DispatchHandler {
 
 	private static final Logger log = LoggerFactory.getLogger(MerchantEnterSuccessNoticeJobHandler.class);
 
-	private final SmsSendTestService smsSendTestService;
+	private final CompanySceneSmsSendPort companySceneSmsSendPort;
 
-	public MerchantEnterSuccessNoticeJobHandler(SmsSendTestService smsSendTestService) {
-		this.smsSendTestService = smsSendTestService;
+	public MerchantEnterSuccessNoticeJobHandler(CompanySceneSmsSendPort companySceneSmsSendPort) {
+		this.companySceneSmsSendPort = companySceneSmsSendPort;
 	}
 
 	@Override
@@ -43,14 +43,14 @@ public class MerchantEnterSuccessNoticeJobHandler implements DispatchHandler {
 			Map<String, String> data = new HashMap<>(4);
 			data.put("password", String.valueOf(payload.get("password")));
 			data.put("phone", mobile);
-			smsSendTestService.sendTemplatedNoticeSms(
+			companySceneSmsSendPort.sendSceneTemplatedSms(
 					companyId, mobile, "merchant_enter_success_notice", data);
 		} catch (RuntimeException e) {
-			log.debug(
-					"merchant_enter_success_notice failed companyId={} mobileTail={} err={}",
+			log.warn(
+					"merchant_enter_success_notice failed companyId={} mobileTail={}",
 					companyId,
 					maskTail(mobile),
-					e.getMessage());
+					e);
 		}
 	}
 

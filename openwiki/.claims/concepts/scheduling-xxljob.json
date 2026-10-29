@@ -1,0 +1,406 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:764d00abff0fce4684db0b78bbfb9fd413907d62d290cbf04a2047a65b88b671",
+  "claims": [
+    {
+      "id": "claim_58d9f660a1904f38b19211fbd3a0b98a",
+      "statement": "All time-driven business work in ECShopX-Java is scheduled through XXL-JOB 2.5.0, with the admin console deployed as a separate container/service (xuxueli/xxl-job-admin:2.5.0) whose scheduling brain (cron expressions, trigger loop, run log, alarm machinery) is outside the Spring application; there is no Quartz and no Spring @Scheduled cron for business jobs.",
+      "evidence": [
+        {
+          "resource": "repo://docker-compose.dev.yml#L71-L94",
+          "version": "repo-lines-v1:sha256:19517e5247999b66dce7b2aab1d1ec2dae541c83a03007083db02279275433a3:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVkMDZiMzkzYzFhMGFiMzIwZDU1ZTE3Mzk1MjM0NjQyMTFlZmIyYjZiMzA3MzMwMzAzNzg5MTg5NTc1ZDYxYWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM1ZjhhMWJjNTk0MDJkZWExY2RjNWU0OWViZDI1MTQxMmE3YzA0YjIzMTc1MTZhZjRkZTFkY2U0MGExNWY5ZmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdmOWZkMDdmNDU5MmQ4Zjc2NjRjNzMwNTIxM2I2ZjhmY2Y1NjY2Njc1ZDg5NDA0ODYyMDhmZWMyODBhODgxNzkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImYzMjQ5OTM3Zjc3NjZjNmRmZTg4ZThlMGEzNTFmOWE0NGU5YjI0MGJiNjY1N2UyMTk1MzQ4OTdmMmY5Mzc1MzMifQ"
+        },
+        {
+          "resource": "repo://docker-lite/docker-compose.yml#L72-L95",
+          "version": "repo-lines-v1:sha256:61cd167dd121b7d6dd03add6266a0fd45fd41b9c121220f287626a322c2490c8:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVkMDZiMzkzYzFhMGFiMzIwZDU1ZTE3Mzk1MjM0NjQyMTFlZmIyYjZiMzA3MzMwMzAzNzg5MTg5NTc1ZDYxYWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc0ZmY5MzA1ZWI5N2RkYWQ1MjVhMmFlZTllMTg1YTg4ZWNlMzBkMjI2OTMyYWE5NjM0MTY5NDQ4OWY3NTU3MjkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZjMTU5OTU4Yjc0NTdlN2UyNTc1YTRlZTkzMTM2MTQ2NTUxNzZhMjk2YmQzM2I3ODJlODdlYzg4MGExMzU0ODAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMyNTM5NTcxODRiZDBkYzA0OGNhMTUzMThjZDFkODkxZDUwOWYyODEyZjljZmZlZGJjNWY4ZWVjNjUyYWE2NzMifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/pom.xml#L232-L236",
+          "version": "repo-lines-v1:sha256:c40412f9dc946cca5b46e888c2d2b4385ca953996c008eaf2e8b81fccae2d4e5:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjA0NzFjNTFlZTVjOWEwZTAxMDc5ZGE5MGJkYjcxZWNiNzZmNmQ0OGI2NjQ4YTUwYWZhNjM3N2Y1MjJhNTRiZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDYwYmFiMDRmMjE5NjU2NmM0ZTRkNDJmNjA2MzcyYzIzNzc4OWM4N2Y2NDdlMzA0NzE5MzY3NzA3YTg4NDQwOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNzY1ZWViMTE1OWI4Y2YxZGZlOGEyZmE5OGQ0M2E5NzMzOTM3ZGQ0ZTYzZjE4ZWU3N2RhOGFjOGFiYjAzZmM4YSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZmI2NmExNGYwOTQwMmI5ZmM5ZDZkNDIzZTMyMTRlOGQxMGUzNjRiYzI3NzI3M2ZjN2ZlYmY2ODRhNmZmZmUyYyJ9"
+        },
+        {
+          "resource": "repo://readme.md#L157-L179",
+          "version": "repo-lines-v1:sha256:4c951d2ac65265aee575241b4f9beaad965cd4f02b5b606ae61417865c4892cb:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU0ZjlmOTdlMjc3YzczMDI1M2Q2NmQ3ZDQzNTQwZTdiY2NiYTAyZDc3MzdhMjUxZDUyMjBhOGY4Y2IzNDY0NmMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI0OGIyOGYxMDA5OTlmNjIyOGExYWQwNDNlNWUxMzEyY2RiMDhjN2ZhMzBhMmY4OGZkZjAzNTNiMTFkODQyYzgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJkOWM0NzI1YzY1YWJhYjQyZDdmYjk4NjkxODVmYTQzNmQ1OTI2MTg4ZDM0ZTM0ZTI5YTU3MDljNGRkYzEzNDYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg3ZjY1NTAwYWI5MGVjNDY2MjQwYmIxOGJmMTI0OWQxNzgwMmNmODQ3MGRhYzRkNTY0OTRiZTUzN2I1N2E3Y2MifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_5ba42f761f454d9c92ba3436f8961bfe",
+      "statement": "XxlJobConfig in ecshopx-bootstrap is the entire application-side XXL-JOB integration: it reads eight xxl.job.* properties via @Value and exposes one XxlJobSpringExecutor bean that auto-registers with the admin and receives trigger callbacks on port 19999, with log path logs/xxl-job and 7-day log retention.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/XxlJobConfig.java#L27-L66",
+          "version": "repo-lines-v1:sha256:a29256a1c12ffe2d5d49d54f1128d184121bb072b006b16f14eda713d8793e70:eyJzZWxlY3RlZExpbmVDb3VudCI6NDAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiMTQ3NjJhYWFkNThkMTM4NDRjZjJlYzU0NzQwYTRkOTdmNWUwN2VlNTE2ZDMyMGQ2MDM2YzFjN2NlNDJkZmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE0N2NkMmQ1NzQ5NGZmYmNlNjUxMThiMDVjMzQ0NGVkMzJiMDUyNjUwZjRhODljODY5NjFkN2M1YzQwODE4ZjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L4-L12",
+          "version": "repo-lines-v1:sha256:015ebb71c8264d86c72a76534bdbafafe2206c9b74d146190cdf68680944841b:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYmI3NGE3OTQ5NzBiMjJmYjFmODIzMzk0NjhkYTkwZmRlNWE2ZTRjNzk2MGY0OGY5NDQ5Nzc3NGZlMTdiM2ViOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYTFkMGFiYTBhYTIzOTk4ZmU4NTAxYjEzMDAxOTMwMTlhNWNiNGRhNjIxZDU0Mjk2MWU5N2I3MDhiMGUxZWNkYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZWIwZGFiMjgxMjY2ZjQxNTVjNDQxNmQyMzIwYmNiODQ5NzA1ZGYyNjY5YjVmMmUxYTgyNzE4MWQ5M2Q3Y2JjMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjRmNjMyMmE3ZTA2ZTkxODkyMTY1MGEzODU2ZGNkYzYzMTkwYjUwMGExOTI2OGQwY2NkODY5NTQxNmQ4MDM5MCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_0f8121ec056c4743a0c04ab8511c9697",
+      "statement": "The repo-default executor configuration is appname ecshopx-executor, executor port 19999, admin address http://127.0.0.1:9080/xxl-job-admin and accessToken ecshopx-cron-dev; the seeded xxl_job_group row uses app_name ecshopx-executor with address_type 0 (auto-registration), and the accessToken must match the admin's PARAMS token or triggers are rejected.",
+      "evidence": [
+        {
+          "resource": "repo://docker-compose.dev.yml#L82-L94",
+          "version": "repo-lines-v1:sha256:b522457ec9df9513e28f7b265e8b49a8da8a67c222b60facbc5fc7c75579016f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZmOTNlMTMwMmVjMDhkMGUwNGU4NmE3Y2UzYTYzZGViYzA5NDc5NTA4ZWU0NjdkNjBjNGY4YmU5NzU1ODgyZDUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM1ZjhhMWJjNTk0MDJkZWExY2RjNWU0OWViZDI1MTQxMmE3YzA0YjIzMTc1MTZhZjRkZTFkY2U0MGExNWY5ZmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBhMzBhMmVlNzYwNWEyNmVmYjVjYmZhZWYzMjAyY2ZiOWY5YTk4Y2NlZDZkNzBmM2EyNDM5ODhjYjY4NDc0OGQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImYzMjQ5OTM3Zjc3NjZjNmRmZTg4ZThlMGEzNTFmOWE0NGU5YjI0MGJiNjY1N2UyMTk1MzQ4OTdmMmY5Mzc1MzMifQ"
+        },
+        {
+          "resource": "repo://docker/tables_xxl_job.sql#L136-L137",
+          "version": "repo-lines-v1:sha256:dc691c777364f1a0a5998f0c6321395bb1357c7041894f5233991620d480d347:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODZkYzQyMjg5MDQzOWQ5MjNlYWE4YzNhMWEzYmY1YTgxODYyZDQ2YjRhNmU2MjA0NGZkZWI5MWZlNTUzMWQzZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMTFlZTQxYjllYjk4M2Y5MTg0ODZkNDU1MmFkNDA3NmEzMzk5MTFjNDJjODE0NmI5ZjZkOWY2MTllOTYwY2VhZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNzE2YTNhYmJjMDAyYWY2YmM4NGU3ZjUxY2IwYzljYWQzOTExMjAwMTQ1NWQyZGUyODk0NDQxZDU4MWJhOTExOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMTk4YjZhYjQ0OTNjOThkMzJkYzQ2YzRhYjM2YmNjNTEwNzdkMjU1NzA0MDQ5NDMxNmNlYWJmNGRiYWYyZjI3YSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L4-L12",
+          "version": "repo-lines-v1:sha256:015ebb71c8264d86c72a76534bdbafafe2206c9b74d146190cdf68680944841b:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYmI3NGE3OTQ5NzBiMjJmYjFmODIzMzk0NjhkYTkwZmRlNWE2ZTRjNzk2MGY0OGY5NDQ5Nzc3NGZlMTdiM2ViOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYTFkMGFiYTBhYTIzOTk4ZmU4NTAxYjEzMDAxOTMwMTlhNWNiNGRhNjIxZDU0Mjk2MWU5N2I3MDhiMGUxZWNkYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZWIwZGFiMjgxMjY2ZjQxNTVjNDQxNmQyMzIwYmNiODQ5NzA1ZGYyNjY5YjVmMmUxYTgyNzE4MWQ5M2Q3Y2JjMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjRmNjMyMmE3ZTA2ZTkxODkyMTY1MGEzODU2ZGNkYzYzMTkwYjUwMGExOTI2OGQwY2NkODY5NTQxNmQ4MDM5MCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_32faaff3ff4148f68575a351ab3d1ae9",
+      "statement": "docker/tables_xxl_job.sql provisions the dedicated xxl_job MySQL schema end to end: it CREATE/USEs the xxl_job database, the eight XXL-JOB tables (xxl_job_info, xxl_job_log, xxl_job_log_report, xxl_job_logglue, xxl_job_registry, xxl_job_group, xxl_job_user, xxl_job_lock), the executor group ecshopx-executor, the console user admin with MD5 password e10adc3949ba59abbe56e057f20f883e (i.e. 123456, role 1), and 69 job definitions for job group 1.",
+      "evidence": [
+        {
+          "resource": "repo://docker/tables_xxl_job.sql#L136-L218",
+          "version": "repo-lines-v1:sha256:ce77a408174dae135fac59d81c16aff7ca5ef704f5dadb9a12b3d0e9b70edacb:eyJzZWxlY3RlZExpbmVDb3VudCI6ODMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg2ZGM0MjI4OTA0MzlkOTIzZWFhOGMzYTFhM2JmNWE4MTg2MmQ0NmI0YTZlNjIwNDRmZGViOTFmZTU1MzFkM2QiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI4YzUyYjQ3YzA1YTY1ZTkxZTBjNzBjOGQzZTAzYmE5NzhiN2ZiNmIxZWMxNjc4M2RiZmRlZmI0YjQyNTFmYmMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcxNmEzYWJiYzAwMmFmNmJjODRlN2Y1MWNiMGM5Y2FkMzkxMTIwMDE0NTVkMmRlMjg5NDQ0MWQ1ODFiYTkxMTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://docker/tables_xxl_job.sql#L5-L10",
+          "version": "repo-lines-v1:sha256:b9c04381bf53d33379dad25481db9771abb61f6a505414bedc896ccb22e2af68:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYmQ1MjBmNzAzODE3YTViZDI3MjJjOWVhNGUyNWVkYmMyZWY3NWIzOGYyM2YyNTJiNGRkOTQ5ZjI1YWFiMTlhMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMTlkNjI3MjU5NDNiOGJiOWMzN2NmNzVmY2ZmNDFhYTg2M2EyYTVhMGRiODQ3YzhkYjRlNGQyZTY4NGMyNmQ5MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjAxYzM1MTUwMzg3OTAyOTcwMDBiMWY3MzM2NDc1OWIxNmIyMTI1YjZiZTcyNGFkMjVlMzM0ZDk4NTk1ZTIwMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNjM4ZDc4YjgyNGI5YjRiMjM4MDNjNmFmNzIwOWZjMmYwZTU3YmIzMzFjOTUzNDUwZDJiZTViZWZhOWVhMzIwMSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_4eedc7fc6eb846e38fae4c1128658801",
+      "statement": "All 69 seeded xxl_job_info jobs are BEAN-mode CRON jobs with executor_route_strategy FIRST, executor_block_strategy SERIAL_EXECUTION, misfire_strategy DO_NOTHING and trigger_status 1, at frequencies from every minute (e.g. cancel-orders) to fixed daily slots (e.g. finish-orders at 03:00); the executor_handler value in each row must equal the @XxlJob short name in code or the handler never fires, because there is no code-side job registration.",
+      "evidence": [
+        {
+          "resource": "repo://docker/tables_xxl_job.sql#L139-L212",
+          "version": "repo-lines-v1:sha256:b2018ca30be201f95f2857f65dfdf914582eafee0a634ce308e3a00ab66e0ec7:eyJzZWxlY3RlZExpbmVDb3VudCI6NzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRmOWJlODI5MzcxZmJiOTg5YjFjMzk2Y2YxYjBmMzM4ZWMwODhmYTBmMTI4Yjg3NjIwNjY1YTg1ZTViODgxMTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBlMzljZjVhMDFjMWRmMzkwNzI3YmM5NjNkZTg3OWRiNTc2ZjdiYTMwMTdiYzY3NDUxNTMyMGZjZTljMDFkMWMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIzYmU1YTcwOTViMzMyNWE5MmM3ZGI0NjY3OGYyZWU5NDE3YmYzN2M4MzEyNWNmYzIyYjZmNjA4ZTQ0NmM5NWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjUzNGRmMDM1MjU5OGJjYzVkM2I5ZGFkMWMzMmUzYjczOTI5YmRjNDkzOGU1YTdlZjM1NGFiNDlkNzU0M2RjMjQifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/cron/ScheduleFinishOrdersHandler.java#L32-L37",
+          "version": "repo-lines-v1:sha256:2171f8aad082fcc6d54479fe7bbf5df1477a037973c527385c6611424037b460:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODc1Y2MxNTg3ZTNkNmJlOWVhMzIxNWQzYmIzOTIzM2FiZmM4ZDllM2U2MjIzNDc5MjI2NTA5ZmEwZTI0NTU1MSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDVhNzg3NmQzMTg4OWIyNjM3NjRkZDUwN2U3NzU0MzMwODY3ZDA0YzEwZjZhOWZhZWY5YjUyMWNlZjEzZjFjOCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZWY4YjcxNzQ2NmFkZGNiMmQ3MWRiYjYzNzM4MmQ0OGZmNWU0MDM0Mzc2ZmU5ODIyNGRjNjA2NWU3NTY3NzRmOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMmIyNWU5M2RmZmVmMGI4NDMxMGY4YTA5NjVjNWVkMGE4NGJiNzNhOWY2Y2E3N2E2ZTNmNmU0OWJlOWNiNWY3MyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_4533b164576048efb0ec14e545513881",
+      "statement": "The seeded job set is not a guaranteed mirror of the code: ecshopx-promotions' recover-turntable-processing @XxlJob handler exists in code with no corresponding xxl_job_info row in the seed, so it must be created in the admin console before it runs.",
+      "evidence": [
+        {
+          "resource": "repo://docker/tables_xxl_job.sql#L139-L212",
+          "version": "repo-lines-v1:sha256:b2018ca30be201f95f2857f65dfdf914582eafee0a634ce308e3a00ab66e0ec7:eyJzZWxlY3RlZExpbmVDb3VudCI6NzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRmOWJlODI5MzcxZmJiOTg5YjFjMzk2Y2YxYjBmMzM4ZWMwODhmYTBmMTI4Yjg3NjIwNjY1YTg1ZTViODgxMTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBlMzljZjVhMDFjMWRmMzkwNzI3YmM5NjNkZTg3OWRiNTc2ZjdiYTMwMTdiYzY3NDUxNTMyMGZjZTljMDFkMWMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIzYmU1YTcwOTViMzMyNWE5MmM3ZGI0NjY3OGYyZWU5NDE3YmYzN2M4MzEyNWNmYzIyYjZmNjA4ZTQ0NmM5NWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjUzNGRmMDM1MjU5OGJjYzVkM2I5ZGFkMWMzMmUzYjczOTI5YmRjNDkzOGU1YTdlZjM1NGFiNDlkNzU0M2RjMjQifQ"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/cron/ScheduleRecoverTurntableProcessingHandler.java#L32-L38",
+          "version": "repo-lines-v1:sha256:dddb3ecdaad2fa141c96a20a2b571f213462c2b7f5a23af2299bcb236d529748:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTdhZjkxM2RkNzYxNjQ1NDdiYWY4YWQ0MTFlYjI4N2U5ODgyYjBmOTJiYmFlNGEwNDk2N2EwZjQzNjFjYjkyYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDVhNzg3NmQzMTg4OWIyNjM3NjRkZDUwN2U3NzU0MzMwODY3ZDA0YzEwZjZhOWZhZWY5YjUyMWNlZjEzZjFjOCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTQ3YmZiZmIyY2UwN2Y4ZmFkM2M0Njg3Mjg4OWZkZjNhNGM1NzM5NGQzOWY4MGU4ZWFiYzY5ZTNhYTRjZmQyMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMmIyNWU5M2RmZmVmMGI4NDMxMGY4YTA5NjVjNWVkMGE4NGJiNzNhOWY2Y2E3N2E2ZTNmNmU0OWJlOWNiNWY3MyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_fc3aca033f484d0e8469cd65c1cbaf63",
+      "statement": "The seed SQL only executes on first MySQL initialisation via docker-entrypoint-initdb.d (mounted as 00-tables_xxl_job.sql, before the business 10-ecshopx.sql, in both compose stacks); re-importing requires recreating the volume, and jobs added after initialisation are registered through the admin console rather than through code.",
+      "evidence": [
+        {
+          "resource": "repo://docker-compose.dev.yml#L31-L35",
+          "version": "repo-lines-v1:sha256:d8f26d826d22338699a08c7f2257bd527187469dfb8b3b68bed62dcd6143ab70:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEzZjRkOTY2MWU5ZDJjM2UxYTI4OWU1ODMyMjk5YmVhMTRjZGI2NGJmODg2NjFkZjcxN2IxMmZhMDJkMDExZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiN2Y2YmE0MjU1ZDAxYzZkMmMwMTI1ZmQ3YTFhYjE2YTcxZmY3YTBiOThkYWZiNTQxYzNiMzA4YjIxN2Q4MmM2MiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZGEwNTc1MzJjYzE5ZWRmMmFhOThmNzY4ZDQ2NDM5YzlmZmZiOGIwMTUwZjRjNDA0MDcxMzZmNWE0OTI3YmNiOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTcyMjYxMTAzZjViODA1MzUxNWIwNmMwYzQ1YzllYTBmZDQzMTc0MThhYmQ4YjZhMGVlYjQzYWI3ZDc3NzNkMyJ9"
+        },
+        {
+          "resource": "repo://docker-lite/docker-compose.yml#L32-L35",
+          "version": "repo-lines-v1:sha256:971bb576d845d58f20a938f1dd75e04c6d78d06d842f3a160a7b050e9b7858e0:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEzZjRkOTY2MWU5ZDJjM2UxYTI4OWU1ODMyMjk5YmVhMTRjZGI2NGJmODg2NjFkZjcxN2IxMmZhMDJkMDExZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzYzNWVjZDdiNmQ5ZmZiZDZlOWYzOTcxOGEyOGRmNzJiODIyYmUwOWE2Njg2YmY0ZGE4NDEzNzBkMjA4NTIzMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZGEwNTc1MzJjYzE5ZWRmMmFhOThmNzY4ZDQ2NDM5YzlmZmZiOGIwMTUwZjRjNDA0MDcxMzZmNWE0OTI3YmNiOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjYxMjIzMzM3ZDFkZmU5Yzg4N2Y1NmNhZjAwNzNlMGJhMTcyNTY0NGVjM2ZhMDc3MmNmYzZiNjUzMTZkZGM1ZCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_00548d01ea404d569236141d80da1156",
+      "statement": "All 72 @XxlJob handler methods across 18 Bundles follow one uniform template: a @Component Schedule*Handler class with a short-name constant used for the @XxlJob value, the [cron][<short-name>] log tags and the CronAlertEvent payload; a parameterless execute() that delegates to a service, logs an INFO done line with cost in ms on success; and on exception logs an ERROR failed line, publishes a CronAlertEvent via ApplicationEventPublisher, then rethrows so XXL-JOB records a failed run.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-kaquan/src/main/java/cn/shopex/ecshopx/kaquan/cron/ScheduleCancelExpiredCardHandler.java#L27-L49",
+          "version": "repo-lines-v1:sha256:5276a0e72058a0fb23a9fb16c7621096d68e7fa64d84e5c42bef28e0137406c5:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYThjMTE2MGViMGE5NTFkOWQxYzkzYmUxYmM0NTRiYjM0ZmY5NTM5NjNkMTNlMTdkZmE4OGM1NDMwZDBhMDMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU4NjRjOTQyZWMwNWUwNWUyM2YxMWUyZDJkYjliMjMzYzliYjY3MDBlNTE5NWVjMDkzZjk1MWUwZmQ0M2U3MTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/cron/ScheduleFinishOrdersHandler.java#L27-L56",
+          "version": "repo-lines-v1:sha256:40e5b4939d4902fc9949731c6fb9344c6d3d21b83bd24443b17af7d5c541dd93:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYThjMTE2MGViMGE5NTFkOWQxYzkzYmUxYmM0NTRiYjM0ZmY5NTM5NjNkMTNlMTdkZmE4OGM1NDMwZDBhMDMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU4NjRjOTQyZWMwNWUwNWUyM2YxMWUyZDJkYjliMjMzYzliYjY3MDBlNTE5NWVjMDkzZjk1MWUwZmQ0M2U3MTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/cron/ScheduleQueryMerchantPaymentHandler.java#L27-L52",
+          "version": "repo-lines-v1:sha256:cd9484cd501576e9a2d67f8900a1c654b72f74d7bf050f9eff69f2063a892818:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYThjMTE2MGViMGE5NTFkOWQxYzkzYmUxYmM0NTRiYjM0ZmY5NTM5NjNkMTNlMTdkZmE4OGM1NDMwZDBhMDMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU4NjRjOTQyZWMwNWUwNWUyM2YxMWUyZDJkYjliMjMzYzliYjY3MDBlNTE5NWVjMDkzZjk1MWUwZmQ0M2U3MTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-theme/src/main/java/cn/shopex/ecshopx/theme/cron/ScheduleEnableTemplateHandler.java#L27-L55",
+          "version": "repo-lines-v1:sha256:a746c9fa0e9a762b994ae0ab661df20b174608b1fb8448d80bf226e770dcfd45:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYThjMTE2MGViMGE5NTFkOWQxYzkzYmUxYmM0NTRiYjM0ZmY5NTM5NjNkMTNlMTdkZmE4OGM1NDMwZDBhMDMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU4NjRjOTQyZWMwNWUwNWUyM2YxMWUyZDJkYjliMjMzYzliYjY3MDBlNTE5NWVjMDkzZjk1MWUwZmQ0M2U3MTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_df41040a6fde4213808c3f02aede4ba4",
+      "statement": "Cron handlers contain no business logic of their own and use no XXL-JOB API surface — they never use XxlJobHelper or implement IJobHandler, do not shard, and communicate success/failure purely by exception propagation; all real work lives in delegated services (NormalOrderCronService, WechatPayService, TaskService, PagesTemplateServices, etc.).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/cron/ScheduleFinishOrdersHandler.java#L34-L41",
+          "version": "repo-lines-v1:sha256:95f15f3070ee52b35e455991de166bdcea62902dcf7baeef3893fbff214432b3:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTlmNGJlMDEwMTIwNjUyYWYyNGM0ZThlNzU1ODFmMWE3ODQwMTY0ODdjY2FkM2I2NWRjOTkyZjE1NTFjNmJlOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYTU4NTViNTQ3MzJlYWE3MWVmZTQ3Mzg3ODA4YjFkYWU4YTE5ZmY2ZDU1ZTJmYWIxMzJkNmVjMjk4ODczOWU2YSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiY2I2YzM3ZjhmODNhYzBkYjRmYTE1ZGExYzg0ZTcwMmM1ZDBkOGZhM2ZkYjgwMmU1NjVhODA1NTMwNzVkZGYyZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDA0ZDY5MDMwZDdlMTg3Y2I2YjhkMGNhNmM5YWZiZDNkNmRiNmQzNGI3MWI3NTEyYzljNzEzNzY0Yzk1OWFjYiJ9"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/NormalOrderCronService.java#L70-L95",
+          "version": "repo-lines-v1:sha256:40be408dac79db341a853f3b49cc4d2f5ac3bdf81caadb4cff81663cb7131533:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFkMzk1ZWU1NjRhMWMyNWY2Y2U1OTlhMDE3MjA2MDYyYzI5YjE1Y2ZkYTc5ZGI0NjZlZWE2YjQ1MDA4ZGNiMzIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdjNGUyMGY2YmYzNTU1ZmY3ZWVjZmFjYzNkYWUzYzljYzM2NzMxZTA4NTUwN2E4NWYyZWQwODhlMDFhNWFhYTgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjgwZmZiYjNlYTY2MDJmMDMwYWMzZmU3MGIyNzFiZjU0ZTM4M2JkMTEwMzAxYTBhMWI2ZTU1MGU0YjQwM2NlOWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ2ZDdiNzM3Zjg4YWExNTZmYjBiMDNhMzg4Mzg3ZjIwNDNkZTM0ZjQ1MDAxZTA0OWNlMDRmMDA3NmYxNjM3YTIifQ"
+        },
+        {
+          "resource": "repo://ecshopx-theme/src/main/java/cn/shopex/ecshopx/theme/cron/ScheduleEnableTemplateHandler.java#L34-L41",
+          "version": "repo-lines-v1:sha256:4fa5cb3d3df9300b1c89397f7bcf1c4f6b3fc695aa6130454699b389594a4f6c:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMmU4ZDhiYzVmNzJjNzExY2I2ZDZjNDVlNTZkMjhjNGI4YWQ4YWZlYzYwZjFkZjMzNGIyZmJmZDgyMzM1OTYwYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzdkNDg0NDRiMTg3MzNhNTY3MzEyNGU4Njc1ZGM3MjJlNDc1NDQ2ZDVhNDkzMWQwYjRkMWViMGZiZmNjNTg1NSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiY2MxNmM0NGNkYTI3NTkyNDhmMjliMWUzODQ1ZjAyMzJiMjllN2UzMGM3MzQ2YWIwZjA1MDgwYjRiOWE2ZmYzMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZjVjNWYyMzM2YmVkNmI1YWUwZmJlOTk3ODIzZmE1Mzk1MjdjZWZlOTI3ZWZhN2FmOGUwZTRkNmYxNDNjYmNhMCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_f51b2195d7c04e09b54fb0bf10b088d6",
+      "statement": "CronAlertEvent (ecshopx-common/.../common/cron/event) is a plain Spring ApplicationEvent carrying exactly handlerShortName and cause; because it is published through the injected ApplicationEventPublisher, delivery is synchronous, in-process and distinct from dispatch-bus events.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/cron/event/CronAlertEvent.java#L21-L39",
+          "version": "repo-lines-v1:sha256:205b7008f4c3b449dc60f74275cb9e4b76bdb5aee8144ab1a03a9495f94ee98a:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ1ZjUwNmEyMzM5Zjg4YTA5YzM1YmMwMTJjYjcxZDdjYjgxNzljNjViOTliNTk1M2ZlNGU1MDUzMTU5MjE5MjciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZjNDgzYWE2OGI1OTMzYmMzOTExNzg0N2ViMzg3NTI1MjBkNTM4ZjljYmQ0Mjk5NWQyMTk2NmYzYTA0NGY5ZDkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_c199b4f0eac44e5f9f4983f47c2a10c9",
+      "statement": "No listener for CronAlertEvent exists anywhere in the repository (no @EventListener or ApplicationListener for it); the event is an alerting seam, not active alerting, and the durable failure signals are the handler ERROR log, XXL-JOB's own xxl_job_log rows and alarm machinery, and the dispatch bus failed_jobs path for handlers that fan out to jobs.",
+      "evidence": [
+        {
+          "resource": "repo://docker/tables_xxl_job.sql#L40-L63",
+          "version": "repo-lines-v1:sha256:38a2f55cca6f000f95603cbf4ca1c0d0f28fcb271121e1765aeb4bd32dadb237:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBhY2QzYjlhMjAzMWFhNDJhMTlkMjQ5NzcyYWYwMWNiZDgxZDg3NmI5NzAxNGEzNmJjYWExMzVlYmZhOGVlM2YiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJiNDQwZjBhZmIzMTZlNjA0MjhkM2Y4NTcxODY1ZTBkZDU5ZTEzMjlhN2Y1OWFlMzU5ZTZiNDNkZDQ2Y2VlZTAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA4NTJlN2Y3MjM0NzQyNzYxYzNmMGNlNjdlMDg1OWUzMTFmOGRmYjgyZDQ2N2NjZDkyNTBhMTU5YWNmYjliYjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFkZGFkMjMzNjg0NzRlYjdhNjZkNzdkNDhlY2ZlMWIwOTI4MDAwOTNjODQ5MzJkYzU3ODEyZTA4NzRiZjFjNjIifQ"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/cron/event/CronAlertEvent.java#L21-L39",
+          "version": "repo-lines-v1:sha256:205b7008f4c3b449dc60f74275cb9e4b76bdb5aee8144ab1a03a9495f94ee98a:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ1ZjUwNmEyMzM5Zjg4YTA5YzM1YmMwMTJjYjcxZDdjYjgxNzljNjViOTliNTk1M2ZlNGU1MDUzMTU5MjE5MjciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZjNDgzYWE2OGI1OTMzYmMzOTExNzg0N2ViMzg3NTI1MjBkNTM4ZjljYmQ0Mjk5NWQyMTk2NmYzYTA0NGY5ZDkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_c8f63496d20c4338a4ec00f3affc8608",
+      "statement": "The recurring @XxlJob handler families across bundles are: order lifecycle cancel/finish/consumption and order money (orders: cancel-orders, cancel-offlinepay-orders, cancel-group-orders, finish-orders, consumption-orders, settle-order-profit, share-order-profit, generate-statements, update-rights-status), invoicing (create-invoice, query-invoice, query-invoice-red), ChinaUMS division SFTP file exchange (chinaums-division-transfer/resubmit/download-sftp), after-sales and refunds (aftersales: refuse-aftersales, close-order-item-aftersales, done-aftersales, schedule-refund), promotions/group-buying lifecycle (fail-group, done-group, done-nostore-group, trigger/invalid-promotion-activity, expire-specific-crowd-discount, expire-crowd-month, clear-turntable-times-over), statistics/data cubes (data-cube, companys, hfpay daily-statistics and record-* families), payment channel status and money movement (payment/adapay/hfpay: wechat-query-merchant-payment, adapay/bspay-confirm-retry, adapay-get-submit-license-audit, adapy-draw-cash-queue, hypay-check-cash, hypay-distributor-withdraw), Aliyun SMS (aliyunsms-query-sign/template-audit-status, aliyunsms-query-sms-send-detail, aliyunsms-update-task, aliyunsms-run-task), points/coupons/engagement/theming (send-member-point, settle-brokerage, cancel-expired-card, finish-community-activity, send-wx-remind-msg, enable-theme-template), file hygiene (espier: delete-error-file, delete-history-file), ERP sync (system-link: sync-wdt-logistics, sync-wdt-inventory), and analytics upload (youshu: youshu-order-sum, youshu-add-wxapp-visit-page/distribution).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/cron/ScheduleRefundHandler.java#L32-L37",
+          "version": "repo-lines-v1:sha256:b99a3899f52865d86a4a3fab2ab03d7e8069b34e6e1c02bd044882998cbb1ecf:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTk4ZjQ4MzMyMjJiMjA5ZjBiYzA5NzBmMThkNzE1N2IxN2Y1YmE1YWJkNzA5OTQ0NDcxNWYzM2E3ZWQ1NGYwZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzdjNzQ3OTI5ODYyMzkwN2EzM2EyYTk0MTQ0ODFiNGYzOGU0NmVhMDU4YTliYzRlM2U1MmI2YTRhMWZjYzdjYiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiODZmODg5MTZkYjk1ODFlODU1Y2UzMTZkMmU3MDBiMTJiOTU3NTUyNTcyZjRlODk4MjBkNzRlNmU5ZmM3ZDE0NyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMmIyNWU5M2RmZmVmMGI4NDMxMGY4YTA5NjVjNWVkMGE4NGJiNzNhOWY2Y2E3N2E2ZTNmNmU0OWJlOWNiNWY3MyJ9"
+        },
+        {
+          "resource": "repo://ecshopx-aliyunsms/src/main/java/cn/shopex/ecshopx/aliyunsms/cron/ScheduleRunTaskHandler.java#L35-L39",
+          "version": "repo-lines-v1:sha256:0fdee1ae869a0725eed38caac655377061b328dc076fffb5a3440d1053c072e5:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTc4MDYzYTM0ZGJkN2VkNzBlODRjNGY3YjQwN2Y0MmUzZjYwMGM2NzAyYTM4ZjFmZjJmOTFkM2YwNmRhY2I2YyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZWVkNGU0NmQwYWI4ZTQyY2U5ODVkZGEyODViY2FiZjRiYTk2NDRiZmRiYWIxYjEwNmZiYjM3MTZlZWNiMjVlMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMGZjNmEyYmQxZDE0MjEzZmJjNDE2NzBlZTg1Njc0OGYxZjQxN2U2MzcyNWRhZDc3MjIzM2U0ZTEyNWJkYzRlYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNjM3YTQxMWY0YzQ0YWU5YjgxYWM4MWIzOWUxMmUyZmEwZjc5M2VkNzZlYzkwYmJjY2NlNDZhYmIxMmMwNzhiZiJ9"
+        },
+        {
+          "resource": "repo://ecshopx-data-cube/src/main/java/cn/shopex/ecshopx/datacube/cron/ScheduleDailyStatisticsHandler.java#L32-L37",
+          "version": "repo-lines-v1:sha256:130e308c2d66cfd52b83008c8f971b5e6563e7b36d09a32110a1e6039a1e3ab7:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZWU4ZDJmOWMxOWZhYjhmODgwM2E0ZDIzZWI3MzM2MjZiM2MyMWQ2MjQ3YTMxZTUzMzQ5ZmUwMmQwYzczZDMxNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzdjNzQ3OTI5ODYyMzkwN2EzM2EyYTk0MTQ0ODFiNGYzOGU0NmVhMDU4YTliYzRlM2U1MmI2YTRhMWZjYzdjYiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMGMzY2Y4ZWY3MjUyMzA4YjUyZTliZmJmODVkMTE2MTIxMWNmMzgxNThkYTk5NTAxODkzYTNiOWFjNTI1OWZmZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMmIyNWU5M2RmZmVmMGI4NDMxMGY4YTA5NjVjNWVkMGE4NGJiNzNhOWY2Y2E3N2E2ZTNmNmU0OWJlOWNiNWY3MyJ9"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/cron/ScheduleDeleteErrorFileHandler.java#L32-L37",
+          "version": "repo-lines-v1:sha256:9a877d96a2fd98f5d3f1958f1cd8665eed630871827852ee522b4eb0c9e97905:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjMxZTNkYWE5YzUxZmZhYWRjMzNlY2M2MGZhM2ZhNGYzNjgxMDI3NDU3MDNiZDM0YjNmMGRkZjg1ZWI1NWQzMiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYmRkZmQ3NmVhMWE2N2U2ZmYzZmY0ODAzYTIwYjM2ZGVlZGMxYmZlNjlkNTY2MTQ0MDlmNTFhMTZiZDlkOThhNyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTZkY2FkZWNiODg2NmFjMzM1NWNhYzI1ZDEwY2QxNTEyN2YzNzE4NTk4NmJkYmMxNzhmNjgzZmQ3NmFjOTZhMyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMmIyNWU5M2RmZmVmMGI4NDMxMGY4YTA5NjVjNWVkMGE4NGJiNzNhOWY2Y2E3N2E2ZTNmNmU0OWJlOWNiNWY3MyJ9"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/cron/ScheduleCancelNormalOrdersHandler.java#L32-L37",
+          "version": "repo-lines-v1:sha256:53b3779a9447f3c7ef87c1ebbc13f9f232328403eb40f8d71f4e63498fe8804a:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTJkODAwMjFmNmZjNzkwMzhlODFiMzBhMjZhYjlmMTUwNmJlMDI0NDNmMjg2NDlhZGZjZGM3NTYwNjY4ZTU5OSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzdjNzQ3OTI5ODYyMzkwN2EzM2EyYTk0MTQ0ODFiNGYzOGU0NmVhMDU4YTliYzRlM2U1MmI2YTRhMWZjYzdjYiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzU3ZDFjNDc1MDM4YjMwNTc2YTAzMGI2NzVkMWE2YzcxODM4ZTMxNjI3YjE2NjliMzhjNzRiNzgwNzVmMzBlMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMmIyNWU5M2RmZmVmMGI4NDMxMGY4YTA5NjVjNWVkMGE4NGJiNzNhOWY2Y2E3N2E2ZTNmNmU0OWJlOWNiNWY3MyJ9"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/cron/ScheduleTransferDownloadSftpHandler.java#L32-L37",
+          "version": "repo-lines-v1:sha256:d28e2313b3dffa018266d491179cf36f83df1332d2ddc7d92197c31a2f201b78:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZmQ2Zjk1M2U1ZGY5YjRjZjRjNTE3ZmIxMjUzNWVhYzg3MDU1ZmE5NTU2NmNiYWM3YTIxOGJiMTgzZTI1ZWE4ZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMWYzOTc5Zjg2N2ZkNzFmNWE2ZWVlZjhmMWJiODRhZTFlNjkyYmZiMjQyMTM2MGJjNzFjNWFkYzVmOTIxNDRlMiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDI5MTM1M2E4YjYzZjYzYmZkODdiNGY3Mzg4YWZjMGE5YTJhY2VkOGEwOTIwZTljMWIwZTgyMDE5OTg3NTBiMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMmIyNWU5M2RmZmVmMGI4NDMxMGY4YTA5NjVjNWVkMGE4NGJiNzNhOWY2Y2E3N2E2ZTNmNmU0OWJlOWNiNWY3MyJ9"
+        },
+        {
+          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/cron/ScheduleQueryMerchantPaymentHandler.java#L32-L37",
+          "version": "repo-lines-v1:sha256:1d16bfaf9f69043ca070aa9bf1c0e94b8cdda6e28621208e2739602f8cd515e7:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMWUzZjUyZDk1ZjdiZjY1MzFmYmFhMGU3N2IxNGRiMjdjM2ZkNzg0NTcxYjNjMGRhYTU2Yzg4MGZkOGQ1YzYwZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDVhNzg3NmQzMTg4OWIyNjM3NjRkZDUwN2U3NzU0MzMwODY3ZDA0YzEwZjZhOWZhZWY5YjUyMWNlZjEzZjFjOCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTIzNTI5YTYzNGVlNGY5MjNhNDk5NGIyMjMzZjUyMWUwODQ5YjIxN2YzODc0YWIzYmVkYjVhYjQxYTU3NWFkNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMmIyNWU5M2RmZmVmMGI4NDMxMGY4YTA5NjVjNWVkMGE4NGJiNzNhOWY2Y2E3N2E2ZTNmNmU0OWJlOWNiNWY3MyJ9"
+        },
+        {
+          "resource": "repo://ecshopx-point/src/main/java/cn/shopex/ecshopx/point/cron/ScheduleSendMemberPointHandler.java#L32-L37",
+          "version": "repo-lines-v1:sha256:48b9a8078e6d2b2b7d24c6279ecd5c640f865f66aea479165a608ae055e676fe:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZGJjZmEwNzljMTE3MzAyZDZhNGE1OWY1ZGI1OTczZGJkODUzNTdhYjYzODRhMThjNzJiMzg4NWIyNDg0ZDQwMiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzdjNzQ3OTI5ODYyMzkwN2EzM2EyYTk0MTQ0ODFiNGYzOGU0NmVhMDU4YTliYzRlM2U1MmI2YTRhMWZjYzdjYiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTc2OWIzNTRmOWRjNGJjODkxY2FhNjYyMWViZGM4NTU3MmRlMDM1N2Q5OTYwY2YwZDc3YjM5NjE4NjU0MGU0YiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMmIyNWU5M2RmZmVmMGI4NDMxMGY4YTA5NjVjNWVkMGE4NGJiNzNhOWY2Y2E3N2E2ZTNmNmU0OWJlOWNiNWY3MyJ9"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/cron/ScheduleDoneGroupHandler.java#L32-L37",
+          "version": "repo-lines-v1:sha256:d87eb7f4e347cf5b01b6cecd45e006fe5a41729e516f0f176cfa123c345e0fe9:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNzFkMzEyMjdmMDA4N2JmM2QyZmQyYzM1MzdiMjhkOGVkNzQxZTBhY2YyNTVjNDhlMjhkZDc4YzEwNTc3MzUyNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzdjNzQ3OTI5ODYyMzkwN2EzM2EyYTk0MTQ0ODFiNGYzOGU0NmVhMDU4YTliYzRlM2U1MmI2YTRhMWZjYzdjYiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNTEwNzAyYmI3ZWZjMzczYmI5NTVhZjU2MzZlNTkyOGFiMDVmMzkzOTI4NjJlOTEwMGUwZTBmM2IzODE5NjA2ZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMmIyNWU5M2RmZmVmMGI4NDMxMGY4YTA5NjVjNWVkMGE4NGJiNzNhOWY2Y2E3N2E2ZTNmNmU0OWJlOWNiNWY3MyJ9"
+        },
+        {
+          "resource": "repo://ecshopx-system-link/src/main/java/cn/shopex/ecshopx/systemlink/cron/ScheduleSyncInventoryHandler.java#L32-L37",
+          "version": "repo-lines-v1:sha256:86e2fd1b846ca05fa860594fc54addc535bbb98e6c07bf418946860bc8300b0f:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOTg3NjlkZGExODRhOTVlY2YyOTZhZjk2MTQ1OWI0NGVjNjk3ZTc2Yjg5MWFjM2UyMTUyMjRlYjEzNzc3MDQyOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzdjNzQ3OTI5ODYyMzkwN2EzM2EyYTk0MTQ0ODFiNGYzOGU0NmVhMDU4YTliYzRlM2U1MmI2YTRhMWZjYzdjYiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDk1YTZlNTViMjBiN2NiZjlkMmY1NDdjZjNjZGUyNzI2NTkyOTY4ZGJiNWY0OWRhMmNhNTkxMzk1NDJhOGQ1NiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMmIyNWU5M2RmZmVmMGI4NDMxMGY4YTA5NjVjNWVkMGE4NGJiNzNhOWY2Y2E3N2E2ZTNmNmU0OWJlOWNiNWY3MyJ9"
+        },
+        {
+          "resource": "repo://ecshopx-youshu/src/main/java/cn/shopex/ecshopx/youshu/cron/ScheduleAddOrderSumHandler.java#L32-L37",
+          "version": "repo-lines-v1:sha256:75f99f3496ec8e7d8b5c5eb5266631e8ae6ee6ab15fed3150e1ca0d10a8af201:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODQwYmEzNGI4ZjMzNzY2NjgxMGE3MzI1MjQ0OGM2M2RiNzc5NGMzN2JjNjEzNzc4OTBhOWY4YzFmMDNjNTBkNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzdjNzQ3OTI5ODYyMzkwN2EzM2EyYTk0MTQ0ODFiNGYzOGU0NmVhMDU4YTliYzRlM2U1MmI2YTRhMWZjYzdjYiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMjA1ZDdjNzEyZDU1NGRmZDc2MzVjN2ZjMzJhY2E5OTc1YTk1NDMxYWNhMGFiMDFkMDBjYzJiYmJkMThjMjIyOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMmIyNWU5M2RmZmVmMGI4NDMxMGY4YTA5NjVjNWVkMGE4NGJiNzNhOWY2Y2E3N2E2ZTNmNmU0OWJlOWNiNWY3MyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_09b5a849d0ec4aaa85a68012644375ff",
+      "statement": "Cron handlers come in two shapes. Queue-feeders publish one dispatch-bus job per tick and return a fixed 1: finish-orders publishes FINISH_ORDER_JOB via FinishOrderJobDispatchPublisherImpl as ASYNC/REDIS/queue slow, consumption-orders publishes CONSUMPTION_ORDER_JOB on slow with payload orderType=normal pageSize=100, send-member-point dispatches SEND_MEMBER_POINT_JOB on slow, and schedule-refund publishes one REFUND_JOB per AUDIT_SUCCESS refund with staggered delays (0 s for the first refund of an order, 60*n+1 s for repeats) to spread the refund spike.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/service/AftersalesRefundService.java#L491-L531",
+          "version": "repo-lines-v1:sha256:9b21ac59ee12c301a08328982bf8027e3880b803ab39591d023f1d9b022d35e0:eyJzZWxlY3RlZExpbmVDb3VudCI6NDEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVkOWQ4Y2EyYmNhNmJiZDE2YjU5Y2JmNTJiNDM1ZDNlNzY3NjA3MTk4NjQ1Njc0YTdjN2ZiOGMyZTA1NjA2YTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjUwMTQ4ODBkOTRjMzhmMjc1MjhlODdkMDRlZmM4MjQ3YjI4NjU3YzFiNWFlZDMwZDFkMjM0NjU1OWI4NTU5ZjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRhYjU5NGVjYWI0ZWE2MDlkMDdjNGRiZjFiMTVlMDVjOWMyZmQwYTFlOTA3NzIxMWFmYzI0MDc3YWRhNzIwYWYifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/AftersalesRefundJobDispatchPublisherImpl.java#L43-L58",
+          "version": "repo-lines-v1:sha256:d0563dc29136732cb157a0cea6f5e50f17af07b5af5c8b85d82d87c79188db6d:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE0ODMwY2Q4MmQ1YTkyZDU0MTgyYWM0ZTBhMDdkNGJkMTM0ZmRhZWZjZTdkOTA5YTQwODBkZjRkZmEzNTIyODgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU2ODczODY4ZGE1Y2FlZDIxYzlmZGY2OTg2MmIwZGE1NDA2OWVjZGYxODgyYzIxNjUzNTZjNzRmNWE3ZDFkMDMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ConsumptionOrderJobDispatchPublisherImpl.java#L40-L54",
+          "version": "repo-lines-v1:sha256:9cd46a51ab8756c2e54ea25d718913b972f554f8c37d5465c0ab41a2cae326a9:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwOGNjMTVkMDc1NGI2ZjIxZjcxZTBiMDNiOWRkNzg2YmM5ODgwMDNiMmI1NzU2NGM2MDUwYTgwMjI1MTdjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE0ZGJiNjE0NzA1MDU0NGY0NDhmYjk2ZmIxZmNkMmYyODE3MjQxY2ZkZGYxNTVjM2M4MzRjZTA3YjM4YTljMTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/FinishOrderJobDispatchPublisherImpl.java#L40-L54",
+          "version": "repo-lines-v1:sha256:d62cd6824d360656768fa3d986af995a6a418e54b11f1ba9ddad39b886ba819b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwOGNjMTVkMDc1NGI2ZjIxZjcxZTBiMDNiOWRkNzg2YmM5ODgwMDNiMmI1NzU2NGM2MDUwYTgwMjI1MTdjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE0ZGJiNjE0NzA1MDU0NGY0NDhmYjk2ZmIxZmNkMmYyODE3MjQxY2ZkZGYxNTVjM2M4MzRjZTA3YjM4YTljMTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/SendMemberPointJobDispatchPublisherImpl.java#L38-L49",
+          "version": "repo-lines-v1:sha256:49b5ceae264b5f8f291fb7a1e9b310644c2fb2592974faac1b74f268aba31dab:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwOGNjMTVkMDc1NGI2ZjIxZjcxZTBiMDNiOWRkNzg2YmM5ODgwMDNiMmI1NzU2NGM2MDUwYTgwMjI1MTdjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE0ZGJiNjE0NzA1MDU0NGY0NDhmYjk2ZmIxZmNkMmYyODE3MjQxY2ZkZGYxNTVjM2M4MzRjZTA3YjM4YTljMTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/NormalOrderCronService.java#L102-L119",
+          "version": "repo-lines-v1:sha256:db86b60deb170a776b1b242662c5e3660148076150efbf166cc140b6ef6ed9b2:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE3NzBjOWU4OGY5NDU4YTU0Y2VlZmJmN2FlNTRkMmJkM2FmZWIzMTQwOWRmNjI5MzZiYTBlZTM5YmNlNTM1OWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAxM2RjYWJlMDdlNzc3MDQ0ZTgzMTU0ZGI4NjliNDA5ZmI4M2Q2NzBkZGU4ZjJjMTNhMTg2MzQxNTQyYjE3MWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRiMjAxOGM5NjIxNGVkYmU5YWEwMTk1NTllNWEzMmM4MDMwYWJhNGVlMDcwYjQzNDA5MDNhNmY0Y2VlNzYwYzYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_593fcda7bb254dbc8885beb83593bfe8",
+      "statement": "Direct-worker cron handlers execute the batch inline in the trigger call: NormalOrderCronService.scheduleCancelOrders counts expired NOTPAY orders (auto_cancel_time within 60 s, excluding offline_pay and point pay types), then pages through them 20 at a time (PAGE_SIZE = 20) batch-updating main and association orders to CANCEL and, per order, running the restore fan-out (invoice cancellation, supplier-order cancellation, marketing join-count decrement, points/upoints return, process logs via OrderProcessLogPublishPort, an after-commit marketing dispatch event, employee-purchase restore, per-item inventory and purchase-limit restores, limited-time-sale quota restores, coupon/directed-promotion restore), returning the cancelled count that ends up in the handler INFO log.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/NormalOrderCronService.java#L121-L293",
+          "version": "repo-lines-v1:sha256:00b119e41884f01fffaf5c94cde8b8b1edf4e66e228e62e061e844e4f0812156:eyJzZWxlY3RlZExpbmVDb3VudCI6MTczLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJlZDlkOGNhMmJjYTZiYmQxNmI1OWNiZjUyYjQzNWQzZTc2NzYwNzE5ODY0NTY3NGE3YzdmYjhjMmUwNTYwNmEzIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI2N2NkYTgyZGE2MDYyMzhlMDVlNjIzOTk1NjljNWVlMDM5OTM0MTk2NDhhZTVkNDNhMmJmOGNkNjM0N2Y4MjYzIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJmN2Y3ZjA4OWY0NWFkNDMzYzRiNTJhMTQxODFjMjhmZTc5YmU1YWZlOWE5YjNlM2Q1Y2U4YzRjNWMwMDQwMWNiIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI1YzM3MjY2NzdiMmY3MDA4ZmM1NDkyMThjYzdhZGM5NTQzNGQ1Yjg4Yjk3NzI4N2I0Y2U3NWE2MTRhOGE0ZjA2In0"
+        }
+      ]
+    },
+    {
+      "id": "claim_db639aeb01b24b55a315fc6a2b9c6720",
+      "statement": "NormalOrderCronService.scheduleConsumptionOrders is skipped under the OEM (Shuyun) flag ecshopx.request-field.oem-shuyun=true — it logs and returns 0 without publishing; otherwise it publishes the consumption job on the slow queue.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/NormalOrderCronService.java#L94-L109",
+          "version": "repo-lines-v1:sha256:ba822cff46eb6eae277cbfc427af4e81f779b28aeb76086552922de95325fbec:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFlYjQxNTE1OTVjZGUyODc2NmYyNDYwMWM3NjdmYjIwZTVjMjc4YWFjMWE0YmFlMDk4Zjk5MjJiMzgzMzE2NTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJkOTZkMWU3YThmYmVjNWViNzNmY2ViOTE2ZTAzYjllNmRhMTBiZDJkNTgyMTY5OWZmOTg1YmY1YTMzMWZmNGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ0MDYyMzU4NWM2YzFiNjJiMjhkZjE3MGIwYTBkZDg0MGM2ZTQ5NTIzYjAwZDA5ZDI3YTdhNGVlNzdmMDA5YzMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_3903e64fbffb4a73812dd189c86045f3",
+      "statement": "The queue-feeder publisher implementations in bootstrap are annotated @Profile(\"!test-cron\") (FinishOrderJobDispatchPublisherImpl, ConsumptionOrderJobDispatchPublisherImpl, AftersalesRefundJobDispatchPublisherImpl), and each cron-owning bundle ships a cron/testcfg/CronTestMockConfig annotated @Profile(\"test-cron\") living in src/main that installs @Bean @Primary No-op replacements for the dispatch publishers and side-effect ports, so cron runs during PHP-to-Java schema-diff comparison do not write Redis, call third parties or enqueue real bus jobs.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/FinishOrderJobDispatchPublisherImpl.java#L30-L32",
+          "version": "repo-lines-v1:sha256:aff651b366d4dfa9e31563cbbdc2e8c9ce3bf81ee0e0d8ef3ecd9e561508e0bd:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjhmYTFlOWY0NDk0OWZhODlhM2I0MmIwNDkyZGRiZGZmYTJlYjc2NDg0OGQzNTc3OGM5ZmI1M2MyMDdlYmRiZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiODRlZDQ0NDRiN2Q1NGJmNGQ5NWZiZTUyYjJlZTJkN2EwNmMyYmM3OWZkYmI5Mjc5YzJmYzc1YzViYTFkNWQ3NCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZGU1NGFmODIwODBiY2IwNWZmYzJhNjhiZjM2MjdjZjY5MTZjNjQyZTE1MTBkZmNhZjA5Njk2NGQ0OWMzYmRlZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMTA1M2I0NWY3NTVlMmI5OTUyNjVhZDk0MGE0NzNjMGFmNjdjMjAyN2Y5NDdlMjg0M2QyNWYzODJkOTA1NTBmNCJ9"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/cron/testcfg/CronTestMockConfig.java#L78-L106",
+          "version": "repo-lines-v1:sha256:080fc4befa2fe8bb7ac5ee7be37fcabadf20728956e2742701f8f014321e42eb:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZiZWQxNzZiYjlhMDkwNDZjMjM1MTJiMWZlNDU3NWI4MmFkYjNiOWRlZjljODZiOGE0ZGM5OWQ2ZjhiODM1NWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY1MGRkNmQ5OGE1ODllZGFlZTVmNjM2OGY3YzY3MWEwM2U4NGFjNWFmNjRmOGJlM2U0Y2MzNWE1NTlhNjJiNzUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBlMTBlZGQ0ZDZmY2NjNDE2NjFmNjJlZDRhMWYyMjRlMmI5MDE0Y2Y0NjIxMGJiYmI2MzU2ZWRlZjc5MDQ3YTMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_81c76ec3e11d49e1a193fce126e5dab6",
+      "statement": "xxl.job.* properties are case-sensitive and therefore injected Spring-Boot-CLI style via the APP_ARGS environment variable in Docker: docker/app-entrypoint.sh appends APP_ARGS verbatim to the java command (java $JAVA_OPTS -jar $JAR $APP_ARGS), and both compose stacks pass --xxl.job.admin.addresses, --xxl.job.accessToken, --xxl.job.executor.appname and --xxl.job.executor.port through APP_ARGS; the readme states this preserves the semantics of case-sensitive properties such as xxl.job.accessToken.",
+      "evidence": [
+        {
+          "resource": "repo://docker-compose.dev.yml#L129-L143",
+          "version": "repo-lines-v1:sha256:0a41701c5b2a5882ff2cc41419746661711375b6d9a94f99e449a60089328f2b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE1OTdkZWQ5NjA1N2NjMzhhNDcxZDJiZjA3ZjcyMjJjNmYzZmIyY2U2ZTkxNjJjZmE1NGQ2YzM1ODkxMWViMDciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjljODExNGUyOTMxYTRlNmEyM2QxMGY4MWQ5OTlkOGQ1ODM1MjdkNjBjYzQ2NmM0NmI5MzhkOTMyYmQ3NmUyYzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIyY2E0ZWEwYzRmYzFlYjNiZWViOTU1YTRiOWM0NDk5OTg5OGNmMDFiNWE4NDM4ZjdmMzcyNmRjZWQ1Mjc2NWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY0NGJkY2VlYmFjZjc5MWQwNGVlZTQwOThjMDYyMmI1NGZkZWJlZDc0MDkxOWYzOTEyZDkyZjE3NTE1N2NhY2IifQ"
+        },
+        {
+          "resource": "repo://docker-lite/docker-compose.yml#L127-L141",
+          "version": "repo-lines-v1:sha256:0a41701c5b2a5882ff2cc41419746661711375b6d9a94f99e449a60089328f2b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE1OTdkZWQ5NjA1N2NjMzhhNDcxZDJiZjA3ZjcyMjJjNmYzZmIyY2U2ZTkxNjJjZmE1NGQ2YzM1ODkxMWViMDciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjljODExNGUyOTMxYTRlNmEyM2QxMGY4MWQ5OTlkOGQ1ODM1MjdkNjBjYzQ2NmM0NmI5MzhkOTMyYmQ3NmUyYzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIyY2E0ZWEwYzRmYzFlYjNiZWViOTU1YTRiOWM0NDk5OTg5OGNmMDFiNWE4NDM4ZjdmMzcyNmRjZWQ1Mjc2NWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjViYmM5N2NhYjVjYjQ1NDYxODk2MzM1ODUxYmQ1Njg0Y2IwNGExZjRhNTUzYTc2Nzk1ODU5NWQ0ZDNmZDY4ZDMifQ"
+        },
+        {
+          "resource": "repo://docker/app-entrypoint.sh#L21-L22",
+          "version": "repo-lines-v1:sha256:0411051765d2ceb0de50d498f3e84c40f8285f7e335a038b3eabf19362308c5d:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiM2JhOWQ4MWI0YzRjMDBlNTg0Y2Y1NGRhYWJjYTJiZTlhODcyZGNiNGU4ZGZiNmZlN2ZhNGRmMjMwOWM4OGM4ZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYWZjNmM5YmJlNWIwZmQyMjUxMmEyN2Y2OTBlMWQ1MWUzMTYzZTQ4Yzg0MzUzNDU0ZGMyYmZkMjk2NGZlMmYyMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZGRjN2QzNmNjYzEyNDM0Y2E0MzBhMjRjNTQwNGE4NGMzMTczMDVmN2UxM2QzYzRiZTk1MzNhNWIyMjAzYjIyMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNGFiOTcwNTA2ODEwZGFjOWVlODRhNDQ2NGI5NTBmMDliZDMxZTQ4NTY1NmExZGYwOTExNzhlYjc5OTI0ZDJmMiJ9"
+        },
+        {
+          "resource": "repo://readme.md#L179-L179",
+          "version": "repo-lines-v1:sha256:248b28f100999f6228a1ad043e5e1312cdb08c7fa30a2f88fdf0353b11d842c8:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMjQ4YjI4ZjEwMDk5OWY2MjI4YTFhZDA0M2U1ZTEzMTJjZGIwOGM3ZmEzMGEyZjg4ZmRmMDM1M2IxMWQ4NDJjOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjQ4YjI4ZjEwMDk5OWY2MjI4YTFhZDA0M2U1ZTEzMTJjZGIwOGM3ZmEzMGEyZjg4ZmRmMDM1M2IxMWQ4NDJjOCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTJhMTcxZmVhZTFhM2JmOTFmYjVhY2MzNTQzNDA1NTE5N2U4NTg3YTQxNzBiNDZiMGNjYmY2Mjc2ZjVlYTMyYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODdmNjU1MDBhYjkwZWM0NjYyNDBiYjE4YmYxMjQ5ZDE3ODAyY2Y4NDcwZGFjNGQ1NjQ5NGJlNTM3YjU3YTdjYyJ9"
+        },
+        {
+          "resource": "repo://readme.md#L222-L233",
+          "version": "repo-lines-v1:sha256:855f779a8467fb60a05187582cb564583a3373b35faf504fc7835f012f9da1d9:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZkMTg1YTIzMTRhOWRkNWY3ZDcxMDU3NDk0MTgyODEwNDgzOTUyZTM2MzYxMTk4NWM3NzlmMjBlZTYwNWFmNDYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY1ZDg2NjBlMGJiNzU1YTBkMTY5MWI5NWJmYTc2MmUxYjQ5YWVlZWIxZWYzOWYxNTRjYTM0MTJhYTFlNGU4YWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJiNTQ1MjM0NWE3NDRmNjI1YTBjOTNmOWJjYjQyNjQ2MzZjN2ViNmE4NTQ5NGQ3YWQwMjQ0MzhmOTk4NjNiZDciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA5OTZjNGQ4ZDQyM2U2Nzc5YThiYjc5NWJiOGNhNzJiZTVmMzlhNTJiYmZiYzI1ZGI3ZDJhYTc3YjE5MGEzNTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_db5b8eabfa054a0f9c138cd7ccc5da83",
+      "statement": "The admin URL differs per environment: the repo default in application.properties is http://127.0.0.1:9080/xxl-job-admin for self-hosted runs, while both compose stacks override it via APP_ARGS to http://xxl-job-admin:8080/xxl-job-admin on the shared bridge network with the admin's host port published as 8080 (overridable via XXL_HOST_PORT, exposed as --xxl-port by dev-setup.sh and docker-lite/deploy.sh); in both stacks the ecshopx-app service depends_on xxl-job-admin with condition service_healthy (TCP check on 8080, 90 s start period).",
+      "evidence": [
+        {
+          "resource": "repo://dev-setup.sh#L360-L387",
+          "version": "repo-lines-v1:sha256:a483667c02b194858be5e267c6e43ea81d3cbd3173ac56c33ddea14e673929ba:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjljZTIyYWZhNjE1YzA5OGY3YWVkYjdiMzQzOGIzYTAzYWE0NWE0MmQxOTllY2U0N2FhZTZiNDI0N2Q5ZDFhYjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBiZDA0YzBmYTUwNDFlYWM3NGExNzVjYTQ3N2ZjZjViNTU2ZjJhYmE4ZTExNjNjMzYxMDg0NGViZTRiYjBiMmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQwMGE4MDk2OGRlNWIzY2RiYTg2Y2ZiM2M1ZGNmYTlhMzY5NTM5MWNiN2RkYzhiM2ExMWI4MWI1MDk4MDU1ZGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk5NjljNTBhNjJhZWY3NjE2MDBlMWFlMmEyYjgwMmRkZTE3YWQ2NjFhOGE1M2YxOWVmODhkMGIzNGExODI3MjAifQ"
+        },
+        {
+          "resource": "repo://docker-compose.dev.yml#L71-L147",
+          "version": "repo-lines-v1:sha256:2a3131c8947ab46cb00cd5fcb5943359f16062677f8f22ba744082565ed32c42:eyJzZWxlY3RlZExpbmVDb3VudCI6NzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVkMDZiMzkzYzFhMGFiMzIwZDU1ZTE3Mzk1MjM0NjQyMTFlZmIyYjZiMzA3MzMwMzAzNzg5MTg5NTc1ZDYxYWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM1ZjhhMWJjNTk0MDJkZWExY2RjNWU0OWViZDI1MTQxMmE3YzA0YjIzMTc1MTZhZjRkZTFkY2U0MGExNWY5ZmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdmOWZkMDdmNDU5MmQ4Zjc2NjRjNzMwNTIxM2I2ZjhmY2Y1NjY2Njc1ZDg5NDA0ODYyMDhmZWMyODBhODgxNzkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkxYTVjNGJhNTI0MjYyZWJhYWQzZTk2ODAwODI4ZmVjZDVkYzc4YWM1MGEwMWQ4MTIzNGI2N2RjZjU1MzA3ODUifQ"
+        },
+        {
+          "resource": "repo://docker-lite/docker-compose.yml#L72-L146",
+          "version": "repo-lines-v1:sha256:594abe68c28bf33c66a250182b299c8600e9f026e7143325c318dac3eeedfcdc:eyJzZWxlY3RlZExpbmVDb3VudCI6NzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVkMDZiMzkzYzFhMGFiMzIwZDU1ZTE3Mzk1MjM0NjQyMTFlZmIyYjZiMzA3MzMwMzAzNzg5MTg5NTc1ZDYxYWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc0ZmY5MzA1ZWI5N2RkYWQ1MjVhMmFlZTllMTg1YTg4ZWNlMzBkMjI2OTMyYWE5NjM0MTY5NDQ4OWY3NTU3MjkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZjMTU5OTU4Yjc0NTdlN2UyNTc1YTRlZTkzMTM2MTQ2NTUxNzZhMjk2YmQzM2I3ODJlODdlYzg4MGExMzU0ODAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkxYTVjNGJhNTI0MjYyZWJhYWQzZTk2ODAwODI4ZmVjZDVkYzc4YWM1MGEwMWQ4MTIzNGI2N2RjZjU1MzA3ODUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L5-L5",
+          "version": "repo-lines-v1:sha256:ae655a9f99623e4f73df9a6f05c643c899e7a1f6d863ea287d5a01f8c2b65a51:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYWU2NTVhOWY5OTYyM2U0ZjczZGY5YTZmMDVjNjQzYzg5OWU3YTFmNmQ4NjNlYTI4N2Q1YTAxZjhjMmI2NWE1MSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYWU2NTVhOWY5OTYyM2U0ZjczZGY5YTZmMDVjNjQzYzg5OWU3YTFmNmQ4NjNlYTI4N2Q1YTAxZjhjMmI2NWE1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMGY1ODExZjA5ZDEwMmVjYWRmMzkxNmY1YWY2MGJjMGE4MDFhY2I3MGJmMDY2OWFjYzQxZjhkN2I4NTBhYTliNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTBhMTY5ZjkzZjcxNjRiMjJhOTc3MzQ4ODA0MDdlZTlhOWU0M2VlMDI3MmMzMGMzYzg4NTYwNmM3MTZlNWM5ZCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_2feac653474f4826b546a4f8c0654b8f",
+      "statement": "Spring @Scheduled exists only for infrastructure polls, enabled by four @EnableScheduling configs — OrdersSchedulingConfig, DoumenIntlPaymentSchedulingConfig (payment), SelfserviceSchedulingConfig and ShuyunOpenPlatformConfiguration — which drive the dispatch-queue pollers, a community-activity cancel queue poller and token-refresh watermarks (DoumenIntlTokenRefreshScheduler, @Scheduled(cron = \"0 * * * * ?\")); removing those bundles stops the dispatch queues draining but affects no XXL-JOB handler, and vice versa.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/config/OrdersSchedulingConfig.java#L22-L24",
+          "version": "repo-lines-v1:sha256:5542b94be279029502cb7fe1232815d8947188e2f3f1b8a7710307ed0e88c2a8:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNGIxNDc2MmFhYWQ1OGQxMzg0NGNmMmVjNTQ3NDBhNGQ5N2Y1ZTA3ZWU1MTZkMzIwZDYwMzZjMWM3Y2U0MmRmZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNmIyNzIxNmVmYWNkNjhmYTZiNzM4MWUyODliZjdmNDRhNTgwODU4MzVkNDIyYTBkODk4ZDM3NDIwNTEyM2FmYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDk5MzVmOWI3ODhjYmNjYWFiMWNjNDc3YWY1NTBlZmFjNjliYjliYWZjMWUyNmM1ZTE5NzQ2NzVlZDdhODZhYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/DoumenIntlTokenRefreshScheduler.java#L25-L48",
+          "version": "repo-lines-v1:sha256:446a49c33adfb28e11fa8bf3f494e8ec11348f743461b95b6567c16fe9d808ff:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFiOTRkMDA1ZDEyMGZmMGFiZmFmYzI0ZTUyYjBkOWRhMTBmZmFkYzhkOTVmYWI1MGY0NmUwMDIyODA0ZDY4YWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM5OTU3ODVlZDE2MmZiMDRhYTVhNzU0YTI0MzYwMDhhZjQ1YjcwMjI2MDgwOWJmZGE5NzhkZGNlMjg5Yzk3YmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_0b16ecf184e846e9be68f5c11a6d7999",
+      "statement": "A cron-owning bundle needs com.xuxueli:xxl-job-core 2.5.0 on its compile classpath: most cron-owning bundles declare it directly in their POM (orders, payment, aftersales, adapay, aliyunsms, community, companys, data-cube, espier, hfpay, kaquan, point, popularize, selfservice, system-link, theme, plus bootstrap), while promotions and youshu currently get it transitively through peer dependencies.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/pom.xml#L232-L236",
+          "version": "repo-lines-v1:sha256:c40412f9dc946cca5b46e888c2d2b4385ca953996c008eaf2e8b81fccae2d4e5:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjA0NzFjNTFlZTVjOWEwZTAxMDc5ZGE5MGJkYjcxZWNiNzZmNmQ0OGI2NjQ4YTUwYWZhNjM3N2Y1MjJhNTRiZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDYwYmFiMDRmMjE5NjU2NmM0ZTRkNDJmNjA2MzcyYzIzNzc4OWM4N2Y2NDdlMzA0NzE5MzY3NzA3YTg4NDQwOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNzY1ZWViMTE1OWI4Y2YxZGZlOGEyZmE5OGQ0M2E5NzMzOTM3ZGQ0ZTYzZjE4ZWU3N2RhOGFjOGFiYjAzZmM4YSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZmI2NmExNGYwOTQwMmI5ZmM5ZDZkNDIzZTMyMTRlOGQxMGUzNjRiYzI3NzI3M2ZjN2ZlYmY2ODRhNmZmZmUyYyJ9"
+        },
+        {
+          "resource": "repo://ecshopx-orders/pom.xml#L111-L115",
+          "version": "repo-lines-v1:sha256:c40412f9dc946cca5b46e888c2d2b4385ca953996c008eaf2e8b81fccae2d4e5:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjA0NzFjNTFlZTVjOWEwZTAxMDc5ZGE5MGJkYjcxZWNiNzZmNmQ0OGI2NjQ4YTUwYWZhNjM3N2Y1MjJhNTRiZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDYwYmFiMDRmMjE5NjU2NmM0ZTRkNDJmNjA2MzcyYzIzNzc4OWM4N2Y2NDdlMzA0NzE5MzY3NzA3YTg4NDQwOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYmNjNjViOTI1ZDMxYWNlNDJhYzkzYjU0OGNkZThmYmViZDYyMTExNDZiYjI1M2YwYWYxOTQ4OWMyYzg2ZjEyMyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDVkMjY2OTY5ZDcyYjc0N2Y5ZWJkMzUxYjAyZGUyZTI2YjJmNWRkMmI1NGY3MmJmNzI3M2RhNDUzNjRjZTk5YiJ9"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/pom.xml#L13-L102",
+          "version": "repo-lines-v1:sha256:71c397834ebb36b57bae76fca3d05a3a255da18729111c63f4b3032cf47fb0bf:eyJzZWxlY3RlZExpbmVDb3VudCI6OTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxNjQ0ODI1Y2MyYzJhMDJiMWU2MWY0Nzc2NjkxYTQzNzY0MDU0NjI1ZWZhMDEyZDBjZmZiNTI4YWEyODVmODkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgxZGNiOThhZmNjOTU5YmU5YTk5MGFhNDQxYTBkYTgzMTRjZTE3ODE5OTUzYzI2M2Q4MDY4OWY0OGJkOGY1ZWMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUyZDFkYzEzM2ZmNzdmODZkM2Y4OTgyNWZkZDA4YmZmNjU1NTE3YzQzNzg0NDY2ZDBlZDhjYTRkNTg0OTZiYjgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI2ZTMyYTMwZjNmMjBiYmM4MmY1YzUzZDQ4MDg4M2RhODk0OWQwYWJhYTllZGQwNWFkMzJjZDdhYzRlMjc5ZTcifQ"
+        },
+        {
+          "resource": "repo://ecshopx-youshu/pom.xml#L13-L67",
+          "version": "repo-lines-v1:sha256:ef2710d246aeffcd2f686069593017f1b1a023243492570cc1c6921278a6ed35:eyJzZWxlY3RlZExpbmVDb3VudCI6NTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxNjQ0ODI1Y2MyYzJhMDJiMWU2MWY0Nzc2NjkxYTQzNzY0MDU0NjI1ZWZhMDEyZDBjZmZiNTI4YWEyODVmODkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIxNzZjZWYyZWExZWM0ODZjN2M0MGU2MjM4MmMwYzMxNDI4M2VkMTNmMTJhOTY4NjU1MTZlMDNmMGFlYTM5ZDUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY1YzFlNjc0MDdjNjczODAyNjZiMWRmZThiMTkwNTlkMDkzMzhlOWE2ZmEzZTdjNmViNWIzMTljZDU0MDA4ZDMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjExZjUxYmUzY2M0YWE0MDZhOGVhN2EyODhkMTRkM2ZlYmVkNTAzZGFjMjJmNTk3MDAxZTMzNWNiNjM3OGY4NjkifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_6565fd786e754f5e99707052e34a4db8",
+      "statement": "Each handler ships with a mirror Mockito test class (e.g. orders/cron/ScheduleFinishOrdersHandlerTest, payment/cron/ScheduleQueryMerchantPaymentHandlerTest) that pins the template contract using a Logback ListAppender: on success the service method is called once, no CronAlertEvent is published, and an INFO log contains the handler short name, the returned count and the cost; on failure execute() rethrows, exactly one CronAlertEvent is captured with handlerShortName equal to the short name, and an ERROR log contains the short name and failed.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/orders/cron/ScheduleFinishOrdersHandlerTest.java#L59-L89",
+          "version": "repo-lines-v1:sha256:d9ce3060506531f12e1316d98b2a43d1013743317704ca5a116f8f4b5c80bb44:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJkNzMwYTM0MWRiMjY2ODViNDYyOGI3MWU5MzhmZmJmMzUxZTFlNTJiMDA3NjkzNzBkYmRiMGQ5OTY1M2RlYmMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU5MTRhMjg0NWE2MTlmY2MxM2U0ZmY1MWNmMTIzODk0ZTUzYWE3NmY0ZjhhOTUzNzliNDgzZDNhZDMyMDYzMDEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-payment/src/test/java/cn/shopex/ecshopx/payment/cron/ScheduleQueryMerchantPaymentHandlerTest.java#L60-L91",
+          "version": "repo-lines-v1:sha256:6144f5f8356a0a1215eb56b2d5079c313bb4c9750174f3a2e2a846e5bc01cda2:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiYTFiMWYwZDkzOTU3NDJlMjE2ZjcxYzllOTBjOGZiOWFhNmI0Mjk2YWFhNGNlN2NjMDVjOTZlYTViODdiYWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU5MTRhMjg0NWE2MTlmY2MxM2U0ZmY1MWNmMTIzODk0ZTUzYWE3NmY0ZjhhOTUzNzliNDgzZDNhZDMyMDYzMDEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_aace2bcdb5624bf093c02bc22bbed5d4",
+      "statement": "Bootstrap publisher-impl tests (e.g. ConsumptionOrderJobDispatchPublisherImplTest) pin the exact dispatch tuple of the queue-feeder path — message name OrdersDispatchJobNames.CONSUMPTION_ORDER_JOB, ASYNC mode, REDIS driver, queue slow, null delay, platform default retry — plus the null-payload guard that throws IllegalArgumentException.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/config/ConsumptionOrderJobDispatchPublisherImplTest.java#L19-L54",
+          "version": "repo-lines-v1:sha256:55a20e771f062997ca85292c76a55be4dd09ac893dbc953489ac315a910d8187:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhjZmFjYzllYjZkZWIyZWExNDdjNGYzYTNkYjU2OGJkOGE2OTM0ZjNmN2Y1NGZiM2U0NDAzOTUyZmY0MTk2ODQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ2NzdkYTZmNmExZTFhMmU0ZWY1YWIzZjU5Mjc5MzExN2U4ZjE5MWVlNmRkMWRmOTY0NWM5ZWNhYzdjZTEwODQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.2",
+    "at": "2026-10-21T12:26:22.580Z"
+  }
+}

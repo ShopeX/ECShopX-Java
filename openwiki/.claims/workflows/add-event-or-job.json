@@ -1,0 +1,366 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:a0d81b0e26bae500179c8a64e77299aee111e0e5e94f791eb63b2837c11b98e3",
+  "claims": [
+    {
+      "id": "claim_76729765035c42478dea741f33d9430e",
+      "statement": "Bus message-name constants live in ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/ as final classes with private constructors, one family per owning Bundle (OrdersDispatchEventNames / OrdersDispatchJobNames, MembersDispatchEventNames / MembersBundleDispatchJobNames, ...), using prefixes event:<csvId>:<PhpBundle>\\\\Events\\\\<Class>, job:<csvId>:<PhpBundle>\\\\Jobs\\\\<Class>, or the shorter event:<bundle>:<snake_case> form; the constant is the single source of truth shared by the bootstrap publisher impl and the bootstrap registration config.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/MembersBundleDispatchJobNames.java#L19-L45",
+          "version": "repo-lines-v1:sha256:4705d5242949afa17c19f3c4f72eb46f7ffd37137530728e4615740be87cdedf:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1OWZiMWU2YTJkZmIyMGExNzQzMDFhNWY2YWI1YzQyNjdkOTc1MzgzNDkxYTZiMThiMmU2MTNmNTRlYzRmYmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFkMjNhZTdkN2UxMTJkODMyM2QyODUxYjQyNGQ1NDE2MjM2M2I4ZGUxYmVmOWUzMWRkZmU2NTZiNWRmMmU4MDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/OrdersDispatchEventNames.java#L19-L68",
+          "version": "repo-lines-v1:sha256:6fbb3c33ce9ffe109cc3bfb30a2ca64757384d19ce553cf582515da5817e1fb2:eyJzZWxlY3RlZExpbmVDb3VudCI6NTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYyZjM4NTIxYjgzMTQ1NTdjYzI0NDg5ZGY1OGU4NDQ0YjYyZjRjNmU5MjIwNGM2ZjFkOGI4YjUzNmQ1MGIyODQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQyNjk5MTNmZWRhZjNhZDY1ODRkYTQwZTQ1ZTdjZDcyMTMwMmU5MGVmYzJiNTM3ZDcyZTE1Mzk3ZjFlOGJkOTkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFkMjNhZTdkN2UxMTJkODMyM2QyODUxYjQyNGQ1NDE2MjM2M2I4ZGUxYmVmOWUzMWRkZmU2NTZiNWRmMmU4MDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjUwZjE2NzM5MWE2YjQzZjQ0MjIwYzMxNzM2OGYxYzhhYjQ0MjVjYjhkMjkyM2Q3MzVlY2YwY2VlOGY1YmE1NTMifQ"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/OrdersDispatchJobNames.java#L19-L56",
+          "version": "repo-lines-v1:sha256:402632c4ecdd91f1e185446accc14baa9dd270b3daf4c121d227f320b5cf0276:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg3NGU2MjlkZDYzZjdhNzdiZTgyMDQ3NDlmMjFlNTJjNzY1MzljYTc1MWMzMDg2MDA0ZTQxMzc0MDQxYjEzMzUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFkMjNhZTdkN2UxMTJkODMyM2QyODUxYjQyNGQ1NDE2MjM2M2I4ZGUxYmVmOWUzMWRkZmU2NTZiNWRmMmU4MDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_889be3b912384810b2243a7441bcf5d0",
+      "statement": "Publisher interfaces for cross-Bundle dispatch messages are declared in ecshopx-common's common/dispatch package as one-method contracts over a plain Map<String,Object> payload (e.g. NormalOrderPaySuccessDispatchPublisher.publish, FinishOrderJobDispatchPublisher.publish), so a producer Bundle can publish without a Maven dependency on ecshopx-dispatch or on any consumer; their implementations live in ecshopx-bootstrap's config package.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/NormalOrderPaySuccessDispatchPublisherImpl.java#L29-L52",
+          "version": "repo-lines-v1:sha256:e81cc27239f80e07544eee8abfacd17ebd0c9395581eba81d05be2a58e1c4914:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4ZmExZTlmNDQ5NDlmYTg5YTNiNDJiMDQ5MmRkYmRmZmEyZWI3NjQ4NDhkMzU3NzhjOWZiNTNjMjA3ZWJkYmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk3OGQ3NWRjMzgwY2YzNzJiNmQ5OWNkNjUxYTRhMzJhMzJlZGFkYTU3OGEzZTc4Nzg4YzM0M2Q1NGJhNmVlYTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/FinishOrderJobDispatchPublisher.java#L21-L24",
+          "version": "repo-lines-v1:sha256:61a47440d88de9021d9fdb67de56e6e8f1f6ce43ee6d9fea97e21e4173c159cf:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTcxODRjOGY2NTQ3YjJiYmQ0Nzg1YjVlYzM0NzBjOTUyZDIwYjczZDc1NzhjMDg1NWJjMzZhYWI0MjVkNGFiZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMmYyNzhmYzI0OGUzZDIwYWZhZGJhYzg1YzRhMDU3ZjdjMzI0YjY2NTU3YzQ4YjM3MDQzMjE3MDQxNzNhMzNmZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/NormalOrderPaySuccessDispatchPublisher.java#L17-L24",
+          "version": "repo-lines-v1:sha256:0ced133b83c85140aa33caf4678662041d1de155f396f2d149ffbcca0cc21687:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTY4YzhiM2YxODk4NTE2NGQ4YzcwYTg3MThkYWZmMzdkODY4NDliMTQ1NDQ0YTAzZDU4NzA4MzVmM2Q5ZTU1NiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjk2YTA5MzE1YzVhMDU1NGQwMjU4ZjE1NzljOWE3MDJhZTZlNWVmNDUxZTUxNGRiY2NiMWRkZTFkNGUxNzE5MiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_b65de34c7d9c48ceb2c9cc9562511b12",
+      "statement": "DispatchOptions is the publisher-facing record (mode, driverOverride, queue, delay, retryPolicy) with factories jobDefaults() = ASYNC/null/null/null/platformDefault, eventDefaults() = SYNC/null/null/null/platformDefault and oplQueuedAfterCommit() = ASYNC/REDIS/null/null/platformDefault; RetryPolicy.platformDefault() is 3 attempts with a 3-second nextDelay.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/DispatchOptions.java#L21-L43",
+          "version": "repo-lines-v1:sha256:2cd1cf53512424c6d4d882862f9a07562865a089553709fdf46675d50c66ee86:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIzMDZkYmNlMjVkZDMyOTE3YWE0NTBjNWNhMjhkYzdhOTIzZjdhMWIwMDI5NWU0YzEzZTczZWU3ODA4MDEzNTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImEzOWQ3OGQ0OTZmZjhjNjgyMDk0N2IwMzUyOWVjYjE5NWU0ODhiMzBiN2I5YzRkYTM3MGNjN2FlYTMwYTZmMTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/RetryPolicy.java#L21-L25",
+          "version": "repo-lines-v1:sha256:e27b6344f71d98212d64ef9588ad516605edff8c16a1ec71d937be723380d4ec:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjE2Y2IzZTUwMmMyNDNlYmE1MjkwMzJlOGNiMTVmOGRkY2I1MjYyNTQ2NDI1NTFkZTQ2MGMyYzIwMzgxN2ZmNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDg5M2Y0MGUzNzgxZWI4OTZjODJkMDQ2YTA4MDY3YTExZTM1Y2RmMmYxZGZhZjI2ZmVhOTBiOGRiNjY3NjQxMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTM5ZDc4ZDQ5NmZmOGM2ODIwOTQ3YjAzNTI5ZWNiMTk1ZTQ4OGIzMGI3YjljNGRhMzcwY2M3YWVhMzBhNmYxNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_2e6b7b1e0a6c4d1f86970728145bfc95",
+      "statement": "DispatchFacade.buildMessage computes driverType as SYNC when the mode is SYNC, otherwise options.driverOverride(), and DispatchBusConfig wires DispatchCore.asyncReady with only DispatchDriverType.REDIS mapped — so publishing ASYNC with a null driverOverride (e.g. jobDefaults()) throws IllegalStateException(\"missing async driver: null\"), and every production *DispatchPublisherImpl passes DispatchDriverType.REDIS explicitly; the RABBITMQ driver exists but is not wired.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/DispatchBusConfig.java#L77-L89",
+          "version": "repo-lines-v1:sha256:b81b3460b63b0ebbfbc39e8d673c262fc1e78f041812c96bbc2c139f77be5433:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM1ZTU5MDY5YzNmMzg3NzE5ZWZlZDI1NmM2YzRiZjIxOWNjYzRmNmU0YjQxYWJmZDQ0NzYxZDQ1NDkyMTRkMDkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVhYjUxOWU3NTE2YTljM2E0MDM0NzQ1NmZkM2FmNDk0ZWU3OWI0NzBmYTQ3NWM2NTQ2YzlhODIwYjMwOWI5ZmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM3MzQ0YmJmYjY2ZGRlMjQyNTczNjFkZGRlYWM3YTZmNTY3ZTJhOWQ1OWE5NDBiMTAyY2Y1MzU1ZDM3NDVhYzkifQ"
+        },
+        {
+          "resource": "repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/DispatchCore.java#L43-L53",
+          "version": "repo-lines-v1:sha256:c514831776a1cb229df4443ecb86b0d7fe905c166cbfcb1013e6b4064e09feca:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAwYjM4NDcxMjc0ODhhMzM4YTU0ZmM3MGMzOWIzY2VkYjdjNTNhMWE0Yzg1ZWMyMDNjYzRmMzA3MDcxOGJiMTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNhYjQ5ZTJkNWI4ZjE5ODg1ZjRjMWMxN2E4YjQ3NWI3MjM0ZTFiMzI2Y2EzMjBhZTcwYzg0MWMxMDYyZjgxNTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/DispatchFacade.java#L82-L96",
+          "version": "repo-lines-v1:sha256:b97dd53a1d0d430fc8734f500aece91d48a0ed35a28a9eb03e67995cfc32945f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkxMzY2ZTA2MTAyN2Y0YjJhZWRjZTgxYzQwNjZiYTBhNDEwZGYzZWQwOGNjMTYwYTJlNTZmMTBlZDgyMGMwMDEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE4ZWQ2ZWNkNTY4YTc2MjRlMTUzNDgzYzgxNzRlNTYyZTdhOGFiMTJkZDY2N2U5OGE4MjU5ODBhMzc2MmY3NWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI2MTZjMzEwZjcyMjMwNGU3M2Y3ZTYyNTVjM2NmODEyNjhjNGNmYzI5YTg3MDU5NDZiZTJhOTJhZmY5OGYwM2QifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_3a5ac3bd09d94d4c94e601d2170a1f59",
+      "statement": "The queue string is a load-class signal: for jobs the publisher's DispatchOptions.queue decides the Redis list, while on the ASYNC event path DispatchFanOutPlanner takes the queue (default \"default\") and the retry policy from each listener's ListenerDispatchOptions and ignores the publisher's queue — which is why NormalOrderPaySuccessDispatchPublisherImpl passes a null queue while FinishOrderJobDispatchPublisherImpl passes \"slow\".",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/FinishOrderJobDispatchPublisherImpl.java#L41-L54",
+          "version": "repo-lines-v1:sha256:662f4c31c35ac04d72f5ca5d8e5f7cc2a8a6ad46b0c6236c3fe701042327b424:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM3ZjY0YjJhZDU5ODZiOGVjOWM2NjZkNWRmYTU2MzQxMTc4NjczNjU5ZGQ1ZTQyZDEzZmQ3MWE1YjkyOTQwZjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU2ODczODY4ZGE1Y2FlZDIxYzlmZGY2OTg2MmIwZGE1NDA2OWVjZGYxODgyYzIxNjUzNTZjNzRmNWE3ZDFkMDMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/NormalOrderPaySuccessDispatchPublisherImpl.java#L32-L52",
+          "version": "repo-lines-v1:sha256:53f57e5f0382312221e2c113af2e9cd4fd78234a058167a441be57c84bc375a5:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRkZTFkZGIwM2E5YTZkNzZiMWNhZmU3N2I4ZjJiMDFjYmU2ZjgzMTlhYmU3M2Y1YWEyY2I1MGE4MzY0ZTU1YzYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA2NzhiZDhhNDI4MWRhMmM5MGIxNDVjNTc2NjY1YjUxMDA0ZDJmZDg0OTBjODI3MzM1NGNhMjFiMmZmZWIzZDciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/DispatchFanOutPlanner.java#L34-L50",
+          "version": "repo-lines-v1:sha256:90d20dd6e9017870fdac33b40fbb4fd189945c9073f3b3fb0ad78baebd6360ff:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjliNWY2NTZkZDRhNDJlZWE4NTk4Mzg2ZjQ5MDU3YWQ5Y2U5YzEzN2NlMzNhZDA5NmE0YWUzZDJmYzhjZTg0NmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNlNzNiYjE4NDhhODc1MTJjYzc1MmNjMzRlODQyODA1ZDFmNjc4MmI5ZGQ3MTA4MjU2YjQyNWU5ZWZhMTdmY2MiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_40b5bdc1cb5c4bf18fa05e3d939bfaae",
+      "statement": "RedisDispatchListener.poll runs on a fixed-delay schedule (dispatch.redis.poll-delay-ms, default 1000 ms), leftPops one message from dispatch:default then up to dispatch.redis.slow.batch-size (default 20) from dispatch:slow and the same batch size from dispatch:sms, feeding each to DispatchConsumerRuntime.consume(message, 1) — so the default lane is latency-prioritised while slow and sms share one throughput knob.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/redis/RedisDispatchListener.java#L36-L79",
+          "version": "repo-lines-v1:sha256:aecdbd12f55e94bf13799f563fa147b0408d3a1a4b21bf104414b9087c775a1a:eyJzZWxlY3RlZExpbmVDb3VudCI6NDQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4Y2RlNjg3YWJiZjA1N2Q0YjdkNzc3MDI4NDdhMTZlMmQwY2QzNTZjYTI5MTYzNjAyZDI3OGM5MmI0YjdmNDkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM2Y2QzYWVlZWM5ZDY5MGY5YjQ0YjQyZjE5OWQ5NWExNGNkNjYzMjJiYmFhMWM1Y2NmNmEwMDZhZGFlODE5NjQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_c512823d81ef4990abd73f98fb86687b",
+      "statement": "A non-null non-zero DispatchOptions.delay routes the message into the dispatch:delayed ZSET scored by ready-epoch-millis instead of a ready list, and RedisDispatchDelayedPollScheduler moves due entries back onto their ready queue with the delay cleared; ReservationExpireCancelDispatchPublisherImpl is the reference use (computes to_shop_time + 7200s − now and publishes on the default queue with that delay).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ReservationExpireCancelDispatchPublisherImpl.java#L47-L68",
+          "version": "repo-lines-v1:sha256:3a44426e9f2a80995a9bbf7c7cf5b35397363c07edbe721cdb2daf2c57863284:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwOGNjMTVkMDc1NGI2ZjIxZjcxZTBiMDNiOWRkNzg2YmM5ODgwMDNiMmI1NzU2NGM2MDUwYTgwMjI1MTdjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU0M2IxNTIwMjg3YzMzZTgzZjZiODdlYjQ2NGJjMjg0YzU4ZTU0ZWEzNDExNjdmNjg1ODcwZDE3YzNlYzBkOTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/redis/RedisDispatchDriver.java#L61-L75",
+          "version": "repo-lines-v1:sha256:3f55a3f7d94a7b98e8090600b85a12f721f2032c9a5d7e484214744ad9c15c37:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwOGNjMTVkMDc1NGI2ZjIxZjcxZTBiMDNiOWRkNzg2YmM5ODgwMDNiMmI1NzU2NGM2MDUwYTgwMjI1MTdjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk2YWNjNzZlZDM1NWU0NzYxY2Q5Yzc4ZWFhZTE4MjZlYzczMjU2YjgyYmZhNGM0MmFjNjVlOTgzZjQ5YzcwNTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFlNDVhNTFiNDQ5OWFhYjg0ZmMzNjY0Y2JkZjgwNjc0ODAyZTBhMThlZGRjYTUxM2I5NmE0NWQ3ZjYzNTFlNmEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_695ac650d97c4f208ec1df321c27f65d",
+      "statement": "Publishing an ASYNC message whose payload was written inside a database transaction requires deferral to afterCommit via TransactionSynchronizationManager; three implementations exist — inside the bootstrap publisher impl (ItemAddEventDispatchPublisherImpl.schedulePublishAfterCommit), a dedicated wrapper class (orders/dispatch/OrdersTradeFinishAfterCommitDispatchPublisher, exposed twice by OrdersTradeFinishDispatchPublisherBeansConfig for the event:291 and event:292 planes), and inside the producer service (MemberAccountService registering a synchronization that calls membersCreateMemberSuccessDispatchPublisher.publish in afterCommit).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ItemAddEventDispatchPublisherImpl.java#L42-L67",
+          "version": "repo-lines-v1:sha256:13c88eff7d8123275deb36c23c54d6b63287b0a845946bf613e0bc169de5a5c8:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFlZDk0ZjEwNmJlNmNlOWFhNzQ1ODI3ZGI5ZmEyYjY4NmMyNGJjOWQ4MjE4M2Y0MjFlZDEzZTdjMWUzMDRmOWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU2ODczODY4ZGE1Y2FlZDIxYzlmZGY2OTg2MmIwZGE1NDA2OWVjZGYxODgyYzIxNjUzNTZjNzRmNWE3ZDFkMDMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMxYzZhNDE2MDc2MTM2MDZjNWM0MmYxNTdhYTM4MzI5NDQyMzlkY2Q4YzEyNDM0NDkxNDA0OWJkZDFjZDg4MTAifQ"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/account/MemberAccountService.java#L394-L404",
+          "version": "repo-lines-v1:sha256:7624c7f74579b5a2d75eb43ab8691f4b9c0874eaf2dac4d19de703659bcef08b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg1ZDM3YWMxNzI4MmRkMTgwMWE0YWIxNzFlMGU4NTg0YjRjNjEzNDEzZTRkNmUyOWUyOWI0MzNiYzM1NGY5OTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZhMmEzYjc2ZTEyY2UxNTM3OWQwNWYyODY5ZGM0ODMyZGU3NTg5MDUzYjQ5YmZmMjM3ZTQyNWM3MjM3ODAxNTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk3Mjc3MzZiNjY5MmY0NGY4YzEyOGM5ODkzZjUwNDdkYjI0MzY0NjU4ZGVjMjkzNDZlY2VmYmI0MzY1N2ExZWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU3NjVmOGQwYjkxMDEzMDVjMTdjMGQ2NjJiOTg5N2ZjZWE1Njc4MzAyOTFjMGY2MDdkOGNmNmIzNmIzMGNlMzUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/dispatch/OrdersTradeFinishAfterCommitDispatchPublisher.java#L37-L51",
+          "version": "repo-lines-v1:sha256:ccafaa70818d6b00b1ad982991c2df101e03f58d1595e6b12549f0d5f7c73b14:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwOGNjMTVkMDc1NGI2ZjIxZjcxZTBiMDNiOWRkNzg2YmM5ODgwMDNiMmI1NzU2NGM2MDUwYTgwMjI1MTdjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkwODhlYzE2NGJiM2NiZDM2MGE0N2Q5OTM0ZjZiY2M2NWRhNmU3NGFhMmIzYjA1YWYxMWIwMmUyZTc0ZTE1ZWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_797f0a19650a48b4bb89589264b9bf21",
+      "statement": "Dispatch handlers and listeners are plain functional interfaces in ecshopx-common (DispatchHandler.handle(Map), DispatchListener.onEvent(Map)) implemented as @Component beans in the owning Bundle's dispatch/ package that parse and validate the payload and delegate to a @Service — FinishOrderJobHandler normalizes a null payload to Map.of() and delegates to FinishOrderJobService, and NormalOrderPaySuccessYoushuDispatchListener throws BadRequestException when company_id or order_id is missing.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/DispatchHandler.java#L21-L25",
+          "version": "repo-lines-v1:sha256:b5714df3958d404155de99a36daa0acbef307623f4a11f19859be942865aef7a:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzEwNzYxOTZjNjY5NDVkODkzOWNkZDY4ODgwOTk4ZThlMjBkMjQ5NTk3ZDJhYjI1ZThlMTFjNDJjZTVmNDJhZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMmYyNzhmYzI0OGUzZDIwYWZhZGJhYzg1YzRhMDU3ZjdjMzI0YjY2NTU3YzQ4YjM3MDQzMjE3MDQxNzNhMzNmZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/dispatch/FinishOrderJobHandler.java#L24-L37",
+          "version": "repo-lines-v1:sha256:1e90aae686c2c68c6e699171b4735290e33fb55ce2705c10ff27cf120078556d:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4ZmExZTlmNDQ5NDlmYTg5YTNiNDJiMDQ5MmRkYmRmZmEyZWI3NjQ4NDhkMzU3NzhjOWZiNTNjMjA3ZWJkYmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk3OGQ3NWRjMzgwY2YzNzJiNmQ5OWNkNjUxYTRhMzJhMzJlZGFkYTU3OGEzZTc4Nzg4YzM0M2Q1NGJhNmVlYTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-youshu/src/main/java/cn/shopex/ecshopx/youshu/dispatch/NormalOrderPaySuccessYoushuDispatchListener.java#L26-L55",
+          "version": "repo-lines-v1:sha256:ff8a37156bb2c31f641ca4ae9711900351644df4b59f291afa1f120754341008:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdmYTQxZmJlOTU4MjkxM2MwNzlmMDM4MWU2ZWFkY2MyYTA0ZDdhMWM1YzQwYWUxZDMyNWE5NmU2OGY3MTkyZWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcyY2Q2OWIyM2NmNzU4MDE3NjVjNDIyMDViN2VlNjgzMzIwOWI1OWMyMjhmNGU3NTNhMjU4OGUyNzA2N2RkMTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_ba1041aa8ecd4544860f9b4e5d10cae8",
+      "statement": "Bus handler registration is explicit, not annotation-driven: ecshopx-bootstrap's config package holds ~200 *RegistrationConfig @Configuration classes whose @PostConstruct injects the DispatchRegistry plus a Bundle handler bean and calls registerJob or registerEventListener — the producer side never registers handlers itself. FinishOrderJobRegistrationConfig is the canonical job example and YoushuNormalOrderPaySuccessDispatchListenerRegistrationConfig the canonical listener example (registering the youshu listener on EVENT_NORMAL_ORDER_PAY_SUCCESS with ListenerDispatchOptions.async(\"default\", null)).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/FinishOrderJobRegistrationConfig.java#L25-L41",
+          "version": "repo-lines-v1:sha256:80b35e38662f26b59f001e706b8da1223b1dfa28afb0b04cc8a5a316680a2865:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiMTQ3NjJhYWFkNThkMTM4NDRjZjJlYzU0NzQwYTRkOTdmNWUwN2VlNTE2ZDMyMGQ2MDM2YzFjN2NlNDJkZmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQwMTk1ZjQxMzAzMzM1ZjIyNDQyMzlkY2E3OGRiOGRjNDY3ZDE5NGNkY2I3MzljODlkMjIyYzVjZjliZmFjNGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/YoushuNormalOrderPaySuccessDispatchListenerRegistrationConfig.java#L26-L47",
+          "version": "repo-lines-v1:sha256:bf00e3487d13180f5d0759a55417f9bed2ecdf7cbe6d496d2d07c7166706e736:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiMTQ3NjJhYWFkNThkMTM4NDRjZjJlYzU0NzQwYTRkOTdmNWUwN2VlNTE2ZDMyMGQ2MDM2YzFjN2NlNDJkZmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQwMTk1ZjQxMzAzMzM1ZjIyNDQyMzlkY2E3OGRiOGRjNDY3ZDE5NGNkY2I3MzljODlkMjIyYzVjZjliZmFjNGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_a74a8791bbc7479aac5ad580857e8c4b",
+      "statement": "InMemoryDispatchRegistry enforces wiring uniqueness at application startup — a second job handler for the same message name throws IllegalStateException(\"duplicate job handler: ...\") and a second listener with the same listenerName for the same event throws IllegalStateException(\"duplicate event listener: ...\") — while a missing registration is silent for events (no consumers) and only fails at consumption time for jobs.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/InMemoryDispatchRegistry.java#L31-L49",
+          "version": "repo-lines-v1:sha256:975c3f0896a1b04fef358428b45e67eaac93b2ac7ddf76c42352da13accf9840:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVkYzJiMzExYWJlODc1NzJlOGE3Y2MwZDk5NmE2NTg0NDA3NmU1MjMyZDIxYjdhODU0NzVmOWI0MDU1Yjc0OTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjljM2QwMTViM2JkNjg5ZTkxNDRjZjcyNTk4NDEwYjMyMzI4ZGFiNTRjMTgwMDUzOTQxOTU5NDViY2Y2MTJmYTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ2ZDAxOGJmNTc5N2Y5Y2Q2ZDQyM2IzNjgzNGQyNjE3ZmM5ODk4YTgzNzc2MGIzOWZlNGM2OTdlZjFlNThkYjEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_98f566d4b3f84f3aac7246051d48ca9b",
+      "statement": "Registration order is controlled with @Order on the config class or @DependsOn on a peer config (e.g. @Order(77) on OrdersTradeFinishNormalOrderPaySuccessBridgeDispatchListenerRegistrationConfig, @DependsOn(\"youshuNormalOrderPaySuccessDispatchListenerRegistrationConfig\") on WsugcNormalOrderPaySuccessDispatchListenerRegistrationConfig), and one handler may legally be registered under several bus names — BindSalsepersonJobRegistrationConfig registers the same handler against job:185, job:186 and job:194, and the bridge config registers the same listener on both trade-finish planes.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/BindSalsepersonJobRegistrationConfig.java#L25-L44",
+          "version": "repo-lines-v1:sha256:6ff36f95d5a7b0f025cdeeec9a837fe588049d77abfc3536b18e30aab08ce87e:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiMTQ3NjJhYWFkNThkMTM4NDRjZjJlYzU0NzQwYTRkOTdmNWUwN2VlNTE2ZDMyMGQ2MDM2YzFjN2NlNDJkZmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQwMTk1ZjQxMzAzMzM1ZjIyNDQyMzlkY2E3OGRiOGRjNDY3ZDE5NGNkY2I3MzljODlkMjIyYzVjZjliZmFjNGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/OrdersTradeFinishNormalOrderPaySuccessBridgeDispatchListenerRegistrationConfig.java#L27-L53",
+          "version": "repo-lines-v1:sha256:94e0be3bc30683f7ad2e10a2fba8039aef2aa6b52d8992cea824f21669fb9c85:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiMTQ3NjJhYWFkNThkMTM4NDRjZjJlYzU0NzQwYTRkOTdmNWUwN2VlNTE2ZDMyMGQ2MDM2YzFjN2NlNDJkZmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc1MWY5MTQ3ZGFkYTQ5NDI1NDJiNzE1OWZkYmIyMmQ3M2FjZTAzNmFkMzdjZWUyYjZjY2YwNTIwODM5OWM2ZmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/WsugcNormalOrderPaySuccessDispatchListenerRegistrationConfig.java#L27-L48",
+          "version": "repo-lines-v1:sha256:47cb0b74b3e0be1e03fcfce8c43457fcb46ead729ac2e02a62adea4a92db73c1:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiMTQ3NjJhYWFkNThkMTM4NDRjZjJlYzU0NzQwYTRkOTdmNWUwN2VlNTE2ZDMyMGQ2MDM2YzFjN2NlNDJkZmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjEwOTJhMDVlN2ZlYWRkNGEwZThiNjJlMWE2OGY3MWIwNGM1ZTBmMzJlOTAwMzc4YWJkYTY0YTM0ZWZkOWVjMjEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_14c360140c974be39d36571705d53553",
+      "statement": "The worked end-to-end examples: NormalOrderPaySuccessDispatchPublisherImpl publishes EVENT_NORMAL_ORDER_PAY_SUCCESS (event:288:OrdersBundle\\\\Events\\\\NormalOrderPaySuccessEvent) as ASYNC/REDIS/null queue/null delay/platformDefault, and four listener registration configs (youshu, shuyun, wsugc, employee-purchase) each register a listener on it with ListenerDispatchOptions.async(\"default\", null); FinishOrderJobDispatchPublisherImpl publishes FINISH_ORDER_JOB (job:128:OrdersBundle\\\\Jobs\\\\FinishOrderJob) as ASYNC/REDIS/queue slow, consumed by orders' FinishOrderJobHandler into FinishOrderJobService.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/EmployeePurchaseNormalOrderPaySuccessDispatchListenerRegistrationConfig.java#L26-L46",
+          "version": "repo-lines-v1:sha256:f96f265c312b2c26af7acfc0585def1ac5eec48cbc75adc36121376151d082a0:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE5YjkyNWM5NDJmMDJkMzI5ZTljYWQwOTQyYzNiNzg3ZDkwNDA2YjgzZDNlOWU2MWU2ZGIyNTExNWNhNzRmNDAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQwMTk1ZjQxMzAzMzM1ZjIyNDQyMzlkY2E3OGRiOGRjNDY3ZDE5NGNkY2I3MzljODlkMjIyYzVjZjliZmFjNGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/FinishOrderJobDispatchPublisherImpl.java#L30-L54",
+          "version": "repo-lines-v1:sha256:aa83a1fb3412a11fc24d132aab5ff700f22cfb7a2094de3098e64b4d7530b4d0:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4ZmExZTlmNDQ5NDlmYTg5YTNiNDJiMDQ5MmRkYmRmZmEyZWI3NjQ4NDhkMzU3NzhjOWZiNTNjMjA3ZWJkYmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRlNTRhZjgyMDgwYmNiMDVmZmMyYTY4YmYzNjI3Y2Y2OTE2YzY0MmUxNTEwZGZjYWYwOTY5NjRkNDljM2JkZWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/NormalOrderPaySuccessDispatchPublisherImpl.java#L32-L52",
+          "version": "repo-lines-v1:sha256:53f57e5f0382312221e2c113af2e9cd4fd78234a058167a441be57c84bc375a5:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRkZTFkZGIwM2E5YTZkNzZiMWNhZmU3N2I4ZjJiMDFjYmU2ZjgzMTlhYmU3M2Y1YWEyY2I1MGE4MzY0ZTU1YzYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA2NzhiZDhhNDI4MWRhMmM5MGIxNDVjNTc2NjY1YjUxMDA0ZDJmZDg0OTBjODI3MzM1NGNhMjFiMmZmZWIzZDciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ShuyunOpenPlatformNormalOrderPaySuccessDispatchListenerRegistrationConfig.java#L26-L46",
+          "version": "repo-lines-v1:sha256:05a0408af923e89d78e029d81a68edb01975369dd7f2ce7193b20821317ef079:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiMTQ3NjJhYWFkNThkMTM4NDRjZjJlYzU0NzQwYTRkOTdmNWUwN2VlNTE2ZDMyMGQ2MDM2YzFjN2NlNDJkZmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQwMTk1ZjQxMzAzMzM1ZjIyNDQyMzlkY2E3OGRiOGRjNDY3ZDE5NGNkY2I3MzljODlkMjIyYzVjZjliZmFjNGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_ebd861a594a544cb9e3699104966af98",
+      "statement": "The canonical *DispatchFlowTest shape assembles the bus by hand without Spring or Redis: mock the terminal service, wrap it in the real handler, register it on a real InMemoryDispatchRegistry exactly as the bootstrap registration config does, build DispatchCore.asyncReady with the REDIS driver replaced by a message-capturing list, wrap in a real DispatchFacade plus DispatchFanOutPlanner, publish with the production DispatchOptions tuple, assert the captured DispatchMessage (queue, delay, listenerName, payload), then feed it to a real DispatchConsumerRuntime and verify the terminal service received the payload. FinishOrderJobDispatchFlowTest and NormalOrderPaySuccessYoushuEventAsyncBusDispatchFlowTest pin the job and event variants.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/dispatch/FinishOrderJobDispatchFlowTest.java#L21-L71",
+          "version": "repo-lines-v1:sha256:31e040171c29a8e28abc7dbcfb244b477bfd28952c0275293c0b65df2e260af3:eyJzZWxlY3RlZExpbmVDb3VudCI6NTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiYTFiMWYwZDkzOTU3NDJlMjE2ZjcxYzllOTBjOGZiOWFhNmI0Mjk2YWFhNGNlN2NjMDVjOTZlYTViODdiYWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNiMzYzYWIwOTM3MWRjYjFmODdkODU2NTI1ZjA0YmZlZDI0MTJkMTY5NjI3NTBlOGMyZjE4ZjA2ZGM5MWQ3ZjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/dispatch/NormalOrderPaySuccessYoushuEventAsyncBusDispatchFlowTest.java#L16-L68",
+          "version": "repo-lines-v1:sha256:9cd0c809477ee73effdc00881f8ea2dc208995489f0fa87f4df5d844edfab53c:eyJzZWxlY3RlZExpbmVDb3VudCI6NTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk1MGMzNzMxYjMxYTZlMDk5NmZkMTAxZmUzMWU5M2JhMzhiMzA3MTVhMDM0MTE0MTk0ZjBjM2RkZDE4MTg1YjQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZkOGIzZWU2NzUxZDZhMjA1ODA3YmEzYjU5MzQ5NzNjOGE4MjJkMjEwZWEwNjhmNWI0NWYwNjAzYTAzZjVmNjgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_10fd4184572b41c6a59e9d4e4a3ca909",
+      "statement": "The narrowest verification commands for a new dispatch message run the flow test in bootstrap and the producer-side probe in the owning Bundle (./mvnw -pl ecshopx-bootstrap test -Dtest=<Name>DispatchFlowTest, ./mvnw -pl ecshopx-<bundle> test -Dtest=<Service><Event>PublishProbeTest), with ./mvnw -pl <module> -am verify as the pre-PR gate; OfflinePaymentDoCheckServiceNormalOrderPaySuccessPublishProbeTest in ecshopx-orders is the pay-success publish-side probe.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/orders/service/offline/OfflinePaymentDoCheckServiceNormalOrderPaySuccessPublishProbeTest.java#L52-L63",
+          "version": "repo-lines-v1:sha256:f7ae9abc6955fc7285afba2465e4de55d4bd55a19950bfd381f9b1d9eaaed41c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZjZDg5ZWFlODNiMzM1NDViMzI5MTBmMDMxNGU0NDU0YTUwNzI5YjQ4YWRmZTFiNDg4YmU2OTY1ODUyNjRmY2UiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA0NzIzNzNlYWU2ZWZiZTNiMTY4MGJhYjI5NTkyOWY1NDBhNmU0YWEwYzAyYTYwNDY0NzVjM2M4Y2RkNDM3NWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNjZjM0ZmM3YmNjNjMwNjRiODEzMDNiMTA0Yzk0MzE1ZTU3ZGU4OGE5NDFiYmU1YjkwMmMxN2MzN2NhNWE2YzUifQ"
+        },
+        {
+          "resource": "repo://readme.md#L347-L365",
+          "version": "repo-lines-v1:sha256:a18a7cea00d02da2c3afc91c966d1842fb5ebbfa36a268a4471ed08adbbf517b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3MjM1ODU2MmEzZmJkMjc3MGJhMzVjNDA0NjAyM2I3ZjdhN2RmMGMzMDU1YmU5MTMzMmUzYzBlYzNiZjFiOGQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ3YzA2YzU2MWQ1YzMyNzM0MzY4NTI2OGE0NmIzMzkxZjM5OThlZWU4OTBkMmJlNTFmMGQyMWNjNGE1M2FlNmQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg2NTU2ZDU1MjE2Y2YxMTgwM2QxOWQwY2RkNTk5MDQzMGQyNjFhOWNlOWFiY2FhNDA2MTJhNTM2N2E1ZjZiMjgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJkMDAxMjc1MTFlMGY3MTM5MzYzOWIxMjk1ZjU2M2MwZDk3MzgzMGFmNDBmM2QwZDhjOTQxZGVjOTQzMGYxNGEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_01f1771c5cf240a8ab44303fd6578dbf",
+      "statement": "XXL-JOB cron handlers are @Component classes in a Bundle's cron/ package with a parameterless @XxlJob(\"<short-name>\") execute() method that delegates to a service, logs an INFO done line with the short name, result count and cost on success, and on failure publishes a CronAlertEvent through the injected ApplicationEventPublisher and then rethrows — the rethrow is what makes the admin record a failed run. ScheduleFinishOrdersHandler (short name finish-orders) is the canonical example.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/cron/ScheduleFinishOrdersHandler.java#L27-L56",
+          "version": "repo-lines-v1:sha256:40e5b4939d4902fc9949731c6fb9344c6d3d21b83bd24443b17af7d5c541dd93:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYThjMTE2MGViMGE5NTFkOWQxYzkzYmUxYmM0NTRiYjM0ZmY5NTM5NjNkMTNlMTdkZmE4OGM1NDMwZDBhMDMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU4NjRjOTQyZWMwNWUwNWUyM2YxMWUyZDJkYjliMjMzYzliYjY3MDBlNTE5NWVjMDkzZjk1MWUwZmQ0M2U3MTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_41326a8c554c469daf279fbdeefad433",
+      "statement": "A cron handler only fires if its @XxlJob short name equals the executor_handler of an xxl_job_info row registered in the separately deployed XXL-JOB admin — there is no code-side registration; docker/tables_xxl_job.sql seeds 69 job definitions including finish-orders with CRON 0 0 3 * * ? *, and that seed runs only on first database initialisation so later jobs are created through the console.",
+      "evidence": [
+        {
+          "resource": "repo://docker/tables_xxl_job.sql#L188-L188",
+          "version": "repo-lines-v1:sha256:8c743ca123c7385ea3be4abc4bb04a1c75463c485d2d723f725eed152152595b:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOGM3NDNjYTEyM2M3Mzg1ZWEzYmU0YWJjNGJiMDRhMWM3NTQ2M2M0ODVkMmQ3MjNmNzI1ZWVkMTUyMTUyNTk1YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOGM3NDNjYTEyM2M3Mzg1ZWEzYmU0YWJjNGJiMDRhMWM3NTQ2M2M0ODVkMmQ3MjNmNzI1ZWVkMTUyMTUyNTk1YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNTk0MzllNjE5Y2FmYjUzYmJhOThlY2YzZTMwZGRiNTU3MWNjYTZmOGM2NDIzZmM0ODY3YjNhMjRlNGYzYzE5YiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDI1ZWRkYTMxNmMwNzA5NWVjZTYyNjFhMGU0YjgwOTMyMDJiMjU1ZDg2ZTg3OTVkMTkwZWJjYWQ2N2FhM2ZhOSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/XxlJobConfig.java#L27-L65",
+          "version": "repo-lines-v1:sha256:20ee673b200171d3ca093ec4a66b2bc19f3daebd51fbb1fd517fe6958c5a9ff5:eyJzZWxlY3RlZExpbmVDb3VudCI6MzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiMTQ3NjJhYWFkNThkMTM4NDRjZjJlYzU0NzQwYTRkOTdmNWUwN2VlNTE2ZDMyMGQ2MDM2YzFjN2NlNDJkZmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA0NWVkNDZiZWVmYjcxY2ZlMGI1M2Q1MTlkNDgxY2EzMTdjODJhOGQ4NGEyMTBhOWE5YTc4MTQzODU5YTQxZjIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE0N2NkMmQ1NzQ5NGZmYmNlNjUxMThiMDVjMzQ0NGVkMzJiMDUyNjUwZjRhODljODY5NjFkN2M1YzQwODE4ZjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQwMzk5NDVmNzEzY2VjY2MyYTJiZTk4MWFiNWM1ZWVhMzdmOTVmOTc2OWU1NzVjZDhlZDlhOWZjYmFmZGYwNmEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_3f1c76914d73446abffb46b71165b1c3",
+      "statement": "Cron handlers split into queue-feeders and direct workers: finish-orders → NormalOrderCronService.scheduleFinishOrders() publishes FINISH_ORDER_JOB via FinishOrderJobDispatchPublisherImpl on queue slow and returns a fixed 1 (dispatch initiated, not the number of finished orders), while cancel-orders → scheduleCancelOrders() does the batch inline and returns the cancelled count; schedule-refund is the only cron handler that uses dispatch delays, staggering one job per refund by 60*n+1 seconds.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/NormalOrderCronService.java#L126-L158",
+          "version": "repo-lines-v1:sha256:3578838543e9ef740144c8a508d7729ef67dd7f3d0d24db90fad309d2094cc06:eyJzZWxlY3RlZExpbmVDb3VudCI6MzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJhODI0ZWY2NjNlMmI2ZWQ1ZDBmZGQ3YjFiZDI3NmY5NGM3MTBmY2JjMDdmYjFlNDk3M2MxMDE5N2UwMTc3MTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhkOTZmMWYyMmQwYmUzZGNjOWI1ZmU2YmI4NzkwOWMwN2RjYTUzNmE5YWVlNWM1ZGQ5NzllMGRlNmVlNDRmYWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRmZDVlMmIxNjQ2ZDIyMGY4MDgyZDAxYzAzYmE1OWRlYjE1MThkZjg1YjkwNWYzYTc0YjQ2NWE5Y2FkNjljNzciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImIyNWFlNDViNGRiMjgwODdlOTUxYjdkZjZlZWNmNDMxYmNjODczZWFhZGFkOWEzMTE1NGM5YTE3ZjY5MjBhMDgifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/NormalOrderCronService.java#L94-L119",
+          "version": "repo-lines-v1:sha256:9c8ba2432f557b1e9d129c95b7865300c5d35be5cc0c52e5b2dfdefbf7de3120:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFlYjQxNTE1OTVjZGUyODc2NmYyNDYwMWM3NjdmYjIwZTVjMjc4YWFjMWE0YmFlMDk4Zjk5MjJiMzgzMzE2NTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJkOTZkMWU3YThmYmVjNWViNzNmY2ViOTE2ZTAzYjllNmRhMTBiZDJkNTgyMTY5OWZmOTg1YmY1YTMzMWZmNGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRiMjAxOGM5NjIxNGVkYmU5YWEwMTk1NTllNWEzMmM4MDMwYWJhNGVlMDcwYjQzNDA5MDNhNmY0Y2VlNzYwYzYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_0d01e3c05e654ba495c0fc019673784a",
+      "statement": "Queue-feeder publisher impls driven by cron ticks are annotated @Profile(\"!test-cron\") (FinishOrderJobDispatchPublisherImpl, ConsumptionOrderJobDispatchPublisherImpl); under the test-cron profile each cron-owning Bundle's cron/testcfg/CronTestMockConfig — a @Profile(\"test-cron\") class living in src/main because the profile is activated at runtime by the migration diff orchestrator — installs @Bean @Primary No-op replacements (e.g. NoopFinishOrderJobDispatchPublisher) so cron runs during schema-diff comparison do not write Redis, call third parties or enqueue real bus jobs.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/FinishOrderJobDispatchPublisherImpl.java#L30-L32",
+          "version": "repo-lines-v1:sha256:aff651b366d4dfa9e31563cbbdc2e8c9ce3bf81ee0e0d8ef3ecd9e561508e0bd:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjhmYTFlOWY0NDk0OWZhODlhM2I0MmIwNDkyZGRiZGZmYTJlYjc2NDg0OGQzNTc3OGM5ZmI1M2MyMDdlYmRiZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiODRlZDQ0NDRiN2Q1NGJmNGQ5NWZiZTUyYjJlZTJkN2EwNmMyYmM3OWZkYmI5Mjc5YzJmYzc1YzViYTFkNWQ3NCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZGU1NGFmODIwODBiY2IwNWZmYzJhNjhiZjM2MjdjZjY5MTZjNjQyZTE1MTBkZmNhZjA5Njk2NGQ0OWMzYmRlZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMTA1M2I0NWY3NTVlMmI5OTUyNjVhZDk0MGE0NzNjMGFmNjdjMjAyN2Y5NDdlMjg0M2QyNWYzODJkOTA1NTBmNCJ9"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/cron/testcfg/CronTestMockConfig.java#L104-L106",
+          "version": "repo-lines-v1:sha256:1b3d9ec34584b37658bb9acec67963aaeafec6096816e90bc41fc707541231d5:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMGJhYTdlYTdhNzY2ODE3YTk5ZTNkYjExN2EyNTE3ZjE3Mzk3ZTU5NTU1NjhmMmMwZWQyNWYzZWM3NmRkMzk5NSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNmJlZDE3NmJiOWEwOTA0NmMyMzUxMmIxZmU0NTc1YjgyYWRiM2I5ZGVmOWM4NmI4YTRkYzk5ZDZmOGI4MzU1YSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiM2U1NGFkMjhkZmFhMzJlYjljMmI5YjA5MTRmZTIwYmUxZmJhNDI0NmVhODAxOGNjZTUwMjAzNWM0ZmQ1NDkyOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMGUxMGVkZDRkNmZjY2M0MTY2MWY2MmVkNGExZjIyNGUyYjkwMTRjZjQ2MjEwYmJiYjYzNTZlZGVmNzkwNDdhMyJ9"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/cron/testcfg/CronTestMockConfig.java#L239-L247",
+          "version": "repo-lines-v1:sha256:ab59ca49a703b2da2e7bc1a4ac8592578ee9aaacdf1720887c716567659d620b:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZWQ5ZDhjYTJiY2E2YmJkMTZiNTljYmY1MmI0MzVkM2U3Njc2MDcxOTg2NDU2NzRhN2M3ZmI4YzJlMDU2MDZhMyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDE5MTlhMmNmN2IxNmJjM2IzZTI4MmMwNmU1YmU5M2ZkODlmNTI3ZDliYTcxMjkwNjU0MTEwNWU3NDU2YzY3NiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYmI4ODRhMDQyZWY1ZTVhMGEwNTY0MGEyY2QyMGYxZTk2NDAzMjM2YzgwNDEyNTIwNzM5NjNkZTg2ZTA0YWQ0MyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_c03a21d44e5f42f6acbd895d0791f0b0",
+      "statement": "Dispatch-queue draining depends on @EnableScheduling supplied by bundle configs (OrdersSchedulingConfig, and peers in payment/selfservice/shuyun), not by the bus or bootstrap — removing those bundles silently stops the Redis queues draining while XXL-JOB handlers keep firing.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/config/OrdersSchedulingConfig.java#L22-L24",
+          "version": "repo-lines-v1:sha256:5542b94be279029502cb7fe1232815d8947188e2f3f1b8a7710307ed0e88c2a8:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNGIxNDc2MmFhYWQ1OGQxMzg0NGNmMmVjNTQ3NDBhNGQ5N2Y1ZTA3ZWU1MTZkMzIwZDYwMzZjMWM3Y2U0MmRmZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNmIyNzIxNmVmYWNkNjhmYTZiNzM4MWUyODliZjdmNDRhNTgwODU4MzVkNDIyYTBkODk4ZDM3NDIwNTEyM2FmYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDk5MzVmOWI3ODhjYmNjYWFiMWNjNDc3YWY1NTBlZmFjNjliYjliYWZjMWUyNmM1ZTE5NzQ2NzVlZDdhODZhYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_299f88b376ee4a758107e2b5928de39f",
+      "statement": "Each cron handler ships a mirror Mockito test pinning the alert-and-rethrow contract: ScheduleFinishOrdersHandlerTest asserts on success that the service is called once, no CronAlertEvent is published and an INFO log contains the short name and return count, and on failure that execute() rethrows with exactly one CronAlertEvent whose handlerShortName equals the short name plus an ERROR log containing the short name, failed and cost.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/orders/cron/ScheduleFinishOrdersHandlerTest.java#L60-L88",
+          "version": "repo-lines-v1:sha256:ad17b5ac10ff9754864fbde607ecb52208774d2f0f95ba1687ab7438d46bb759:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiYTFiMWYwZDkzOTU3NDJlMjE2ZjcxYzllOTBjOGZiOWFhNmI0Mjk2YWFhNGNlN2NjMDVjOTZlYTViODdiYWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRhNWE5ZGMzNTMzNzE4M2JjODQ0NDMzMGFhYmUwN2E3NTRhM2VjOTZiN2E4MGMxYTE5OGMxODhjYTFkYjBkMjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_fbdb93e655a04b3d94cd36a36b0c3a42",
+      "statement": "Redis-path dispatch consumption is effectively at-most-once: the listener always calls consume(message, 1), a failing message is not re-enqueued on this path, and RetryPolicy.nextDelay is carried as metadata rather than applied — so handlers must be idempotent and self-healing, and only the terminal failed_jobs record survives a failure.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/DispatchConsumerRuntime.java#L37-L60",
+          "version": "repo-lines-v1:sha256:08f2b6ca602c0630f98e848919f21009f0af0057d0d949620fd56e2b4cb0d626:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJiOGEzY2ZjOWU0NzU3MTJkNTM2NDBhMDNlZTUwYjNkN2NhMDM4Y2NjNWVkMTFlMWY5NzVmYTU2ODk3MmZjY2EiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFlZGFjNzNhOTdlOWE3MDg0MjgwMzAxODczYzIxODNkYTgzNTBhYjc0Mzk1NzVjMTBlMThmNDI0ZGVhZDZhYzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/redis/RedisDispatchListener.java#L59-L79",
+          "version": "repo-lines-v1:sha256:ebfac031285c316f2aea369a7428e1cf54340f038e130c499c2981b5f58af6db:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRlMDllNzQ2YTkzN2YzN2ZiMjhmMDA4ZGEyNGRhYzExMzk0Y2Q5ZDUwMTc3Y2Y5MThkM2FmNzYzOWQyYzIyMjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdiOWI4ZmM5ZDIwZjlhOGVjMDA1MDhiYWIxZTc2ZjIwN2I1OTRjYmFiYzgyYzQ2YjBmYjZhNmIwNDY3ZTliNGIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_9e2993bf286b4345a25953fee9c23f03",
+      "statement": "A Bundle needs com.xuxueli:xxl-job-core 2.5.0 on its compile classpath to declare a cron handler (declared directly by orders, payment, aftersales, adapay, aliyunsms, community, companys, data-cube, espier, hfpay, kaquan, point, popularize, selfservice, system-link, theme and bootstrap), while dispatch handler/listener beans need only ecshopx-common since DispatchHandler and DispatchListener live in its common/dispatch package.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/DispatchListener.java#L21-L25",
+          "version": "repo-lines-v1:sha256:d24756a8470cae06ae149600ce9f423733c350da35d7cbe44957ba2de339a185:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzEwNzYxOTZjNjY5NDVkODkzOWNkZDY4ODgwOTk4ZThlMjBkMjQ5NTk3ZDJhYjI1ZThlMTFjNDJjZTVmNDJhZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMmYyNzhmYzI0OGUzZDIwYWZhZGJhYzg1YzRhMDU3ZjdjMzI0YjY2NTU3YzQ4YjM3MDQzMjE3MDQxNzNhMzNmZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-orders/pom.xml#L111-L115",
+          "version": "repo-lines-v1:sha256:c40412f9dc946cca5b46e888c2d2b4385ca953996c008eaf2e8b81fccae2d4e5:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjA0NzFjNTFlZTVjOWEwZTAxMDc5ZGE5MGJkYjcxZWNiNzZmNmQ0OGI2NjQ4YTUwYWZhNjM3N2Y1MjJhNTRiZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDYwYmFiMDRmMjE5NjU2NmM0ZTRkNDJmNjA2MzcyYzIzNzc4OWM4N2Y2NDdlMzA0NzE5MzY3NzA3YTg4NDQwOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYmNjNjViOTI1ZDMxYWNlNDJhYzkzYjU0OGNkZThmYmViZDYyMTExNDZiYjI1M2YwYWYxOTQ4OWMyYzg2ZjEyMyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDVkMjY2OTY5ZDcyYjc0N2Y5ZWJkMzUxYjAyZGUyZTI2YjJmNWRkMmI1NGY3MmJmNzI3M2RhNDUzNjRjZTk5YiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_0215225587144b82bb11cdda2c893058",
+      "statement": "OrdersTradeFinishNormalOrderPaySuccessBridgeDispatchListener demonstrates that a dispatch listener may itself be a publisher and that SYNC events run inside the producer's call stack: registered as a syncDefaults() listener on both trade-finish planes, it marks mall normal orders paid and then calls NormalOrderPaySuccessDispatchPublisher.publish, chaining the trade-finish event into the pay-success event.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/OrdersTradeFinishNormalOrderPaySuccessBridgeDispatchListenerRegistrationConfig.java#L41-L53",
+          "version": "repo-lines-v1:sha256:9c9d6b5f2f4c08cd2ac8d726d7d1d5f93cea3c9086366367d8bd597e89cfe6a8:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ0Y2MzZjJjMGJhOTIzNmI2OGQ3OWY3NWVlMmZkNGJjODY5YmVkOTI4ZTlmMzlmYWNjNTUxZTllOGE0ODRjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUwMDM3MDQ0ZmZjMjVkNDUwZTVjZTYxNmRjYTUyZTIwZWFjOGYwZTRlNGRlYmEwOTFlYTM5MGNlZjczYTBiM2MiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/dispatch/OrdersTradeFinishNormalOrderPaySuccessBridgeDispatchListener.java#L25-L44",
+          "version": "repo-lines-v1:sha256:41dd6df630a38f85975dfaa3c5fd8dfec4d558683398c61dae181d01dbeb2c91:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4ZmExZTlmNDQ5NDlmYTg5YTNiNDJiMDQ5MmRkYmRmZmEyZWI3NjQ4NDhkMzU3NzhjOWZiNTNjMjA3ZWJkYmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk3OGQ3NWRjMzgwY2YzNzJiNmQ5OWNkNjUxYTRhMzJhMzJlZGFkYTU3OGEzZTc4Nzg4YzM0M2Q1NGJhNmVlYTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.2",
+    "at": "2026-10-21T12:26:22.580Z"
+  }
+}

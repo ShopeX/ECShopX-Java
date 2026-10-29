@@ -86,7 +86,8 @@ public class OrderCreatePersistencePortImpl implements OrderCreatePersistencePor
 		ensureCurrencyFields(od);
 		long companyId = longVal(od.get("company_id"), 0L);
 		long userId = longVal(od.get("user_id"), 0L);
-		long orderId = normalOrderNumericIdService.generate(userId);
+		long preassigned = longVal(od.get("order_id"), 0L);
+		long orderId = preassigned > 0L ? preassigned : normalOrderNumericIdService.generate(userId);
 		od.put("order_id", orderId);
 		int now = (int) (System.currentTimeMillis() / 1000L);
 		long distributorId = longVal(od.get("distributor_id"), 0L);
@@ -175,6 +176,7 @@ public class OrderCreatePersistencePortImpl implements OrderCreatePersistencePor
 		order.setSalesmanId(longVal(od.get("salesman_id"), 0L));
 		long opId = longVal(od.get("operator_id"), 0L);
 		order.setOperatorId(opId > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) opId);
+		order.setUsesPlatformItemStock(intVal(od.get("uses_platform_item_stock"), 0) != 0 ? 1 : 0);
 		applyReceiverFieldsFromOrderData(order, od);
 		order.setMerchantId(longVal(od.get("merchant_id"), 0L));
 		order.setDiscountInfo(writeDiscountInfoJson(od.get("discount_info")));
@@ -182,6 +184,7 @@ public class OrderCreatePersistencePortImpl implements OrderCreatePersistencePor
 		applyCurrencyFields(order, od);
 		normalOrdersMapper.insert(order);
 
+		boolean usesPlatformItemStock = intVal(od.get("uses_platform_item_stock"), 0) != 0;
 		Object itemsRaw = od.get("items");
 		Map<Long, NormalOrdersItems> itemOrder = new LinkedHashMap<>();
 		if (itemsRaw instanceof List<?> itemList) {
@@ -216,7 +219,7 @@ public class OrderCreatePersistencePortImpl implements OrderCreatePersistencePor
 				line.setPoint(intVal(row.get("point"), line.getSharePoints()));
 				line.setDistributorId(longVal(row.get("distributor_id"), distributorId));
 				line.setShopId(longVal(row.get("shop_id"), shopId));
-				line.setIsTotalStore(!Boolean.FALSE.equals(row.get("is_total_store")));
+				line.setIsTotalStore(usesPlatformItemStock || !Boolean.FALSE.equals(row.get("is_total_store")));
 				line.setOrderItemType(stringVal(row.get("order_item_type")));
 				if (line.getOrderItemType() == null || line.getOrderItemType().isBlank()) {
 					line.setOrderItemType("normal");

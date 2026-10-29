@@ -23,7 +23,10 @@ dist-release
 ecshopx-*.tar.gz
 ecshopx-java-*.tar.gz
 .env
-/target/
+# Unanchored: a leading slash would only drop ECShopX-Java/target/,
+# not each Maven module's target/ (classes + intermediate jars).
+# The fat jar already lives at docker-lite/app/*.jar, outside target/.
+target/
 EOF
 
   mkdir -p "$stage/$name"

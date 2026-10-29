@@ -34,7 +34,7 @@ public class MemberTagsMultiLangWriteService {
 	private static final String TABLE_MODULE = "members_tags";
 	private static final String FIELD = "tag_name";
 	private static final String TABLE_PREFIX = "outside_item_multi_lang_mod_lang_";
-	private static final List<String> LANG_SUFFIXES = List.of("zhCN", "enCN", "arSA");
+	private static final List<String> LANG_SUFFIXES = List.of("zhCN", "enCN", "arSA", "zhTW", "jaJP", "ruRU");
 
 	private final JdbcTemplate jdbcTemplate;
 

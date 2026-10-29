@@ -31,12 +31,24 @@ release_read_product_version() {
     return 1
   fi
   # sed only — lite deploy must not invoke host mvn/java (may be broken/unrelated on PATH).
-  ver=$(sed -n '/<artifactId>ecshopx<\/artifactId>/,/<packaging>/{/<version>/{s/.*<version>\([^<]*\)<\/version>.*/\1/p;q}}' "$pom_xml")
+  # BSD sed treats "q}" as extra characters on q; keep q on its own line.
+  ver=$(sed -n '/<artifactId>ecshopx<\/artifactId>/,/<packaging>/ {
+    /<version>/ {
+      s/.*<version>\([^<]*\)<\/version>.*/\1/p
+      q
+    }
+  }' "$pom_xml")
   # Resolve Maven CI-friendly placeholders like ${revision} from <properties>.
-  if [[ "$ver" =~ ^\$\{([A-Za-z0-9._-]+)\}$ ]]; then
-    prop="${BASH_REMATCH[1]}"
-    ver=$(sed -n "s|.*<${prop}>\\([^<]*\\)</${prop}>.*|\\1|p" "$pom_xml" | head -1)
-  fi
+  # Parameter expansion: bash 3.2 (macOS) does not match \$ in [[ =~ ]].
+  case "$ver" in
+    '${'*)
+      prop=${ver#'${'}
+      prop=${prop%'}'}
+      if [[ "$prop" =~ ^[A-Za-z0-9._-]+$ ]]; then
+        ver=$(sed -n "s|.*<${prop}>\\([^<]*\\)</${prop}>.*|\\1|p" "$pom_xml" | head -1)
+      fi
+      ;;
+  esac
   if [ -z "$ver" ]; then
     release_log_error "cannot parse version from $pom_xml"
     return 1

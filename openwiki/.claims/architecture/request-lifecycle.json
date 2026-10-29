@@ -1,0 +1,470 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:7251e914215c2c587e41bdff44c1d0a5d000dbbd288024b51996a6028bdaf8bc",
+  "claims": [
+    {
+      "id": "claim_10d8ee8441894b5fa577c80a982ea348",
+      "statement": "ecshopx-bootstrap runs on Undertow (spring-boot-starter-tomcat excluded, spring-boot-starter-undertow added) and sets PHP-compatibility edge options in application.properties: server.undertow.options.server.allow-unescaped-characters-in-url=true (raw UTF-8 query bytes), server.undertow.max-http-post-size=64MB (kept above spring.servlet.multipart.max-file-size=50MB / max-request-size=55MB), and spring.mvc.servlet.pathmatch.use-trailing-slash-match=true (collection URLs match with or without trailing slash).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/pom.xml#L13-L27",
+          "version": "repo-lines-v1:sha256:28659ed2dbd57b708acc91fddd7f409428e462e24a138e019149f9c32bf738ae:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxNjQ0ODI1Y2MyYzJhMDJiMWU2MWY0Nzc2NjkxYTQzNzY0MDU0NjI1ZWZhMDEyZDBjZmZiNTI4YWEyODVmODkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA2MGJhYjA0ZjIxOTY1NjZjNGU0ZDQyZjYwNjM3MmMyMzc3ODljODdmNjQ3ZTMwNDcxOTM2NzcwN2E4ODQ0MDkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBjMGY0MzA5Nzc0Nzk2MjRkMWRkYWRjZjc1NzMyMTM3NDQxNWZjNjQyMmUyMzM0Mjk2N2Q2Mzg4MWExYjNiOGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI1ZGFiNzFlNGFjY2QyMjc1MWNjMjhjYmY2YjkyMzUzNGFmMWQ0ZjhjZjEwNDJiY2YzYjFhNzg5OTliYjVmMTQifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L13-L20",
+          "version": "repo-lines-v1:sha256:12ee35c1b43598af28ae0e0b2124bc644c0c31d69b540c07ccc5a146c9862f84:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNzk4MmQxNGEwNjMzMWUwOGU2Y2Q5NmM0NDQ1NDRlMGE0ZTg0NDdlMWU0MzZiNzVjYzFkNzJiY2U2NzUyYmVmZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNGMzZmIxZTJlN2M2MTA2ZjgyNjJkMmVjZGY5NDk4MTUzM2I2MjAyYWUzNzUxNDUzZmY5Y2E3Y2JkZmU0OWE4MiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzQ1ZWE3MmIyN2Q1MzYxYzU0ZDBhMDkzNmI0NzliNzY5ZTIyNjVmZDg2MDE3MDY1M2Y1NzQwZjk0MmI2MGEwNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOWJhOTk2ZDIwNjFjOWI5OWUxYjBmOTUxMDBkNTI0M2NiNGRjZDQ0YmQ3ZDU5ZDNiMzQyYzBkY2ZkYWFkZDcwZSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L336-L339",
+          "version": "repo-lines-v1:sha256:73f40435c89e720711838d98dab9ddffa8db22dba8a99103e00d9287c3a4fdf8:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzVjZTMxYjJiOTRhZTk0YTkwMzc5NzgyNTRhYThlNGNjYzliZWY5MDQ3ZmIzMDRhMTNiOGFmOTg0M2MxMmFiOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiODEwMzc0ZjkxMmM4ODllMjI1OTg2N2NjNWNhOTQ5YjYyZGNkODllY2YyMjVmNWM2NzJiODkyOTY1MWM3YWI4OSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzE4OTYyZWJlZjMyOWE0ZTE0MzNiODdiZDRjOTFjYTgzNmE2MDhmYjU0MmRmNzhiY2U1NWYwYTVmYjQxYWE5ZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMWViYTI1YjVkMTM5NWM3NDlhYzNiM2IxZDVmOWFiMDUxM2NmZTUwYTA5NTQ2ZTg0MzQyNWY4M2U5ODc5MzhmNCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_161a48d06af14fbaa5e37fb73b3c1b5d",
+      "statement": "UndertowMultipartMaxEntityCustomizer is a WebServerFactoryCustomizer for UndertowServletWebServerFactory that raises UndertowOptions.MULTIPART_MAX_ENTITY_SIZE to 64MB — because Undertow 2.3+ enforces a separate multipart entity cap (near 2MB) independent of spring.servlet.multipart.* — and enables UndertowOptions.ALLOW_ENCODED_SLASH so encoded %2F reaches servlet mapping.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/UndertowMultipartMaxEntityCustomizer.java#L24-L39",
+          "version": "repo-lines-v1:sha256:919d93ca34a445b58eee6818fd99e3f8842b3db2a98593e24bb6ddc0c4a7b156:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFlNGYzOWE0NTY2M2ZjODE2YmY0OWQ5ZGFkZTQ2OTFiNWFmYmZjN2QyZjE3Mjc3YTc5NzlkNmU1ZTMxZDQxN2EiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_a34fbc47da724647891fdf8c69c2fcec",
+      "statement": "StrictHttpFirewallConfig installs StorageAwareHttpFirewall as the Spring Security HttpFirewall via a WebSecurityCustomizer; the firewall routes /storage/** (and exact /storage) through the lenient DefaultHttpFirewall so local image URLs with Chinese/mojibake non-ASCII filenames are not rejected, while all other paths use StrictHttpFirewall with relaxations for encoded slash, encoded double slash, and semicolons. StorageUnicodeHttpFirewallTest pins that /storage/** with Chinese passes and non-storage Chinese paths are still rejected.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/StorageAwareHttpFirewall.java#L27-L61",
+          "version": "repo-lines-v1:sha256:56b4b7f313166a1645213f00cffd53a6db4113cfe413496f1cda1c80fc107703:eyJzZWxlY3RlZExpbmVDb3VudCI6MzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE2MzI4OWRjZWE0MzY0ZDgzY2JkYWFlOTg0ZTRmYjM3MzgyMGExZTMzYzdmZTBjM2UyY2VjMjBkYTBlZWIwNjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/StrictHttpFirewallConfig.java#L28-L39",
+          "version": "repo-lines-v1:sha256:7eda8c9f88b12497209a687c775a8901ba97e5c4d893797352c4c27d2103446f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiMTQ3NjJhYWFkNThkMTM4NDRjZjJlYzU0NzQwYTRkOTdmNWUwN2VlNTE2ZDMyMGQ2MDM2YzFjN2NlNDJkZmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjgwMmFlNTRjNDVjYWExYjRiOWUzMTA2Y2YzZWE4NGI5NTUyNTFlYWMxOGQyMGMxNWJlNjk1OTMxMDU4MjUzOWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/config/StorageUnicodeHttpFirewallTest.java#L17-L39",
+          "version": "repo-lines-v1:sha256:e588090b57f35c9fb62760b86933c682975bfbaa4d9f7b0ec651b178401ee9f4:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZlYzQzYzkyN2VhZmNmN2QxNDI0YjUzMDA5ZDMxZmY0YTYxZTg4ZDRjZjA4YzU4MmEwNDlhODhiMDJmMThkMGQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU1NTUxZGNkOWM2MTczMWJkY2FkNjc4YjU2MTlhZDFkY2E5MWNhZWVlNjMxZjdjNmZlZDU1OWQwZjdjYTBlY2UiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_3e03f16b40c949a78f27e1d8810f7fab",
+      "statement": "/storage/** is served as static resources by StorageWebMvcConfigurer in ecshopx-espier only when ecshopx.storage.driver=local (default), mapping the ecshopx.storage.local.root (default storage/app/public) directory onto the /storage/** resource handler.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/storage/StorageWebMvcConfigurer.java#L24-L46",
+          "version": "repo-lines-v1:sha256:9849eb1a5cd9de4b2b2d7a674828bd60a47bc987bd5ac3d306807e0f1139ba32:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE4ODNjNDNkOTQ2ZDMyMTI5NTQzMzAzYjljYTI5ZDQ0OTU4NDNkNDk3NzRhNGIxM2JkZTgyMTgwODQwMzFkNjgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_934072191cfd43c1979bda5070a614f2",
+      "statement": "EspierSecurityConfig keeps Spring Security thin: a wxappMemberSessionSecurityFilterChain (Order -2, matcher /api/v1/wxapp/**) that authenticates every request by inserting WxappMemberSessionAuthenticationFilter before UsernamePasswordAuthenticationFilter, and a defaultPermitAllSecurityFilterChain (Order 100, matcher /api/**) with everything permitted; authorization has moved to annotations plus interceptors.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/EspierSecurityConfig.java#L29-L60",
+          "version": "repo-lines-v1:sha256:22d1c7ba810a8e8da497524d512527671d6d9ebb0b4874ab29d56a122124c549:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImYxMWUzNjliM2UxYmQ1NjZhZmJkYWU0YmI0ZmEyN2VmYzU0ZWU0NzM0ZTgwNzc0YWQ3ZjY3MTllOGVhYzI5ZGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_cdf73e50a22a4cbcad09b73751eee834",
+      "statement": "WxappMemberSessionAuthenticationFilter authenticates /api/v1/wxapp/** requests from the x-wxapp-session header via WxappMemberAuthService, stores the auth map under the WxappMemberAuthAttributes.REQUEST_ATTR request attribute and a UsernamePasswordAuthenticationToken in the SecurityContext, and writes auth failures as a Dingo-style nested-data envelope with HTTP 200 (data.message + data.status_code 400 or 401).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/web/WxappMemberAuthAttributes.java#L20-L27",
+          "version": "repo-lines-v1:sha256:a1f41a833056bb81fd148eba4145966fa3608775ccf685d065835df92f46c9ac:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzAzZjIxMTEwMmI4NjUwNmZhZDYzMDU1YWYyMmZmYTBjNDY3MjJlZGE4OTc2ODAxOGQ3MzhlOGY2YTY5YzZkZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNWYyZWY3YmUxNzc3ODBkZjA1YmE4Nzg1MWQ4OTBiYzM0NzkxNGQ5ZWE3NWE1N2YwMjgwMDc5NDAwYTRjNGNhZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzA4Y2UxMzI4YTMwZTkzZjM1MDZjNjE2ZDAwZWI3YTFmNjk2MmQ4MzQ5ODRkOWQ4ODBkZWQ5OGFlMzEzOWYxMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/WxappMemberSessionAuthenticationFilter.java#L37-L87",
+          "version": "repo-lines-v1:sha256:43c19171f284406c937c655fb1996e343de2e56d9b1f74993983f01adc288537:eyJzZWxlY3RlZExpbmVDb3VudCI6NTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRjY2VlOGVlNWE4OGEyODQyNzk1MzQwZjYxYjJlNGFkMmVkZDQyYjY3ZGRhMjMyZmFhZWM1MTIwMDAzMmNmNWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg0OGZkY2M5ZTliMGQzNGM4YTU3MzJkY2I2NjE1YjVjYTI3MjBiNmZmMDBlNDExYTYwZTA1YjdkOWQyZTYxYzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b5edb1a44b4d4640b0047384b74dea64",
+      "statement": "OperatorJwtAuthenticationFilter is a @Component OncePerRequestFilter (servlet-filter auto-registration, all URLs) acting as an operator-JWT safety net: it requires a valid admin Bearer JWT for every request that maps to a controller method and is not on its shouldNotFilter allowlist (unmapped paths fall through to 404/405 via RequestMappingHandlerMapping lookup; anonymous admin login/code/callback paths; /api/openapi/**; /wechatAuth/**; and the front surfaces /api/v1/h5app/** and /api/v1/wxapp/**). On success it verifies the HS256 token, checks exp and the operator JWT blacklist, enriches shop-app member tokens, runs CompanysActivationService.checkUserAuth, attaches the selected distributor for operator_type=distributor, and stores the claims map under OperatorJwtRequestAttributes.OPERATOR_JWT_USER_DATA.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/auth/OperatorJwtRequestAttributes.java#L22-L32",
+          "version": "repo-lines-v1:sha256:3e9ac21d5808fc5abe03fbb5441113d6313e7dd12ca34d371d1fba33bdd7f92c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVjZTBiNjU1N2IwODEyZjQ1Y2RhN2FmZjMxM2I4ZmE1OWFjNzk5ODlhOGFmZjVlNzVmOTNjYTkxNjcxZmYzZDAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImMyMWMyNGVhOWVmMDM0MmZhYzI3Yjk2YjEzYTJhOWRiY2VkYTRhYjMyNGNiZTJiYjgyMWUwYjg1MTAxMzg1ZWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/OperatorJwtAuthenticationFilter.java#L218-L263",
+          "version": "repo-lines-v1:sha256:5778df28ed7ef2b2b962237729e71a3205f5ccf29a195c2a4240b198b26e78e5:eyJzZWxlY3RlZExpbmVDb3VudCI6NDYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwOGNjMTVkMDc1NGI2ZjIxZjcxZTBiMDNiOWRkNzg2YmM5ODgwMDNiMmI1NzU2NGM2MDUwYTgwMjI1MTdjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIyZjJmZjVmZWVjNjBmNTg3YzhmYWU0ZTg3ZjgwOWE2NjFjZmZlZDZiNDdhYWU1ZjZkNmEyNjUzYWE4OTUyZWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFlYjFkZjk1ODU2MzBkMDg0MjM4OGRkMDdmMzA1ZmNhNDAxYjgxMzgxNWUxMmY2ZDk2MTU2ZWRjYjFkMzg4YjEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/OperatorJwtAuthenticationFilter.java#L93-L206",
+          "version": "repo-lines-v1:sha256:911f66cb78f77ab95f58caf19d554f083160b99d6c01be2c4ba3e230469a90a0:eyJzZWxlY3RlZExpbmVDb3VudCI6MTE0LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJmMDhjYzE1ZDA3NTRiNmYyMWY3MWUwYjAzYjlkZDc4NmJjOTg4MDAzYjJiNTc1NjRjNjA1MGE4MDIyNTE3YzVlIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI2N2NkYTgyZGE2MDYyMzhlMDVlNjIzOTk1NjljNWVlMDM5OTM0MTk2NDhhZTVkNDNhMmJmOGNkNjM0N2Y4MjYzIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiIzNzUyOGJmZjIzYTdmMDM2NWRhZGM0NDcwYmIwODNlMGRjYWU3YzVmMWI1ZGZhMzcwZTYyYTA0NzhlYmIyNDQ0IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJhZDBiMTUzZTE5NjhjNTUyZWQ5OTU0OGVlN2Y4N2ZjMGJmMzBmNWY2MmYxZjZkZTQwZTgxMzMxOWZmNmU4YjMxIn0"
+        }
+      ]
+    },
+    {
+      "id": "claim_5e56cfc668234ef9b13cc7e421ecd94f",
+      "statement": "MiddlewareWebMvcConfigurer in ecshopx-espier registers the MVC interceptor chain on /api/** in a fixed order: EspierAgreementRateLimitInterceptor (order 5, only /api/v1/espier/system/agreement), AdminAuthInterceptor (order 10, with the admin anonymous excludes), FrontNoAuthInterceptor (15), FrontAuthInterceptor (20), ActivatedInterceptor (100), DataPassInterceptor (200), ShopLogInterceptor (300). Every interceptor skips requests whose handler is not a HandlerMethod or lacks its annotation (method level first, then class level), making the chain annotation-routed.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/web/interceptor/AdminAuthInterceptor.java#L82-L90",
+          "version": "repo-lines-v1:sha256:288768d771a42b9afe00b087c35551faf8d11410abae3aa471c1d0b90bca7239:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjA4Y2MxNWQwNzU0YjZmMjFmNzFlMGIwM2I5ZGQ3ODZiYzk4ODAwM2IyYjU3NTY0YzYwNTBhODAyMjUxN2M1ZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjRlZmM0OTQxOGQyNmRjZjEyOWIyMmE2YWEyMTEwOGNlZWMzNzY3N2EzMmQwOGU5ZDVmZWUzNWRkYTY2YmI5ZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzc1MjhiZmYyM2E3ZjAzNjVkYWRjNDQ3MGJiMDgzZTBkY2FlN2M1ZjFiNWRmYTM3MGU2MmEwNDc4ZWJiMjQ0NCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMmE2ZWU3N2Q3NzJjNWU3ZmY2YmE5Y2I5MjY0ZmEwNzFkNzM3MzI1NTk1YzNjMzNlZjVkOWM5NmM5Y2E2MTIyZiJ9"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/web/interceptor/FrontAuthInterceptor.java#L50-L85",
+          "version": "repo-lines-v1:sha256:6ca0e1567a5d15088dc88db7be80527e8a6dd7bc48238f24435bea35be68fa3b:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwOGNjMTVkMDc1NGI2ZjIxZjcxZTBiMDNiOWRkNzg2YmM5ODgwMDNiMmI1NzU2NGM2MDUwYTgwMjI1MTdjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ2YjgyZWY0ZDY5ZWYzN2ZhMDFmNzVmOGNlZjY2MWI0MjliNGFiMzJmMTU1MDA4YzUyMjg5OTU1NDY4YTM4NWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFlMWI5ZTdiNGZjNWY4ZjRjMjllN2RjZGM2ZjIzOGE4YTI3NDcxOTQ3YTQyZGQxMzE1NDA1ZGQ1YzNlM2FiNDEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/web/interceptor/MiddlewareWebMvcConfigurer.java#L23-L102",
+          "version": "repo-lines-v1:sha256:a06adeda336b1dde8bcbd9987b3e5864cf005b0f11b0dab7483a891511e1f9a5:eyJzZWxlY3RlZExpbmVDb3VudCI6ODAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkzN2YwYWY4ZGRlNDc2NTk1ZjA3MmU5Zjg4MmNlMGU5MzY2NGI2ZGY0OTkxYjIyY2I0MjNkOGJkYTkyOGI1YzciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_98bc2ba9542a4114a1621d22f0c2d78c",
+      "statement": "FrontAuthInterceptor implements @FrontAuth: it verifies the H5 Bearer JWT via H5BearerJwtClaimsService (HS256 signature, issuer, time claims with leeway, required claims iss/iat/exp/nbf/sub/jti, positive company_id claim, H5 JWT blacklist), rejects with HTTP 401 and Dingo envelope code 401001 message 'Unable to authenticate user.' on failure, rejects a truthy disabled claim with HTTP 403 code 403001, and on success sets the h5AuthClaims and h5CompanyId request attributes. A method-level @FrontNoAuth suppresses the check even when the class carries @FrontAuth.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/web/H5FrontAuthAttributes.java#L22-L29",
+          "version": "repo-lines-v1:sha256:a8e3ab80eeb18ffa652243a37e4585ba8c169cc27edc9af9b0170098f6acaa80:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiN2M5MWE2MDVlNzU4NzliNjBjM2Q5MzQyNjg1OGJiMzgxNTYxNmE2ZWY4ZmVhYzI1YWI3ZDMyYzQ0NjQ3MDdiZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTEyZjc3NDgwMGY4MTQwODA4ODMxOTg1YTkwYmVmN2U4Zjc1NTA1NjFiMTEzN2E1NDFhNDM1ZDc1MTkwOTY3OCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiODU1ZDkyMjNmNWRmOGY3MjZjNTlkMGVhODQ2OTljZTkyYWY2YjJjODU2ODk2MTU4ZTE1NjE2YzAxZmUxMDIwMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjIsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDAzOTk0NWY3MTNjZWNjYzJhMmJlOTgxYWI1YzVlZWEzN2Y5NWY5NzY5ZTU3NWNkOGVkOWE5ZmNiYWZkZjA2YSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/web/interceptor/FrontAuthInterceptor.java#L36-L97",
+          "version": "repo-lines-v1:sha256:031afbeddac8fb9ee58d0ebeae818ba13e17baeb14c02978953250f3e4c12ed9:eyJzZWxlY3RlZExpbmVDb3VudCI6NjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4ZmExZTlmNDQ5NDlmYTg5YTNiNDJiMDQ5MmRkYmRmZmEyZWI3NjQ4NDhkMzU3NzhjOWZiNTNjMjA3ZWJkYmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUyODk2YTdiNWE5MDYzMTIzNjYzNjAyMjdhZjI1YjQ1NGY2OWQ5OTU0MDkwMzkzNmE1MTNhNTFkYjY0NDFmOWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjUyNGEwOTc2ZGYxOTlhNDgxNTE4MTYwZTQ0ZDI1ODZiMzQ3NjUxZmMyNWZjYTI0ZjhlMTRhNTI4NzU3M2UxNWUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/h5/H5BearerJwtClaimsService.java#L55-L96",
+          "version": "repo-lines-v1:sha256:ac5c1d4a0ed0fbf169f71c681ae34efaf6d7c16992f08d52921a46b5f5c51e70:eyJzZWxlY3RlZExpbmVDb3VudCI6NDIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBkM2VlMzlhOTk5YjQ2MzRhYWJmNDgwMGJmZDU5ZmJkODRiOTU4YjljMzQ0ZmViNzVhN2IxMGQzODdiNGMzMGEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImEzMTU3ZjlhYWZiZWRmNTQ0YTgyOWEzNWNlZDMzOGNjMTIyZTU2ZDBiODJjNWFlOWVkNzg3YjIzM2UyZGM5NGQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRmYzYyZWI1ZjcwMGY1OTg4ZmI4ZjE4MGI5MDFjOTZiNDI0ZGZlMTNiMzEzNzk1OTk3Y2IwYTBkYjM2YzVmODkifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_e0753703052b49258b4de1fd32da3361",
+      "statement": "FrontNoAuthInterceptor implements @FrontNoAuth by always producing a company_id: first from a valid H5 Bearer JWT (enriched by H5JwtUserLoginInfoEnrichService plus a member-mobile backfill), otherwise anonymously from the appid parameter / authorizer-appid header (WeChat mapper or AliMiniAppCompanyIdLookupPort), then the fixed system company (common.system-companys-id when not SaaS, common.system-main-companys-id when SaaS), then the company_id query parameter, then the Origin domain via CompanyDomainLookupService; unresolved requests throw UnauthorizedException, except MembersController.getNoAuthDecryptPhoneNumber which passes with company_id 0. Anonymous requests get a synthetic claims map in h5AuthClaims.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/web/interceptor/FrontNoAuthInterceptor.java#L148-L337",
+          "version": "repo-lines-v1:sha256:9906ce9fd59a3fe677090defd5d23dfb1a726c669a804362381b81b19341c0bf:eyJzZWxlY3RlZExpbmVDb3VudCI6MTkwLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIxNzAyZGRkODRiNWFiMDM3MDI1ZDczN2QxYjNkNmI5NDRhODhmNGE3MTE3ZGRiNzE4ZjU1MmFiYzJmYTI4YjdjIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI2N2NkYTgyZGE2MDYyMzhlMDVlNjIzOTk1NjljNWVlMDM5OTM0MTk2NDhhZTVkNDNhMmJmOGNkNjM0N2Y4MjYzIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiIzZmJiYjg4MDllYzNiZWFlMWI0NzcxN2U2NTdkMDA2ODlmZmZlYmY2YjgxYzViNmIzZWQ4NmQ0MWY4ZTE3ZTczIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIwYjI1YjQ2ZmI1MDkxOGEwM2M0M2MxMzk3NzZjOTY5M2ZhMGNjZTQ2ZjA4YTYwZTdiMzY4OTkwODdlZDgxYjljIn0"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/web/interceptor/FrontNoAuthInterceptor.java#L88-L146",
+          "version": "repo-lines-v1:sha256:2d34697a6780ea6fafab4978af168793760f2213bed5f867cf1ad2a816d22160:eyJzZWxlY3RlZExpbmVDb3VudCI6NTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwOGNjMTVkMDc1NGI2ZjIxZjcxZTBiMDNiOWRkNzg2YmM5ODgwMDNiMmI1NzU2NGM2MDUwYTgwMjI1MTdjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU1ZmZkMmUyYTMxZjc3OTE3ZTY5ODRjZDk4MzQ0YTE0ZTIwYzNiMGUxYTZkNzRhYjQzNGMwZjlhMzdhOTczNjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZmOTJhMDVmMTc5MjE4OTFkZDIyOGIwNjg3NjgzOGVlMzZmYWViNTljMTdkZDhjNmQ2ODg3ODRjNmQ5ZmZkOWIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_69d12d44fb2343dd9ca3e41ca885b392",
+      "statement": "FrontNoAuthInterceptor writes its 401 error in a Dingo nested-data envelope only when the handler carries @DingoResponse(unauthorized = true) — mapping the message '该账号已被禁用.' to code 401002 and everything else to 'Unable to authenticate user.' code 401001 — and otherwise writes plain ApiResult.fail(401, msg); this mirrors GlobalExceptionHandler's choice for the same annotation.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/web/interceptor/FrontNoAuthInterceptor.java#L339-L380",
+          "version": "repo-lines-v1:sha256:c1541e85fc700d18f374c877bf050a50d88c36338edfbd85eb7ec66dbb002bfa:eyJzZWxlY3RlZExpbmVDb3VudCI6NDIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU3ZGZjYzdjYTI2ZTgyMDI2MDFhYjMxMWE5MmY5MWYwZGY1MGY4YTdmYzg3Y2Y2MzY1OWEyZDk2ZDQwNWE5ZmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNlMDVlZDliMjY1MDgwYTc4NmFmMzMyM2U2ZDRjZTBlN2JkZmE5MDA4NmRkYWQzNTNkNWMyZDdjZWUzMjNiMGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc3MjRhMjQ3Y2RmYzBmY2E4NzZiMWZmMjg3MjQ2N2ZkZGQzNWQ5NWZjMzg2YjY4MmE5YzlhZWU0YTI0NDgzMTAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_939da4ec2d954f79ae5a0b3576f8f2f1",
+      "statement": "AdminAuthInterceptor implements @AdminAuth for operator-console endpoints: it requires a Bearer token, verifies it with OperatorJwtCompactCodec (own HMAC check with a jjwt legacy fallback), checks exp, enriches shop-app member tokens, runs CompanysActivationService.checkUserAuth (which validates the encrypted session token inside the id claim unless operator_type is shopadmin/user), attaches the operator id and the selected distributor for operator_type=distributor, and stores the claims map under the OPERATOR_JWT_USER_DATA attribute. It rejects 401 with a Dingo envelope (data.message + data.status_code, no code key) and 403 with ApiResult.fail(403, msg).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/activation/CompanysActivationService.java#L155-L172",
+          "version": "repo-lines-v1:sha256:b2c9a94c8302e4f3cadbc1f7a9f7859d73ce9dae4ec70ae72258ae382672aae1:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdkMTUzMGQ2OTMyOWM3ZGU5NmIwNmEzZDU2YTFiMDgyZjdkZDEyMDI1Y2NlNWYxNjMzNzc1MGQ1YTI4ZTA3OTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc5NDJkMzQwN2Q5MzI0YWQ5Njc1ZDI5Y2IxMjdhNWFhZjBmNGQwOGIyYjMwNGM5YzNiYjVjNWJjZDZhYWVlMGYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIzNmFmOGExZGM3NDE2ZTY4YTFjYjgzMDRlZjk4ZTM2NDE1ZTBmYTUzYTAzZTNiNDc0YTgwMmZhZjk4NGIzNjEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/OperatorJwtCompactCodec.java#L61-L81",
+          "version": "repo-lines-v1:sha256:c277037ac97e438f778fbdddd9098b204bec91c61c5399d6321ae59c9acb3f01:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU3YzYyZmZlZDBlYzU5M2I3N2IyYTZhYjc5ZTE0NTk2NGUwNjAyMTQxZjk0YmZjYWI3MjY3ZDg2ZjhjZWZlZWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIyZjJmZjVmZWVjNjBmNTg3YzhmYWU0ZTg3ZjgwOWE2NjFjZmZlZDZiNDdhYWU1ZjZkNmEyNjUzYWE4OTUyZWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZkMTExMjQ4MWVmNTQyMGRiZmI2NjE2Mzg3Y2YxYTEwNzAyNTljNGRlYWE1NjdjZTUxMGZmYTdlOWE4YjAyZDcifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/web/interceptor/AdminAuthInterceptor.java#L44-L125",
+          "version": "repo-lines-v1:sha256:8c577d7ee2cf27f26ad5454094c7111a1edbcb97f5925f58d09171c223cacba0:eyJzZWxlY3RlZExpbmVDb3VudCI6ODIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4ZmExZTlmNDQ5NDlmYTg5YTNiNDJiMDQ5MmRkYmRmZmEyZWI3NjQ4NDhkMzU3NzhjOWZiNTNjMjA3ZWJkYmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUyODk2YTdiNWE5MDYzMTIzNjYzNjAyMjdhZjI1YjQ1NGY2OWQ5OTU0MDkwMzkzNmE1MTNhNTFkYjY0NDFmOWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFlYjFkZjk1ODU2MzBkMDg0MjM4OGRkMDdmMzA1ZmNhNDAxYjgxMzgxNWUxMmY2ZDk2MTU2ZWRjYjFkMzg4YjEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b982eaaf46084f8c8591bb0e7cfc3703",
+      "statement": "FrontMerchantAuthInterceptor (registered by MerchantInterceptorWebMvcConfigurer at order 25 on /api/**) implements @FrontMerchantAuth for merchant-settlement Mini Program endpoints: it verifies a separate merchant JWT under ecshopx.merchant.wxapp.jwt.* properties (issuer ecshopx, secret from JWT_SECRET, 60-minute default TTL) with HS256/issuer/time-claim checks and positive company_id/account_id claims, then confirms a MerchantSettlementApply row exists for account_id in the same company, exposing a MerchantWxappAuthAttributes(companyId, accountId) record as the request attribute; failures return the Dingo 401001 envelope.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-merchant/src/main/java/cn/shopex/ecshopx/merchant/config/security/FrontMerchantAuthInterceptor.java#L41-L131",
+          "version": "repo-lines-v1:sha256:e78f23f0b4e24d7f24a013bd4e2f2ac1493bb3c8fe3b761d348d16c0d9276482:eyJzZWxlY3RlZExpbmVDb3VudCI6OTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4ZmExZTlmNDQ5NDlmYTg5YTNiNDJiMDQ5MmRkYmRmZmEyZWI3NjQ4NDhkMzU3NzhjOWZiNTNjMjA3ZWJkYmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUyODk2YTdiNWE5MDYzMTIzNjYzNjAyMjdhZjI1YjQ1NGY2OWQ5OTU0MDkwMzkzNmE1MTNhNTFkYjY0NDFmOWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJkYjVmMzY1NDU0ODZmOTdkZDIzNTJhNWI1MDA5YjFjMTAzYzgwYzMzYTNlNTQ3ZjRmMDM1M2VkNDcwYjE1ZjgifQ"
+        },
+        {
+          "resource": "repo://ecshopx-merchant/src/main/java/cn/shopex/ecshopx/merchant/config/security/MerchantInterceptorWebMvcConfigurer.java#L24-L37",
+          "version": "repo-lines-v1:sha256:b65f0091194029ba865780d6299a9400b22f501a8440818a02118a3ed33efe85:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBmMTQxMmNjODRkNmNkOTIxOWU0OTkzNWY1ZDdhZWY3NTBiOWQ5ZTFlOGJhY2MxZGJiODlmNjIyNTA0YmYxNmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE5Yzc0NWIzODRkYzcyN2RlYzY1YTkwYjQ4NTRiZmYzZjU0ZDAzZjBhZGRmZTlmZTNiMTBmMzUxZjkxMDMzNmQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-merchant/src/main/java/cn/shopex/ecshopx/merchant/service/wxapp/MerchantWxappAuthAttributes.java#L19-L22",
+          "version": "repo-lines-v1:sha256:43099109fdbf5a8ee22c46fd3af5a66de555e6ba13c255340eb2172305c5b4da:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMjgyNGY3MGVlYWZiOTUyNWY1NjI1Zjk0MDRiYzhlNjBhMGQ2MmE2MzYxNDFmMjQxNWUwM2U4NDY2YzQ5ZGNhZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNmU2MTZmNDZlZDUxYmI4NzRiYzA3NWY2MGNkNmFiYWEyOTAxMzRhN2VkYzdmNjZiOTBlNTdjODYzZjUxYjY2OCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_eeca6bd6e8dc4b1ebebe340374bac25b",
+      "statement": "QywxSalespersonAuthInterceptor (registered by SalespersonWebMvcConfigurer at order 21 on /api/**) implements @QywxSalespersonAuth for the Work-WeChat salesperson Mini Program: it authenticates the x-wxapp-session header against WxappSalespersonSessionAuthService (Redis frontSession3rd:<session> plus DB re-validation) and stores the auth map under QywxSalespersonAuthAttributes.REQUEST_ATTR; BadRequestException/UnauthorizedException/ForbiddenException become Dingo-style envelopes with business codes 400001/401001/403001 at the matching HTTP status.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-salesperson/src/main/java/cn/shopex/ecshopx/salesperson/config/SalespersonWebMvcConfigurer.java#L27-L41",
+          "version": "repo-lines-v1:sha256:0f68dc2344a6136a5fc7c2bb8dca679c89f293f880444682a603d5a706b5cd22:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIxN2YxMWYwN2IwNWM0ZGU3Yzk1OGU5ZWU4ZmU1ZGRiYzU4ZjllMDQ0MjVjMTdmNTYyNWNhYWZhNTUwNDk2M2YiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ3MDVmMDQ5ZWIwZThlZWI0ZTJjOTRjYjRmNjdmYTAxMmFlNjRmMzI5OWU2MzhmNjVhNWNhNzhjZGJmN2I4Y2IiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-salesperson/src/main/java/cn/shopex/ecshopx/salesperson/service/WxappSalespersonSessionAuthService.java#L42-L100",
+          "version": "repo-lines-v1:sha256:0063609bed9c77c45dfcafbeaebd5dbe87534d1f8769993246bb8b47ca4286ce:eyJzZWxlY3RlZExpbmVDb3VudCI6NTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc4Njc0MTU0M2Y1ODgxMzUyOTY5MjE1ZmMzMTk1MWNjZTI1ZGVhNGQ5OTA4YmEwMjFjNmU1NWVmYzhmOGIxOTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQyZWQwOWIxYWRmNDk5MzMxNjRjMGNhODFhYWFiMzZmZTlmNjI0NDcwNzE1MDVlN2EwM2QyMTZkYjA0YzUzMDkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhjZmQ2N2JhNDExNGQ5MmY4NzY4MzEwZmI5M2IwZWFmOTI4MjY1NDkyMmQ5OWEyOThlMmNlY2NmNmJhZTZhNTkifQ"
+        },
+        {
+          "resource": "repo://ecshopx-salesperson/src/main/java/cn/shopex/ecshopx/salesperson/web/QywxSalespersonAuthInterceptor.java#L38-L98",
+          "version": "repo-lines-v1:sha256:bf05b78bcea2f02fc2f691ea9ef6f564c78abc7074d271d8cd80a08a455c957a:eyJzZWxlY3RlZExpbmVDb3VudCI6NjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNmMjE0NmU2YTAxOWE0ZWFlZTU0NDgwMmQ3YTM1ZWM0NThjZjlmZDEzNzhhNTcwZjM3NmM0OGQxNTIzNDAyNTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA1OGUwYmJiYTU1M2I3M2I4MTQ4ZGMzYWUzYTRmM2UxY2NlOTM2ODA1MWI0M2QxYmYxNmU1NzdlOGQzNzM2ODAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImYzY2Y0NWI1NDA0ZDQ1YzdkN2VkZmQ5M2QyNGE3MmFkNzE4ZGY2NjYwOTA4YTYyN2VhYzllZmRlZGNmMDRhMzQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_09d98076c091441dbedb51bd613bf6c7",
+      "statement": "ActivatedInterceptor (order 100) implements @Activated(routeAlias) by delegating to ActivatedMiddlewareService, which checks the route alias against the operator's role menus (ShopMenuService.collectApisFromMenus with menu version per operator type: distributor 3, dealer 5, merchant 6, supplier 7, else 1; admins skip unless common.check-superadmin-permission=true; fixed whitelist and delivery-staff paths bypass), verifies the company exists and is not disabled (assertShopOperatorCompanyActive), computes the distributor scope, and exposes distributor_id / distributorIds request attributes (ActivatedRequestAttributes) that FlexibleHttpServletParameterMap later merges into parameter maps. Failures throw ResourceException.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/activation/ActivatedMiddlewareService.java#L328-L342",
+          "version": "repo-lines-v1:sha256:44aa1cf20c6cab95589e94e1908a8f66cbcdddd0a63fdff0ed7aaffece8bb2ea:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVkMzViYmI1NjQ3M2NlZTFlMjdiYzU0OWMzYWExOGJjMDRmZWU5ZDJmMzY2Y2JkNmE1NTBjODgwZGExNWQ4YzEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZhYzViMDU5MDYwZTg3MjhmOGU1NDg1ZmZhNjAxZjBhMTgzNGQwY2E5ZWY3OTAxNWYyOTM2MzY0YzEwNDQzZDciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE2NTZjZDJhNmMxMjdkNGQ4MDZmZDJlY2YyMGQxMWFiYWNmNjYxMzE5YjMzMTlkOWJhMGZiMmQzOGI1ZDg1MTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/activation/ActivatedMiddlewareService.java#L76-L163",
+          "version": "repo-lines-v1:sha256:0492a168be96b5aa4f2d51c1050e47844dbb15e457cde8c41e57cb248a199688:eyJzZWxlY3RlZExpbmVDb3VudCI6ODgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMxMTA1N2QwYjVmNjJmZmJjYzdlYmVjZGI1ZWFjMzQ4MjVjZTA1ZmQ3ZDY0MTIzZjQ5MGY0NTMzYzNmZjJmM2EiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ2YjgyZWY0ZDY5ZWYzN2ZhMDFmNzVmOGNlZjY2MWI0MjliNGFiMzJmMTU1MDA4YzUyMjg5OTU1NDY4YTM4NWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAxZDg1NGM0MGQ3NmY0MTY1YjJhMWU0MGQzNzU3ZDFhY2E1NDA3NDM2OTA1NDliYTQ1YzhjNDdiMGE2YjU5NDMifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/web/interceptor/ActivatedInterceptor.java#L33-L61",
+          "version": "repo-lines-v1:sha256:02ac9f3a79162cade563bc476d14d940ca8ecc5ca00ae1170d304868465c7d05:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3NmQ4MWVkOGY0YWIxYjBhMzAyMjE3YTcyYjU2YzNhZWY3ZTA1NjU4MWY2MWI1ZDRjZTU2YWM1ODlmMzEyMjciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQzOGI1MjE1N2Q2ZDQzYTE0N2RhM2FjYzAyYTg0NWExOWU3Zjc3Y2YxYzEyOTc4OTVlY2ZlMTQyMmYyY2QxY2UiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_f69198d1e7d94d129df94990396c389d",
+      "statement": "DataPassInterceptor (order 200) implements @DataPass (method-level, optional pathAlias defaulting to ClassSimpleName.methodName): for admin operators, merchant-main accounts, and self-delivery staff it is a no-op; otherwise, without datapass authorization it sets the request attribute x-datapass-block = 1 (controllers read it to mask sensitive data) and with authorization it inserts an OperatorDataPassLog row. It never blocks the request and swallows its own errors.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/datapass/ShopOperatorDatapassApplyService.java#L47-L75",
+          "version": "repo-lines-v1:sha256:24dc3988028be87fe1573261016412eeaab6d7f5cc74ec66709ce779e200dd5b:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBkMzk1MDIwYzQyMjczYjY0ODlmOGQ1MmQ2ODE3MTczNDA3NWJkMWE4NzI3ZGFhMzFjMzYxMjQ3YWY1ODQyNDciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJjM2FjN2YzZWVkYjYxNDdhMjY1NmEzODVhMzYyMDM5NDcyZTVjMWIxYzAxODRhZDU0NWMwZThhOWE4NDgxYmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc1MGVmOTBiMGFmMTNhODIzMTA5YjBkMzJmMTk5M2Y2ODM1MzBlYmU1NzQzZTE0YmJiOWU2ZmQ2YzQzYWEyM2UifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/web/interceptor/DataPassInterceptor.java#L39-L74",
+          "version": "repo-lines-v1:sha256:d4c0f4265d9ee48989e5788f158f574374836975ebd857d8521da9b0b1ba8cf9:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJjMzhlNzdmMTkzM2RiY2M1MmU4ZWYxZmVmYmMxNzI3NDU3NTAwOTJlMDkzYjg5NzM3YTViZTM5OTI1NzYzMDIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdiMDQxNTYyOWE3MWY3MDc1MDNkYjFkYjM2MGUxODNiZTQwYmNkZWQxY2I0YmEyYjk2MTUwZTE2NTY5N2IxNDciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_a413fbefce9940948da16f3a71e0778c",
+      "statement": "ShopLogInterceptor (order 300) implements @ShopLog in afterCompletion: for non-GET requests whose handler carries the annotation and whose OPERATOR_JWT_USER_DATA attribute is present, it writes a merchant operation log (log_type=operator, company/operator/merchant ids from the JWT claims, request URI, first X-Forwarded-For IP or remote address) through OperatorLogsWriteService, swallowing failures. @AdminLog is consumed by the AdminLogAspect AOP aspect instead, recording login audit logs when a 2xx ApiResult response contains a token.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/web/interceptor/AdminLogAspect.java#L36-L79",
+          "version": "repo-lines-v1:sha256:f7ddc965b0d122914bb362474aefd58aadc660bc3c855206d7e1429be8cf20c5:eyJzZWxlY3RlZExpbmVDb3VudCI6NDQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRlNThlOTI1NTY1MTIzNTM3NGEzZGRiMzZjMGQyOGUxMjU5ZDA3NGFmMmM1NTZkNWEyZjczN2EyY2VmMWMzNGQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ5Mjk3NzYyMWU1YjJiZDM4MTBlMzljMjUyMmI2ZTcwYjRhZTVhNmQ1MzQwNzAyZmYxNTE4ZDI3MDUyYjA5OWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg1NTU1OTljYmI4ZjEwMzEzNTUwNjBkYTU3NjQyYzk1MTIxNTcyNTJjNjUxZTFlNDgzMTk2YThjZjNjMDUxNTcifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/web/interceptor/ShopLogInterceptor.java#L36-L97",
+          "version": "repo-lines-v1:sha256:14783f5862ec13f7b50e44978b05cabc2d8b51559d04e5e3cfb150927737eedf:eyJzZWxlY3RlZExpbmVDb3VudCI6NjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIyOWEzODJkMWMxZWQxNGJkYmVlNjgwNGM1ODQ4ZDE1OWY4MTFiZDc3YWY2NDEzOTZjNTcyNjZlMGE2NmRiNmEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE3MDUwODI1MGJlYjNhMjc2ODM3NWFmOWMwMDIxYzNlNjNjMzcyZDEzNjYzMTBiNzZlMTkyNzU0ZWZlZmY4YmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_75d7ededdcf74cd58f53fb5abd767530",
+      "statement": "@OperationLog is consumed by OperationLogAspect (AOP, ecshopx-common), which logs timed operation lines to the SLF4J logger named operation-log on method entry/return/throwing; it is not an MVC interceptor and no controller in the tree currently uses it — it is the reserved hook for future DB-backed operation logs.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/annotation/OperationLog.java#L27-L46",
+          "version": "repo-lines-v1:sha256:5c2ef6e6a9922f546f78b218775919f3a0054ef6d4af0bb15c54260f7c727a2a:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjlkNTc3MjQzYmUzOWRmNDBmZmYxYTUwOGEwOTg2MzIxOWQ0NzAyNWRlYTMxYjhiNThjNmJiOTIwNDVlMDJlZjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/aspectj/OperationLogAspect.java#L38-L86",
+          "version": "repo-lines-v1:sha256:4599ecf0d0353e58d2e5d090b4215817a1a67634943954cdcc69ef478f6ee2ce:eyJzZWxlY3RlZExpbmVDb3VudCI6NDksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI2M2U5MTM3NGRiNGY5MTJmZDVhNDM2ZjNjMjMxZjE1NmQwOWQ4NGJkOWJjNjQ5NDk1ZTJhNDAzNjM1NjRjMTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ1ODQ3NGU1MzhjOGM4MjE0YzEyNjcwZTc3ZjRiNzMyMTEyNTU0MTQxZGFhNjEwMTY1NjE5OWJkNDAzZTllZGQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_64f50e63fdb54f6495fc3fc55c2f51cf",
+      "statement": "FlexibleBodyWebMvcConfigurer (ecshopx-common, servlet web apps) prepends FlexibleBodyMethodArgumentResolver to the custom argument resolvers and configures a UrlPathHelper with setRemoveSemicolonContent(false) so semicolon path content survives handler mapping. FlexibleBody is the @RequestBody replacement that binds the same parameter from application/json, multipart/form-data, or application/x-www-form-urlencoded, dispatching by declared type (JsonNode, Map, or POJO via convertValue with a ServletRequestDataBinder fallback); required=false allows null/empty bodies while required=true throws BadRequestException('请求体不能为空') on empty, and @Valid triggers jakarta Validator checks converted to MethodArgumentNotValidException.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/config/FlexibleBodyWebMvcConfigurer.java#L31-L54",
+          "version": "repo-lines-v1:sha256:16e6954092339d8e385fe11721f6e2e877ac27e83978cf11aab58e5279da873b:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiMTQ3NjJhYWFkNThkMTM4NDRjZjJlYzU0NzQwYTRkOTdmNWUwN2VlNTE2ZDMyMGQ2MDM2YzFjN2NlNDJkZmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhlOWZhYmIzMTMyNTUxODYyYmU3YjhhMjZmYmIwNWU0NzljODk0MzgwNWI4YzY1MGE1MjJmMjM0YzRhM2YyZTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/web/FlexibleBody.java#L25-L42",
+          "version": "repo-lines-v1:sha256:3f00d90f35b03e40d06303069ccdf6b29957d767629b4b3cdaac1d1ffdeff9ad:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM5YTA1YjgxOTA4Y2RmYzkzNzI4ODhjYThkZGMwMjZjNzM3M2NiZWJhY2Y0NmNmZWY5MDY3Njc4NGI5NTUwMDEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjlkNTc3MjQzYmUzOWRmNDBmZmYxYTUwOGEwOTg2MzIxOWQ0NzAyNWRlYTMxYjhiNThjNmJiOTIwNDVlMDJlZjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/web/FlexibleBodyMethodArgumentResolver.java#L47-L158",
+          "version": "repo-lines-v1:sha256:084051ee56dd74a24568baa0b32eb8921f77fe13f2aa1a0b714313a5a3db59e3:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEyLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI0ODc0MDYyYjJlNWIxZmI1OWY2NmFlNjBhMmRiMWI4MjdmZGI5ZmNmYTZkODcyMDUwYzNkNDExNzFjZjg0N2ZkIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI2N2NkYTgyZGE2MDYyMzhlMDVlNjIzOTk1NjljNWVlMDM5OTM0MTk2NDhhZTVkNDNhMmJmOGNkNjM0N2Y4MjYzIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI0MjYyMTk4NDZiNDQ0MjI2MTgxNzc2Y2ZkMzllNjJmOWYzMGZhMDY5YmFlOTVmY2I3ODk5N2FmZDc1ZDE1MTI1IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIwMjU3MDc1NGFkNjlkOGI0ZDdhODljYWJkYjkyZGUwMjMxZTdmZjRlYzJlYWVjZjk2YzVhODlhNTVkZDU2NjMxIn0"
+        }
+      ]
+    },
+    {
+      "id": "claim_b10823bd69eb45ec8556cb702a780959",
+      "statement": "FlexibleHttpServletParameterMap.toObjectMap(request) converts the servlet parameter map into a PHP-style Map<String, Object>: bracket-array keys (name[]=) and repeated keys become Lists, indexed keys (name[0]=) fold into ordered Lists, nested bracket keys (rates[0][item_id]=) become nested maps/lists with all-numeric-key maps converted to index-ordered lists at any depth, and scalars stay Strings; it then injects the Activated middleware attributes distributor_id and distributorIds when the parameters do not already carry them, which is how admin endpoints become distributor-scoped.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/web/FlexibleHttpServletParameterMap.java#L31-L89",
+          "version": "repo-lines-v1:sha256:8c81072b6249c0ef01191de0f58dcb3310779c684089dfd82ace30d358d0bf5b:eyJzZWxlY3RlZExpbmVDb3VudCI6NTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU3NTFkNjNiZjlhNTZiOTRlNzg3M2UwNmRjOWUyMTk1MmM1ZTU5MzFkZDkxZWNiMjkyNTU4YzcwZmUwYTZhMWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY1ZGEzY2M4MTMxNDI1MTRmNjhhYzk0YmYyN2JiZTg2MTliMzIzNWIyMWE1NzJiNzdmMGMwZjMyMzljZGU0YzcifQ"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/web/FlexibleHttpServletParameterMap.java#L91-L244",
+          "version": "repo-lines-v1:sha256:43045b3edf66b5ac79d69f3496ffbc8428b5504de416af35517da280ffc3352a:eyJzZWxlY3RlZExpbmVDb3VudCI6MTU0LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJlZDlkOGNhMmJjYTZiYmQxNmI1OWNiZjUyYjQzNWQzZTc2NzYwNzE5ODY0NTY3NGE3YzdmYjhjMmUwNTYwNmEzIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0MTJjYTM0NWNjZjc1YmY5YzA4MDZiY2U2OTViZThkZTgwOGI3OTk4NDI1MWE3YTU0ZDIwMmNmNjEwMWRkNDUxIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiIyMmYyZmY1ZmVlYzYwZjU4N2M4ZmFlNGU4N2Y4MDlhNjYxY2ZmZWQ2YjQ3YWFlNWY2ZDZhMjY1M2FhODk1MmVmIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MCwiZm9sbG93aW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1In0"
+        }
+      ]
+    },
+    {
+      "id": "claim_12a3e93578f24b22823ea91e5677d92e",
+      "statement": "The dominant front-controller idiom (WxappPaymentController.payment) merges FlexibleHttpServletParameterMap.toObjectMap(request) as the base map and putAll the @FlexibleBody(required = false) body map over it, so query/form parameters form the base and the parsed body wins on key conflicts — reproducing PHP/Laravel request-merge semantics; identity is then read from request attributes (wxapp session attr, then h5AuthClaims, backfilled from h5CompanyId and finally the merged params) rather than from parameters.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/api/front/v1/WxappPaymentController.java#L118-L152",
+          "version": "repo-lines-v1:sha256:6c02559d61d098c177163f89ab80d6be8373ba3302721bef832051a7a8c36faf:eyJzZWxlY3RlZExpbmVDb3VudCI6MzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEzMzNjZTNmMzI3OWE1YTBlNTg2MjhjYmQ5OGFlMmVlOWEyNjhkYjQyNjY0ZWUzMzRmYjM2MDU1MzY5OGNkNmYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImViMjJmMTFhYjdlZDMyNTM1NWU5NWZjZWRhNzkxMTA3ZTZmZjgxZTViZDkzNTdiMjE4ZGVmYTE4MjlmMDRlNWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImVlNzJjMzUxMGM1YjVhZGYxOTgzOWU3Yzg0NDU2YzRhOWU0MGZkNzVlOWNlOWQ0NjM1Y2UwNDA0NWQ1ZjEzMjEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/api/front/v1/WxappPaymentController.java#L81-L116",
+          "version": "repo-lines-v1:sha256:9715c1c78682ca7b9ff13ea1595cd7b18e101e26d1666f78fd55b8a0727a5e4e:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY1ZTE3ZDMxOTVkYjVmYjRiM2Q5ZDkyZDNhMzEyZWM5MWI4MDlkMWE0NjY2ZWQ5ZWMyZWY5ZWZmZGE0MGFhODgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZlZDQ4NGYzY2E0MWVhOWFiMGM0OTljYmE0MDBhNTVjNjAwMTMzM2YzMDYzMzYzZDc0NDA4MTYzODRjOGU1M2UiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFhMzdjMmY3N2JlYzZjYzg2NThlMmEzOTMwY2JlMjhiMDdkM2Y1YTY2OTEyZjA1ZDJlNTlkYzFlNTU5NTNiZWIifQ"
+        },
+        {
+          "resource": "repo://ecshopx-salesperson/src/main/java/cn/shopex/ecshopx/salesperson/web/ShopSalespersonFrontRequestMerge.java#L27-L65",
+          "version": "repo-lines-v1:sha256:7aee876f5a0e6f7dd76c1574af5c9528ef822f433a277464d95ac1a0ecabbba6:eyJzZWxlY3RlZExpbmVDb3VudCI6MzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA2NjhmODAwMzhmNjExNTE1OWQwNmYwMzM0NGMwZTE1YWZkZDcwNzVmZjllNmFjMjk3N2RiYzMxMDVlYzU4ZmMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYwZjQ5NmEyNmNhMzI5YTU0YTM5ZmEyN2Q4ZTNhMDA4NTNiYzQ5MmM2YjIxYTFhZGYyYzA5YTViNTUwMDE0MTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_aab1a1558718472b822bf5c66fef9159",
+      "statement": "ApiResult is the standard success envelope: ApiResult.ok(data) renders {\"code\":200,\"msg\":\"success\",\"data\":...} and ApiResult.fail(code,msg) renders {\"code\":code,\"msg\":msg} with data omitted via @JsonInclude(NON_NULL).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/core/domain/ApiResult.java#L23-L63",
+          "version": "repo-lines-v1:sha256:770027e62c5d86981cb846340542f39e52822a7711227b4604abdea92e34a517:eyJzZWxlY3RlZExpbmVDb3VudCI6NDEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdmOTc2OWQ4MWI3ODRlOThiY2FmMjQ0OGM5ODExZDM3NzFkMWY0NDUxNzJhOTYxZGMwZDg0ZDZmNDE5NTJkYmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ2ZWQ2ZmJmOWRiZDk0NzE3NDA0YTBjNjY2ZGQ0Nzk0YzRhY2ZkNWEwM2RmMWU3NDIxMjVjOTZmYmZkNDMxOTIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_93c58e8311d743fbbc8fb105495a20fa",
+      "statement": "@DingoResponse (class or method) opts an endpoint into legacy PHP Dingo error envelopes with four knobs: resource() picks the ResourceException style (DINGO = dingoStyleError with embeddedStatusCode ?? 422 plus optional embeddedBusinessCode; DINGO_FIXED = fixed 422; PLAIN = standard ApiResult 422), badRequest() picks the BadRequestException style (NONE = ApiResult 400; DINGO_400/DINGO_422 = embedded ?? 400/422; DINGO_FIXED = fixed 422), unauthorized()/unauthorizedHttpOk() shape UnauthorizedException responses, and notFound() maps NoResourceFoundException to dingoStyleError(\"404 Not Found\", 404). GlobalExceptionHandler resolves the annotation per request from the best-matching handler, so new endpoints need no handler routing-table change.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/annotation/DingoResponse.java#L25-L96",
+          "version": "repo-lines-v1:sha256:e353c00fe59efa2e55fdb6c4e45c8e9345fabd4e20561e77e81ea2307ea342b5:eyJzZWxlY3RlZExpbmVDb3VudCI6NzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjlkNTc3MjQzYmUzOWRmNDBmZmYxYTUwOGEwOTg2MzIxOWQ0NzAyNWRlYTMxYjhiNThjNmJiOTIwNDVlMDJlZjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/exception/GlobalExceptionHandler.java#L136-L174",
+          "version": "repo-lines-v1:sha256:378fecdae8660c4265ca5cfab019d9a63a494c06ba9b52ec5f5d6a68bede6a25:eyJzZWxlY3RlZExpbmVDb3VudCI6MzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc1MDBkMDkwNWM5MDRjMzY2YmVhYTE1MDRmNmM2YzI1ZmI2MjQ1ZGMxYmJhOTQ0NjUxNTc2NDZjNTQ4YjlmMTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE3MGQwZGM2OTU5NGU2MzBjNzcxNmE0NGY2ODcxZDIyM2FkZjdhNjY5YzNjZGRjMTJiZWFkMGRkOGY5Nzk0YjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc3YmFmMTUxOTIyMzVhZTU0YTE4Nzg5OTU0ZDY1M2Y0ZmQ2NTNkYjg1NjQ3NGY5MjEzN2EyYjc5NmQ0ZTllZDcifQ"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/exception/GlobalExceptionHandler.java#L57-L67",
+          "version": "repo-lines-v1:sha256:61ae6acf362e1b2557f79326ff4cdab891280eadb4ca667f7c501fd643aee7fe:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEwMDJiODI4N2JmYjc2YmY0NzBjZDcxZmM5NjVmODU0ZjY1NTNkODY0N2Q3YTljMGUyMzViODIwYTQ3MjEwNjUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY3ZGEyNWE2ZDZiMzFhZGJiNjY0NDJlYjk3ZWZkNzY3MzZiOTI5NTFiYWFkYTU3MjFkMDY0ZmY0NTY5ODRmODYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI0MDk5M2Q1MDMzOGYzMWU1OTBhNTRiODI3MGI4ZTZjZTBjZGRlZGQ0ZTEwZDY2NTMxOWY0N2VhMDgwZDY3YTQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_16a943147cc44a89a31e1df7e2feb639",
+      "statement": "GlobalExceptionHandler produces three Dingo envelope families: dingoStyleError returns HTTP 200 with {\"data\":{\"message\":...,\"code\":<businessCode>,\"status_code\":...}} (code key only when a business code exists); dingoStyleErrorHttp returns an HTTP status equal to status_code (used for ForbiddenException 403, ConflictException 409, TooManyRequestsException 429 under the annotation); and fixed 401 shapes under unauthorized=true — message '该账号已被禁用.' → code 401002, the H5 blacklist message 'The token has been blacklisted' → 401 without a business code, otherwise 'Unable to authenticate user.' code 401001 — with unauthorizedHttpOk=true returning HTTP 200 and data.status_code 403. Without the annotation (or the relevant attribute off), every exception falls back to plain ApiResult at the HTTP status.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/exception/GlobalExceptionHandler.java#L180-L257",
+          "version": "repo-lines-v1:sha256:cec6285784a007af225aaf2280b3592d98f867c545e00c8e08bbe9755f5d0ae3:eyJzZWxlY3RlZExpbmVDb3VudCI6NzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZmMDcwOWFjNTc5NjIzZGNiNjMxNDljYWZiYzlhMDMyMzRkOTljMWFjMWM5MzRkMzgyMmM5ZGUyZjQ5M2VmMmYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFiNGI3NzYzM2QwODlhZTdmMzcwYmM1NzhjYjVjYWQxZTczYzYzNDEzNzM5NjhiYzIxN2NmYzQ3MTJlMTQ1YTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZhYjBjNzdhYmEyY2ZiZjJiZTkzNjUxOTMxM2Y1NTg2ZWU2NzBjY2JjMjFmZmM5ZjhjYTkyY2Y1ZjlkZTE5YzkifQ"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/exception/GlobalExceptionHandler.java#L292-L300",
+          "version": "repo-lines-v1:sha256:75fda0c4e159082496aed80f6efa58bb7a02713cece79205eee3e380353e323e:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNzE0YjI1YjU1ZDdlNGIxNjRhZDY2N2QxNTk1YjNlZWMwOTNkNTNhMDRhYzU2ODMyYmIxMDU3ZjFiM2RmYjUzZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMmEzNTAyNTU2Mjc0YTAyZWY3MDE0OTViOWNkOTgxODI0ZmQ5YzU2YzhhYWQ3ZjBjZjk3NzkwZjE0MTQ4NDI5ZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiY2VhOGRiYjNiMzQ3MTk5ZjYyNDQzZDBiOGFkYWNlZjAyZDUxZmNkNzE5NmUyNzFmOGE1N2EzYzExNzRmNGY3NSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/exception/GlobalExceptionHandler.java#L73-L130",
+          "version": "repo-lines-v1:sha256:5d6b54072f2b22ba791feb1dff65422ae1ff01257f578ac748e5a72faba7ed7e:eyJzZWxlY3RlZExpbmVDb3VudCI6NTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBmN2EzMjlkNDA0NzZlNTZiYzFmODU5ZjRmY2QyMTdlN2M1MWJhM2JiZTI1Yjc2ZGZmYWQ5MmFmYTZlMzVhNmEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJhYTk2NGEwNjVjYmM5NTkzZmRiZjViNDEwOWM3MWI2NTliOGIxMGEzODI0ODJkZWNhYjNmNGRmOTljYzJkMTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA3NzdjMzM0YWVkOGFkZjc2NDUwMDdhYjE0MmNkMDAzNzU2MWQxMGYzOTE4N2I3NTdlMGYwYzhkZDQ0ZTA0NzUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_877585b2627640ec80ad14d6c741665f",
+      "statement": "GlobalExceptionHandler never applies Dingo envelopes to framework exceptions: MethodArgumentNotValidException → 422 ApiResult with 'field: message' pairs joined by '; ' (covering @FlexibleBody @Valid failures), MissingServletRequestParameterException / MethodArgumentTypeMismatchException / HttpMessageNotReadableException → 400 ApiResult with Chinese messages, HttpRequestMethodNotSupportedException → 405, NoResourceFoundException → 404 '资源不存在' (unless notFound=true), and any other Exception → 500 '服务器内部错误' logged at error.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/exception/GlobalExceptionHandler.java#L259-L307",
+          "version": "repo-lines-v1:sha256:d95e84833f9315186da956889bdb786776acf610666197198e44ec1843bd52b0:eyJzZWxlY3RlZExpbmVDb3VudCI6NDksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMyZjRhN2U1NDBmNmIzOWRiMWJiMGNjNDFhMGMyNTU2NjU1OGY2NzZiNWU4YjY2ZDBmNDAzOGMzMDU1NDM0OWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFkYzg3ZmUwNzUzMmY2ZjcwMzQyMGEzNjk2ZTJiMjE3ZTVmN2I0OGQyYjI0NzBkODg3MDAyYTNjYzk2NmM4OGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_8163c68b91b04e3aa8b6001dcba7b410",
+      "statement": "ResourceException and BadRequestException carry the business error metadata (embeddedStatusCode, embeddedBusinessCode, and fieldErrors as a Map of field to error-code list such as validation.required); GlobalExceptionHandler does not expand fieldErrors — instead module-level @RestControllerAdvice beans at HIGHEST_PRECEDENCE (OrdersFrontV1BadRequestFieldErrorsAdvice, SalespersonFrontV1BadRequestFieldErrorsAdvice) and controller-local @ExceptionHandler methods (pointsmall front ItemsController) render the data.errors validation envelope and return null to defer to GlobalExceptionHandler.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/exception/BadRequestException.java#L25-L69",
+          "version": "repo-lines-v1:sha256:40b2400df3aacf948f63a909df52c4a2cbd5f88c7cb03a442dfb5dbd16a8a1ed:eyJzZWxlY3RlZExpbmVDb3VudCI6NDUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhjMzU5YjhjZDc5ZWE5ZGQ2Nzc3YjNhYzZkMDlhOThmMjAwMGRmYjMwMTNiZmYwNTUxZTVjZjQzYTE4Y2JkZDkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkwYjFkZTE5NGJkYmRhMTAzOTA4MjVlYTkxMzE2NDYwNGI1Y2UyODdhYzMyOGU0ZjI3MTQ3N2FiNDMzMGQ3ZjQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/exception/ResourceException.java#L23-L81",
+          "version": "repo-lines-v1:sha256:aa6588269b181624762c25f826be3c8b356107cc412e7271391f93f294712c0f:eyJzZWxlY3RlZExpbmVDb3VudCI6NTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA1MDc0NGVjYzkwZmMyMzlmMWNkZDAwMjNhNmZjZTNmYjNmZTlkOGQ5NjRjMzM4MTgzMWM0MTZlZTIwNjZmMDAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjUwMzczOGUxYTM3ZTA2MzRiY2JmMDY2OWVjMDIwYjQzMTNiMjJiYjUyZDJkMjJkNjIxM2ZlYjlhOWM0OTQ1YjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/config/OrdersFrontV1BadRequestFieldErrorsAdvice.java#L32-L60",
+          "version": "repo-lines-v1:sha256:a56130283d01fab7d41d9a2d7533cbd5661a9c8fb05e02aaa762267ebd308e79:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjczMzNhZGVjZDkyODQ0YmQ1MGU4Mzc2OWE0NmZkOGZlNmY5YTgwODVlOGNkNjdhMzU5MzI2ZWEzZGMxNzgzZmQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE2NjI0MzZlY2Y1MTQ1NmMxNjY2ZGY2MWViZTFmZjhmNmRjMmZlNzRmY2QxNzdjNjQ5MGZiMjU3MWI3OGI5OTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA0OWJhZTVlNmQ0ZDczY2JkMzE4MmU3OWMxZmJhYTcxOGUxMGU5MDMxNDI4NzcwYjkwYzM3MGI4M2NmN2EwMDkifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_84b8bb625bc34114913a9f9f69757366",
+      "statement": "Locale resolution is a filter, not a Spring LocaleResolver: CommonWebLocaleAutoConfiguration registers CountryCodeLocaleFilter on /* at Ordered.LOWEST_PRECEDENCE - 50; the filter takes the country_code query parameter (falling back to the first Accept-Language tag), normalizes it through LangueProperties.resolveToSupportedTag against langue.list (six pinned tags) and langue.default-lang=zh-CN, converts it via RequestMessageLocale.toMessageLocale (with the deliberate en-CN → en-US mapping for the messages_en_US bundle), sets LocaleContextHolder for the request thread, and resets it after the chain. Downstream code reads the tag with RequestLangTag.current or clamps per-company with LanguageTagSupport/CompanyLanguageResolver.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/config/CommonWebLocaleAutoConfiguration.java#L27-L45",
+          "version": "repo-lines-v1:sha256:b94524d93a6baea8143c8d00326d85044c8e3c55fae7494aec5cb69fc5cff412:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc1OTEzYTdjYmNiOTdiNTk5ZmU0OTEyMjM4ZTVjYWVjM2Y4YjBjNzhlZmIyNWFmNDRhMDU3OWY0ODM5ZDRjNDYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA0MzEzYjVlNjUxODA2MDMzYWI4OTJiYTFjODViYjUzNmUyNWJjZjU0NzdjOWJiNzk1YzIyZmJkNGJjNDNiYjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/config/LangueProperties.java#L26-L93",
+          "version": "repo-lines-v1:sha256:5af4ef6963e8767141d3e40ece06a92823c7d88dd57b65c80b6cefcb89f7ae75:eyJzZWxlY3RlZExpbmVDb3VudCI6NjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU1Y2MxNzM0NjZhZWIxMDNjYzE0NTlhZTBiNGIyZmVjN2RkMWY0ZWQ5M2VhZGI2OTY3YWRjMjQ4OWEzMWJmNzEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVlMjliYzc5OWE4NzU0NzBmNDEzZWEyOGViNTkwNjdjNDE4YTc0MTg1ZmMxMTg0YzFjOTE5NjEzMmJjMDA5ZmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/web/locale/CountryCodeLocaleFilter.java#L32-L78",
+          "version": "repo-lines-v1:sha256:8256a694d354ce830d28d10ca1cdcd23762e0cd9b8e03a800a9f04f35e7f09f1:eyJzZWxlY3RlZExpbmVDb3VudCI6NDcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg0OGZkY2M5ZTliMGQzNGM4YTU3MzJkY2I2NjE1YjVjYTI3MjBiNmZmMDBlNDExYTYwZTA1YjdkOWQyZTYxYzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRiMDQ2NjY3ZmE0ZDQxYzgxZGJiMjQ3N2IyYzQ5YmYxYTA1ZTRlNTMxYjI5N2QzZDdjM2Q4OTcyNWFmMjYyYjkifQ"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/web/locale/RequestMessageLocale.java#L25-L59",
+          "version": "repo-lines-v1:sha256:1fff4f3895b3e9782a95fedea768bf41f0c93d164c2c52e05c35b30bde0e8e13:eyJzZWxlY3RlZExpbmVDb3VudCI6MzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA2ZGUwNTM2NmRjMjBmZjQ3YzAxMzMxMTQ5MjMzNTU0NjUwMmExZmZlNDI0YzViNWFhYWJjODdmOTVkMmEyNWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjUxMTgxN2QxNGQzMzYxMGEzM2ZhNzMzN2MwNzA4ZDVjNWFlYjZiNGY2OTBlNWU0NTI1ZTljZWRkNGQ3ZWQ5OWEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_e9b23cf3cb1c4da69b203beb36f37549",
+      "statement": "EspierAgreementRateLimitInterceptor (order 5, only /api/v1/espier/system/agreement) throttles the anonymous install-agreement endpoint by client IP via Redis key espier:agreement:throttle:<ip> (30 requests per minute on the companys Redis template) and writes {\"message\":\"Too Many Attempts.\",\"status_code\":429} with HTTP 429 when exceeded.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/web/interceptor/EspierAgreementRateLimitInterceptor.java#L29-L67",
+          "version": "repo-lines-v1:sha256:3d6d6364003e2c1223962e4aede28dec892bbcac82c0afe1ca47a8b53472acd5:eyJzZWxlY3RlZExpbmVDb3VudCI6MzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4ZmExZTlmNDQ5NDlmYTg5YTNiNDJiMDQ5MmRkYmRmZmEyZWI3NjQ4NDhkMzU3NzhjOWZiNTNjMjA3ZWJkYmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUyODk2YTdiNWE5MDYzMTIzNjYzNjAyMjdhZjI1YjQ1NGY2OWQ5OTU0MDkwMzkzNmE1MTNhNTFkYjY0NDFmOWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_8bc9a88acb364a1ba5127277e29f31fa",
+      "statement": "H5 JWT secrets and TTLs are wired from environment variables in application.properties: JWT_SECRET (Base64 of a 32-byte key, required — interceptors/filters fail fast when blank) feeds both ecshopx.h5.jwt.secret-base64 and ecshopx.merchant.wxapp.jwt.secret-base64; JWT_TTL (default 120) and JWT_REFRESH_TTL (default 20160) set the H5 JWT TTL and refresh window; both H5 and operator JWT blacklists are keyed by sha256 of the compact token in the Redis prism DB (h5_jwt_invalidate:* with a grace period, operator_jwt_invalidate:*).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L59-L74",
+          "version": "repo-lines-v1:sha256:ce6baedbd10264109050b7db9994d12ded7bfa7a89145672c5783f30fe2fe99a:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU2Y2UxN2FmNGEzMzYzZDcyYzI0YzQxOTdiYmMxOTRjN2NjYzVkMzQ1ODNmODlmYTg5NTVlZDBjMmVjOGFmYWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkzOThlMmJkN2M1MjZkYjgxODZjNGI4YTRiOWIwZTdkN2YyYWMzODAzYzEzY2Y3OTdmZjVjNDJjN2JjMGRmYTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjEyYjM3YWZlOTNhMzJlMGY0MTIzNjkzYTNjNWNmMDA1Njc1MjIzMTkwOWI0ZmY1MGNiZDg5ZmQ0Y2RjZmMzNzMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI2M2U0MGQzN2E4OWJjMDQ1MTg2YmYzNTViYTAzMzM4ODFlMDRkMmIxNDM2YjMzOWM0NGNkM2M4YmIxM2MzNzYifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/H5JwtBlacklistService.java#L31-L91",
+          "version": "repo-lines-v1:sha256:8025309547dcc2272b46d14c1080718034c7512475aec72300fcd417163d2b2f:eyJzZWxlY3RlZExpbmVDb3VudCI6NjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYwOGIxOGRmOWIzN2U5NDE5MmRjMzhmNjZjOTMyZjM4MWQ3YjgxZmQ5OWY3OWJiYjUxNGMxMWMzYmYzZGNhM2YiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcyY2Q2OWIyM2NmNzU4MDE3NjVjNDIyMDViN2VlNjgzMzIwOWI1OWMyMjhmNGU3NTNhMjU4OGUyNzA2N2RkMTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBjMDMzNDEwMmQ1ZjA2NTlmNTliYjRlYzU4YzUxMzc1ZGY3ZWUzNzZiYmQ3NGE4YzEzZDJjZDk5MWMxZDNkMTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/OperatorJwtBlacklistService.java#L30-L65",
+          "version": "repo-lines-v1:sha256:57b12cc5036d74788a70cc57f8bf363e548860614231fdfe9689c374f02b4fd4:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYxMTE5ODAxMzllMjgzOWFkYWMyNTkwNTE1ZTY1MmVkZDhmOWE0ODliMWM2MmQ3ZmE0OGYwYzQzZDdlNTNmNGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcyY2Q2OWIyM2NmNzU4MDE3NjVjNDIyMDViN2VlNjgzMzIwOWI1OWMyMjhmNGU3NTNhMjU4OGUyNzA2N2RkMTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBjMDMzNDEwMmQ1ZjA2NTlmNTliYjRlYzU4YzUxMzc1ZGY3ZWUzNzZiYmQ3NGE4YzEzZDJjZDk5MWMxZDNkMTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_84b5f5cb2d2b486c99d3f52065d9210c",
+      "statement": "Controller web-slice tests across the repo build standalone MockMvc with setCustomArgumentResolvers(new FlexibleBodyMethodArgumentResolver(objectMapper, null)) and inject the authenticated operator via requestAttr(OperatorJwtRequestAttributes.OPERATOR_JWT_USER_DATA, claimsMap) — the established pattern for testing a controller without booting the interceptor chain.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/aftersales/api/AftersalesReviewEndpointMappingTest.java#L69-L79",
+          "version": "repo-lines-v1:sha256:fdda5dd4607e127eb41796d2465a28c3298772984dec34e8affe6e2033b3e76e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0YzYxNjVlY2NiNWYwMGIxYjhiZWI0ZjZlNTMyM2QzZTljYjNkY2NkNzNiNTY2NmJjY2Y2YWM1ZTU3OTg1ZmMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNlYWZhMGJmNGFiMGY0MWM2OTQzNGE1ZGQ4NzFkNjA2NzdmMjdiYzVlZjgyMmUwMzk0OGZkMTJhZmM4NTkzNzEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg1NmM1OWJmYzE1ODM5YWQzMjk5NzM0NTI4NjUyZDA5NTM1MTc4OWE1NzBlNzA5YjE4MWM1MzI5MzJjYjE4MTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJhNTgwMDY2ZGQ2ZDllZjg5MzBkMjEyMmFiZTRiMjM5ZThjZTYxOWNmMmEyZmQ0NWNmN2QxYzk0ZjIzZDI0NjYifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/companys/api/admin/v1/ShopexBindControllerWebSliceTest.java#L29-L49",
+          "version": "repo-lines-v1:sha256:574f235533698e2ea0b2b071ad0cc35319427facf76613d51e838dc75432e6bc:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdkZjI1YzlmYzZkYmMwOTMxNTcxNmJmZWIwNzMzMjkyZDQwMWI4ODQ0OWQwZWFmMzBkZDNlYTk2M2IwZjY2ZTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMwNTc5YWQxMjAzZDU4YjBiMzkxNDE5ZTk3MWZiNjE0Y2EzZjc5Y2Y1ZDQ2OGZlNGU2NzFlZDdmNzIwZDdkOTciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI5ZjIzNGQ1ZjhkMTQ3ZWNmNTQyYjM5ZjQ3YTliMjQwMWJlMWEyMDNkOTZhY2RlMTEzYzlhY2RmOTY5ODExZjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJhZGMyZDBkMWE5ZDNlYmJkODkxNmM5NDA0MDA5MGU3YWNhOWQxMzkxNDVjYTIzNjU5YTM0MDZhNGYyMzk3OGEifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.2",
+    "at": "2026-10-21T12:26:22.580Z"
+  }
+}

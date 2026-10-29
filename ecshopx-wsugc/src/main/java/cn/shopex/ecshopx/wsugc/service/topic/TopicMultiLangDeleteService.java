@@ -43,7 +43,7 @@ public class TopicMultiLangDeleteService {
 
 	private static List<String> buildWhitelistedOutsideTables() {
 		List<String> tables = new ArrayList<>();
-		for (String lang : List.of("zh-CN", "en-CN", "ar-SA")) {
+		for (String lang : List.of("zh-CN", "en-CN", "ar-SA", "zh-TW", "ja-JP", "ru-RU")) {
 			tables.add("outside_item_multi_lang_mod_lang_" + normalizeLangTableSuffix(lang));
 		}
 		return List.copyOf(tables);

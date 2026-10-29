@@ -20,8 +20,6 @@ import cn.shopex.ecshopx.aftersales.dto.AftersalesApplyParams;
 import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.common.port.order.OrderNormalOrderHeaderReadPort;
 import cn.shopex.ecshopx.common.port.order.OrderSuccessTradeReadPort;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -51,6 +49,16 @@ public class AftersalesApplyShopApplyByNumService {
 
 	public void shopApplyByNum(AftersalesApplyParams params) {
 		aftersalesApplyCheckApplyService.checkApply(params);
+		doShopApplyByNum(params);
+	}
+
+	public void shopApplyByNum(
+			AftersalesApplyParams params, boolean shareFullDeliveredAftersalesQuantity) {
+		aftersalesApplyCheckApplyService.checkApply(params, shareFullDeliveredAftersalesQuantity);
+		doShopApplyByNum(params);
+	}
+
+	private void doShopApplyByNum(AftersalesApplyParams params) {
 		long companyId = params.getCompanyId();
 		long orderId = params.getOrderId();
 
@@ -72,36 +80,11 @@ public class AftersalesApplyShopApplyByNumService {
 			return;
 		}
 		for (Map<String, Object> v : detailRows) {
-			Map<String, Object> detailTmp = new LinkedHashMap<>(v);
-			int originalLineNum = intVal(detailTmp.get("num"));
+			int originalLineNum = intVal(v.get("num"));
 			for (int i = 0; i < originalLineNum; i++) {
-				if (detailTmp.get("total_fee") != null && intVal(detailTmp.get("total_fee")) > 0) {
-					int tf = intVal(detailTmp.get("total_fee"));
-					int dn = originalLineNum;
-					if (dn > 0) {
-						int next =
-								new BigDecimal(tf)
-										.multiply(new BigDecimal("100"))
-										.divide(new BigDecimal(dn), 2, RoundingMode.HALF_UP)
-										.setScale(0, RoundingMode.FLOOR)
-										.intValue();
-						detailTmp.put("total_fee", next);
-					}
-				}
-				if (detailTmp.get("total_point") != null && intVal(detailTmp.get("total_point")) > 0) {
-					int tp = intVal(detailTmp.get("total_point"));
-					int dn = originalLineNum;
-					if (dn > 0) {
-						int next =
-								new BigDecimal(tp)
-										.multiply(new BigDecimal("100"))
-										.divide(new BigDecimal(dn), 2, RoundingMode.HALF_UP)
-										.setScale(0, RoundingMode.FLOOR)
-										.intValue();
-						detailTmp.put("total_point", next);
-					}
-				}
-				Map<String, Object> oneRow = new LinkedHashMap<>(detailTmp);
+				Map<String, Object> oneRow = new LinkedHashMap<>(v);
+				oneRow.remove("total_fee");
+				oneRow.remove("total_point");
 				oneRow.put("num", 1);
 				List<Map<String, Object>> single = new ArrayList<>();
 				single.add(oneRow);

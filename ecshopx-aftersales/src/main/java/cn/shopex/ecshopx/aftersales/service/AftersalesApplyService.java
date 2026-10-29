@@ -113,7 +113,7 @@ public class AftersalesApplyService {
 			throw new ResourceException("匿名订单只能申请仅退款或者到店退货");
 		}
 
-		aftersalesApplyShopApplyByNumService.shopApplyByNum(params);
+		aftersalesApplyShopApplyByNumService.shopApplyByNum(params, true);
 
 		Map<String, Object> ok = new LinkedHashMap<>();
 		ok.put("status", true);
@@ -182,12 +182,6 @@ public class AftersalesApplyService {
 			}
 			if (el.has("num")) {
 				row.put("num", el.get("num").asText());
-			}
-			if (el.has("total_fee")) {
-				row.put("total_fee", el.get("total_fee").asInt());
-			}
-			if (el.has("total_point")) {
-				row.put("total_point", el.get("total_point").asInt());
 			}
 			rows.add(row);
 		}

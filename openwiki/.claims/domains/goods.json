@@ -1,0 +1,758 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:257deba611a79bbc9f1a255d135ea2e38a8e2616e17b6f675920af1c6f55277c",
+  "claims": [
+    {
+      "id": "claim_9b43b991325b4e1e83b149b1960be8a7",
+      "statement": "ecshopx-goods is the product Bundle (商品域模块) owning the SKU-grain items table plus its satellites (items_category, items_rel_cats, item_rel_attributes, items_barcode, items_medicine, multi-language shard tables), and provides admin/front item CRUD, platform-vs-supplier goods flows, batch edits, barcodes, keywords, tags, recommendations, inventory pools, and the goods-side services of order create.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/domain/Items.java#L36-L49",
+          "version": "repo-lines-v1:sha256:7fadcf2b28090aae15661179bf69ad92592999393135cd33f77830eee20993f7:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFlZmFjMGQzMGU1N2M4MTYwNzllMDAwNzJhYzk3ZWIxNjNiMjRkNDJkMmY0M2IyMjgzNDQ3ZWVmMDEwNWVlOTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU3ZTFjN2VhM2M3MDYyNDk5ZTcyMzQ1N2UzZTA2MzAyMmEzM2MwOWEwMDhlZGU3OGRhMmU4NTBhMGIwOWRjMjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFjYzcwZDljZGQ1MDBjMWM0YmE3YzJiNzRkODkwYjQ5OThjZGNkYWZiOGI3MmJmNjRiYzQzMTNmYzFmMGFhNjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk0YWMyMWMyMzdkYWE5ZWYxZTI0NzJjNjRlYmQxZDNkNWVlMTUwZjZjZDNkZWMzMjgxMjNmMGJmNzZhODEzNjYifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/package-info.java#L17-L21",
+          "version": "repo-lines-v1:sha256:5dc9f6234876dbba439a254543cbcdef561c5a8f5e2927dc68ccd77fcb037831:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZWFmMjJjZjA3MzI1OTJjMjQ3MTQxY2JlNjFlZmExMTAxMjYxMmY1YTMxMjJiOWFmOWJiYWY1MmY1NzI0ZDE5NCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiODdjN2I3Y2ExMjQ4OWI2M2Y2OGNjYmMzZTdlZDEyNjMzZTE1MTM5NGQ2MWI5Yjg0ODI4ZTliODYyNjFmOGJkMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjk2YTA5MzE1YzVhMDU1NGQwMjU4ZjE1NzljOWE3MDJhZTZlNWVmNDUxZTUxNGRiY2NiMWRkZTFkNGUxNzE5MiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_ce610aac8ba2487c81c74de4b0dd8c09",
+      "statement": "The Items entity stores one row per SKU with sibling SKUs grouped by goods_id/default_item_id/is_default, shop ownership via distributor_id (0 = mall), supplier linkage via supplier_id/supplier_item_id/is_market, a dual status model (approve_status onsale/offline_sale/instock/only_show; audit_status submitting/approved/processing/rejected), integer-fen prices, and a unique index on (company_id, distributor_id, item_bn).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/domain/Items.java#L144-L154",
+          "version": "repo-lines-v1:sha256:53f46993864ebb517e26294444037eb68f8cda6941377164c0c447c898ca1909:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVkOWQ4Y2EyYmNhNmJiZDE2YjU5Y2JmNTJiNDM1ZDNlNzY3NjA3MTk4NjQ1Njc0YTdjN2ZiOGMyZTA1NjA2YTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg2ODM0YWZjMWYwMDEyZTlhYzZjOWJiMzNmYmQ0YjM1M2ViYTlkNmFmMDgxZDRiMmRlYzNmZGNiNjYwYjFiZGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUwNWZkNWI1ZDJiYjRiN2E4MGVjM2M0M2E2OGIxN2MzMGRkZDVmMTljODllMzkzYTg0YmI1ZDg0YmFmMDJhMTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJmOTUyNjY5Yjg3N2YwZmVhMGRmNTg5MDljZjk4ZTFmZTgwYjUyNTg2ZjZjZWNkYTI5YjkzYzgxOGI2OWU5ZTgifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/domain/Items.java#L180-L194",
+          "version": "repo-lines-v1:sha256:61942050c86205c934213325db13c8ecd94448a1c9b8af214a5f707412dacfbf:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE1NTdiNGIwMTM0MjVlNTIwYmUxYWI0MDFkMDNlZmJlOTY2MWYxN2QyNjQxNGQ5Yjg2MzAyY2MxMzlkYjk5ODUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg2NmQ3NzM2ZmE2ZWVjYTU1OThiOTdlMDg0YmQwYjQ3NDZkMzAyZjE0ZmI0MWU1MTkwN2YyYmUwMjA4NmJjMzQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImMwZDZmOGY0MDI3ZjQ1ZmU5NGMxZjg2OGZiMTBhMGNlMTIyOTY5MmZiZTI5ZjI1Yjg4MzM2NzZjM2JkYjA0ZGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFlN2RhY2U1YWYyMjRiY2E1OGFkNDMwZGIzNWI4ZmZlNzEwNDkzYmUwNmI1NTlkOGUyNjZhMTVlNWE5YmE1MzMifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/domain/Items.java#L278-L280",
+          "version": "repo-lines-v1:sha256:e1f4357616aa17737a2fada66277a5909c923673ec3bad074fe058e6c3dfb686:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjI1OWYyMDllMzMxNmRjZGE1YWIyMzdlN2RlZDJmMWI5M2EyYTM4MmJhM2NkOWVjNTIzMDRhYzdhMzllM2UxZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNGJkMmFhMjFmOGRlNTA4MmUxYzEzZmFkODM2NWNkZWM2YjIyMzFkMDk0MjBkZTlhMzlkOWE4ZDE1NzVlZGExMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjhjNTQyNzI0ZjRjM2ZkZGRhNjRmMGNmZDRmOTYxMzI4MjNjYTVhYWM3YjUzZWZkNTdjODJkNjYzZGFkMjVlYyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDY0NzE4NzA1MGJhZjNkOTE5MmYwOTkzNDA3NDQyZDY1N2ZhZGI2MmI3M2VmNzE1ZjFiZjRhYzY2OWY5YWI5YSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/domain/Items.java#L47-L49",
+          "version": "repo-lines-v1:sha256:734add61d7af6145ddfd65bd6847185ab5c319057bde32c808b87e0fc9543374:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTQ3NGQyMjg2NTQxOGNhNDAxNzIzNjNjNmI1Mjg3NGNhZjQ4MmYwOTgzMzllZTBiM2ZkN2I4OGI2NmRmZmU0MCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTdlMWM3ZWEzYzcwNjI0OTllNzIzNDU3ZTNlMDYzMDIyYTMzYzA5YTAwOGVkZTc4ZGEyZTg1MGEwYjA5ZGMyNyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNhOWM2MmM2NjVkMTY0YzYyY2YzZGQxNzQ5MzE1Yzk1ZWI3Zjk4N2Q4MjA5YWQ0OGQ2ZDI2NWEwY2QxM2U4ZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOTRhYzIxYzIzN2RhYTllZjFlMjQ3MmM2NGViZDFkM2Q1ZWUxNTBmNmNkM2RlYzMyODEyM2YwYmY3NmE4MTM2NiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_2b6a3e063312482a9bb83cd06130a1aa",
+      "statement": "Admin goods APIs live under /api/v1/goods (18 controllers, @AdminAuth @ShopLog, central ItemsController ~1,600 lines) and front wxapp APIs under /api/v1/h5app/wxapp/goods (5 controllers, @FrontNoAuth with Dingo response style), including the salesperson item surface under /api/v1/h5app/wxapp/goods/salesperson/*.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/api/admin/v1/ItemsController.java#L83-L87",
+          "version": "repo-lines-v1:sha256:7968862273b06a5b501bdbd84a0591ef2104f1552bd07a478aff24f826475d90:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMWI4ZTRiNmUwYTRiMGMyODc2NjhjNDFlM2EwNmFhYjM0ODY1ZWU1ZTZiYTczZDQ3NzZiNzgxYWU4MjhiNGQ2OCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiM2FhMjVjYWU5OWQ4ZWJhZmJkODUwYzc3NzFkYzU2MGQ2ZWFlMjNhNTQyN2EyOTc3MjcyMjZiYjUxNzFmYzFhMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYWRiNTUxOTdiMDM2MWRhNjA5MWM5OGRmYmQ0MGFkMTk4ZjEwNGE5M2E5OGYzOWU1YzcwZDVkY2U2OWE1MDcwYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDU5N2JkMzhkMzY0NDU2NWYyOWM2OTFjMjY2NTU5YjMwMTI2MjUzYTk5YmI4MDViZDFkOWZlMGQwNjA4MDE0MCJ9"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/api/front/v1/ItemsController.java#L59-L67",
+          "version": "repo-lines-v1:sha256:3fbf342a282e267971ac8a10cdc77fe606c15792a938230a27fb4c770b70cba1:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNWY2MTZkOThkYmE4MjcxNTNiM2NhMDgyNzYxOWUxY2ZhYmJhNDNhNmNkZjM5YTMxNjBhODVjN2ZmZDAxOTJkMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiM2FhMjVjYWU5OWQ4ZWJhZmJkODUwYzc3NzFkYzU2MGQ2ZWFlMjNhNTQyN2EyOTc3MjcyMjZiYjUxNzFmYzFhMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYWRiNTUxOTdiMDM2MWRhNjA5MWM5OGRmYmQ0MGFkMTk4ZjEwNGE5M2E5OGYzOWU1YzcwZDVkY2U2OWE1MDcwYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOTFhMDE4YzQxYzdlNTVkNjE0NmQ5OWMyNjljMWE0YTBhZWQzZTA2YmI1MGY4MjNmNGY2NDJhMjczZTE5Y2NlMCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_1181f1bbcba846bbbbd9f152e75cfa71",
+      "statement": "The goods POM depends on 20 other ecshopx bundles — including orders (cart tables), promotions, distribution, supplier, deposit, pointsmall — which is what lets order-create logic live in the goods bundle behind common port interfaces.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-goods/pom.xml#L14-L95",
+          "version": "repo-lines-v1:sha256:1ca2c2517b5a40e1f276208aa6d413c5f042c80c110c0f524c225ead2892ce21:eyJzZWxlY3RlZExpbmVDb3VudCI6ODIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwNDcxYzUxZWU1YzlhMGUwMTA3OWRhOTBiZGI3MWVjYjc2ZjZkNDhiNjY0OGE1MGFmYTYzNzdmNTIyYTU0YmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkzMDM2YjFjZjE1MWIzYjZlNGQ0NDkwNzc5NDdmOTBkZDA1MTQ4N2ZhOTJiZDg4NjA4YTc1NGI5NDI5N2M4MWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJhYjI0NDdmMGE5OGIxMmU2ZDgwODJkODc4YThkY2YxYjBhMTVkNzUxYjJiNDk1NzcxZmEyMzFmYjhjZWQ1NzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzNzIzZTZlZjdlNzYyNjg2ZDQzNmFiOTg0YTFmM2VkZmJiZjE2ZWIzNGJkYzI0NDM4MGM4YjBlNTk2MWIyYjcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_45218c54c5c4442dbc4d857ede6a35b2",
+      "statement": "GoodsItemsCreateRequestGate guards the create/audit/delete/update admin routes: it requires a logged-in operator with operator_type, checks super-admin route permissions per route alias (skipped for salesperson_workwechat source), requires an activated company (未激活 otherwise, skipped for salesperson source), and confines distributor operators to distributors they own, injecting their selected distributor_id into the merged params.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/api/admin/v1/ItemsController.java#L248-L290",
+          "version": "repo-lines-v1:sha256:fcff597b4f5f3c26abe2c5b8e1f3a0e35057637ac087bc23d971e77a416da817:eyJzZWxlY3RlZExpbmVDb3VudCI6NDMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZkNGJjYTJkODIzNWVhZGExOTA2YTk1ZjEwNGU1OWJlYTExMDNhNWRmYzI0NWFjOGY1OGUyN2U1NGYwMTRmODMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM1NDgxOTExMmRiOGMzMzg0NTVhNzY0YWRmMWE4MmU1MDJmNmQxMzUzYzg4MmVkOGI4MGVhMjllZjQ1NDRjNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRlNThkZWQ4Yjg4NDU0NTRlNDFkMTBiNzlkODQ1ZDc4ZTA3ODgwNzUyOTI4YTM2MDdiZmIzYzk3OWVmZmJhMTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ2MjQ4ZmNmOTk0YzcyNTczNWZjNGI0YTA3ZjEzNGIzMmU0YmQyYTk1ZTJjYjBiM2JmODEzZWUyNTA5MGNmOTIifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/GoodsItemsCreateRequestGate.java#L54-L68",
+          "version": "repo-lines-v1:sha256:9fed618683cc43360aad58740662fca12176eb039a595cefc12d002528204bf8:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlhOTkyNTBlNjdiZDY2M2IyN2NjMmJmZDljNTIzMGM1ODUzYWMzMGYwYjNhNTc1NjZiYTM2MDM4YTg0NzNmNjEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ2YjgyZWY0ZDY5ZWYzN2ZhMDFmNzVmOGNlZjY2MWI0MjliNGFiMzJmMTU1MDA4YzUyMjg5OTU1NDY4YTM4NWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU4ZjkxM2U3MGEzNTlhYzQ0M2MzNmM4MTY1NGY1YjE4OTQ4ZGMwNWQ0MTgwODgwMWIyOTBlZjJjZDFkYjU4MjgifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/GoodsItemsCreateRequestGate.java#L70-L136",
+          "version": "repo-lines-v1:sha256:452df13ebbb8a91c301a310f5afccd02156307ccc2a3b6e48843433083e3ecb5:eyJzZWxlY3RlZExpbmVDb3VudCI6NjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAwMjg0MmY5NjFmZjNhZTFmODFjNTJlMTU3MzU0NGYwMTAxMWYwZTk5ODc2NjllYzg1MGJjNGMyMzU5NDM1ZTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdkOWJhOGVmNjk4YWVmZmZjYjBkMDBhZGNkOTNmYzRiOTIxYTU4ZDA0NzI5MzU5YmM4NmU0YmVhMmI5YzIzMzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM3MDY4ZWM4ODc1Nzc3MmM3Y2M3NWI1MjQyN2Y0MTE2MTFmMjM2ZmY5Mzc0MjIxOTkxOTdmZDc4YjU0MzE0ZjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNlYjI2ZGRlMjQ3NzA1MWJhNTllMTIwMmE1YmNkNDQzNTg2ZTA4ODE5ZTIyZjQ3NDU2YzUxOTEyODQ1ODBiYTIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_c91377dd68f948dfba896383f1639f09",
+      "statement": "POST /api/v1/goods/items merges query/form/JSON params, forces supplier_id=0 unless the operator JWT says operator_type=supplier — in which case supplier_id=operator_id and audit_status defaults to submitting (anything not already processing); non-supplier operators get audit_status=approved.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/api/admin/v1/ItemsController.java#L266-L288",
+          "version": "repo-lines-v1:sha256:c804e3e4863595ca836da2273a2e0a9e862f119d154dd93c0672a88731c0c87c:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBmZDc1YzY5Y2Q5ZDllYTM0NzhhZGViNGI5ZGNiNzk5NzVmNjY2MGE0ZDYxZGM2NmVmM2IyNGMzMTNmYjliNzUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRlMTU1ZTUyZWNlMTRmNzgyZDQwMTEzYjJkNzk3ODJhNDQxNDFiY2EwMjhlMWQ0NTQ2OTcxZWQ2ZDVmZmZjZjgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjYyYzQzZDEwMGM3YzQ0MTEyZjgxMGI3MDRlYTI2MDFkNWMxZDgxNjA0NjI3NzcxY2I2NDJiNTE0ZGUzZjU0MTYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_2874f575e1d54a43b1fed03a83301484",
+      "statement": "ItemsCreateOrchestrator.createItems routes supplier_id>0 requests to SupplierItemsAddService and everything else to PlatformItemsAddService followed by DistributorGoodsSyncService.syncGoods(companyId, defaultItemId) — the distributor fan-out runs only on the platform path.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/ItemsCreateOrchestrator.java#L38-L47",
+          "version": "repo-lines-v1:sha256:a2c8ef90ea906993a83c32c7f3c4719fdb5f442cd3ef3c29d73a00659093247c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgzYTc2YmE1NDk0ZGM2MmYwMGE0MTlhNTdlMTJiMGI1ODAxY2VlOTJkYWQxZjk3MDNiMDU3NDUwOWRkNjUyZWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZmN2M3ZmRmY2I4NGRhZTBkZTIzOGQxODRmMjRlYTIyNDc5ZDE1YjE0MGIxYTc4OTE5NjIzYjg3ODRmNjI0YTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQyY2EyNjk0M2Y2NmQ3NThmNDA3YzVhMjkxZjQxMGZlOGIyZjYxMjgwOWY2ZWE1YjRlYmYxOTI3YjNmZjg3NWMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_c55be35df1e34427af40d1af61059d8e",
+      "statement": "PlatformItemsAddService.addItemsTransactional runs one transaction that: persists one SKU per spec_items row (multi-spec) or a single SKU, picks default_item_id as the lowest-price SKU (first on-sale, else first), defaults goods_id to default_item_id, runs promotion guards for gift items and item prices, stamps the sibling group via updateByItemIds + clearDefaultFlagExcept + setDefaultItem, writes rel data (categories, brand, params) on the default SKU, and per SKU writes multi-language rows, the shop-scoped barcode, the Redis store seed and item_spec attribute rows.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/PlatformItemsAddService.java#L115-L221",
+          "version": "repo-lines-v1:sha256:e11753e5d1aa856fec86d5773c84c7d04b08618c6275a40f99babd5d9cb1ffb3:eyJzZWxlY3RlZExpbmVDb3VudCI6MTA3LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJiZDc1NDhmMDgxZjNmNDI2NDk2MTc0YmI3ZjE2MGY4NzA5NDQzYzFjNTZjNjZhZjMzZmI2ZjZlODk3Y2YwM2Y4IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI2N2NkYTgyZGE2MDYyMzhlMDVlNjIzOTk1NjljNWVlMDM5OTM0MTk2NDhhZTVkNDNhMmJmOGNkNjM0N2Y4MjYzIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJkNmI4MmVmNGQ2OWVmMzdmYTAxZjc1ZjhjZWY2NjFiNDI5YjRhYjMyZjE1NTAwOGM1MjI4OTk1NTQ2OGEzODViIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJlZjgyOTE0MTY3OWNkOGRjMWQwZTIxZTI5NGU2YjBmZTgwZWEwYTlhYTQyN2FmNzIzYmJkYTRkZWNiNGY5MDNiIn0"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/PlatformItemsAddService.java#L236-L285",
+          "version": "repo-lines-v1:sha256:9101fbbfb96e128909d81aa6ebb4d15d398cd1be35bcd8e48b3f4678d9ba4658:eyJzZWxlY3RlZExpbmVDb3VudCI6NTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY3NTNmNWIwMjJiZGViMWI0ZGQxMGMwMGMyMzhmMGY3MDE0OWZkNmQ2MTU2MzM4YzBiYjFmMTc0NTI2YjQzYjciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFhN2NmODFkODA4YjMyZTEyNjhiYmM1ZGFmOTVhZjMzN2IyY2YzOGFkYzgzYmY3MGI5ZDEwNDRiMTI4NWJkZmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRmMjYzNWIyMzlmNmNlODZjYmMzM2ZiNThiNGIwMmNhMTQ4MWY4MGM1ZmY3NjJmOGYwOGZiNDU3N2QwYTA5MDgifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_ade281ead19a4ac591a9e07465e4050f",
+      "statement": "Item lifecycle uses two dispatch events with deliberately different timing: ItemCreateEvent is published inside the create transaction in SYNC mode (promotions listener runs inline before commit), while ItemAddEvent is scheduled per SKU in afterCommit and published ASYNC on the Redis bus (or immediately when no transaction synchronization is active).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ItemAddEventDispatchPublisherImpl.java#L41-L67",
+          "version": "repo-lines-v1:sha256:837bc94647b29ed4482485fa0914983f803f399b4b548d3213909fb5044f4564:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwOGNjMTVkMDc1NGI2ZjIxZjcxZTBiMDNiOWRkNzg2YmM5ODgwMDNiMmI1NzU2NGM2MDUwYTgwMjI1MTdjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE0ZGJiNjE0NzA1MDU0NGY0NDhmYjk2ZmIxZmNkMmYyODE3MjQxY2ZkZGYxNTVjM2M4MzRjZTA3YjM4YTljMTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMxYzZhNDE2MDc2MTM2MDZjNWM0MmYxNTdhYTM4MzI5NDQyMzlkY2Q4YzEyNDM0NDkxNDA0OWJkZDFjZDg4MTAifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ItemCreateEventDispatchPublisherImpl.java#L38-L45",
+          "version": "repo-lines-v1:sha256:7b1cbd3dea6b7fc2c02374183f64947c3eecde64f3aa6b36efa5762b620e7ede:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjA4Y2MxNWQwNzU0YjZmMjFmNzFlMGIwM2I5ZGQ3ODZiYzk4ODAwM2IyYjU3NTY0YzYwNTBhODAyMjUxN2M1ZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTRkYmI2MTQ3MDUwNTQ0ZjQ0OGZiOTZmYjFmY2QyZjI4MTcyNDFjZmRkZjE1NWMzYzgzNGNlMDdiMzhhOWMxMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/PlatformItemsAddService.java#L217-L234",
+          "version": "repo-lines-v1:sha256:bad58b737272413e9f84f822191ed2438c773cc11797b58844ab8fb37751e07a:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxNDI1N2Q4M2U2OTA3MWFlMjJmYjdjOWY3OGZhNmE4OTA0YjYzNzIzNzU4MDViNTdiOGVkNjcxOGZiNWMxMWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjljMzc5MGRkMGZlMGUxZGQxOTlhN2I0NmE5MjA0NjYyY2JjNmI2NjgzOWQwN2ZiOTAyODdhNGZkMDRhNWZkNzUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjUwOTJkMDhmMDllMzk3NThjOWQzYTQwNjk2ODdmZTFjNWE3NmI2Njc3YzA1NWY3ZmMxM2ZjOWIyMDYyM2U4NjIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d8f9af21f5fc45769935a09f063ddeb1",
+      "statement": "PlatformItemsDeleteService.deleteCore verifies company and distributor_id match, expands a multi-spec goods to all sibling SKUs by default_item_id, deletes per SKU the items row, Redis item_store key and attribute rows, then rel-cats, services rel-type, distributor_items, member prices and barcodes, and publishes ItemDeleteEvent after commit with a payload of item_id, company_id, del_ids and a full item_info snapshot.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/PlatformItemsDeleteService.java#L78-L131",
+          "version": "repo-lines-v1:sha256:4b30057a00354ef8165dcadeb08ea4bdb6d7704c2ec4192e8861a97f7f80756d:eyJzZWxlY3RlZExpbmVDb3VudCI6NTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImExM2UwN2I2MTA2OGZmMWEwMGQ1ODU2NzQ3NjU5NTgxMTc2ODhhYzQ4NmZlOTk0OTM3MmNmY2RjZGE2ZjliM2MiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAyNzc1ZTBkMjU3MDNhY2Y1ZWExM2M0NGM0YjdhNTQ2MThiOWZhMDJmMmZmZTJjNTI5MGZmOGNmMGY1ZDE3NjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjlhOWJhNDM0Y2Y1NDgxYjllMjE4YWNkYmIyY2U1MjcwODhlMjNjMDMzNWU2NDMxMzkyMWQ3YTIwNjc4YWY4N2QifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_ed796bde20ef49738ce45e7918ace8a8",
+      "statement": "ItemsUpdateOrchestrator.updateItems branches exclusively: supplier operator → SupplierItemsAddService (audit reset to submitting unless processing); platform operator editing a supplier good (body supplier_id>0) → supplier add when audit_status=approved then SupplierItemsReviewGoodsService.reviewGoods; plain platform good → platform add + syncGoods — supplier paths never call syncGoods (pinned by ItemsUpdateOrchestratorDistributorSyncTest).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/ItemsUpdateOrchestrator.java#L41-L63",
+          "version": "repo-lines-v1:sha256:e4969429de7595ce1e08897ec2a42f96770b21146c2aa6ee73928ac38b070751:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkyYzNiYzU3ZjEwNzk1ZTU5ZWUyM2E0OTQzY2M3ZWY1ZmUwZDBmZmM4YjYyMDk3NTgzZjhjNjEyYjZlMzNjNzQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjUxZDQ0NjZhNDVkZmNkZWQxMDJiYjQzMjExMjc5ZWQ5YzZhZTBlZmE0N2ZhNWU0MmI4OTYwM2VlZmU5ZDNlMTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjUzNjU2ZTJlNjZhNDhiYTZkYmI1MmYzMzNjZWZiYjFjMTM2OGRlYmE0ZmM1MzlkMjczMWY1YmE4ZjdjYzI3YzMifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/service/items/ItemsUpdateOrchestratorDistributorSyncTest.java#L38-L86",
+          "version": "repo-lines-v1:sha256:f06ab3fa36a4cc7351393a27199e4f08400fca80377c515dbc12cf9d822853e0:eyJzZWxlY3RlZExpbmVDb3VudCI6NDksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiYTFiMWYwZDkzOTU3NDJlMjE2ZjcxYzllOTBjOGZiOWFhNmI0Mjk2YWFhNGNlN2NjMDVjOTZlYTViODdiYWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMxZDZkOWFhMTA1NDMzOWU0YjBmNjkxNDY2ZDllMDZmZjA1Y2MxZjdkMTU5YmVlMWFkMWRjNTIzMmZmMDk3YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg4MTI4M2Q4NmZkNmVhYzFlN2JjZDcxNGY3MjZhMzRiYWRhZmVmZGYxMDAyMTM5NDI4YTU4ZTRhZTRmNWE2NjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdkMjA2YTgwMjZkZmI5NmY3OGIwM2NlNzE5YzY1NDMyNWIyYjFjNzViY2U1M2QwZWFjYmIzMjFmNmQxYjRmMzYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_2e850174e97c44fc91a30bfa4c457872",
+      "statement": "When a supplier edits master data, SupplierItemsAddService.syncPlatformIfNeeded propagates a PHP-whitelist field patch (store, pics, approve_status, item_name, optional cost_price/start_num, audit reset on submitting|processing) to every items row linked by supplier_item_id and refreshes each linked Redis store.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/SupplierItemsAddService.java#L284-L331",
+          "version": "repo-lines-v1:sha256:0a68242e36d2ad40ce55f5d0548884597aac7b651e83ac1b05761c39ad885de4:eyJzZWxlY3RlZExpbmVDb3VudCI6NDgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc4OTZlZWVhNjEzYjQ2YTg5YWNjOWRmY2EwMjkyMDYxZTU5YWE3YzM3NTE5MzdmYWIzOGY3MzdhNDUwMzQ2MWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdhZWNiYzA4ZWRmNzk2NDE0NjIzODk0N2VmZGFhM2JlZDQ1M2I5NzkwYWQ2MTFmOGZkZWJiMDhlMWU1OTBlNjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjYzMDFmNWQzZTJiODA0N2Q1NTVhMWZhYTZmNDM0MDI4NWUwMDM0MmZhMmQwNDVkNTY5NjExZDQyODIzZGNmYmUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/service/items/SupplierItemsAddServiceSyncPlatformIfNeededTest.java#L75-L76",
+          "version": "repo-lines-v1:sha256:0f4cac9ea56dadc3ab937efd356713123873931c01003cc0c14b5c99c2e90bc1:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNGJhMWIxZjBkOTM5NTc0MmUyMTZmNzFjOWU5MGM4ZmI5YWE2YjQyOTZhYWE0Y2U3Y2MwNWM5NmVhNWI4N2JhZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMmIzNDJlZTM2NWVjMDU3ZTU1MzYzMjQyZGZmOGJiMjhkN2ViNTY2MmExNDc5NWE2OTdkODk0NzBiMmI4MjYwMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzBhN2RlNTk0NTQ4N2NlNmJiMTA3OWQzZWE1OWRhMDNjNzg4ZjQ2YmZkZTBhNTEzMGI2NjExZjk5OTY2MzJkOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNjRmNzdkNTEyM2ZiNmUzZDMzMWQxNTkxMTc2NWRhYjdhNzdkNmM0ZDc4ZGRhYWViY2UyMGYzOWMwMDI3MTNhMiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_a0f23abe0a6f4a51ad17636a5345b00e",
+      "statement": "SupplierItemsReviewGoodsService implements the common SupplierItemsReviewGoodsExecutor/SyncToPoolExecutor/SyncToShopExecutor interfaces driven by the supplier bundle: reviewGoods with approved audit automatically syncs the goods into the platform pool, and syncToShop is restricted to platform product-model companies and dual-writes shop-scoped barcode rows.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/SupplierItemsReviewGoodsService.java#L53-L139",
+          "version": "repo-lines-v1:sha256:75ca841a0c23ba8ba9c755062c12db433d2d5fd009ee32c02a19a9829947c3ed:eyJzZWxlY3RlZExpbmVDb3VudCI6ODcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJiMzM2YzQyYjJmNTIwN2I3NzVlNTBhOGRhY2UyZDZkMTViMjZmNjFlOGNkYTJjYTRkNDNmY2U0YWU0ODQ0ZjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIzMzlhZTRmNzk4ZGEzYjlmOGY1OWY5NWEwODFkZTFlY2EzNGU2NjM3NjRlZGE4MDc2NjdjMzI0ODNiNGFjNDYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjE1YmFiZmJlMWRjMDY5MmZlYjkwMDNlMWE5MTkzZTY1MThkZWQ5NjhjOGU0NzE3MmQ5M2M1MDE0NmRiMWVhNTkifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/service/items/SupplierItemsReviewGoodsServiceShopBarcodeDualWriteTest.java#L58-L61",
+          "version": "repo-lines-v1:sha256:1f8054c78249b934cfa42996ff1eb783aa7bd097a10332c9914452a807cb0b4f:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTc3Njk5NTIxMmMzNGMzNzVjMjRhZmVjODBhNzIwZmJhNTJmMjkwZTQ3MGY1MDA2Y2YxYjhiNjc0OWU3NDljMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNWRiZGYzM2UzZDM5YzYzYjE0NGZhOWE0MWI5ODY2MmY3YmRjMzE4ZWQ2ODk2NGM4Y2E1MzhiNmY5NzFkNjQ2YyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjhmNTc1MTRlODZlNmExMTQ0MjlkYjZkOTk2ZTE4MWE2YTM4ZjYyYzc0ZWVmNGZiYmNlNDBiNTBmMzYwYmQ3OSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOGRkZTljNTQ0OGVmMTJmY2I0MzJkNGY0ODk1ZjUwMjdjYWYyYWMwYTcxNGY0ZjhlODAwZWMyMzUxMmRkNmQzNyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_e9450c39d7ce4b6b99331e653f24a44b",
+      "statement": "GoodsItemsBatchApproveStatusService.updateItemsStatus expands a truthy query filter into distinct goods_ids and, for status onsale, rejects supplier-controlled goods (供应商商品不可售) and prescription drugs unless the pharma-industry setting is enabled and their medicine audit is not pending; instock skips those checks; each goods then gets its approve_status updated plus an enqueue of the batch-status event through job:74 (slow queue).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/GoodsItemsBatchApproveStatusService.java#L186-L227",
+          "version": "repo-lines-v1:sha256:0629c0c7056292d01455dd2b3271f9a48b550dfda1c355c75bcd192e8f456582:eyJzZWxlY3RlZExpbmVDb3VudCI6NDIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYwZGJiYzAwZTZhNjNlOGU0ZWFiNzM5YWY1YjJmNTJmOTJiNWJhNGJhYjg4N2FkOTZkM2Y5N2JjNDZmYWQ1YjAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjlkYjdiZWZjMTRkMzEyOGI1ZTI5ZjhiNjMxNDA0NTVkYWY5YmI4ZDM5YTgxOGQ5Y2M5MDlkNTNmOTk3MjgwOGQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImIwYTU5YTMyZWU4YzUxYTQ4ZTFkZjM4OWIyZTQ5ZDlmMjg5YmRlNGZiNjY3MGFiZDNkYWM0YjY1MjgwNmYxMWEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/GoodsItemsBatchApproveStatusService.java#L73-L112",
+          "version": "repo-lines-v1:sha256:5f5b4cb5c511f98aa359da80cd16e9c660b439347d52e122edf8ae3ccdea084a:eyJzZWxlY3RlZExpbmVDb3VudCI6NDAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM3OTlmZDRjOGRjZGNmODU1NjQ0ZjU0YTUyNTkyMmJhMzhlNTY2NTkyYjRkNDJhZTI4NzU5MGRjYmFhNWQxYTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ2YjgyZWY0ZDY5ZWYzN2ZhMDFmNzVmOGNlZjY2MWI0MjliNGFiMzJmMTU1MDA4YzUyMjg5OTU1NDY4YTM4NWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI3YWFkZjY5NmEzMGY2ZDg0N2UyNzgzZDdmZTllOTM2YzdlYzYwY2UzOTQxNzllYTIyZDhkMjk4Yzc1MjYxN2MifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d01679f549a4458f80c4cafbc53b1477",
+      "statement": "The ItemBatchEditStatusEvent (republished by the job:74 handler) has two listeners: the third-party marketing-center push and the goods bundle's own ItemsApproveStatusSyncDispatchListener, which cascades the approve_status to distributor_items via ItemsApproveStatusSyncService.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ItemBatchEditStatusEventDispatchListenerRegistrationConfig.java#L45-L57",
+          "version": "repo-lines-v1:sha256:bde569265b07e1bdbca8d5cbd55280e754a3a57718acebbd3c2b76b92fc632ee:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ0Y2MzZjJjMGJhOTIzNmI2OGQ3OWY3NWVlMmZkNGJjODY5YmVkOTI4ZTlmMzlmYWNjNTUxZTllOGE0ODRjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRmZTdiY2ZlZjcwZDhjNDU5M2JiNTRiZGM0ODJkYzRiNzQ1Y2E3NmUxMDI4ZTFiMmJjYTE3YzZiMzM0M2Y1MzgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/dispatch/ItemsApproveStatusSyncDispatchListener.java#L34-L52",
+          "version": "repo-lines-v1:sha256:ad91d2a119fe53c7ae3d9e368ee12a33582909c20bc78354781a09652ce4792e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwOGNjMTVkMDc1NGI2ZjIxZjcxZTBiMDNiOWRkNzg2YmM5ODgwMDNiMmI1NzU2NGM2MDUwYTgwMjI1MTdjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVkZThlMzEwYzRhZWYwYTU2YzhhNmI3OWEwZjAzZGZlMWE2ZTY2OThiZjRlYjY2OTYyNTc0MmQ4MzZkNjBlN2UiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI3ZWJjYjZmOGFjN2Q2NTc3MjgzNTBkNjZlMzY2YWE1ZTMwYTI0ZDA5YTMwZWZhNDNjM2U3OTliMjdkOWUwZmYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b59900550bb54e07ac11ab7bf8a271b2",
+      "statement": "ItemsBatchUpdateStoreOrchestrator.batchUpdate writes store either to supplier_items rows plus their supplier_item_store Redis keys (supplier operator or operate_source=supplier), or — for platform operators — to all sibling SKUs by default_item_id (when the row id is treated as default) with each Redis store refreshed, or to a single item.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/ItemsBatchUpdateStoreOrchestrator.java#L46-L74",
+          "version": "repo-lines-v1:sha256:e155851bb91d6e05afc25f18dbb8fd0e92d6a1cc785871ea017c48cf6cd33137:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcyODkyN2I2ZmIxNDllNjVmZTlhNzI2MDU4YmI2OGU0YzIyMWVlMWY4MDljZWUxMmY0YjA5ZjA2OTAwMTU0YWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY3NWVmYjk2ZTRhOTJhODI1ZTk3NTU4ZmRiOTAwYjczNzMzNjNkOWFlOGNkYzYxZjU2ZWEzOTc3YTYzMjYzZjQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d9d4647244154f72a7b0b38ae52f83f2",
+      "statement": "InventoryDeductTargetResolver maps an ItemInventoryLineContext to one of three deduct pools, aligning the PHP ItemStoreService::minusItemStore rules: logistics receipt with supplier_id>0 → SUPPLIER_ITEMS; is_total_store=false with distributor_id>0 → SHOP_DISTRIBUTOR_ITEMS; otherwise PLATFORM_ITEMS.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/InventoryDeductTargetResolver.java#L26-L45",
+          "version": "repo-lines-v1:sha256:481a79e164adecb801e34c4c8a3d26dfb4ec6aef5b81efdb07500f9d31a8f5dd:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVkOWQ4Y2EyYmNhNmJiZDE2YjU5Y2JmNTJiNDM1ZDNlNzY3NjA3MTk4NjQ1Njc0YTdjN2ZiOGMyZTA1NjA2YTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIxYTNhMmM5OTI2ZDhjNjVmMDc1NDY1YjU4YmY5N2EyZGQwYWMzMDU4Nzk3OTcyOGI4NGE1OWQ4MmY2MjIwNGQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJjMmVhMmE2M2YzYTkyODlkNmY5ZWIxZmVmMWMyNjM4M2RkNjkzOWM0N2UxMWZmMzJkOTM4NTk5ZmMyZTdjYWMifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/service/items/InventoryDeductTargetResolverTest.java",
+          "version": "repo-file-v1:sha256:d15660b3314bb7058e5e827335e839c4048fec5368885435fa8ccf458e6af43d"
+        }
+      ]
+    },
+    {
+      "id": "claim_277f2c2a0b1d4f5cb5402e99c6ff1f47",
+      "statement": "ItemInventoryOrchestratorService.minusItemStore loads the items row to fill a missing supplier_item_id (only for logistics supplier lines), routes by the resolver to SupplierItemStoreService or ItemStoreService, and a negative num acts as a restore (restoreItemStore); every pool returns false when stock is insufficient.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/ItemInventoryOrchestratorService.java#L44-L96",
+          "version": "repo-lines-v1:sha256:20268822432f493389a120a6f6ef696f9df2bb8bfe79bdc2f8fe65c6fd816151:eyJzZWxlY3RlZExpbmVDb3VudCI6NTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVkOWQ4Y2EyYmNhNmJiZDE2YjU5Y2JmNTJiNDM1ZDNlNzY3NjA3MTk4NjQ1Njc0YTdjN2ZiOGMyZTA1NjA2YTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjgyMWVkNzI2NzY1YWEzNDE5ZDZiMmM5ZmJmODJkZjhmNDYzZDlmYTFhNmMyODUzZWZhYWI5MjUxYjI1MzZkZDIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM1OTU5NmJmY2ZkZjllMGM0ZDA0ZmVmZGRkODI1OGMyOGUwYmNkMDcwNjI4YzY0MThjZTFjNzIzY2RhYjkyMzYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b23c225e6e9e4d83b3f65831556e4e94",
+      "statement": "ItemStoreService decrements Redis item_store:{distributorId}_{itemId} (shop pool, writes back distributor_items) or item_store:{itemId} (platform pool, writes back items) via INCRBY -num, re-increments to roll back and returns false when the result would go negative (the oversell guard); saveItemStore seeds the key and synchronously publishes EVENT_ITEM_STORE_UPDATE, while saveItemStoreForWdtErp publishes the bus event before the Redis write to preserve WDT ordering.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/ItemStoreService.java#L110-L129",
+          "version": "repo-lines-v1:sha256:eca69c76938415527800b64aaad4def215c789501937d86552f096e8f4b78f33:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ3ZDE0Mzc5NDhmZTQxZDI3OTg1Zjg0YmQzYjgyNzcwYjIwODQ0YTVkNDEzMWI5YzFmNTFhYWI4MDBhNDY3MWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQwNzllNDM5YzA5YmNjMjVhMzAwYWFmZTYwZjJiYWY0MzRmMTAzZDE0ZDM5ZWQyYWMwMTVlZjVmMzdiYmQzODEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk4ODVkYTVmYWUxYTcwYjllM2RkZDQyZGM2NzQyODc5Njk3OGE3N2Q1MjUyNmEzMTc0ZTA2MjE2OWZhMWRiMjUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/ItemStoreService.java#L51-L96",
+          "version": "repo-lines-v1:sha256:5f81b83fbf15c77abf26c8c45611ebd44c24713479604da7b814ff3a83ac94f0:eyJzZWxlY3RlZExpbmVDb3VudCI6NDYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVkOWQ4Y2EyYmNhNmJiZDE2YjU5Y2JmNTJiNDM1ZDNlNzY3NjA3MTk4NjQ1Njc0YTdjN2ZiOGMyZTA1NjA2YTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ1MGM4OGFiZDljODc2NjdjZmQ0OWQ1MDAzMjgzNDE3NTUxYWJiNTM3ZGRlM2FiNDMzNDUwYWY0NDRjMzIzNmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM0YWUwNGFhMjFjYjM2Mzc0NzYwYWY4Y2VjNGQ3Nzg5NjEwODhlNDlmYTU3NWVmMjc5MTUxY2I4Nzk1YWQ5OWMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_f314b17500d04739854a1c1311058344",
+      "statement": "SupplierItemStoreService mirrors the item-store mechanics on supplier_item_store:{supplierItemId} with supplier_items write-back and the same negative-result rollback; resolveSupplierItemStore returns 0 for rows that are not marketable (is_market != 1) and reads Redis first, falling back to the DB store.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/SupplierItemStoreService.java#L57-L118",
+          "version": "repo-lines-v1:sha256:541feea0d6d5e78b6e76f732e8d949d56c736ceef350b51b9bd3fc9271651fd5:eyJzZWxlY3RlZExpbmVDb3VudCI6NjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVkOWQ4Y2EyYmNhNmJiZDE2YjU5Y2JmNTJiNDM1ZDNlNzY3NjA3MTk4NjQ1Njc0YTdjN2ZiOGMyZTA1NjA2YTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU4ZTdlYjdhMGIzMjRhY2IwMDc5NTAwZGZkMTBmNmU3MWYwNjllODcyMzk2ZTNmZmEyNDJjZmNiYTVhMjI3ODUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/SupplierItemStoreService.java#L93-L114",
+          "version": "repo-lines-v1:sha256:53a0e577cea86ae1e5a2a3c8b7fab75cffa45a58f817aaf6d5993c9d6ef327d8:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY5YWIzZDE1ZjRkYTllZDdmMjRlZDE5YjI4Zjg0ZDVkNzQyODM4NDE2YmNiNGVlNDU3YTE1MWU1N2IzZTM2YWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ5NjY0MDdlNzQwODgyNTMyYTc4MjI2NGI1MGM2ZmJjMDg2N2NiYTY3Y2NlODkyMDkyODc2OTdhNDgzZGI2NWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY1ZjI2Y2FhODA1YjJjMWI0MjFjOTdiODRlMGRlZTVhMjI0N2MwNWQ0ZGQzZDcwZmQ4NGMzN2YwYTM0ZTI5OTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_98540fd02882472a993cf14033b24c83",
+      "statement": "OrderCreateInventoryPortImpl.minusStores (the common OrderCreateInventoryPort used by the orders bundle) skips normal_employee_purchase orders entirely, treats uses_platform_item_stock || is_total_store as each line's platform/total bucket flag when calling ItemInventoryOrchestratorService (a line counts as shop stock only when is_total_store is exactly false; the order-level uses_platform_item_stock comes from the format port), routes point-mall orders to PointsmallPartialCancelItemStorePort instead, throws 商品库存不足 when a deduct returns false, and afterwards records limited-buy purchases (LimitPersonBuyService.createLimitPerson, mirroring PHP AbstractNormalOrder) and limited-time-sale/seckill purchases (SeckillUserBuysStoreService).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/order/normal/OrderCreateInventoryPortImpl.java#L51-L94",
+          "version": "repo-lines-v1:sha256:979732c764987b3ab68d9beda27df3dfc169909721b02ae298f27fc6dace58d7:eyJzZWxlY3RlZExpbmVDb3VudCI6NDQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwOGNjMTVkMDc1NGI2ZjIxZjcxZTBiMDNiOWRkNzg2YmM5ODgwMDNiMmI1NzU2NGM2MDUwYTgwMjI1MTdjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc0MmJkMGQzZmIyOWNmMzA3OTg5NjEwNmRhNzA5YWE1M2U5ZTI5NTcwOGEwYmE2MDk3NjkxMjVjNjlkOGJkODkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM3YzA2ODZlYTMwOGYwYmQ0ZWJjNzE0ZTMyN2QzZjVhNTJhZTM0YzJiYzRjZTE2OTc3Nzc1ZTI3NmExM2U1MzIifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/service/order/normal/OrderCreateInventoryPortImplLimitedBuyTest.java#L44-L150",
+          "version": "repo-lines-v1:sha256:99c2a7607659094cc730299c44b244a4c8b5604bcc58e6babc99219b13eca6d3:eyJzZWxlY3RlZExpbmVDb3VudCI6MTA3LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIwODM2YjJmMjQ4ZWZjYzE4MDdiYzBhZjdiYmY1OGE4NThhZTU3Mzc2ZDM4NTFhZTM4NjIyYzRkMGYwODdjMDEyIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIzNGZiMTg4N2I2NTJiZjJhMGE5MWJkYTI5NDVlNzBhOWRhZmY2ZmZlYzRiNjBhOGRkZjk0NTlkODRkMzcyOWUyIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJkYTU0NzA2OGMyYjllOGMwYjJmNGE3NzkxY2MyN2Q2NmYwZTlkMjkyMTY3M2YyNDhmMzFiZjIzYjM2ZmEzN2M0IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI2NGI2MDc3ZTkwYTU0ZDM5OTRiMDZiYmI1Yzg1YWNhZmZjMTBkMzZkMmFmY2Y4NDFlYWIzY2M3MTIwNmQ0ZDYzIn0"
+        }
+      ]
+    },
+    {
+      "id": "claim_714b7da107f840a18f06c32fb29c366b",
+      "statement": "ItemAvailableStoreResolver.resolveAvailable computes purchasable stock per delivery mode (logistics+supplier → supplier store or logistics_store fallback; non-logistics → store when is_total_store=false, otherwise store minus logistics_store floored at 0; no receipt type → max of both paths), and CheckoutCartLogisticsSupplierStoreClampService applies these rules in memory at checkout only — quantities are clamped for pricing and never written back to the cart.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/cart/wxapp/CheckoutCartLogisticsSupplierStoreClampService.java#L28-L92",
+          "version": "repo-lines-v1:sha256:b9fd593584358faa98dd598f9b97524bd217f1a84b389aa387f1690eee135eea:eyJzZWxlY3RlZExpbmVDb3VudCI6NjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE2YzUwZDg1NDM4OTUwMDE3ZjVmNDY1ZmFhZWVhMTNiNGI2ZGIxOTU0ZmQzM2ZhODVkNmVlMzJkZGIyZDMxNTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhlYjk5NGRhNWUwNWFhMTYxOWRlMDgyZjQxOGE3M2U5MjBlZWUxNjkwNjczZjQxZDVkMDk3MTE2MzZkMGRjN2EifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/ItemAvailableStoreResolver.java#L39-L88",
+          "version": "repo-lines-v1:sha256:ed8ce21d01138c6186e92c67419520ee16b0a18ce75201109f42a66388d45a2a:eyJzZWxlY3RlZExpbmVDb3VudCI6NTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVkOWQ4Y2EyYmNhNmJiZDE2YjU5Y2JmNTJiNDM1ZDNlNzY3NjA3MTk4NjQ1Njc0YTdjN2ZiOGMyZTA1NjA2YTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY3NWVmYjk2ZTRhOTJhODI1ZTk3NTU4ZmRiOTAwYjczNzMzNjNkOWFlOGNkYzYxZjU2ZWEzOTc3YTYzMjYzZjQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ3MjcxNGExZDVjYjE3ZmQ3YTk5Zjc3ZTc5YjE4ZDU2OTI4YzNiOTRlZjhmNzcwMmZiNWRlYTYwNWUyOGI5Y2EifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_9fc028b3c91e4b03afc0776335bc2ba8",
+      "statement": "OrderCreateFormatDataPortImpl (the common OrderCreateFormatDataPort) rebuilds orderData from scratch with shop_id=0 (PHP OrderService::_formatOrderData parity), stamps uses_platform_item_stock=1 only for shopadmin fastbuy orders (order_class shopadmin + cart_type=fastbuy) and 0 for every other order, passes through the seven receiver_* address fields for shopadmin orders (is_logistics forced true for fastbuy), merges live SKU data for online wxapp normal/groups/employee-purchase orders, layers checkout promotions — cart promotion merge, full-gift, plus-buy (skipped for fastbuy), optimal coupon, directed crowd discount, gift fee allocation — and assertDepositBalance rejects pay_type=deposit orders whose deposit balance is below total_fee while format itself never throws for balance.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/order/normal/OrderCreateFormatDataPortImpl.java#L360-L405",
+          "version": "repo-lines-v1:sha256:22e13162cd8a4500570a4f3026be884ed4082295d1e31fc81e940ce6b2f88694:eyJzZWxlY3RlZExpbmVDb3VudCI6NDYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM3YmNlZGE1YTEyY2I5ZWQ1Y2U4YjlkNThmNTlkM2E5YmVlMjc4ZjQ4NzVkYWY3ZGE1ZjYwODc1YzY1N2JmNTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZiMjdjOWRiNWViOGQ5ZjJjM2Y5YjM4Y2RkMDA5ODk0NWYyMTE5N2YxNmVkODg1MWMyN2IyOGVkY2I4ZjYzMjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNhYmZiYmQ1MzVkNzNjZTYxMGYwMTE3NTA2MmJhOWM5ZDdmZWVhYjllOTZmMmZiNzBjZDI3NGQzODExYzJmY2YifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/order/normal/OrderCreateFormatDataPortImpl.java#L78-L152",
+          "version": "repo-lines-v1:sha256:b03663793d496d619556ec6883688cb7b71b69e522bad2b44fafae29ae8ea57d:eyJzZWxlY3RlZExpbmVDb3VudCI6NzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwOGNjMTVkMDc1NGI2ZjIxZjcxZTBiMDNiOWRkNzg2YmM5ODgwMDNiMmI1NzU2NGM2MDUwYTgwMjI1MTdjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjlmMmQzNTQ4YTQ5MzUwOGUwNzhkMjJmYjhkNThiNWFmMWI5ZDA2OTFjMDBmNDQ4MTRkODYxNWMyZmNlNjk3OGYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE5MWQxNDBmMjQ2YTVhMzEwMWViNmY2YzA3MzdlOWUyYmU0MWQyZTZhY2NmZmFlMDIxODU4NWI3ODVmZjIzNjYifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/service/order/normal/OrderCreateFormatDataPortImplDepositBalanceTest.java#L99-L135",
+          "version": "repo-lines-v1:sha256:35211a146be3fb29a044122a6eeef5525a04fc942fb250b282041e12c8fdfc49:eyJzZWxlY3RlZExpbmVDb3VudCI6MzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZjM2E1NDNmMzk5Mzg0OWVjYjhiOWRmYzFiMGQ3ODA2NTQ3NGZjMWE3YWI0MDU4NzdlYjQzMThiZDI2MjdhMmYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIxYTkxNDhkZjQ5NTI0YTJhM2VjNGNhNzEyZTE5YWIyNDJkM2YzZGQ3ZWFhNGE4ZWY1ZGU4MWQ4ZTJjNmZiYjEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFlOTUyZjIxNDA2NmFiOWMxMWU1NGY5MjkwMmNhNDM4Yzc4OGMzYTc3ODU0YTZmMzFlMjExYmVlYzlkMDg0NmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFmNTJhOTVmOTc5MTZjNTg5ZjliNmM4ZGVlOTNhOGE4MDQzNWQ5MjVhYmM3ZmNkNTYyMDI5ODI5NjQyZDRmM2YifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b1aa04503d59418eaebbc9569c1e7e1f",
+      "statement": "OrderCreateItemCheckPortImpl enforces for cart-line orders: at most 100 distinct SKUs (单次购买商品种类不能超过100种), all requested items must resolve in the SKU query, at most 10 distinct suppliers (单次订单供应商数量不能超过10个), cart line nums must match the SKU list, and promotion=normal orders on a shop may only contain shop-scoped SKUs; point-mall orders validate through PointsmallCartSkuLoadService and single-item_id orders check onsale-like approve_status.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/order/normal/OrderCreateItemCheckPortImpl.java#L167-L260",
+          "version": "repo-lines-v1:sha256:82298ea9199c56c7510e857836f45d1bbcc9f402e1560c476d242d9f8657d359:eyJzZWxlY3RlZExpbmVDb3VudCI6OTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJiZjQ5MjNmN2RkMDU4OThiMDQyNTU4MmEwZDMzNjE1NTU3MTM0NTkzNDM5ZWRlODMxMmE0OWNlYThkNTMwNGYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIyZjJmZjVmZWVjNjBmNTg3YzhmYWU0ZTg3ZjgwOWE2NjFjZmZlZDZiNDdhYWU1ZjZkNmEyNjUzYWE4OTUyZWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI5ZDdkM2Q5OGRiNDI2ZjcxOTFjOWM0MTM2YmVkYzg4ZThjZWJiYjVlZDNkMTVhNjlmYzI2ZDVlMzNjYjJiMDYifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/order/normal/OrderCreateItemCheckPortImpl.java#L56-L106",
+          "version": "repo-lines-v1:sha256:8cf1f674e238dacfe7b4b68ea133bcec9dbadd1e3796a6a12777b6f4ba82d5bc:eyJzZWxlY3RlZExpbmVDb3VudCI6NTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwOGNjMTVkMDc1NGI2ZjIxZjcxZTBiMDNiOWRkNzg2YmM5ODgwMDNiMmI1NzU2NGM2MDUwYTgwMjI1MTdjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFlNjRjNzZhMGEyYzliZmRiNTk2NGRhNGJkYjE1YjllMTljMmExYWU0NDNhMWFiMzBiNzQ1MGE0MDg0NDdhODciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc1YzY0ZGMzOTkzYWFiZDVhMzk1NGEwMDUwMTQyYTk0NjEzNjY0NDEyMWE4MjkwZTZmYWZjMWYzMDFmOTNhNWUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_bde42ca1269b4d59a5a050500bba6920",
+      "statement": "OrderCreateNeedParamsPortImpl requires company_id/user_id and a receipt_type that is empty or one of logistics/ziti/dada/merchant (normal_groups also needs bargain_id); OrderCheckoutCartPortImpl.fillItemsFromOperatorCart branches on cart_type — a fastbuy request first passes DistributorPlatformStoreBuyGateService.assertShopadminPlatformStoreBuyAllowed (该店铺未开启云仓可购买 when the shop's cloud switch is off) and OperatorCartFastBuyFacade.revalidateFastBuyPlatformStock, then reads the fast-buy bucket via getFastBuyCartDataList, while any other cart type goes through OperatorCartDataListFacade.getCartDataList — both paths take checked rows from the first valid_cart block (购物车为空 when none) and attach _checkout_cart_meta for downstream checkout promotion merging.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/operatorcart/OrderCheckoutCartPortImpl.java#L72-L122",
+          "version": "repo-lines-v1:sha256:7d46bb4279d6e15d34da877eb170970760c0a2f07fd49a28801bdd06924fbf2e:eyJzZWxlY3RlZExpbmVDb3VudCI6NTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwOGNjMTVkMDc1NGI2ZjIxZjcxZTBiMDNiOWRkNzg2YmM5ODgwMDNiMmI1NzU2NGM2MDUwYTgwMjI1MTdjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJmYjFlOWM4NjBhOWI1N2UzZTUzNmI1ZGFmZWNiMjEzOGRkYmVhMTgyMDUyNDllZTUyN2UyMmFlODhkNTY0M2YiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ2YjgyZWY0ZDY5ZWYzN2ZhMDFmNzVmOGNlZjY2MWI0MjliNGFiMzJmMTU1MDA4YzUyMjg5OTU1NDY4YTM4NWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU2ODczODY4ZGE1Y2FlZDIxYzlmZGY2OTg2MmIwZGE1NDA2OWVjZGYxODgyYzIxNjUzNTZjNzRmNWE3ZDFkMDMifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/order/normal/OrderCreateNeedParamsPortImpl.java#L44-L67",
+          "version": "repo-lines-v1:sha256:6df157d7063bc1243271d1e13f35a08baab381b4052e2a4280c8962c839ef6d4:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwOGNjMTVkMDc1NGI2ZjIxZjcxZTBiMDNiOWRkNzg2YmM5ODgwMDNiMmI1NzU2NGM2MDUwYTgwMjI1MTdjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYxZWEyMjYwNGRjYzE3NTFhZTVkMjc4ZThjZGMzZmFhZTQ2ZmQxNjk4OGYyNWQ0ZTUwM2I3NDNkYWExOTcwODgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImEzMzhmNGRhYzNjM2EyMWU0YzI4ZWY3YjY5ZjFmMDIyZTEyMDBkYzdjMWZmNDZhNmJiMjdiYzY5ODA5ODhmOTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d828a3a74d6449eba68dbc050bca93db",
+      "statement": "OrderCheckoutFullGiftService merges full-gift lines immediately after their linked main item (cart ordering), honors per-activity join limits via the Redis hash MarketingUserJoinNum:{companyId}:{marketingId}, and accumulates per-SKU reservations across activities to prevent the same SKU being oversold by overlapping activities; GiftActivityStoreAdjustService clamps gift_num only when the platform check_gift_store setting is on, using the same available-store rules as normal items and surfacing the gift_unavailable_tip (赠品暂时无货) for dropped gifts.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/order/normal/GiftActivityStoreAdjustService.java#L29-L80",
+          "version": "repo-lines-v1:sha256:235263a166596b85b8fc92192db8469f9cb0e787c324d0261967d99509bc0ab7:eyJzZWxlY3RlZExpbmVDb3VudCI6NTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU2YzU1OTYxNGE4NWNmNDQ0OTcwNDViMmNlMjMzZDliM2NiYTg3MjY3NmNkNDkwNjExZmY2NmQ0MDU4MzAwMGMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdkMzcwN2E5NDBhMjJmOWM3Yzg1YmZhY2E0NWJjYTExNzE2Mzc2ZWZkYzA4MjM3NTg5ZjEwNTc3Y2VlMDhkMTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZiYzFhMTZmOTU1MGRmZjJiYmVmODQwODM3MmU2YjlmMmU3ODZjZmEwOTgwMWNhOGJhMzZkNGViMzNhODU0ZWIifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/order/normal/OrderCheckoutFullGiftService.java#L52-L126",
+          "version": "repo-lines-v1:sha256:4bfe1c6fb19d332cca8831caa7e6223c791a84a22aed552516482853de02d6f0:eyJzZWxlY3RlZExpbmVDb3VudCI6NzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE3YmVmY2UzMjA2YzlhMDJiOGM3MWY0ZjI4NThkMmU5MTBjN2M2OWVlZDRmYTQ2MjI4YTMyMTA4ZDYxYTZlMTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMWFiNGE2ZjZkODY0YjdmYjI4NDgwNGRmNDk2ZDE4NTY0NDliZTBlZjUwYWYwZjU5OWU3Zjg1NjAwZDAyYTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhlMDk3NGUzOTAyODY3N2Q4ZThhNzFjYjhhYjQ3ODFiZDNkNmQwMDkwMjliOGMzZmQ3ZTNiOWQ4NmM0MGVjNTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdkYjgzY2JhYTAxMjUxOGUzOGYxMmIzMTgwYWRhMmJiMTJhOTZkN2M5YjBlMzIyY2UxZjhjZTFhZTEzYmRhMTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/order/normal/OrderCheckoutFullGiftService.java#L588-L608",
+          "version": "repo-lines-v1:sha256:7e3b39f69f2e931ff0ecd580daf2c012e7ba24b3a649ac7d7474432755d5b6c0:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYzMTg0NDkxMzI0YWY2ZTE1NWI5MmU3MjU1ZThiMzg3ODY5ZmY2ZTllZjIyZDVlYmJhYzBkNDAzNmFlZjI4OWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJhYmJjNzVjMjEyMTM2OTUyMjMxMTA2N2E0MjYzOTI1ZmY0NGY4Njc4MWFlY2IxODIyY2E3ZjUxNmM0MWZkYTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU3ZTE2ZGE3NDRjMWRjZTcxY2IxOWEyM2IxZDg0NTU0NzIwNDZmNmY5N2YyMDRlZmJkODY4YzM5NjA2NjZkMjYifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/service/order/normal/OrderCheckoutFullGiftServiceItemOrderTest.java#L54-L85",
+          "version": "repo-lines-v1:sha256:765a916bcb275caefb32ef5a5a8731afea633b8a238e633f95953dca09dda996:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiYTFiMWYwZDkzOTU3NDJlMjE2ZjcxYzllOTBjOGZiOWFhNmI0Mjk2YWFhNGNlN2NjMDVjOTZlYTViODdiYWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEwNGM1Y2U3Yjg0NGNkZDk2Yzc1NzVkYjUzOTkxMmFiMzJjMDI2MzU0OTY4MzIyMzI0ZDE0NzQxMGIyMTllZjUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNjMDE0NzJmMGEwNjE4YzZmODU3NTJjNzBlNWYzYjczYmE4NjAxMmFlMDM4YTIzZTMwOTM0YmJjYzZlMzQ1OTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdhNjI2ZTlmN2ExOTIyYjUzMjQ4OGJhYWQ2MDg0NTJjMTkyMTNjNGEzYzgwOGJlYzMwMjFiZTIxZjZkODc2MDEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_701692671fbf40dfa96f3a82e28a3282",
+      "statement": "DistributorGoodsSyncService.syncGoods selects distributors with auto_sync_goods=true (excluding is_valid=delete) and either runs all pages synchronously for up to 3 distributors or enqueues job:62 AddDistributorItems, whose DistributorItemsPagedAddRunner consumes self-chaining 100-SKU pages into distributor_items and re-enqueues the next page until done, also firing Shuyun product sync per touched goods.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/distributor/DistributorItemsPagedAddRunner.java#L55-L113",
+          "version": "repo-lines-v1:sha256:240fdeeec7ee21374882be1f3951ee18d554a0f1f4fad51a4176bdd2c13ff7d1:eyJzZWxlY3RlZExpbmVDb3VudCI6NTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE3ODAzNDEzYmZmMWE1YjgyOTI1MzVmMjIwMjUzMjYzYTQyMTJhOTQ0YjJhNzQzZTU2NzE1OTlmN2RhZjJlMTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkwMDgyOWRjYjg4OGM1YWE3NDYwYjgzNmU3MGM2MjQ0ZTNiMjlkMmU3ZDc4NjQ1M2U2ZjgwNDUwYjc5MzRhNzciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNlNzliODViMzQzNzNhZWUzZWUxNDU0YWJiMmFiYzQzYjcxZjA2ZTQyMTAyMDFjZmQ3MTAxMGNhNDFiOTgyOGIifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/DistributorGoodsSyncService.java#L39-L60",
+          "version": "repo-lines-v1:sha256:e90a5cc36a6f07a63e82350037d4fcf79672682cdf7ff2f9dd3cccbb055ff1db:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZjODE2MmY5ZjI1ZTVmNmVlZWVhYjFmMzEwNDY4NzVmYjk3OTg2ZWUxMzgyYmZjZTUwMmYwOGI2OWNkMWY5OGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM4ZmFhNjFhMDYzOGQ0ZjViODI1ZTQ1MzE3ZDQxYThkMTFmZTZmZTZlYTNhM2RkMjQwZjliNjE1OTAyODJkYWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_64c92f72a8524f27a34be409b3fcb1d0",
+      "statement": "ItemsCategorySaveService.saveItemsCategory is the category tree persistence entry: it validates names (≤50 UTF-8 bytes), saves levels 1-3 recursively with comma-joined paths, resolves each node's distributor_id via ItemsCategoryDistributorIdResolver (main categories always 0; platform product model lets the JWT distributor id win; product model derived from companys.menu_type 1..5 → all/b2c/platform/standard/in_purchase with ${common.product-model:platform} default), and registers an afterCommit publish of EVENT_ITEM_CATEGORY_ADD plus Shuyun open-platform category sync for level-2/3 categories.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/ItemsCategoryDistributorIdResolver.java#L29-L94",
+          "version": "repo-lines-v1:sha256:40c2e17b15ade43e28bcf4ee553e95684e9eb6f9f9cecf340582a3b8ac6e7f43:eyJzZWxlY3RlZExpbmVDb3VudCI6NjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE1ZmQ2Mjg4MGJkMGM0ODFjMDhiYzA2MGQzNjA4NmQxNzk5MTk0OGRlMWRhMDY1M2VhNDczZDY4ZGI5MjU4M2EiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA5MTVhMzM2MmQ1Yzg0MGIwMWU2NjNlM2MwMGVkM2M0YWJlZjNiMzRhZThlYmE0ZGU0ODQ5ZDQxMjUxZGY2ZGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/ItemsCategorySaveService.java#L159-L202",
+          "version": "repo-lines-v1:sha256:5343c3a1a684770f29d0d74548424e96f3e3266ba32443758d3e286b424b8edc:eyJzZWxlY3RlZExpbmVDb3VudCI6NDQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMzOTIxYjc2MjYyZmMzN2E5NzE3ZGE5OWNmOTQ2NzA5Mzc4NTA5MTBjYzU1ODVjMjcxNzA4MjcxOWRmZGQ2MmYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNmOWRjNWMwNTEyNjdhNDk1YWMwYzlkOTA4OGRiZTEwNWFiNWYzYmUwMjdlODJmNzRhMjAxOGVjYWU4MTc0Y2EiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUxYzZmOTk5MGE3ZGQ1MWZjYzNkZDRkYmEwMTcwMGY1MmMyZTY4NmFjMTg1OTJiYmEwZDdmZDk0ZDExNzAxOTkifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/ItemsCategorySaveService.java#L63-L101",
+          "version": "repo-lines-v1:sha256:a8c703aa740485ea1fd3673b42a89dd524948843b1dd3f77c555ef372155d41d:eyJzZWxlY3RlZExpbmVDb3VudCI6MzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJkNzU0OGYwODFmM2Y0MjY0OTYxNzRiYjdmMTYwZjg3MDk0NDNjMWM1NmM2NmFmMzNmYjZmNmU4OTdjZjAzZjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjMwZDJhNzAwMjhkMTk2N2M2ODA5MTgxZDhlYWI3OTA2ZDUwN2QzNWU3ZjMzYjU5NWE1NjlhNzU3MWFmY2U0NDMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ3ZDcxNmUwMzY4NTlhOTZkMGQzZjk1MWFkYTg5YWU2YWY2NWM0M2RhYzkyZjQyNDcxYmFlNmNlNzA5ZjI1N2MifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_95f681b2026f4888a1db3ba303cd25bf",
+      "statement": "ItemsCategoryFrontDisplayResolver (ECX-9537) decides front category reads: platform mall pages (distributor_id=0) always read management categories and skip the sale-to-management fallback; standard-model shops share platform sale categories (distributor 0); customize pages bind level-1 management categories only under the platform product model.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/ItemsCategoryFrontDisplayResolver.java#L24-L65",
+          "version": "repo-lines-v1:sha256:540aaaef62a3b9d8f4074182441634cf2913f81cad6c0d833a8e5fb782a056cd:eyJzZWxlY3RlZExpbmVDb3VudCI6NDIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY4ZjAxM2U0ZjJjYWM4ZmYxZWI0OWJhZmE1YTNjNGViZjVmMTdhNGI5N2NlY2Y3ZmY0MDNiYTlmNzY4MTU1MWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY3NTY3MjczM2MwODMwYzMwYzU3MzVhNzVlNzc4ZDU2ZDE4NTg4MTRjMmFkYzJkZTA1NDZmM2U1MGNiNDgxYzIifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/service/ItemsCategoryFrontDisplayResolverTest.java",
+          "version": "repo-file-v1:sha256:97123ea2e40fa854a3b8104e85b9011096db45fb9f55fc199c99585c653ae75f"
+        }
+      ]
+    },
+    {
+      "id": "claim_2d68f01f0ee743d6a3a4c926ca2b04a2",
+      "statement": "ItemsMultiLangWriteService mirrors PHP MultiLangService for module items: item_name/brief/intro are upserted into per-language shard tables item_multi_lang_mod_lang_* — create writes all three fields (empty string when absent), update writes only fields present in params — with the language tag resolved from merged request params, then query/Accept-Language, defaulting to LangueProperties.defaultLang.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/ItemsMultiLangWriteService.java#L27-L81",
+          "version": "repo-lines-v1:sha256:5321b8272fcc454e92d83644fcd2d9d774d9cc378a3a7eaea842edb58c9ecc1a:eyJzZWxlY3RlZExpbmVDb3VudCI6NTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdkMzcwN2E5NDBhMjJmOWM3Yzg1YmZhY2E0NWJjYTExNzE2Mzc2ZWZkYzA4MjM3NTg5ZjEwNTc3Y2VlMDhkMTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/support/ItemLangShardJdbc.java#L29-L39",
+          "version": "repo-lines-v1:sha256:12c457694cb2feaf0d49c096e3b4456a0b1cadac9c03ebb203e789b71d700d79:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ5MDgyMDkxNGYwZDQ0NGM5NDk2ZTQwOTExMmVmMGRhZTAzYmJkN2QwZDM2NjEwNDVmYWNjYjYxZmQyYjg5NGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdkYTcxNTc3NzRiZjVmYjM0NmM0NjU5Y2UwZTkzOGMzZGVhN2Y2Y2IwN2FiOTVjZDljNTZhODNhMGE4ODdjNmQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU2ZmM4ZDMyOTEwMDA3MjczMGM1NGM2ZDE2NmM5ZjcyN2E5YjgwNmMzMDk5NWZlYjBmYWE5YjAxNGQ0N2EwMzAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_46a23ca2b7a844f2a17217bb1510b562",
+      "statement": "OME inbound sync (POST /api/v1/goods/sync/items and siblings for category/spec/brand) runs as paged self-chaining dispatch jobs (75-78): each page calls ShopexErpOpenApiClient goods.getList with a fixed page size of 10 (OME contract), gated on the company's is_openapi_open Redis setting, persists the page, then either re-enqueues itself with page+1 or advances the Redis last-modify cursor to close the window.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/GoodsBundleDispatchJobNames.java#L27-L37",
+          "version": "repo-lines-v1:sha256:2fdc365afcbd6fe1d55472326c6ca07d6ebbd840cb6402686d001af28a21d6c7:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdjZmE1YWY5MTc4YjYzYTc0MjdkZjJlNzIyOGMxN2IxNTFiYTdkMzIzNTc2Y2FhOGQ1YTQwMGU5MTc3MzIwNmMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI2Nzg1ZmQ2ZDAwNjhlMDY4ZTYxZjMxNDU1NWVjNTA0YmUyOTIxNmZlYmQ1NmI4NzcxNDNkMGQxOGFjNWUxN2MiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU0YmNiN2RmMjMzNGNlYWRiN2Q1Y2JhYmQ0YTBkZTg2ZGQwNTc5Mzc0NGE4YjI3ZGNjM2JmNTQxNmQxNWI3MWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ3Yjc2N2RkMTRjZTFhMWE5YzAwYWJkMzMwNmVhMzk5YmRkM2JkNWU5MmM2ZDk1MzE0MjFlNTI4Y2U0YmM4MmYifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/ome/OmeItemsFromOmePagedSyncRunner.java#L33-L78",
+          "version": "repo-lines-v1:sha256:10d18a8ca390b6393a2a047f55716faa2b9ceb1bf659ad4b1e802ebd4811aa8b:eyJzZWxlY3RlZExpbmVDb3VudCI6NDYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ5YTgwOGIyYWQ4YjU4NTI1ZGVjNjRkMjVhZGJjZjgxMjJhMDM2MjM3NDcwNjExZDlkNDljOGQwMjJlMWQyNzMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdkMzcwN2E5NDBhMjJmOWM3Yzg1YmZhY2E0NWJjYTExNzE2Mzc2ZWZkYzA4MjM3NTg5ZjEwNTc3Y2VlMDhkMTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFhNjU4NWMyZDlmOTUyYzU5ZmM5NjMwZTAyMGM4NDQ5NzE5Zjg1MTJjMGI2MzBlNzg4MmE5ZTc2YWI4ZGE4MDgifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_1c0fe6bdd11e499f9ae70d4e70bc076b",
+      "statement": "Jushuitan integration: POST /goods/upload/items requires the shop's jst_shop_id binding and enqueues pages of approved default-SKU normal items (job:82, incremental via the last-upload Redis cursor); POST /goods/query/inventory enqueues batches of 100 item ids (job:84), and JushuitanInventoryPersistService maps sku_id back to item_bn, computes store as qty + virtual_qty + purchase_qty + return_qty + in_qty − order_lock − local unpaid-frozen, writes items.store and re-seeds Redis via saveItemStore (which fans out EVENT_ITEM_STORE_UPDATE).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/jushuitan/JushuitanInventoryPersistService.java#L50-L106",
+          "version": "repo-lines-v1:sha256:b2aace97a681504914f07e667b6fa5a49713157f6988975ba365d8de3d28bd74:eyJzZWxlY3RlZExpbmVDb3VudCI6NTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVkOWQ4Y2EyYmNhNmJiZDE2YjU5Y2JmNTJiNDM1ZDNlNzY3NjA3MTk4NjQ1Njc0YTdjN2ZiOGMyZTA1NjA2YTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjEyYTgwN2RkMTE2ZDE2Y2JjOWU2NzdlNGNlYjdjYjRkZDlmODcxYTNlYTkxZWM5ODM5N2ExZWI3MjhlZjY3ZWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAyODUxMDQ2YzI2ZGE2Mjk3NWQyMzQ3OThkNDY2ZGFmMTY1MGU3YmQwNjRhODUyMzg1MjI1MTNlMTA5NWIzM2MifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/jushuitan/JushuitanQueryInventoryOrchestratorService.java#L34-L84",
+          "version": "repo-lines-v1:sha256:891d645d3402a818687cb5635290f8cde272253c471356e29f6d9e36d03a27ed:eyJzZWxlY3RlZExpbmVDb3VudCI6NTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRkOGE5MDRmM2Y3MDA0YWVlOWNmMDBjZTcyZTNhYTRiYzMxYmM5ZWNlMGEzNGIyNzc4ZDM3OTA1NTA3ZTZmZDIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg3MWQ0MWNmN2ViZTY5NGYwZTZiYTdhZWE0YzY1YzcyYjJiMTdiYzRhY2U0OTA0NGRjMmFlOWMzM2VlOTBjZDMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxN2Q3ZjFiZjc3Y2Y1MjA4MGE4MTg5YWJlYmEyOTFhODIzOGIyM2FhZWRlZTZkZDBmZTkwYjZkNTVhMDI0N2QifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/jushuitan/JushuitanUploadItemsOrchestratorService.java#L64-L113",
+          "version": "repo-lines-v1:sha256:c42ce12a294dfa2dc7c8b30149dacee076e3c67fd208454f12fbc64a65e266e8:eyJzZWxlY3RlZExpbmVDb3VudCI6NTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdkNGZiZjY0NWU2MzVkYWFhYjJkYTljOWQ3YjY1M2M3NWEwNTFjNGQ4MjE2NWQzNzU4OTgxYTA5NzQxNDk4ZmMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhlMDk3NGUzOTAyODY3N2Q4ZThhNzFjYjhhYjQ3ODFiZDNkNmQwMDkwMjliOGMzZmQ3ZTNiOWQ4NmM0MGVjNTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImEyMjVhMzdjOWIxNDQ4ZmNhMjJjNTM1MWE0ZDgyMzQzODQwZjZiZTQzMTg4YmVlMTliZmNmMzI0YWJmMTgzNGEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_1fde834f8b5a4d7b95fb150ea845b720",
+      "statement": "WdtErp item upload (POST /goods/upload/wdterp/items) mirrors the Jushuitan shape — wdt_shop_no binding check, approved default-SKU normal items with an incremental Redis cursor, pages dispatched as job:79 handled by WdtErpUploadItemsBatchHandler.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/GoodsBundleDispatchJobNames.java#L39-L40",
+          "version": "repo-lines-v1:sha256:235ae45f51e3cc01f745b0bd426b812dfe389b1d42bc26a215d55844fc3183ae:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZDg3ODJmMTc0YWU3MmE3NDg5NzQxZTc4ZGFmMjBjMDQ4OTBkYmNjZDNjMWQ0ZjZiMzZmOGE2Mjc1N2NkNDc3NyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzk1M2UzMWYyM2RhZDljMWNkNmIyYjQ3Y2U2NDRiOTgxMmRkNzJjMGIyZGIzOGVlMjc3MzJiYTc3NGM3Y2JkMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTBkYzY0OTAzN2ZhYWE3ZjRlY2I5OTM0ZWRjYWUxOGM3OTg1ZDRmZWEyMzc2NzdjZjU0YjViNjZmYzVhZjBjMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNWEzNmJmMjlkYWUyYjNhZTg1YTk4MTg1OTYzNjZlOTZjNTA0MjZkMDEyMzMwNjEyYzc2MzVhZGUwMWU4OTUwZCJ9"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/wdterp/WdtErpUploadItemsOrchestratorService.java#L64-L106",
+          "version": "repo-lines-v1:sha256:6390b8ba412fbc658d614a367a53361d1d75a1b07bf438703a4a10520e0a0099:eyJzZWxlY3RlZExpbmVDb3VudCI6NDMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdkNGZiZjY0NWU2MzVkYWFhYjJkYTljOWQ3YjY1M2M3NWEwNTFjNGQ4MjE2NWQzNzU4OTgxYTA5NzQxNDk4ZmMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRkYzc2MDIwYmFlNzA1NzdlNjRiMzMwZGNhODNmZGYyNGYzZDc1OTNhMDE1NGQ4YWJlYzZkYzYzZjU4OTdmZDkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhlMDk3NGUzOTAyODY3N2Q4ZThhNzFjYjhhYjQ3ODFiZDNkNmQwMDkwMjliOGMzZmQ3ZTNiOWQ4NmM0MGVjNTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZjOTk0MTc4NGI4MGMzYzRkNDNlZjNiYzNiNmNmYjY5ODdmNGNlNzY0M2U4ZjJhMWUwZGY1ZDUxNzc2ZDRiMDQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b573f3b45c2c4327b57f94d9f060f460",
+      "statement": "The goods lifecycle events (names in GoodsDispatchEventNames, publisher interfaces in the bundle, impls and listener registrations in ecshopx-bootstrap/config) fan out to: ItemCreateEvent → promotions.CreateItemSuccessPromotions (sync); ItemAddEvent → third-party marketing-center push + youshu item add (async); ItemDeleteEvent → marketing-center push (sync listener) + youshu items_item_delete (async); ItemStoreUpdateEvent → ali template message + members goods-arrival notices + Shuyun open-platform product sync; item category add → youshu item_category; ItemTagEditEvent → promotions.ItemTagEditSuccessPromotions.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ItemCreateEventDispatchListenerRegistrationConfig.java#L41-L48",
+          "version": "repo-lines-v1:sha256:afb6eea11bc19214e0f426d42e58620dd94be6500647b1945273b1bd9213e859:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDRjYzNmMmMwYmE5MjM2YjY4ZDc5Zjc1ZWUyZmQ0YmM4NjliZWQ5MjhlOWYzOWZhY2M1NTFlOWU4YTQ4NGM1ZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNWY5YzFiNjUxOTU0MWIzOWVjNWJlNGEyZGUwNzJiY2JlZjQwY2Q3NTRmNTc3YTY3MDY5MjRkODI5ZGE4ZGQwZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ItemDeleteEventDispatchListenerRegistrationConfig.java#L43-L55",
+          "version": "repo-lines-v1:sha256:2653523cae232500cc541ec403c8ac66e0a3563da5afd98326bd1b8ee1799dc3:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ0Y2MzZjJjMGJhOTIzNmI2OGQ3OWY3NWVlMmZkNGJjODY5YmVkOTI4ZTlmMzlmYWNjNTUxZTllOGE0ODRjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcwMDIxOTAyOWM2NmY5Mjg5YTI3ODU3YzI4MzBhMjNiZmNiMzg4NDVlNDRiZTAxMTkyODM5ZWRlODdlNTljZDciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ItemStoreUpdatedEventDispatchListenerRegistrationConfig.java#L45-L57",
+          "version": "repo-lines-v1:sha256:c9805d976f336847fb0a441827bd0a37d201969a1a8c8468d590b4055415aeb0:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ0Y2MzZjJjMGJhOTIzNmI2OGQ3OWY3NWVlMmZkNGJjODY5YmVkOTI4ZTlmMzlmYWNjNTUxZTllOGE0ODRjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImYwYWQ3ZWZkMDEzMTFiMTliZDMxYTNmOWIwODUzZDY2OWZlYWZkZWUyYmE5ZGQ2MTVhMjYyMDc3YjhiNWEzNDMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ItemTagEditEventDispatchListenerRegistrationConfig.java#L41-L48",
+          "version": "repo-lines-v1:sha256:50940f1bd5fe1b14176d240041ad58c32dc950577fae440b253bf6bceb09e416:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDRjYzNmMmMwYmE5MjM2YjY4ZDc5Zjc1ZWUyZmQ0YmM4NjliZWQ5MjhlOWYzOWZhY2M1NTFlOWU4YTQ4NGM1ZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiODM4MThhOTA5OGYyMjAzMDY2YmM2NzJjZjE2OWMxNDExZTJlZjllMjM5YzQ0Y2FlMGI1ZjdlZjZkYTE0NzFjNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ShuyunOpenPlatformItemStoreProductSyncDispatchListenerRegistrationConfig.java#L38-L45",
+          "version": "repo-lines-v1:sha256:0034856b92dfed43057fa5caf95a14e72d6aca3a06db0e00edd8d148ba834a6a:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDRjYzNmMmMwYmE5MjM2YjY4ZDc5Zjc1ZWUyZmQ0YmM4NjliZWQ5MjhlOWYzOWZhY2M1NTFlOWU4YTQ4NGM1ZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDUxYWYzY2IxMjY4ODlkMGU2NjMxMWI1MDU5ZjRhZDQwYjk3MDU2M2E3OTk1Nzg0ZGFkZGM3M2U2MTI3ZmYyOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ThirdPartyItemAddPushMarketingCenterDispatchListenerRegistrationConfig.java#L40-L48",
+          "version": "repo-lines-v1:sha256:1f815ef92e3327213e8484232015459113386a65e016aa9be6146eb70674c563:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzliYzVjZDcxOTdkYmQyZGEzYmY1NzNlYTQyZWU5NGZmYTdlMDBlZTljMzFkMGIwZDFhZjZlMDg0Nzk3ZDJlZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/YoushuItemAddDispatchListenerRegistrationConfig.java#L40-L47",
+          "version": "repo-lines-v1:sha256:48802d6aa510c6a02cb309e3e7a5b7c80090b1deb3d50a76699a81cc5b5b091c:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDRjYzNmMmMwYmE5MjM2YjY4ZDc5Zjc1ZWUyZmQ0YmM4NjliZWQ5MjhlOWYzOWZhY2M1NTFlOWU4YTQ4NGM1ZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNGFjNDQ3ZGE0YjAwZTEwZmZlOGQwMjJkYzkzNGZkNjk2YmZlNDBhOWU3MTU2YzM3ODNjNjJkYjNlM2Q4NjExMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/YoushuItemCategoryDispatchListenerRegistrationConfig.java#L38-L45",
+          "version": "repo-lines-v1:sha256:55ca7103ef3b9c6e7d2b19f8ecfaf3cd855828064b8629412d391fc5448aab9f:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDRjYzNmMmMwYmE5MjM2YjY4ZDc5Zjc1ZWUyZmQ0YmM4NjliZWQ5MjhlOWYzOWZhY2M1NTFlOWU4YTQ4NGM1ZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOWM0ZTlhNzI5ZmIyZWZhMDcxM2FiMjY3MGUyOTQ5ZWJkNDQwNzZkNzg3ZTYxMmYzZDU0ZjM2OWVhZjU4MmFjNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/GoodsDispatchEventNames.java#L19-L45",
+          "version": "repo-lines-v1:sha256:bd5f6d9e288a8a3107ac46ec81ced4e612b791d97b38372f57b9d942573a8b0a:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNhYmM1NDY5YjRhNjY4MDY5MDVkM2FjMjBhODRmYTg5YjBkZTI2ODEyNzgzNWNhMTQ5ODNhMzIzOWNiYTRiNzQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFkMjNhZTdkN2UxMTJkODMyM2QyODUxYjQyNGQ1NDE2MjM2M2I4ZGUxYmVmOWUzMWRkZmU2NTZiNWRmMmU4MDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_f23e90db49624acf8db7699902222f96",
+      "statement": "Barcodes are shop-scoped: ItemsBarcodeRepository.saveBarcode deletes the item's rows then inserts one row per comma-separated code (full-width commas normalized), rejecting any code already used by another SKU in the same shop (条形码已经存在) while different shops may share a code; WxappScanCodeAddCartService resolves scanned barcodes through this (company_id, distributor_id, barcode) scope before adding to the cart.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/repository/ItemsBarcodeRepository.java#L47-L108",
+          "version": "repo-lines-v1:sha256:df99665e62b4674f8f87d28da75524d82f235fabd319c832f76c01016385cf99:eyJzZWxlY3RlZExpbmVDb3VudCI6NjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM4Y2Q4NzQ4ZjFjMDE2YTliZjFkYzJhNWRjMDI4MTgzMGQyMGJjNGZkYmI5ZGQ0NjBiZjM4M2NhMmMwZDk3ODYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImMyYWIwNjBlOWM5NGI0NmM4ZWFmOGNmZDgwNDA3ZjZiNTVmNzllMjlhZGY5OTBhZTc3NDY4MWVkZmQ2NTIzMWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/repository/ItemsBarcodeRepositoryShopScopedTest.java#L31-L68",
+          "version": "repo-lines-v1:sha256:bf9764be312f549e7e3157db117879bfafee1519d1c6d51b44eaafde9f386b1d:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiYTFiMWYwZDkzOTU3NDJlMjE2ZjcxYzllOTBjOGZiOWFhNmI0Mjk2YWFhNGNlN2NjMDVjOTZlYTViODdiYWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVhNjA4OGY4OTI5NzEzNTI4MWQyOWUxM2I0ZDJjNTczMDhmNzY2M2Q3MjAwMGFlMTZhNzM0YjNmMjQwNzZjM2UiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_921b85b56f41489c8319fee8205fd738",
+      "statement": "GoodsRecommendMatchService (behind POST /api/v1/h5app/wxapp/goods/recommendations/match) does scene-gated goods_id-keyed rule matching with salability filtering; per ECX-10357 already-carted/current-page main items are no longer excluded from results — only unsellable items drop out; at checkout GoodsRecommendCheckoutMergeService appends recommend lines after the main items and marks them so OrderCreateFormatDataPortImpl prices them from their own spec rather than the cart row.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/order/normal/OrderCreateFormatDataPortImpl.java#L220-L247",
+          "version": "repo-lines-v1:sha256:80c153267d3fbdeb19010749a810e0c080f21405086a68d9a9bbc8443683e81e:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlkZmI2ZjUyMWQ3YWEzODRkOWRhYmY5ZGYzMGYxYjI0NmFlMzk5YzExMmM2MTY5YTRkMWNhZTQxZTNmYTBlZWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRkYzc2MDIwYmFlNzA1NzdlNjRiMzMwZGNhODNmZGYyNGYzZDc1OTNhMDE1NGQ4YWJlYzZkYzYzZjU4OTdmZDkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYzMGQ4ZDY1ZGRlZDExNGY1NDE1NzY4ZjQ3M2U5ODkzZGUzNDk0ZmRmMGViNDE4Yzk0MWY0MmE4ZmMxNTVkMjEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNhZGM0M2I3ZmQxYjIyYjc3YTJmZDBhZjRiM2YxYmUzMDI4OWNmODQ1NDdkN2NhMWIzZjI4MGY2MjRiMjE2NDMifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/recommend/GoodsRecommendMatchService.java#L81-L134",
+          "version": "repo-lines-v1:sha256:04d23dd7fc3236ef020e3a2784fd40fc4c15dbe3b5881b42ebf3d7660551c585:eyJzZWxlY3RlZExpbmVDb3VudCI6NTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQwY2M4MDdhY2VlNzRmMjVkNDBmZTQyNjlmYzEzNzcwZjhiNmIwYTIxMmRlMmY3ZGNmODM0ODU5N2Y1NzY2OGYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFmYWNlZWY3YzIyNzQ4MDk0MWM3YTZhNTZiN2FjNzU5NDNmMjZjYTJlZDNmYmQyMjQ0ZTg2NGM0M2I5YmEyYmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY4OTc4ZmE0NGRmNzNjNGUwNTY2YjhkYTkyOWM0NTcyZTY2YjUwNGI4ZjliNWU2ZWJmMWI0MDk1NTI4YjdlZmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQwYjEyZTA5YTBlNmVjMGMwZWMwMTAyNzBkN2ZmMzBlZWU4NjBmZDU4ZmViNmE0ZWJkMmI4NjgyMTdkZjY0OWYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_022dadd65d5b48829708a5c447c83e57",
+      "statement": "The openapi/ package holds ~30 port impls behind ecshopx-openapi's /api/openapi/internal/v2 surface (ecx.items.entity.*, price/store sync, brand/category CRUD, product goods/SKU lists v1+v2, distributor item download/update), each delegating to openapi/thirdapi/v2 services inside the goods bundle so external integrations reuse the same mappers.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/openapi/OpenapiItemStoreSyncPortImpl.java#L24-L36",
+          "version": "repo-lines-v1:sha256:74e1a991104e00d0cd9171b9cd66387d6874ded69791eafb70930ed17aa97da3:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4ZmExZTlmNDQ5NDlmYTg5YTNiNDJiMDQ5MmRkYmRmZmEyZWI3NjQ4NDhkMzU3NzhjOWZiNTNjMjA3ZWJkYmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk3OGQ3NWRjMzgwY2YzNzJiNmQ5OWNkNjUxYTRhMzJhMzJlZGFkYTU3OGEzZTc4Nzg4YzM0M2Q1NGJhNmVlYTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/openapi/OpenapiNormalItemsEntityListPortImpl.java#L24-L56",
+          "version": "repo-lines-v1:sha256:eceda57c180a8b4841744721d8b24a758dcbc58e9863526cf26322e0fdaee570:eyJzZWxlY3RlZExpbmVDb3VudCI6MzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4ZmExZTlmNDQ5NDlmYTg5YTNiNDJiMDQ5MmRkYmRmZmEyZWI3NjQ4NDhkMzU3NzhjOWZiNTNjMjA3ZWJkYmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk3OGQ3NWRjMzgwY2YzNzJiNmQ5OWNkNjUxYTRhMzJhMzJlZGFkYTU3OGEzZTc4Nzg4YzM0M2Q1NGJhNmVlYTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_79b2e4d64f814d9fa81d2f0a0b85092b",
+      "statement": "The goods bundle implements order-side common ports: OrderCancelItemStoreRestorePortImpl restores inventory through ItemInventoryOrchestratorService.restoreItemStore (same pool routing as deducts) and TradeFinishItemSalesIncrementPortImpl increments items.sales per finished order line.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/integration/TradeFinishItemSalesIncrementPortImpl.java#L45-L71",
+          "version": "repo-lines-v1:sha256:1b9f85ebb432ce78db4fa04a9d6499c27c10f7e0b40a2e9150beb1836aa88a22:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwOGNjMTVkMDc1NGI2ZjIxZjcxZTBiMDNiOWRkNzg2YmM5ODgwMDNiMmI1NzU2NGM2MDUwYTgwMjI1MTdjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjgyMWVkNzI2NzY1YWEzNDE5ZDZiMmM5ZmJmODJkZjhmNDYzZDlmYTFhNmMyODUzZWZhYWI5MjUxYjI1MzZkZDIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU1ZmQ2ZDg1ZWUyMTUzOTBmNGIxNTQyZDM2ZWJkNzE0ZmRjMDJjNGIzOTAyYTEwNzc0NjkxMDhkZjI1NzUwY2IifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/integration/order/OrderCancelItemStoreRestorePortImpl.java#L24-L37",
+          "version": "repo-lines-v1:sha256:63aed614fda90d27eb150c21d7cf66c1cc4e445963e14d9ae7fd97229bf1ae28:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM4YTIxMTg0YjZkZTkxYmZjZDk5MmJkZWUwNjBmOWEwZDdiMjEwMjZkZWVmYzM3MjBiYzhjOTk5OTM4MmJkZGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY2MGRmY2E3NmJlNTUwOWRhMWU3M2ZmZTg5MTYxNWU3MjE1NTlkMjlmZmI0OGRiNDFmMTdmMWFkZTNjNTlmYmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_f75f8ff4ac7b4354ad16b9864f920ee2",
+      "statement": "Medicine items submit for audit through job:72 (MedicineItemsSubmitAuditJobHandler), which pushes item medicine data to the kuaizhen580 sync HTTP client and writes the audit result (including failure reasons) back to items_medicine; combined with the batch-status pharma gating, prescription drugs cannot go on sale without the pharma-industry setting and a passed medicine audit.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/GoodsBundleDispatchJobNames.java#L21-L25",
+          "version": "repo-lines-v1:sha256:5c2d5e37331a4d09d014408e355511f93bde2e0e89f8e339e4128e734f347054:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNmM3MWUyM2IwY2M3NWEyODhkODM2N2VkYmMzNDBmOGY0MmRkZjk5NzJjNjNkM2I5ZDZiYmJmZTU5OTVmNjY5OCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZDdhNDZkYThkMTFhNTQ3YTFlN2I1YWNiNjhkNTE3OTEzMDgyNTdiYjRkNDYwNmU0ZDJhYTdkOTAwMGQxNDQyMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNTQ2NmUxNDkxZmYxMDUzNzViZTRkZTU0MzM5YTU0YjQwMjZlNzEwMWUwNmU1YmQzN2U3YTI2NjkzZmI2ZjIwNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDk5OGY1MWExNDJiOWI3NDIzMWY0MTY1ZGUyMGQ2ZjM5NTg2MDg4OTk4MTJkN2JmNmVjYTkyYjkyOGI2ODVlMiJ9"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/dispatch/MedicineItemsSubmitAuditJobHandler.java#L45-L86",
+          "version": "repo-lines-v1:sha256:4f26bc941d619c820f0c1c5419e44ba74da6a85e825c8451a69de2361b0df05b:eyJzZWxlY3RlZExpbmVDb3VudCI6NDIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwOGNjMTVkMDc1NGI2ZjIxZjcxZTBiMDNiOWRkNzg2YmM5ODgwMDNiMmI1NzU2NGM2MDUwYTgwMjI1MTdjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJkOGVhOWM5Yjc5ZWZhMjhmM2NkMDAxNjUzOTcyNDM1NzAwMzg5OGMzNmVkZmNhYWQwN2JiMTUyYzdmYmQxMjQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU1ZmY0Yzg3YzE3YWI1OWVlY2MxNDEzY2JlZDFjOWNlZjkxNGU1NWQ5ZTNiNmQ3MmIyYzg0MzhmZjk0ZmU4YTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY2MWUwNDc1MzE4MTIwMjQ1YmJlNDMyYTUwYmEwODRhMmI1NDExZTQ3NDIxMDVjYzVjNWJhNTk2NTRlNzlkMzkifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_24312034708c4a3faee4f92fa2e23c49",
+      "statement": "Item-type behavior is an extension point: ItemTypeHandler (preRelItemParams/createRelItem) is selected by item_type (normal vs default services) in both PlatformItemsAddService and SupplierItemsAddService; NormalItemTypeHandler validates store (0-999999999), converts cost_price/rebate yuan input to integer fen and generates item_bn when missing.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/ItemTypeHandler.java#L21-L29",
+          "version": "repo-lines-v1:sha256:3a13897e1a90d91302796f34d66a8ca6fa0e994987268fb8b032f703861ce5b2:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzgyZjgyZTdjOTQ4ZDE3ZjRhZDhjOGYzYmFjZjY0NWQ3MzliOThhMzYyZDg1ZTVhYTdhZGYyOGZlY2ZmNzg4NyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMmYyNzhmYzI0OGUzZDIwYWZhZGJhYzg1YzRhMDU3ZjdjMzI0YjY2NTU3YzQ4YjM3MDQzMjE3MDQxNzNhMzNmZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/NormalItemTypeHandler.java#L45-L74",
+          "version": "repo-lines-v1:sha256:4396b7e1d03eb3b1fbae0ca5ab28baefded8c9ea5971aa3591ecde9ec74753f6:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwOGNjMTVkMDc1NGI2ZjIxZjcxZTBiMDNiOWRkNzg2YmM5ODgwMDNiMmI1NzU2NGM2MDUwYTgwMjI1MTdjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjEyYTgwN2RkMTE2ZDE2Y2JjOWU2NzdlNGNlYjdjYjRkZDlmODcxYTNlYTkxZWM5ODM5N2ExZWI3MjhlZjY3ZWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdkYTNjNjYzN2FmYWQ1MjFjOTI2YjMwMzg2ZjM1ODlmMzlkYjE5MDAxYzk5ZmE3M2YzOTYxMDIwYzQ0NTVlOWMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_0378c603bf6b440e932916519e6559d3",
+      "statement": "The goods bundle owns dispatch job handlers in dispatch/ for job:62 AddDistributorItems, job:72 MedicineItemsSubmitAudit, job:74 ItemBatchEditStatusEventJob, jobs 75-78 OME sync, job:79 WdtErp upload, job:82 Jushuitan upload and job:84 Jushuitan inventory query, plus export-file job handlers; there is no production cron/ code in the bundle (only a test-cron profile mock config) — scheduling is owned by system-link/bootstrap.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/DistributionDispatchJobNames.java#L21-L23",
+          "version": "repo-lines-v1:sha256:03824d0836d793a3a95b9b0307b7aecc092099488aa784619df56c5ccea508bd:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiN2ZlODcyYzQyMmVkOGU5ZjJlODA1ZTRhYThjNjM5ZTEwYjMyNTdiODU4NGQwMzhkMGJiMmE4YzM0NmFmMzAxYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZGVmZDM1OTUyZDdjMWYyYzk2NjU0YmRhMWZhNTMwYmMwZGFhODc0NDBhYjEzMjZkMjE1MzkyZmYxZTI4NmExYyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOGM4NjJjNzQzMWQ0Y2NmODZhYmM3N2FmOTkyODM5ZmM5YWM0YmJjN2FkNDI1NWE3N2FkYzMzYWI1MzUyN2IxMyJ9"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/GoodsBundleDispatchJobNames.java#L21-L46",
+          "version": "repo-lines-v1:sha256:455701366780f05c7c6cbea2e41e9c3cb6b95169bd32cf213753987b8da98139:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZjNzFlMjNiMGNjNzVhMjg4ZDgzNjdlZGJjMzQwZjhmNDJkZGY5OTcyYzYzZDNiOWQ2YmJiZmU1OTk1ZjY2OTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFmZmRlYWU2MDY3YTY5ZDUzYjJkMWFkZGU5YjdkYTE0YzNjM2Q4OTFhZWEwMTEwNWFiODM1ODM4Yzc2MzY0YmQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU0NjZlMTQ5MWZmMTA1Mzc1YmU0ZGU1NDMzOWE1NGI0MDI2ZTcxMDFlMDZlNWJkMzdlN2EyNjY5M2ZiNmYyMDYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImEwOWU3YzI1NTllZjc0MzI5ZGVhZGE0ODcyMzBiMDM4OTJjYTY3YmY1N2QzYzIyZWEzYzg1Zjc3MDJmMDM2ZTQifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/cron/testcfg/CronTestMockConfig.java#L34-L36",
+          "version": "repo-lines-v1:sha256:c3ec698cfc4a57b79440512e3564250b1632051f6b6ccd16787f3d1116cd58d1:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMGJhYTdlYTdhNzY2ODE3YTk5ZTNkYjExN2EyNTE3ZjE3Mzk3ZTU5NTU1NjhmMmMwZWQyNWYzZWM3NmRkMzk5NSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNmJlZDE3NmJiOWEwOTA0NmMyMzUxMmIxZmU0NTc1YjgyYWRiM2I5ZGVmOWM4NmI4YTRkYzk5ZDZmOGI4MzU1YSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjUwZGQ2ZDk4YTU4OWVkYWVlNWY2MzY4ZjdjNjcxYTAzZTg0YWM1YWY2NGY4YmUzZTRjYzM1YTU1OWE2MmI3NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZjliMjY2OTgwYjM1OTY0OWQ5MzIzN2RlYWI1ZGYyZTQ5MmNlNjE3MTFkN2NlYjlmNDlmNmI2YjU2NWQ3YTIxYSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_27d063009306498aac8b8d11c4627454",
+      "statement": "The operator (shopadmin) cart HTTP surface lives in the companys bundle (OperatorCartController under /api/v1/operator: cartfastbuyadd, cartdataadd/update, cartdatalist, cartdatadel, scancodeAddcart), but every item-facing decision delegates through facade interfaces declared in ecshopx-common/operatorcart and implemented in the goods bundle (OperatorCartSkuLoadFacadeImpl, OperatorCartDataListFacadeImpl, OperatorCartFastBuyFacadeImpl, OperatorCartScanBarcodeFacadeImpl), so companys never touches items tables directly.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/operatorcart/OperatorCartFastBuyFacade.java#L17-L33",
+          "version": "repo-lines-v1:sha256:ff817478fb4eeb0d4cb8c73b5f88c2d9fcf4ea72731a02c215f4225c8215e10a:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJiMjJmMDcyNWMzMmEyODI4MmQwMjc4ZGM1MTFiMDMwNjRiMjU3ZDIyYWYxMmNlMGRjM2I2ZDNiNGEwY2Y5YWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY5NmEwOTMxNWM1YTA1NTRkMDI1OGYxNTc5YzlhNzAyYWU2ZTVlZjQ1MWU1MTRkYmNjYjFkZGUxZDRlMTcxOTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/api/admin/v1/OperatorCartController.java#L48-L108",
+          "version": "repo-lines-v1:sha256:d3847fb5df71a2c8b51aa7069fbc5b9b13cc918776229eecd0d60347a9d56e62:eyJzZWxlY3RlZExpbmVDb3VudCI6NjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFiOGU0YjZlMGE0YjBjMjg3NjY4YzQxZTNhMDZhYWIzNDg2NWVlNWU2YmE3M2Q0Nzc2Yjc4MWFlODI4YjRkNjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFhNmY0NTQ2YmI0YTNhMDczZWFlNTFkYTdlNzEyYzY5ZmE5NTU2NTIyYWYwMGQwNzgxNDI0ODU0ZTk0ZGQ1MjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMyYzBhOWI1ZDg2ZDg2MDVjZGVjMTI3YTcyYmE5ZGMxZDU0ZTgzZjI2ZGY1NzE4NTQ3MTlhZDhlZmI5OWFlYWEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_fb256ef20835424da4e5118cec36da53",
+      "statement": "OperatorCartFastBuyFacadeImpl.addFastBuyCartData validates params (管理员信息有误/企业信息有误/店铺信息有误/购物车商品有误/购买数量有误), resolves the SKU via OperatorCartSkuLoadFacade, runs DistributorPlatformStoreBuyGateService.assertShopadminFastBuyAllowed (headquarters-shipment SKUs pass unconditionally; store-shipment SKUs need the shop's is_platform_store_buy switch), splits stock into platformStock (OnsalePlatformStoreSupport.resolvePlatformStoreForSkuRow) and shopStock (0 when distributor_id<=0, the platform product model, or headquarters shipment; otherwise the row store), then OperatorFastBuyStockValidator refuses shop-stock purchases with 当前商品门店有库存，请从收银加购 and cloud-stock shortfalls with 库存不足 before writing the bucket.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/operatorcart/OperatorFastBuyStockValidator.java#L27-L41",
+          "version": "repo-lines-v1:sha256:b60e299786a45a3dbd504885b67b5e04ccebe846b4b0c6c51c4c7f10f8f8ad06:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNhYjUxODM1ZTMzOTU4NmFmMTM4ZWNmNDM5NmEwNzVmNmFkZmIyMWVmY2IwYTBmNWI5OTdkOWIzZjMwMDc1NGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAzYzBkNjVkZTkyYzM4ZjUyYzdlODEzNWFhZjBmYTA4YmU2ODk0NWJiYmZhZGRjYWQwMmUzNDNmZTJkODc4M2YiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/operatorcart/OperatorCartFastBuyFacadeImpl.java#L166-L177",
+          "version": "repo-lines-v1:sha256:37bd5607a86c535344b362ada991d5a8cfa7e1b3101e2e4c0f19aa3483ef6b3e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAzMDQxOTc0Njc4YWI3YzhjNjEyZjM4Y2YyNzUyNTViM2Y2OTAwMTUwMTg0ZWZiMDE0ZmQxN2YxODhhZGVhODAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFkYjBjODM1MjU0ZjNkY2Y0NDQ1NmU1YjEzYzU0Nzc1MDk2MTFmODQ3MmZiZjE3MzdmZTk3YmJiZDc1YTRmZTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg1ZWQ0OWM2ODk0MTQzZDZkZjVhOGI2N2RjYTZkYTJiOTNjOGYxM2E0YmIxZGE3NTJkMmQ0Njg1ZmEyMzI5MTAifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/operatorcart/OperatorCartFastBuyFacadeImpl.java#L62-L92",
+          "version": "repo-lines-v1:sha256:5a4440adf7c67bf8aa1bf7ebaaa276a8fdeb4ee6eec2ee3807411baa181375a1:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwOGNjMTVkMDc1NGI2ZjIxZjcxZTBiMDNiOWRkNzg2YmM5ODgwMDNiMmI1NzU2NGM2MDUwYTgwMjI1MTdjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ3OTI1YTVhMjA3ODgyZjJjNDVlNWVkNDQwZTkxMzU5YmJmNThiNWQyYTIwOTJmNGViYjk4ODA0YmExODRmNGYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdlNzJlZTEzZDhiNmYwZDMxNzg2NGFhNjEzYWRkMmNkNWUwNGI0Y2FiMjBjNTJkYWZkMzllNzY0ODg4YjljYzIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_0eb94463160148bfa21bfb4ef5f038a7",
+      "statement": "The shopadmin fast-buy bucket is a single Redis row per (company_id, operator_id, distributor_id): key shop_fastbuy:{sha1(companyId:operatorId:distributorId)} on the companysRedisTemplate with a 600-second TTL (OperatorShopFastBuyRedisService); accumulate=true adds to the existing num when the item matches, otherwise the row is replaced; revalidateFastBuyPlatformStock re-runs gate plus both stock gates against the persisted bucket and fails fast with 立即购买已失效，请重新加购 on an empty bucket; and the orders bundle's OrderCreatePostCommitPortImpl clears the bucket via clearFastBuyCart after a successful normal_shopadmin fastbuy order (regular operator carts are emptied item-by-item instead).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/operatorcart/OperatorShopFastBuyRedisService.java#L34-L75",
+          "version": "repo-lines-v1:sha256:51e28f3b0d96371419d6d85b56741d670716b030be57e5f880a58d34131c47b6:eyJzZWxlY3RlZExpbmVDb3VudCI6NDIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMyYjRlNjE0NTdhNWIyNGYwZjhjZjM3NzMwNzVlZjliMDMzYmM5MjFjNTIyOWVjNjlmNWNiZTAxZGJlYzExNzQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZiN2YwZWVlN2Y2M2NmMGMwNDZiNWJiZmQ0ZWU0OGFlNjc0N2UyOTJlYTg2NWZiNTlkZDVhOGVmNTdiZDBkOTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/operatorcart/OperatorCartFastBuyFacadeImpl.java#L143-L164",
+          "version": "repo-lines-v1:sha256:479fa24c202550212d09a72e92dc46c36c18e4866a5023ea66d5d4ee89c46747:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwOGNjMTVkMDc1NGI2ZjIxZjcxZTBiMDNiOWRkNzg2YmM5ODgwMDNiMmI1NzU2NGM2MDUwYTgwMjI1MTdjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc4NDg1MjI1NjNlMmM5ZWE0ZDdkN2IzODk2YWE5MzQxZTA5YzllZDU5NmQ3MzU2N2I4OWMxMzZmYjQ4Mzg2NWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImEyODRlZDA0ZTQ3ZmU4ZTA3OTkxZTIwOTE5ZDk0MDVmNmJlYTRkNWRhOGRhMmExY2I5ZmQxOTI0ZWZmYzRkYTkifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/create/OrderCreatePostCommitPortImpl.java#L220-L228",
+          "version": "repo-lines-v1:sha256:72055ba02a99d09c10cca0b8f15345521a792e40cdbfb55bf31fb182dbe60e9e:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNmI0MDZiNzM2Zjc1YTQ3YWQ0Y2RlNmFiNzg0MzI5OTQyNzYxOWQ5YzZiNjBlZTUzMmViYjgzZWM4NGNmOTFkOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjRlZmM0OTQxOGQyNmRjZjEyOWIyMmE2YWEyMTEwOGNlZWMzNzY3N2EzMmQwOGU5ZDVmZWUzNWRkYTY2YmI5ZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMWQ3MjA5YzJlZjlkMDk1MjdlOTQ5ODkyODQ5ZmI4Y2JkNDczZGJhNTc4MmUyZGIwYTNlNGQ0Y2Q1OGNlODNmOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNThkYzU3YjI4Nzg0ZDA1YTEzNjQ0MzA0MzcwMTIyYjA3ZDkwNWE0MmIwOGRiYTI2YzJiMjAzYjc3Mjc2ODBiZCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_7fdf8fb3d431498b9dce70b36d1b907d",
+      "statement": "OperatorCartFastBuyFacadeImpl.getFastBuyCartDataList reads the bucket (throwing 购物车为空 on isSubmit when empty), re-resolves the SKU, re-runs the stock validation on submit, lifts the display store to max(store, platformStock), and routes the synthetic cart row (shop_type=shop_offline, shop_id=distributorId, activity_type=normal) through the same OperatorCartHandleValidCartService + SalespersonDistributorCartFormatAndTotalService chain as the regular operator cart, so fast-buy pricing/promotion output is identical.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/operatorcart/OperatorCartFastBuyFacadeImpl.java#L94-L141",
+          "version": "repo-lines-v1:sha256:927eb7f463a8f8593808e50821506f713d0b6baea9c63c6f55afa3078a43364e:eyJzZWxlY3RlZExpbmVDb3VudCI6NDgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwOGNjMTVkMDc1NGI2ZjIxZjcxZTBiMDNiOWRkNzg2YmM5ODgwMDNiMmI1NzU2NGM2MDUwYTgwMjI1MTdjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjEyODhiOTlmNTNlNDBiYjYzMzBlYWFiMDA2MGJkNTRlODgwMWIxM2UyNzJhYTdlMzdiZTY4MjFiZTIzMzc5MWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjYzY2FhOTc1MjI1YWI5ZjIxMjhiYjY0ZDZhNDM4MDBmMTVmYmZjZTExYjQzNTQ4MjdiY2IwMGRjMzZhYjc1ZWEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_8d6719cf64774f39a62e8e264f4777a5",
+      "statement": "OnsalePlatformStoreSupport.resolvePlatformStoreForSkuRow (PHP ItemsService::appendPlatformStoreForOnsaleSkuList parity) computes the cloud/platform-bucket stock per SKU row with strict precedence: logistics_store present → that value; headquarters shipment (is_total_store truthy per DistributorPlatformStoreBuySupport.isSkuHeadquartersShipment) → store; a distributor_store key present → 0 (independent shop stock, nothing platform-borne); otherwise store — and GoodsItemsListFacadeService.listOnsaleItems injects platform_store and echoes is_platform_store_buy only when the request resolves a single shop (onsaleDistributorId > 0) whose is_platform_store_buy switch is on.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/GoodsItemsListFacadeService.java#L273-L295",
+          "version": "repo-lines-v1:sha256:4c9e2b1d7fede4bc0f6f3624664ca891afb7927febb19c718f3df0c68c442e8e:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQwNjkxYzViYjYxMWIwZGY2YzRjOGIyOWUzNzExYjY0MDI0ZTFkM2M4NGFhMjFhZWNlZmVhMWYyYjBjYTNjMDUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY0MWZmZmZlNTljMGVhY2M3ZWVmYmY0MTRkODIzOTE2N2Q1ZGVlZDk3MzdiNzc1ZGYxY2I5NDAwZDdjYzI2MmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJhYmJjNzVjMjEyMTM2OTUyMjMxMTA2N2E0MjYzOTI1ZmY0NGY4Njc4MWFlY2IxODIyY2E3ZjUxNmM0MWZkYTQifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/OnsalePlatformStoreSupport.java#L29-L54",
+          "version": "repo-lines-v1:sha256:fe26e0cb0c1f184a8bfbc532c0395bb300311c51e15ef7dbeabd1462389e6180:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFmNmY2Y2Y0YzAwZjI0MzEyYTRmMDIyNjRkYmE4NzcxNzY4Yjc0NDAwYzlmZjA0OTk2NGE5MWY4YmFiOGE1ZDUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVmZjkxYjYyZjRjNzA2OTdiNGJmZjBjODBkY2ZkYWY1OTllNmVkNmMwMzY1YjIzZjI4MjgxZjc1NTk5OTA0MzkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRiYzQzMDIwODBlMTNjMDM0NzU0MTg3ODU4MTBjZDlkMDlkNjg3MTUxODM3YTVmYmIyYWUzMjA1ZjliYzk4YzQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_1a2b57cd41064ad3abdb920a6dca85bd",
+      "statement": "WxappGoodsItemsListQueryOrchestrator fronts all wxapp item-list entrypoints (querySkuItemsList, querySalespersonSkuItemsList, queryItemListData with page size clamped to 50, queryShopItemListData unclamped): every entry strips distributors linked to disabled merchants, applies the salesperson gate (may patch params or short-circuit to an empty nosalestore response), then buildRepositoryParams composes item_id ⊕ category_resolved_item_ids ⊕ __keyword_default_item_ids ⊕ tag_id into one KEY_ITEM_ID_OR_DEFAULT_IDS set that intersects when several are present and collapses to [-1] forced no-match whenever an intersection empties or a category/keyword hit list is empty (pinned by WxappGoodsItemsListQueryOrchestratorCategoryTest and KeywordTest); distributor scoping uses the dist_rel_virt_ store-shelf virtual join only for the standard product model with is_can_sale, otherwise a direct items.distributor_id filter.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/wxapp/WxappGoodsItemsListQueryOrchestrator.java#L298-L389",
+          "version": "repo-lines-v1:sha256:825380996f24a9b7d4eab0dd2af98ae67045c30457f7d639c6f05b1d78cdc083:eyJzZWxlY3RlZExpbmVDb3VudCI6OTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRhNmEzZWI3NDRhZjkwYWI0OTc1M2RjN2VmNWVmMjI3MDdlZmJmN2UyNGM0NjA5NzUwNTIwOTI0ZjljZDE3OGQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUwYmE0M2RlZTg3M2UyOTZiZDE0YTY4OGNjYWUxYWNiZDU1YTg3ZTY5OTZkYmZkZjI3YjYyMjE1Mjg1MzljMTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAwYjk0YjdiMjUwYjBkNDRkNGIzZjY0ZWUxMGZkM2M3Y2ZlNWVlZmZiYTE2MGU0OWUwNDg5NjBiMDBkN2U0ZDQifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/wxapp/WxappGoodsItemsListQueryOrchestrator.java#L66-L155",
+          "version": "repo-lines-v1:sha256:970def86f5b54c04d4f9161fa1a9a762eff0c83a4f4663596435dbb26d787e9e:eyJzZWxlY3RlZExpbmVDb3VudCI6OTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEyYWMyZjkwYjFjOGU1YzM1YjMxZjY3N2U4ZWI4NDgzYzZhYWU3OWU4M2UyMzM1MWZlYmQzMDQzN2Q2ZjhmMDUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBhMzQyMzIwZDE2ZDZlZjAwYzg0NTA3Zjg1NjRkNThlMDUzMGQ4ZjJjYmU2NjQ3ZDJmYzMyMzgwNzZiYTA3YjgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhhMmE5MDE1OGUzYjRiNzMzOTg2OTg4MDExZmI1NjZhYzc3NWE0YjIyZmE2ZDU1OGVjMWM5NWQxMmVlY2VmYzQifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/service/wxapp/WxappGoodsItemsListQueryOrchestratorCategoryTest.java#L61-L89",
+          "version": "repo-lines-v1:sha256:a16948b85e132b479a8947fb542328094c0f0cc8389c1d602cae6ca9021593c0:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiYTFiMWYwZDkzOTU3NDJlMjE2ZjcxYzllOTBjOGZiOWFhNmI0Mjk2YWFhNGNlN2NjMDVjOTZlYTViODdiYWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIwYmI0ZTczYzA5NDZkOTQ5YmQyNTJmNTg1YWZiNWMzMjEwNGU5YzhmNjkwN2JlZmUzYmM2OTMyM2RkYmEyYmUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU5YzA1ODc4ZmJiOTMzYjgzYWUxNTU1MmVkNjZjMmM3NzYwOTU5YWI2YzE2ZDUxMTc3NzZmMDllZWRkYjliNTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU5YTE1OGZjOTRkNzlmYzRlNDc2MjEyMTUzNjI1ODU1MGFiYjA2NDJhY2ZkMzUyYmQ0ODcwMmZhZDBhMjA0MTgifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_5f4a1786b10b45b5af4aea34bff235dc",
+      "statement": "DistributorItemsRelListCoreService is the shared pagination core behind the shopadmin shop-goods list, the Jushuitan/WdtErp upload page queries, the distributor CSV export and the openapi SPU page (queryOpenapiSpuPage): applyDistributorItemsScopeFilter lists only goods related to the shop through the dist_rel_virt_ virtual join (with the request's is_can_sale mapped to d_items.goods_can_sale, PHP getDistributorRelItemList parity) under the standard product model, while any other product model filters items.distributor_id directly; row post-processing runs applyDistributorSkuReplace (shop store/price replace, distributor_store, logistics_store preservation, is_total_store flags) and SPU stock sums only under standard, and the platform pipeline (type labels, medicine data) otherwise.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/distributor/DistributorItemsRelListCoreService.java#L333-L351",
+          "version": "repo-lines-v1:sha256:a55add270a174d3cf64e034cfd47d07f7055b850d7a837b0217c66a11a067ab3:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVkOWQ4Y2EyYmNhNmJiZDE2YjU5Y2JmNTJiNDM1ZDNlNzY3NjA3MTk4NjQ1Njc0YTdjN2ZiOGMyZTA1NjA2YTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJhYmJjNzVjMjEyMTM2OTUyMjMxMTA2N2E0MjYzOTI1ZmY0NGY4Njc4MWFlY2IxODIyY2E3ZjUxNmM0MWZkYTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjVkMTAyMThiMDE5MDJjMzk0M2ZjODI4OWUxODI0YzYyMjU3Mzk2MDIxYjhkMjc1OGQ2Yzg3YTA3YWYzZjE1ZGIifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/distributor/DistributorItemsRelListCoreService.java#L94-L240",
+          "version": "repo-lines-v1:sha256:0194956b3949b2130fef4be3d457c90a35bbaa259ebf447bca4c03cae7e053d7:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQ3LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJiZjJjZDhmOWIzN2JhZjdjNjY5YTQ1ZWM2OWI3Y2ZiYTk2ZTZmMjk1MzM4MDQ2ZjliZDc3ZmI5ZDQzYmY3MmY2IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI2NGVmYzQ5NDE4ZDI2ZGNmMTI5YjIyYTZhYTIxMTA4Y2VlYzM3Njc3YTMyZDA4ZTlkNWZlZTM1ZGRhNjZiYjlkIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI4MmM1MGQ0ODk3ODBlZWYwNmE4ZGVkN2QxOWU0YmZlZWQ4NmIyY2RlZDFiZThhOGY0ODExZGUwMDA2ZmNhYjI0IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI0ZTI4YTU0OGE4MDY3NTJhNDI0OTYzNDljMzY4NzE4M2IzMWZhNGJkM2NiMDNjYTljYzRlNDQxMjliMGU2NDZkIn0"
+        }
+      ]
+    },
+    {
+      "id": "claim_f6713630875440c7a5ae638b2de126e2",
+      "statement": "OperatorCartSkuLoadFacadeImpl.resolveSkuForOperatorCartAdd is the single add-time SKU resolver shared by the fast-buy bucket and the regular operator cart add: the platform branch (distributor_id=0 or platform product model) forces is_total_store=true; a shop branch reads distributor_items where is_total_store=false swaps in the shop's store/price and records distributor_store and is_can_sale=false zeroes the store; rows the shop neither owns (items.distributor_id equals the shop) nor has a relation for are refused with 无效商品; supplier goods always get their logistics_store and a combined effective store via ItemLogisticsStoreEnricher.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/operatorcart/OperatorCartSkuLoadFacadeImpl.java#L300-L372",
+          "version": "repo-lines-v1:sha256:3e3d81d29d7e6ccf233e578312daa22b3fb432146dc073f6d763c365c36fac23:eyJzZWxlY3RlZExpbmVDb3VudCI6NzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwOGNjMTVkMDc1NGI2ZjIxZjcxZTBiMDNiOWRkNzg2YmM5ODgwMDNiMmI1NzU2NGM2MDUwYTgwMjI1MTdjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFmZWMxZTA5NDNjN2FjZDNjZjljN2NkOTEyYjM1YjMwNjc4MGVlN2Y1ZWI2ZjFlNjI3NjgzYzg3ZjFjMzY3ZDQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_ee7156927a6642b38bfa7814d82dccaf",
+      "statement": "DistributorItemTotalStorePortImpl (goods' impl of the common DistributorItemTotalStorePort) answers which of a set of shops currently draw a given SKU from headquarters stock (filterDistributorIdsUsingTotalStore over distributor_items), which the members bundle's GoodsArrivalSubscribeMatchService uses so a headquarters EVENT_ITEM_STORE_UPDATE also notifies per-shop subscribers of shops on total-store shipment.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/integration/members/DistributorItemTotalStorePortImpl.java#L25-L40",
+          "version": "repo-lines-v1:sha256:a128d501b4a1eaba6c87af3274413dddf1d2d8cede1dd9762e213a6a037d08a5:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJiMzM2YzQyYjJmNTIwN2I3NzVlNTBhOGRhY2UyZDZkMTViMjZmNjFlOGNkYTJjYTRkNDNmY2U0YWU0ODQ0ZjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNlNzljMTJiYWZlMmViNmJkOTM5MWZmOTZhZTBkYWZkZWE1Nzc2NzdjNmNiOTBhNDJjZGM2NWEyMDlmOTVjMTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/GoodsArrivalSubscribeMatchService.java#L96-L119",
+          "version": "repo-lines-v1:sha256:d8ac7975f7785f4d00f81f35feac4a9c5336f6de5cbdc6ec4455c1015ab97201:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdkMTAwYWM0MThhYzM5YjQ4Y2MxMjVjOGQxMmIzYmU4NDBlOTM4ZjQyOGE2YTAwMTZhNzZiZTE2MWZjYjJhZTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE1OWI5ZTFkMjk0MmZlMTE0ZTIwZmFjZmUyMGU4M2M0NzFlNDRkZTFmZDYwNzk3NzJiMDQxN2VhNWIzYTYyMzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZiNTZlYTE2YWYyN2M0YTQxNmM2MzQ5ZDZiYzVkYzdlMzI2YjA3NGYyNmJiZjE2OTk3YjEyYzZkZGFlODg4ZDQifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.2",
+    "at": "2026-10-25T17:14:04.348Z"
+  }
+}

@@ -165,7 +165,8 @@ class RefundCheckThirdPartyTradeAftersalesSaasErpBusPublishProbeTest {
 						wdtPublisher,
 						wdtPayloadBuilder,
 						thirdPartyTradeAftersalesCancelSaasErpPublisher,
-						thirdPartyTradeAftersalesSaasErpDispatchPublisher);
+						thirdPartyTradeAftersalesSaasErpDispatchPublisher,
+				mock(AftersalesRefuseWxaNotifyService.class));
 
 		Map<String, Object> param = new LinkedHashMap<>();
 		param.put("company_id", COMPANY_ID);
@@ -289,7 +290,8 @@ class RefundCheckThirdPartyTradeAftersalesSaasErpBusPublishProbeTest {
 						wdtPublisher,
 						wdtPayloadBuilder,
 						thirdPartyTradeAftersalesCancelSaasErpPublisher,
-						thirdPartyTradeAftersalesSaasErpDispatchPublisher);
+						thirdPartyTradeAftersalesSaasErpDispatchPublisher,
+				mock(AftersalesRefuseWxaNotifyService.class));
 
 		LinkedHashMap<String, Object> merged = new LinkedHashMap<>();
 		merged.put("aftersales_bn", AFTERSALES_BN);
@@ -415,7 +417,8 @@ class RefundCheckThirdPartyTradeAftersalesSaasErpBusPublishProbeTest {
 						wdtPublisher,
 						wdtPayloadBuilder,
 						thirdPartyTradeAftersalesCancelSaasErpPublisher,
-						thirdPartyTradeAftersalesSaasErpDispatchPublisher);
+						thirdPartyTradeAftersalesSaasErpDispatchPublisher,
+				mock(AftersalesRefuseWxaNotifyService.class));
 
 		Map<String, Object> param = new LinkedHashMap<>();
 		param.put("company_id", COMPANY_ID);

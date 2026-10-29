@@ -282,23 +282,23 @@
 	<select id="countOfflinePayCancelable" resultType="long">
 		SELECT COUNT(*)
 		FROM orders_normal_orders o
-		LEFT JOIN offline_payment of ON o.order_id = of.order_id
+		LEFT JOIN offline_payment op ON o.order_id = op.order_id
 		WHERE CAST(o.auto_cancel_time AS UNSIGNED) &lt; #{threshold}
 		  AND o.order_status = 'NOTPAY'
 		  AND o.order_class IN ('normal', 'shopguide', 'employee_purchase')
 		  AND o.pay_type = 'offline_pay'
-		  AND (of.check_status IS NULL OR of.check_status != 0)
+		  AND (op.check_status IS NULL OR op.check_status != 0)
 	</select>
 
 	<select id="selectOfflinePayCancelable" resultType="cn.shopex.ecshopx.orders.domain.NormalOrders">
 		SELECT o.*
 		FROM orders_normal_orders o
-		LEFT JOIN offline_payment of ON o.order_id = of.order_id
+		LEFT JOIN offline_payment op ON o.order_id = op.order_id
 		WHERE CAST(o.auto_cancel_time AS UNSIGNED) &lt; #{threshold}
 		  AND o.order_status = 'NOTPAY'
 		  AND o.order_class IN ('normal', 'shopguide', 'employee_purchase')
 		  AND o.pay_type = 'offline_pay'
-		  AND (of.check_status IS NULL OR of.check_status != 0)
+		  AND (op.check_status IS NULL OR op.check_status != 0)
 		LIMIT #{limit}
 	</select>
 

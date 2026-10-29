@@ -1,0 +1,294 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:959c1fc279fa166a9c6c658e747b880cdc6de46d5441b3f2cf748ab5ab2304b4",
+  "claims": [
+    {
+      "id": "claim_3d9864ae8e5d4123b40f3da9acfcc8e6",
+      "statement": "The only @SpringBootTest in the entire repository is EcshopxApplicationTests.contextLoads in ecshopx-bootstrap; every other test is a plain JUnit 5 unit/slice test that constructs classes directly with Mockito mocks and never boots a Spring context.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L23-L34",
+          "version": "repo-lines-v1:sha256:54f7f481d7a9144a866392851baf0792b3956a37e6c8d21d02c7663628ed7c99:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYwMTJjNjc3ZThiMjgzZDAxYWZiMzg2MTgxODdiYWJiZjQzZGY0ODliOGQ5OGYxMzZmMmFhNTQ2ZGI0ZTc2ODMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFmMGE4NmIzN2ZlNTA1Y2U3NDNjZjFkY2M3YTBjNzYyMzc4NDBlNmE3YjViYmI4ZDI5MGRjNzlhZmRjZTk5NGIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZlOWM3NTlmMjZlZDJkY2EzMGJiNDk0ODk0ZDY5OWRmN2FiMGI3Zjc4MjRjNzY0OTgzOTQwNjI4YzMzYmFjYzciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjUwMTU5MjhiYmRhMzVlNTliYzdlYmUxMWU2NDkxNDEzZjgyY2EwYWNhZWJkNmI0MGI4ZDEwM2Y3MDdkOTM2YTkifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/EcshopxApplicationTests.java",
+          "version": "repo-file-v1:sha256:a499c7e57206160bbbcf63745b6c67f59d7d062e2b4eba82fba92ba102f16c07"
+        }
+      ]
+    },
+    {
+      "id": "claim_43a0c26c173641e1822b7df06bb76a45",
+      "statement": "*DispatchFlowTest classes (200+ under ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/dispatch/) pin one message end to end: a real InMemoryDispatchRegistry holds the real handler/listener, a real DispatchFacade + DispatchFanOutPlanner + DispatchCore is built with the REDIS driver replaced by a message-capturing list (DispatchCore.asyncReady(registry, new SyncDispatchDriver(registry), Map.of(DispatchDriverType.REDIS, captured::add))), the captured DispatchMessage's queue/delay/listenerName/payload is asserted, and a real DispatchConsumerRuntime then consumes the message into the handler body.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/dispatch/FinishOrderJobDispatchFlowTest.java#L27-L71",
+          "version": "repo-lines-v1:sha256:d40f48fbee51dca6b265060ce6d1f7d2e8e1ad709f70517306fda17c0b1d4f4b:eyJzZWxlY3RlZExpbmVDb3VudCI6NDUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdlY2E0YWE0OTgxMjQ1ZjdkNGJkYTZjZDczMDAxZDgzZTIyNjU2YjM0NDZkN2Q3ZGJlNjk1MzAwNGUyYmVhZjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc0MGQzMTU2MzFhZDc0ZjJkYzg4ZWVhN2U4MzE0YzAwYTRkMzc5NjdhZmNhNjk4ZGRhNjIwM2UwYjY5ODhlZTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/dispatch/ItemCreateEventAsyncConsumeDispatchFlowTest.java#L14-L61",
+          "version": "repo-lines-v1:sha256:54a9343bf714d5ef9d091c465278fd590b6cd8a81208b6c4996ca4a1635b6f73:eyJzZWxlY3RlZExpbmVDb3VudCI6NDgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxYTZhMDRhMGJjNDUxMmE4OGRkNDJmZjVjOWUyMGUyZDRkYTIxY2UwMzNjZTdhZDc4YTRlNTM2ZDkwNmZjNTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImYzYmRkODRkMTE5Nzc2OWU2YjMzMjU1NDRjM2M0OTMyM2Y5Nzg1NTU5Yzc2YWU1NWMxZjgwMDY3NDBiODNlMjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_e3ca81f433ab4c32bb9ed72230df63dc",
+      "statement": "Publish probes pin AFTER_COMMIT timing with a hand-rolled fake PlatformTransactionManager: getTransaction calls TransactionSynchronizationManager.initSynchronization(), commit iterates the registered synchronizations and invokes each afterCommit() before clearing; the service is driven through a TransactionTemplate over that manager, and the test asserts the dispatch publish fires only after commit (zero facade interactions inside the transaction), with an @AfterEach clearing TransactionSynchronizationManager between tests.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-aftersales/src/test/java/cn/shopex/ecshopx/aftersales/service/AftersalesAdminApplyOrderProcessLogDispatchPublishProbeTest.java#L104-L129",
+          "version": "repo-lines-v1:sha256:a5272d9f497cb376c10400f2607a1175de632ba18e4c586c56c5e1155a5b476b:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIwMGYzMzM3YTYzMDhjM2I4YTAwODk2Y2FhNjYzZTQxMGYzZWQyYTY4NjJkNjM3MjhlZTk5OTViYzExOGY1OWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIyZjJmZjVmZWVjNjBmNTg3YzhmYWU0ZTg3ZjgwOWE2NjFjZmZlZDZiNDdhYWU1ZjZkNmEyNjUzYWE4OTUyZWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjcwOTdkMjNiZGE0MDY0N2ZlZTkwYjg3MTQ5MmE5NGY2OWVjYzdjMmNlMjg2YWEwMjJmZWQzY2Y4OWMyOTY2YmIifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/config/ItemAddEventDispatchPublisherImplAfterCommitTest.java#L38-L88",
+          "version": "repo-lines-v1:sha256:b0b2f8bf071829435003a58e04c7669d4038cb4976c4f4dcd37678c9031d7fd3:eyJzZWxlY3RlZExpbmVDb3VudCI6NTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiYTFiMWYwZDkzOTU3NDJlMjE2ZjcxYzllOTBjOGZiOWFhNmI0Mjk2YWFhNGNlN2NjMDVjOTZlYTViODdiYWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIyZjJmZjVmZWVjNjBmNTg3YzhmYWU0ZTg3ZjgwOWE2NjFjZmZlZDZiNDdhYWU1ZjZkNmEyNjUzYWE4OTUyZWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZkODgyMjFlYWMyM2Y1YTAxOTdkYzk2MWRiNWE0MTA5MTZkYzZjMjNmZmNmY2RjYmIzZTI0OGJlZDQxODMyYzEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/orders/service/offline/OfflinePaymentDoCheckTradeFinishCanceledRefundOplPublishProbeTest.java#L352-L386",
+          "version": "repo-lines-v1:sha256:80d507dc2686bfcfe28ffc2f934c84ccb036ffbd60f83a045173e4e2b05c2d22:eyJzZWxlY3RlZExpbmVDb3VudCI6MzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEyMzk3OWU4MmQ2ZjNiZWRmNjhmNGU3Njg3YWMwMGRlNjEyZjIwODI3ZTEwYjIwNzQzNTRkYTMwMGUwM2MxNWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI2NGQwNTUzNzJmMjRiODUzODQ3NDkxY2VkMDNiY2UzY2NmMDk1YjU3NWVkY2VhMDFjYzcyNmM4YThjNjBkOWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_0af35488c1df44479ea7170e9baedd77",
+      "statement": "Consume-side envelopes are pinned by *EventAsyncConsumeTest (ecshopx-orders, ~50 classes) and *DispatchConsumerRuntimeTest (youshu/hfpay/reservation): the test hand-builds a DispatchMessage carrying the real listener name and queue, registers the real listener on an InMemoryDispatchRegistry with its production ListenerDispatchOptions, and drives DispatchConsumerRuntime.consume(msg, 1) to verify the listener's downstream service runs exactly once with the payload.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/orders/integration/AlipayNotifyOrderProcessLogEventAsyncConsumeTest.java#L33-L78",
+          "version": "repo-lines-v1:sha256:0fdcc4218d85010c6374c98b9c3850dfa06df2aa12d6127b6e5205116198367d:eyJzZWxlY3RlZExpbmVDb3VudCI6NDYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiYTFiMWYwZDkzOTU3NDJlMjE2ZjcxYzllOTBjOGZiOWFhNmI0Mjk2YWFhNGNlN2NjMDVjOTZlYTViODdiYWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhhYTc0ZDUwM2QyY2JlNzVkNjE5ZmNiMTg3M2E3MGZhZGI4OWVlZjJjMGRmOGIwOTczNzNjN2FjMmE0ODY0OWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-youshu/src/test/java/cn/shopex/ecshopx/youshu/dispatch/CouponDeleteYoushuDispatchListenerDispatchConsumerRuntimeTest.java#L41-L86",
+          "version": "repo-lines-v1:sha256:1dd32ac5f0f9e3e8aad295aeae5dc171140c56b17204f9fe5465910d524b14e0:eyJzZWxlY3RlZExpbmVDb3VudCI6NDYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdkZjI1YzlmYzZkYmMwOTMxNTcxNmJmZWIwNzMzMjkyZDQwMWI4ODQ0OWQwZWFmMzBkZDNlYTk2M2IwZjY2ZTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVmMWU3YmU5NmI2MzYyMTg5MmQ1NjE0MzljOTc5NTBlMjFhYjcwYjRmYTNjMzg3OTFkY2IxOWYxNTRhNWQwZGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_79dce48758e242429cc291e5a3332e40",
+      "statement": "Controller tests (*WebSliceTest in bootstrap, *DelegationTest / *EndpointMappingTest / *WebMvcTest in bundles) use MockMvcBuilders.standaloneSetup(controller).setCustomArgumentResolvers(new FlexibleBodyMethodArgumentResolver(objectMapper, null)).build() — the production resolver must be registered manually because standalone setup has no Spring MVC infrastructure; operator identity is injected via .requestAttr(...) on the OperatorJwtRequestAttributes.OPERATOR_JWT_USER_DATA attribute, and DelegationTests additionally verifyNoMoreInteractions over all injected services to guard that controllers carry no dispatch-publisher path.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-aftersales/src/test/java/cn/shopex/ecshopx/aftersales/api/admin/v1/AftersalesControllerAdminSendbackDelegationTest.java#L32-L98",
+          "version": "repo-lines-v1:sha256:df3ea2d5a3d992d46acfccf3c0e6eb51d82d146f935bc13f4d60318f34c27a1e:eyJzZWxlY3RlZExpbmVDb3VudCI6NjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI3MGU0YjY2NjgxZDBmZmU4YWRjMzBkYTM1MjQ5NWRiMDhhMzVhYWE2YjJjZWYwNTk1ZjNjOWI5MzFkZDAwYzUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/companys/api/admin/v1/OperatorsGetCredentialsWebSliceTest.java#L88-L111",
+          "version": "repo-lines-v1:sha256:4ca5c3818de47cb71b780dd75591e96b1a4da2b61244f1eb67fcf1da810c9c2f:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM4OGRlMWUxMDc2YmY0ZTljNWI4M2U1YzQ1NzkzYjA3NDJjY2MzMjI0OTI0NGVjZjE5MDcxZmUwZjc0ZjYxNjUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIzNjBhOGU2Y2UyZjM5ZjZkOTg4YzMwMzEwNGQ0MWY3MGUyYzMwM2NmNTUxMzNlZTY5NDc1NWZmMjE1OTkyYTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/web/FlexibleBodyMethodArgumentResolver.java#L44-L56",
+          "version": "repo-lines-v1:sha256:b4599d24999c1f75f5e292027bb76805bc6533180c8621b3c6344b63b899a290:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJlODA3OGU3NWI5MWI2MDA1MGRkZGMxMTFhOGMyMWI1NGMwNmExY2ExMTQ2NDY0NThiMjc1NzQwNGU4MDI2MTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImEzZWRiMjg3ZjUxODE4YzZmOTdkZjU2NzViZDc1M2QzZjlmZjVlMTIwNjc1MjRlMDM0ZGE2ZDNmM2U4ZGUxZDgifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_9c4645e9160a4409b9b567c43922be07",
+      "statement": "Unit tests that exercise services building MyBatis-Plus lambda wrappers register entity metadata manually in @BeforeAll via TableInfoHelper.initTableInfo(new MapperBuilderAssistant(new MybatisConfiguration(), \"\"), Entity.class) for each entity the mocked mapper will be called with — there is no live SqlSessionFactory in tests, so without this the wrapper construction throws.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-members/src/test/java/cn/shopex/ecshopx/members/service/h5/prelogin/H5NewLoginPathsCreateMemberSuccessDispatchProbeTest.java#L49-L53",
+          "version": "repo-lines-v1:sha256:ddefb6b8cfd00cdaa786547a5f466e29d71516219520d357d93f0bf5d09121f6:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMjc1YzhjMmIzMmRlZjRhZTQ0NjY1M2ExZjg4ODhkMzQxNDI3ODdiMmY1OTQwNDY2MzZjNWYwYjkyNTUyMDkxNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDM5ZWJlOGI0ZmU3ODdjNzcwMjAwZDBlODUyYjU0Y2Y0ZmUzNjZjZDgxY2U3ZGZiNjMzZjc3YWExNmMzNWM4NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOWI5ZGZlZWM0MGU3MDFkMGFlNjhmNjk1N2JmYjNhYzA4ZjFkYTQ0YTJlMzEzMWY4MTExMzM1ZGYyNDZmY2NhMiJ9"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/orders/service/offline/OfflinePaymentDoCheckTradeFinishCanceledRefundOplPublishProbeTest.java#L69-L77",
+          "version": "repo-lines-v1:sha256:1d991b4960988da9f8488b80d90105c031d0f8eea4ac019b532db032dee89d7f:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMjc1YzhjMmIzMmRlZjRhZTQ0NjY1M2ExZjg4ODhkMzQxNDI3ODdiMmY1OTQwNDY2MzZjNWYwYjkyNTUyMDkxNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjJlNWQ3MDZkZDRmNzdjM2I3MWYwZmE5ZmM0NmNhZjYxY2M0MTcwZDRiNDFmYjFmZTFjNDk0MzQ5YzJmNWQyNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODBjZGUwYjQ1NjRhMzgyM2EzYmFlNjRiYzI5NWE4ZmU3MzljZTMyZWZkZmU3ZWRmODIwNDgwN2RlNDQzZGMxMCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_c14eab4fa72b4840add100b82abe50c0",
+      "statement": "Where a service genuinely needs Spring transaction proxies, tests use @SpringJUnitConfig with a hand-written @Configuration that @Imports the real service, declares every mapper/publisher/port as a Mockito mock() bean, and backs @EnableTransactionManagement with an H2 EmbeddedDatabaseBuilder DataSource plus DataSourceTransactionManager — H2 is a test-scoped dependency only in ecshopx-members, ecshopx-goods, and ecshopx-third-party, and the in-memory DB holds no tables (it exists solely so the transaction manager is real).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-members/pom.xml#L85-L89",
+          "version": "repo-lines-v1:sha256:33a63a270ae93fe637cd6822e2a91406203a0e58d6167a322495dd0af8413b35:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjA0NzFjNTFlZTVjOWEwZTAxMDc5ZGE5MGJkYjcxZWNiNzZmNmQ0OGI2NjQ4YTUwYWZhNjM3N2Y1MjJhNTRiZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDYwYmFiMDRmMjE5NjU2NmM0ZTRkNDJmNjA2MzcyYzIzNzc4OWM4N2Y2NDdlMzA0NzE5MzY3NzA3YTg4NDQwOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiODkzNDQxYmFjZWY1NmI5ZDMwY2NlMTk0NTdkYzA3OTg2ZWJlYWEwYTVmMTNiYWM5ZGI4MDAxODJjNDZmYzQwMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjIsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMmZhMTQ0NWU4YTMyNjcxYzliMDdlOGVhYzhhZGE2OTJiY2EyNjlkYTBkMGQ3NWRlYzcyYmI0ZjM4Yzc2ZDM4NiJ9"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/test/java/cn/shopex/ecshopx/members/service/account/MemberAccountServiceCreateMemberLocalAutoRegisterDispatchTest.java#L34-L107",
+          "version": "repo-lines-v1:sha256:3668e6c3c08af0bbbedf9b652f6d52630b1fa3c7de038d513d4e94c0971a8660:eyJzZWxlY3RlZExpbmVDb3VudCI6NzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlkNDI2YzRmMzAxZTVlMDJjYTY0ZjA3NzMxMjZhZmViNDRjYTMxZDE2MzEwZThlNWMyOGE4NmJhYTZjNzMxMTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRmYjQ3NWFmNDI3Mjk5ODcxZjE1ODI1MGQzOWRhNDU1YzM4Y2ExYzEzNTViZjY4YTFhNmUwMDRiMGY3N2U0YTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZjNGRiNjZmOTA0NmRhYjA3ZmRhMWRkNjEwYzFiMGE3MDgzMWY1MTFjNjhiYzI3M2U4ZmE1YjY3ZmJhMzYzZTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY5MGY1YjRkYzA3NmFlY2Q0MGU2YTY2ZWZlOGUwZWJmNjVmY2Q2MDRmOTdkZTczNDNjYjNiNzQ0YWVhYmRkYzAifQ"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/test/java/cn/shopex/ecshopx/members/service/account/MemberAccountServiceDispatchIntegrationTestConfiguration.java#L35-L48",
+          "version": "repo-lines-v1:sha256:44a67986a14226eca38105351342dd6f9fbe7d8a0986208d780eb216d7590612:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiMTQ3NjJhYWFkNThkMTM4NDRjZjJlYzU0NzQwYTRkOTdmNWUwN2VlNTE2ZDMyMGQ2MDM2YzFjN2NlNDJkZmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVjZDllMTBhNDI5ZDg3ZDNlMTZlNjMzNjdjNmZiYmEyMmU2NzdmNzZjM2NlMzIwYWQxZGZmYmIzMDdjZTdjYjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjgxY2VlYjdlMTk0YjU0ZjUzODg0NmE5NzI5ODFkMTVjNTU5NjRmOGQxZTdmYjVkMTljZDk2ZTA1NDg5ZTYyN2IifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_f6af289ded4b45adb6fd28768799885a",
+      "statement": "The repo's canonical verification commands are ./mvnw -pl <module> test (one Bundle), ./mvnw -pl <module> test -Dtest=ClassName (one class), and the pre-PR gate ./mvnw -pl <module> -am verify required by readme.md's contributing checklist; CONTRIBUTING.md additionally requires all tests to pass and new features to add test cases.",
+      "evidence": [
+        {
+          "resource": "repo://CONTRIBUTING.md#L51-L56",
+          "version": "repo-lines-v1:sha256:8626fffbb21c3e0b5a2c1de4ed7ce1b0a4f9f7017f1bf5241897f6dd055612a1:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOWZmZjM5ODEwOTZkYmM2YmJiZjRmZTM1NzkzNmM5Mjg1NDc3MWQ4MzlmMTg4YzgzZGNjZGMzNWMyZmUwNDZiZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiM2Y5NDhmYjk0MzA3MzMzZWE4NjhiMGQ3MjI1YzgwNTZiNTlkM2ZkYmFiMjgzNzc4ZmFkNzZlMTMzYmRiOTJmYyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzFmMmRkNWRjZDRmMzhiZWNkNzBkOWZlZmRlZDkwNmY4OGRlMTUyY2EzMWNlNDE0NWYyYzU4YzRlNDQxMWY5NyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzk3YTg1YTI1YzRlMzE2M2E5ZmQ4N2Q5Mzg1MWQ5NDIyMDIzNTczMjA1YTY2YWJkOTk5ODcwOWVhNDBkZGRkMSJ9"
+        },
+        {
+          "resource": "repo://readme.md#L347-L365",
+          "version": "repo-lines-v1:sha256:a18a7cea00d02da2c3afc91c966d1842fb5ebbfa36a268a4471ed08adbbf517b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3MjM1ODU2MmEzZmJkMjc3MGJhMzVjNDA0NjAyM2I3ZjdhN2RmMGMzMDU1YmU5MTMzMmUzYzBlYzNiZjFiOGQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ3YzA2YzU2MWQ1YzMyNzM0MzY4NTI2OGE0NmIzMzkxZjM5OThlZWU4OTBkMmJlNTFmMGQyMWNjNGE1M2FlNmQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg2NTU2ZDU1MjE2Y2YxMTgwM2QxOWQwY2RkNTk5MDQzMGQyNjFhOWNlOWFiY2FhNDA2MTJhNTM2N2E1ZjZiMjgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJkMDAxMjc1MTFlMGY3MTM5MzYzOWIxMjk1ZjU2M2MwZDk3MzgzMGFmNDBmM2QwZDhjOTQxZGVjOTQzMGYxNGEifQ"
+        },
+        {
+          "resource": "repo://readme.md#L401-L406",
+          "version": "repo-lines-v1:sha256:0716c7fb94573a0235391411cbee431a3fcb4c533bc3e370d316729c38274229:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYWRlNmViMjJjOTFhZDQyYzQ4Y2UzNjc5NzRmYjdmYjY3ZWNiYjU4ZTQyMGRjYzQ0NmQzZjQyN2Q0M2U5Njg0MyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNmYyNDVlZWMyOTcwMWM1MGM1MmMxMWY0NjhjMTU2OTgwZjJlN2YwOWQ3MTU5MTE3MWNkM2JjMmQ3MWViMmYyOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTkxODJhMjE2YTNiYjJlMThkOTY0MTBkMDgwY2Y2MDg2NmM4NWUxMjQxOGUzNDUwYjdiZDI2YzM1OGI2MTA1YiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYzM2ODU3ZjBiMjQ4ZWQwYzQ2NzEzNzJhOGE5OTYxZjExYTUxZWIwYWY4ZTM3MDI3MDE4NjVhZTEwMTc0MDhlZSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_7c22a1b008a64aa08b41856dd89efcb3",
+      "statement": "Production controllers document their own re-verification commands in Javadoc: WxappOrderController embeds exact mvn -pl ecshopx-orders -Dtest=...PublishProbeTest,...EventAsyncConsumeTest test invocations for the dispatch contracts each endpoint relies on.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/api/front/v1/WxappOrderController.java#L87-L116",
+          "version": "repo-lines-v1:sha256:08e9fa2fe09a8fb2025929f55482c551808a0ed6ee3b05973225cf88ab5ce674:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgzMDE0ZDZlZDY4NzM4Nzk1NTA1NjI3YWE0ZGYwYTEzYzcwZjY1MjhhNmViNWM0MTcxMjJmY2ZjOGI4OGI1ZmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU0M2NiYjVmYTIxNDk1NDlhY2JmNjgyZTk5NzkwOGM1OTY4NTI4YTgwNmJlMzY2MzU1MzViZGJjYmY3MGUzMzEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU5YWNhYjI0OTFkNjJkNzczNTJkZmRkOWQ4YzQ3NTQ1YjFlYmFmNWQ5MDg5MDU2MjhmZTBiMzBkY2I2NzM2ZWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM0MjI2NzI0MGRiMDRhOWVkMjk5NWZlMzUxNmE3MjdhN2QyZTg3ODkwMDZmN2Y0MTU5NjQ3MmRkNzkxZTBlMjQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d3f9bfc8305c456ba9dbdf591c90a585",
+      "statement": "No POM in the repository configures Surefire/Failsafe/JaCoCo or Testcontainers; the parent POM's build section only configures spring-boot-maven-plugin (skipped except in bootstrap) and flatten-maven-plugin, and test deps come solely from spring-boot-starter-test (plus H2 in three modules) — so ./mvnw test runs default Surefire behavior over *Test classes.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/pom.xml#L254-L258",
+          "version": "repo-lines-v1:sha256:d619c84f4212661dc7611c128eb221a3f218d536cccf18aa43a49ba75ac02a3e:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjA0NzFjNTFlZTVjOWEwZTAxMDc5ZGE5MGJkYjcxZWNiNzZmNmQ0OGI2NjQ4YTUwYWZhNjM3N2Y1MjJhNTRiZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDYwYmFiMDRmMjE5NjU2NmM0ZTRkNDJmNjA2MzcyYzIzNzc4OWM4N2Y2NDdlMzA0NzE5MzY3NzA3YTg4NDQwOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNzRhNDQyY2ZjMThhODg4YWI1Mzc2OGJkMTMxNDQxY2U2OTAyYjE1MjdlYTM4MTdkODdiYjQwNWZkOGRjNzUyOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOTk0MzRmMmNlZTUyYTg0ODBhYTQwZjg5ZjkyMGVlOWQ4MmUyNDI4MjBjOWY2NjQ5OTY0MWFkMDcwYjVmODczYyJ9"
+        },
+        {
+          "resource": "repo://pom.xml#L426-L460",
+          "version": "repo-lines-v1:sha256:259a35640ddeba906dbc4fa2a958fd14bfa4a7a8b68f59b2addd427cd44a734e:eyJzZWxlY3RlZExpbmVDb3VudCI6MzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMwYTBlMTVjNjM3NWM1NmI2ZWExNGFjMGUxZWY3M2NiNGE1NjVmZDE5ZGYxODA0ZmI0NzIxYTQ2NTc0NTczNGQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU4ZmIxYjhmZjkzYzU5ZjBjZjUzMTUzOTQ0YWJmM2Q3ZTE2ZDY3MGE2MWRkN2I2MjkwZjMxNjhmYWIyZDdlYTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZlN2QwZjI3YzNjODdmMWVhNzkzNWY1MTk0NzNhZjBmNzdiNDMyMWEwZDEyNWY5NTY3MjU1ZmQyMGNkZjQyOTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ2MmY2YjcyYmUxYjk3N2JkMGUyMWI3N2Q0YzE2ZDQ0MzAyYzA0NmE1NzJmY2M4MmMyZjRjOGJjY2I5OTBlOTYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_0972c758ff64462f85c098cdbcf29616",
+      "statement": "Bundle-local *PublishProbeTest / *BusProbeTest classes assert the publish side without HTTP or bus infrastructure: the real service runs with a mocked DispatchFacade (often through the real OrderProcessLogPublishPortImpl, whose publish defers to afterCommit via DispatchOptions.oplQueuedAfterCommit when a synchronization is active), and ArgumentCaptor + verify pin the message name, payload fields, and exact options tuple; some Spring-context variants set @TestPropertySource(properties = \"ecshopx.h5.encrypt-sensitive-data=false\") so captured payloads carry plain fixtures.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/integration/OrderProcessLogPublishPortImpl.java#L38-L59",
+          "version": "repo-lines-v1:sha256:86e288e215926bb097baa6b8a59c28d716220ab3cc3caf6c8612a1a6e2885f12:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwOGNjMTVkMDc1NGI2ZjIxZjcxZTBiMDNiOWRkNzg2YmM5ODgwMDNiMmI1NzU2NGM2MDUwYTgwMjI1MTdjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE0ZGJiNjE0NzA1MDU0NGY0NDhmYjk2ZmIxZmNkMmYyODE3MjQxY2ZkZGYxNTVjM2M4MzRjZTA3YjM4YTljMTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/test/java/cn/shopex/ecshopx/members/service/account/MemberAccountServiceCreateMemberLocalAutoRegisterDispatchTest.java#L106-L123",
+          "version": "repo-lines-v1:sha256:055f715e7797c2bdcc6fd3b6d5ecebe3f376254918f239579473f1e251134845:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhNWM3OWZmNzBjYjhmMGU5YTlmZjg2OTY3MGI1Nzc3MmE2NGU3ZmZjY2E5YjJjM2UyMWVmYjBiZGVkZmI1ZDEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ0OGEzNDdhMjViODc2Nzc1ZDk3MWE1OTFmZjk5NGY2OWZjMmNjNDRjNGNjMzZlNGQ3Y2QyZDIyMzMxNGMxNDYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJmMmZiNWUxNDdmOTZhN2Q2Yjg5YTgyM2I2NTQ4MzliOGM1OWUzNzY0ODkzZmU5MzNhZTdlYWIxZjYyZmQxNjQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFlOTUyZjIxNDA2NmFiOWMxMWU1NGY5MjkwMmNhNDM4Yzc4OGMzYTc3ODU0YTZmMzFlMjExYmVlYzlkMDg0NmUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_7d5c31761daf4447935712b379d1c076",
+      "statement": "Inline in-memory dispatch stacks let @SpringJUnitConfig service tests assert real captured envelopes: a @TestConfiguration assembles InMemoryDispatchRegistry with the real listener registered, DispatchCore.asyncReady whose REDIS driver appends to a shared List<DispatchMessage>, a DispatchFanOutPlanner, a DispatchFacade, and a @Primary publisher bean — avoiding bootstrap's ~200 registration configs and duplicate-listener registration.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-members/src/test/java/cn/shopex/ecshopx/members/service/account/MemberAccountServiceCreateMemberLocalAutoRegisterShopexCrmDispatchFlowTestConfiguration.java#L34-L112",
+          "version": "repo-lines-v1:sha256:cd84eda3f7e61ce7933a96383c7141a88c30b99892ead7001f31b66f818414cf:eyJzZWxlY3RlZExpbmVDb3VudCI6NzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhkNDIzZTM0ODJlNTM5ODg3OWUyZTAzZWNhYTRhMzQ2YTQ3YWIyOWMyNTRmZWY0MTNkODYzMjAyYzU3ZDQ1Y2YiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjMwZGYxMjljMDkwMjQ2MjllYjc4NGFlZjJmMDQ1ODYwZWI3OWE2NzM0M2RiZWQ0YjlmNTkzYWNiNjkwOTJjZGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_9d41329fb49f42d28cf451b96c621cd8",
+      "statement": "Dispatch bus internals are tested against mocked Redis/Rabbit templates: DispatchBusIntegrationTest proves the sync driver executes inline, RedisDispatchListener.poll() decodes a dispatch:default payload into runtime.consume, and the Rabbit listener does the same for AMQP bytes — queue draining, the delayed-ZSET mover, and poller loops are never run against real infrastructure.",
+      "evidence": [
+        {
+          "resource": "repo://AGENTS.md#L11-L14",
+          "version": "repo-lines-v1:sha256:9eb409c08e8de7aa64760c896b4418feccc8ecb3129b33d529cbdcf4c07d2d1a:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMmNiM2Q0YTQ2NjliZGM3YTQwZDk4MDc3MzVkZjYwOGJmZTMxZDM4NjA2N2M5OTliNzUwYWFjNjMyYzFiNmQzMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYWI1Mzk1M2JmYjcyYzEyNjJiYmFlMmVhY2E3MmNhYmYxYWY0OTkyN2EwYmJhMTE1N2IyZDViZGIyODVjNGJkMiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOWM5MGE3YjU5ZmEwNjFhOTU2YzE5MTIxOTkyYWQ4ZDFmOTk2ZGMwOGE3YjQ1ODhlYjJjYjk4MzU0YjdmMTU0ZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjIsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzA4OWRmOTNmOGJhNTdhNGRkYmZkOGYwMTM5NjJjMzk3OGNlNGRiNjgxOTljNGRhNjY2NjQ5YjA5OTZjZWRhOSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/dispatch/DispatchBusIntegrationTest.java#L27-L116",
+          "version": "repo-lines-v1:sha256:ae1987cc60e07519e4faa7f2cc999aa0bf64da3ce8635b9f0805b6414ce45507:eyJzZWxlY3RlZExpbmVDb3VudCI6OTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY1NjEwOTcwMzZmMjNhYzM1MGQ0N2Q2OTk0MTE2MDkwNzcwNjhmZTYzNGRhMGY2ZDAzZmIxYWZmYzZmMmRlMDAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU0NDM2MmY4NDBiYjM0ZmI4NWMzYThkMmRjZGFlMmYzNjlkNzAzMjAwOWJmN2M3MjJkMGI3MTM0MzUzZjlhZjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkzOGRlNzRiZTk3YmYzYWJhNzg3MmE2MWJhMGU0MjA4NDAwOGM4MWU4YTIwMmE2MTIxMzRjNzU1YWFmN2ZhMDYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b5b511b96a2e47a69b16462b1f2114e4",
+      "statement": "Pure business rules get plain unit tests with mocked read ports and AssertJ (e.g. AftersalesApplyCheckApplyServiceRefundFeePrecisionTest pins fen-unit refund-fee precision with floating-point-noise tolerance), and @ConfigurationProperties validation is tested with Spring's ApplicationContextRunner (LanguePropertiesTest) — the one place the context runner appears.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-aftersales/src/test/java/cn/shopex/ecshopx/aftersales/service/AftersalesApplyCheckApplyServiceRefundFeePrecisionTest.java#L23-L53",
+          "version": "repo-lines-v1:sha256:705ef24967704de6434154cebe24cf3ec30b368232b60d5b1764e1f66b778522:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE2YTgyY2MxMTUyZWE0ZTdjNThiYjQ2ZDhlMTZmYzU0NGQzNWVjMjkxMjAxMjBkNmIxYzJkNzBmMTFmYjA1ZDEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU5NGE3ZmFlZmE1Yjc5ZTk4YzRmNmVjNDc2NWE4ZmVkN2U4NGViYjM1OWUzMjhjYTU3NTY1OGJhOTViNjdjNzMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk2ZjIxYTgxNjYwNTJlNjJhMTljNmEyOWZiOTA3ZDA1NTRiMTYwNmZlYzYwN2MyMTQ0NDMzY2U2YzY0Nzk5ZDMifQ"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/test/java/cn/shopex/ecshopx/common/config/LanguePropertiesTest.java#L10-L70",
+          "version": "repo-lines-v1:sha256:4572d348ce466ce9e03a2af38ad565fcdd321ae41442192cf11060b59b6d25cd:eyJzZWxlY3RlZExpbmVDb3VudCI6NjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI0Yzc2Yjc2ODE2NzRiZDQ2ZGFjZWNhNDIzNGY4YjJmNDIyM2RmNzE1Njg2MDhhYmRkNmJmOTAxZmIyOTE0MGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE4ODZlNzhlZjBjMGIyNGNlZDIyY2YwMzg1ZDRkZjMyMGUzZTBkYWM2N2FkNTgwMzM4NDBhMjYzZDIyZGZmNzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_9122f528ec3441f8a014c84bc6c29717",
+      "statement": "Dispatch-flow tests are homed in ecshopx-bootstrap's test tree because bootstrap depends on every Bundle: the test can see both the bootstrap publisher implementation (config/ package) and the handler in any Bundle, and registry-level tests (DispatchBusConfigTest) boot only DispatchBusConfig with a mocked dispatchBusStringRedisTemplate to assert the core beans exist.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/dispatch/DispatchBusConfigTest.java#L13-L35",
+          "version": "repo-lines-v1:sha256:3c355d2076ff195e85c2d8ceafdaa34c9ff14c9e3731e16d6bd873c2c8dd446c:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIxOGNmMWY0OTZkNmVmNThhMzdkNTM5Y2RkZjk3ZDUzYTExMWU3OWVkMjc5YjJhZWUwNTQwOWIwZmRhNzI0YjQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ0ZGUwM2U4NGQ1NTVhNjk5NzFkNTc2OWVmZDcwOTQxMjllNTQ5NjJkNjRmMWVkNDk0OTYzOTgzZGUyNDE2MWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/dispatch/redis/RedisDispatchDriverTest.java",
+          "version": "repo-file-v1:sha256:8fc220902fefb3100b5effe037f3de3db20dbf231ba19dd26e9290375c67d304"
+        }
+      ]
+    },
+    {
+      "id": "claim_ba7fc575ea974862bd3052efe023d3ed",
+      "statement": "A negative variant of the *PublishProbeTest family pins publish absence for the deferred shopadmin create: ShopadminNormalOrderCreateOrchestratorNormalOrderAddDispatchPublishProbeTest and NormalOrderAdminCreateUserOrderServiceNormalOrderAddDispatchPublishProbeTest construct the real orchestrator (and the real NormalOrderAdminCreateUserOrderService over it) with all collaborators mocked and verify only preparePricingSnapshot plus ShopadminDeferredOrderCache.saveWaitPay(state, orderId, companyId, payType, totalFee, ttl) are invoked, returning order_id with order_status=NOTPAY — neither class holds a dispatch publisher, and the EVENT_NORMAL_ORDER_ADD publish moves to materialization (ShopadminDeferredOrderService.splitAndPublishOnce calls NormalOrderAddDispatchPublisher.publish only after payment persists the snapshot), so the probe pins absence plus the saveWaitPay call instead of a message name.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/NormalOrderAddDispatchPublisherImpl.java#L47-L54",
+          "version": "repo-lines-v1:sha256:235b4045a45c1f9e5f7e05f7466f0f4a97e48fc5125f696a3759bdf8f1369a53:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjA4Y2MxNWQwNzU0YjZmMjFmNzFlMGIwM2I5ZGQ3ODZiYzk4ODAwM2IyYjU3NTY0YzYwNTBhODAyMjUxN2M1ZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTRkYmI2MTQ3MDUwNTQ0ZjQ0OGZiOTZmYjFmY2QyZjI4MTcyNDFjZmRkZjE1NWMzYzgzNGNlMDdiMzhhOWMxMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/shopadmin/ShopadminDeferredOrderService.java#L244-L261",
+          "version": "repo-lines-v1:sha256:07db52b8b4efd4fcc73436014942e4d1859b25e49618cec183792791b548ef92:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFmOTA3OTg0NzVmOWY3YjY2NTBiM2U4MDBhZDUwM2IxMGU5ZWJkZjRiNDA2OTQ2NzI3ZTBhZjRjNGM4M2I5N2EiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFiMDRmODkxNmQwYTdjZjAxZDkzMmVjNmU1MjVlMzQzNTEyMjc1YjBkNWM5ZDFhMjZhYzNhNzI0YTY1NzJmNGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMyMTcyMTAzN2VkOGVhOTYzNDgxZDFlOWMwNTcwODdlYWMzNmJkNzg2MGY2NGY3ZmNiZDI3ZWUzYTZmZmE5MDcifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/orders/service/normal/shopadmin/NormalOrderAdminCreateUserOrderServiceNormalOrderAddDispatchPublishProbeTest.java#L81-L112",
+          "version": "repo-lines-v1:sha256:a811f3a5114ecd9673f6301794ba545dc8899f50a71d797a85bea2dd67ec5340:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiYTFiMWYwZDkzOTU3NDJlMjE2ZjcxYzllOTBjOGZiOWFhNmI0Mjk2YWFhNGNlN2NjMDVjOTZlYTViODdiYWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjMzNWM1N2UxODZhMTkyZTc1NmFjNzE5NmVjN2M1MzFmMzE0NTVlNTczYmU4MWFiYjRkZTUwZWQ5MDgxOGY4Y2YiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/orders/service/normal/shopadmin/ShopadminNormalOrderCreateOrchestratorNormalOrderAddDispatchPublishProbeTest.java#L73-L100",
+          "version": "repo-lines-v1:sha256:7ba4c3743cd4af2707630a5a76e87f412dc33376c24b610df6207dde820f6c2e:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiYTFiMWYwZDkzOTU3NDJlMjE2ZjcxYzllOTBjOGZiOWFhNmI0Mjk2YWFhNGNlN2NjMDVjOTZlYTViODdiYWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjMzNWM1N2UxODZhMTkyZTc1NmFjNzE5NmVjN2M1MzFmMzE0NTVlNTczYmU4MWFiYjRkZTUwZWQ5MDgxOGY4Y2YiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_feccf1bc0e024ac8a932fd7436aab476",
+      "statement": "PHP-parity alignment tests (*AlignPhpTest, two classes) pin that Java order-create mirrors the legacy PHP OrderService::_formatOrderData behavior, citing it in their Javadoc: OrderCreatePersistencePortImplShopIdAlignPhpTest captures the NormalOrders, NormalOrdersItems and OrderAssociations inserts via ArgumentCaptor and asserts shop_id comes from orderData (0 when the shop check is off for normal/shopadmin) rather than being rewritten to distributor_id (which stays 104L), plus preassigned order-id reuse and default-currency fee fields; its goods-bundle twin OrderCreateFormatDataPortImplShopIdAlignPhpTest pins the same shop_id=0 rule on the format side, matching OrderCreatePersistencePortImpl's production comment 'PHP: shop_id from orderData (shopInfo; 0 when isCheckShopValid=false) — not distributor_id'.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/service/order/normal/OrderCreateFormatDataPortImplShopIdAlignPhpTest.java#L22-L27",
+          "version": "repo-lines-v1:sha256:5d73e3ae87e1466745c64de4099ae386221480bb819d41c52c38dc75b6ec1a62:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZWFmMjJjZjA3MzI1OTJjMjQ3MTQxY2JlNjFlZmExMTAxMjYxMmY1YTMxMjJiOWFmOWJiYWY1MmY1NzI0ZDE5NCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZGQ2NWY5NjdhOWM4ZDZmNTk1NGQ3Y2QyZTcxY2QzYjdjODI5MjQ0ZThkNTUwZjdiODg0ZjdjMmRlZjE1ZDQ4OCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjI1YWI5ZTEzZTExOGVlN2VlNWU2Yzk2ZTQ2YTc5MDdjZjgxYWJmNjA0MDM0MGVjNWUzMWU5ZGNiZDYxOWEwYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzk4MjNkNTllMzE2NWIzOGVmMDk5NjZkNDA3M2RjMWRiNTdlNjBjNzc1YTA1MDViODU2YTNjODMyMDQ3ZTFmNCJ9"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/create/OrderCreatePersistencePortImpl.java#L119-L123",
+          "version": "repo-lines-v1:sha256:a14347163c8d603148eb63e98355dc90716434a463e3877cb803097e8843da4e:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTBmMzM4YzQwYTUzYzRmYTFlMWYyNzcwMzE0ZTg4ZjIyNTVlN2RlN2RlYWNkYWEzZmFmODAzN2M3NjU0MTQxZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMTJmMmVlNWZhMGI2YTc2YmQ2NzA4YWYyOWEyN2Q2YzFiNTRjZjM3YmQwZTkyMzllYjVhZDU4YTYwOTQyOTdjMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzI2ZDdjYmE2YzFiMjA2OWRkNGIzNjgzY2ZlODA1NmQzZWZhMzkyMTNlZDZjNjg5MjViOTk5NTgyYjNjNzA3NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTBkMTY3OGRhZmUzNGU2M2Q3ZWRmODdhZTg5MWUwMGUxMjJiNjAxYmYzN2UyZDkyOWJjZTViNjc5NjIwZjkyZCJ9"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/orders/service/normal/create/OrderCreatePersistencePortImplShopIdAlignPhpTest.java#L124-L174",
+          "version": "repo-lines-v1:sha256:579dbf7851e1ee4e45b91cbdea55a0be3fb879dc46e5350d5398bdbe36ab09da:eyJzZWxlY3RlZExpbmVDb3VudCI6NTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiYTFiMWYwZDkzOTU3NDJlMjE2ZjcxYzllOTBjOGZiOWFhNmI0Mjk2YWFhNGNlN2NjMDVjOTZlYTViODdiYWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZmMGYzNGY0ZmEwNTZhZDUwZTlmZDFiNmRkZjZmYzI3MTE2MTYzNTU3NzA4MDUwNjc3ZjI1NTZkNWZlOWVkYTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ3NWZjYjkwOTQ1MDQ4ZTk0OTJjZDgzYzM3ODRhMzk2MzI1M2U3NTIzYWY4YjYwMGIyZmZkMDhkOTg3OGYxYWQifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/orders/service/normal/create/OrderCreatePersistencePortImplShopIdAlignPhpTest.java#L32-L37",
+          "version": "repo-lines-v1:sha256:e8b717bc8bcad93a2c1d0e54edbf172149f51c13d16e312d0996c55a79c47e18:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZWFmMjJjZjA3MzI1OTJjMjQ3MTQxY2JlNjFlZmExMTAxMjYxMmY1YTMxMjJiOWFmOWJiYWY1MmY1NzI0ZDE5NCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTUwMjEyNDc1NmViNjczZDVlZWE5Y2U1YzBiNjdhNjE5ODMxNjRlYjRlZDg4ZTM1MDBhNTMzMDAwNjVhOGZiMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDA2MDZkNWY3ZWViYWU3ZTljOWJlNWE1MzNjZTY3ZmViZTdkYmYzYWU4MDhkMDNjNTY1M2YzYjhhZTcyNmY0MyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjlkNTcyZmQ1MmE0NzMwNmQxOWM1NmY4MzU0YTc2ZDdjNzNlMDE5YTE3MmE1OTMyY2IzMmEyMGIwOWU1ZDIzMyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_6c5a8df375204c07892cb88dc1dcb477",
+      "statement": "Guard-relaxation tests pin that a deliberately loosened business rule stays relaxed while the surviving guard stays wired: SeckillActivityCreateServiceLimitedTimeSaleShopOverlapTest runs the real SeckillActivityCreateService create/update with seckillActivityMapper.selectList returning an overlapping same-shop limited_time_sale activity, wraps the call in assertDoesNotThrow (the shop mutex must not reject), and then verify(guard).checkActivityValidBySecKill(anyMap()) — consistent with the production code, which always builds guardParams with use_bound=1 so checkSecKill's use_bound=0 whole-store rejection branch is never entered on the seckill write path, while per-item overlap guarding remains active; the test also clears TransactionSynchronizationManager in @AfterEach because the @Transactional service registers after-commit synchronizations (salespersonItemsShelvesJobDispatchPublisher.publish).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/MarketingActivityCrossPromotionGuardService.java#L524-L535",
+          "version": "repo-lines-v1:sha256:9ed46ab908a35a94bf9c9dcb393aa9597bd3d88ce8e726a61001c8a14c63b86e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUwMWQ2ZTcwODFjZWQ3YjY4MmQ3ZGU0Njk0ZDAzZjA0ODJjY2ZhMDg3YzU3MGMwZmY0Y2RmZjAyZmVkMjQ3ZDEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNlMTU2Njc2YzczY2FmMTlhZDNkMTQxYjU2ODYyOWNhMGQwYjI3YTRlNmY5MWUzNzFlMTg1OTFhYzJjNDQ2YjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZhNTI1ODA5MmRkNzI3NDEwMzk5YzNhNWUwZmVjYzViYWM2MjI4ZWZlZDIzNWYzOTc0NzA3ODA3MDY2YmIyY2QifQ"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/MarketingActivityCrossPromotionGuardService.java#L866-L880",
+          "version": "repo-lines-v1:sha256:81167bf1e43770e8ba252b81bce6d8ffcceab53b0dd20d00fe88a27c8fa24039:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgxOThmNGRjNDQzOGYxMjdiMDMxNDJjOWMzMzJmYWIzNjY1YjRhODk1ZmIyZjgwZTU0OWU3Mzg0MWY1NWMyYjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdjNTY0OTAwNTM0YTViOTZkMDdmOGE2NWI4Mzg1OGM0NjBiNzUxZjI4ZjViZmYwOGI3OWZlNjBkZmQ2YjNlM2YiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ5MWFjZDUyMWM5YWY4ZjRiNzkzYjEwOWEwOTYzNzU4ODA3NDE1NzdjODc4MmNkMjJmZmU2MjYzZTEyMDU3NjEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/SeckillActivityCreateService.java#L167-L178",
+          "version": "repo-lines-v1:sha256:79db2cb830e2630b81a3008efc6127ddb59a4db745c3ad91b71bf441ad4dda62:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZjODI4YzJlZmM5YWY4NGZkNTY2MDgzN2JjMjI5NGZlNWNkZGJiMGVjZTNhZmYxYTAyNzEzYTVmMGQ0YmUyNjEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVmNGNmMGQ3OTMyNDJmZTE4NDQyZDI2M2FjNzRlZjBiZWU4ZGZhMDlhYTI2ZjY1ZGM5MGM0ZTkxZDgyNDM2YWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcxZGU0OTBhM2E4NDg3N2IwYTAxZDYwOTI1NjM3YTQyNjBiMTYwOWU0ODBlOTlkZWY0NjllMDZlMDYxMTU2ZTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY3NmIyNzg5ZjU3YzY2ZWVmMjNkMTYzYzc3NTEyYzM5N2IxM2NmYmY3YzY2OGQzOGY2MjExZTdlYTkyNjVjMmMifQ"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/test/java/cn/shopex/ecshopx/promotions/service/SeckillActivityCreateServiceLimitedTimeSaleShopOverlapTest.java#L52-L73",
+          "version": "repo-lines-v1:sha256:73dc0d48e11e36bcc197709ae6176d5c5b0309d90398aa0c8a785b2e6a78a7f8:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiYTFiMWYwZDkzOTU3NDJlMjE2ZjcxYzllOTBjOGZiOWFhNmI0Mjk2YWFhNGNlN2NjMDVjOTZlYTViODdiYWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIyZjJmZjVmZWVjNjBmNTg3YzhmYWU0ZTg3ZjgwOWE2NjFjZmZlZDZiNDdhYWU1ZjZkNmEyNjUzYWE4OTUyZWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImEyOWQ5OGRiMmFjNmIwYTM0Y2EzODcxM2MxMDViNzEwZWQ3MThkZTc3OTJlYWJiOTkxODBjYmQ0NzMzMzgxYjUifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.2",
+    "at": "2026-10-23T03:04:20.471Z"
+  }
+}

@@ -1,0 +1,330 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:8e0662c5b4f57696a4952dccac90632dfb8096268014b101a7984711791b91bc",
+  "claims": [
+    {
+      "id": "claim_a430e315735a4af5adc3a18089a3897e",
+      "statement": "DispatchFacade is the single publishing entrypoint for cross-Bundle messages: dispatchJob builds a DispatchMessageType.JOB message and publishEvent builds an EVENT message from the caller's DispatchOptions (mode, driverOverride, queue, delay, retryPolicy), stamping a random-UUID traceId and occurredAt, then hands each message to DispatchCore.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/DispatchFacade.java#L40-L72",
+          "version": "repo-lines-v1:sha256:b1dc97327418b2c2c7c7e30d42bd6d0c8b2a9b60f7884b5d50b8dd59dbe355a3:eyJzZWxlY3RlZExpbmVDb3VudCI6MzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxMDU4NWZjZGRkOGJkZGZkMTdmMDI3Njk3NDk3OTAwMDkwMzUyNzAzNzg0MGNhZjljMDg5NDM0ZjA1N2Y4MDMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE3ZTJiMzUzMGZlMzY0YjQ1NTZhZjYzZjgzMDE5OTYzNTcxZWVmMWJhY2EwZGM4OTc0YmQ3YjNiNmY1ZDBhNDEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZkNmIzNDQ2NWUxOGEwNjZjNTMzODc5ZjM5YzVmMmI2ZTgyN2QzOGFhNjgyN2Q0OTQ2YzEwYWQzMzNiNTg0N2EifQ"
+        },
+        {
+          "resource": "repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/DispatchOptions.java#L21-L43",
+          "version": "repo-lines-v1:sha256:2cd1cf53512424c6d4d882862f9a07562865a089553709fdf46675d50c66ee86:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIzMDZkYmNlMjVkZDMyOTE3YWE0NTBjNWNhMjhkYzdhOTIzZjdhMWIwMDI5NWU0YzEzZTczZWU3ODA4MDEzNTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImEzOWQ3OGQ0OTZmZjhjNjgyMDk0N2IwMzUyOWVjYjE5NWU0ODhiMzBiN2I5YzRkYTM3MGNjN2FlYTMwYTZmMTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/RetryPolicy.java#L21-L25",
+          "version": "repo-lines-v1:sha256:e27b6344f71d98212d64ef9588ad516605edff8c16a1ec71d937be723380d4ec:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjE2Y2IzZTUwMmMyNDNlYmE1MjkwMzJlOGNiMTVmOGRkY2I1MjYyNTQ2NDI1NTFkZTQ2MGMyYzIwMzgxN2ZmNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDg5M2Y0MGUzNzgxZWI4OTZjODJkMDQ2YTA4MDY3YTExZTM1Y2RmMmYxZGZhZjI2ZmVhOTBiOGRiNjY3NjQxMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTM5ZDc4ZDQ5NmZmOGM2ODIwOTQ3YjAzNTI5ZWNiMTk1ZTQ4OGIzMGI3YjljNGRhMzcwY2M3YWVhMzBhNmYxNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_0bebd0fc56b046f0b061b70b3c9f863a",
+      "statement": "DispatchCore routes by mode: SYNC messages execute immediately through SyncDispatchDriver (in the caller's thread, job handler or all matching event listeners), while ASYNC messages are looked up in the asyncDrivers map by driverType and enqueued, throwing IllegalStateException when no driver is registered for that type.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/DispatchCore.java#L43-L53",
+          "version": "repo-lines-v1:sha256:c514831776a1cb229df4443ecb86b0d7fe905c166cbfcb1013e6b4064e09feca:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAwYjM4NDcxMjc0ODhhMzM4YTU0ZmM3MGMzOWIzY2VkYjdjNTNhMWE0Yzg1ZWMyMDNjYzRmMzA3MDcxOGJiMTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNhYjQ5ZTJkNWI4ZjE5ODg1ZjRjMWMxN2E4YjQ3NWI3MjM0ZTFiMzI2Y2EzMjBhZTcwYzg0MWMxMDYyZjgxNTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/SyncDispatchDriver.java#L27-L39",
+          "version": "repo-lines-v1:sha256:5385931c39529d7a15578326ff1619eef953b0c11b8374ede1683c58f470b305:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIzMmQ3ODBiMzBlYTY3NmUwN2Y5ZWZkZTRkN2QyM2ZjMjkyNmE4Y2RjZWE0OGVmMjBiNTBlYjkxZGJjOTY0YWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJhNGVkZTA5ZTY3NDljOThiODQxMjcyYTZlNmE4MGMwYmY1Mjg1OWYyYWI4ODVlZjkwZWEzN2MxYzlkOTQ4YmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_3d6e28fe0a6843be92553ccddc7c9dbe",
+      "statement": "DispatchFanOutPlanner expands one ASYNC event into one DispatchMessage per registered listener, forcing DispatchMode.ASYNC, keeping the parent's driverType/messageName/payload/occurredAt/traceId, stamping the listener name, taking the queue from the listener's ListenerDispatchOptions (defaulting to \"default\"), taking the retry policy from the listener registration, and taking the delay from the parent message when present otherwise the listener's delay.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/dispatch/DispatchFanOutPlannerTest.java#L14-L64",
+          "version": "repo-lines-v1:sha256:29fd9f2c4b71152089e34a709016ca47b3143ee1e812e94c630fabaecd329ec0:eyJzZWxlY3RlZExpbmVDb3VudCI6NTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI2ZDE3NmJhZmI4YWEzNzQwZDliNTc2Zjk2YjVlZGI3YTIyZWY2MWY0NDdkMTViMTcxYmVlZGZlOTIzMzYzMmEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE3ZTM2NDNmYmRkODQ5MGNlYTIwOWNiYjFmNTdlZWJkNmY1N2RmYzEzZTQ0ZjU5NWU2ODM3ODY4ZTE5ZjAwOTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImYzODg4N2Q3NTg5YTRhNGM0OGZjYjA2MTQxNjJjYTA1MTgyMzcwOWI5MTM4NDJmMWE2Y2I3ODdhZTY2ODg1MDAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM3OTRkMDJhODEyMTk0NGQxNzZkMjY1ZTliYjljYzU5ZjZhYjg5MGJjYWRmOGFlZmRlYmRiYmI0ZjJlYTg0NDQifQ"
+        },
+        {
+          "resource": "repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/DispatchFanOutPlanner.java#L34-L50",
+          "version": "repo-lines-v1:sha256:90d20dd6e9017870fdac33b40fbb4fd189945c9073f3b3fb0ad78baebd6360ff:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjliNWY2NTZkZDRhNDJlZWE4NTk4Mzg2ZjQ5MDU3YWQ5Y2U5YzEzN2NlMzNhZDA5NmE0YWUzZDJmYzhjZTg0NmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNlNzNiYjE4NDhhODc1MTJjYzc1MmNjMzRlODQyODA1ZDFmNjc4MmI5ZGQ3MTA4MjU2YjQyNWU5ZWZhMTdmY2MiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_f2d33da1fe5c4a8dadab18729f70ec7a",
+      "statement": "publishEvent with SYNC mode and exactly one registered listener takes a special branch: it stamps the sole listener's name onto a parent and a child envelope, records both in publishedMessages, and dispatches only the child inline; with zero or many listeners it dispatches a single message with a null listener name so SyncDispatchDriver runs every registered listener inline in registration order.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/dispatch/NormalOrderCancelDispatchFlowTest.java#L26-L62",
+          "version": "repo-lines-v1:sha256:a3b7776131f82a4738f757ae632ef93817dac553c4e33703ec0fa8ab0963a610:eyJzZWxlY3RlZExpbmVDb3VudCI6MzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiYTFiMWYwZDkzOTU3NDJlMjE2ZjcxYzllOTBjOGZiOWFhNmI0Mjk2YWFhNGNlN2NjMDVjOTZlYTViODdiYWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM2ZGNlNGJlNDBjY2E5MTE4ZDQyNTdiYmY2MWY1MzM2NDg3OGYxZDcyZjRiMmM3NzhhMzdhNzJlN2ZhMGRmZjYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjEwNTUxZGUzYmMxYmYzMmQ3YWUxYjFkNDRmZTg1MTk5YTg4ODUzYWY2OTYxOTczMDdiNWYwMzJhZTQyZDIzODYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQwMzk5NDVmNzEzY2VjY2MyYTJiZTk4MWFiNWM1ZWVhMzdmOTVmOTc2OWU1NzVjZDhlZDlhOWZjYmFmZGYwNmEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/DispatchFacade.java#L46-L72",
+          "version": "repo-lines-v1:sha256:0e132e90b16acc70c3d3582060842a14615bd2034f7860166fde659590894dd0:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc4MzU3Yzc2ZjRjZDAzMWI5OGY3MTdiYWJjMmFjN2JiY2RlNDAyYjVlMGE4ZDc3NDQ5OGRkZTA2MWRmMjQ1OTkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE0MDY1ZjM1Y2NiZTNlNzAxYzNhM2VjOWNmMmUwMzk3N2FkN2FiOTdhMzhmMGY0MDgwM2IzMGU4ZmJjZjc1NmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZkNmIzNDQ2NWUxOGEwNjZjNTMzODc5ZjM5YzVmMmI2ZTgyN2QzOGFhNjgyN2Q0OTQ2YzEwYWQzMzNiNTg0N2EifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_f818ca475be84125a639cfc5812514d9",
+      "statement": "InMemoryDispatchRegistry maps message name to job handler and message name to an ordered list of RegisteredListeners, and throws IllegalStateException at registration time for a duplicate job handler name or a duplicate (eventName, listenerName) pair; registration is done explicitly by bootstrap *RegistrationConfig @Configuration classes in @PostConstruct rather than by annotations.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/FinishOrderJobRegistrationConfig.java#L37-L40",
+          "version": "repo-lines-v1:sha256:786e57d381d09f54e9e09ed8e76f8d0d27d8d77cdb5128287c3211c36ecd0ebc:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDRjYzNmMmMwYmE5MjM2YjY4ZDc5Zjc1ZWUyZmQ0YmM4NjliZWQ5MjhlOWYzOWZhY2M1NTFlOWU4YTQ4NGM1ZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNmJiN2NiODZlZmJlYzUzN2QxMWIxY2RiMTkwMWRhM2ZhMmMzNzJmMzhiNzFiZjFmOGM2MjlkMGU0YTgzNTBmNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/dispatch/InMemoryDispatchRegistryTest.java#L12-L25",
+          "version": "repo-lines-v1:sha256:2f25f9ca423a0d88fa9e1d3ce36ed5a1e4c293e97350aaa759741f8aa8f2acc1:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE5M2UyM2U1YzIzMGJjMzhhYmUyZjA0MDM0YjVmZjk4MjNkYTY4MDZjMTRjNDNkY2E5OWQ0MTQ0MGMyMTMyOWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU2ZTI5NjRkMDE0ZTE4ZDcwMTBjN2YwNzY5NjJlNmEyZWE3NmZhZGViOWIzMjZhZDk5ZDczMWNiMmE2ZDc3ZmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/InMemoryDispatchRegistry.java#L31-L59",
+          "version": "repo-lines-v1:sha256:7eb44485b459c0cde3ee7b92c2e3c544dc816427c800c9b30f43c3ea098c56d8:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVkYzJiMzExYWJlODc1NzJlOGE3Y2MwZDk5NmE2NTg0NDA3NmU1MjMyZDIxYjdhODU0NzVmOWI0MDU1Yjc0OTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjljM2QwMTViM2JkNjg5ZTkxNDRjZjcyNTk4NDEwYjMyMzI4ZGFiNTRjMTgwMDUzOTQxOTU5NDViY2Y2MTJmYTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_7af77fbd1f36444daf6d769d83ccc338",
+      "statement": "RedisDispatchDriver enqueues a JSON-encoded DispatchMessage (RedisDispatchMessageCodec over an ObjectMapper with JavaTimeModule) by RPUSH onto dispatch:<queue> with blank queues normalized to \"default\", unless a delayed ZSET key is configured and the message carries a non-null non-zero delay, in which case it ZADDs into dispatch:delayed with score now + delay in epoch millis.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/redis/RedisDispatchDriver.java#L61-L75",
+          "version": "repo-lines-v1:sha256:3f55a3f7d94a7b98e8090600b85a12f721f2032c9a5d7e484214744ad9c15c37:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwOGNjMTVkMDc1NGI2ZjIxZjcxZTBiMDNiOWRkNzg2YmM5ODgwMDNiMmI1NzU2NGM2MDUwYTgwMjI1MTdjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk2YWNjNzZlZDM1NWU0NzYxY2Q5Yzc4ZWFhZTE4MjZlYzczMjU2YjgyYmZhNGM0MmFjNjVlOTgzZjQ5YzcwNTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFlNDVhNTFiNDQ5OWFhYjg0ZmMzNjY0Y2JkZjgwNjc0ODAyZTBhMThlZGRjYTUxM2I5NmE0NWQ3ZjYzNTFlNmEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/redis/RedisDispatchMessageCodec.java#L31-L45",
+          "version": "repo-lines-v1:sha256:69a37b1eca969ba8c2f7d3f3a76299ba33965a329ec7d57d76da12f587aff15d:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI2NjNhZDdiODU1ODQ0Mzc1OWVhODc0MTg2MzA1YmNhZjg3MmFkNDc1ZTQwMDhkNjU1Yzk5NzFhYTk0Njk5ZGEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM2ZWVlOWUyY2QyM2U4MTRhOGFjMTE5OWYzY2Q1ZmViNzVkZWU1MDBjMGZjNjA0NjZmNWY1NmIzMjBlZDg1NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_7977d869951d41f183d0a3aa1257bff3",
+      "statement": "RedisDispatchListener is a @Scheduled poller with fixedDelay dispatch.redis.poll-delay-ms (default 1000 ms) that pops one message from dispatch:default, then up to dispatch.redis.slow.batch-size (default 20) each from dispatch:slow and dispatch:sms, feeding each decoded message to DispatchConsumerRuntime.consume with attempt 1 — so the single batch-size property governs both the slow and sms drain loops and queue names act as load-class signals (slow for heavy batch work, sms for notification traffic).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/dispatch/redis/RedisDispatchListenerTest.java#L62-L96",
+          "version": "repo-lines-v1:sha256:a6a959cc548f36823ecf7388ed8dd56e4a627bb04665bf08e3e4266601985e53:eyJzZWxlY3RlZExpbmVDb3VudCI6MzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRjZjA5ZWIwYzU3NDRmYjk3MzMxYjk4ZmYzZmJmMDVhNjAyYmEzZjdmNjdlNWRhNWJlOTA5NTAzM2Y2MjU4MjUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU5OTQxOWIzOWM4Y2JkMjI3YjU4ZjI0NGM5NTg0N2ZhMmQ0YTc3MGViMGRmMzVkMDFmYTM1YjA1MDVjNDg4ODkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcxZWQ1YmJiOWY3NWRlYzg3NjhiNzY4ZDFhYmU4Zjg2ZTI2YWI4NjQ2YmZjMjk2ZjY4MTc2NWY4N2I5MjcwYzEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM3OTRkMDJhODEyMTk0NGQxNzZkMjY1ZTliYjljYzU5ZjZhYjg5MGJjYWRmOGFlZmRlYmRiYmI0ZjJlYTg0NDQifQ"
+        },
+        {
+          "resource": "repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/redis/RedisDispatchListener.java#L59-L79",
+          "version": "repo-lines-v1:sha256:ebfac031285c316f2aea369a7428e1cf54340f038e130c499c2981b5f58af6db:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRlMDllNzQ2YTkzN2YzN2ZiMjhmMDA4ZGEyNGRhYzExMzk0Y2Q5ZDUwMTc3Y2Y5MThkM2FmNzYzOWQyYzIyMjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdiOWI4ZmM5ZDIwZjlhOGVjMDA1MDhiYWIxZTc2ZjIwN2I1OTRjYmFiYzgyYzQ2YjBmYjZhNmIwNDY3ZTliNGIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d9abc3d5215b4e25a7313d1b1ff37631",
+      "statement": "RedisDispatchDelayedPollScheduler (gated by dispatch.redis.delayed-mover.enabled, default true, running every dispatch.redis.delayed-mover.poll-delay-ms default 1000 ms) drives RedisDelayedDispatchMover.moveReadyMessages, which rangeByScores dispatch:delayed up to now, decodes each payload, rebuilds the message with delay cleared, enqueues it through the ready driver, and removes it from the ZSET — an enqueue-then-remove sequence that is not transactional, so a crash between the two can duplicate a delayed message.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/dispatch/redis/RedisDelayedDispatchMoverTest.java#L26-L91",
+          "version": "repo-lines-v1:sha256:7f05e88d15dc91080e324b8b75b312ba31b6245d1ed806ae28f64d43104158f4:eyJzZWxlY3RlZExpbmVDb3VudCI6NjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0YjM3MWZlMDViM2Q5MzhmNDNkYjIwOWYyMjUwMjJhODUxZjZmMGE2MDY1ZDg4NDIwZjA1Mzg5MzQzNjAyMjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAwZjcxZDZiYTEzYWYyNThjZTJhZmIzZGZhZjdmOGI1OWVjMzQ1YTUwNTg4ODc1ZTA4Mzg5OWY3ZDYwNWM3YzgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/redis/RedisDelayedDispatchMover.java#L43-L67",
+          "version": "repo-lines-v1:sha256:67750053780235736732848e7f0c1c8554aa6ea499288eea0c98e8297bc0367d:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJiNDg0MGU0M2ViZGRiNzViMTBlZWUzNTlhYzVkOGViZWJmMzYzMDc2MTA2M2U5ODcxNzAwY2U1OTVkYTU3NzUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE1OTUwNjExYWFkNzE3MzgzNzc2YjQ1MjQzYWYzOTE2NTFlZjA1MTA4MTdmYWY1ZTQwZjkxN2Y5MmU2OGFjNzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/redis/RedisDispatchDelayedPollScheduler.java#L24-L37",
+          "version": "repo-lines-v1:sha256:20d7c24bb8b489c3dc77bf8874f8ec92ef0ae8ee5d381a609b3eaee034d2248e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4ZmExZTlmNDQ5NDlmYTg5YTNiNDJiMDQ5MmRkYmRmZmEyZWI3NjQ4NDhkMzU3NzhjOWZiNTNjMjA3ZWJkYmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM5OTU3ODVlZDE2MmZiMDRhYTVhNzU0YTI0MzYwMDhhZjQ1YjcwMjI2MDgwOWJmZGE5NzhkZGNlMjg5Yzk3YmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_f14525511e6d452eb023fe9610ff9805",
+      "statement": "DispatchConsumerRuntime.consume resolves a JOB via registry.jobHandler or an EVENT via the registered listener matching the message's listenerName, records an ack on success, and on a RuntimeException records a retry and rethrows while DispatchRetryDecider says currentAttempt is below retryPolicy.maxAttempts, otherwise records the fail, builds a structured log line and persists through FailedJobRecorder.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/dispatch/DispatchConsumerRuntimeTest.java#L13-L40",
+          "version": "repo-lines-v1:sha256:b62a7a7389097d9f3423204d42f637a58718004c4bc0ce04aeaa9b58c5df4737:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU0ZDlhYjQxZTI2NTZkNzMyZDI0YmNlN2FiODVhM2U0NTg5OTgzMjAzYTNlZDk0YTUwZWViZjMyMmQwN2RmYWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc5MDNiZjkyNjUzYjk5OWI2NWZjZGU3YzkxYThhOTIzMDY1MmExYWU1ZTJlNTE5OTgzOTVmYjhkMzI5MmExMDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/DispatchConsumerRuntime.java#L37-L60",
+          "version": "repo-lines-v1:sha256:08f2b6ca602c0630f98e848919f21009f0af0057d0d949620fd56e2b4cb0d626:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJiOGEzY2ZjOWU0NzU3MTJkNTM2NDBhMDNlZTUwYjNkN2NhMDM4Y2NjNWVkMTFlMWY5NzVmYTU2ODk3MmZjY2EiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFlZGFjNzNhOTdlOWE3MDg0MjgwMzAxODczYzIxODNkYTgzNTBhYjc0Mzk1NzVjMTBlMThmNDI0ZGVhZDZhYzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/DispatchRetryDecider.java#L21-L23",
+          "version": "repo-lines-v1:sha256:f55feee4a789cd3ec7154020fd5c1e5951ed060b8e652bc68d0f9779f18d352c:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDliNTUwY2E3ODJhYzViZGM2MTg5ZWRiODFlYmJlMzRhNzkwOWMzMjU3OTBlY2JmYTFmMmQ0OWVhODMyYzQwNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDg5M2Y0MGUzNzgxZWI4OTZjODJkMDQ2YTA4MDY3YTExZTM1Y2RmMmYxZGZhZjI2ZmVhOTBiOGRiNjY3NjQxMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTU1MWE5OWUwMDNmMDU5MDNmMzIxYmZlYTEzMDZmZjUyNTA3ZmJjMGVhZDZiNDMwNDc0N2RiZDA2MjAxMzA0MyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_a5bc02da9eda4395b9897f33e7f84151",
+      "statement": "On the Redis transport path the listener always calls consume with attempt 1, the rethrow from a retryable failure propagates out of poll() where the @Scheduled infrastructure swallows it, and AsyncDispatchDriver.retry() is never invoked by the loop — so the attempt counter never advances past 1, a popped failing message is not re-enqueued, and consumption is effectively at-most-once with only the terminal branch leaving a durable trace.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/AsyncDispatchDriver.java#L19-L38",
+          "version": "repo-lines-v1:sha256:b4d8eed3ef24f142e3e99c547e77d942f4284537b2d0dd0f1f398b5dde4ef404:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUzNjdkNjI4MzI1MGI5MmM0NTQ5MWNhNmQ5YTNmM2YwMWZjOTljZDg4ZDEzOTY5ODE0MjBkMTM2Y2NhNTY2YWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRhN2VkZWVlMGM2MDAwZTM5MDMyMzk4ZmQ2NzdjMGU3ZDFiODdiZTEzZWZlM2VmNjc1MzI0NjllZmJhZmJjMDkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/redis/RedisDispatchDriver.java#L94-L112",
+          "version": "repo-lines-v1:sha256:646aa21fc41a5e8efc32f2be167a4dc6e2224fc159df8de76793d7a7744d26ab:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwOGNjMTVkMDc1NGI2ZjIxZjcxZTBiMDNiOWRkNzg2YmM5ODgwMDNiMmI1NzU2NGM2MDUwYTgwMjI1MTdjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIyZjJmZjVmZWVjNjBmNTg3YzhmYWU0ZTg3ZjgwOWE2NjFjZmZlZDZiNDdhYWU1ZjZkNmEyNjUzYWE4OTUyZWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/redis/RedisDispatchListener.java#L59-L71",
+          "version": "repo-lines-v1:sha256:e338de9a8ab539012dda6ba533ab29ee0a7336d36477519736f99e332d011ce7:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRlMDllNzQ2YTkzN2YzN2ZiMjhmMDA4ZGEyNGRhYzExMzk0Y2Q5ZDUwMTc3Y2Y5MThkM2FmNzYzOWQyYzIyMjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU2YjA0NDkxNDY5NzIyZTgzNjNhOTRlNDA0NDUzOGUwMTNhMmEyMTdlMzZiMWU1NjhiYTYwYWNiN2I0YzhmMmUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdiOWI4ZmM5ZDIwZjlhOGVjMDA1MDhiYWIxZTc2ZjIwN2I1OTRjYmFiYzgyYzQ2YjBmYjZhNmIwNDY3ZTliNGIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU0NDNkNTkwMjIxOTJiOWU4NTJiMjc2NDQ0MTkyNDQ3YTFiMTlkNWUxNDdjYmRiNzY3MWFlOWQ2OTJkMGRlZTgifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_11d74783d7574af88b6a97f860148e32",
+      "statement": "FailedJobRecorder maps a failed DispatchMessage onto FailedJobEntity (messageName, messageType, listenerName, queueName, payloadJson with toString fallback, retryCount, exceptionClass, exceptionMessage, driverType, delay, consumerId set to the traceId, occurredAt, failedAt) and inserts via FailedJobMapper, but bootstrap installs FailedJobMapper as a stub bean returning 1, the mapper has no XML mapping, and the only failed_jobs DDL is the legacy Laravel-shaped table in docker/ecshopx.sql whose columns do not match the entity.",
+      "evidence": [
+        {
+          "resource": "repo://docker/ecshopx.sql#L9189-L9197",
+          "version": "repo-lines-v1:sha256:f658c89d20b97c4646c81c5cf09214dd7c1079ef4331a1432b45573fbbd2e56f:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDcxMDU1MTdiZTJjNjdlYTI4NzM1Y2E1MWMxYzJhYmFmNDY5YTM3ZTc1MmU4MGM5YTFlOTJmY2E3NDFmMDE0YSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzhlZTI1MGE2YTZlMzc4MDM3ZjYzOGRiMTU2ZjE5ODhhZTFiYjA1MDc1NGNhZDViNzJjNzI4NThmMjQ5YjJmZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDdjNjBhNTViOTI0MmUxZjRjZmNmOGFhMWMzOTNjMmZkMDMwZWU2MTdhZTYwNGMwNGI4YTQ0YjY3ZGE0N2MxZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjRjOWM5MDU2MjVmMjE5NzQzNWQ4N2EyNjFlYzg1ZTg0ODc5ZGI0MjY1NDk1NjE0ZmZlNmUzYWQwZTEyYTExNCJ9"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/DispatchBusConfig.java#L101-L114",
+          "version": "repo-lines-v1:sha256:0c43729e1f28c8d9208246c3e70d3904de45a586bbb52cc00dcc8f8d88b136c6:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM1ZTU5MDY5YzNmMzg3NzE5ZWZlZDI1NmM2YzRiZjIxOWNjYzRmNmU0YjQxYWJmZDQ0NzYxZDQ1NDkyMTRkMDkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRhZGM0MTA4YWRjMDQ5MTFlNmQxNmEzNTViYWM2ZjJkZmY4N2ZiYmM5MTRjYzQwNDcwYjkyZTBkZmI1MDcwYTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjVjM2UyOTZiNWRhZGE5NjM0YWZlODIxNWQyNGNjZjQwMzkwN2QzNTI4NTE0MzZhYzIzMTk3MmVkYWNkNzkxNzcifQ"
+        },
+        {
+          "resource": "repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/FailedJobRecorder.java#L33-L53",
+          "version": "repo-lines-v1:sha256:0ce17456c55bdbb928fb2208265cb27266796061ab047cdb7fae1b014bea0d11:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYwNThjMDlmNGZhZWI2MGNiODhhNWZhODBiZWI3NmZhN2FiZTYwNDAyMWJmMTkzZGRlMjM2ZTlmYTEyYjg0NWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM2ZWVlOWUyY2QyM2U4MTRhOGFjMTE5OWYzY2Q1ZmViNzVkZWU1MDBjMGZjNjA0NjZmNWY1NmIzMjBlZDg1NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_352104aa0ce64ea1b6f3917e0d477da5",
+      "statement": "The RabbitMQ driver family (RabbitDispatchDriver publishing to a configurable exchange with the queue as routing key and failing to <exchange>.dead, RabbitDispatchListener with @RabbitListener on dispatch.rabbit.queue, RabbitDispatchTopologyProvisioner declaring a durable direct exchange, durable queue and binding) exists in ecshopx-dispatch but is not active: DispatchBusConfig maps only DispatchDriverType.REDIS in DispatchCore, registers no RabbitTemplate or driver bean, and application.properties contains no spring.rabbitmq settings, so an ASYNC RABBITMQ message fails with missing async driver.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/DispatchBusConfig.java#L59-L89",
+          "version": "repo-lines-v1:sha256:2fc681523f3f5b0bb46dbf402a3c3e2aa1398625dde201fe51c8b78771d00330:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM1ZTU5MDY5YzNmMzg3NzE5ZWZlZDI1NmM2YzRiZjIxOWNjYzRmNmU0YjQxYWJmZDQ0NzYxZDQ1NDkyMTRkMDkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBkMzI2Y2YzM2VjMDczY2UwZTkyNWEwYmFlZDc3MzgxNmU3OWEzZGYzYjI0NWMwMjlmOGQwMmU5MzE1ZjczMjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM3MzQ0YmJmYjY2ZGRlMjQyNTczNjFkZGRlYWM3YTZmNTY3ZTJhOWQ1OWE5NDBiMTAyY2Y1MzU1ZDM3NDVhYzkifQ"
+        },
+        {
+          "resource": "repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/rabbit/RabbitDispatchDriver.java#L46-L84",
+          "version": "repo-lines-v1:sha256:0f2562942a305978094095fd31820fa704d7ca301da930c7ea90ff8e3f58fb13:eyJzZWxlY3RlZExpbmVDb3VudCI6MzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVkYzJiMzExYWJlODc1NzJlOGE3Y2MwZDk5NmE2NTg0NDA3NmU1MjMyZDIxYjdhODU0NzVmOWI0MDU1Yjc0OTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFlZGFjNzNhOTdlOWE3MDg0MjgwMzAxODczYzIxODNkYTgzNTBhYjc0Mzk1NzVjMTBlMThmNDI0ZGVhZDZhYzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/rabbit/RabbitDispatchListener.java#L34-L37",
+          "version": "repo-lines-v1:sha256:440742e5eb51e61b835f41763cc7a15cd1dc46d4cb9bb89ae6f93603dcd2cfaa:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMmViMThmM2NlYmQzZjhiMTMyNGRlNmY5NjJhMzM0OTEyY2U1ODIyNTNkMzAxMTViNDFmMDdjZWUzZWU4N2QzZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDg5M2Y0MGUzNzgxZWI4OTZjODJkMDQ2YTA4MDY3YTExZTM1Y2RmMmYxZGZhZjI2ZmVhOTBiOGRiNjY3NjQxMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjA4YzRhMTY0NDljYTBmMWI4YTNjMTdjNTZjYWUwZjNjZDM3ZWM5MDlhNDE2ZDYxZjQwMTMyZDA2ZTJhODE5ZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_33736243a3f84c5aaaa24ec68485cc6d",
+      "statement": "DispatchBusConfig in ecshopx-bootstrap declares the whole bus as plain beans (registry, sync driver, Redis driver with prefix dispatch: and delayed ZSET key from dispatch.redis.delayed-zset-key defaulting to dispatch:delayed, mover, DispatchCore.asyncReady with only the Redis driver, facade with fan-out planner, structured logger, retry decider, stub mapper, ObjectMapper with JavaTimeModule, failed-job recorder, in-memory state recorder, consumer runtime, Redis codec and rabbit converter), while @EnableScheduling is supplied by bundle configs such as OrdersSchedulingConfig rather than by the bus or bootstrap.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/DispatchBusConfig.java#L46-L139",
+          "version": "repo-lines-v1:sha256:805d8e69d2d70cd06054f2919ed83ccd088cbecd1c362035b66848e49a2b6163:eyJzZWxlY3RlZExpbmVDb3VudCI6OTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiMTQ3NjJhYWFkNThkMTM4NDRjZjJlYzU0NzQwYTRkOTdmNWUwN2VlNTE2ZDMyMGQ2MDM2YzFjN2NlNDJkZmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ0ZGUwM2U4NGQ1NTVhNjk5NzFkNTc2OWVmZDcwOTQxMjllNTQ5NjJkNjRmMWVkNDk0OTYzOTgzZGUyNDE2MWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MultiRedisConfig.java#L127-L133",
+          "version": "repo-lines-v1:sha256:57e7f583b9721f2744ec409af8de7b151843b319a329c0384976fc2f60ce10cb:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNWZhMTc3YmI5ODA5MWFkYjJiMDJhNDQ3NTYxZmE3MTQ1MjAzMTU4MGRiYzBkNjFhZWViMjQ0ZDM5MDY0ZDU5ZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMWY2ZGQ4NzE2ODZlYTViOWUzMzhiZTA4ZTRlZjI3MDA5MDM0NjM1N2M1OTVmNmU5ODJiMGQyNDNhMmM2YTQzOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYmYzODllOTdiMmNhMDE1MzA1ZDlhOGI5MzZmZWRhZmE4N2E3NjRmYmJlZjFkNGM1NDUwNTc2ZWI4ZTcxMWUwZCJ9"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/config/OrdersSchedulingConfig.java#L22-L25",
+          "version": "repo-lines-v1:sha256:d50c0dd3d2574fd30874bf35169ce97cad3e7eabf3575a48a8efce31d1409ee5:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNGIxNDc2MmFhYWQ1OGQxMzg0NGNmMmVjNTQ3NDBhNGQ5N2Y1ZTA3ZWU1MTZkMzIwZDYwMzZjMWM3Y2U0MmRmZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDk5MzVmOWI3ODhjYmNjYWFiMWNjNDc3YWY1NTBlZmFjNjliYjliYWZjMWUyNmM1ZTE5NzQ2NzVlZDdhODZhYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_12ced92bf300473a816810223332c5db",
+      "statement": "The dispatch bus Redis keys live in the shared/default logical database: dispatchBusStringRedisTemplate is built on springDataRedisConnectionFactory, which reads spring.data.redis.host/port/password/database (default 0), not the deposit (1) or prism (2) logical DBs.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MultiRedisConfig.java#L127-L133",
+          "version": "repo-lines-v1:sha256:57e7f583b9721f2744ec409af8de7b151843b319a329c0384976fc2f60ce10cb:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNWZhMTc3YmI5ODA5MWFkYjJiMDJhNDQ3NTYxZmE3MTQ1MjAzMTU4MGRiYzBkNjFhZWViMjQ0ZDM5MDY0ZDU5ZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMWY2ZGQ4NzE2ODZlYTViOWUzMzhiZTA4ZTRlZjI3MDA5MDM0NjM1N2M1OTVmNmU5ODJiMGQyNDNhMmM2YTQzOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYmYzODllOTdiMmNhMDE1MzA1ZDlhOGI5MzZmZWRhZmE4N2E3NjRmYmJlZjFkNGM1NDUwNTc2ZWI4ZTcxMWUwZCJ9"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MultiRedisConfig.java#L66-L73",
+          "version": "repo-lines-v1:sha256:b2b91715cafe4de74f851a79c2b29e5129992068dcfe7b0869fa1f79b6df5831:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMTkzZjQ1ZjJjNmM5MTY1ZGU2MjY0NTE0YjA5N2ZlMjJjYWRkY2FkZjk4ZjAwZmViZjE0N2E2ODFhOWU3MDJiZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiODM5YzM5NjZjMTE1ZjQyMWQ0YzZjZjdiYTkwOTQyYzk4YjU4OTQzZjFkN2JlY2ZkMTYwMWIyOWE4YzA3ODljOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOWQ4NGEwZDM4NWEyZGU0M2M2NGVmMmJkNTNmN2U0OGJjODBlNDVkODIxNjRlZWQ2MmM5OTc1MzY4Mjk0YTkxZSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_5781e26b64c54ba98caf02130857e101",
+      "statement": "Message-name constants live in ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch as final *DispatchEventNames / *DispatchJobNames classes per Bundle, with event:<csvId>:<PhpBundle>\\Events\\<Class> and job:<csvId>:<PhpBundle>\\Jobs\\<Class> forms aligned with the legacy PHP CSV inventory, shorter event:<bundle>:<snake_case> forms for Java-first planes, and listener: constants as either PHP listener FQNs (optionally @method-qualified) or dotted descriptive names; distinct CSV ids can expose the same PHP event as separate bus planes (event:291 vs event:292 TradeFinishEvent) and alias constants can fold several CSV ids onto one bus name.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/DispatchHandler.java#L21-L25",
+          "version": "repo-lines-v1:sha256:b5714df3958d404155de99a36daa0acbef307623f4a11f19859be942865aef7a:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzEwNzYxOTZjNjY5NDVkODkzOWNkZDY4ODgwOTk4ZThlMjBkMjQ5NTk3ZDJhYjI1ZThlMTFjNDJjZTVmNDJhZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMmYyNzhmYzI0OGUzZDIwYWZhZGJhYzg1YzRhMDU3ZjdjMzI0YjY2NTU3YzQ4YjM3MDQzMjE3MDQxNzNhMzNmZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/OrdersDispatchEventNames.java#L21-L62",
+          "version": "repo-lines-v1:sha256:94fe744a3c5a58356ec3d5f41aee1e8c3eeec8f90b26567629f449fb63c394f1:eyJzZWxlY3RlZExpbmVDb3VudCI6NDIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ5Nzc1NTJjZTNhNDkwZWJhNWY4ZWM4MzhiODA5NGUwMGIyNGY3NjNhODA3MTA1YzM3YzlhYjY4MGVlMDExZjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNmODRkZjQ2NDkxMzQwNzk5YmI2YTJkMjllZGM1MzYyODQ3OTYzYmFmMGM1YWMxMWNjYjdiZDBkNDliY2I3MmUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRkMDY2ZGRjN2JlNTc0YmE5NjYxYWEwYTM1ZjlmYzc0MGJhNGNiZjI2NWIyM2RmNTU5ZmQwYTUwM2U4YjE0OGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJhMWNiZWNlZDcyMWJkZWRlNmE5YzE4YTVmYjM4MmVjMjEyNWY5OTdiOTk2MTVlMTkxYTVhM2ZmNTA0NzkxODYifQ"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/SalespersonDispatchJobNames.java#L27-L63",
+          "version": "repo-lines-v1:sha256:c2089e31d00379aba84c28ba450bdc5dfdcd1e9ae6ccd051807c7388aa75c1c4:eyJzZWxlY3RlZExpbmVDb3VudCI6MzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNlMmVhNWM2YzczOGM5ZDlkZGUyMzdkNTM5M2Y3ODI2ZTdkNjVhMmEwMTExOGQ4YWJlM2U2ZjJjNjUyYmQxMmYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRlYjQyZGZhODFhNDQ0MWRiNDNhNmQ5NjViNGY0MTlhN2IwNzYwYjMzZmJjYjRkNzljNjUyNDRlNDAxMGM2YTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRlNzQ1NjY4ZWJkYzdiZmFmZTU2YWE3MmE1NDA4MTE4MTE4OTI3NjE1MDY1MDhlYWFjMjEwMjE5NjZhN2ZiMWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNjNTY3MmI0NjFkYzQwMTllMjViYTFlM2YxMzAzMTk5ZTkxYTZhZGY2MDJmYTA3MWE1NzY2NzEwYjFkYWUyNGQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_69c78814737242f09cdd344e415ade8e",
+      "statement": "Publishing an event inside a transaction is deferred to TransactionSynchronization.afterCommit so async consumers never see a rolled-back row: ItemAddEventDispatchPublisherImpl.schedulePublishAfterCommit registers an afterCommit synchronization (publishing EVENT_ITEM_ADD as ASYNC/REDIS with null queue and delay) when synchronization is active and publishes immediately otherwise, and the same shape with DispatchOptions.oplQueuedAfterCommit() is used by OrderProcessLogPublishPortImpl for EVENT_ORDER_PROCESS_LOG.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ItemAddEventDispatchPublisherImpl.java#L42-L67",
+          "version": "repo-lines-v1:sha256:13c88eff7d8123275deb36c23c54d6b63287b0a845946bf613e0bc169de5a5c8:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFlZDk0ZjEwNmJlNmNlOWFhNzQ1ODI3ZGI5ZmEyYjY4NmMyNGJjOWQ4MjE4M2Y0MjFlZDEzZTdjMWUzMDRmOWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU2ODczODY4ZGE1Y2FlZDIxYzlmZGY2OTg2MmIwZGE1NDA2OWVjZGYxODgyYzIxNjUzNTZjNzRmNWE3ZDFkMDMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMxYzZhNDE2MDc2MTM2MDZjNWM0MmYxNTdhYTM4MzI5NDQyMzlkY2Q4YzEyNDM0NDkxNDA0OWJkZDFjZDg4MTAifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/config/ItemAddEventDispatchPublisherImplAfterCommitTest.java#L38-L104",
+          "version": "repo-lines-v1:sha256:29de0a42fdee04e469b1d5691bd0659c5e6b91e15d96064a581a5d9f9e53ff41:eyJzZWxlY3RlZExpbmVDb3VudCI6NjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiYTFiMWYwZDkzOTU3NDJlMjE2ZjcxYzllOTBjOGZiOWFhNmI0Mjk2YWFhNGNlN2NjMDVjOTZlYTViODdiYWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlkOWQ5ZWQwOThlNzk1OWVmYjkyYTU3YWFjZGMxZTdmOTExYmY5NGEwNWJjZTRhNTc2MjM4ZGRhNjYxZmE1MWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIyZjJmZjVmZWVjNjBmNTg3YzhmYWU0ZTg3ZjgwOWE2NjFjZmZlZDZiNDdhYWU1ZjZkNmEyNjUzYWE4OTUyZWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNjYTI1ZjYzNTAwZDdmZTExMzdkNTRlMDg5ZjBjMjU1YTNhNTRjM2QyZWJiMjQ5ZTlmODZmMjM3OWUzNDc4NzQifQ"
+        },
+        {
+          "resource": "repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/integration/OrderProcessLogPublishPortImpl.java#L39-L58",
+          "version": "repo-lines-v1:sha256:e00df98e1f2e5e7dd04ef71526ff97ea5a9ec34f2ec50f6b668e976b0a1a7ee5:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJhYTI5NzUzYTNkZGRlMTE2MTg1MTRiMzcxNjcwYzRlZDZlZjA4M2M5YjEwMzkxN2VkZjI3OWEyYWFlMzU2NDAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU2ODczODY4ZGE1Y2FlZDIxYzlmZGY2OTg2MmIwZGE1NDA2OWVjZGYxODgyYzIxNjUzNTZjNzRmNWE3ZDFkMDMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQwMzk5NDVmNzEzY2VjY2MyYTJiZTk4MWFiNWM1ZWVhMzdmOTVmOTc2OWU1NzVjZDhlZDlhOWZjYmFmZGYwNmEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b8c962f81e874addb9639336c03d153e",
+      "statement": "DispatchFacade records every message it produces in an unbounded publishedMessages ArrayList that is never cleared, and exposes publishedMessages() and lastPublishedMessage() for test introspection — a growth risk in long-running processes.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/DispatchFacade.java#L29-L53",
+          "version": "repo-lines-v1:sha256:a957c09080e412fb14aed85869e2d230f66b7b54703c604444356f4c9d646574:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI2MmZlNjBiNzE2MjlkZjllNjliZDQxZDhiNTg1Y2VjZDZlOTNhMjhiZTVlMTYyNWJhZTQ5ODY3OTdlMmFiNWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZjMTBkODc1YTIxNTU4NmI1OThjMzU0NjY2NzUzNzQ2Y2U5YzM3NmM2ZjFhYzY0NzVkYTY0N2Q2MTYwNjI5ZjkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI2MzYxYTgxMGYxZDZlNTVhZjY1YzhkMTFhODU0M2IxNzdiODU4YjMxMTNmMzk0YjIyNjhhYjQ5NzE2OWVkZjgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc0ZDA4MmYyZDgzMjUyMGQxMmFlMWQyODVjZmE2MzYwOGZjN2Y0ODdmMTgxM2I3ZGE0MWU4Mzk4MTg1MmQzZjUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/DispatchFacade.java#L74-L80",
+          "version": "repo-lines-v1:sha256:7d26dc7b454e153503a2a14a16b304f4800510d566da72b8584196ad8b79a868:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOTgxZmM3ODU4Y2E5YzhjMjEyOTRhNDMwMjc3N2VlNTllOTdlNjQ3YTk5Njk4ODEyMTRjYzY2NGFkMWMyMTBlZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDg5M2Y0MGUzNzgxZWI4OTZjODJkMDQ2YTA4MDY3YTExZTM1Y2RmMmYxZGZhZjI2ZmVhOTBiOGRiNjY3NjQxMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTQwNjVmMzVjY2JlM2U3MDFjM2EzZWM5Y2YyZTAzOTc3YWQ3YWI5N2EzOGYwZjQwODAzYjMwZThmYmNmNzU2ZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTMzNGY4MWRmNzRlYmU2NTA2MTc3N2E0ZThkNmFiZTIyNmQ5N2ZlZWE4Y2UwOWYwYjRhMWJmYzY0ODI0ODczYyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_f78658c5efc3490680cae57f2f4af9c9",
+      "statement": "DispatchFacade.buildMessage forces driverType to SYNC when the mode is SYNC and otherwise uses options.driverOverride(), so publishing ASYNC with a null driverOverride (as DispatchOptions.jobDefaults() does) yields a null driver type that DispatchCore rejects with missing async driver — production publishers must pass DispatchDriverType.REDIS explicitly.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/DispatchFacade.java#L82-L96",
+          "version": "repo-lines-v1:sha256:b97dd53a1d0d430fc8734f500aece91d48a0ed35a28a9eb03e67995cfc32945f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkxMzY2ZTA2MTAyN2Y0YjJhZWRjZTgxYzQwNjZiYTBhNDEwZGYzZWQwOGNjMTYwYTJlNTZmMTBlZDgyMGMwMDEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE4ZWQ2ZWNkNTY4YTc2MjRlMTUzNDgzYzgxNzRlNTYyZTdhOGFiMTJkZDY2N2U5OGE4MjU5ODBhMzc2MmY3NWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI2MTZjMzEwZjcyMjMwNGU3M2Y3ZTYyNTVjM2NmODEyNjhjNGNmYzI5YTg3MDU5NDZiZTJhOTJhZmY5OGYwM2QifQ"
+        },
+        {
+          "resource": "repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/DispatchOptions.java#L28-L34",
+          "version": "repo-lines-v1:sha256:fc6c604b784be17262a5ea02add645586bdabbde6861650f7bc2ac65cbb49dc0:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYWZlNDRmZmQ4MzMxYzg4NjE5NjkxYzQ5ZWZhY2YxMWE0NzcxZGQ4MzA0ZTUyZWFlMTA1MWM4MzFiY2FhMzc1OSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDg5M2Y0MGUzNzgxZWI4OTZjODJkMDQ2YTA4MDY3YTExZTM1Y2RmMmYxZGZhZjI2ZmVhOTBiOGRiNjY3NjQxMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDAyNTIzNWU5OWU5MTdjMDYyZmRkOTE4NDg5Yzc3ZTRjYmU0NGZhNjY1NjFiZDY2NTY2NmIzNGEyNDUyZTUxYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZGM5MGQzMmJkMzk2ZTVjZDcyYjZlNTRhYzFiZWZlNzY4YjYzZDBkMTc3ODU3MmM0YzczYjg5MDFjZmJkOGM1YiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_29b58d0695e348b9bb2e3be9021c23e2",
+      "statement": "RedisDispatchDriver's driver-level lifecycle hooks — ack (records state only, nothing requeued), retry (records state and re-enqueues, which re-enters the delay check so a message still carrying a non-zero delay returns to the ZSET), and fail (records state and RPUSHes onto dispatch:dead:<queue>) — are not invoked by the scheduled listener loop, so the dead lists stay empty in normal operation.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/dispatch/redis/RedisDispatchDriverTest.java#L94-L165",
+          "version": "repo-lines-v1:sha256:839c465dbac676b3a1a728605fc857b4dd00c807fdaf42c49cab18eb321d6e1e:eyJzZWxlY3RlZExpbmVDb3VudCI6NzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZmNGQ4YzYwNjAwYTRiNDFlOWQyNzMzNDQ2MzE5YjRkMWUyODAyNmQwYThkN2ZjNmExNTQzNzk5NDAzMDY2NjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU4ZWFmM2UxZGIyODRmNmE2ZmQ0ZTA2NmFlMmZiNjU0YWU2OGZkZmNmM2U3ZTRkY2E0YzJkZDIxNGE0OWI5ZDAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/redis/RedisDispatchDriver.java#L47-L58",
+          "version": "repo-lines-v1:sha256:41318bce0f8fc8ddced24274204b43d4862e2fd442bcba2752eb6c3cf8adedff:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhiMWMzNWYzNTBlMzY1NzNiODRhMDFlMjNkZjczNjhjNDk1ZjA3OGE1YTQ1OTdhM2EwMmQwMDM3YWQ3YzJmZGQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM3ZTQxNTlhNjlmMWM0MWI3MWY0YTBiMDYxMWE0NDY2NzdkZDRiZmUzYWNlZGI4NTQ4NjM2N2U3MjNlOTFiOTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNjZTMwMzEwODBiZGI2ZWFhM2NiYjQ3NjgwODdmNjQ1NTQwNTc3ZGJmYjRjMGE5ODQ5NjhiMTJlMzcxZWY3ZDQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU2ODczODY4ZGE1Y2FlZDIxYzlmZGY2OTg2MmIwZGE1NDA2OWVjZGYxODgyYzIxNjUzNTZjNzRmNWE3ZDFkMDMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d4b90c8ce27b4a45823730cd29ab2d45",
+      "statement": "ecshopx-dispatch is a small library module depending only on ecshopx-common, spring-boot-starter-data-redis and spring-boot-starter-amqp, with the DispatchHandler and DispatchListener functional interfaces (and all publisher interfaces) living in ecshopx-common's common/dispatch package so a Bundle can implement or publish depending only on ecshopx-common.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/DispatchListener.java#L21-L25",
+          "version": "repo-lines-v1:sha256:d24756a8470cae06ae149600ce9f423733c350da35d7cbe44957ba2de339a185:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzEwNzYxOTZjNjY5NDVkODkzOWNkZDY4ODgwOTk4ZThlMjBkMjQ5NTk3ZDJhYjI1ZThlMTFjNDJjZTVmNDJhZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMmYyNzhmYzI0OGUzZDIwYWZhZGJhYzg1YzRhMDU3ZjdjMzI0YjY2NTU3YzQ4YjM3MDQzMjE3MDQxNzNhMzNmZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-dispatch/pom.xml#L18-L36",
+          "version": "repo-lines-v1:sha256:22ff5fea409b02d7b94de4f5e3c6182281b1a72b5a5373744d0d5a23fe160abd:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwNDcxYzUxZWU1YzlhMGUwMTA3OWRhOTBiZGI3MWVjYjc2ZjZkNDhiNjY0OGE1MGFmYTYzNzdmNTIyYTU0YmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgxZGNiOThhZmNjOTU5YmU5YTk5MGFhNDQxYTBkYTgzMTRjZTE3ODE5OTUzYzI2M2Q4MDY4OWY0OGJkOGY1ZWMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc1NWMzMTUwNjA2YTBlMDVmYmQyZmZhZjgzNjdjZTNlYzliMmY0NjY4MTNlN2FkNzQzMjg2MzRjNDRjMDBlYmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI2ZTMyYTMwZjNmMjBiYmM4MmY1YzUzZDQ4MDg4M2RhODk0OWQwYWJhYTllZGQwNWFkMzJjZDdhYzRlMjc5ZTcifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.2",
+    "at": "2026-10-21T12:26:22.580Z"
+  }
+}

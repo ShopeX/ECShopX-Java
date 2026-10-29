@@ -117,6 +117,10 @@ public class OrderCreateFormatDataPortImpl implements OrderCreateFormatDataPort 
 		od.put("order_type", typed.orderType());
 		od.put("order_class", typed.orderClass());
 		od.put("order_type_slug", slug);
+		// PHP OrderService::_formatOrderData uses_platform_item_stock
+		boolean shopadminFastBuy =
+				"shopadmin".equals(typed.orderClass()) && "fastbuy".equals(stringVal(pr.get("cart_type")));
+		od.put("uses_platform_item_stock", shopadminFastBuy ? 1 : 0);
 		od.put("order_source", stringVal(pr.get("order_source")));
 		od.put("pay_type", stringVal(pr.get("pay_type")));
 		od.put("pay_channel", stringVal(pr.get("pay_channel")));
@@ -125,6 +129,26 @@ public class OrderCreateFormatDataPortImpl implements OrderCreateFormatDataPort 
 		}
 		if (!wxappOnlineNormal) {
 			od.put("operator_id", longVal(pr.get("operator_id"), 0L));
+		}
+		// 店务物流立即购买：透传收货地址（对齐 PHP）
+		if ("shopadmin".equals(typed.orderClass())) {
+			for (String addrKey :
+					new String[] {
+						"receiver_name",
+						"receiver_mobile",
+						"receiver_zip",
+						"receiver_state",
+						"receiver_city",
+						"receiver_district",
+						"receiver_address"
+					}) {
+				if (pr.containsKey(addrKey)) {
+					od.put(addrKey, pr.get(addrKey));
+				}
+			}
+			if (shopadminFastBuy) {
+				od.put("is_logistics", Boolean.TRUE);
+			}
 		}
 		od.put("salesman_id", 0L);
 		od.put("freight_fee", 0);

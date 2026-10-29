@@ -944,7 +944,7 @@ public class CommonLangModReadService {
 		if (LANG_AR_SA.equalsIgnoreCase(lang)) {
 			return loadRolesRoleNamesAr(companyId, roleIds);
 		}
-		// zh-TW and future locales: route by shard suffix (zhtw, ...)
+		// zh-TW and future locales: route by shard suffix (zhTW, ...)
 		return loadRolesRoleNamesFromOutside(companyId, roleIds, normalizeLangTableSuffix(lang));
 	}
 

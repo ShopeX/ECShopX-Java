@@ -511,4 +511,8 @@ public class NormalOrders {
     /** 达摩积分预扣id */
     @MpField(value = "dm_point_preid", columnType = "string", length = 64, nullable = true, comment = "达摩积分预扣id")
     private String dmPointPreid;
+
+    /** 是否云仓/平台SKU库存履约（店务立即购买等） */
+    @MpField(value = "uses_platform_item_stock", columnType = "smallint", comment = "是否云仓/平台SKU库存履约（店务立即购买等）", defaultValue = "0")
+    private Integer usesPlatformItemStock = 0;
 }

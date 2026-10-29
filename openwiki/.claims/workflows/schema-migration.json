@@ -1,0 +1,282 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:0ebb5142e8ad988da5be47bbb40474ca33b3a2aa908035eef8638f75f64f75f2",
+  "claims": [
+    {
+      "id": "claim_b8ceba57f1bf4c6ab0f63586c6f4164a",
+      "statement": "bin/make-migration <description> generates a Flyway migration named V<yyyyMMddHHmmss>__<slug>.sql under ecshopx-bootstrap/src/main/resources/db/migration by treating the currently connected MySQL database (read via information_schema) as the 'from' schema and the MyBatis-Plus domain mappings (@MpTable/@MpId/@MpField, falling back to @TableName/@TableId/@TableField) parsed from every ecshopx-*/src/main/java/**/domain/**/*.java file as the 'to' schema — deliberately mirroring the legacy PHP doctrine:migrations:diff flow, with the description slugified to lowercase [a-z0-9_] form.",
+      "evidence": [
+        {
+          "resource": "repo://bin/make-migration#L157-L164",
+          "version": "repo-lines-v1:sha256:fdacacaf7cdb7d608d4ff8fcce5595c218e04555df90c115a27cce9914cc331c:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYmQ5ZDA2YmY5MzM0MzJhMzk1NDlhMjlmYTRjZjY2NWY5ZTk5MDEwNGUwMGM0MTY1MjRjYTBmYzRhNmNiZjNjNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzJmZTgyNzYyZDhmMWQ1NWExOGVlOTNlZjdmMGJiYjU0MWE2MTA4N2NhNmZkMTQyNDEwNmNhMjZhYTY4YzBlNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiN2QyZDFiMjBkM2NiMmI4MzEyNWI5YmM3YzIzY2QzZDNlZWM4OTRlZGIwYjYxZjY2OTI0MzEwZjgwNjRiNTQ1MyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTJjODM2ZjE5NDRhMDkzZWU3NWRjMTQ2MmRkNTkyZWZiMmVjMzQ1ZjBjNGU5YTg1ZjY1OTY1MjNkNDkzYjM4ZSJ9"
+        },
+        {
+          "resource": "repo://bin/make-migration#L166-L191",
+          "version": "repo-lines-v1:sha256:0dd4b311ac0ec616844b1899e6b0a08e57a85abc34dfe2eede3a23eaa8c70f6c:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA0ZTllZDFhZGVjOWQxMWZkMDRmMTBhNTI5MDkwMmRlY2RkNDYwYjgyOWI4ZGMzYzcxZjI0Njk5ZGExNmIyY2UiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFhODgyMDI1ZDU0ZjhlODk1YzEwMGU4YjAyMjQzYmVjNzM2ZTFmMjEyY2ViMDM4OThmYzk3YTdjZjgwM2NhZTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZhMjFhZTg3MWNlOWYyNDk3ZWZmNTI4ZWZhYjM3YTMyOTZiYzc0OTYxMDA3OTc2MDQ1M2FkZDRkMmU2MmY4ZTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU0NGVlYjI5OWNhYTRmYTRiMDQ4YzY2OTNkODJlMWY3N2ExYjc0YTg0YmFlNTQ5Yjg4NDM0MjdmYTA0N2ZkMjgifQ"
+        },
+        {
+          "resource": "repo://bin/make-migration#L68-L102",
+          "version": "repo-lines-v1:sha256:ffbd6b8efa540d13cbf2502fbd85db6d84c60a2926969fb46a1ffb0f1dd6281b:eyJzZWxlY3RlZExpbmVDb3VudCI6MzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM3ZGJkNWExYTVkZDNiNGJkZTdmNDQzYTI0NjRkOGVlYzZiOGY4ZjI2NWJlNDAxMmY3ZTM0YTg1YzJlYzk0ZGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImViOTBiOGNlODUzNjhkODRmZjk2ODE1MzNmN2I4MDUyNjdhZTE3MTZmNDVlZmM4NjNkNzNjYmRjM2EwYWRhM2IiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZjMGM5MmEzNmJlNzgwM2IzYWM2NjkzNWQzYmZmMDhhMzE4MDc2ODc1NzlkYmJiYjUyYjZhYjVhZmNhZDlmZmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc4ZDZmOTA1MGY5YTQxN2M1NzMyMGM1N2U4YzkwMGE1ZjQwMzE2NDY2YWY0ODkxZGE3MTFkODBmYWUyZjk2YjgifQ"
+        },
+        {
+          "resource": "repo://readme.md#L96-L127",
+          "version": "repo-lines-v1:sha256:3928448bd7028ab086383fd6cf57bc0a62041bc9fe2c8770c7d991f0bf19b864:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk5OTA0ZDg4YTAxZjhiNGY3OGRjMTZjYjVmZDI1ZDYxMTczNTgwMjU1MzlhODM3MDRkYmVkMzExYjlmNTViMTkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ3YzA2YzU2MWQ1YzMyNzM0MzY4NTI2OGE0NmIzMzkxZjM5OThlZWU4OTBkMmJlNTFmMGQyMWNjNGE1M2FlNmQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVhNWNmYjI4ZjI1MTQ0ZjIzZmMyM2Q0NTIyMzBiZDBkZmE3NDM4YjlkOTM4ZjFmMWMyZjY0ZGJkZDg2YzY5Y2QiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQzMTAwY2M5YWNjNDY3NDgzYTNiZjhlN2NjZTc4MGJkNWQ0MDBkNTllYWUxNzRlNjkzNDliN2EwNWNlODVlYzMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_7bb64eee83174a00b18cd80f3a1f043d",
+      "statement": "The generator's own help text warns that MyBatis-Plus annotations are less expressive than Doctrine ORM metadata, so generated SQL is best-effort and must always be manually reviewed for SQL type, nullability, default, comment, indexes, and destructive changes before applying; the script's final output line repeats the review reminder and the migration README says the same.",
+      "evidence": [
+        {
+          "resource": "repo://bin/make-migration#L100-L102",
+          "version": "repo-lines-v1:sha256:41096aade63a8770a276b3b261b43fb621ed4a9ee8ee85a1e01ce4e71f7245f0:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjUyNjU3NzliMTQzMTQ3ZTgxZjExNjBhMzdkMjU1MDI0MzU1YjRlZWQ0NjhhZTlkMTY1MjQxNzY3OTJiYWIyMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZWI5MGI4Y2U4NTM2OGQ4NGZmOTY4MTUzM2Y3YjgwNTI2N2FlMTcxNmY0NWVmYzg2M2Q3M2NiZGMzYTBhZGEzYiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDQyMjExMzU5MWFlZTVkMGQyZTc1YjUwZDQ0ZGNhNDQ1MjQzYjQ5NWEzOGNiNjk0ZTgwY2ZhYjNhODJlOTFiNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzhkNmY5MDUwZjlhNDE3YzU3MzIwYzU3ZThjOTAwYTVmNDAzMTY0NjZhZjQ4OTFkYTcxMWQ4MGZhZTJmOTZiOCJ9"
+        },
+        {
+          "resource": "repo://bin/make-migration#L999-L1003",
+          "version": "repo-lines-v1:sha256:c40ab02d75c7652acb4286405a0ec654faa4d1f2a679aa623bc18c4fa47ab683:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjUzM2RlOTA0OTA5NWQ5MGRmOGUwYzgyMjVhNjMzOWVjNTI3NjJkMTAwYWRmMTJhYTE4NjJlNDZlNGU4Y2M0MiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzc2OWQyMzdjZDQyMGI5ZDM4Yjk4MWEwYTRmNjc3MDE5MGE0YTgzZGNhMWZlNTZjNGY1YmExZTJjYmMwZWY3NiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTE5Yzc1OTkwMjgwNzU5NzkxZGRiOTA3NjhmZDRmNjY2ZmIzZjhjZmIxYzA1ZDYwY2E3MmU1ZTk2ZmUzYjQ1MyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/db/migration/README.md#L9-L15",
+          "version": "repo-lines-v1:sha256:d8aa3aab6d028b11263bfda3cb8651cc5879c4221726bcbec0c9689f3744a460:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMWU1N2M1MTdkMDViYmMxMmM2ZjRiYjdmZTAyZTNiYWZkMWRhNDJhMGEzZmM0Y2M5Mzg0ZWI3OGFiZWNiM2FlNyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiODdlNGNjMDI2YWM2ZWUzNDU4NTg2NmUwNzA4Y2NhZGY4OTMyYTBiYTZlZTc5YjVmOTE4NzY5ZmYxM2NlYzNlYyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiODRiNjM0NjBiYmM4MGFjMWI2ZTEzYzk0NDE2NDRjMzJjZDJiOTYxZjg2OTJlOTcwOTY0YTc4YTlkNWEzNzUwMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_46ed1ada0165429fb00110f66dd630b8",
+      "statement": "Without --allow-drop, database columns and tables that exist in the database but not in the domain mapping only produce stderr warnings; DROP COLUMN and DROP TABLE statements are generated only when the flag is passed, and flyway_schema_history is always excluded from generated DROP TABLE statements.",
+      "evidence": [
+        {
+          "resource": "repo://bin/make-migration#L933-L949",
+          "version": "repo-lines-v1:sha256:43c7558672adb5389d840b6734c755caa72a8d77904f4ee860fd3f6149b509cf:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxYWEzZDE0YjhlYWEwNWM4OGI0ZWZhNjEwYjIyMjM0MWM2MGIxMGIxNjQ1Y2YxMmI3NzhjOWQyYzQ3MmY5YzUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxY2I3ZmVkNzE5ZjU0ZWQ0MmZjZWRjNTYwMmZkZGQxYjQ0ZGRkZGJiMzJiMDRjZTVjMmM3ODU0MTk1MWE0MTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE5ODFiNGIyY2JmZmE1ODdjNDk0N2QwYmRmY2U2ZGYxYjkyMDVjOTlkOGM1ODYwZjBlMTJmMTljMjUwMmMzMDciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQyYmIyNDhlYjlhZjY3MWQ2YWExNDM1YjdmNjk2OTA5ODY0ZjA0NzY3MzIxMzVhY2YzZmZhZjcxM2IwNTFjNjEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_2e340470c0ad40a6a4892eb5697ef138",
+      "statement": "When the diff produces no statements, bin/make-migration prints 'No changes detected in your mapping information.' and exits 1 without writing a file, unless --allow-empty-diff is passed (writes the file with an explanatory comment) or --empty is used (skips the diff entirely and writes a TODO template, requiring no database connection or pymysql).",
+      "evidence": [
+        {
+          "resource": "repo://bin/make-migration#L177-L182",
+          "version": "repo-lines-v1:sha256:3fe84687117996c37aa75eb59876ed860239ddb19d9a5eb41b642232103dacfa:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzFjNWFlYjViYzA2ODQwNGFhNWY0YjU1MDE3NDRjMzFiZTIyZDg1ZjY1NDhkYWYwYmI3NWU2OTEwODMyMmM2OCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYmUxNTJjZDAwMmQxNjgzYjk1NjUzZDgxNzM3ZTAwMmQwOWVlOThjOWE1ZDJkNGY2OTMwYmQ4YjBkNmY4N2I0ZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODYwYjZiNTg4MDY2NDFiMGFjZWNjNTJmMmIzNjNjNjVkMDFlN2E5MGQ1YWU3NmMzMmM2MTAxOGFlYjAwODk1OSJ9"
+        },
+        {
+          "resource": "repo://bin/make-migration#L974-L995",
+          "version": "repo-lines-v1:sha256:fc9e586ee5c9d8b27a3fbccbacacb55cfca1cdbf5a6b3d112b5e11a190f2e8c6:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ0OTkyMzA5MDgwYmRmYTI3MjY2ZWY3OTgxOWNjOWFjNTRlZDZlNTRmOTYwNjU2ZmEwZGRlMDZlMjkyOTE5NDUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY5ODNhZDViZjMwYWNiNTJlMzQxYzgxY2EyMGI5NTU0NzQzZDYzMGEzODNmZjk3NzdjNjYyOWVkMTA2ZDdjMWMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkxYmEyNGFjZjgzZWJmOTY5MmEwMTI4NzkwOGQwYWFjNTlkZjk5YTllNzNjOThiZTgzYmVlMmQ5MDIzMzE0ZDIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkxOWM3NTk5MDI4MDc1OTc5MWRkYjkwNzY4ZmQ0ZjY2NmZiM2Y4Y2ZiMWMwNWQ2MGNhNzJlNWU5NmZlM2I0NTMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_2efe1d72bb204b52bdde20ec3ff564d6",
+      "statement": "bin/make-migration migrate and bin/make-migration repair invoke the Flyway Maven plugin (./mvnw -pl ecshopx-bootstrap org.flywaydb:flyway-maven-plugin:<goal>) against the resolved datasource with flyway.locations=filesystem:ecshopx-bootstrap/src/main/resources/db/migration, flyway.baselineOnMigrate=true, flyway.baselineVersion=0, and UTF-8 encoding; neither subcommand accepts a description or extra positional arguments.",
+      "evidence": [
+        {
+          "resource": "repo://bin/make-migration#L139-L155",
+          "version": "repo-lines-v1:sha256:149014840b0e9922b6704ddfb32eb982bc1f2934db5aba2aa97d9f35c4fde9df:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU3ZTViNDBhZjY5YmM0YmRkYWYzMjUxYzAzZmM3YTQ5M2RjMWFlNDg3ODZjZjcwYzZjMzhjZmM1NDNjYTNhNGEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM3NjlkMjM3Y2Q0MjBiOWQzOGI5ODFhMGE0ZjY3NzAxOTBhNGE4M2RjYTFmZTU2YzRmNWJhMWUyY2JjMGVmNzYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjMxY2UxYWExMTY5NWQ5YjUxNTcwZGExNWYyMzlkNzBkMmY1Y2FkNThhNzg1MGQyYThkYTljZWQ1ODYxZDQ4MzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImYyMGU4Y2FhNTcyMzBjYWEyZGEzOGJmYmMzN2ZjYjIzZjdkNWVmMWE2M2NmM2QyNjZiYWYyZjRmZGNmNGVhZjAifQ"
+        },
+        {
+          "resource": "repo://bin/make-migration#L42-L66",
+          "version": "repo-lines-v1:sha256:1858ecdb63802eda0abb2b92e7dd903ff37995dc1bf52859d7c7811c73ee4924:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNlZjI4ZDY0ZWZkNDRiNGU4OGI0MjUxMTRlZjM2NzhlYWMyOTgxYmJhMmIyYTNiMmU1NjhhZTFkYmY0MTgwNzEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQyZjM1NGYxZmQ1YTA5M2RkN2RhYWQ0MTNhZmZhZjUyMTZmNGE4ZWI2MDk1ZmNhMTMwZTk2ZDZlYmQ2MWI0YzEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY2NWNlNWMxMTU4YTM2MDUyZDMxYzM0ODFmODk0MTZhOTNjZTI5MjViYzgwZGE4Nzc0M2I0OWZjZjc2ZDdiNzIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b28c296da2d746708dfad2b0d519db6a",
+      "statement": "The application applies Flyway migrations at startup by default — spring.flyway.enabled=true with locations=classpath:db/migration, baseline-on-migrate=true, baseline-version=0, and UTF-8 encoding in the shipped application.properties, which the Docker and lite install paths rely on — so pre-Flyway databases such as a docker/ecshopx.sql import are baselined at version 0 instead of replaying history, with execution history recorded in flyway_schema_history; no shipped profile turns startup migration off, so a local developer wanting manual control runs bin/make-migration migrate or overrides the flag through the usual Spring mechanisms (--spring.flyway.enabled=false on the command line or the SPRING_FLYWAY_ENABLED environment variable).",
+      "evidence": [
+        {
+          "resource": "repo://bin/make-migration#L42-L66",
+          "version": "repo-lines-v1:sha256:1858ecdb63802eda0abb2b92e7dd903ff37995dc1bf52859d7c7811c73ee4924:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNlZjI4ZDY0ZWZkNDRiNGU4OGI0MjUxMTRlZjM2NzhlYWMyOTgxYmJhMmIyYTNiMmU1NjhhZTFkYmY0MTgwNzEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQyZjM1NGYxZmQ1YTA5M2RkN2RhYWQ0MTNhZmZhZjUyMTZmNGE4ZWI2MDk1ZmNhMTMwZTk2ZDZlYmQ2MWI0YzEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY2NWNlNWMxMTU4YTM2MDUyZDMxYzM0ODFmODk0MTZhOTNjZTI5MjViYzgwZGE4Nzc0M2I0OWZjZjc2ZDdiNzIifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L28-L34",
+          "version": "repo-lines-v1:sha256:7c1d021fc1c34fc5e2fb23733c2304a8719a64d4c65c2683720ccd88e7509ebd:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDQ5NjM4YWZhZmE3NGNlYjgyZTZlNWRhNWU1ZDM0MTZmYTU0MDRmMTZlNThjZjViOTJlNWM1MzYwMWU3NmIzNyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYWYwYTg2YjM3ZmU1MDVjZTc0M2NmMWRjYzdhMGM3NjIzNzg0MGU2YTdiNWJiYjhkMjkwZGM3OWFmZGNlOTk0YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjY4MzJlZjQ1NTg1NzU3ZTljM2Y1ZTRlMGE2ZTkwYWU0NmZlNDkyMWJiZTZhNTNjNGVmM2Y4YWZiZjExNDcxYyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTAxNTkyOGJiZGEzNWU1OWJjN2ViZTExZTY0OTE0MTNmODJjYTBhY2FlYmQ2YjQwYjhkMTAzZjcwN2Q5MzZhOSJ9"
+        },
+        {
+          "resource": "repo://readme.md#L88-L94",
+          "version": "repo-lines-v1:sha256:b5eed6da29224bf4b638347a79324fdad03ab6d1114b07c8172fce4e89d06882:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDA0MDkzYzUwYmZjMWRjNTliMDMzZTUwMjhkZGFlNDk1NjVjOWI1NzY2MzBiMWJiMDMwNmRhMGM5ZjE4YjhjZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzgzNWQ3NDUzZjM2OGRjNzEwYjZkNGJmN2I3ZTNjMjQ1YWY5ZGY3NzQzYTQ3ODZlYWYyMDJkYWEwYzE5MzE3MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYWNkNjE0MmU3MjA5N2ZmZjQ1NTI3YzY3ZTEzN2E1YzhiNTVhMzQwZTk3NDk1NzBkMjE0YmUwZmU1MmI0MTQwYyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODVjZDA3NTk1YWY1Njg5NzNhOTNhYjdlMDZjYzJkZjhhNDAxOGNkMzgyNzc0NWJkMjY3ZDRiODM4YTJkZTEyOSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_5a9a57da25564fb5ac62077c568bfae6",
+      "statement": "@MpTable, @MpId, @MpField, and @MpIndex in ecshopx-common's mybatis/metadata package are meta-annotated with the stock MyBatis-Plus @TableName/@TableId/@TableField and additionally carry Doctrine-ORM-era schema metadata (table comment and indexes; column type, length, precision, scale, nullability, default, comment, uniqueness); MpMetadataAnnotationHandler, registered on MyBatis-Plus' GlobalConfig by MybatisPlusCommonConfig, makes these entities visible to the runtime by synthesizing dynamic Proxy instances of the stock annotations from the @Mp* values.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/config/MybatisPlusCommonConfig.java#L41-L51",
+          "version": "repo-lines-v1:sha256:4d663757cb4000c9fb7184ff610b740ad027506c91153aeb25415ab679fbad3e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcyMWM3NjAzYTEzYzMyYzU0MWZkNTVmMmNkM2UxMTJiNWMxZWZmNmQ0ODA1OGFhNmYxMzc5ZWVmMjE3NGYxYzMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE2OTNjMDQxMjc2MzkzMmY0NjlmNDk2MzU3NDEwNGIwYWQ1MThlYzE1MzFhNzNkMmFjNmIyMTA4YTBkNTRhY2YiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/mybatis/metadata/MpField.java#L31-L86",
+          "version": "repo-lines-v1:sha256:31c8fd1b73d81bac8825360a899da8ed246869450fe0480ab6ac9fdabbfdd035:eyJzZWxlY3RlZExpbmVDb3VudCI6NTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY1Y2IxYWE0NDkwNzlhYzlhZGYwNDgzM2Q4OTVlNTc0MjY1OGZjOWQ4OTI5OGJlZjAxZWViOWE0YjAzNmFhNDMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/mybatis/metadata/MpMetadataAnnotationHandler.java#L31-L81",
+          "version": "repo-lines-v1:sha256:4a3f9852b9ffa67ff2e11d73902806a68ad52b3f4c909fdd69136e782775826b:eyJzZWxlY3RlZExpbmVDb3VudCI6NTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY5MjZhYzQ4ZWQwMmIwZjM3OTBjMTVlYjJhMmE1NTBkMjEwNDkxMGQxMjlhMmY1NmU1MTMxNGZiYjdmM2JhNGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY3YTNkNDhlMzExNDhjMWMxNGU2ZjQzNWJhMmVjYjVlMTQ4ZWU0MzY5N2JmOTFmMTBlYTRlNjAxZWJiMDE5MjYifQ"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/mybatis/metadata/MpTable.java#L26-L53",
+          "version": "repo-lines-v1:sha256:8ac6a0412a042509ac122c3745ceafc35d55dc5866693276a989acdb9b7b59de:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjlkNTc3MjQzYmUzOWRmNDBmZmYxYTUwOGEwOTg2MzIxOWQ0NzAyNWRlYTMxYjhiNThjNmJiOTIwNDVlMDJlZjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_1bb745e10ab546b39ef626069b9f0a1f",
+      "statement": "The diff generator honors @Mp* attributes (columnType, length, precision, scale, nullable, defaultValue, comment, columnDefinition, unique) directly, but for entities using only stock @TableField/@TableId it infers the SQL type from a Java-type map (String to varchar(255), Integer to int(11), BigDecimal to decimal(20,2), unknown types to varchar(255)) and nullability/default from the Java field initializer; fields with exist = false are skipped, and @MpField's nullable attribute defaults to false so unmapped-nullability columns become NOT NULL.",
+      "evidence": [
+        {
+          "resource": "repo://bin/make-migration#L557-L605",
+          "version": "repo-lines-v1:sha256:00cf38531a8393655f2013311ca9c9ad4c82f4f9ff4abe720e409a09affcf4ce:eyJzZWxlY3RlZExpbmVDb3VudCI6NDksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ0NTFhMjJiOWY2M2MwMDNmYTI1YmJmOWZjMzA5M2I5MmIwMGZhZDBhOGY1NDVlM2MyMjdhNjc5MDZmMGM2ODQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ3OWU5MjMxN2Q1NTNhYTNlYTE2NDI5NTllYjA4NmQzZDVkZWIwODQ2OGJhNmVjOGRjMjg2NTMzMTE1ZDEzOGMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIxOGMzYjA5ZGZmZThhOTBiNWY0NGZkZTQ2Y2ZkOWYxMzJiYmVmODhjY2QzODQwMzY5YjY5YjQyNTlmMzcxZDAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRhZTEwYmVhNWI5MGViNzJkNWM0ZjIyODA2MjMxZWM0YjFjNmZjNTkyYzI0ZWFhOTkyZTA2OTlhNTEwODlkZTUifQ"
+        },
+        {
+          "resource": "repo://bin/make-migration#L608-L621",
+          "version": "repo-lines-v1:sha256:7747981f6b0a992c1a2483939549a9c9e46260fbb78550fbb31bd5ba0943fdce:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg1N2E3M2Y5Y2RjNGJlNGNkY2JjOTdmMmMxYzdlMDA3MTFiNWJjNjRiNzBhZmZlOTFhMDYxM2FmOTQ5OGY3NjAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBlZjFkMWRkMzU4ZTBjOGYzNzNjYTcyZjk4NGMyYjM3Y2ZmMGE3NTFkOTE5YmRmYmEzYmFjYTlhZDZjYzVkNDYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZkYTI2MzlhMzg0NDM1ZTU4ZmQ5MGVmYjY1ZGQ1NzEwZmJlMDAzNzhlOGVjYmEzZGQ1N2IwYmMwYmUwZGJjNmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI0YzgxZjM2NWFiODNmZDBmODA0YmFmYmFiZDEzZTE1OWU4YWJmYzRjNTBhZmM0ZTY2ZDZjMTdhZWY5MDFiNWYifQ"
+        },
+        {
+          "resource": "repo://bin/make-migration#L675-L712",
+          "version": "repo-lines-v1:sha256:054fd1cfe787afe9270f08997f193a7a4e321f64420c87f720120de32e23d975:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE2ZTFjMjI0YmExMmU5ZmRiNDc1MTc1ZDhhMGY0MGM3NzUxMWYyYjNlZGQ1MTk3YTkyZmJjMTE0MTIzMWY1NGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZkMzUyYWQzYmU0OTE3Zjk5ODZkMmFlNjY2MDZhNzhkZWEzNmJlMjY0YWI1MTViNjIzN2RjNTNhMDc0NzBlZWYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBhZDA1OGEwYzFkZDlkZDQxMTlkZDgzZjJiOWUzNGE4MWVjYjFjOWNjNDE3ZDI4NzNhMDAzMmU3ZTgxMWU5NjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkwYTM3YTAzMjAzMzg1YzIxODQyNDc3MGRkNTI0YzMwZDhiMGEyN2UxODZiNWUzNGM0ZTBiYWIwZDNkODZjNTkifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_8daeb3007a974be285eb8b57f518eebd",
+      "statement": "Secondary and unique indexes are generated only from explicit metadata — @MpTable(indexes/uniqueIndexes) entries with @MpIndex(name, columns, unique, lengths) and @MpField(unique = true) (which yields a uniq_<table>_<column> key) — never invented for stock-annotated entities; when two domain classes map the same table, the generator keeps the richer mapping (more columns, then more indexes, then more primary keys, then the shorter source path) and warns about the ignored one; every generated CREATE TABLE ends with ENGINE = InnoDB DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci.",
+      "evidence": [
+        {
+          "resource": "repo://bin/make-migration#L508-L522",
+          "version": "repo-lines-v1:sha256:228ebf771298a457fed64e95dc29576299724a105bd4856e1aae0e1f3c82b309:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVmNjFlZGNlOWU3YjQwOWE0Mjk2ZjAxMGJjMzEzNjUyMjc4YTY4ZTM4ZmQyYzNlODZjODBmOWZkNTViYWIwMjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZiOTgwZWUyZjYwYmU3YzY1MGZlYzIyMTMxZThhNGM2ZDc3YjNiZGM2MzQ4MTIzMWQwOWUyNDJhZDA0YmU4N2UiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU4MTllNTZhNDhkNWJiNmQyOGExY2ZmOTQ4ZmM0MDgzMGJmZjFmZWMwYjMxYWJjZmU2ZWIyMGU2MjY2OWI1YzMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRkYTNjMjdkZGExZTZjMzUyNDVjOTY2N2M5YzU2ZjMxNDRjOGUyYzlkOWVmYzUwMjUzMTdhNGNlOWUwOGU1NDMifQ"
+        },
+        {
+          "resource": "repo://bin/make-migration#L716-L717",
+          "version": "repo-lines-v1:sha256:2d526ed97052f8d79393db323d048374afa2cf3bee2937d2b78df341eb9d0881:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjg2ZjE2NDkzZGJlYTFjYzkwMTY1YTliZDdmMzQxNmNjNzkzMzNlZWM0ZjNhM2E1N2NjMDZmYmYyNzFmYTRkNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiN2RiZTZlZWYyODY5OTRmNDAyMmE5YTNlNjNhZjkzMWIzNGM2YTBmOTMxMGRhYjc4Njc0YjY2YjAzMGFiODkwMiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTBhMzdhMDMyMDMzODVjMjE4NDI0NzcwZGQ1MjRjMzBkOGIwYTI3ZTE4NmI1ZTM0YzRlMGJhYjBkM2Q4NmM1OSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZjU3Mjc1Y2M5NmRlODM2ZDY1ZGE3YjFmMGEwYjk0ZDkwMzY5ZTBjMjA5NTczYmJlYzI3YjU0MjlmMTkzN2E3NCJ9"
+        },
+        {
+          "resource": "repo://bin/make-migration#L760-L769",
+          "version": "repo-lines-v1:sha256:54b066c476a29558fa3cbe7295fedc09e3606c56bf7e3796b03fceaf87b35bb0:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFjZTQ3YTZkMWVhZTE0MzE3Mjg1NGY4NjI2N2RhYmI5NmM0NGY4MDEwZGE3NTNkYWEzNWNlNGY4NTRhMDlkOWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwZjJkMzkyNjQ1MjVkNjRjNmMyMmE5OGI2NDNkMjJmY2MyNWFhNjliOTkxNGIyMzBjM2E1YmRmYWYyYjIzOTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVlZWM4ZDU1ZmQ3NGRhZTE2NDhlY2NkOGY3OGQ0MDg3YWYwMjNjMGEwYTQyYjVlMGJlMmQ0NWM0YTU4Njc0OTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJiNDE5YzE1OGNmMzYyYzQ0Zjk4NDcxYWUxNGM5YTk0YTNmZDMxZmY5MWI0YjVhZWZiZjAwZWYwYmZlYjI4NjgifQ"
+        },
+        {
+          "resource": "repo://bin/make-migration#L861-L877",
+          "version": "repo-lines-v1:sha256:4e8eea5b9562e16a22cb9530075899d1fd705fe5a09173e67c6b056403511b0a:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg3OWYxYmI5MTg0YjI0MzYyNGNiZDcyYzUxYzUxMTM1YmYxY2NlNTUxODljNGNhMTIwZTYyYzQ3ZDEzNmE4NWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZmMmIwODAyOGUxMGM2ODk2YTcxMjBhMjRlZThlYjBiZGZiMzMyODdjMDY3MTM2ZjFjMGZmNjdhMGI5YWIxYjIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ3MjE0YzM2NWI0MjJlZTk0NDE2YzljODdiMTMwMmI4MWZlZDBiNWM3NjlkNTRjMjA5NjU3MTkxYjlmZjBiMTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJhODNjMmU0NDQ0ODk5ODM2Yjk4NTNlOTk2Nzk5MjdmZDc3ZjU0MmQ0Mzk2ZDZlYjdkZTA4YzA2NDNlZmY3NzAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_6c78df6d19834fc3b4c04a85f03661e3",
+      "statement": "--filter-expression <regex> restricts the comparison to matching table names on both the domain and database side, and --changed-only restricts the parsed domain set to /domain/*.java files changed in the git diff (staged plus unstaged) instead of all domain files across all bundles.",
+      "evidence": [
+        {
+          "resource": "repo://bin/make-migration#L661-L672",
+          "version": "repo-lines-v1:sha256:e05bfd10aca071a064611854a241bde06ecd0b1203249d03a7628256c3ff5a58:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE2N2M4NTc2Zjg3MWNjMmU5MGYwN2JhMGQ5NzkzMzA0NWNiOTM2YTZmOTRiOGViYjFlNjlkZGVkZjdlMDcwYmYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3YzE5OGU5NTA3YTFkNTNiMTVhOWQzMTFjNmE5NzUzYzFlMDU0MmZhMWM2NGQ3NDkyMWYwNjU2Nzk2MWJjNTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAyZTYzMDEzMTI4ZjE4ZDkyMGEyOTFiNTczNzI3ODI0NWQ3NWE2MjZjYWFlMGI3NzA5MjczMWIyNmYxN2U0NGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRmNGYxYzgzYjdjZWM4ZDllMmQwZmNiYjIzZmM0ZGYwYmQzYmE3ODgzODJhYjNjNWRlZWE3NTlhYjA1MTRiYjMifQ"
+        },
+        {
+          "resource": "repo://bin/make-migration#L720-L722",
+          "version": "repo-lines-v1:sha256:e761e3bf90e705ed4bd262926212aefc9fd56cedbd6d9dc71bb2761bb7cfc9a9:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjI2ZDE1MzllY2ViMzgyMGRiYTU4ZDYzNDBjNWVkMDhmOTU3MmQ4ZDFlYjE4M2Y3YjczYmFmYzAyOTlkOWQxMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMWI4ZmU0N2Y4Y2Q4YmE3OTUwODMyZDliNGUzZTNmODUwYWJkOWEwMjY2ODZjYzQxYTliNzQ0YzkxZGZjYTNhNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMjdiYzU2YzI4NTkzZWVkMGNlZjNhNDFmMTA1YzgyMjEyNzhlNDM0NDk3ZmM5YTNjNzI1MjNhMTQwOWI1MDFmMSJ9"
+        },
+        {
+          "resource": "repo://bin/make-migration#L81-L84",
+          "version": "repo-lines-v1:sha256:a1466632d5e299c88631d7a17788428d33f4b9d227e5d7a1730a84ad106828a6:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZDE1M2MzYTVmYWE4ZDk2MTY3NDBkMmI5YjVmYmQ1YWEyMjFiZjRmZmRjMmEzYWQ4NDQ3NzkxOTY2YTEzMWY0NCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYTdiZjA3YmE3Yjg4NDc1MDFlM2JiYjczNDY5NGZkYTQ3OTBkYzhiOWVhMDBkNmMyODFmZmZjZDdhZTMwNTg4OSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNlYjZhNWRlY2YwMTljOTM3OTRhMTJlNzgxNzg4ZTA5NmI0MTYwY2VjOGYyMmY0NGVkMzBkYWIwODAzYzk1ZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjk0NzRkYjU3ZWM4ZjVhZGVjZTJkMTE5YWJhMTc5ZWI0MjE4MWFiNDdlZjE3NWYxMmQ1N2UzMmQ5MDJkMGYwYSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_ead1c0cb48c24b9694d69726d9eb638b",
+      "statement": "The target database is resolved as CLI flags (--db-url/--db-user/--db-password) over environment variables (SPRING_DATASOURCE_URL/_USERNAME/_PASSWORD, SPRING_PROFILES_ACTIVE) over application.properties overlaid by application-<profile>.properties (with ${ENV:default} placeholders resolved against the environment); only jdbc:mysql:// URLs are supported, and a utf8 characterEncoding parameter is normalized to utf8mb4 for the pymysql connection.",
+      "evidence": [
+        {
+          "resource": "repo://bin/make-migration#L105-L132",
+          "version": "repo-lines-v1:sha256:be9274d5c25b5b4f6a0233fc0cc95c1643dba6d4f344e63ae3c522dc3fe06135:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI4MmY5YWJlMjdjZmI2N2I0NDQ0ZTg5NGNiOTMwYWU0YmMxYTc0NzY5YmM2YzA5MDRjYjA4MGYwYjM1Yjg5NDQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQxMTdmYTAwNmJhOTIwODUwMGIyOTMwY2U2OWNiZGU0MzZjNjQ3YWZhOTE3Y2I3Mzk2YTliYzkxMTFhNDZkZDIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjEwZGJhYjMzNzk1OTJlNGExODkxMzM5ZTRkZmQ0NDBhMTJjN2VkYmQ3YmFhZmU1ZGIxYmE2ZmM4YjYwMzA2NzUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdlN2Q3OTgyODljOTgyM2Q1ZjBhN2I1ZDMwZGU2ZmJmOTI2Njc0ZDQyM2ZiZTA1NDUwNTBkNWY3ZTNkZWU2MzAifQ"
+        },
+        {
+          "resource": "repo://bin/make-migration#L323-L347",
+          "version": "repo-lines-v1:sha256:b2078132e4e75f5eaf12d4dc7d48fbbe5efc38e88f560d76df2464ced8fe8b58:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ1YjUzODYyZmM2Mzk0MmYzYWZjYzc1MGFhNGRkNWI2ZTQxYzIwYzBjZTVmMDU1Y2ExYjg0ZjM1NWJkNThmMDQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI0MzI3YTU4NjE0NGYyYmJlYzM5YWIyNDU0ZjY1NzhkMjlkZmY3ZTExNGIzODE3YzMxYzI2Y2I1ZmMyZDEzMmEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFhNjZjOGI5NDJlZGQxY2JhZDViMjdmOGY2NTA5YjFhZmVlZjQ5NDFjZTE4MzBiM2Y5ZWIzYzc2ZDc2NmM1NWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI5MTZjNjFkNWFjOWMxMzhmNjVkMzkwYzQ3YmU2OTVkN2E2MTVkZDNkNmU3Njc2MmYzZTcwYzQ0ZjdjYTRhOTIifQ"
+        },
+        {
+          "resource": "repo://bin/make-migration#L8-L58",
+          "version": "repo-lines-v1:sha256:bd935cdb0f0c02430f929ed5458f0d0d75065624710a35066cd947acecc0db62:eyJzZWxlY3RlZExpbmVDb3VudCI6NTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVjZDI5ZTFkMTliZmYzMmZiNWZjNzdjYzA3ODJhMTBjMWNkODA1NWFhM2JiZjA4Mzc3Y2FjMzdmOTVhNzk3NGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU5ZDUyNzhmZTFjNzVmYTk4M2Q5MDllOTllMzgzMGJkYzhkNDU5ZDQwN2ZmM2M4YzEwYzA0OWNkMzM0NzIxODIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAwYTJhZGY1YmFjZjI4OTM4YzQyMTQyODJiNzYxMGJhNDdiYWIxYTVmMDhiM2UxYjE0MjczN2RkYTlhMDQ1MjQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_34b4f8b75e924aefa1b0ce2c7d558ccd",
+      "statement": "MigrationSeedRunner, an ApplicationRunner in ecshopx-bootstrap aligned with the legacy PHP EspierBundle\\Listeners\\UpdateMenuListener, seeds the logistics table from classpath:seed/logistics/kuaidi.json only when the table is empty, skipping rows with blank corp_code or corp_name, and catches all exceptions with a WARN log so a logistics seeding failure never blocks startup.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MigrationSeedRunner.java#L43-L130",
+          "version": "repo-lines-v1:sha256:c972eec05be3d8ea17cd7eddfcd1f0a974cdecd4dbc7ce2db6bb30d4e9e22bdd:eyJzZWxlY3RlZExpbmVDb3VudCI6ODgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFlN2U1NGRhM2Y2NGYxNmE4YTI1OWE0YzUxMWE2NGU3YTVmYTY4Mzc0NzBkOTYzNTg5YTliZWMzYzczZWJmY2QiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjVlYWFkMjljNGM2OWI3M2NhZjI2ZjNjY2MwYTQ2YTE1ZDhlMWI0NzVjODFjNmYwNTZkMmEyZmJkYTQxNzQwNDMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_89b1cad05a9d437b885a42c81eb9dc58",
+      "statement": "MigrationSeedRunner.updateSystemMenus() is gated by common.use-system-menu (default true); when enabled it deletes all company_id=0 rows from shop_menu and shop_menu_rel_type and re-imports six menu seed files in a fixed order (platform, it, shop, dealer, merchant, supplier) through ShopMenuUploadService.uploadMenus inside a single programmatic TransactionTemplate transaction — used because the method is self-invoked from run() and proxy-based @Transactional would be bypassed — and any failure propagates and fails startup.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MigrationSeedRunner.java#L132-L157",
+          "version": "repo-lines-v1:sha256:71d65b1980f57dff691c7f536e5f88e8fb806f779bb0b025eb8aa161d724ff87:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVkOWQ4Y2EyYmNhNmJiZDE2YjU5Y2JmNTJiNDM1ZDNlNzY3NjA3MTk4NjQ1Njc0YTdjN2ZiOGMyZTA1NjA2YTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIyZjJmZjVmZWVjNjBmNTg3YzhmYWU0ZTg3ZjgwOWE2NjFjZmZlZDZiNDdhYWU1ZjZkNmEyNjUzYWE4OTUyZWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRmYWFjOWM2MWQzMmJlYzJjM2VmNDM3YWUwZmZhMDhhNGE4ZDM3N2ZiZGI0M2QwNWZlMTgxODA1ZjA0YTkwODIifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L96-L96",
+          "version": "repo-lines-v1:sha256:ad36660e917970697bb49038bf84859b6017866fe55e01cc2071fe9404cf1e3a:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYWQzNjY2MGU5MTc5NzA2OTdiYjQ5MDM4YmY4NDg1OWI2MDE3ODY2ZmU1NWUwMWNjMjA3MWZlOTQwNGNmMWUzYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYWQzNjY2MGU5MTc5NzA2OTdiYjQ5MDM4YmY4NDg1OWI2MDE3ODY2ZmU1NWUwMWNjMjA3MWZlOTQwNGNmMWUzYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNGU4MTViMjBiNDA4NDYyNWYyZWZiMTA5ZGE3OWY4ZjgwMDAxNTBmOGJhOThiNzliYmMyYzhiYzY3YzBjOTQ5OCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDZjZGQ3NmZhODljZWNlMzk5ZTAzMmRmY2NlZGJjY2M0MWFhZDI0ZjdmOWUwY2IwZWQwN2FkODg0N2FhYWZhOCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_9abd5921974a434f87b218590ac9490c",
+      "statement": "MigrationSeedRunnerTest pins the seeding contract with mocked mappers and a synchronous inline TransactionTemplate: logistics rows are inserted only when the table count is zero (blank corp_code/corp_name rows skipped), a non-empty logistics table never inserts, common.use-system-menu=false performs no deletes or uploads, and the enabled path deletes both tables and then calls uploadMenus exactly six times in order.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/config/MigrationSeedRunnerTest.java#L68-L209",
+          "version": "repo-lines-v1:sha256:809872f2ca7e6b2f7e5e1b5cdeeb7dead9afd23c3c014132560ee6093a0d0c7b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQyLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI0YmExYjFmMGQ5Mzk1NzQyZTIxNmY3MWM5ZTkwYzhmYjlhYTZiNDI5NmFhYTRjZTdjYzA1Yzk2ZWE1Yjg3YmFmIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI2N2NkYTgyZGE2MDYyMzhlMDVlNjIzOTk1NjljNWVlMDM5OTM0MTk2NDhhZTVkNDNhMmJmOGNkNjM0N2Y4MjYzIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiIwMjY3YmYxMGMxYzVjODM3NTljY2FmNjg0MDJkOWE4NmIzZjRiNWZhMDk0ZTNhMDQ5MjBlZDM3ZWIyOGYzMTViIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MSwiZm9sbG93aW5nQ29udGV4dEhhc2giOiI0MTJjYTM0NWNjZjc1YmY5YzA4MDZiY2U2OTViZThkZTgwOGI3OTk4NDI1MWE3YTU0ZDIwMmNmNjEwMWRkNDUxIn0"
+        }
+      ]
+    },
+    {
+      "id": "claim_bc3a84d1f5c646a6af9a8bd968cfa0f6",
+      "statement": "Flyway (flyway-core + flyway-mysql) is a dependency of the ecshopx-bootstrap module only, which is why all migration SQL lives in ecshopx-bootstrap/src/main/resources/db/migration; the two shipped base migrations are V00000000000001.sql (mixed CREATE TABLE and ALTER TABLE changes across bundles) and V00000000000002.sql (member signin activity tables), whose zero-padded versions sort before any generated 14-digit-timestamp migration.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/pom.xml#L237-L244",
+          "version": "repo-lines-v1:sha256:1be17a2c545fcb5332630f1ff3ba13463694afdc61d8803fcf2aff235ba64526:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjA0NzFjNTFlZTVjOWEwZTAxMDc5ZGE5MGJkYjcxZWNiNzZmNmQ0OGI2NjQ4YTUwYWZhNjM3N2Y1MjJhNTRiZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDYwYmFiMDRmMjE5NjU2NmM0ZTRkNDJmNjA2MzcyYzIzNzc4OWM4N2Y2NDdlMzA0NzE5MzY3NzA3YTg4NDQwOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMWI5NTMzYWU3MTIyNTQ4Nzg0OTg2YTAzNzQ5YTRjZDgyZDAxN2U2ZWVhOTU1OWNjOWFlMGExMzZjMmQ2YzUyMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiN2RiZGUyZmE5MTdhMGEyODZkYWNhMjhmMDY1YWM2NGMwNzU0NGRlODIyNzVhNGRmZTg2NmY1ZjVmNmJkNTQ1YyJ9"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/db/migration/README.md",
+          "version": "repo-file-v1:sha256:c210753a115df652fefb90e5a0eed2d56177e33a718f7b847aae9ef465361623"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/db/migration/V00000000000001.sql#L1-L20",
+          "version": "repo-lines-v1:sha256:22f69999ab875f8bbbae79988809904bd0f3b591be2d7b151d16b852abbb4ba3:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFiZWEwN2VkMDYwMDkzZWFiYzg2ZWYwMzI1MjAyYjJiZTUzZGM2ZGQ0ZmU1MzUyZjY3OWQ4MDVkYjFhNmM3YmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYzM2MxNjhlMTdlYjVkMTI3ZWQ1M2RjODcyODVkMTkzMDBiMGM1ZjdlOWE4YWVlMmYxNjMwNGQ3NjczZTNlMGMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZjMDIxNjUxY2MwY2YzZDM2NjE0NDFiMTg3MjExNDMyNTAwOGE1MzZkNzM0M2JiMDc2NWVlMzY3ZjkzYTdjYWMifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/db/migration/V00000000000002.sql#L4-L26",
+          "version": "repo-lines-v1:sha256:93d2656430c7cd3b89a1f4d270ea19d482ba714f3e3b8d2d307fd9eba5a52091:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg4NzJiZjdmNjY1YTg2YWE1NGIyMjZkOTU1MWRhMTU5Zjg3YjdkZGY5NDgwNDZiMWM5YjUwNDYwMDZjZDcxNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUzZjRlMDMxZjM5ODRiYmFmMTgyNDAyYmU1MTFlNzFjOTIzY2IyM2ZjNjY3MTM4MmFmYWIwZTBjOWIxOGQxMzgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjViZmEzOWE3YjcwYTQ3NGI3YWQ3MWUxMWM4NzFjOGEwMTlhMDEyYzFjYTRkYjFhMjQ2YmRkODIyNDIyNjQ3OTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJlODkxMzBiZjM1MjcwNjUzYWM3OTBjZTNhMmU1YzZlNzhhYmRiNDllYTgyZTUwY2VmNTExOTUyYTQ4MmEwZWYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b50ec10896ae42448613ebf0216b94bb",
+      "statement": "The repository ships no application-local.properties — ecshopx-bootstrap/src/main/resources/application-local.properties is listed in .gitignore, making the readme's claim that the project already includes it as a local development sample drift — so bin/make-migration --profile <name> only overlays an application-<name>.properties that the developer creates themselves (both the Bash load_prop helper and the embedded Python loader silently skip a missing overlay file), and profile-based datasource or Flyway overrides require authoring that file first.",
+      "evidence": [
+        {
+          "resource": "repo://.gitignore#L7-L7",
+          "version": "repo-lines-v1:sha256:0834693538e35870e7c0789da838a6afe5bc6d8676110ad7e7d29c312717f4b0:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDgzNDY5MzUzOGUzNTg3MGU3YzA3ODlkYTgzOGE2YWZlNWJjNmQ4Njc2MTEwYWQ3ZTdkMjljMzEyNzE3ZjRiMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDgzNDY5MzUzOGUzNTg3MGU3YzA3ODlkYTgzOGE2YWZlNWJjNmQ4Njc2MTEwYWQ3ZTdkMjljMzEyNzE3ZjRiMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiODJiZmNkMDk1ZDQ0ZmQ5Zjg1NDY3M2U4MjRiZjhiN2ZkYzYyZGUzMjg5YWU0YjFhMmRiM2I4OTc2YTY1ZGE3MSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMGY2YjQyMDIyZDFiYjIyMTBjZWM2OGZjZDhiY2JlMGZlYzQ2NmQ4ZDYyZGYxM2RiZjQ1ZmIzYjYxM2U0NzU5YiJ9"
+        },
+        {
+          "resource": "repo://bin/make-migration#L24-L40",
+          "version": "repo-lines-v1:sha256:d668c27d2fe634d9e28d496c233a4e0fa47d1d2d583587f1b5a060cf1e2846ea:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg2OWQxZThiMjlmNDhhYmJkODg0NzNlZWVhZGU4MTEwMTkzMGMzY2IyNTJjZGEzNTczOTIyMTc2NTY3MTIzZjEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkxYmEyNGFjZjgzZWJmOTY5MmEwMTI4NzkwOGQwYWFjNTlkZjk5YTllNzNjOThiZTgzYmVlMmQ5MDIzMzE0ZDIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg3NzM0MTVmMTM2Nzg4YTBmMzI2N2M0MTgyM2QzNGNiMjk0NWRiY2YwODk0NmI2NDExYTU1ZGIxNGI0OTY0YjYifQ"
+        },
+        {
+          "resource": "repo://bin/make-migration#L297-L330",
+          "version": "repo-lines-v1:sha256:a489b178c396a9f877249d0ea09c47ea58c713ff0b79aa387ebada1e7cf554c4:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ4NTMzMTE3MWJiNzRlOGJiMjk3NjQ0Mjc0M2RhNjc2ZWEzMDVmMTI5NjM1OWMwODg3MGNkODU0OTJlN2U4ODUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhmZTE1MzYxODJhMjAzYWY0ZGVkOGI2MTBlMWUxNjZkYTAxMGZlNDdhOWI4ZjFjZDM5OWJjZTQ1NmE0ODc5Y2EiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg2Yzc2YTBhYTNiOGZkMGEzM2MxZjQwZTY0MzY4OTQ1MTQ5OWYwNzUzODUxN2RjMWUzMTlkNjY2M2E1NDZjMGIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMyYTljZGIzYTBlZTQ4YmJlMjY0MDM5NzJiZDNkZGU5MzRhNGQzYTY3NWM4NWI4ZTYxNTQ2MGRiYThmYjI4ZDUifQ"
+        },
+        {
+          "resource": "repo://readme.md#L237-L244",
+          "version": "repo-lines-v1:sha256:0f731c8e71dc34353aa5f5089cf924e833d48284553ecf720e28d7e897f16387:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzk5YjgzODNkOWZmNTc0Y2JlNDQxNDBhM2I1ZTE3N2I3ZTk3Yzg5NzM3M2ZhYmVjYWNjOWZmZDAwZDMyMDkyOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDhjYzAwN2M2M2ZhMTk0YWVjNWFkMjIwYWQ1OWQ5MWVlMzQwMGIzNzQ0MjRhNTlkOGZlYWY2YTZkMDBlMGVlZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDk5NmM0ZDhkNDIzZTY3NzlhOGJiNzk1YmI4Y2E3MmJlNWYzOWE1MmJiZmJjMjVkYjdkMmFhNzdiMTkwYTM1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiM2Y0OGEyMzg4OWExYzY5YWM3Njg1NjY4MjMzN2E2ZjRkMzJhMjA0NGRmNjQ0YmI4OTQ4NTJmNjdmMDM4ODVjNSJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.2",
+    "at": "2026-10-23T03:04:20.471Z"
+  }
+}

@@ -1,0 +1,336 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:418836399373a2a212eb23dd8af6c514ac4127fa7e2bd5a977972fe817b18d5a",
+  "claims": [
+    {
+      "id": "claim_f8dea3b28c564e42855a59a2b74e035f",
+      "statement": "Every business Bundle roots its code at cn.shopex.ecshopx.<domain> and follows a standard package skeleton: api/admin/v1 and api/front/v1 (+ api/open for callbacks) controllers, service, domain entities, mapper interfaces, dispatch job handlers and event listeners, cron Schedule*Handler classes, port interfaces the Bundle owns, integration implementations of other Bundles' Ports, config, and an optional repository layer; orders, goods, members, and kaquan all follow it, though not every Bundle carries every package (kaquan has no repository/, members has no cron/, goods' cron/ holds only the test-cron mock config).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/EcshopxApplication.java#L30-L41",
+          "version": "repo-lines-v1:sha256:c5c9ceb6505bb19d4773f4b8c7cddcfa4ffe3bf4c660735372ae94cf41e2686e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA3MTlhYmJmODYzMDk1NjZkNjgwMjg5ZTYzZTRmN2RlZTVmZGRmZjBkM2UxOGQzOGIzZWM3ODQxMGYyODc4NDAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk2NWVjNzdkYjUxYWYwODFhNDlmM2ZiODIyNjViZWEwZWRjMTc4NzQxYjcxODQ5Mjg1NTgyYjEzMzVmZWVjMWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/package-info.java",
+          "version": "repo-file-v1:sha256:58fd08d7b9bda3e7165c9a130eba494b04586c4694806a4c893fa7c24f9a251d"
+        },
+        {
+          "resource": "repo://readme.md#L6-L9",
+          "version": "repo-lines-v1:sha256:b9b07370d56cb7a209bb06569ac542fd6c2b5f6f9c4ef4463095539d7e873dbd:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNGQwODQ0OTQ4ZDA2ZWUyY2I1NDIyMDYyOTJhZWZlMDQ5Njk1NmM5MzE2ZGUxODEzMDFkOWVjODk1OTJjYmQzNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYmQwNGZlYTZmODU1OGE0MGFmMTEzY2UwZjg3MTkxMmZlYmRhYzQwMmQyMTU1NzA3ZTI1YTc0ZTNhNDAxMmFjNCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTg3ZmFkNzI3ZTg2ZGY2YzBhODhmZmJiOWM4YmUzZWZiOTBlYzkxZDUwMTNkOWEzMDZjZDk4Y2M2YmY5NWIwNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZmRjODUxMGZlNmJmMGIzMmVmM2YwNGY4NjQxMzgyYTFmZWY1M2MwZGM0YjAxMjZkN2JkOTVjNzA1ZmExMzJhMCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_148b507c332b4bda84705a15a9b5cb31",
+      "statement": "Controllers are split by API surface: api/admin/v1 controllers carry @AdminAuth (plus @ShopLog) and map /api/v1 or /api/v1/<domain>; api/front/v1 controllers carry @FrontAuth or @FrontNoAuth and always map under /api/v1/h5app, with Mini Program endpoints further namespaced by wxapp; api/open holds unauthenticated callbacks and legacy PHP-URL-compatibility routes such as the WeChat Pay notify endpoint at /wechatAuth/wxpay/notify. The public Open API is served by the dedicated ecshopx-openapi module at /api/openapi/internal/v1|v2 plus a catch-all gateway at /api/openapi, not from business-Bundle api/ packages.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/api/admin/v1/ItemsController.java#L85-L86",
+          "version": "repo-lines-v1:sha256:da381a31bd05d6f9746c7fea14ae30afdceb030a70ec713f7608cd876e15e86d:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMjU4N2I1ZjA0ZWIyNmQzZDZhMDg3Mjg4YzkzNGNkZWIzNmNmOTlmOTAzMTEwMDU4OTRiODk0NzJkZjJjYWY1MiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTg1NzQ5Y2VmMTc4MTY2NGM4MTJmODYxOWEzMzBkMWYzZjZkYzYyYmFmNTA4YmYyMzMxMTZlYTE1NGIzNDM1ZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNTQ4ZWZkNDU2NGE4OWI4MWI5OTRhOWE1NTI4NTMzOTViZmJmY2E4MTU3YjNlYWU2OTZkMzkxODNlZDUxNWRmYyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZjg5MTJiNzM4YmI5MDNiMzYyYzU4MDg5MmMwM2FiNjA5OTA2ZjI1NWYxZTI5NThkYjQ1M2E5ODdiYzBmMDE5YyJ9"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/api/admin/v1/OrderController.java#L76-L79",
+          "version": "repo-lines-v1:sha256:884385dcf47a2318c5e9ef376227a8277963ab5e22c4840a9a2e92ed2091a10a:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMWI4ZTRiNmUwYTRiMGMyODc2NjhjNDFlM2EwNmFhYjM0ODY1ZWU1ZTZiYTczZDQ3NzZiNzgxYWU4MjhiNGQ2OCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMTgzMDg1MmZjYzJhMzZkY2M1ZGU4MTVjNGEyZThiNjk0MGFkZDk3ZjFkNjgxMTJlYWEyOGE1MDQ4ZDhhNmY0ZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNWUyNzYzZTQwMDE2ZjdjZTNiYTMwMGJjNmNmNzI2NTg5Mzk1ODgwN2FkZjk4ZDIzZmFiNThjZDc1ODJkZjQ2NiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDEyZjBiNDQ3MzQ3MGJlYTQ3NWIzNTlmZjgwNDk4MDU4Nzg4MDI1MTFlMzViZGJmOGJhYzhkYzRiZTk4MjZmNCJ9"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/api/front/v1/WxappPaymentController.java#L47-L54",
+          "version": "repo-lines-v1:sha256:54f4f4d46223fc63f2086fc6e5918adc2cc02dddf86c9ce436ab5ba5ee3af30c:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNWY2MTZkOThkYmE4MjcxNTNiM2NhMDgyNzYxOWUxY2ZhYmJhNDNhNmNkZjM5YTMxNjBhODVjN2ZmZDAxOTJkMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjA1YWQwYjgwODQ5NzU5YjFiOGVlMDBiNWExNWYwNzFiZDM2YTExMzAwNzYyNWYyZWU3MDA1MzBjNDdjNTM5YyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjM5NGI5N2MxNTdmM2FmMDQ5ZWE2MWQwZjY3ZTYzYmI3NDE1ZTY5NWJkMGUxOTc3OWQ1NDQ2ZjZhMTUxNmY2NyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzEzYmQxYjY3MmZlYmM5OWVlMjBiMDhlNzU4ZDRkOTI2NzIxMjVmMWQ1NDI0YThiZjUyYzI3M2Q5OWIyMTMzZSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/api/open/WxpayNotifyController.java#L28-L35",
+          "version": "repo-lines-v1:sha256:ed5aeb58c47cd9719aa24cb76bd92d99dde3386c80bed1e4c93aa590660e39f0:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNWY2MTZkOThkYmE4MjcxNTNiM2NhMDgyNzYxOWUxY2ZhYmJhNDNhNmNkZjM5YTMxNjBhODVjN2ZmZDAxOTJkMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOWIwMzFhNDE2ZjhhZDcyMzU4NjZkN2ExMDBlOGJiMTE1YzBlYjljMWRmZGMyZTk0ZTU2NzA5OGQ3NjNjMGI0MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjM5NGI5N2MxNTdmM2FmMDQ5ZWE2MWQwZjY3ZTYzYmI3NDE1ZTY5NWJkMGUxOTc3OWQ1NDQ2ZjZhMTUxNmY2NyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYmIyYzY2MTVhZGIxMDQ1MjY1M2E4NTRmZDBmMzFkYzQ0OTFhMzBhYzZjNWRkMTBjYmUzNjMwNWI3ZDk0NWRmOSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_2dc1ad6b3229410eab861a07be901ba3",
+      "statement": "Every controller passes an explicit bean name to @RestController to avoid collisions in the single Spring context that scans cn.shopex.ecshopx.**: the dominant pattern is <domain><Surface>V1<Entity> (ordersAdminV1Order, ordersFrontV1WxappPayment, goodsAdminV1Items, membersFrontV1Members) while kaquan uses the variant <domain><Entity><Surface>V1 (kaquanVipGradeAdminV1, kaquanDiscountCardFrontV1), and the openapi module uses openapiV1*/openapiV2* names.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/api/admin/v1/ItemsController.java#L85-L86",
+          "version": "repo-lines-v1:sha256:da381a31bd05d6f9746c7fea14ae30afdceb030a70ec713f7608cd876e15e86d:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMjU4N2I1ZjA0ZWIyNmQzZDZhMDg3Mjg4YzkzNGNkZWIzNmNmOTlmOTAzMTEwMDU4OTRiODk0NzJkZjJjYWY1MiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTg1NzQ5Y2VmMTc4MTY2NGM4MTJmODYxOWEzMzBkMWYzZjZkYzYyYmFmNTA4YmYyMzMxMTZlYTE1NGIzNDM1ZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNTQ4ZWZkNDU2NGE4OWI4MWI5OTRhOWE1NTI4NTMzOTViZmJmY2E4MTU3YjNlYWU2OTZkMzkxODNlZDUxNWRmYyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZjg5MTJiNzM4YmI5MDNiMzYyYzU4MDg5MmMwM2FiNjA5OTA2ZjI1NWYxZTI5NThkYjQ1M2E5ODdiYzBmMDE5YyJ9"
+        },
+        {
+          "resource": "repo://ecshopx-kaquan/src/main/java/cn/shopex/ecshopx/kaquan/api/admin/v1/VipGradeController.java#L61-L62",
+          "version": "repo-lines-v1:sha256:0c7542853f5eb2d56205d14e7c6428dbff828429e5473b682963faa148f28765:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjliY2Q3NGEzNWYwZDVkOGQ4ZGZiNGVmOWExZjljZGZhNzI5OGRiZmE1ZjE5OWRiZjNjNGY4YTMzYjI3OGJkNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMTgzMDg1MmZjYzJhMzZkY2M1ZGU4MTVjNGEyZThiNjk0MGFkZDk3ZjFkNjgxMTJlYWEyOGE1MDQ4ZDhhNmY0ZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMGUwMGVjZDU3MWExMGUyNjQyZDM2NTk3NjM0MWQzNjM4YjM0NWZiZDYzMzQ1NGE3ZjViZDI4ZTUwNmIyMjI1ZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNjhkMzZjZDk4N2UxMzgzMjJhYTI1NmZjOGVjZDVkN2E4Y2Q2NGNiZmZiNzU5ZDI4NDVkNjdmOWU5ZWY1ZjY2MCJ9"
+        },
+        {
+          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/thirdapi/v1/DistributorController.java#L34-L35",
+          "version": "repo-lines-v1:sha256:2059967552407f593ab761576f5a8fdc8675ee48522d05297724fabba8ca5698:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMTlmMDY1N2IzYzQyMGRiZDA5ZTUxNmM5MDQzYjQzYzA3YWNiNmUyYjdiYWZhNzJhN2M0YzE5ODY4MDA5ZTkwYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzdiZTJlYWNjMTBhNjIwZGM4ZWI0OWJmYmQ1ZDQyMmJkYTFkN2UwZmEwNTIxYmUzOGNkNTYyYzRiMDU5NWZiNyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYmQwNDU2NWQ2NmRlMWIzNDFmNzU2MGVmMjZlNTEwOTBjM2JlYmQ1ZTIyMDBlNmMwNzBlZDIzYTBiZDM5MzU2ZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZjM3M2JlMmVhNWUwMjA2ZWRlOWY0MjY1YTBhM2QyNTdmMWIwODlkMDI4MTEyOTcyYzdmZmUyN2MxNmJmODRkMCJ9"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/api/admin/v1/OrderController.java#L78-L79",
+          "version": "repo-lines-v1:sha256:697bc4f59c51aa6268f13fcffea2247f5400015ff729a2ddd0f46c0d4ed9b4d0:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNGFiZTdiMGRiYWViMDgzZjg1YjQwY2JjMGVmOTE3NjRhYTI5MTNlZTRmYzNjZjVlODEyZWZhMWViNmQwNmU4ZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMTgzMDg1MmZjYzJhMzZkY2M1ZGU4MTVjNGEyZThiNjk0MGFkZDk3ZjFkNjgxMTJlYWEyOGE1MDQ4ZDhhNmY0ZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNTQ4ZWZkNDU2NGE4OWI4MWI5OTRhOWE1NTI4NTMzOTViZmJmY2E4MTU3YjNlYWU2OTZkMzkxODNlZDUxNWRmYyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDEyZjBiNDQ3MzQ3MGJlYTQ3NWIzNTlmZjgwNDk4MDU4Nzg4MDI1MTFlMzViZGJmOGJhYzhkYzRiZTk4MjZmNCJ9"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/api/front/v1/WxappPaymentController.java#L53-L54",
+          "version": "repo-lines-v1:sha256:61b4c5d807167dda8b23204f3c969f513580093607917a45ae73c9528261add1:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYWJjODE4NDYzYTA3ZjE1ZWJiYzI4ZWE0N2IyYTNkNTY3M2U3OGExNDYzOGQ3YjkzNTVjNzAwZDA3ZThmNGJiYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjA1YWQwYjgwODQ5NzU5YjFiOGVlMDBiNWExNWYwNzFiZDM2YTExMzAwNzYyNWYyZWU3MDA1MzBjNDdjNTM5YyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjUyZWNkMTBhMDFlZTVjZGYwZmY2ZDVhZDY2MGZlMzYwN2ZmMjFiOWZhMDdlZWRmYjZlNDE2YmJjNTAwYTJkZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzEzYmQxYjY3MmZlYmM5OWVlMjBiMDhlNzU4ZDRkOTI2NzIxMjVmMWQ1NDI0YThiZjUyYzI3M2Q5OWIyMTMzZSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_1ba4b76a18324020a590423ab185102d",
+      "statement": "Mapper bean-name collisions across Bundles are prevented not by manual names but by FqcnMapperBeanNameGenerator, installed by EcshopxApplication via @MapperScan(basePackages = cn.shopex.ecshopx.**.mapper, nameGenerator = FqcnMapperBeanNameGenerator.class, sqlSessionFactoryRef = sqlSessionFactory, lazyInitialization = true); a mapper interface only works if it lives in a mapper package, and its XML only loads via mybatis-plus.mapper-locations=classpath*:mapper/**/*.xml in the bootstrap application.properties.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/EcshopxApplication.java#L30-L41",
+          "version": "repo-lines-v1:sha256:c5c9ceb6505bb19d4773f4b8c7cddcfa4ffe3bf4c660735372ae94cf41e2686e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA3MTlhYmJmODYzMDk1NjZkNjgwMjg5ZTYzZTRmN2RlZTVmZGRmZjBkM2UxOGQzOGIzZWM3ODQxMGYyODc4NDAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk2NWVjNzdkYjUxYWYwODFhNDlmM2ZiODIyNjViZWEwZWRjMTc4NzQxYjcxODQ5Mjg1NTgyYjEzMzVmZWVjMWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L36-L39",
+          "version": "repo-lines-v1:sha256:d0d4e79d60835325467f7a83af33f5fb1f78197995fd7b6b22e3d66a45c7a989:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNzBlMTM5MzM5ZDE3ZDAxOTlmNzgwZTgxMjM3MjZlMjhhZjdmNjRjNzViZTQ2MTY1NTAyOTczNjkwMzBiYzg4YSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMWY2ZTAxZjE1MTEyZDEyYzU4NWE5Njc2YjQ3MTViY2M5ZTIzMDlmZDQ2YzMwZGQyMmYyOWQwZGQzMmUyYzJkYyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMmM5M2Q2ZjZlZmI4YTM5ZTAzNTc0MjM5MGI1MzkyMGI5ZTQwMGM3N2VjMGM3YWNkMDA3MDQ3MzliM2QyYzFhMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZGM3N2Q0NDU1MTcwZjc2ZWI4MTY3YjFhZmJmOGI2NzgzMDcxMWUxMGJiOThlYWFmNzE1YzllMzAxMjQzMWMwNyJ9"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/mybatis/FqcnMapperBeanNameGenerator.java#L24-L39",
+          "version": "repo-lines-v1:sha256:5968cf398eba94fec314d5e072bc89d11351ccd04daa7597649528a8b9631c95:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA2ZjI3ZTNlZDIyOTNkNTRhYzNhYWVmNTUzYmRjOWI3ZTQ4MTkwZGM3MTM0NDA3NjEyMmZjYjJjOWYzYjNjZmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_6dd56fe9e6954fc485f3ee417664e206",
+      "statement": "Write-side service logic in mature Bundles follows a responsibility split: a @Service RequestGate (e.g. DistributorCreateRequestGate) re-reads the operator JWT, enforces menu-permission route aliases, asserts company activation, and narrows entity scope, throwing Unauthorized/BadRequest/Forbidden before business code runs; a stateless ParamValidator with static validate(Map) checks field shape; and an Orchestrator (DistributorCreateOrchestrator) owns @Transactional(rollbackFor = Exception.class), sequences duplicate checks, third-party guard clients, the delegated insert, and registers a TransactionSynchronization whose afterCommit publishes the dispatch job and event in fixed order.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/api/admin/v1/DistributorController.java#L237-L293",
+          "version": "repo-lines-v1:sha256:9b9315772f35e4b3b8956b0517c0243b5ee6d413d37c9786b7d7417ed60c297b:eyJzZWxlY3RlZExpbmVDb3VudCI6NTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkwMTZkZjUwMTc5MDYzYWI5ZjhiZGQ5YzlhNjcwMGY2N2E4NDM2NzM0M2U4YzA5OGMyZTI0NGZiZjhhOWY2NDYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJkNTBiZWIyM2IwYTkyMTJlNjc5ZmY4YzBmMDU4ZTkzZWYxODMyODMwNTY1NTgwMmE2NWQ0MjA3MDNmZDQ0MzUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU3MDkyNGNmZGU5Mjk0YWE3NGE3MTkxMWFkOTljZjU2OWRhYzNhNDgwYjk2OWMxOGMyY2Q3ZTM3NGVkNGZkYzkifQ"
+        },
+        {
+          "resource": "repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/service/DistributorCreateOrchestrator.java#L85-L135",
+          "version": "repo-lines-v1:sha256:3bdb300addb7ce36afc911d0d985bc5541f6eb1799a97a873d3916f6e17c74d4:eyJzZWxlY3RlZExpbmVDb3VudCI6NTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJkNzU0OGYwODFmM2Y0MjY0OTYxNzRiYjdmMTYwZjg3MDk0NDNjMWM1NmM2NmFmMzNmYjZmNmU4OTdjZjAzZjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA0ZmUwZjY5NDk2MzJhMzg0OTM3MDlkNzFiZmU2MGNiNDQ4NDIzOGUyOGFhMWEzNDNjYWEwMTNmNjZlOTI5MzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBjZDZlOGU3ZWE1MjllMjc5ZjJjOWM1MmQ5ZGVlNDQzZGJjOWM1NTY3MTcyOWIwMzkzNTJjNzIxMjQ0Y2M0NTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY2NWUzYzhmNGNhYTUzNDk5MzY4Y2JhZGRkNWQxZDQ0OTQ4OGM3Mjk1M2UyNGY2MmJjNjk0MjUwOGFlOGM5MzQifQ"
+        },
+        {
+          "resource": "repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/service/DistributorCreateParamValidator.java#L26-L45",
+          "version": "repo-lines-v1:sha256:f65b349c4198fddb23ecf053e35fe27679dab54c1065b91939a2deb5dc62d9a2:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBmYzgzN2M2ZWM3NDQyZGRkMDZmMmFmMmIyZGQxYzAxYmI5NmUxMzFkNTEzM2YzZDg4Y2U1ZjM1NDAwYTkyZDUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJjZGY3YWQzNTRlMmIyMzI1MWVmZTJkNTcwNTZjOGVhNzFjYjQyNmZkYTI0ZjdiNWNhYzc1ODllOWE4YThlODEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU3NTFkNjNiZjlhNTZiOTRlNzg3M2UwNmRjOWUyMTk1MmM1ZTU5MzFkZDkxZWNiMjkyNTU4YzcwZmUwYTZhMWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI2YWYyZDM4NTU1ZmI5Y2FmZTg3OWI5ZmM4OWI4ZTNkY2Y5ZDdiZDVhYTk3NmMzOTUxNmQ4MjJjMDJiOWFiMjcifQ"
+        },
+        {
+          "resource": "repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/service/DistributorCreateRequestGate.java#L51-L90",
+          "version": "repo-lines-v1:sha256:0b72f8677acc800e4e94f85479f3cd23ccc704520e7ccc2823a6a296694753d7:eyJzZWxlY3RlZExpbmVDb3VudCI6NDAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlhOTkyNTBlNjdiZDY2M2IyN2NjMmJmZDljNTIzMGM1ODUzYWMzMGYwYjNhNTc1NjZiYTM2MDM4YTg0NzNmNjEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ2YjgyZWY0ZDY5ZWYzN2ZhMDFmNzVmOGNlZjY2MWI0MjliNGFiMzJmMTU1MDA4YzUyMjg5OTU1NDY4YTM4NWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImYxNjhmNzE5OWJjODRmOTQzMWZjMDliMDU0OTIyYjk3NmZjNDhkYzJiOTBmMjJhODc4NjI0YjM3YjViMTAyMDkifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_aabe4803bc9d40c6880e064e1d154324",
+      "statement": "port/ holds interfaces this Bundle owns that other Bundles implement (e.g. orders/port/WxappCartAddPort, whose Javadoc states it is implemented by the goods module to avoid an orders-to-goods dependency, with the implementation at goods/service/cart/wxapp/WxappCartAddPortImpl injected by orders' CartController), while integration/ holds this Bundle's implementations of Ports owned by other Bundles; most shared Port interfaces live in ecshopx-common under common/port/<domain>/ so consumers never depend on providers, which keeps the peer graph acyclic (goods depends on orders, never the reverse).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-goods/pom.xml#L56-L63",
+          "version": "repo-lines-v1:sha256:be563918083a9fedb6f6eea7d5f080024d22ce6c778481859631feaed8521f1b:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZDE3YmFkYjFiNGU1NWU2ODU5OWNlNGNiZTZlZWVjOGQxNGZhNDcyZTNhYjVmZmRhM2UxMmZmMDI1YWJhMmU5MiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTVlMmNlZjVhMjM2NGFiNGVhMzYwODkwNjkyOTlkMWJjMzZhZTBkNGI5YzJiNmEwOTQyZDdmOWMzYWQ5ZjA5MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDIwMTEyOTUzYjljZGY5NTYyZTgxNzM3ZjQ1MmUyMDgxOWU0NjZlMjQzZTk5ODFiNTQ3OTkwMWNmMDQwNGUyMyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzZkZjllYTBmNTAzOWJmZTZiODFlNTM3Y2E3NzZiODQ4ODUwMGViZTJlNjY1YWIwZGJkNzNhMTlmOTNiYjUzMCJ9"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/cart/wxapp/WxappCartAddPortImpl.java#L16-L47",
+          "version": "repo-lines-v1:sha256:286d862faff54a6346607af42a3423f9ee1469e7555febd4e8898cce9f211efb:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEyNmMzMjcxMzE1ZjQ5ZjZlYzA1OTUzNmU0ZjliMzJhNDY0ZTE3NmU5YWU2ZjEwZTk2ZThjYTk1ODY3ZDQ4OWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM4OTQzNzg1ZmE0NWIwYTBmNGY3YjcxYzE0ZmFmMjQ4OTdjM2ViMDI1Yjc0YzllMTllNDc3ZWU3ZDAyZTU3OGIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNjYWNjMTlkMGYxYzQzYjAyYzFhODkzYzlhNDBkZDI5NjE1ZjZkNjdiOGIzNDVmOTJkZGZmZjMzYTM0ZDdmNzMifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/pom.xml#L13-L21",
+          "version": "repo-lines-v1:sha256:219e24129c24e0f87bf20dab24d4b7afb9d0bf7f3ff6b0184c780aff3cf0853c:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDE2NDQ4MjVjYzJjMmEwMmIxZTYxZjQ3NzY2OTFhNDM3NjQwNTQ2MjVlZmEwMTJkMGNmZmI1MjhhYTI4NWY4OSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDYwYmFiMDRmMjE5NjU2NmM0ZTRkNDJmNjA2MzcyYzIzNzc4OWM4N2Y2NDdlMzA0NzE5MzY3NzA3YTg4NDQwOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDUwMTJiMmE4MmJkNDczZDk2Mjk4MDFhYWQyY2IwMjdkODJiODQ1MDNmMDkwMTg5YWNkMTNlMWRiZmIzYWYyOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMTYzZTBiOTI5OGI4YTQxZWQ4ZmU1NzgxNTRkMTNhMmQ3MDI2ZTgzOTRlM2I4ZjM4N2FlM2Q0Mjg0YTk2NjI0NCJ9"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/port/WxappCartAddPort.java#L21-L27",
+          "version": "repo-lines-v1:sha256:b42a750fbca5ce76c07809482b2b716f79699bf5685649043a0803d877b101fe:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZDhhMTNjOWI2MDgzNjQ1NjA2OWE3OWRlOWY2ZWI1MjQwMjk5NmVkNTBiNzZhYzUxM2U2NzQ5MmViZWIyMDdiYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjQzYTQwZDVlODg5ODkzYTk4YTI1MzdmNzRlOWE0N2MyYTFjNzZiNGZjMmM0YzU4ZmRjYzVjM2UxOGUwYTg3ZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMmYyNzhmYzI0OGUzZDIwYWZhZGJhYzg1YzRhMDU3ZjdjMzI0YjY2NTU3YzQ4YjM3MDQzMjE3MDQxNzNhMzNmZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_448d24c6ccfa4e9dad7e077f285b6bbe",
+      "statement": "orders/integration/JushuitanSettingReadPortImpl implements common/port/order/JushuitanSettingReadPort by delegating to the orders-local OrdersErpSettingRedisReadService, letting aftersales and system-link consume the same Port without depending on ecshopx-orders; likewise each Bundle's openapi/ package (e.g. orders/openapi/OpenapiOrderListPortImpl implementing common/openapi/OpenapiOrderListPort) adapts the Bundle to the ecshopx-openapi gateway, which itself depends only on ecshopx-common.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/port/order/JushuitanSettingReadPort.java#L17-L24",
+          "version": "repo-lines-v1:sha256:0921ec1a1d895705b9236ed54f3e17510939206c8bad3ca4eb2fb0dbe2fa4022:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODEzYzNmNzU4YjcyMzVlMzU2YWRhYzJjZmEzMTFkMzYwZTI4MDEzNzY5YTY2YTk3OTU1OTFhOTNjYTA4YzAzMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjk2YTA5MzE1YzVhMDU1NGQwMjU4ZjE1NzljOWE3MDJhZTZlNWVmNDUxZTUxNGRiY2NiMWRkZTFkNGUxNzE5MiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/thirdapi/v1/OrderController.java#L31-L49",
+          "version": "repo-lines-v1:sha256:aca1334897f5292eb8f44854bd26f180312d806de039b08c060a1d5816733d09:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUxMjc2YTY4NjZkMzE0ODk5NTBjOTJlNGNhNTdkYjM3NDI1ZDVkNjg3MTUxYjY4NGFmZjU5OGM1ZDA5NjI5YTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQyNGIyMzU3YTI4NGUxMmVlNTg2ZjJlOGJlMWRjYzNiNWU3ODg0NzBhN2Y3NTg5M2Y5MmRmOGExYzYyNGU4MzIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFkYjU1MTk3YjAzNjFkYTYwOTFjOThkZmJkNDBhZDE5OGYxMDRhOTNhOThmMzllNWM3MGQ1ZGNlNjlhNTA3MGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdlZmNiMzg1NTAxNWNjNGI5NTc2NTk1MjU4ZTE0NWE0ZmQ1YmYzOTVjMDk3ZTBlYWVmNzMyZmY1Y2FlNTU5NjUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/integration/JushuitanSettingReadPortImpl.java#L24-L37",
+          "version": "repo-lines-v1:sha256:8b7816669d4c85bc7a7df3c90a00243e3759632f85699d49666487532307b097:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4ZmExZTlmNDQ5NDlmYTg5YTNiNDJiMDQ5MmRkYmRmZmEyZWI3NjQ4NDhkMzU3NzhjOWZiNTNjMjA3ZWJkYmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk3OGQ3NWRjMzgwY2YzNzJiNmQ5OWNkNjUxYTRhMzJhMzJlZGFkYTU3OGEzZTc4Nzg4YzM0M2Q1NGJhNmVlYTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/openapi/OpenapiOrderListPortImpl.java#L25-L25",
+          "version": "repo-lines-v1:sha256:bbe2a39f86fa9883c155b3c40bf9d85df462c733f7d8703ee233169b9f122543:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYmJlMmEzOWY4NmZhOTg4M2MxNTViM2M0MGJmOWQ4NWRmNDYyYzczM2Y3ZDg3MDNlZTIzMzE2OWI5ZjEyMjU0MyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYmJlMmEzOWY4NmZhOTg4M2MxNTViM2M0MGJmOWQ4NWRmNDYyYzczM2Y3ZDg3MDNlZTIzMzE2OWI5ZjEyMjU0MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNzJjZDY5YjIzY2Y3NTgwMTc2NWM0MjIwNWI3ZWU2ODMzMjA5YjU5YzIyOGY0ZTc1M2EyNTg4ZTI3MDY3ZGQxNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMTViZTZiMGU2MjgzNjBkZGM3MmExY2U0MzY1NGQwOGZmOGUyMjM3OThmMmU3MjZkMDNiZjU2NzY2YTU4ZWNmMiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_b5f873dcbcde425f8362a51fabfef4ac",
+      "statement": "dispatch/ beans come in two shapes implementing interfaces from ecshopx-common: *JobHandler implements DispatchHandler with handle(Map) (e.g. FinishOrderJobHandler normalizing null payload to Map.of() and delegating to FinishOrderJobService) and *DispatchListener implements DispatchListener with onEvent(Map) (e.g. UpdateItemSalesDispatchListener on EVENT_TRADE_FINISH); they are never registered by annotation — ecshopx-bootstrap contains explicit *RegistrationConfig @Configuration classes that call dispatchRegistry.registerJob/registerEventListener in @PostConstruct, and DispatchBusConfig instantiates the DispatchRegistry, DispatchFacade, and the sync/Redis drivers.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/DispatchBusConfig.java#L46-L89",
+          "version": "repo-lines-v1:sha256:4b93754e9fec7e2684726c025022cbce1bc722f8a99f3938774a8aac8829ab55:eyJzZWxlY3RlZExpbmVDb3VudCI6NDQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiMTQ3NjJhYWFkNThkMTM4NDRjZjJlYzU0NzQwYTRkOTdmNWUwN2VlNTE2ZDMyMGQ2MDM2YzFjN2NlNDJkZmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ0ZGUwM2U4NGQ1NTVhNjk5NzFkNTc2OWVmZDcwOTQxMjllNTQ5NjJkNjRmMWVkNDk0OTYzOTgzZGUyNDE2MWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM3MzQ0YmJmYjY2ZGRlMjQyNTczNjFkZGRlYWM3YTZmNTY3ZTJhOWQ1OWE5NDBiMTAyY2Y1MzU1ZDM3NDVhYzkifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/FinishOrderJobRegistrationConfig.java#L25-L40",
+          "version": "repo-lines-v1:sha256:d2d128bbd9cef54315b778b14ffe6d90cefa1f6363fe50e1904ff489508f392e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiMTQ3NjJhYWFkNThkMTM4NDRjZjJlYzU0NzQwYTRkOTdmNWUwN2VlNTE2ZDMyMGQ2MDM2YzFjN2NlNDJkZmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQwMTk1ZjQxMzAzMzM1ZjIyNDQyMzlkY2E3OGRiOGRjNDY3ZDE5NGNkY2I3MzljODlkMjIyYzVjZjliZmFjNGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/UpdateItemSalesDispatchListenerRegistrationConfig.java#L27-L54",
+          "version": "repo-lines-v1:sha256:193956f5b0651cc90bc0b7702abb4083e79e6cf237f43a89d1488bbfd9bfedd0:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiMTQ3NjJhYWFkNThkMTM4NDRjZjJlYzU0NzQwYTRkOTdmNWUwN2VlNTE2ZDMyMGQ2MDM2YzFjN2NlNDJkZmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc1MWY5MTQ3ZGFkYTQ5NDI1NDJiNzE1OWZkYmIyMmQ3M2FjZTAzNmFkMzdjZWUyYjZjY2YwNTIwODM5OWM2ZmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/dispatch/FinishOrderJobHandler.java#L24-L38",
+          "version": "repo-lines-v1:sha256:e73c5491235db6812c92459683f7c94e0b38f91e887b3a85bf426ee9ab428a5f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4ZmExZTlmNDQ5NDlmYTg5YTNiNDJiMDQ5MmRkYmRmZmEyZWI3NjQ4NDhkMzU3NzhjOWZiNTNjMjA3ZWJkYmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk3OGQ3NWRjMzgwY2YzNzJiNmQ5OWNkNjUxYTRhMzJhMzJlZGFkYTU3OGEzZTc4Nzg4YzM0M2Q1NGJhNmVlYTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/dispatch/UpdateItemSalesDispatchListener.java#L24-L39",
+          "version": "repo-lines-v1:sha256:f694c539fba273e7bfc9c4655bc83e671b0186e43797528c825b6be5832eb9f1:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4ZmExZTlmNDQ5NDlmYTg5YTNiNDJiMDQ5MmRkYmRmZmEyZWI3NjQ4NDhkMzU3NzhjOWZiNTNjMjA3ZWJkYmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk3OGQ3NWRjMzgwY2YzNzJiNmQ5OWNkNjUxYTRhMzJhMzJlZGFkYTU3OGEzZTc4Nzg4YzM0M2Q1NGJhNmVlYTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_14a56fc1c39c4cf78c92f560f3694dcb",
+      "statement": "Publisher-side dispatch interfaces (FinishOrderJobDispatchPublisher, OrdersTradeFinishDispatchPublisher, DistributionAddEventDispatchPublisher, …) live in ecshopx-common so a Bundle can publish without depending on the bus implementation or the consumer; their DispatchFacade-backed implementations are provided by ecshopx-bootstrap (e.g. FinishOrderJobDispatchPublisherImpl dispatches with ASYNC/REDIS/slow options), and after-commit semantics are provided either inline via TransactionSynchronizationManager in the orchestrator or via a dedicated *AfterCommitDispatchPublisher wrapper bean registered @Primary in the bootstrap.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/FinishOrderJobDispatchPublisherImpl.java#L30-L54",
+          "version": "repo-lines-v1:sha256:aa83a1fb3412a11fc24d132aab5ff700f22cfb7a2094de3098e64b4d7530b4d0:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4ZmExZTlmNDQ5NDlmYTg5YTNiNDJiMDQ5MmRkYmRmZmEyZWI3NjQ4NDhkMzU3NzhjOWZiNTNjMjA3ZWJkYmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRlNTRhZjgyMDgwYmNiMDVmZmMyYTY4YmYzNjI3Y2Y2OTE2YzY0MmUxNTEwZGZjYWYwOTY5NjRkNDljM2JkZWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/OrdersTradeFinishDispatchPublisherBeansConfig.java#L27-L43",
+          "version": "repo-lines-v1:sha256:2fdb22538563949a6d0ff1a8ea9dbfedb559dc403965966bc7ada95faa0fde04:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiMTQ3NjJhYWFkNThkMTM4NDRjZjJlYzU0NzQwYTRkOTdmNWUwN2VlNTE2ZDMyMGQ2MDM2YzFjN2NlNDJkZmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQxN2JkYzUyYmZmNWJhNDE0MDZlMjgwMDBjY2MxMWI1YmI4NzM5YTBmNDY3Y2IzZThmMDdlYmI1M2Q5OTVmM2YiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/FinishOrderJobDispatchPublisher.java#L21-L24",
+          "version": "repo-lines-v1:sha256:61a47440d88de9021d9fdb67de56e6e8f1f6ce43ee6d9fea97e21e4173c159cf:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTcxODRjOGY2NTQ3YjJiYmQ0Nzg1YjVlYzM0NzBjOTUyZDIwYjczZDc1NzhjMDg1NWJjMzZhYWI0MjVkNGFiZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMmYyNzhmYzI0OGUzZDIwYWZhZGJhYzg1YzRhMDU3ZjdjMzI0YjY2NTU3YzQ4YjM3MDQzMjE3MDQxNzNhMzNmZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/dispatch/OrdersTradeFinishAfterCommitDispatchPublisher.java#L26-L51",
+          "version": "repo-lines-v1:sha256:313b564ae03182de14283b818e54e05cbc2861d86d41ff5fadf61d2bcb73d5f1:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYjIwOWIxNDFhZDI0OGVjOGZjOWU0MDM5NmY2ZGQ2ZjRiOThiMjQzOGExYWMzODI0YTZhZGE2OTBiMjA5MjUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE4ZGMyMDFmNGE1YWJhZjEyNzE2YWQ1MzM0YTBlODg5ODQ2ODc5MDg1MDBhYjA1M2UzMWRhNjFlNDkxMThhMzMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_76bc637946c14db19167ca717e0bbb1d",
+      "statement": "cron/ holds XXL-JOB handlers named Schedule*Handler that are pure delegators: a @Component with a @XxlJob(short-name) method that times the call, logs done/failed in the [cron][<name>] shape with cost in ms, delegates to a service, and on exception publishes a CronAlertEvent via ApplicationEventPublisher and rethrows so XXL-JOB marks the run failed; orders has 18 such handlers and kaquan's ScheduleCancelExpiredCardHandler follows the same pattern, and the contract is pinned by per-handler tests asserting the log shape and the alert-and-rethrow behaviour.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-kaquan/src/main/java/cn/shopex/ecshopx/kaquan/cron/ScheduleCancelExpiredCardHandler.java#L27-L48",
+          "version": "repo-lines-v1:sha256:8ef72b0ee871ffa26f413a410ba79cfa1618f6fab95caf1efb8076ce86d4de85:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYThjMTE2MGViMGE5NTFkOWQxYzkzYmUxYmM0NTRiYjM0ZmY5NTM5NjNkMTNlMTdkZmE4OGM1NDMwZDBhMDMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU4NjRjOTQyZWMwNWUwNWUyM2YxMWUyZDJkYjliMjMzYzliYjY3MDBlNTE5NWVjMDkzZjk1MWUwZmQ0M2U3MTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/cron/ScheduleFinishOrdersHandler.java#L27-L56",
+          "version": "repo-lines-v1:sha256:40e5b4939d4902fc9949731c6fb9344c6d3d21b83bd24443b17af7d5c541dd93:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYThjMTE2MGViMGE5NTFkOWQxYzkzYmUxYmM0NTRiYjM0ZmY5NTM5NjNkMTNlMTdkZmE4OGM1NDMwZDBhMDMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU4NjRjOTQyZWMwNWUwNWUyM2YxMWUyZDJkYjliMjMzYzliYjY3MDBlNTE5NWVjMDkzZjk1MWUwZmQ0M2U3MTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/orders/cron/ScheduleFinishOrdersHandlerTest.java#L59-L88",
+          "version": "repo-lines-v1:sha256:fee27762be32ce19d3b364e469d802a7df0156d0e071a17c14f10013a8a979fa:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJkNzMwYTM0MWRiMjY2ODViNDYyOGI3MWU5MzhmZmJmMzUxZTFlNTJiMDA3NjkzNzBkYmRiMGQ5OTY1M2RlYmMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU5MTRhMjg0NWE2MTlmY2MxM2U0ZmY1MWNmMTIzODk0ZTUzYWE3NmY0ZjhhOTUzNzliNDgzZDNhZDMyMDYzMDEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_e02f13970e7f4d9891596d1cd41b7c66",
+      "statement": "Every business Bundle's POM depends on ecshopx-common (most add ecshopx-dispatch) plus a curated set of peer Bundles it actually needs; ecshopx-orders lists work-wechat, third-party, supplier, reservation, espier, members, companys, point, aftersales, payment, chinaums-pay, deposit, hfpay, popularize, and super-admin, while ecshopx-bootstrap depends on every Bundle, is the only module with the spring-boot-maven-plugin (mainClass cn.shopex.ecshopx.EcshopxApplication), and carries the Flyway migrations, the global application.properties, and the dispatch-bus and registration configuration.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/pom.xml#L260-L271",
+          "version": "repo-lines-v1:sha256:39d9164cdadbbb6d98c6cddc249977c3d78b281ea0ceaea759155ac4fc3ddaa5:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMwYTBlMTVjNjM3NWM1NmI2ZWExNGFjMGUxZWY3M2NiNGE1NjVmZDE5ZGYxODA0ZmI0NzIxYTQ2NTc0NTczNGQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYyZTg0MTI0MThhMDQ0OWRjODU1ODZiYjRkYTYzNGFiYjRlY2YzZDk5YThlMDhmZDZiODI2YzQyYjgzZDZiOGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjExZjUxYmUzY2M0YWE0MDZhOGVhN2EyODhkMTRkM2ZlYmVkNTAzZGFjMjJmNTk3MDAxZTMzNWNiNjM3OGY4NjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI2ZTMyYTMwZjNmMjBiYmM4MmY1YzUzZDQ4MDg4M2RhODk0OWQwYWJhYTllZGQwNWFkMzJjZDdhYzRlMjc5ZTcifQ"
+        },
+        {
+          "resource": "repo://ecshopx-openapi/pom.xml#L13-L21",
+          "version": "repo-lines-v1:sha256:be60b275c8515265afb71f0dc762f279be0a14349f2262a8021526168756e508:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDE2NDQ4MjVjYzJjMmEwMmIxZTYxZjQ3NzY2OTFhNDM3NjQwNTQ2MjVlZmEwMTJkMGNmZmI1MjhhYTI4NWY4OSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDJlYzU2N2E5NjY0NDY5OGIwM2NlODgyYWVlMmE1ZTNkMTNhMGE1ZDdlZWY3MjJkYmIwZDBjNTA5NWI2NzRlYyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMWNkNGRkYTc0NzQ5ZjY2YTQyNzVlNWZkM2U5M2JlZTM1NGNiZTQ2OTliNjI1ODEwMWQ4NmMxZDQ5MTc3ODRhMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTZjZDJhYjhkNThmOGQ4Njg0Yzk2N2YzOTBiYTJkMjg4ZjRiNWMyNDU3MjFmZTBhMjEyNDhhN2NkYWZjMGI2YyJ9"
+        },
+        {
+          "resource": "repo://ecshopx-orders/pom.xml#L13-L115",
+          "version": "repo-lines-v1:sha256:d9f4b55fc5098b8c8548a1d787ec8991d0a7e74bcd644636612f762413c58609:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAzLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI0MTY0NDgyNWNjMmMyYTAyYjFlNjFmNDc3NjY5MWE0Mzc2NDA1NDYyNWVmYTAxMmQwY2ZmYjUyOGFhMjg1Zjg5IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIwNjBiYWIwNGYyMTk2NTY2YzRlNGQ0MmY2MDYzNzJjMjM3Nzg5Yzg3ZjY0N2UzMDQ3MTkzNjc3MDdhODg0NDA5IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJkNTAxMmIyYTgyYmQ0NzNkOTYyOTgwMWFhZDJjYjAyN2Q4MmI4NDUwM2YwOTAxODlhY2QxM2UxZGJmYjNhZjI4IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJkNWQyNjY5NjlkNzJiNzQ3ZjllYmQzNTFiMDJkZTJlMjZiMmY1ZGQyYjU0ZjcyYmY3MjczZGE0NTM2NGNlOTliIn0"
+        }
+      ]
+    },
+    {
+      "id": "claim_5b028ca740f5445cb4123dfe4bc6cc3c",
+      "statement": "domain/ entities are annotated with the extended MyBatis-Plus metadata annotations @MpTable/@MpId/@MpField/@MpIndex from common/mybatis/metadata, which are meta-annotated with the stock @TableName/@TableId/@TableField and additionally carry column type, length, nullability, comments, and indexes migrated from the legacy Doctrine ORM; the bin/make-migration helper diffs the live MySQL schema against these domains to generate Flyway SQL under ecshopx-bootstrap/src/main/resources/db/migration, and the readme requires manually reviewing the generated SQL for types, defaults, NULL allowance, comments, and indexes.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/mybatis/metadata/MpTable.java#L26-L53",
+          "version": "repo-lines-v1:sha256:8ac6a0412a042509ac122c3745ceafc35d55dc5866693276a989acdb9b7b59de:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjlkNTc3MjQzYmUzOWRmNDBmZmYxYTUwOGEwOTg2MzIxOWQ0NzAyNWRlYTMxYjhiNThjNmJiOTIwNDVlMDJlZjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/domain/NormalOrders.java#L26-L45",
+          "version": "repo-lines-v1:sha256:2e7aecbd26c0c894e8844503d30b7da2da0de3a1d716a4677672e14d194a1e54:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgzYWFiYTc1MTU5MjkyZDVjMmQ4NGEwMTU3ZjhmNzZkYmU3Y2NjZDY3MjQ1NWE3ZGMyMTY0MWE1YjYyNjM1ZmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVmYTg5MjMzN2VkYTJmZDlhMTBmNWZiMzAxMTAyMTBjN2ZmMWU5N2JjYTNiODY4YjE2NWJiMGM4OGNiOGZjZTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdjMTczMDhlMjFjZDkzMTQyMDRhMTBhZDA0YmRhYmJiMTIxY2JhNjcwYzY0N2FiNDUxMzA2NWNlYTM4NTBkOTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM1M2QzZGJmNWZlYzliYzc4ZjRmZThhYmZmMDBiOGQ5MmNjNmY3MDkyZjI3ZTBkOGNlNWU4ZDYwMWQ2NmVjZTQifQ"
+        },
+        {
+          "resource": "repo://readme.md#L96-L127",
+          "version": "repo-lines-v1:sha256:3928448bd7028ab086383fd6cf57bc0a62041bc9fe2c8770c7d991f0bf19b864:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk5OTA0ZDg4YTAxZjhiNGY3OGRjMTZjYjVmZDI1ZDYxMTczNTgwMjU1MzlhODM3MDRkYmVkMzExYjlmNTViMTkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ3YzA2YzU2MWQ1YzMyNzM0MzY4NTI2OGE0NmIzMzkxZjM5OThlZWU4OTBkMmJlNTFmMGQyMWNjNGE1M2FlNmQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVhNWNmYjI4ZjI1MTQ0ZjIzZmMyM2Q0NTIyMzBiZDBkZmE3NDM4YjlkOTM4ZjFmMWMyZjY0ZGJkZDg2YzY5Y2QiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQzMTAwY2M5YWNjNDY3NDgzYTNiZjhlN2NjZTc4MGJkNWQ0MDBkNTllYWUxNzRlNjkzNDliN2EwNWNlODVlYzMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_65d8e2fcae3b409b960fd64ccac071b7",
+      "statement": "repository/ is an optional @Repository layer composing mapper calls into named operations (orders/repository/CategoryTaxRateRepository wraps CategoryTaxRateMapper with findDuplicateForCreate, insertEntity, updateByIdPartialReturningRow owning the MyBatis-Plus wrapper logic); simple flows may call the mappers directly, as FinishOrderBatchService does with NormalOrdersMapper.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/mapper/CategoryTaxRateMapper.java#L23-L24",
+          "version": "repo-lines-v1:sha256:67b7a26cc46d855dec1b763e9b7f86664fe4226adf6f44c11601d803dc1dd983:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzhmZjQyNWViNzBjZWU2NDMzY2QzOTI3NTNjYmE2YmVmZjcyMmI1NzA0MjAxOTM1OWViNDc4MDhlYzkyM2E1MSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZGJlNTFhZWU4YmY1NGVlYjRiYjY4MzFmNmYwZmE3ZDgwY2U0MmNkMmVlMGVjNDQ2Y2M3NDcwMmVkZmM0ODZlNyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjU1ZjAxYmJjOWY1OTI0ODA3ODYyOGNhY2NiNGFkMzQ3MzIzZjUzNmQxMTUzNzVlZWRkNzI4NDk0MzhiZjhjMyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/repository/CategoryTaxRateRepository.java#L30-L49",
+          "version": "repo-lines-v1:sha256:49d9f300f58f6994a8e10fbb3b4de3afb3da773e0cb950f5c40b0478e2553c73:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMzNjQ0ZDNhN2YxMDE1ZTA4YTZmZjkxZDRiYjYwYjlhNTIwNjM0ZDFkY2FjOGE2ZGI3MDVmMzI2YTM2ODc4OGQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQyYTM0MTA2MTI5NzVkOTZlZmZiMWYyYzE4ODcwOTk4YmNjYjk0ZmVkOTljMmNiMTJiMjhkNGZlNzA1ZmFkODAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU1ODg4N2M1MmMyN2VlMjI4OGQwZGVkOGViYmQ0ZmM4NDQ3NDQ5ODU1YjFiMGZkYTI5Y2RkYzdmODAyOTM3ZDAifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/finish/FinishOrderBatchService.java#L60-L74",
+          "version": "repo-lines-v1:sha256:3fb9da40e7d1511ec2a0fee7029cb0431fff951b08f732c44dddb65b5a421143:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg5MzYwMmVhZGQ0NDdkYTRkNjViOTJhZDNhZTJjZjFmMjg3M2Y0OTJhMTY2YmFhMzJmYzBmZGJhN2NjZDI3ZDYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU4MmUwNzg3YzAwYTNhZWZlNjE5ZTZkNTQ1NTc3YjQ0ZTA1ZjY0M2Q1Y2Y3MTIyNjc4YWM3MjFmOTk3N2I4NGIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIzYzhmMmNhNTg4NWVjMWQ4MmM3Nzc3NGIzNWE5ZjExYzFhNDE5ODQ3MDkxNTVmNGU4OTEwNjA1OTkyNjQ2MGIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImIwNjNkZDlhYTY4YTM1MjgxODJiMTU5NjQ5MzM3MDI5MzI1NzA2MTVkM2JmNGM0MWZhNDlmOGZlNTlkOTY4YzMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_54403b6c1a4c4bef97d6e3e90e487aae",
+      "statement": "Bundle-scoped @RestControllerAdvice classes are tightly scoped to one API surface rather than global: orders/config/OrdersAdminV1ExceptionAdvice uses basePackages = cn.shopex.ecshopx.orders.api.admin.v1 and maps BadRequest/Resource exceptions to a Dingo-style 200-with-data envelope, while kaquan's DiscountCardControllerExceptionAdvice lives next to the controllers in api/admin/v1 and scopes by assignableTypes; both are ordered @Order(HIGHEST_PRECEDENCE).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-kaquan/src/main/java/cn/shopex/ecshopx/kaquan/api/admin/v1/DiscountCardControllerExceptionAdvice.java#L28-L46",
+          "version": "repo-lines-v1:sha256:b296ca379f0fb7b26a290a46e0e5acd4b1fd39f78e4aeeacd6eef26180d750e2:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVlMDk4MzBhMDUxMjBiZmZlYTJiMDI0OGU3NDZhZTcwNzgxYzAwMGE4NzE0YzRhZjNjMmFhZTM2ZjBkYzIwNzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/config/OrdersAdminV1ExceptionAdvice.java#L30-L61",
+          "version": "repo-lines-v1:sha256:5b78d6ee0c1d0fc69a66405b07d0549477cbaed1ce980d4f5ea38e283aa674a6:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkxZTFiODFhOTRjNTMxNWVlMDY4NGRkNjVmOTgxZjA4MGU4MDYwY2U3YTQxMTljMzE2NzU4MDM1NTk1ZjU2NmEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVlMDk4MzBhMDUxMjBiZmZlYTJiMDI0OGU3NDZhZTcwNzgxYzAwMGE4NzE0YzRhZjNjMmFhZTM2ZjBkYzIwNzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_fe0ebe1d460c4398bc1952d22fde946b",
+      "statement": "event/ and listener/ form a lighter third async mechanism distinct from the dispatch bus and cron: plain Spring ApplicationEvents (PaySuccessSpringEvent, NormalOrderCancelSpringEvent, OrderProcessLogSpringEvent) consumed by @TransactionalEventListener(phase = AFTER_COMMIT, fallbackExecution = true) beans such as orders/listener/OrderProcessLogSpringEventListener, used for intra-Bundle after-commit work that does not need retry or cross-Bundle fan-out.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/event/PaySuccessSpringEvent.java",
+          "version": "repo-file-v1:sha256:ab0f47bc3c559eb4680d00026ea0f9bfc9aaac3903737661d1faa9c5dbc7ba04"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/listener/OrderProcessLogSpringEventListener.java#L25-L37",
+          "version": "repo-lines-v1:sha256:5847f99f2dc1478a3414d89cd4e5eb25e80d7ae30a28a6da5f1d5f29d16cfa97:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4ZmExZTlmNDQ5NDlmYTg5YTNiNDJiMDQ5MmRkYmRmZmEyZWI3NjQ4NDhkMzU3NzhjOWZiNTNjMjA3ZWJkYmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA0NGZhZTFiNTM4YjY5YWY5YWNjODg5N2NkMzBkYTk1ZDE2NTc0YWU2NDM3MjdkMzVlZmI2ZDc3M2NmMDYwNzciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_3fc390ffaf254005afae4af5dc89d866",
+      "statement": "config/ holds Bundle-local Spring beans (e.g. orders/config/OrdersSchedulingConfig with @EnableScheduling, executor configs, and the scoped advice classes), and the cron/testcfg/CronTestMockConfig class in src/main (not src/test) is annotated @Profile(test-cron) to swap side-effect beans such as dispatch publishers, Redis writes, and third-party ports for No-op implementations during cron-diff testing.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/config/OrdersSchedulingConfig.java#L22-L24",
+          "version": "repo-lines-v1:sha256:5542b94be279029502cb7fe1232815d8947188e2f3f1b8a7710307ed0e88c2a8:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNGIxNDc2MmFhYWQ1OGQxMzg0NGNmMmVjNTQ3NDBhNGQ5N2Y1ZTA3ZWU1MTZkMzIwZDYwMzZjMWM3Y2U0MmRmZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNmIyNzIxNmVmYWNkNjhmYTZiNzM4MWUyODliZjdmNDRhNTgwODU4MzVkNDIyYTBkODk4ZDM3NDIwNTEyM2FmYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDk5MzVmOWI3ODhjYmNjYWFiMWNjNDc3YWY1NTBlZmFjNjliYjliYWZjMWUyNmM1ZTE5NzQ2NzVlZDdhODZhYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/cron/testcfg/CronTestMockConfig.java#L17-L104",
+          "version": "repo-lines-v1:sha256:a102f929545dc7aed50df3f0e0a9792fb40d1e8f181fe412f0f07c61bd3855f1:eyJzZWxlY3RlZExpbmVDb3VudCI6ODgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA5ZGI1ZDkyZmQ1NTVkMGYzZTdmNTkwNDJjNGQwZjc5YmY3ZTUxODhiMGFkMTliNzVjYjU1NTQ3NzRiNjQwYzYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBiYWE3ZWE3YTc2NjgxN2E5OWUzZGIxMTdhMjUxN2YxNzM5N2U1OTU1NTY4ZjJjMGVkMjVmM2VjNzZkZDM5OTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY5NmEwOTMxNWM1YTA1NTRkMDI1OGYxNTc5YzlhNzAyYWU2ZTVlZjQ1MWU1MTRkYmNjYjFkZGUxZDRlMTcxOTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNjMzE4OWE3MzcyMDNlZjExNzg1YjQ1NzMzNjI5Zjk2ODY5ZGNkNDkyMTJlMjRjYzYxODVjODE3ZTUyNGM5ZjIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_74d5b5ca7f2d488890a20d9498eb2cad",
+      "statement": "When a Port implementation would otherwise create a dependency cycle, ecshopx-bootstrap supplies the adapter itself: e.g. bootstrap/order/CompanyPassportUidByCompanyIdPortAdapter implements common/port/companys/CompanyPassportUidByCompanyIdPort by delegating to CompanysMapper, sitting alongside the bootstrap's many cn.shopex.ecshopx.config.*RegistrationConfig and *DispatchPublisherImpl classes that wire cross-Bundle jobs and events.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/bootstrap/order/CompanyPassportUidByCompanyIdPortAdapter.java#L19-L42",
+          "version": "repo-lines-v1:sha256:bbd701eb39393bf80384bb7c7c121ee1e8b972d93bda264d9d8d31cd1aa26f39:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMzOWY2MWI1NDgwMjMyNTY4NjkwYzU0NjgzYjA0MmNjZWQxNTRhMDZkY2VjNmUxZGEwZmMxMjQwZTRjZjcyZGQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ1ZTE2NDA4ZWFiNDhkMGFhMTRiYjhlOTY3Zjk5ZDg1YjE1NDJlMmQ0MmNjMGUyNjMzYzIwZWVmMzljZmUyMzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/DispatchBusConfig.java#L46-L52",
+          "version": "repo-lines-v1:sha256:bd1ea84f6468e27382fb0cdea47175185d6b695b5684f21073aabfdacd6b7747:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNGIxNDc2MmFhYWQ1OGQxMzg0NGNmMmVjNTQ3NDBhNGQ5N2Y1ZTA3ZWU1MTZkMzIwZDYwMzZjMWM3Y2U0MmRmZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDg5M2Y0MGUzNzgxZWI4OTZjODJkMDQ2YTA4MDY3YTExZTM1Y2RmMmYxZGZhZjI2ZmVhOTBiOGRiNjY3NjQxMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDRkZTAzZTg0ZDU1NWE2OTk3MWQ1NzY5ZWZkNzA5NDEyOWU1NDk2MmQ2NGYxZWQ0OTQ5NjM5ODNkZTI0MTYxZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOTk4YjA4MTFmNzUzYmZhNDE1OWU4OTZjZGNjYTMwMmVhYjFjYzJkOTk3NWRhYmQxZjZlMGZkZjQ3OWE1ZDFiZiJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.2",
+    "at": "2026-10-21T12:26:22.580Z"
+  }
+}

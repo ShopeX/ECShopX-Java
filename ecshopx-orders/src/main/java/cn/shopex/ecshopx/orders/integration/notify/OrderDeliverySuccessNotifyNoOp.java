@@ -23,12 +23,11 @@ import org.springframework.stereotype.Service;
 @Service("orderDeliverySuccessNotifyNoOp")
 @ConditionalOnProperty(
 		name = "ecshopx.orders.delivery-success-notify.enabled",
-		havingValue = "false",
-		matchIfMissing = true)
+		havingValue = "false")
 public class OrderDeliverySuccessNotifyNoOp implements OrderDeliverySuccessNotifyPort {
 
 	@Override
 	public void sendDeliverySuccessNotice(Map<String, Object> context) {
-		// default: no user notification
+		// explicitly disabled
 	}
 }

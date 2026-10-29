@@ -52,6 +52,7 @@ public class DistributorUpdateService {
 			"regions_id",
 			"regions",
 			"is_ziti",
+			"is_platform_store_buy",
 			"is_delivery",
 			"is_self_delivery",
 			"shop_code",
@@ -251,6 +252,10 @@ public class DistributorUpdateService {
 			}
 			case "is_ziti" -> {
 				u.set(Distributor::getIsZiti, truthy(merged.get("is_ziti")));
+				yield true;
+			}
+			case "is_platform_store_buy" -> {
+				u.set(Distributor::getIsPlatformStoreBuy, truthy(merged.get("is_platform_store_buy")));
 				yield true;
 			}
 			case "is_delivery" -> {

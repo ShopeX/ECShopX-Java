@@ -1,6 +1,8 @@
 package cn.shopex.ecshopx.goods.service.wxapp;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -10,7 +12,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import cn.shopex.ecshopx.distribution.service.DistributorListQueryService;
 import cn.shopex.ecshopx.goods.repository.ItemsListQueryRepository;
 import cn.shopex.ecshopx.goods.repository.ItemsRelTagsRepository;
 import cn.shopex.ecshopx.goods.service.ItemsCategoryDistributorIdResolver;
@@ -41,8 +42,6 @@ class WxappGoodsItemsListQueryOrchestratorCategoryTest {
 	private ItemsRelTagsRepository itemsRelTagsRepository;
 	@Mock
 	private ItemsCategoryDistributorIdResolver itemsCategoryDistributorIdResolver;
-	@Mock
-	private DistributorListQueryService distributorListQueryService;
 
 	private WxappGoodsItemsListQueryOrchestrator sut;
 
@@ -50,7 +49,7 @@ class WxappGoodsItemsListQueryOrchestratorCategoryTest {
 	void setUp() {
 		sut = new WxappGoodsItemsListQueryOrchestrator(merchantDisabledDistributorIdsQueryService,
 				wxappItemsListSalesmanDistributorResolveService, goodsItemsListFacadeService, itemsRelTagsRepository,
-				itemsCategoryDistributorIdResolver, distributorListQueryService);
+				itemsCategoryDistributorIdResolver);
 		when(merchantDisabledDistributorIdsQueryService.listDistributorIdsLinkedToDisabledMerchants(anyLong()))
 				.thenReturn(List.of());
 		when(wxappItemsListSalesmanDistributorResolveService.resolve(anyLong(), anyLong(), any()))
@@ -80,6 +79,36 @@ class WxappGoodsItemsListQueryOrchestratorCategoryTest {
 		assertEquals(List.of(-1L), capturedItemIdOrDefaultIds());
 	}
 
+	@Test
+	void queryItemListData_standardWithDistributorId_usesStoreShelfJoinRegardlessOfSelfStore() {
+		when(itemsCategoryDistributorIdResolver.resolveProductModel(1L)).thenReturn("standard");
+		LinkedHashMap<String, Object> params = baseParams();
+		params.put("distributor_id", 269L);
+		params.put("is_can_sale", Boolean.TRUE);
+
+		sut.queryItemListData(1L, params, List.of());
+
+		Map<String, Object> repo = capturedRepoParams();
+		assertTrue(Boolean.TRUE.equals(repo.get(ItemsListQueryRepository.KEY_DIST_REL_VIRT_JOIN)));
+		assertEquals(269L, repo.get(ItemsListQueryRepository.KEY_DIST_REL_VIRT_DISTRIBUTOR_ID));
+		assertEquals(Boolean.TRUE, repo.get(ItemsListQueryRepository.KEY_DIST_REL_VIRT_GOODS_CAN_SALE));
+		assertNull(repo.get(ItemsListQueryRepository.KEY_DISTRIBUTOR_ID_EQ));
+	}
+
+	@Test
+	void queryItemListData_nonStandardWithDistributorId_keepsDirectDistributorFilter() {
+		when(itemsCategoryDistributorIdResolver.resolveProductModel(1L)).thenReturn("b2c");
+		LinkedHashMap<String, Object> params = baseParams();
+		params.put("distributor_id", 269L);
+		params.put("is_can_sale", Boolean.TRUE);
+
+		sut.queryItemListData(1L, params, List.of());
+
+		Map<String, Object> repo = capturedRepoParams();
+		assertNull(repo.get(ItemsListQueryRepository.KEY_DIST_REL_VIRT_JOIN));
+		assertEquals(269, repo.get(ItemsListQueryRepository.KEY_DISTRIBUTOR_ID_EQ));
+	}
+
 	private static LinkedHashMap<String, Object> baseParams() {
 		LinkedHashMap<String, Object> params = new LinkedHashMap<>();
 		params.put("user_id", 0L);
@@ -93,10 +122,14 @@ class WxappGoodsItemsListQueryOrchestratorCategoryTest {
 	}
 
 	private List<?> capturedItemIdOrDefaultIds() {
+		return (List<?>) capturedRepoParams().get(ItemsListQueryRepository.KEY_ITEM_ID_OR_DEFAULT_IDS);
+	}
+
+	private Map<String, Object> capturedRepoParams() {
 		@SuppressWarnings("unchecked")
 		ArgumentCaptor<Map<String, Object>> repoCaptor = ArgumentCaptor.forClass(Map.class);
 		verify(goodsItemsListFacadeService).wxappQueryDefaultItemList(eq(1L), repoCaptor.capture(), eq(1), eq(10),
 				anyString(), eq("zh-CN"));
-		return (List<?>) repoCaptor.getValue().get(ItemsListQueryRepository.KEY_ITEM_ID_OR_DEFAULT_IDS);
+		return repoCaptor.getValue();
 	}
 }

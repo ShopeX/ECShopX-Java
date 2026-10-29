@@ -318,8 +318,10 @@ public class OperatorCartSkuLoadFacadeImpl implements OperatorCartSkuLoadFacade 
 		dto.setSaleDisabled(false);
 		dto.setItemCategory(it.getItemCategory());
 		dto.setBrandId(it.getBrandId());
+		dto.setLogisticsStore(Math.max(0, itemLogisticsStoreEnricher.resolveLogisticsStore(companyId, it)));
 
 		if (distributorId == 0L || (productModel != null && "platform".equalsIgnoreCase(productModel))) {
+			dto.setIsTotalStore(Boolean.TRUE);
 			dto.setStore(itemLogisticsStoreEnricher.combineEffectiveStore(
 					companyId, distributorId, localStore, it));
 			return dto;
@@ -331,6 +333,7 @@ public class OperatorCartSkuLoadFacadeImpl implements OperatorCartSkuLoadFacade 
 		DistributorItems di = distributorItemsMapper.selectOne(dw);
 		if (di != null) {
 			boolean totalStore = Boolean.TRUE.equals(di.getIsTotalStore());
+			dto.setIsTotalStore(totalStore);
 			if (!totalStore) {
 				if (di.getStore() != null) {
 					long s = di.getStore();
@@ -340,6 +343,7 @@ public class OperatorCartSkuLoadFacadeImpl implements OperatorCartSkuLoadFacade 
 						localStore = (int) s;
 					}
 				}
+				dto.setDistributorStore(localStore);
 				if (di.getPrice() != null && di.getPrice() > 0) {
 					long p = di.getPrice();
 					dto.setUnitPriceFen(p > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) p);
@@ -357,6 +361,7 @@ public class OperatorCartSkuLoadFacadeImpl implements OperatorCartSkuLoadFacade 
 		Integer itemDistId = it.getDistributorId();
 		if (itemDistId != null && itemDistId > 0) {
 			if (itemDistId.longValue() == distributorId) {
+				dto.setIsTotalStore(Boolean.TRUE);
 				dto.setStore(itemLogisticsStoreEnricher.combineEffectiveStore(
 						companyId, distributorId, localStore, it));
 				return dto;

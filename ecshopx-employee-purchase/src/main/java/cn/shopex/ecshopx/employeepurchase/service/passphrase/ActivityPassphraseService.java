@@ -20,6 +20,7 @@ import cn.shopex.ecshopx.employeepurchase.domain.Activities;
 import cn.shopex.ecshopx.employeepurchase.domain.ActivityPassphraseEnterprise;
 import cn.shopex.ecshopx.employeepurchase.mapper.ActivityPassphraseEnterpriseMapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -40,6 +41,25 @@ public class ActivityPassphraseService {
 
 	public boolean isPassphraseEnabled(Activities activity) {
 		return activity != null && Boolean.TRUE.equals(activity.getIsPassphraseEnabled());
+	}
+
+	/**
+	 * 活动已开口令、企业在参与范围内且口令表中有有效口令码（与 PHP
+	 * ActivitiesService::supportsPassphraseBypassWhitelist 一致）。
+	 */
+	public boolean supportsPassphraseBypassWhitelist(
+			Activities activity, long companyId, long activityId, long enterpriseId) {
+		if (companyId < 1L || activityId < 1L || enterpriseId < 1L) {
+			return false;
+		}
+		if (!isPassphraseEnabled(activity)) {
+			return false;
+		}
+		if (!enterpriseParticipates(activity, enterpriseId)) {
+			return false;
+		}
+		ActivityPassphraseEnterprise cfg = requireEnterpriseConfig(companyId, activityId, enterpriseId);
+		return cfg != null && StringUtils.hasText(cfg.getPassphraseCode());
 	}
 
 	public ActivityPassphraseEnterprise requireEnterpriseConfig(
@@ -128,6 +148,33 @@ public class ActivityPassphraseService {
 			}
 			if (StringUtils.hasText(row.getPassphraseCode())) {
 				out.add(row.getPassphraseCode().trim());
+			}
+		}
+		return out;
+	}
+
+	private static boolean enterpriseParticipates(Activities activity, long enterpriseId) {
+		for (Long id : parseEnterpriseIdCsv(activity == null ? null : activity.getEnterpriseId())) {
+			if (id != null && id.longValue() == enterpriseId) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static List<Long> parseEnterpriseIdCsv(String csv) {
+		if (csv == null || csv.isBlank()) {
+			return List.of();
+		}
+		List<Long> out = new ArrayList<>();
+		for (String part : csv.split(",")) {
+			String p = part.trim();
+			if (p.isEmpty()) {
+				continue;
+			}
+			try {
+				out.add(Long.parseLong(p));
+			} catch (NumberFormatException ignored) {
 			}
 		}
 		return out;

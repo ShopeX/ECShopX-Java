@@ -26,4 +26,10 @@ public interface OperatorCartDataListFacade {
 
 	Map<String, Object> getCartDataList(long companyId, long operatorId, long distributorId, long targetUserId,
 			HttpServletRequest request, boolean isSubmit);
+
+	/** 店务立即购买 Redis 分桶结算数据（对齐 PHP {@code getFastBuyCartdataList}）。 */
+	default Map<String, Object> getFastBuyCartDataList(
+			long companyId, long operatorId, long distributorId, long targetUserId, boolean isSubmit) {
+		throw new UnsupportedOperationException("fastbuy cart not supported");
+	}
 }

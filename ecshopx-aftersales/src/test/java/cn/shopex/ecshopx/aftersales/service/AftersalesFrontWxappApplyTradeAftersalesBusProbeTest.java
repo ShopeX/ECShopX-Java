@@ -210,7 +210,8 @@ class AftersalesFrontWxappApplyTradeAftersalesBusProbeTest {
 						new WdtErpTradeAfterSaleBusPayloadBuilder(),
 						tradeRefundDispatchPublisher,
 						tradeAftersalesDispatchPublisher,
-						thirdPartyTradeAftersalesSaasErpDispatchPublisher);
+						thirdPartyTradeAftersalesSaasErpDispatchPublisher,
+						AftersalesTestMessageSource.FALLBACK);
 
 		AftersalesApplyShopApplyByNumService shopApplyByNumService =
 				new AftersalesApplyShopApplyByNumService(

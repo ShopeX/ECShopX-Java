@@ -7,6 +7,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -17,10 +18,14 @@ import cn.shopex.ecshopx.goods.service.ItemsCategoryDistributorIdResolver;
 import cn.shopex.ecshopx.goods.service.ItemsListMultiLangApplier;
 import cn.shopex.ecshopx.goods.service.items.ItemsMedicineService;
 import cn.shopex.ecshopx.goods.service.items.ItemsSkuListAssembler;
+import cn.shopex.ecshopx.goods.service.items.OnsalePlatformStoreSupport;
 import cn.shopex.ecshopx.crossborder.mapper.OriginCountryMapper;
+import cn.shopex.ecshopx.distribution.domain.DistributorItems;
 import cn.shopex.ecshopx.distribution.repository.DistributorItemsRepository;
 import cn.shopex.ecshopx.goods.repository.ItemsAttributesRepository;
 import cn.shopex.ecshopx.common.config.LangueProperties;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -100,5 +105,64 @@ class DistributorItemsRelListCoreServiceTest {
 		ArgumentCaptor<Map<String, Object>> captor = ArgumentCaptor.forClass(Map.class);
 		verify(itemsListQueryRepository).countByParams(captor.capture());
 		assertEquals(Boolean.TRUE, captor.getValue().get(ItemsListQueryRepository.KEY_DIST_REL_VIRT_GOODS_CAN_SALE));
+	}
+
+	@Test
+	@DisplayName("is_total_store=false：store 换门店库存，logistics_store 保留总部库存")
+	void applyDistributorSkuReplace_independentStore_overlaysShopStock() {
+		DistributorItems di = new DistributorItems();
+		di.setItemId(7666L);
+		di.setStore(5L);
+		di.setPrice(19900L);
+		di.setIsTotalStore(false);
+		di.setIsCanSale(true);
+		di.setGoodsCanSale(true);
+		when(distributorItemsRepository.listByDistributorAndItemIds(eq(38L), eq(289L), any()))
+				.thenReturn(List.of(di));
+
+		List<Map<String, Object>> rows = new ArrayList<>();
+		Map<String, Object> row = new HashMap<>();
+		row.put("item_id", 7666L);
+		row.put("distributor_id", 0L);
+		row.put("store", 94);
+		row.put("approve_status", "onsale");
+		rows.add(row);
+
+		service.applyDistributorSkuReplace(38L, 289L, rows, true);
+
+		assertEquals(false, rows.get(0).get("is_total_store"));
+		assertEquals(5, rows.get(0).get("store"));
+		assertEquals(5, rows.get(0).get("distributor_store"));
+		assertEquals(94, rows.get(0).get("logistics_store"));
+		assertEquals(289L, rows.get(0).get("distributor_id"));
+		OnsalePlatformStoreSupport.appendPlatformStoreForOnsaleSkuList(rows, true);
+		assertEquals(94, rows.get(0).get("platform_store"));
+	}
+
+	@Test
+	@DisplayName("is_total_store=true：保留总部 store，不写 logistics_store 覆盖")
+	void applyDistributorSkuReplace_totalStore_keepsPlatformStock() {
+		DistributorItems di = new DistributorItems();
+		di.setItemId(7666L);
+		di.setStore(5L);
+		di.setIsTotalStore(true);
+		di.setIsCanSale(true);
+		di.setGoodsCanSale(true);
+		when(distributorItemsRepository.listByDistributorAndItemIds(eq(38L), eq(289L), any()))
+				.thenReturn(List.of(di));
+
+		List<Map<String, Object>> rows = new ArrayList<>();
+		Map<String, Object> row = new HashMap<>();
+		row.put("item_id", 7666L);
+		row.put("store", 94);
+		row.put("approve_status", "onsale");
+		row.put("logistics_store", 0);
+		rows.add(row);
+
+		service.applyDistributorSkuReplace(38L, 289L, rows, true);
+
+		assertEquals(true, rows.get(0).get("is_total_store"));
+		assertEquals(94, rows.get(0).get("store"));
+		assertEquals(0, rows.get(0).get("logistics_store"));
 	}
 }

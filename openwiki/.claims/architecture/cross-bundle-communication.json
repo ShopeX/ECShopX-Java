@@ -1,0 +1,348 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:f19e22c7b0a452bdecfe57c4668855193c436633bef684055315a6f09315d620",
+  "claims": [
+    {
+      "id": "claim_99031e08043c4fcd9e0aeed337a19e0b",
+      "statement": "ecshopx-payment owns the Alipay async-notify endpoint (PaymentNotifyController at POST /api/v1/alipay/notify, delegating to AlipayNotifyFacade) but applies payment results through two Ports payment itself declares in payment/integration/alipay — AlipayNotifyOrderSidePort (resolveDistributorIdForAlipayRedis + applyTradePaymentAfterAlipay) and AlipayNotifyDepositSidePort (rechargeCallback). AlipayNotifyFacade.handle routes by passback parameter: attach=depositRecharge goes to the deposit Port, everything else to the order Port. This inverts the natural dependency because orders and deposit already depend on payment, so a direct call would create a Maven cycle; payment's POM contains neither ecshopx-orders nor ecshopx-deposit.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/api/admin/v1/PaymentNotifyController.java",
+          "version": "repo-file-v1:sha256:79068b81ad0291c9cba7c664b6cbe1d81502bca7c5c70f20aeb4e39607313d52"
+        },
+        {
+          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/integration/alipay/AlipayNotifyOrderSidePort.java",
+          "version": "repo-file-v1:sha256:f76f9fdadde1d742216b4ac578b0c3d60d4a293b92516a8441914e9cfc5cf549"
+        },
+        {
+          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/AlipayNotifyFacade.java#L100-L120",
+          "version": "repo-lines-v1:sha256:584d698e15dde525cee8121c3844ae22dd3d507c35b7422354e39b93eb9c4e51:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdhZmM4YWUyYmUzNTJhMDk3NDJmNWZkNjUzN2JhYTQyMmUyMjQ0ZjExNzdiZWNlMDgzNzc1NDAyYzMyNjNkYjkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ3MjRmY2VjNzZjMjZjMDdkNTYxY2U2OTc5ZTRiMTFjNmQyZmVhY2JkYzJiMDNhOTJlOTk2ZWUwZGU3MTQzNDAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQyNDMzY2IxNjJhYTkwMWY2N2ExZDAyNTg2OGFkZmZmNjk0ZDc5Y2MyN2Y0ODY2M2EwOGQ2MDc4OGI1ZmIyN2YifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_661cbc13483846d5898e23e15b5fe82e",
+      "statement": "The payment-owned Alipay notify Ports are implemented by the provider bundles: orders/service/alipay/AlipayNotifyOrderSidePortImpl delegates applyTradePaymentAfterAlipay to OrdersTradePaymentCallbackService.applyTradePaymentNotify (trade-row update plus the trade-finish cascade on SUCCESS) and reads trade + distribution_distributor_peek for the distributor payment-subject setting; deposit/integration/alipay/AlipayNotifyDepositSidePortImpl delegates rechargeCallback to AdapayDepositTradeRechargeCallbackService.rechargeCallback. WxpayNotifyPaymentContextLoader also injects AlipayNotifyOrderSidePort to resolve distributor settings for wxpay notifies.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-deposit/src/main/java/cn/shopex/ecshopx/deposit/integration/alipay/AlipayNotifyDepositSidePortImpl.java",
+          "version": "repo-file-v1:sha256:eb4a542044ac933ee41d75caa5037825695c395968988a5dca9bb858a939edbd"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/alipay/AlipayNotifyOrderSidePortImpl.java",
+          "version": "repo-file-v1:sha256:208fbfd931800c3b47bb7385ab1873531574bc6ff59b408d62513fbfaf42986f"
+        },
+        {
+          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/WxpayNotifyPaymentContextLoader.java",
+          "version": "repo-file-v1:sha256:c1bd8a04c1970fd0f34dea8d1f7ad2daf14a9724178afee188addabf9eb73eea"
+        }
+      ]
+    },
+    {
+      "id": "claim_c77401287cf649c199efd2ecaf5754d2",
+      "statement": "Cross-bundle Port contracts live in one of two homes: shared seams in ecshopx-common/port/<consumer-domain>/ (about 115 interfaces over ~26 domain subpackages such as order/, orders/, payment/, shuyun/, localdelivery/, goods/, aftersales/, members/, plus a sibling common/order/port/ for later additions), grouped by the domain that consumes them; and single-consumer contracts in the consumer bundle's own port/ package when the provider already sits downstream — e.g. orders/port/WxappCartAddPort is implemented by goods/service/cart/wxapp/WxappCartAddPortImpl (goods depends on orders; Javadoc: \"由 goods 模块实现，避免 orders→goods 依赖\"), and orders/port/OrdersMiniProgramHfpayPayPort is implemented inside orders' own hfpay sub-package.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/port/shuyun/ShuyunOfflineBenefitCouponGrantPortNoOp.java",
+          "version": "repo-file-v1:sha256:3801dc6ab38fd6d1ba6e27cb5f1a16a0f094d161b6f2177959716982373afd39"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/cart/wxapp/WxappCartAddPortImpl.java",
+          "version": "repo-file-v1:sha256:0870bfe60776aab2163a954c92290f8928860836f96de0e04a35611754f29401"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/port/WxappCartAddPort.java",
+          "version": "repo-file-v1:sha256:9f2c43a1f4ac5b9bfb3a0271c2d02d9bc9a3694471ef685f77016289ae25cc35"
+        }
+      ]
+    },
+    {
+      "id": "claim_42291ad7e5d2403b91ac587f7d012656",
+      "statement": "The Facade variant of the Port pattern is used for multi-step orchestration entry points: common/service/salesperson/SalespersonCartDataListFacade (Javadoc: implementation lives in the goods domain so the controller can inject the interface and avoid a module cycle) is implemented by goods/service/cart/salesperson/SalespersonCartDataListService, which composes the salesperson cart repository (visible to goods because goods depends on ecshopx-salesperson) plus goods-local SKU-load/format services; salesperson's SalespersonCartController injects only the common Facade and salesperson's POM has no goods dependency.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/service/salesperson/SalespersonCartDataListFacade.java",
+          "version": "repo-file-v1:sha256:9319892927d27fadaf740fa1d84841e60afe148401af10af93f6782563b49818"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/cart/salesperson/SalespersonCartDataListService.java",
+          "version": "repo-file-v1:sha256:b3d637f73312d19ef56ba07af12c91fc2a1acff88c21840796296a7001e06ee9"
+        },
+        {
+          "resource": "repo://ecshopx-salesperson/src/main/java/cn/shopex/ecshopx/salesperson/api/front/v1/SalespersonCartController.java",
+          "version": "repo-file-v1:sha256:b285f00cf1f88f7ac6e26f014d47ef6da16daa445545432313fcb3a8bf4a5a6a"
+        }
+      ]
+    },
+    {
+      "id": "claim_0435964b4dbb4e338365266eb3e820ae",
+      "statement": "Optional Ports are consumed via Spring's ObjectProvider with getIfAvailable(): OrdersPaymentDoPaymentService injects ObjectProvider<OrdersMiniProgramHfpayPayPort> and ObjectProvider<VipGradeMembercardTradePaidPort>; for hfpay pay-type requests a missing port throws the user-facing error \"不支持支付服务，请联系商家\", while the VIP-grade membercard hook (invoked by OrdersTradePaymentCallbackService after a membercard trade is marked SUCCESS, implemented by kaquan's VipGradeMembercardTradePaidPortImpl) silently returns when absent. WxappOrderDetailPostProcessService uses the same ObjectProvider<OrderDetailEmployeePurchaseEnrichmentPort> pattern for employee-purchase enrichment.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/payment/OrdersPaymentDoPaymentService.java#L355-L370",
+          "version": "repo-lines-v1:sha256:4ebe0c44588065bc5ac0b9ea0dfe6680fca93e690a24f74c6d09dac526195e74:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYyMWQ5M2FlZjRkYTNhZWUyODFkMTBmODY2OGM3MjJkMTIyYTdkNTg0MDAwM2E1MDdjOGM5MTVkOTUxMDY2ZGQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI3MDNjNDQ2OGYzYmZkMGRjZTA5NDEzMGUyYzkwZWE3ZTg1M2JiMGNiNzcwZTkyNzFmNzNmYWNlZjFkNDlhNWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZhOGU0OGU1ZDkxYzQyYzQ2ZWQxYjcyMTdkYmM3NDI2MTc4YjJkOTdlM2E4NTRiNzYzNzE2OWM3ZjllYzA3NzYifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/payment/OrdersTradePaymentCallbackService.java#L156-L178",
+          "version": "repo-lines-v1:sha256:72ae6d0059884c4b2a7c7507a8ea44a0b0f067c4628368522168c2a33850631c:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg3M2RiYWY3OTE2NTg3MWM0MzhmODNiNjU0MWJlZTU3ZWE0N2VhZjE3NzRmNWM1MTk0Y2U2M2I5N2QyNjMyNmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY1M2U4MmQxMmMwMzJjOWViMGYwMDU3NTMxYTU0ZDMyYTE4NGY5MGY4YzIzYmUxZmVmZDQ2YTI4M2UwZjMwOGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE5YTk4NmRiNDBjY2E3NDg5ZDNmOGViYmU5OWU5ZjMxZmUwYzViNTY1ZWQ5MDc2YTdmMjdmYzczNDE2NGFmYjQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_a59d9b221a3243b3bbbc1754820a028f",
+      "statement": "Ports whose absence must fail loudly use a NoOp-default + @Primary-adapter pair: common/port/shuyun holds a Port plus a PortNoOp @Component for each contract (8 pairs); the NoOp throws a descriptive ResourceException (e.g. \"数云线下权益发券未接入卡券模块\"), and when ecshopx-kaquan is on the classpath its @Primary adapter (ShuyunOfflineBenefitKaquanCouponGrantAdapter delegating to UserDiscountReceiveCardService.receiveCard) wins injection. @Profile-scoped NoOps (e.g. aftersales' NoopAftersalesRefundJobSideEffects behind @Profile(\"noop-aftersales-refund-job-side-effects\") and the per-bundle cron/testcfg/CronTestMockConfig families activated by the test-cron profile) swap publishers and Redis-writing ports during migration-diff snapshot comparison.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/port/shuyun/ShuyunOfflineBenefitCouponGrantPortNoOp.java",
+          "version": "repo-file-v1:sha256:3801dc6ab38fd6d1ba6e27cb5f1a16a0f094d161b6f2177959716982373afd39"
+        },
+        {
+          "resource": "repo://ecshopx-kaquan/src/main/java/cn/shopex/ecshopx/kaquan/integration/shuyun/ShuyunOfflineBenefitKaquanCouponGrantAdapter.java",
+          "version": "repo-file-v1:sha256:06f5b512e27452cd049a581c8ce465ad7fdc543283855681a21cc7750ca3c5c8"
+        }
+      ]
+    },
+    {
+      "id": "claim_1d8a71da493a40c6b337b2818f6b33b4",
+      "statement": "Async cross-bundle announcements use *DispatchPublisher interfaces declared in ecshopx-common (~130 total: ~120 in common/dispatch plus domain-specific ones in common/kaquan/port and common/promotions/port) and implemented by small *DispatchPublisherImpl @Component classes in ecshopx-bootstrap's config package, which map the interface to a bus event name via DispatchFacade.publishEvent with DispatchOptions (e.g. NormalOrderPaySuccessDispatchPublisherImpl publishes EVENT_NORMAL_ORDER_PAY_SUCCESS as ASYNC+REDIS). Producers — e.g. orders' OfflinePaymentDoCheckService and the trade-finish bridge listener — inject only the common interface and never depend on any listener. A few dispatch-dependent bundles also declare local publisher interfaces (e.g. members/dispatch/AdminMemberExportFileJobDispatchPublisher) whose impls still live in bootstrap.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/NormalOrderPaySuccessDispatchPublisherImpl.java",
+          "version": "repo-file-v1:sha256:5890b6e7365722d61cf4b9acba28b8e93b60a85c7c1345ae2f07c9c05867474c"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/NormalOrderPaySuccessDispatchPublisher.java",
+          "version": "repo-file-v1:sha256:eb1a2c4e0666576b7b5d34e3fd29e7b6d93f233c60300c37e5cdc05e13827ead"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/offline/OfflinePaymentDoCheckService.java#L54-L61",
+          "version": "repo-lines-v1:sha256:8a2a7ee648d872314da731de66d5543e63ec200a8d9059a5e3e6c6f866f7ae3a:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZWFmMjJjZjA3MzI1OTJjMjQ3MTQxY2JlNjFlZmExMTAxMjYxMmY1YTMxMjJiOWFmOWJiYWY1MmY1NzI0ZDE5NCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTcyYTQyOTM4MmIyZTE0NzE4ZTBlMzdiMDU3MGE4YTE3MDI5OTFmY2Q4NDk4Y2Q4NDA2MGE4YmY0ZjA1MDE3YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYWU3ZTU0ZGEzZjY0ZjE2YThhMjU5YTRjNTExYTY0ZTdhNWZhNjgzNzQ3MGQ5NjM1ODlhOWJlYzNjNzNlYmZjZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjJhYzkzMTZlMGE2ODdiMTJmNzMzYTRmYjYxYTkyYjlkMTA5ZWE4MDE2NjlmNjI1ZWVkNThiODM4MDI3MGFmYyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_3480250769d04e28ba5f7c7019393f6d",
+      "statement": "Dispatch-bus consumers are registered explicitly, not by annotation: bootstrap's config package holds ~200 *RegistrationConfig @Configuration classes (each 30–50 lines, constructor-injecting a DispatchRegistry plus one handler/listener bean from a business bundle) that call registerJob/registerEventListener in @PostConstruct. InMemoryDispatchRegistry fails the Spring context at startup on a duplicate job name or duplicate (event, listenerName) pair. Inter-config ordering uses @Order(n) (e.g. @Order(77) on the trade-finish bridge config, @Order(81) on the trade-finish wxa-template config) or @DependsOn (wsugc pay-success listener depends on the youshu pay-success config). A bundle owning a new bus job or listener must add a matching registration config in ecshopx-bootstrap — the producer side never registers handlers itself.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/OrdersTradeFinishNormalOrderPaySuccessBridgeDispatchListenerRegistrationConfig.java",
+          "version": "repo-file-v1:sha256:00c28f44712ce706bf4fcc59642a7d0d86b699e6a205fdd9b31571bf8b9b0a60"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/WsugcNormalOrderPaySuccessDispatchListenerRegistrationConfig.java",
+          "version": "repo-file-v1:sha256:bed55504cdc1f0df96b0d9e24afb5d6377e2c7b5f09a0034029c983aeb5a1492"
+        },
+        {
+          "resource": "repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/InMemoryDispatchRegistry.java#L31-L49",
+          "version": "repo-lines-v1:sha256:975c3f0896a1b04fef358428b45e67eaac93b2ac7ddf76c42352da13accf9840:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVkYzJiMzExYWJlODc1NzJlOGE3Y2MwZDk5NmE2NTg0NDA3NmU1MjMyZDIxYjdhODU0NzVmOWI0MDU1Yjc0OTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjljM2QwMTViM2JkNjg5ZTkxNDRjZjcyNTk4NDEwYjMyMzI4ZGFiNTRjMTgwMDUzOTQxOTU5NDViY2Y2MTJmYTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ2ZDAxOGJmNTc5N2Y5Y2Q2ZDQyM2IzNjgzNGQyNjE3ZmM5ODk4YTgzNzc2MGIzOWZlNGM2OTdlZjFlNThkYjEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_22b05d145e52497fb2fe4dc066de013a",
+      "statement": "Bus message names are versioned strings aligned with the legacy PHP event registry: EVENT_NORMAL_ORDER_PAY_SUCCESS = \"event:288:OrdersBundle\\Events\\NormalOrderPaySuccessEvent\", EVENT_TRADE_FINISH = \"event:291:OrdersBundle\\Events\\TradeFinishEvent\", and a second trade-finish plane EVENT_TRADE_FINISH_CSV292 = \"event:292:OrdersBundle\\Events\\TradeFinishEvent\" used by the admin offline bank-transfer approval (do_check) path — most trade-finish listeners register on both planes. Listener names mirror legacy listener FQNs or method pairs (e.g. \"listener:youshu.orders_normal_order_pay_success\", \"listener:WsugcBundle\\Listeners\\Order\", \"listener:HfPayBundle\\Listeners\\HfpayTradeRecordListener@paySuccess\"). Constants live in per-domain *DispatchEventNames/*DispatchJobNames classes in common/dispatch and are the single source of truth for publisher impls and registration configs.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/OrdersDispatchEventNames.java#L25-L72",
+          "version": "repo-lines-v1:sha256:3956221ba99962e9c04537bd18de4a4780fe1e6a07d36a90d26dc3b0fcce590f:eyJzZWxlY3RlZExpbmVDb3VudCI6NDgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRhNmI1NmVlMTQxNDVlMDA4NTU0N2RlOWYwYzZmMTU5Y2QxYmM4Zjg1ZTIwZmM5ZDk2OWJhOThiZTdhMTIxNTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE4YTBiMTVmNTIyOGU2NTU2ZjJmMjVmZTA0NDdkZmE1Nzc1OGRiYWUxNzBhZGZmNmM3MGIxY2UzZGQyM2RmMGEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRmYTBjYTI0NWQzN2E1OGFhMTk3Zjk2ZTgyZWMwNDk4N2JkYzhlMzY0YjI4MjY0M2QzYWQxNWRmMTEyY2E0OWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImExMDczZjQ0MGY4NTRjMTI1MzlmYzExOTJiOGJlZTUyOWE2NGQzYTI5NzlkYzY3NGU3NGY2OGQ1NzJjOGZkZGEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_77f823ff8d7344cb9e34bbb09c8954dc",
+      "statement": "DispatchFacade.publishEvent fans out by mode: with ASYNC mode and a fan-out planner, DispatchFanOutPlanner.plan expands one event into one DispatchMessage per registered listener, each stamped with that listener's queue (defaulting to \"default\"), delay (event delay overriding listener delay), retry policy, and listenerName, then each goes through DispatchCore.dispatch. With SYNC mode and exactly one registered listener, the facade builds a parent+child pair and executes the child through SyncDispatchDriver in the calling thread (in-call-stack delivery the trade-finish bridge relies on); dispatchJob always builds one message and hands it to the core. DispatchCore picks the driver by mode/type and throws IllegalStateException for a missing async driver.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/DispatchFacade.java#L40-L72",
+          "version": "repo-lines-v1:sha256:b1dc97327418b2c2c7c7e30d42bd6d0c8b2a9b60f7884b5d50b8dd59dbe355a3:eyJzZWxlY3RlZExpbmVDb3VudCI6MzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxMDU4NWZjZGRkOGJkZGZkMTdmMDI3Njk3NDk3OTAwMDkwMzUyNzAzNzg0MGNhZjljMDg5NDM0ZjA1N2Y4MDMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE3ZTJiMzUzMGZlMzY0YjQ1NTZhZjYzZjgzMDE5OTYzNTcxZWVmMWJhY2EwZGM4OTc0YmQ3YjNiNmY1ZDBhNDEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZkNmIzNDQ2NWUxOGEwNjZjNTMzODc5ZjM5YzVmMmI2ZTgyN2QzOGFhNjgyN2Q0OTQ2YzEwYWQzMzNiNTg0N2EifQ"
+        },
+        {
+          "resource": "repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/DispatchFanOutPlanner.java#L34-L50",
+          "version": "repo-lines-v1:sha256:90d20dd6e9017870fdac33b40fbb4fd189945c9073f3b3fb0ad78baebd6360ff:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjliNWY2NTZkZDRhNDJlZWE4NTk4Mzg2ZjQ5MDU3YWQ5Y2U5YzEzN2NlMzNhZDA5NmE0YWUzZDJmYzhjZTg0NmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNlNzNiYjE4NDhhODc1MTJjYzc1MmNjMzRlODQyODA1ZDFmNjc4MmI5ZGQ3MTA4MjU2YjQyNWU5ZWZhMTdmY2MiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/SyncDispatchDriver.java#L27-L39",
+          "version": "repo-lines-v1:sha256:5385931c39529d7a15578326ff1619eef953b0c11b8374ede1683c58f470b305:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIzMmQ3ODBiMzBlYTY3NmUwN2Y5ZWZkZTRkN2QyM2ZjMjkyNmE4Y2RjZWE0OGVmMjBiNTBlYjkxZGJjOTY0YWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJhNGVkZTA5ZTY3NDljOThiODQxMjcyYTZlNmE4MGMwYmY1Mjg1OWYyYWI4ODVlZjkwZWEzN2MxYzlkOTQ4YmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_88e171bf2cf64e198cf66acce7be2d05",
+      "statement": "Redis is the only wired async transport: bootstrap's DispatchBusConfig registers DispatchCore.asyncReady with SyncDispatchDriver plus exactly one async driver (RedisDispatchDriver, using the dedicated dispatchBusStringRedisTemplate from MultiRedisConfig, ready-queue prefix \"dispatch:\", dead-queue prefix \"dispatch:dead:\", delayed ZSET key dispatch:delayed) — the RabbitMQ driver classes in ecshopx-dispatch/rabbit are not wired. RedisDispatchDriver rightPushes non-delayed messages onto dispatch:<queue> (queues in use: default, slow, sms) and adds delayed messages to the ZSET scored by ready-epoch-millis; failed messages are rightPushed to dispatch:dead:<queue>.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/DispatchBusConfig.java#L59-L89",
+          "version": "repo-lines-v1:sha256:2fc681523f3f5b0bb46dbf402a3c3e2aa1398625dde201fe51c8b78771d00330:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM1ZTU5MDY5YzNmMzg3NzE5ZWZlZDI1NmM2YzRiZjIxOWNjYzRmNmU0YjQxYWJmZDQ0NzYxZDQ1NDkyMTRkMDkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBkMzI2Y2YzM2VjMDczY2UwZTkyNWEwYmFlZDc3MzgxNmU3OWEzZGYzYjI0NWMwMjlmOGQwMmU5MzE1ZjczMjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM3MzQ0YmJmYjY2ZGRlMjQyNTczNjFkZGRlYWM3YTZmNTY3ZTJhOWQ1OWE5NDBiMTAyY2Y1MzU1ZDM3NDVhYzkifQ"
+        },
+        {
+          "resource": "repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/redis/RedisDispatchDriver.java#L61-L112",
+          "version": "repo-lines-v1:sha256:5ed00ade743dd9cdb0c59cc224fb69e489f67817aaabc7c62d50cc34b5855fb6:eyJzZWxlY3RlZExpbmVDb3VudCI6NTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwOGNjMTVkMDc1NGI2ZjIxZjcxZTBiMDNiOWRkNzg2YmM5ODgwMDNiMmI1NzU2NGM2MDUwYTgwMjI1MTdjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk2YWNjNzZlZDM1NWU0NzYxY2Q5Yzc4ZWFhZTE4MjZlYzczMjU2YjgyYmZhNGM0MmFjNjVlOTgzZjQ5YzcwNTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_84ed231d613643199e2d61882237d15e",
+      "statement": "Delivery is polling-based: RedisDispatchListener.poll() runs on a @Scheduled tick (dispatch.redis.poll-delay-ms, default 1000 ms), leftPops one message from dispatch:default then up to dispatch.redis.slow.batch-size (default 20) from each of dispatch:slow and dispatch:sms, feeding each to DispatchConsumerRuntime.consume(message, 1). RedisDispatchDelayedPollScheduler (ConditionalOnProperty dispatch.redis.delayed-mover.enabled, on by default; @Scheduled every dispatch.redis.delayed-mover.poll-delay-ms default 1000 ms) moves due ZSET entries back to their ready queues via RedisDelayedDispatchMover, clearing the delay so the re-enqueued message is not re-delayed.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/redis/RedisDelayedDispatchMover.java#L43-L67",
+          "version": "repo-lines-v1:sha256:67750053780235736732848e7f0c1c8554aa6ea499288eea0c98e8297bc0367d:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJiNDg0MGU0M2ViZGRiNzViMTBlZWUzNTlhYzVkOGViZWJmMzYzMDc2MTA2M2U5ODcxNzAwY2U1OTVkYTU3NzUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE1OTUwNjExYWFkNzE3MzgzNzc2YjQ1MjQzYWYzOTE2NTFlZjA1MTA4MTdmYWY1ZTQwZjkxN2Y5MmU2OGFjNzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/redis/RedisDispatchDelayedPollScheduler.java",
+          "version": "repo-file-v1:sha256:be2433515af321824107621c2ef7a5bac78efc4a9fa651245e9fe758695f0118"
+        },
+        {
+          "resource": "repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/redis/RedisDispatchListener.java#L59-L79",
+          "version": "repo-lines-v1:sha256:ebfac031285c316f2aea369a7428e1cf54340f038e130c499c2981b5f58af6db:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRlMDllNzQ2YTkzN2YzN2ZiMjhmMDA4ZGEyNGRhYzExMzk0Y2Q5ZDUwMTc3Y2Y5MThkM2FmNzYzOWQyYzIyMjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdiOWI4ZmM5ZDIwZjlhOGVjMDA1MDhiYWIxZTc2ZjIwN2I1OTRjYmFiYzgyYzQ2YjBmYjZhNmIwNDY3ZTliNGIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_a9cc7bfcbd4d4c24a9e5b4ff78fbf091",
+      "statement": "DispatchConsumerRuntime.consume dispatches by message type — registry.jobHandler(name).handle(payload) for jobs, or the registered listener whose listenerName matches the message's for events (fan-out messages carry their listener name, so consuming the wrong listener is impossible) — and records an ack. On RuntimeException, DispatchRetryDecider.shouldRetry compares currentAttempt < retryPolicy.maxAttempts (RetryPolicy.platformDefault = 3 attempts / 3-second next delay): retryable messages are recorded and rethrown so the driver re-enqueues them; exhausted messages are serialized by FailedJobRecorder.recordFailure into a FailedJobEntity (message name/type, listener name, queue, payload JSON, retry count, exception class/message, driver, delay, consumer id, occurred/failed timestamps) inserted via FailedJobMapper, logged as a structured \"failed\" line, and pushed by the driver to the dead queue. Bootstrap's DispatchBusConfig currently wires failedJobMapper as a no-op lambda (entity -> 1), so failed-job persistence is stubbed while the dead-queue push always happens.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/DispatchBusConfig.java#L101-L104",
+          "version": "repo-lines-v1:sha256:41ec59d92dbe165fd7dd0903c081cd1937535974b1ed0b35e9536e69960adbdd:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzVlNTkwNjljM2YzODc3MTllZmVkMjU2YzZjNGJmMjE5Y2NjNGY2ZTRiNDFhYmZkNDQ3NjFkNDU0OTIxNGQwOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDg5M2Y0MGUzNzgxZWI4OTZjODJkMDQ2YTA4MDY3YTExZTM1Y2RmMmYxZGZhZjI2ZmVhOTBiOGRiNjY3NjQxMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZGFkYzQxMDhhZGMwNDkxMWU2ZDE2YTM1NWJhYzZmMmRmZjg3ZmJiYzkxNGNjNDA0NzBiOTJlMGRmYjUwNzBhMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZWUyZjA0OThhYTk0OWM3ZTM2MDM3YmQ0NTBkY2M2NjgxNWUxMmY0YmQ1OGM5OTgxY2IwMjk3NDIxNGQ0OWM4YSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/DispatchConsumerRuntime.java#L37-L60",
+          "version": "repo-lines-v1:sha256:08f2b6ca602c0630f98e848919f21009f0af0057d0d949620fd56e2b4cb0d626:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJiOGEzY2ZjOWU0NzU3MTJkNTM2NDBhMDNlZTUwYjNkN2NhMDM4Y2NjNWVkMTFlMWY5NzVmYTU2ODk3MmZjY2EiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFlZGFjNzNhOTdlOWE3MDg0MjgwMzAxODczYzIxODNkYTgzNTBhYjc0Mzk1NzVjMTBlMThmNDI0ZGVhZDZhYzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/DispatchRetryDecider.java",
+          "version": "repo-file-v1:sha256:fb0bf44dcde67c95f5bba89f28350d175176e1461222aa3b18765f61d73713d2"
+        },
+        {
+          "resource": "repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/RetryPolicy.java",
+          "version": "repo-file-v1:sha256:781ca95e2fb9b822e6375233cc7a3dffd59a9bb8069de8c1c2aee0a012687ade"
+        }
+      ]
+    },
+    {
+      "id": "claim_261c9030e7ab4bb5900b2dc63a3b523f",
+      "statement": "After-commit publication is handled by TransactionSynchronization wrappers: orders' OrdersTradeFinishAfterCommitDispatchPublisher registers afterCommit (publishing immediately if no synchronization is active) and ecshopx-dispatch's own OrderProcessLogPublishPortImpl does the same for EVENT_ORDER_PROCESS_LOG with DispatchOptions.oplQueuedAfterCommit (ASYNC+REDIS). Bootstrap's OrdersTradeFinishDispatchPublisherBeansConfig exposes two beans of the same OrdersTradeFinishDispatchPublisher interface — @Primary ordersTradeFinishDispatchPublisher on the event:291 plane and qualified ordersTradeFinishDispatchPublisherOfflineCsv292 on the event:292 plane — so OrdersTradePaymentCallbackService publishes the mall flow while OfflinePaymentDoCheckService (admin offline bank-transfer approval, injecting the qualifier) publishes the offline flow.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/OrdersTradeFinishDispatchPublisherBeansConfig.java",
+          "version": "repo-file-v1:sha256:022d3d3781f150950552dabd158cd3b7398f58068cd5f84fcc455a9744df58aa"
+        },
+        {
+          "resource": "repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/integration/OrderProcessLogPublishPortImpl.java",
+          "version": "repo-file-v1:sha256:848b6e950184f29506d9bfcc3b7645f92179d52b98bc884a2d7e11011154e93c"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/dispatch/OrdersTradeFinishAfterCommitDispatchPublisher.java",
+          "version": "repo-file-v1:sha256:67c810e68adf758c0341f001da2b63edb519c1e5334965e1325eb65960db8961"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/offline/OfflinePaymentDoCheckService.java#L79-L90",
+          "version": "repo-lines-v1:sha256:6e9e3085efcde577a00a916be908eb6dd3d3fc7e69dcbff880ca366601e976d1:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhZjdmNTQwZGZkZWE5NDNlZjY4ZTlhNWIxMjk1M2RhNWY0OGEwYTllY2E4ODI0YjA4ZTllYTk4ZjRlZjlmNDUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZmYzRlYjFiY2NjZjJiNTRhOTczZWIzNjdjNWE0NTQ3NmNkYTc2MWIyOTM3ZTQzZWMyMDE4OWJjNzk4ODcyMmUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFlNDA1ZDY5N2JiMGQxYTQ0NzkzNjI4ZTA5YjIyMzVlNmYxMzYxYjA2Mzc3NmVjYjdhZjc2MjhlMWE3N2Q0MTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM4YjFhNDFhNzQ2Y2ZiMTE3OTQxNDBjN2MyZjkzNTY2ZDU0YjQ0MmUyNDk4YTE4NjU4MjM3NGRlZmM1ZWMxNDIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_48431b4d12ef48a9a74de04b02b3fdf6",
+      "statement": "The normal-order pay-success event demonstrates the full chain across bundles: orders' OfflinePaymentDoCheckService (and the trade-finish bridge listener OrdersTradeFinishNormalOrderPaySuccessBridgeDispatchListener) call NormalOrderPaySuccessDispatchPublisher (common interface); bootstrap's NormalOrderPaySuccessDispatchPublisherImpl publishes EVENT_NORMAL_ORDER_PAY_SUCCESS with ASYNC+REDIS options; the fan-out planner expands it into per-listener messages consumed by listeners in other bundles registered via bootstrap configs with ListenerDispatchOptions.async(\"default\", null) — youshu (NormalOrderPaySuccessYoushuDispatchListener), shuyun (NormalOrderPaySuccessShuyunTradeSyncDispatchListener), wsugc (NormalOrderPaySuccessWsugcDispatchListener, @DependsOn the youshu config), and employeepurchase (pay-success behavior-log listener). Orders' POM mentions none of these bundles.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/EmployeePurchaseNormalOrderPaySuccessDispatchListenerRegistrationConfig.java",
+          "version": "repo-file-v1:sha256:1710f86694b9f7285c10b640d3238fbb1e9185f25aae09fb8529c162cd7a0391"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/NormalOrderPaySuccessDispatchPublisherImpl.java",
+          "version": "repo-file-v1:sha256:5890b6e7365722d61cf4b9acba28b8e93b60a85c7c1345ae2f07c9c05867474c"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ShuyunOpenPlatformNormalOrderPaySuccessDispatchListenerRegistrationConfig.java",
+          "version": "repo-file-v1:sha256:b371a8d6bbcd4afc42e307be88791525dc36a7824f2034cc91fd6bdf0f7ccada"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/WsugcNormalOrderPaySuccessDispatchListenerRegistrationConfig.java",
+          "version": "repo-file-v1:sha256:bed55504cdc1f0df96b0d9e24afb5d6377e2c7b5f09a0034029c983aeb5a1492"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/YoushuNormalOrderPaySuccessDispatchListenerRegistrationConfig.java",
+          "version": "repo-file-v1:sha256:41f7d60a47b6ccfffa4e29d63b2ec49474d81f28c5e2b00db76da733370d9c81"
+        }
+      ]
+    },
+    {
+      "id": "claim_2616364474524d129e4db778b55c63d5",
+      "statement": "EVENT_TRADE_FINISH is the widest fan-out: OrdersTradePaymentCallbackService (after updating the trade row and optionally fulfilling a VIP membercard sale via ObjectProvider<VipGradeMembercardTradePaidPort>) publishes the reloaded trade row through JushuitanTradeFinishDispatchPublisher, OrdersTradeFinishDispatchPublisher, and WdtErpTradeFinishDispatchPublisher in one go; ~20 bootstrap registration configs register listeners on EVENT_TRADE_FINISH (notify-push, wxa template, sms notify, fapiao, profit, consume-card, link-member, statistics, hfpay trade-record pay-success, marketing-center, dm-crm, ome, order-process-log, bargain-help-pay, printer, groups-activity, item-sales, offline-refund, work-wechat, and the bridge), split between syncDefaults() and async(\"slow\"/\"default\", null) registrations — fapiao, for example, registers on both the 291 and 292 planes in the slow queue. The bridge listener is itself a publisher: registered sync on both trade-finish planes (@Order(77)), it marks mall normal orders paid via OrdersTradeFinishNormalOrderPaySuccessApplyService.markPayedIfNeeded and then calls NormalOrderPaySuccessDispatchPublisher.publish, chaining trade-finish into pay-success inside the same synchronous call stack.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/TradeFinishFapiaoDispatchListenerRegistrationConfig.java",
+          "version": "repo-file-v1:sha256:44b5e495b85aca01c9d829c8af5144bb0e0a807f7fe13ca62b1d4d8a0a672275"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/dispatch/OrdersTradeFinishNormalOrderPaySuccessBridgeDispatchListener.java",
+          "version": "repo-file-v1:sha256:4c486a38fbf570afe06cf5ca288959248c96e9724134e5831a6014113928df66"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/payment/OrdersTradePaymentCallbackService.java#L135-L178",
+          "version": "repo-lines-v1:sha256:b8292b1e8c7503a0f4da28d70e7b085b89e2a015f0e511dfd01ab3ed2a791951:eyJzZWxlY3RlZExpbmVDb3VudCI6NDQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIzYWM0NjU5YjU1NmE5MDUyN2I3N2JiYzM2N2MzNDU3YTlkYzI5NGY0YjUwMTkxYTE0OTA2MjczMTlhODk3MTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIyZjJmZjVmZWVjNjBmNTg3YzhmYWU0ZTg3ZjgwOWE2NjFjZmZlZDZiNDdhYWU1ZjZkNmEyNjUzYWE4OTUyZWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE5YTk4NmRiNDBjY2E3NDg5ZDNmOGViYmU5OWU5ZjMxZmUwYzViNTY1ZWQ5MDc2YTdmMjdmYzczNDE2NGFmYjQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_40d48f9bda824d3a899a42483eced4a2",
+      "statement": "Intra-bundle after-commit side effects use Spring application events rather than the bus: OrderProcessLogSpringEvent is published by order services and consumed by OrderProcessLogSpringEventListener with @TransactionalEventListener(phase = AFTER_COMMIT, fallbackExecution = true), so log rows are persisted only if the surrounding transaction committed (fallback keeps it working outside transactions). The same pattern recurs in AdminNormalOrderFullCancelPostCommitListener (three AFTER_COMMIT handlers), promotions' SeckillActivityCommittedEventListener, supplier's SupplierOrderPaidConfirmCommittedListener, and members' CompanyActivatedStaffTagListener. AftersalesRefundDoRefundService shows the hybrid: it publishes TradeRefundSpringEvent (common/event) for local coupling while also using dispatch publishers (TradeRefundStatisticsJobDispatchPublisher, TradeRefundFinishEventDispatchPublisher) for cross-bundle fan-out; the bus has a parallel OrderProcessLogDispatchListener on EVENT_ORDER_PROCESS_LOG registered in the slow queue for bus-based producers.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/OrderProcessLogDispatchListenerRegistrationConfig.java",
+          "version": "repo-file-v1:sha256:b0789cbc21d00aa836ddc306a9d7692105fc5b222621adb38f53868c8a6351dc"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/listener/OrderProcessLogSpringEventListener.java",
+          "version": "repo-file-v1:sha256:21d5192a289017b6b43bc710d0cdaf5719dcccbc1e0383579a61b2f8e9e2cfce"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/refund/AftersalesRefundDoRefundService.java#L53-L66",
+          "version": "repo-lines-v1:sha256:2a4860e799694ea8b76b697594439172fa7512cb89c41a7af50507b794c81afe:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcyMTdhZDkyOWFmYzZjMWQ5YjJkNmY1YjFjYWU5Y2NjYWZlMmJjZGY4YTg5MTk0ZjZjZDkwM2U3MzViM2E0MTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAwOTU5NjczYWY1MjAzZGNjMGQ4YmJkYmViYmU1OWIwMWU4NTY1MDUzNmE1ZDQ5ODdlZDUwMzNlMTQ0ODhiZTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA3ODFhMTMyN2M4ZDEwMGY0YmM1OGM3NzBkN2IyZGU0MjlmNDYwZjUzMmU4MWM5MWJiZGI2NDZlNDU3YTI2OWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImVmYjk4Mjg2NzY5Mjg1ZjNhYTAyMGQ0ZGU2NmY4YzAxY2EyNDRkMzc0YmZhZjllZDQ1MGYxZDE5MWQxMmVmY2YifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_9fd53f666771413eba71b3661f8e1c1c",
+      "statement": "When no single bundle can host an implementation, the adapter lives directly in ecshopx-bootstrap (which depends on all ~50 bundles): bootstrap/distribution/DistributorInfoQueryHandlerImpl implements distribution's own DistributorInfoQueryHandler by composing distribution + adapay + companys + merchant services; bootstrap/wechat/WxappCommonSettingFacadeImpl implements common/wechat/WxappCommonSettingFacade (interface Javadoc explicitly says it lives in bootstrap to avoid the wechat ↔ companys/im module cycle), aggregating im (meiqia/echat), companys (nostores/whitelist/share/category-page, currency), point rules, thirdparty DM-CRM settings, and espier storage properties; config/TradeFinishPaymentSuccShopNameAdapter implements common/port/orders/TradeFinishPaymentSuccShopNamePort by joining companys' WxShopsMapper with wechat's WechatAuthQueryService (consumer: orders' TradeFinishWxaTemplateWaitingDeliveryDispatchService); bootstrap/order/CompanyPassportUidByCompanyIdPortAdapter implements the companys passport-uid port over CompanysMapper; and bootstrap/hfpay/HfpayPopularizeCashWithdrawalMerchantPaymentService implements popularize's PopularizeHfpayRebateMerchantWithdrawalPort by orchestrating hfpay payment settings, orders' MerchantPaymentTradeWriteService, and an hfpay withdraw event publish.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/bootstrap/distribution/DistributorInfoQueryHandlerImpl.java",
+          "version": "repo-file-v1:sha256:da19b1dd8de8f7c9d5793e660a923d22e3d05daf97d0d937369e799c5738fe27"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/bootstrap/hfpay/HfpayPopularizeCashWithdrawalMerchantPaymentService.java",
+          "version": "repo-file-v1:sha256:c516c6482ae6bc1accbfb847579ab3f7ac6b486e95b1b55d939b2c4755cba41a"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/TradeFinishPaymentSuccShopNameAdapter.java",
+          "version": "repo-file-v1:sha256:fd41b6f96d8df3ff265745f7d1ce51b7db05996297ab1eb21502f4a90e515a73"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/wechat/WxappCommonSettingFacade.java",
+          "version": "repo-file-v1:sha256:c0ec93439a064d5b93cc43dc949098980d5c72c6ca7cec8512a4190184943668"
+        }
+      ]
+    },
+    {
+      "id": "claim_639514be4c724d5f9bdeb8892ab06d78",
+      "statement": "The wiring is pinned by ~230 *DispatchFlowTest classes in ecshopx-bootstrap/src/test that hand-assemble InMemoryDispatchRegistry + real or mocked listener + DispatchCore with a capturing driver + DispatchFacade + DispatchFanOutPlanner and assert the full publish → fan-out → queue-message shape → DispatchConsumerRuntime.consume → listener-invocation chain (e.g. NormalOrderPaySuccessYoushuEventAsyncBusDispatchFlowTest asserts exactly one enqueued message with the youshu listener name and \"default\" queue, then verifies the youshu service is invoked on consume; JushuitanTradeAftersalesEventDispatchFlowTest covers both sync single-listener and async fan-out paths; TradeFinishFapiaoEventSyncDispatchFlowTest pins sync delivery). The same scaffolding recurs as per-bundle *DispatchConsumerRuntimeTest classes (third-party, wsugc, reservation's deferred-job test).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/dispatch/NormalOrderPaySuccessYoushuEventAsyncBusDispatchFlowTest.java",
+          "version": "repo-file-v1:sha256:b0db214f9c4f24ffe83f3a88bdad598b4c9768b787b6879e67c0a0af5ebda01a"
+        },
+        {
+          "resource": "repo://ecshopx-reservation/src/test/java/cn/shopex/ecshopx/reservation/dispatch/ReservationRemindSendWxaTemplateDeferJobDispatchHandlerDispatchConsumerRuntimeTest.java",
+          "version": "repo-file-v1:sha256:72c4fa09b26673deb2fefbb18a04b7cb0d0081f330f222af633dd3539847d0d4"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.2",
+    "at": "2026-10-21T12:26:22.580Z"
+  }
+}

@@ -66,6 +66,11 @@ public class DistributorCreateParamNormalizer {
 			merged.put("is_self_delivery", Boolean.FALSE);
 		}
 		coerceTriBool(merged, "is_ziti");
+		if (merged.containsKey("is_platform_store_buy")) {
+			coerceTriBool(merged, "is_platform_store_buy");
+		} else {
+			merged.put("is_platform_store_buy", Boolean.FALSE);
+		}
 		coerceTriBool(merged, "is_delivery");
 		coerceTriBool(merged, "is_self_delivery");
 		if (merged.containsKey("auto_sync_goods")) {

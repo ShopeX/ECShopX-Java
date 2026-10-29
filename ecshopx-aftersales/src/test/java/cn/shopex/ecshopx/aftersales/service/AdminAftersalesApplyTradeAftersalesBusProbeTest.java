@@ -133,7 +133,8 @@ class AdminAftersalesApplyTradeAftersalesBusProbeTest {
 		OrderItemsProfitWritePort profitWrite = mock(OrderItemsProfitWritePort.class);
 		AftersalesBrokeragePort brokeragePort = mock(AftersalesBrokeragePort.class);
 		JdbcTemplate jdbcTemplate = mock(JdbcTemplate.class);
-		when(jdbcTemplate.update(anyString(), eq(COMPANY_ID), eq(ORDER_ID))).thenReturn(1);
+		when(jdbcTemplate.update(anyString(), any(), eq(COMPANY_ID), eq(ORDER_ID)))
+				.thenReturn(1);
 
 		OrderProcessLogPublishPort logPort = mock(OrderProcessLogPublishPort.class);
 		ApplicationEventPublisher eventPublisher = mock(ApplicationEventPublisher.class);
@@ -191,10 +192,12 @@ class AdminAftersalesApplyTradeAftersalesBusProbeTest {
 						new WdtErpTradeAfterSaleBusPayloadBuilder(),
 						tradeRefundDispatchPublisher,
 						tradeAftersalesDispatchPublisher,
-						thirdPartyTradeAftersalesSaasErpDispatchPublisher);
+						thirdPartyTradeAftersalesSaasErpDispatchPublisher,
+						AftersalesTestMessageSource.FALLBACK);
 
 		AftersalesApplyCheckApplyService checkService =
-				new AftersalesApplyCheckApplyService(headerPort, itemsPort, detailQuery);
+				new AftersalesApplyCheckApplyService(
+						headerPort, itemsPort, detailQuery, AftersalesTestMessageSource.FALLBACK);
 
 		OrderSuccessTradeReadPort tradeRead = mock(OrderSuccessTradeReadPort.class);
 		when(tradeRead.primarySuccessTrade(COMPANY_ID, ORDER_ID)).thenReturn(Optional.of(successTrade()));

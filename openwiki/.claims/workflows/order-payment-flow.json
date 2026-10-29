@@ -1,0 +1,348 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:4383e351d26fc1008b109231f4d0f61c7e9dbd5a9b37375db9c8ed71fbd6c736",
+  "claims": [
+    {
+      "id": "claim_8ebde6be55a342c6aad350bc80c8c0f5",
+      "statement": "POST /api/v1/h5app/wxapp/payment is served by WxappPaymentController in ecshopx-orders (class-level @FrontNoAuth, no @FrontAuth on /payment or /payment/query, only /payment/config and /payment_deposit carry @FrontAuth); it merges query params with the flexible body, resolves company_id from wxapp/H5 auth attributes falling back to merged params, throwing UnauthorizedException when absent, rejects falsy trade_id on /payment/query with '支付单号不存在', and splits is_logistics items out of order_info.items into order_info.logistics_items.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/api/front/v1/WxappPaymentController.java#L118-L181",
+          "version": "repo-lines-v1:sha256:a09ab8a2e81861a3862a95723864d589be9e0cfe7d7395473be603794e2a9d7f:eyJzZWxlY3RlZExpbmVDb3VudCI6NjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEzMzNjZTNmMzI3OWE1YTBlNTg2MjhjYmQ5OGFlMmVlOWEyNjhkYjQyNjY0ZWUzMzRmYjM2MDU1MzY5OGNkNmYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImViMjJmMTFhYjdlZDMyNTM1NWU5NWZjZWRhNzkxMTA3ZTZmZjgxZTViZDkzNTdiMjE4ZGVmYTE4MjlmMDRlNWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjllMmEzZWQ3YTZhY2YzNTMwODllNzc5YTYxYTIwMWE2MzRmZTM5MDRkNGQ4Mjk3YWI2NGEyOWQ0NGIxZTNjODEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/api/front/v1/WxappPaymentController.java#L212-L238",
+          "version": "repo-lines-v1:sha256:3f7f3278ece6ebc7bfcc2c126de496c63bffb0fee016198b1ffac16819389959:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY1ZTE3ZDMxOTVkYjVmYjRiM2Q5ZDkyZDNhMzEyZWM5MWI4MDlkMWE0NjY2ZWQ5ZWMyZWY5ZWZmZGE0MGFhODgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIyZjJmZjVmZWVjNjBmNTg3YzhmYWU0ZTg3ZjgwOWE2NjFjZmZlZDZiNDdhYWU1ZjZkNmEyNjUzYWE4OTUyZWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY1ZjdiMDRiNGIxZWNhZGFiYTNmZGE0ZjFlNzZhYjQ1MzA1ZTFjOTg2MTE3YjY2NzlkY2E1Mjc1MTM3YmMwZjIifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/api/front/v1/WxappPaymentController.java#L52-L116",
+          "version": "repo-lines-v1:sha256:7791c0e08cf320d39ec9aafe577c46bb6a157b5a964afd0c809495d43d4fc381:eyJzZWxlY3RlZExpbmVDb3VudCI6NjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFmN2NjN2E3ODc3NGQzNzBkMTYzM2Y3MTAyY2M0OTY1MmJmZjNjNzdlOTkyM2JiYjZjZDYwNjc2YjAwMmNiZjAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE0OTgxZGE5ZWZmNGI0NzBhOWQ0ZmIwOTJlNTdlMWU5ZjEzYjk0ODFjMGU0YWJhYWY4ZWI4OWJlYzE4YzkyMTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFhMzdjMmY3N2JlYzZjYzg2NThlMmEzOTMwY2JlMjhiMDdkM2Y1YTY2OTEyZjA1ZDJlNTlkYzFlNTU5NTNiZWIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_53f3ad4d937c4cff8315ed158c5e013b",
+      "statement": "WxappPaymentService.payment enforces the guard layer before trade creation: order_id is mandatory; an order_id starting with CZ is routed to DepositTradeWxappPaymentService.depositPayment; pay_type is mandatory unless auth_code is present (adapay additionally requires pay_channel); the order must exist in orders_associations, must not be order_type=supplier_order, its order_status must be NOTPAY or PART_PAYMENT; a zero cash total with point>0 forces pay_type=point; and updatePayTypeIfApplicable writes the chosen pay_type onto orders_normal_orders.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/front/wxapp/WxappPaymentService.java#L407-L510",
+          "version": "repo-lines-v1:sha256:6d8a5718654509db142c15e85f7b05e8612cc0e9d2bab26e9a8767cab625e185:eyJzZWxlY3RlZExpbmVDb3VudCI6MTA0LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI2ZTljNTlmYmQ4ZDNiNWUzZTY0OTI3MWE2ODA2MTU0YjhlNjE4M2VhMjk2YWMyMjM5NTRkMTRkNDhhOTYxMzUxIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI1ZTViYWYxZDVlYzE3MmM4MjNjZjMwZDRhNDAzYzM5Y2NiYmNiY2ExNDVjZjI4NjVjZDkyNTNmZjZkOWJhNzdkIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI0YmM4NDRmYzk2M2U1ZjllYzAzOTliYTVhNjdhYTEzZTY1NmVhZjI3YmMwODQyY2E4MGRiMTFjOTNlNThiNDBkIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIzYzhkNmIwZTg3NzdkZTc0MDc1NDI0MjlmZjFlOTc3MDgxOWU1NDQ2YmQyZjFiZTY4OTFmZDU4Yzc5Zjc5OTQ1In0"
+        }
+      ]
+    },
+    {
+      "id": "claim_236633980cab4b19b64b9632a8776cb1",
+      "statement": "POST /wechatAuth/wxpay/notify is served by WxpayNotifyController in ecshopx-payment (@DingoResponse PLAIN, consumes XML/text/all, produces XML) and delegates one-for-one to WxpayNotifyFacade.handle; the /wechatAuth/ prefix exempts it from operator JWT auth, so every request must pass MD5 signature verification before any state is written.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/api/open/WxpayNotifyController.java#L29-L51",
+          "version": "repo-lines-v1:sha256:b895dae93694c8223c2b1585672f50b9f212fc320349f794765f6709207d8c5c:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1N2ZiYjRkZjg5NWVhMTk4ZWRhY2UzZDliNTU4MTMzZDFkZjU2MDg1NWNiNGEzMmMxMTY5NDc5NGQ0NTQ4N2EiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdkYzkzY2FkZmM1MjA5YTk4OWEwYzQzM2Y3ZTc1NGI5MWNkYjRjZWUzMDJlYzg1N2NiM2YyNzI3YzUxN2EzMzUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_88cf99e8f2d14eab858e4110b3192f2a",
+      "statement": "WxpayNotifyFacade.handle loads and parses the XML body, resolves companyId from the notify appid (authorizer-appid port then Redis fallback maps), resolves the distributor-scoped wxPaymentSetting API key, verifies the MD5 signature, classifies result_code=SUCCESS to status SUCCESS (else the notify's trade_state, defaulting PAYERROR), and routes on the decoded attach: attach=depositRecharge goes to AlipayNotifyDepositSidePort.rechargeCallback, everything else to AlipayNotifyOrderSidePort.applyTradePaymentAfterAlipay; pay_type is taken from the attach rather than the notify body.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/WxpayNotifyFacade.java#L55-L114",
+          "version": "repo-lines-v1:sha256:204341feb2bb26581644767831be8d55e7168782e04cf6a904d9eab6e26e1912:eyJzZWxlY3RlZExpbmVDb3VudCI6NjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIzYmIwNDc5YWZhYmVjMjAzYWM4ZTdhOTdkYzlhNmRjZDMxMDUxYWJmZDEzNjU3ZjI1OTE0MjQzZTkwNWY1MWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE3ZDNkMDU2YzhlYzgwMGExNmE5MGI1MDRiNjM2MmMyMGUyZGRiNGQ2OWQ4YjhjZjIxZWYyZTRhMWNhMTNlODgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMzZWZlZGE3ODcxZjIxYzBmZjk1M2E0MTRhOWU4NTgzZGViNzFlOTM5NjNhYzhmZWI1MTg2MTA5MzE2OGQyMTIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_7dbda0a137a54940b8671729b5549940",
+      "statement": "WxpayNotifyFacade swallows business exceptions: the port call is wrapped in catch (BadRequestException | ResourceException) logged at debug ('wxpay notify business already handled'), and the facade still returns XML SUCCESS; only unexpected exceptions (signature failure, unparseable body, missing config) reach the outer catch and return XML FAIL with the message CDATA-escaped (cdataSafe neutralizes ']]>') — the HTTP status stays 200 and the return_code is the signal, so already-processed and unknown-trade notifies stop gateway retries.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/WxpayNotifyFacade.java#L94-L131",
+          "version": "repo-lines-v1:sha256:6f22c151ca559002da797c4717694ba10074864c3d1c9f3c876eba982f3adcf3:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRkZjExMWI5MjdmYTFhZmI3MGE2MDcxYzkwNTU0NzRjMTJmZTRlOGRhYmRmNWNjZGY1YjgyNWI4MDg1YmIyNTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAwYmYyZjE2MTE2ZmJmYmE3MDQyZGQxOTg5YzBlMmM3NTAzZjUyM2MwNjEzMGQ2Y2E5MTY3ZTg5OGRmZDE0YTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjUzNjU2ZTJlNjZhNDhiYTZkYmI1MmYzMzNjZWZiYjFjMTM2OGRlYmE0ZmM1MzlkMjczMWY1YmE4ZjdjYzI3YzMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_ae3ea39238224e5680d30a7551f40f1e",
+      "statement": "ecshopx-payment depends on orders/deposit only through port interfaces: AlipayNotifyOrderSidePortImpl in ecshopx-orders delegates applyTradePaymentAfterAlipay one-line to OrdersTradePaymentCallbackService.applyTradePaymentNotify, and AlipayNotifyDepositSidePortImpl in ecshopx-deposit delegates rechargeCallback to AdapayDepositTradeRechargeCallbackService — despite the 'Alipay' name these ports are the shared side entry reused by the wxpay notify facade; the orders port also exposes resolveDistributorIdForAlipayRedis which returns the trade's distributor id only when the distributor's payment_subject=1.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-deposit/src/main/java/cn/shopex/ecshopx/deposit/integration/alipay/AlipayNotifyDepositSidePortImpl.java#L24-L38",
+          "version": "repo-lines-v1:sha256:7d6ac2a6d511d7b34713a72e3a9f8a26349167b0bfa1b6eeece27f39a86497fa:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJiMzM2YzQyYjJmNTIwN2I3NzVlNTBhOGRhY2UyZDZkMTViMjZmNjFlOGNkYTJjYTRkNDNmY2U0YWU0ODQ0ZjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE2YzUwZDg1NDM4OTUwMDE3ZjVmNDY1ZmFhZWVhMTNiNGI2ZGIxOTU0ZmQzM2ZhODVkNmVlMzJkZGIyZDMxNTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/alipay/AlipayNotifyOrderSidePortImpl.java#L70-L83",
+          "version": "repo-lines-v1:sha256:1fc04b9260d016446dc46e0734a26838565fdf9e215459f35ba87df6faa76399:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1YjI3MTdlMWI5ODBlNDI1OTdiMGI0NzNjNzdhMzU0ZWUzMjI5ZmNhZGQ1MDUzYTE5YjI2NTA2MTk0NGVhNmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVjYjI5MTM3OTM4NTM2NzBmZjVkMTg2ODhmM2YxNjIxODE5MDBjNTczMjE1Mzc5ZTY4ZDVmMDM4Y2UzNjFiOWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_9312e5667ac146a2a026f6686ee32cbb",
+      "statement": "OrdersTradePaymentCallbackService.applyTradePaymentNotify is the single mutation point for a channel-confirmed trade: blank out_trade_no throws '回调数据无效'; a missing trade throws '未查询到更新数据'; the entire notify map is serialized into trade.inital_response as JSON before the state guard (so replays refresh the audit trail); then the NOTPAY idempotency guard throws ResourceException '更新已处理，不需要更新' for any other trade_state; the guarded UPDATE sets trade_state/pay_type/pay_channel/bank_type/coupon_fee/coupon_info/transaction_id, and on SUCCESS additionally stamps time_expire (unix seconds) and trade_no from the Redis daily sequence; zero affected rows throws '交易单状态更新失败'.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/payment/OrdersTradePaymentCallbackService.java#L74-L133",
+          "version": "repo-lines-v1:sha256:8e4fb25aad782d6a94b82c9d91400c8e86496a75646a4baf03bfdd3a12d4ff13:eyJzZWxlY3RlZExpbmVDb3VudCI6NjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgxZGUyNjgyNTFkNDRiNDk3ODQ4MDQwOTEzMzZlMDE2ZThiODNmMmM4ODFhMTRjYWI3NGJiMGZjNmZjN2JkYzkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjExZmZlMWI4Yzg0NTViNGQ1Y2ZkZDM3MTE0NmQ5NWQzMTBiNmQwOTNkY2FlYmRmOTEzZjk3OWUzYmZkMmI1YmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAwZGEwNTQzNjE2NDc1MWEzNTY3MTk5N2VkM2QzMzE2Y2VlNmVmZjhlNGMxMjVjZDllNjU2ZWJhY2FkNTJkMmYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_81f39ca66afa4b7ab2d3230cd5f0eea2",
+      "statement": "trade_no is assigned only on the first SUCCESS, built as MMDD-seq from a Redis daily sequence: the h_trade_no_{company}_{distributor}_{MMdd} hash keyed by order id returns an existing entry, otherwise the c_trade_no_{company}_{distributor}_{MMdd} counter is incremented — so a repeated trade for the same order reuses its sequence number and the number rolls over daily.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/payment/OrdersTradePaymentCallbackService.java#L180-L200",
+          "version": "repo-lines-v1:sha256:896c060690237afaef452df0f6801c67bb081037d93f9885190841501a5398c6:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE4MDEyNTgzYjFjNDFiZjNmZDI4YjhkMmZiMTBjODI3ZTBlNzE0YjVjOWIwNjI3MjM0NzAzOWI4ZmRiMTJjNGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAxNjZhOGZkZDRiMzBiNmJmMGQ0YzQzMDlkNWEyYjEyMWYyNzNhZWM3MDRjY2Q3NzMwZjAwOTI1ZDYyMGFkOTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZmOTJiMTI2ODY2MmVjZWIxYWFhN2QyYjc3YjIxN2VjMmQ2NjcyM2M1NmI4NTBlOGQ3NzVjMzJhMThmYWIwMDAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_34c9e8d847994c4fae169344782f3e35",
+      "statement": "Only a SUCCESS status publishes the trade-finish fan-out: publishSystemLinkTradeFinishAfterSuccess first fulfils the membercard VIP port for trade_source_type=membercard (PHP parity), converts the trade row to a snake_case map, and publishes it to three publishers — jushuitanTradeFinishDispatchPublisher, ordersTradeFinishDispatchPublisher and wdtErpTradeFinishDispatchPublisher; non-SUCCESS statuses (REFUND/CLOSED/REVOKED/PAYERROR) are written to trade_state but publish nothing.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/payment/OrdersTradePaymentCallbackService.java#L130-L178",
+          "version": "repo-lines-v1:sha256:6638ecfb4103b4498dd18c2ac5716ab2e28e756ecf35a299ee095b57b21628f7:eyJzZWxlY3RlZExpbmVDb3VudCI6NDksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImViNDQ4MDk4OGE4ZmVkM2RiMDIyN2VjMzViMjIzYzY5Y2IwOWUzNTBhNDdiYTIyNzBmMDA1ZGY0YWRlYWYyYWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjgwY2U1YWU0MzdlZDhiZGIzYTk4ZDc5NTkwZmNmNGY0MWZiYmJlMGE4MWFlZGRjMmEzNmY5Mzg4NTBiNWQ2NjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE5YTk4NmRiNDBjY2E3NDg5ZDNmOGViYmU5OWU5ZjMxZmUwYzViNTY1ZWQ5MDc2YTdmMjdmYzczNDE2NGFmYjQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_0a2febdd7d1e41d6b65c043d756dff70",
+      "statement": "OrdersTradeFinishDispatchPublisherBeansConfig exposes two OrdersTradeFinishDispatchPublisher beans, both backed by OrdersTradeFinishAfterCommitDispatchPublisher which registers a TransactionSynchronization and publishes after commit when a transaction is active (immediately otherwise): the @Primary bean publishes EVENT_TRADE_FINISH (event:291, the gateway-notify plane) and the qualified ordersTradeFinishDispatchPublisherOfflineCsv292 publishes EVENT_TRADE_FINISH_CSV292 (event:292, the admin offline bank-transfer approval plane); Jushuitan and WdtErp each ride their own dedicated ASYNC+REDIS events.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/OrdersTradeFinishDispatchPublisherBeansConfig.java#L27-L43",
+          "version": "repo-lines-v1:sha256:2fdb22538563949a6d0ff1a8ea9dbfedb559dc403965966bc7ada95faa0fde04:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiMTQ3NjJhYWFkNThkMTM4NDRjZjJlYzU0NzQwYTRkOTdmNWUwN2VlNTE2ZDMyMGQ2MDM2YzFjN2NlNDJkZmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQxN2JkYzUyYmZmNWJhNDE0MDZlMjgwMDBjY2MxMWI1YmI4NzM5YTBmNDY3Y2IzZThmMDdlYmI1M2Q5OTVmM2YiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/dispatch/OrdersTradeFinishAfterCommitDispatchPublisher.java#L26-L52",
+          "version": "repo-lines-v1:sha256:038352388d963b109940faff55ea95fcd92e220eb45c7dfbfc6a6dcbabd202ed:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYjIwOWIxNDFhZDI0OGVjOGZjOWU0MDM5NmY2ZGQ2ZjRiOThiMjQzOGExYWMzODI0YTZhZGE2OTBiMjA5MjUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE4ZGMyMDFmNGE1YWJhZjEyNzE2YWQ1MzM0YTBlODg5ODQ2ODc5MDg1MDBhYjA1M2UzMWRhNjFlNDkxMThhMzMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_4b0f40631d484a3ca8ce1735ce3d53a2",
+      "statement": "Every trade-finish listener registration config in ecshopx-bootstrap registers its listener on both EVENT_TRADE_FINISH and EVENT_TRADE_FINISH_CSV292 with the same listener name and options (e.g. TradeFinishSmsNotifyDispatchListenerRegistrationConfig at @Order(78) registers listener:orders.listeners.TradeFinishSmsNotify with ListenerDispatchOptions.async(\"sms\", null) on both planes), so the twin planes share one listener set by design.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/TradeFinishSmsNotifyDispatchListenerRegistrationConfig.java#L27-L56",
+          "version": "repo-lines-v1:sha256:a29d2ad535cc56bb2b1a6eca26d1e0819b366d4805562bf3e734c6bcf48b30e3:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiMTQ3NjJhYWFkNThkMTM4NDRjZjJlYzU0NzQwYTRkOTdmNWUwN2VlNTE2ZDMyMGQ2MDM2YzFjN2NlNDJkZmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc1MWY5MTQ3ZGFkYTQ5NDI1NDJiNzE1OWZkYmIyMmQ3M2FjZTAzNmFkMzdjZWUyYjZjY2YwNTIwODM5OWM2ZmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_67d9e2d0058542ccb429b84f5bae4271",
+      "statement": "The pay-success bridge (OrdersTradeFinishNormalOrderPaySuccessApplyService.markPayedIfNeeded, one @Transactional method) only considers trade_state=SUCCESS payloads with positive company_id/order_id whose trade_source_type is in NORMAL_TRADE_SOURCE_TYPES; it targets WAIT_GROUPS_SUCCESS for normal_groups, DONE for shopadmin-class orders, otherwise PAYED; the header update is guarded by order_status='NOTPAY' and sets pay_status=PAYED — zero affected rows returns Optional.empty() so no pay-success event is published (the bridge is idempotent); it mirrors the status onto orders_associations, promotes supplier_order children from NOTPAY/PART_PAYMENT, and for shopadmin/shopscreen ziti orders auto-completes delivery.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/tradefinish/OrdersTradeFinishNormalOrderPaySuccessApplyService.java#L72-L189",
+          "version": "repo-lines-v1:sha256:2050693693f43526de175b4d47e62bb0925732504858abe445b4b7bb66847dda:eyJzZWxlY3RlZExpbmVDb3VudCI6MTE4LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJlZDlkOGNhMmJjYTZiYmQxNmI1OWNiZjUyYjQzNWQzZTc2NzYwNzE5ODY0NTY3NGE3YzdmYjhjMmUwNTYwNmEzIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI2N2NkYTgyZGE2MDYyMzhlMDVlNjIzOTk1NjljNWVlMDM5OTM0MTk2NDhhZTVkNDNhMmJmOGNkNjM0N2Y4MjYzIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJkN2JmODMyNGQzNzJlYjE5YTQ0NDFiZjQzOGU5ODg1ZWUwOWQzNWI2YjMwMjhlNTEzOWYxODBmZmEwNjJmYTBmIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJiNjgxMjg2MzdmZmY4MWM3MjQ1ZTQxNTE2OTc1NDU1OTkzYjIzNDUzMTIyMmVmYTA4MzA4MWRmMjk2ZWVkNmYzIn0"
+        }
+      ]
+    },
+    {
+      "id": "claim_4361e4709c3f447c841d6dca14451908",
+      "statement": "The sibling internal path OrdersPaymentDoPaymentService.finalizeTradeSuccess (used by localPay/point/prepaid_point/pos/deposit and finalizeTradeSuccessAfterChannelQuery for /payment/query) performs the same CAS guarded by WHERE trade_state='NOTPAY', the same trade_no assignment, membercard fulfilment and trade-finish publish — with one behavioural difference: when the trade is already SUCCESS it re-publishes the finish event idempotently instead of throwing, whereas finalizeTradeSuccessAfterChannelQuery throws '更新已处理，不需要更新' for a non-NOTPAY non-SUCCESS state.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/payment/OrdersPaymentDoPaymentService.java#L618-L698",
+          "version": "repo-lines-v1:sha256:053928d626309cd6d1f17e3885beaf987ec39ba776328bd0c8a3d5960625ffaf:eyJzZWxlY3RlZExpbmVDb3VudCI6ODEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZDI5M2VmOWVhZmNmOWM0OTMzN2RhY2I2N2MxZDcxZDAyYTYzZmI4YzdkNWZhY2JkMzhkYWNlMGUxZDg0ODQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA1N2JlNmFlMjcwYTYzMjczYzk0YzgzZDQwNjIyNGI1YzAwOTM5MGJjODFmNTZhNTAxNDYzMDM0YjljM2VmNjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMyNzcyNTg0NTUzMThjYmM3ZmQ0Nzc5MzNhNWZhOWE5NzllYTI3MDZkODJiMDg2NzZjOTE5ZjQzYjQyMTc2ZmQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_4a1ae719034647769c21e9d6d3712673",
+      "statement": "POST /payment/query (WxappPaymentService.query → OrdersPaymentTradeQueryService.resolve) is the polling fallback: an already-SUCCESS trade returns {status: SUCCESS, msg: 支付成功} without touching the channel; otherwise the channel is queried and when it reports SUCCESS, finalizeTradeSuccessAfterChannelQuery performs the CAS flip (persisting transaction_id) and publishes the trade-finish event — the same fan-out reached from the client's poll instead of a notify.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/payment/OrdersPaymentTradeQueryService.java#L48-L80",
+          "version": "repo-lines-v1:sha256:f60a13632feb24e62cfbb2215ded75ae20c76e27910a0bdaabd96e3ef197ac38:eyJzZWxlY3RlZExpbmVDb3VudCI6MzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA2YTg0MTIyOTE2NWJlYTUzNWE4NjRiODI1ZjQ3OGVlMzFmNDQyMDcwYjI1NmIzYmI5NzFiM2YxNWRiMTMwODAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY0MDczZjUyZGIzOWRiMDc2Mzg5MDYyMjc3OTg5M2EwODgzY2I5NWU2ZjI5ZGViM2QxMzMwYThmMDBhZDRiNWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJhMjBiZmE5NmIzNzcwZmU1MDRlZmM1ZWE1N2M4Yjc1MDRmODcwM2JkMjc3YTYyMzRmODJiYTM5MTA2YWZlZjkifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_357fd5e92ba8459180731a4fdaf819ee",
+      "statement": "The SMS listener (listener:orders.listeners.TradeFinishSmsNotify, @Order 78, async queue sms) runs TradeFinishSmsNotifyBusService.handleTradeFinishRow, which skips point/deposit pay types, requires a resolvable company, a non-blank passport uid and a non-blank mobile, formats pay_money as yuan (pay_fee/100) and pay_time from time_start, then calls TradePaySuccessTemplatedSmsPort.sendTradePaySuccess; send failures are caught and logged at debug.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/dispatch/WxappPaymentTradeFinishSmsNotifySyncDispatchFlowTest.java#L49-L100",
+          "version": "repo-lines-v1:sha256:857565227ebd8e468fafe6c6201c0bcd7fd236369da2041bb27100d218282b0e:eyJzZWxlY3RlZExpbmVDb3VudCI6NTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiYTFiMWYwZDkzOTU3NDJlMjE2ZjcxYzllOTBjOGZiOWFhNmI0Mjk2YWFhNGNlN2NjMDVjOTZlYTViODdiYWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVkOWVkNTE3MzNiNGNlZDNjODI4MzVhOWQ1NDhkODVlM2U0YTIwYTk5N2NlN2JmZjdlMzdhZDI4ZTIwOTA3ODciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/notify/TradeFinishSmsNotifyBusService.java#L88-L88",
+          "version": "repo-lines-v1:sha256:c1d039bba44255c7df71ee22f10984b98cc6d95d6e9bb4d7d9ca9274a37dfc06:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzFkMDM5YmJhNDQyNTVjN2RmNzFlZTIyZjEwOTg0Yjk4Y2M2ZDk1ZDZlOWJiNGQ3ZDljYTkyNzRhMzdkZmMwNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYzFkMDM5YmJhNDQyNTVjN2RmNzFlZTIyZjEwOTg0Yjk4Y2M2ZDk1ZDZlOWJiNGQ3ZDljYTkyNzRhMzdkZmMwNiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOWY0YWIwMTU2ZjM0YzdmZTIyMDMwZDU4ZWNiNDg5NGU2YzUzNzY2MTJhZjRlNzg2YjI0MWI5MzMyZmUyNTQ0MSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYzA5MzRmZmEwNWUzOGNkZjk5YjU1YTFjMjBmYjA4N2JiODBkNjZhZmU2YjgyZmVhNGE3ZWE2NTExNzUzYjY4OSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_c50911509bd148f89a21fc048c765c92",
+      "statement": "WxappPaymentTradeFinishSmsNotifySyncDispatchFlowTest pins the SMS listener behaviour with a production-listener SyncDispatchDriver facade: a wxpay zero-fee payload with an eligible mobile sends exactly one templated SMS with pay_money=0.00 and the formatted pay_time, while a point pay type sends nothing at all (verifyNoInteractions on both the passport and the SMS port).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/dispatch/WxappPaymentTradeFinishSmsNotifySyncDispatchFlowTest.java#L49-L100",
+          "version": "repo-lines-v1:sha256:857565227ebd8e468fafe6c6201c0bcd7fd236369da2041bb27100d218282b0e:eyJzZWxlY3RlZExpbmVDb3VudCI6NTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiYTFiMWYwZDkzOTU3NDJlMjE2ZjcxYzllOTBjOGZiOWFhNmI0Mjk2YWFhNGNlN2NjMDVjOTZlYTViODdiYWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVkOWVkNTE3MzNiNGNlZDNjODI4MzVhOWQ1NDhkODVlM2U0YTIwYTk5N2NlN2JmZjdlMzdhZDI4ZTIwOTA3ODciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_3c249aa4b0d54730b81a77c7edfe0d9f",
+      "statement": "ecshopx.payment.wechat.notify-url ships in ecshopx-bootstrap/src/main/resources/application.properties with the default http://127.0.0.1/wechatAuth/wxpay/notify, an explicitly local placeholder (the file's own comment says the WeChat v2 unified-order async-notify URL must be publicly reachable, default is local placeholder only); ecshopx.payment.alipay.notify-url similarly defaults to http://localhost:8080/api/v1/alipay/notify. Overrides arrive per deployment via env vars or --key=value program arguments — ecshopx-bootstrap/src/main/resources/application-local.properties is git-ignored (.gitignore line 7) and not shipped. OrdersExternalPayParamBuildService injects the property with an empty-value default and a blank value fails the wxpay unify call with '不支持支付服务，请联系商家' before any request is built.",
+      "evidence": [
+        {
+          "resource": "repo://.gitignore#L7-L7",
+          "version": "repo-lines-v1:sha256:0834693538e35870e7c0789da838a6afe5bc6d8676110ad7e7d29c312717f4b0:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDgzNDY5MzUzOGUzNTg3MGU3YzA3ODlkYTgzOGE2YWZlNWJjNmQ4Njc2MTEwYWQ3ZTdkMjljMzEyNzE3ZjRiMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDgzNDY5MzUzOGUzNTg3MGU3YzA3ODlkYTgzOGE2YWZlNWJjNmQ4Njc2MTEwYWQ3ZTdkMjljMzEyNzE3ZjRiMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiODJiZmNkMDk1ZDQ0ZmQ5Zjg1NDY3M2U4MjRiZjhiN2ZkYzYyZGUzMjg5YWU0YjFhMmRiM2I4OTc2YTY1ZGE3MSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMGY2YjQyMDIyZDFiYjIyMTBjZWM2OGZjZDhiY2JlMGZlYzQ2NmQ4ZDYyZGYxM2RiZjQ1ZmIzYjYxM2U0NzU5YiJ9"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L224-L226",
+          "version": "repo-lines-v1:sha256:7c8caeca413552195370720332bee79d3bc21bd7915195e3a6adc6a196f89f5e:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTM5Y2Q1MWU3YmE0MGFkNmUwMmMwNTJmMGJkMmYxYWM1NjA1N2YxOGFjMmU2ZmVkN2U5ZTAwNmQ2NTQzY2I2MSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMTRkNGYzZmM0OTU0Nzg1YTdlOTk3NWM4YWUyNDdmNmJhYmExMzU5YmM0MjM1MzYyNTE0ODM1YWVkZTg3MmJkMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOWZlY2UxYjVlY2M5ZWVhYjlkNGVlZjE5YzZiMjcxYmU5NjM4YWM4ZGZiMDYyY2RhNTdkM2ZhM2NhOWJhMDMyZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTdkMzc3NWVjNWIxY2U3YWQxMGU3YmMwMTViMTJmOWVhZWVlOGYzMWQ4MThlNzc5YTFlZmU5NzkyMjdiM2FkYyJ9"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/payment/OrdersExternalPayParamBuildService.java#L436-L438",
+          "version": "repo-lines-v1:sha256:3f46a3ed31299c095b2505cca2c5d45cf65e600d76b019fe66f42d77409166ec:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTM4MzQzZGQyZjZmMGQ4ODJjMjA1NDAwMDE2ZmE1MjM3Y2I4MGRkYjYyYTdhNjNkZTYwZTZkZmFhMWY3YzA4MiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjRlZmM0OTQxOGQyNmRjZjEyOWIyMmE2YWEyMTEwOGNlZWMzNzY3N2EzMmQwOGU5ZDVmZWUzNWRkYTY2YmI5ZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiY2MyNjFiM2MyY2YxY2I2NjE0YTJkOGMyOTM5NzhiNjQwZDdjMTdhYWQ2MzFiMTM3NGFlODNjOTU0M2E3MzAzZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZGFiMzNiYjAwOTdmZmYwN2RjMTJiZGE5NzkyNzJmNWY2YTcxNzVkNWM0ZTBhZmVlM2MwMjljOWQzMzBmYzJmNCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_6f583271204242408755925f6c6e3808",
+      "statement": "Admin POST /api/v1/order/create (NormalOrderController, @AdminAuth, routeAlias order.create) runs NormalOrderAdminCreateUserOrderService.createUserOrder → ShopadminNormalOrderCreateOrchestrator.create, which accepts only order_type=normal_shopadmin ('无此类型订单！'), runs the same staged pipeline as wxapp (need-params, operator-cart fill, item check, distributor check, format, assertDepositBalance) plus the non-transactional ShopadminNormalOrderCreateTransactionalRunner.preparePricingSnapshot, pre-assigns order_id via NormalOrderNumericIdService.generate(userId) with pay_type defaulting to pos, and writes a ShopadminDeferredOrderSnapshot (status WAIT_PAY, expireAt now+ttl, TTL = auto_cancel_time − now falling back to 15×60s) into shared Redis under shopadmin:deferred:{companyId}:{orderId} carrying the JSON-serialized params + orderData maps, payType and totalFee. No DB rows are written and no normal_order_add publish happens on create — the two probe tests verify only preparePricingSnapshot + saveWaitPay are invoked and the response returns the preassigned order_id with order_status=NOTPAY.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/api/admin/v1/NormalOrderController.java#L82-L96",
+          "version": "repo-lines-v1:sha256:8fef4503116214ac3ed09b6fd7a9cf40b1d0f5795fe54b1d0693274f44a54c31:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI5NWNmZjc2YzE3MjEzMjgzNGE0NzY5MGRlZGIxZDIwODVkNmEzMmE5NDIzMTg1ZjZjMjJhMTc1NWM0ODQ3YmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI1MmUxNTJiY2JlMWVkZjliMDA0MTg5ODgxYThlZmE4MWVhNWI3MjQyMmM1MDZiYTFiN2I5MzBmMWFkMzJlMDQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAwOTBhNGM3YmUyNWFjZWE4NDEyZjg2YmIzMGUyMWZkYmU4NTI5ZDYwMzZhZjUyYTE3NGEwYzgxMmYxMjljYWIifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/shopadmin/ShopadminDeferredOrderCache.java#L50-L62",
+          "version": "repo-lines-v1:sha256:8e3d529c8d53505edca528df48d2ee72d27dab22abc99e021f2b0aa473e85adb:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE0YTZkMGFiNzk1OGZhMzVjNzdmYzIxMjk4NjQ4MmE0NTBiMjYyNzc4Zjc1MzMzNmYwMWEzNjQ1NTdlN2Y0YzEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ2YjgyZWY0ZDY5ZWYzN2ZhMDFmNzVmOGNlZjY2MWI0MjliNGFiMzJmMTU1MDA4YzUyMjg5OTU1NDY4YTM4NWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjcxZjk3MGQyYTdhNGYwZTUwMGQyZmNmYTJlOThhYzZhYjIyOWIzNTVhM2ExZTc4MTg5ZTMwMjUyMDlkYTZkNDEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/shopadmin/ShopadminNormalOrderCreateOrchestrator.java#L64-L108",
+          "version": "repo-lines-v1:sha256:66a01ea0beaf720e5655db7539da7be0a881797cc7c158a8f5f48d3347c5a7f5:eyJzZWxlY3RlZExpbmVDb3VudCI6NDUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYzY2FmZTY0NTRhZDhhMDhjMGFmYmYwYWIxNDNhZWE2ZjU4ZmQwZTBkY2ZhMTIxM2Q5OGFmNzkxYTBmMjM0MTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU3MWVkNjY0MjUzNGUwN2VmNTVjNzIwNDFjYjI4YjExMTVlMTllYjJmZGFlYzYwZDA1ZjdkYjkyNDEyYWNmMDAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRkOGM5Y2VmZGIyNGVmN2NlOWM2NzdlMDM5ZjM4MmIyNGZkMmU4MTg5YTliYjdkZGFlYTQxMzZkNTA1ZWFkN2IifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/orders/service/normal/shopadmin/ShopadminNormalOrderCreateOrchestratorNormalOrderAddDispatchPublishProbeTest.java#L73-L100",
+          "version": "repo-lines-v1:sha256:7ba4c3743cd4af2707630a5a76e87f412dc33376c24b610df6207dde820f6c2e:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiYTFiMWYwZDkzOTU3NDJlMjE2ZjcxYzllOTBjOGZiOWFhNmI0Mjk2YWFhNGNlN2NjMDVjOTZlYTViODdiYWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjMzNWM1N2UxODZhMTkyZTc1NmFjNzE5NmVjN2M1MzFmMzE0NTVlNTczYmU4MWFiYjRkZTUwZWQ5MDgxOGY4Y2YiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_7aa3497a50b74a268024146da7cfcd56",
+      "statement": "Admin POST /api/v1/order/payment (NormalOrderAdminPaymentService.payment, operator JWT auth with company_id from OPERATOR_JWT_USER_DATA) requires order_id plus pay_type or auth_code ('支付方式必填'), classifies auth_code by regex (^1[0-5][0-9]{16}$ → wxpaypos, ^(25|26|27|28|29|30)[0-9]{14,22}$ → alipaypos). It routes on the orders_associations lookup: when that row is missing but the deferred Redis cache has a snapshot for (company, order), it delegates to ShopadminDeferredOrderService.payDeferredOrder; otherwise the ordinary admin pay path runs (supplier_order rejection, NOTPAY/PART_PAYMENT guard, effective-type check, order bundle, point-forcing, pay-type persist, prescription/deposit/alipaymini guards) calling doPayment directly. payDeferredOrder re-derives the pay type (auth_code regex first, then request pay_type, then the snapshot's), only accepts DEFERRED_PAY_TYPES pos/wxpaypos/alipaypos ('暂不支持该支付方式'), answers '订单已退款' for a REFUNDED snapshot, and executes under the shopadmin:deferred:lock:{orderId} Redis lock (setIfAbsent + UUID token, 120s TTL, token-checked unlock; contention → '订单处理中，请稍后查询', Redis failure → '订单缓存不可用'/'订单处理繁忙，请稍后查询').",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/shopadmin/NormalOrderAdminPaymentService.java#L71-L118",
+          "version": "repo-lines-v1:sha256:25dcec7f2133252affacd7ae9b5f396e298207cb9c44f68f8f3f4175a2e3a381:eyJzZWxlY3RlZExpbmVDb3VudCI6NDgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE2YmE5YTIzNzhmZjljOGM3YWMxODJmMDViOWFlODljN2Q2NDE3Zjc3MDZkYWJkYjkxNzNlZjA0YTQyZTQ3OGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ3MWViZTYzZjY1YzNiZTE4MjE4NTI3NzNmZDRmNmE5NGU5NGM2NTkyNjM0MDY0YjI0ZjE1OGNmNGZhN2Y4MTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImEwODVmOWU3ZDhjYzhiNzU2ZDk4OTllOTU4NjBlMzlmZmZmOTIzZmE2M2RlZjIwNjkxMjFiNzdhZDc2YzZmNzcifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/shopadmin/ShopadminDeferredOrderCache.java#L93-L117",
+          "version": "repo-lines-v1:sha256:961f4858fda38c784925c3bc2278afe727dd0a4b10c442b7f164c65484e8127e:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVkYTBmMzYxNWQwNGQ1NzMxYzI0YzBhNzI0NzYyZGZhMDlkNmQxYTUwZTMyODY0OTMzMGMyODlkODc0NzA2NzIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIyZjJmZjVmZWVjNjBmNTg3YzhmYWU0ZTg3ZjgwOWE2NjFjZmZlZDZiNDdhYWU1ZjZkNmEyNjUzYWE4OTUyZWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImEyNWMxZmJlOGY0MmI1MGM5ZGZhZDU2ZTJjMWZlYTMxNjgzYzc5MzgxZDZhYWRkZGRhZTE5NzQ0ZDVkNDgxMWYifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/shopadmin/ShopadminDeferredOrderService.java#L380-L400",
+          "version": "repo-lines-v1:sha256:dd6d9aa0478d064f6c5cf5f1c7fc7811e01c809b40dbb50cf4b8ff1067c05001:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNiZTlmMGZhYWIyMmVlZWQ5ODFkZGRkYWNjZDE3MzI0ZDNmYzUyNzMwYjNhNmU3ZDZkNTdiZDI1NDUxMDcxZDgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImYxYzViZTBlZGVhZmU2MGViZGIxMDc4OGJkOWM5YmM0ZGMwYzNmMzg0ZmQ4M2NhOGQ3ZGJmYmVjMmI0MDYyOWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZkODU1ODEwOTFlNWMyNTM5YWZkNTI3OGU2ZTg4ODg3ZThjMGNlZTU1OGVjM2IzMjY4OTdjYjRiMGMzMDgzN2MifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/shopadmin/ShopadminDeferredOrderService.java#L91-L107",
+          "version": "repo-lines-v1:sha256:f4a526c8b105d054ea8414ad685fcd5eca7f6afbd1b70ddea0157afb6ce2f968:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ0YzhjZmQxMTkzMjkzNWU1NzdmNDM1NWE3ZTRkMjBhNTAwYTE4OWEzOGIxMDRiNjM0YmFkNmI5OWI5MjM1NjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU2NDllODZkMTFlY2VkOTIyYTA2ZjFjNjZhOWQyMTQ2ZjdkNDkxNWUzMjRjYjJlY2Q4ZGU2MDRiYjA0YmE4MjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNmMTRjYzJjZjU0NGEzYTU1ODYyZDZiYzA1OTgyYzg5YWE1ZjViOGQzMjZmOWJkMGJiOTg1ZmViZDNmMWI4MmYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_8b769ade89fb46d8a37690358e46978e",
+      "statement": "Inside the deferred lock, ShopadminDeferredOrderService.executeDeferredPaymentLocked: (1) an already-materialized orders_normal_orders row triggers recoverExistingOrder (markPayedIfNeeded when still NOTPAY, then re-split) and returns a paid response; (2) an existing SUCCESS/REFUND trade for the order answers '订单已退款' (REFUND) or materializes from the snapshot (SUCCESS); (3) otherwise it calls OrdersPaymentDoPaymentService.doPayment with data rebuilt from the snapshot (trade_source_type=normal, pay_fee = snapshot.totalFee, auth_code forwarded, ids/mobile/title from cached orderData, appids from operator auth) — pos finalizes synchronously, wxpaypos/alipaypos invoke the micropay/barcode channel in OrdersExternalPayParamBuildService returning pay_status=true plus transaction_id on synchronous confirmation (Alipay 10003 USERPAYING returns pay_status=false and leaves the snapshot WAIT_PAY); (4) on pay_status=true, persistAndFinishAfterPay runs ShopadminNormalOrderCreateTransactionalRunner.persistPreparedSnapshot (one @Transactional: persistOrder → minusStores → runAfterOrderInsert, reusing the preassigned order_id), then invokes OrdersTradeFinishNormalOrderPaySuccessApplyService.markPayedIfNeeded directly with the snake_case trade row, then splitAndPublishOnce runs SupplierOrderSplitOnNormalOrderAddService.split (which itself skips already-split suppliers) and publishes the single event:orders:normal_order_add payload {company_id, order_id, pay_type}, and finally deletes the cache entry.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/shopadmin/ShopadminDeferredOrderService.java#L145-L198",
+          "version": "repo-lines-v1:sha256:cc70316405a0ec955f3a97e020f560ca27cb184c33ecb8dc6cf7c1a7a518c329:eyJzZWxlY3RlZExpbmVDb3VudCI6NTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJkN2E0MjdmOWE1MTdjNTUwNDA3MWQxYTYxMTI4MjkxMzJlMTFlNzZiMGZiODM2Yzc0YmM2ODI1MGU1YTQ3Y2IiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAzZjAxNTQzNzY4ODM5ZTkwNGM5ODVhZDBiMjM0Nzg4YmRiMGU1ZGNmMmNhZGNjMmUyOTk3ZGViMmQyNGU0YzMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRmMDQwODdkYmU4MzY3ZjZkODcxZTg3MzJmMDg4Y2M0MTBhMDUzNzgyYjU3NDM3MGQwYjMwMDQzNGVkNTE3NTcifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/shopadmin/ShopadminDeferredOrderService.java#L220-L261",
+          "version": "repo-lines-v1:sha256:b42da08e9824336099f10b4515e24e6b795c5382231b82e014c39f0dc6fb0c3f:eyJzZWxlY3RlZExpbmVDb3VudCI6NDIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE0ZmQwZjQ3YTNmMjA4OTUzMzg4YmExYTEyMDU1NTk5MWRlZTAwOTk1NzVjYjY4ZGZiYzZiNjViYjBkMjdjZDAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIyZjJmZjVmZWVjNjBmNTg3YzhmYWU0ZTg3ZjgwOWE2NjFjZmZlZDZiNDdhYWU1ZjZkNmEyNjUzYWE4OTUyZWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMyMTcyMTAzN2VkOGVhOTYzNDgxZDFlOWMwNTcwODdlYWMzNmJkNzg2MGY2NGY3ZmNiZDI3ZWUzYTZmZmE5MDcifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/shopadmin/ShopadminDeferredOrderService.java#L402-L435",
+          "version": "repo-lines-v1:sha256:0bf69cb70d437b15d1d08cbf0167a5c7942eb1efb99215cac87dfb9eb7658055:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA4ZDkwNzk2YTFmYjNiYTIzOGEzNzY5ODI0N2E0NDllYjJjOWE4ZGVlMTAxMTY3OGE5YTk1NTMxMzk0OGZhZDAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNkNzdjYjA1MTdmYWI0ODllNWVhOTkwM2I4M2FiOTYwNGZlMWRiYTJhNjZmOWYyNjBlN2NjMWRkYjY3Y2ViNTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAyYjEzYzkzMDFhMTg5MzVlZWJiZGNmMWExNjViMjI5MTNlOTI2ODFjOGU0ZWE5NWRmZjE5ZDQ3ZjI5MzYyMzAifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/shopadmin/ShopadminNormalOrderCreateTransactionalRunner.java#L67-L80",
+          "version": "repo-lines-v1:sha256:20f6a70bc8ab8b33615a5cf91e30338b2f836a1e4cd249bb25e14be6dec4b4d4:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQxNmU2NTgxZGY1M2NjNmI0YzY2OGVlYTgxMDY1ZjE2YmZhMGZkMTZlZjg1ZDNlYTg4N2UwYjExMmYzNzMxZGEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU4ZmI3MWEyZjM2NDIyZDZhMTgwMDgzNTAyMjVhNWQ2NzNiMTU0MDY3MzAyNmRiNjYxYjE3ZTIxMGZkYTI2MjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFiZThmODUyNjUyMjk4ZGIwZjkyNDhjOTE1MWM5MmRkZDc4ZWRhMTc3ZDE1ZWM2MWRjNzU2Y2Y0Mzg2NWJiMDUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_98b2e6d228894d2a96f3f6e6cd8ccbf7",
+      "statement": "The deferred charge publishes the trade-finish plane before any order row exists: doPayment's channel branch calls finalizeTradeSuccess on a synchronously confirmed charge, which publishes the trade-finish event through the after-commit publisher when its own transactionTemplate transaction commits — i.e. before persistPreparedSnapshot creates the order. The pay-success bridge listener (order 77, markPayedIfNeeded.ifPresent(publish)) therefore finds no NormalOrders row and returns empty, so no event:288 NormalOrderPaySuccessEvent is published for a deferred order on this path; the direct markPayedIfNeeded call after materialization is what flips the shopadmin order to DONE, and its returned pay-success payload is ignored by the deferred service rather than forwarded to the pay-success publisher. Order-row-dependent trade-finish listeners no-op on the happy path: item sales (UpdateItemSalesBusService → TradeFinishItemSalesIncrementPortImpl reads order items) and profit sharing (TradeFinishProfitBusService reads order_profit rows written inside persistOrder via OrderProfitByOrderResultPortImpl) find nothing; trade-field-only listeners (statistics, pay-success SMS, websocket push, the '订单支付' OPL) are unaffected. supplementAfterPaymentQuery likewise never re-publishes the trade-finish plane — it re-applies markPayedIfNeeded and the supplier split only. Consumers that must react to a shopadmin order becoming paid should key off normal_order_add or the order row.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/dispatch/OrdersTradeFinishNormalOrderPaySuccessBridgeDispatchListener.java#L38-L43",
+          "version": "repo-lines-v1:sha256:f7778a4d3ad65a9fad83407d69104c113509a13dde50f194b8883dc2669741f1:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjA4Y2MxNWQwNzU0YjZmMjFmNzFlMGIwM2I5ZGQ3ODZiYzk4ODAwM2IyYjU3NTY0YzYwNTBhODAyMjUxN2M1ZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZmY0NGUzNjBjMmIzOTA5MDU2MmQ2ZTQ4NmZkYzliYmVmNjJiYzg5MjYxOGRmODU3MGQ1ZTc3OThkMjgyNjcyMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/create/OrderCreatePersistencePortImpl.java#L306-L306",
+          "version": "repo-lines-v1:sha256:ea47000ddd4deeb3a8234d0767a296f04c837be96b719a49b159b1d56c4f8ea4:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZWE0NzAwMGRkZDRkZWViM2E4MjM0ZDA3NjdhMjk2ZjA0YzgzN2JlOTZiNzE5YTQ5YjE1OWIxZDU2YzRmOGVhNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZWE0NzAwMGRkZDRkZWViM2E4MjM0ZDA3NjdhMjk2ZjA0YzgzN2JlOTZiNzE5YTQ5YjE1OWIxZDU2YzRmOGVhNCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiY2MyNjFiM2MyY2YxY2I2NjE0YTJkOGMyOTM5NzhiNjQwZDdjMTdhYWQ2MzFiMTM3NGFlODNjOTU0M2E3MzAzZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDZkZDAzZmU2ODk0MTMwOTkwYjRlNTY0ZWM3YTZlOWM2NDE3NTlkNDBmZWI5MDliMzdkMTlhMWE3ODhlYzg1MyJ9"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/payment/OrdersPaymentDoPaymentService.java#L331-L348",
+          "version": "repo-lines-v1:sha256:66e4b0393b55497b0d095e5ba4e2ffdde26795b1c9c0d0fbe86a6691cd0fd972:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJhZjRlMDI1OGY4MTViMTFhMjY0Y2MzNTI1NTViMTdmODI3ZDMyMjg3M2Y2MWJlYmU2ZjI5YTA4OWE3NGRiNTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImMyMDgwZmUwYTIxNDI5ZDI5MWRmNzk3MmNkM2FmYWU0YzdjNzc1OGI0YTYwYjAzNmI5ZGY4MjQ3YWIwOTQ5YmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkwY2FjNzE3YzhiM2Q2OTU4MDBiOGEzMjg2ZGFhMzZhZDkzOWI0ZTNiODRmMGVhNjI5NzVkMWQ5YWM5NjZjNTgifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/payment/OrdersPaymentDoPaymentService.java#L618-L657",
+          "version": "repo-lines-v1:sha256:bf50027c6ce4684094b97c0e970ea066842f378dc78f9ce352672b28c273874e:eyJzZWxlY3RlZExpbmVDb3VudCI6NDAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZDI5M2VmOWVhZmNmOWM0OTMzN2RhY2I2N2MxZDcxZDAyYTYzZmI4YzdkNWZhY2JkMzhkYWNlMGUxZDg0ODQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA1N2JlNmFlMjcwYTYzMjczYzk0YzgzZDQwNjIyNGI1YzAwOTM5MGJjODFmNTZhNTAxNDYzMDM0YjljM2VmNjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhiMTc2MzgyNTJiYjk5MWIwZjllODY2MDA2NmU0OWM3YTg2NDk2NmI3ZGE5ZGIyOThkZTc4ZjMxNDU1MDVkNjIifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/sales/UpdateItemSalesBusService.java#L37-L56",
+          "version": "repo-lines-v1:sha256:cab247ccc57a049492453c64a47c8b676509cbd597804633db555f9319877eed:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAwYjc1ZmFhMDQwYTA4MDAxYzg1YjE0MDVlMmI0MzYwMGQ2Zjc5YjE5ZjIwNDMzZmFhMzE0MmU3Nzc0NmMxODMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZiYTZlN2Q3ZTVlMmE0ZDQ3ZWRlZjlhMTUwYjFhMTkyZWYzNzc3OTY3YTEyNTcwNTljMTRkOWQwZjQ0Zjk1ZDciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg3MzNkM2U2ZjQ1MzNhMjQ2YmQzM2YwZDAwNjJhNWUxODYzZWU3ZGQ2NmIzNTlhZGRmNzU2NmEzZjc5YTNkYTQifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/tradefinish/OrdersTradeFinishNormalOrderPaySuccessApplyService.java#L94-L108",
+          "version": "repo-lines-v1:sha256:590024d6eeb4c5aba810d928cb36ef04cc404da0220c5c6e8a81b3be2ec9daf7:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAyZTQwYjBlNDIzYjM2Mjk4YmMwOWJlY2M3ZmM3ZjllZTY4N2Y1NTJjOWQzMTMyNzQ3ZmEyNWYzYWVjZDRjMTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE0NzkyYmMwM2Q2NzFiNDcxOGQ0YjkxYjVjNmIzZjAxZDhmOTVlZmY3MzhjNGZiMTMwOTk1NzZjNjU2ZDU2MTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJiY2RiMTdkNDBlOTVhYWQ4ZTNiZTEwYmM5OTkxZTdjZDcxOGJlZTU0MjgwYWNiYzEyZGI1N2Y5NzhhZTJlOGQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d527d547e714464fab3e5c065ead1e97",
+      "statement": "After a successful deferred charge, failure handling distinguishes exception types: a ResourceException (business rejection) triggers refundAfterBusinessFailure — a channel refund through WxpaySecapiAftersalesRefundRunner for wxpay* (secapi/pay/refund, merchant API cert, out_refund_no = orderId) or AlipayTradeAftersalesRefundRunner for alipay* (alipay.trade.refund, status SUCCESS or PROCESSING both count as ok), while pos is treated as refunded with nothing to reverse; on refund success the trade is CAS-flipped SUCCESS → REFUND (WHERE trade_state='SUCCESS') and the snapshot becomes REFUNDED, on channel failure it becomes REFUND_FAILED — both with the 24h COMPENSATION_TTL_SECONDS so operators can see and retry them — and the original exception is re-thrown. Any other RuntimeException marks the snapshot PAID_WAIT_ORDER (with the trade id, 24h TTL) and surfaces '订单创建失败，请稍后查询' — the money is held, not refunded.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/shopadmin/ShopadminDeferredOrderService.java#L184-L198",
+          "version": "repo-lines-v1:sha256:518d69372febdc156e41281a4a02f7090be8e26d111bf5d7bd67a7ccdfc2baaf:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI3OGZmNmFiYmEwOGFiZjg3NzYzM2I0MWJkNzE0OTY2ODEzYTlhYmM5YmE5MmVkYjM4ZDYwOWFkMTg3ZTE0ODYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRmMDQwODdkYmU4MzY3ZjZkODcxZTg3MzJmMDg4Y2M0MTBhMDUzNzgyYjU3NDM3MGQwYjMwMDQzNGVkNTE3NTcifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/shopadmin/ShopadminDeferredOrderService.java#L263-L344",
+          "version": "repo-lines-v1:sha256:138ffc182d43f901609caa0c7bd64ef6a9e880d9a96a78b5bd15cfd42b447e2a:eyJzZWxlY3RlZExpbmVDb3VudCI6ODIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM1Yjg0ZjVjNjQ0YmRjMGIwNzllNmE4ODQ0MTRmMWE2Nzc0Y2ZlMjNmMTFmNzFlN2U5YThiYmU1MGVlYWZhOTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZmMDBlOGQ1MDNlZTM0MTFlM2FlMDA5MDM4OTkxOGU1OWFhYmFlN2ZkNTIzMmQ5ZjUwZWFlYTgxNWZjMjkxMGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU3ODhlZGJlOWE5NGQ4NzUzNDAxMmRiY2VlZTUwODQ4YjdiZTNjMjdmNjU2ZWFhNGNlNDc5NzYyM2E3YjM3NGMifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/shopadmin/ShopadminDeferredOrderStatus.java#L19-L27",
+          "version": "repo-lines-v1:sha256:7f0360f5aa44bd9bcbb65a3daf019e10ce2c49c8805a869ec0f67cf481ec2d72:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiY2IzZmFlYWM3NjE4YWVjMDcyMzRmMzBhYzU3ZjRjOWM5OTQ5NGY4OWQxODk4OWY3YWUxMGRhNGJjY2U0MzU3OSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzA0NzczNzQ1NDg5NzY0ZDE3ZGUwYTFhNzVmYWZmZWJiOGQ3YzVkYmIwNjQyZmQzYjgxMTg4MDRiNGJiMzUxYiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDgyOTgxNjhhMjRhM2ZlN2JmNDhiMTE5MGNjNzI1MjM5ZDNlOTNkNjI3MTI4YTQ1OGI4YjhhY2FhZDRmM2MwNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZmNjNWNjNjQyZTJkM2MyZTdkODRiYjBkYWU2MmZlZjU5ZGNhYmUzMzYyZjY5YzdjOGU3NjJkNGU2ZTcxMGY2NCJ9"
+        },
+        {
+          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/orderrefund/AlipayTradeAftersalesRefundRunner.java#L33-L100",
+          "version": "repo-lines-v1:sha256:7f73124f94f3d5410ecb3648c3ea0f69587e9bc5516c2c273531046570351e10:eyJzZWxlY3RlZExpbmVDb3VudCI6NjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY4ZjAxM2U0ZjJjYWM4ZmYxZWI0OWJhZmE1YTNjNGViZjVmMTdhNGI5N2NlY2Y3ZmY0MDNiYTlmNzY4MTU1MWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ1Zjk5ZjE1MWQyYTZkMTk5NGIyMDAwYTNkYzhjMTM3NjA3MjMwMWZkNTFkNGM0YWNmMGMwMDYwM2ViMTRmN2IifQ"
+        },
+        {
+          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/orderrefund/WxpaySecapiAftersalesRefundRunner.java#L52-L127",
+          "version": "repo-lines-v1:sha256:93f3b46a5714a84f884ad2dea859dfe34629ad7151f4a6a5afe9bfa7131634b7:eyJzZWxlY3RlZExpbmVDb3VudCI6NzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZiMTMwNjRmNTE3ZmZhYzU5ZTVlMjUyOWQzNGRjMDJmOWQ4MWU3Nzk0M2YwNWU3MTE4N2FkODMxNGI0MzM5ZTciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZlZTMzZGUzMzcxMjI5ZTBlOGE0MWFlOTI1MDExOTVjMjk4MDM0Y2YyNDc3ZDdhMzdhZjI0ZWEyOGE1MjY3YTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjliOGJjNDQ0MmQ2YmU0MWZmNjUzZWViNDhjMmQ1NWJlZmE4Yjk2Zjg5NDU2YWIwMDM4Y2EyN2M2ZTcwNzZiZjgifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_2143b392ecf040659597f4ec12f530c6",
+      "statement": "GET /order/payment/query (NormalOrderController routeAlias order.payment.query; falsy trade_id rejected as '支付单号不存在') drives the deferred compensation: NormalOrderAdminPaymentQueryService.queryPayment resolves the trade through OrdersPaymentTradeQueryService.resolve (already-SUCCESS answers directly, otherwise the active channel is queried and a confirmed SUCCESS is finalized through finalizeTradeSuccessAfterChannelQuery), then for a SUCCESS trade with a positive company_id calls ShopadminDeferredOrderService.supplementAfterPaymentQuery, which: recovers an already-materialized order (markPayedIfNeeded when still NOTPAY, then re-split), refunds-without-snapshot when the cache entry is gone entirely (channel refund + trade CAS to REFUND), retries the refund under the lock for a REFUND_FAILED snapshot (after first recovering an already-materialized order), does nothing for a REFUNDED one, and otherwise materializes the order from the snapshot under the lock with the same failure semantics as the payment call.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/api/admin/v1/NormalOrderController.java#L116-L127",
+          "version": "repo-lines-v1:sha256:df2782cbe0267962b66ac51d5b210bb2dd79407155d50914d0921866bede9544:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQxNmMxMGQ4NjBlMzgxNzhhYTIwZTE3MmFiNWM3ZTRjMmY1OGUwZWYxMzg5ZjNhNjUyMjViOWVkMzI5MjU2MmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE3NmViNDI4ZjNlOGM2YjljM2U1NmViNzM1MDk4MzhmMGY3MTM1YzcwMGYxM2Q2NmY4ZjVmOTc3ODg4MTYwNWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNkMjk1Njg3NzI3OWFiZWE4M2QzNWY0Nzg4YzExMzIzYTk0NDQ5MGY4YmRlYTlhYWExNDljMmRlNzg5NWY1NDIifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/shopadmin/NormalOrderAdminPaymentQueryService.java#L45-L56",
+          "version": "repo-lines-v1:sha256:02f7c1481b3a0d6ca7121464426a247d1ea0a72754c6a5da585c25e314c1fed4:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM3MmQ1MmRjZDA4ODUzMjg4MjhhZTIzYjBkZWI4ODBlMzgxNWQ0MDQ5OTIxYTNiMmFjOGNmZWQxNTA1OWJkYzQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUxZjgwMTRjMGYxMjk4NDAzNTk0NmIzODUwNDNlYTEyZDE4ODgxOGJhYzQ1ZDc2M2RlOWNlZjNkY2IyMDdlMTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRjNjY4YThiNDBiYzcyMjFkODkxODA4OTdiYmI0ZThiZjJjOTM0ODY0YWEyOGVhNjRkN2FhY2Q1YjkzN2I2YmEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/shopadmin/ShopadminDeferredOrderService.java#L109-L143",
+          "version": "repo-lines-v1:sha256:d71a0c92f5e96219c9908d357e0cf0984e153aeeb0192c2adc4cbd262a7ddacd:eyJzZWxlY3RlZExpbmVDb3VudCI6MzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgyMDFlODZlMGIxZmI1YjNiZWVmYzcwOTA0YTA0ZTZkZDJlZjMyYTZlYzViN2QxMDg2NWVmYWZhNmQ4YzJmMGQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZkNTUwMWUxNWM5YzI5NjQ1NzA4MTE2OTAwOTA3NWJlYmU3MmQ2YzViYjliMzZlNTNmMGUxOTUwZDNmZDQ3NjQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRiNWI0YmM4ZTQxOTI1Y2ZjNmYxYjBiY2NjYTk5MmE3ZWEwZjBjMzA3NzM5MGI0ZWQyNTg5MDczYjdlNTU2YzQifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.2",
+    "at": "2026-10-23T03:04:20.471Z"
+  }
+}

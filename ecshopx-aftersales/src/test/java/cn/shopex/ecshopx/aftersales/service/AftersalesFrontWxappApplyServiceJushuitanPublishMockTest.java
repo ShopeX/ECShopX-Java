@@ -221,7 +221,8 @@ class AftersalesFrontWxappApplyServiceJushuitanPublishMockTest {
 						new WdtErpTradeAfterSaleBusPayloadBuilder(),
 						tradeRefundDispatchPublisher,
 						tradeAftersalesDispatchPublisher,
-						mock(ThirdPartyTradeAftersalesSaasErpDispatchPublisher.class));
+						mock(ThirdPartyTradeAftersalesSaasErpDispatchPublisher.class),
+						AftersalesTestMessageSource.FALLBACK);
 
 		AftersalesApplyShopApplyByNumService shopApplyByNumService =
 				new AftersalesApplyShopApplyByNumService(

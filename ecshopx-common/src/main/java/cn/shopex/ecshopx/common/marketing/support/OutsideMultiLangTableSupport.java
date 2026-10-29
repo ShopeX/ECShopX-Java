@@ -21,15 +21,21 @@ import java.util.Map;
 import org.springframework.util.StringUtils;
 
 /**
- * Multi-lang physical shard table suffix, aligned with PHP {@code MultiLangItem::normalizeTableLanguage}:
- * legacy three locales keep camelCase; all other tags drop {@code -} and lower-case (e.g. {@code zh-TW} → {@code zhtw}).
+ * Multi-lang physical shard table suffix.
+ *
+ * <p>Canonical tags map to camelCase suffixes ({@code zh-CN}→{@code zhCN}, {@code zh-TW}→{@code zhTW}).
+ * Other {@code language-REGION} tags use the same rule: drop {@code -}, lower-case the language part,
+ * upper-case the region part(s).
  */
 public final class OutsideMultiLangTableSupport {
 
-	private static final Map<String, String> LEGACY_TABLE_LANGUAGE_SUFFIXES = Map.of(
+	private static final Map<String, String> TABLE_LANGUAGE_SUFFIXES = Map.of(
 			"zh-CN", "zhCN",
 			"en-CN", "enCN",
-			"ar-SA", "arSA");
+			"ar-SA", "arSA",
+			"zh-TW", "zhTW",
+			"ja-JP", "jaJP",
+			"ru-RU", "ruRU");
 
 	private OutsideMultiLangTableSupport() {}
 
@@ -41,20 +47,37 @@ public final class OutsideMultiLangTableSupport {
 		if ("undefined".equalsIgnoreCase(trimmed) || "null".equalsIgnoreCase(trimmed)) {
 			return "zhCN";
 		}
-		String legacy = LEGACY_TABLE_LANGUAGE_SUFFIXES.get(trimmed);
-		if (legacy != null) {
-			return legacy;
+		String known = TABLE_LANGUAGE_SUFFIXES.get(trimmed);
+		if (known != null) {
+			return known;
 		}
-		// case-insensitive legacy match
-		for (Map.Entry<String, String> e : LEGACY_TABLE_LANGUAGE_SUFFIXES.entrySet()) {
+		for (Map.Entry<String, String> e : TABLE_LANGUAGE_SUFFIXES.entrySet()) {
 			if (e.getKey().equalsIgnoreCase(trimmed)) {
 				return e.getValue();
 			}
 		}
-		String s = trimmed.replace("-", "");
-		if (!s.matches("[A-Za-z0-9]+")) {
+		String camel = toCamelLocaleSuffix(trimmed);
+		if (camel == null || !camel.matches("[A-Za-z0-9]+")) {
 			return "zhCN";
 		}
-		return s.toLowerCase(Locale.ROOT);
+		return camel;
+	}
+
+	/** {@code zh-TW} / {@code zhtw} → {@code zhTW}; invalid input → {@code null}. */
+	private static String toCamelLocaleSuffix(String langTag) {
+		String[] parts = langTag.split("-");
+		if (parts.length >= 2) {
+			StringBuilder sb = new StringBuilder();
+			sb.append(parts[0].toLowerCase(Locale.ROOT));
+			for (int i = 1; i < parts.length; i++) {
+				sb.append(parts[i].toUpperCase(Locale.ROOT));
+			}
+			return sb.toString();
+		}
+		String s = langTag.replace("-", "");
+		if (s.length() < 2 || !s.matches("[A-Za-z0-9]+")) {
+			return null;
+		}
+		return s.substring(0, 2).toLowerCase(Locale.ROOT) + s.substring(2).toUpperCase(Locale.ROOT);
 	}
 }

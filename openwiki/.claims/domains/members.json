@@ -1,0 +1,608 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:ab92e1a23ad916585520d612336bee2debae15fab9f1cff29f464fed9702ec47",
+  "claims": [
+    {
+      "id": "claim_a77f54208d174b0c866c7d5de18e4130",
+      "statement": "The H5 login routes live in ecshopx-espier while the login services live in ecshopx-members: espier's LoginController (class-level /api/v1/h5app) exposes POST /api/v1/h5app/wxapp/new_login, a @FrontNoAuth endpoint that merges query/body params via H5LoginRequestAssembler and delegates to FrontWxappNewLoginService, which delegates member resolution and token minting to members' H5LoginOrchestrator.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/api/front/v1/LoginController.java",
+          "version": "repo-file-v1:sha256:ef67e83ca0c684bab7ba8fbb5db97fe3edff7d3ac6484ad905fbf5a9cb0721ca"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/front/FrontWxappNewLoginService.java",
+          "version": "repo-file-v1:sha256:bafa39dcce175f38e69b5019d0584a4704b5aa9f44ff7f8da2e9f99b975d0f4d"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/h5/H5LoginOrchestrator.java",
+          "version": "repo-file-v1:sha256:90710ba92044b3d2cad3cdd166d18dad060cde5fb1347a15d43cdecf22dcbdd1"
+        }
+      ]
+    },
+    {
+      "id": "claim_1550a7b14c8849e282920924a1f12645",
+      "statement": "H5LoginOrchestrator.attempt resolves the user through EspierLocalUserResolver and then issues the JWT; the resolver selects an H5AuthStrategy from the auth_type via an EnumMap<H5AuthType, H5AuthStrategy> built from all Spring beans, so adding a login channel means adding an enum constant plus a @Component strategy without editing the resolver — covering LOCAL, WXAPP, OAUTH, WX_OFFIACCOUNT, PC_WXQRCODE, ALIAPP, SOCIAL_OAUTH and a default UNKNOWN that soft-fails.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/h5/EspierLocalUserResolver.java",
+          "version": "repo-file-v1:sha256:d987d27f45bdf9be41b98f4654a66c3737b87a4e4add15370a26534ae9c34175"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/h5/H5LoginOrchestrator.java",
+          "version": "repo-file-v1:sha256:90710ba92044b3d2cad3cdd166d18dad060cde5fb1347a15d43cdecf22dcbdd1"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/h5/auth/H5AuthStrategy.java",
+          "version": "repo-file-v1:sha256:67cdbb3d0b69953cbcbd8d9703d17e0ee6b0670b2557a38b36a00b029921bba1"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/h5/auth/H5AuthType.java",
+          "version": "repo-file-v1:sha256:408296ed29b14c0b7a7e8b62eddb1343de189ed968291d28479d031f77255ecc"
+        }
+      ]
+    },
+    {
+      "id": "claim_5e9d610f5a734da78850f57e31c3ab97",
+      "statement": "The H5 JWT subject is an _espier_-joined composite: wechat login strategies build id as '<userId>_espier_<open_id>_espier_<unionid>', Alipay as '<userId>_espier_alipay_espier_<alipay_user_id>', and the local/bind paths build '<user_id>_espier_companyid_espier_<company_id>' (MemberAccountService.getTokenData); H5JwtUserLoginInfoEnrichService parses this composite back on every authenticated request.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/account/MemberAccountService.java",
+          "version": "repo-file-v1:sha256:ae2353c8a8e5e88e2a858be102d90fc81fac4649ca2345e0f1351a6fd4029504"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/h5/H5JwtUserLoginInfoEnrichService.java",
+          "version": "repo-file-v1:sha256:fff1cb81236afea5d2a660c570f6eddd43ec27efe478b9b825959a8fa29769b2"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/h5/auth/WxAppH5AuthStrategy.java",
+          "version": "repo-file-v1:sha256:0bc498cf6b0b6268c2d4f7f2dfbdfb2a4399910c031bf55876b21d611600172e"
+        }
+      ]
+    },
+    {
+      "id": "claim_0bafe6e48dc54240b17f9fede7702fca",
+      "statement": "H5JwtIssuer issues HS256 Nimbus JWTs from ecshopx.h5.jwt.* properties (secret-base64 ${JWT_SECRET}, ttl-minutes ${JWT_TTL:120}, refresh-ttl-minutes ${JWT_REFRESH_TTL:20160}, blacklist-grace-period-seconds ${JWT_BLACKLIST_GRACE_PERIOD:0}): it sets iss/sub/jti/iat/nbf/exp and copies every non-null user attribute as a custom claim except the reserved names iss,sub,aud,exp,nbf,iat,jti; H5JwtProperties fails fast on a required-claims list missing any of the six registered claims.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L66-L69",
+          "version": "repo-lines-v1:sha256:b0cfdafa87d8460b53bd32fbf729357f1a1e9e8f7cbde4b59470aabfb716f51c:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjFlYmY5OGVkMjg2NGUyZTVjYjgzOWViNjVmZTYxMzg3ODZkMzg5Y2JjNzk3OGUxNmI2OGMzNjM4YTkyYjEzZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTM3NzA3ZGM2NzNlNjcxMWZkNDc1YzViYjRiOWNkYThiYmIwYmNmMjRiNWZlY2EzNGU3OTVhNjIwNGE2M2MyYyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNmRkZDI0MjgxOWZjOTc4NGM1MTMwYzhkZmRlZTY1ZDNmNDM5MWUxOWEzNTlkNDVkNTRmMzdkMTUyMjA5ZTNhMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTJhNWFiMDlkZDdhYmNkYzk1YTA1OGQ4NWM4MGFjY2VmNTJhODE4YjU4NmEwYzYzMjkwNzU3ZmE2MGU3MTg0NyJ9"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/config/H5JwtProperties.java",
+          "version": "repo-file-v1:sha256:a185d8ecf9cf1d3743b063a3b283f5546b49e0a04af9928fef25b5e778c3f3b2"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/h5/H5JwtIssuer.java",
+          "version": "repo-file-v1:sha256:313f8d78eedcbf324baa1c29a39da657e26293f4e0b709017ae82eeb99594cb1"
+        }
+      ]
+    },
+    {
+      "id": "claim_2391589c8fd4465dbf4028e3354af32a",
+      "statement": "H5BearerJwtClaimsService.verifyAndExtractClaims is the single verification gate for @FrontAuth endpoints — it rejects a missing/non-Bearer header, a blacklisted token, an empty secret, a non-HS256 alg, a bad MACVerifier signature, a wrong iss, time-claim failure (with leeway), a missing required claim and a non-positive company_id, returning Optional.empty() rather than throwing so espier's FrontAuthInterceptor decides the HTTP shape (Dingo 401 code 401001, or Dingo 403 code 403001 for a truthy disabled claim).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/web/interceptor/FrontAuthInterceptor.java",
+          "version": "repo-file-v1:sha256:bb1e94e740bf69ab0fc2fffaf97d2e62db2dc1aeac8b43219c67fd7eed0214ae"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/h5/H5BearerJwtClaimsService.java",
+          "version": "repo-file-v1:sha256:66cae64fc6266067ceabfaa620befca1bdf4463d81da76c505555fb4a99db738"
+        }
+      ]
+    },
+    {
+      "id": "claim_fab4c257f08c448d999b3371afce696b",
+      "statement": "H5JwtUserLoginInfoEnrichService.enrichClaims re-reads member and wechat state on every request (mirroring PHP EspierLocalUserProvider::getUserLoginInfo) and overwrites/fills user_id, company_id, disabled, open_id, unionid, nickname, headimgurl, grade_id, mobile, username and more — making the enrich service, not the JWT, the source of truth for member state, so a disabled member is rejected on the very next request even mid-token-TTL.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/web/interceptor/FrontAuthInterceptor.java",
+          "version": "repo-file-v1:sha256:bb1e94e740bf69ab0fc2fffaf97d2e62db2dc1aeac8b43219c67fd7eed0214ae"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/h5/H5JwtUserLoginInfoEnrichService.java",
+          "version": "repo-file-v1:sha256:fff1cb81236afea5d2a660c570f6eddd43ec27efe478b9b825959a8fa29769b2"
+        }
+      ]
+    },
+    {
+      "id": "claim_fa233707b6d840c494ed1eed62b8e047",
+      "statement": "Token refresh blacklists the old token before minting a new one: H5JwtIssuer.refreshAccessToken verifies alg/iss/required registered claims, requires iat within refresh-ttl-minutes, then calls H5JwtBlacklistPort.addToBlacklist(compactJwt, exp) and re-issues from the surviving custom claims; the espier H5JwtBlacklistService implementation stores h5_jwt_invalidate:<sha256(compactJwt)> in the prism Redis DB (DB 2) with value now+blacklistGracePeriodSeconds and TTL tied to the token's exp, so the grace period is the window where a just-invalidated token is still accepted.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/auth/H5JwtBlacklistPort.java",
+          "version": "repo-file-v1:sha256:28f0c3e83a624ceb153ccbca545d716fcf9ec951cf46828926463e94485db10e"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/H5JwtBlacklistService.java",
+          "version": "repo-file-v1:sha256:9551557b34d914cc453ec06756b17e76bd193c137e2dae1e1fd79d44aec22642"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/h5/H5JwtIssuer.java#L84-L148",
+          "version": "repo-lines-v1:sha256:6dcf66ed83ae5f9b3398d8dada100c6105b0ad1aacc48a48aaa9c2351b65c978:eyJzZWxlY3RlZExpbmVDb3VudCI6NjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkzNGU4NmEyMzY4OTg3ZGY4ZjQxODNiN2IwNDlmMzNkYjQxZWE5YzA2Y2YwZjYwYWVjMGI0YjgwZDdjYjA0ZjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE0NmZjMjFhMDIzNjdmNWVjM2QwY2ZhNGUxOTljMTRhOGY4NzlmYWViNDYxY2Y3MWMwYjdkMGRmZDA5ODA4OTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImVlMzA1N2I5Zjg3MGJkZGVhOWQwYzI4YmFiNTUyODRkYmQxMGJlOGFkOTUwOWViMjk5YWI1YTQzZjk0NzM5NTAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b6f1c593def64424b97cedbc7af2aa6b",
+      "statement": "FrontNoAuthInterceptor serves @FrontNoAuth handlers by trying the same Bearer-JWT path first and otherwise building anonymous claims (user_id=0, api_from=h5app, wxapp_appid/woa_appid/alipay_appid resolved by appid shape) with company_id resolved in PHP FrontNoAuthMiddleWare priority: appid lookup → fixed system company (non-SaaS / main-tenant) → company_id query → Origin-domain lookup → UnauthorizedException, with MembersController.getNoAuthDecryptPhoneNumber as the single H5_COMPANY_ID=0 carve-out.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/web/interceptor/FrontNoAuthInterceptor.java",
+          "version": "repo-file-v1:sha256:a9371142e8f2f948b3ead2e11c485a6559524df5bc57d65e9ba4433e9ba841f5"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/h5/H5JwtUserLoginInfoEnrichService.java",
+          "version": "repo-file-v1:sha256:fff1cb81236afea5d2a660c570f6eddd43ec27efe478b9b825959a8fa29769b2"
+        }
+      ]
+    },
+    {
+      "id": "claim_cf7c027ade1c49778ff645c2c62ae1e2",
+      "statement": "The CreateMemberSuccess event is the canonical AFTER_COMMIT dispatch: members publishes event:members:create_member_success through the one-method MembersCreateMemberSuccessDispatchPublisher port from ecshopx-common, implemented in bootstrap as ASYNC/REDIS/default-queue/RetryPolicy.platformDefault(), and every MemberAccountService registration path registers a TransactionSynchronization afterCommit while throwing BadRequestException up front when transaction synchronization is not active — guaranteeing the event is only published for rows that actually committed.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MembersCreateMemberSuccessDispatchPublisherImpl.java",
+          "version": "repo-file-v1:sha256:bb97fcc299a0f044125d012f24acdcb639b83b7330cad98d6e7ab09cccb3002e"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/MembersCreateMemberSuccessDispatchPublisher.java",
+          "version": "repo-file-v1:sha256:ac8d9a50f19837b5ff408d7524ac6f505d080d040a2489f3ac1bbbfab9535d11"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/account/MemberAccountService.java#L381-L404",
+          "version": "repo-lines-v1:sha256:cde6746d54b13053f2bc03469f3ce1ced037f2be985565011c8746f4c2972d28:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRiYjA3NDNmNzVhMDMzZTM2Yjc4NDU1YzI5ODE2ZWM1NjgwYWIzMjNhNDFkZGQwMDk5N2Q2ZTEyOWZjYzgxNDUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZhMmEzYjc2ZTEyY2UxNTM3OWQwNWYyODY5ZGM0ODMyZGU3NTg5MDUzYjQ5YmZmMjM3ZTQyNWM3MjM3ODAxNTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImEwY2I4ZDNmYjYwYzgwZjI1Yzk4NjJlMzE3OWZlNjFhNTY5MmFkNTQzYWEyMWM1MjhkZDlmNGJhMjZhZTI0NjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU3NjVmOGQwYjkxMDEzMDVjMTdjMGQ2NjJiOTg5N2ZjZWE1Njc4MzAyOTFjMGY2MDdkOGNmNmIzNmIzMGNlMzUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b045ae4a7f13484c84b8ddecdc001580",
+      "statement": "The CreateMemberSuccess payload contract is stable across all registration paths — company_id, user_id, mobile, openid, wxa_appid, inviter_id, distributor_id, source_id, monitor_id, salesperson_id, if_register_promotion — where if_register_promotion is forced false when the tenant's member_logout_config.new_rights is off and a members_delete_record row exists for that mobile (a deregistered member does not regain new-member rights).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/account/MemberAccountService.java#L370-L378",
+          "version": "repo-lines-v1:sha256:de9110ff737aadb88f034b95e5bd57124356a9cd4e0c5f243c6bf44e3e60a7db:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZmRiOGJjYzJjYmFiMTFjYTcxZDMyODk3MGU2N2RlY2ExOTNhNzc2ZGViZDQwY2YyMDU0NzdhNWNkZDAwMDdlYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjRlZmM0OTQxOGQyNmRjZjEyOWIyMmE2YWEyMTEwOGNlZWMzNzY3N2EzMmQwOGU5ZDVmZWUzNWRkYTY2YmI5ZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDk1ODlkYmFhNWM5Yjg3OTFhOGUyNmNiOTk0ZWYwMTc4YWQ1YzgxYzM4MWUwYzE4ZjdlZmQ3OTk5NGQ5YzFiOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTc2ODFjNmE5YTIyMGQ4ZWUwZDA4NmU0ODQwNzZiZmFjYjFmOGI1YzNiOGMwOGYwNWQ3ODJhMWIyMmFiNTZmNCJ9"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/account/MemberAccountService.java#L381-L404",
+          "version": "repo-lines-v1:sha256:cde6746d54b13053f2bc03469f3ce1ced037f2be985565011c8746f4c2972d28:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRiYjA3NDNmNzVhMDMzZTM2Yjc4NDU1YzI5ODE2ZWM1NjgwYWIzMjNhNDFkZGQwMDk5N2Q2ZTEyOWZjYzgxNDUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZhMmEzYjc2ZTEyY2UxNTM3OWQwNWYyODY5ZGM0ODMyZGU3NTg5MDUzYjQ5YmZmMjM3ZTQyNWM3MjM3ODAxNTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImEwY2I4ZDNmYjYwYzgwZjI1Yzk4NjJlMzE3OWZlNjFhNTY5MmFkNTQzYWEyMWM1MjhkZDlmNGJhMjZhZTI0NjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU3NjVmOGQwYjkxMDEzMDVjMTdjMGQ2NjJiOTg5N2ZjZWE1Njc4MzAyOTFjMGY2MDdkOGNmNmIzNmIzMGNlMzUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/account/MemberAccountService.java#L414-L435",
+          "version": "repo-lines-v1:sha256:f813cfda936809dfafdcee2b1c90bdda2b2b27ce822a5565e6ef297fc7ad884c:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUyNDkwMmExNTQwZGE5MTY2M2U2MDkwOTczYzIxMGYyNzQ4NjFhZDFjNzgzM2Y1ZTExNWIwMzhiMzdhZmM0OTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjEyODhiOTlmNTNlNDBiYjYzMzBlYWFiMDA2MGJkNTRlODgwMWIxM2UyNzJhYTdlMzdiZTY4MjFiZTIzMzc5MWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZkNjE3ZjI4NWQxZWIyMGNhNTliZjA1N2VmYmE3MWFlY2Q4OGFjMmY2MDljZmEyNzY2YWIwYTk2OTU4NTEzOTkifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b8cf3fd083bd40aa978fff37a3cf8531",
+      "statement": "Bootstrap registers eight dispatch listeners on create_member_success, each in its own registration config: youshu member sync, shuyun open-platform member.register, third-party Shopex CRM add-member (gated on crm.crm-sync), promotions register-promotion (gated on if_register_promotion), promotions register-point (gated on Redis register-point config), datacube register-num stats (slow queue), members' own create-member-success notice (slow queue, needs openid+wxa_appid) and promotions send-membercard (gated on if_register_promotion).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/DatacubeRegisterNumStatsCreateMemberSuccessDispatchListenerRegistrationConfig.java",
+          "version": "repo-file-v1:sha256:5380ae626f445fce9ddad1000a4e75064f4d6cc40f89d8df5b4785bc3aa71d6e"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MembersCreateMemberSuccessNoticeDispatchListenerRegistrationConfig.java",
+          "version": "repo-file-v1:sha256:0c935ad0d1662b5e8713b321ec4adf95c3a1a66bbdaf7bac2292ff6ceb107cd2"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/PromotionsCreateMemberSuccessDispatchListenerRegistrationConfig.java",
+          "version": "repo-file-v1:sha256:8500ef4ce8d93bf9d7e96c6f8ffcfc7046d580f8857738bf6826fdf2f5d03374"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/PromotionsSendMembercardCreateMemberSuccessDispatchListenerRegistrationConfig.java",
+          "version": "repo-file-v1:sha256:3edb16fb89274beddb2eaa9dbb3848eed3305c3e911350e985efb767f29e33d0"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/RegisterPointCreateMemberSuccessDispatchListenerRegistrationConfig.java",
+          "version": "repo-file-v1:sha256:88caf6099b8f54e81f0ddb53c4ac765a0cef437fe9f4ad561513c75ac1c7f22d"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ShopexCrmCreateMemberSuccessDispatchListenerRegistrationConfig.java",
+          "version": "repo-file-v1:sha256:18d45d719f510f4829563a9918c5e1e2b9e6ac96980d1325e5fc9a202a38241f"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ShuyunOpenPlatformCreateMemberSuccessDispatchListenerRegistrationConfig.java",
+          "version": "repo-file-v1:sha256:71340c56b39c2bb7ae49c73ece833139ac96c742ba63e5e90b109de2d0754622"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/YoushuCreateMemberSuccessDispatchListenerRegistrationConfig.java",
+          "version": "repo-file-v1:sha256:9de265e6223af39ccb513ad8e37ef614859d0d96c00db929f7a3665ac49fbc64"
+        }
+      ]
+    },
+    {
+      "id": "claim_40c35d6f13374e9598e16ea5d409b51a",
+      "statement": "Each MemberAccountService registration path (createMemberForWxappBind, createMemberLocalAutoRegister, registerShuyunMember, creatMemberForH5Post) also adds the userId to the daily active Redis set Member:<companyId>:<yyyyMMdd> in its afterCommit, and createMemberLocalAutoRegister enqueues a BindSalseperson job when work_userid and channel=1 — or the DM-CRM variant enqueueBindSalsepersonAfterDmMemberCreate when DmCrmSettingReadPort.isPointIntegrationOpen(companyId).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/account/MemberAccountService.java#L381-L435",
+          "version": "repo-lines-v1:sha256:8844962d34a316532b4e1f634b617c12f9aa8e144d6931bb235aa7eb3c41f0ec:eyJzZWxlY3RlZExpbmVDb3VudCI6NTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRiYjA3NDNmNzVhMDMzZTM2Yjc4NDU1YzI5ODE2ZWM1NjgwYWIzMjNhNDFkZGQwMDk5N2Q2ZTEyOWZjYzgxNDUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImEwY2I4ZDNmYjYwYzgwZjI1Yzk4NjJlMzE3OWZlNjFhNTY5MmFkNTQzYWEyMWM1MjhkZDlmNGJhMjZhZTI0NjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZkNjE3ZjI4NWQxZWIyMGNhNTliZjA1N2VmYmE3MWFlY2Q4OGFjMmY2MDljZmEyNzY2YWIwYTk2OTU4NTEzOTkifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_135b1a23c111411484de982e90135fde",
+      "statement": "H5WxappPreLoginService.wxappPreLogin is where the wxapp new-login path actually creates the member: after code2session + phone-number decryption it routes to H5WxappLoginRegisterFacade.registerMemberForWxapp when no member exists for the mobile or an existing member lacks a matching wechat association, with the OEM-Shuyun mismatched-unionid case failing with ResourceException; the facade holds the registration policy (whitelist check, employee-auth or invite-code with Redis lock, OEM-Shuyun short-circuits, createMemberLocalAutoRegister plus fan/tag recording).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/h5/prelogin/H5WxappLoginRegisterFacade.java",
+          "version": "repo-file-v1:sha256:c05ab7ed5b675a4a119467d14f99b81f8f55fdaf48f70b04aff01b3ca37cc12f"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/h5/prelogin/H5WxappPreLoginService.java",
+          "version": "repo-file-v1:sha256:7f26690f22550ffdce008536fc47b36576ae6ee039e859f333b40526f5f8bd97"
+        }
+      ]
+    },
+    {
+      "id": "claim_4ac227d5a22f4ac88468692b693f1c86",
+      "statement": "H5WxappLoginRegisterFacade treats employee-auth and invite-code as optional ObjectProvider-injected extensions (H5WxappRegisterEmployeeAuthenticator / H5WxappRegisterInviteBinder): startup succeeds without the implementing bundles, but a request asking for the feature when the bean is missing fails with ResourceException.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/h5/prelogin/H5WxappLoginRegisterFacade.java",
+          "version": "repo-file-v1:sha256:c05ab7ed5b675a4a119467d14f99b81f8f55fdaf48f70b04aff01b3ca37cc12f"
+        }
+      ]
+    },
+    {
+      "id": "claim_e3ed77db6f494d8e82c01b8fba7e31da",
+      "statement": "members.mobile is written through LegacyFixedMobileEncrypt.fixedEncryptMobile, a deterministic legacy-PHP-compatible AES (default AES-128-CBC, fixed IV) transform configured from ecshopx.compat-crypto.app-key/cipher and common.encrypt-sensitive-data; when common.encrypt-sensitive-data is false (the repo default) the transform is the identity, and the plaintext is kept alongside in members.region_mobile — so mobile lookups must always go through the encryptor to remain equality-queryable in both modes.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L75-L78",
+          "version": "repo-lines-v1:sha256:1940e30d72e292d31742d12eb96613a76facd18e7f483c7ede29b814e705261d:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTJiOGIwMDcxYzk4ZjdlY2UzZTE5ODYwOWI0YzdhMDM3Y2M4YmU2MzBiNmNiYzk0YTRkMjhhMWQ1ODRlYjhkMyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTIzMzUyNGU2ZDRjMjA5MmI0ZDAxZjUxNDM2ODhjZmJiNjgwOTdmMGJkMzM0YjkxN2FiYWMzZWU0Y2ZjYzE0NCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZGJhODVjNDA2OGRjY2U5YmUyNmE4ZTU2YTUyMzU4ZTRiZTE3OGQ0Y2NmZjEzYjEwNDY4Mzg2MzZhODY3ZDJiNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiN2FmOGNmN2IzY2IwNTgzOGY0OTZlOGQ0MDRjZmViZDI0YzczYjA3NzRmMDdiYjBiMTdhZDlkYjk5NTcyMjg5ZSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/security/LegacyFixedMobileEncrypt.java",
+          "version": "repo-file-v1:sha256:cbada2b561ed806e7e1fa5c9f134f729e40658c5fb899f24d2bae83db2d1eb31"
+        }
+      ]
+    },
+    {
+      "id": "claim_e931372b6d374e18b23b1acb35154bfa",
+      "statement": "WxappMemberMobileChangeService.updateMemberMobile enforces a per-member 30-day cooldown via the Redis key updateMemberMobileCD:<userId>:<sha1(companyId)> (members.update-mobile.ttl-seconds default 2592000), verifies the SMS code stored under member-update:company<companyId>:<newMobile>, rejects duplicate mobiles within the tenant, updates mobile/region_mobile/mobile_country_code, writes a member_operate_log row with old/new JSON, and only then sets the cooldown key.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/h5/WxappMemberMobileChangeService.java#L158-L174",
+          "version": "repo-lines-v1:sha256:261388f89e49fe221a85ab4b660bd302572ab72730701b3b1e89b1988f9557c8:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM4MzRlMmM3NzVjMTkzODM5YzM1Zjk3YWEzNmYxNTRkNzViNTIzODQ0ZTVhNTBiMjY5YmRmOGQ0ZmZhNjUzYTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMyMjUwNTE5OGI2YzE4ZDU0MjA3MzQ4NGMwZDA1MWYzZmNkZWE1MDE0YmViN2U5ZDRlMDM1MzlmZDk1M2ZhZDAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImEzZjU5MDE2MmRjNWVjZWM0MTVkYzAyMGZjNjlhY2RlNWFlMGNkZTMzZDlhMjQwOTk3ZjhlZmZjNmNhMWE5N2MiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFiNjdkZDBjNjU2YTdjOTZjOTdjM2M5NzhjOGI2OWQyM2UyMmFhYzU2ZWM3MDY1NWVkZjI2YWFkMmVkNjhlYjYifQ"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/h5/WxappMemberMobileChangeService.java#L57-L98",
+          "version": "repo-lines-v1:sha256:10f4342a9726361daf28701a8da674db87f87cdf55b29328f0ba51c92c788039:eyJzZWxlY3RlZExpbmVDb3VudCI6NDIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNmZTg5OTYwYTcwODRjNzBlNTQ0MmVkMzU3MTljYTE2NTQyNWUxNGFjZDE2YjYxY2RiN2M4MzU0M2YwMjkyZmEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZhOTU3Mzg0YWFkMGJhZGZmOTVkOTZlZDM2N2U5MTEzNDkyZDZhNzQzZmY1ZDc5ZDViMjI2ODhjMjM5MjIxOGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImVhMjVlMzJhM2U2OGM0YTU4MzNlY2E3MjY1NjgxMzc4YjBiNmJhNTk0MmE0OGQ2ZmU1ODcyOTIyMmU4Zjc1ZTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_33e183838cbb45c59a2fcb942443a005",
+      "statement": "MemberSmsVerificationCodeDeliveryService.deliver enforces the daily SMS cap via the yzmsend:<companyId>:<yyyyMMdd>:<type>:<mobile> counter (common.sms-send-limit, default 5, 24h expiry), stores a 6-digit code for 300 seconds under member-<type>:company<companyId>:<mobile> on the members Redis template, and sends through CompanySmsSendPort.sendVerificationCodeForScene(..., verification_code), failing with ResourceException on send failure.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/sms/MemberSmsVerificationCodeDeliveryService.java#L58-L90",
+          "version": "repo-lines-v1:sha256:30937d01c166bd24c8e03eec3ea4bf74bbfea449fc5c576437b4e213ad9c1d2d:eyJzZWxlY3RlZExpbmVDb3VudCI6MzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdmYzgzZjFiYWUyZWZkMTU5YzA4Y2ViNzUyNjljZThkNzBiOWExNWNhMGJlOGI4ZGEyOWZmZWE0NTc2N2VmMWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA3MTJhYjdiYjg0YmE4OWRmZmVhYzM4YjQ3NzM5NjljOGE1NjVkNzNhMDA5MjRiOTNjYzIxMmRlNjU4YWE2NzEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJhZDc1YWIzZmI2OGZhY2ZhZTFmOTgwODMwNDU3ZjMwZjI5ZjI1ZDhlMDNlNTExYTA0NWI1OGE3YWYxMzAzMGYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_79db4720cd7a473abb5c6947c88f6172",
+      "statement": "WechatFansSyncService.syncWechatFans throttles official-account fan sync to 3 runs per day and one per 10 minutes per company via the syncUsersCount<yyyyMMdd>:<sha1(companyId)> Redis list (expiry at end of day), then pages the official-account user/get API 10,000 openids at a time and publishes one event:members:sync_wechat_fans message per page, consumed on the slow queue by SyncWechatFansPageNotificationProcessor in batches of ≤100.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/WechatFansSyncService.java#L56-L98",
+          "version": "repo-lines-v1:sha256:243607037f3a473e3db1b5d8c5582aed0e04fb7e90c4f6bad95b2354eac72cd8:eyJzZWxlY3RlZExpbmVDb3VudCI6NDMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIwYTY3NGU2MzMwYmI2MmJhOTU1ZjUyOWI4ZDkxOThlMTg4Njg1NDZjMTljYzc5MWE3YjdjNzRlY2E1MjUzOWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ1NzdmNTZlMzY2ZThlYzUwNzBmYWUwMjJlNjMyMWIzNDc3ZTQxYTEwYWU0MDFkZTNjN2I4MDg1Y2I5MzkyNWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk3ZDQzNzE2M2Q4Zjc0MGJiMmZlZjA0YjBiYjlkMjBhZDk2MGFiODViY2E3ODBmNDQ4Yjc2MTExN2FjODg5YjAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_2298f04ba0ca4a43aa0afb5f91fc2c1b",
+      "statement": "Overseas trust login (auth_type=social_oauth, providers apple/google/facebook/line per SocialTrustLoginTypes) maps an existing members_associations row to the member, or allocates a unique synthetic mobile (MemberSyntheticMobileService: '10' + 9 random digits, unique per company, bounded attempts) and creates the member through creatMemberForH5Post with auth_type=social_oauth, so the social path joins the CreateMemberSuccess fan-out.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/email/MemberSyntheticMobileService.java",
+          "version": "repo-file-v1:sha256:61f01f6b7a326d342c119c6c0817445853e2cc9024271fb4367e6ecea9c91280"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/h5/H5SocialOAuthLoginService.java",
+          "version": "repo-file-v1:sha256:1dcf78b5a9621443dea9b960f161ce1d590e01003e6454d64150408f4bc9dcb0"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/trustlogin/SocialTrustLoginTypes.java",
+          "version": "repo-file-v1:sha256:215f359e6baf267b8dee01165ada8552b4028584c9a7c60714d2b5e3710f4994"
+        }
+      ]
+    },
+    {
+      "id": "claim_0305ddfff0344dde85b20257f19bcca5",
+      "statement": "Apple trust login needs a server-side callback controller at /api/v1/h5app/wxapp/trustlogin/apple/callback (GET and POST, deliberately without @FrontNoAuth) because Apple posts the authorization code as a form: it resolves the h5 host from the h5_host query param or remembered state and 302-redirects to the H5 landing URL with the normalized code, with SocialTrustLoginService carrying the state↔h5Host bookkeeping and Apple client-secret signing.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/api/front/v1/TrustLoginAppleCallbackController.java",
+          "version": "repo-file-v1:sha256:49407f0262b5fa1f5abe79df6c55119e5aa96217693f501bbd72bfe1fef3ca62"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/trustlogin/SocialTrustLoginService.java",
+          "version": "repo-file-v1:sha256:159ff8938423aee08797f67b3af9fc58a358551d164db754c14d0aaca81f1186"
+        }
+      ]
+    },
+    {
+      "id": "claim_d74aad8bdd3543dcaf0c3fedb8c1fbd2",
+      "statement": "MemberAccountService.createWxappFans is the shared upsert behind login-time fan recording: insert-or-update the wechat_users row keyed by (company_id, authorizer_appid, open_id, unionid) and, when a bind_member_user_id was supplied and no wechat association exists, insert the members_associations row, returning is_new = 'no association', which the official-account login strategy uses to decide whether the fan still needs to register; updateWechatUnionId migrates a stale unionid across both tables and clears need_transfer.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/account/MemberAccountService.java",
+          "version": "repo-file-v1:sha256:ae2353c8a8e5e88e2a858be102d90fc81fac4649ca2345e0f1351a6fd4029504"
+        }
+      ]
+    },
+    {
+      "id": "claim_5667af3a60bb4cc593bc737e9347a9ef",
+      "statement": "PUT /api/v1/h5app/wxapp/member flows through WxappMemberUpdateMemberService: Shuyun open-platform member.modify before the local write, MemberAccountService.memberInfoUpdate, then an after-commit event:members:update_member_success publish with a fresh members_info snapshot — an event whose only bootstrap listener is the Shopex CRM update-member sync, gated on crm.crm-sync.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/MembersUpdateMemberSuccessDispatchPublisher.java",
+          "version": "repo-file-v1:sha256:5b07e272b884b1d26472cb48ad6f70d85f929d400dae717dc79fbec93132e37e"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/h5/WxappMemberUpdateMemberService.java",
+          "version": "repo-file-v1:sha256:e56d6a16f5cc851a23dd368a4e9ea9d370884e5ae6d69f21a0e5603befe6c338"
+        }
+      ]
+    },
+    {
+      "id": "claim_bbdc713b3d62404583bf08c8e590cc66",
+      "statement": "The MemberAccountService*DispatchTest family (using MemberAccountServiceDispatchIntegrationTestConfiguration with mocked mappers/publishers and a real PlatformTransactionManager) pins which side effects fire per registration path, and H5NewLoginPathsCreateMemberSuccessDispatchProbeTest verifies end-to-end from the real login entries that the CreateMemberSuccess payload is published on commit and NOT published after setRollbackOnly().",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-members/src/test/java/cn/shopex/ecshopx/members/service/account/MemberAccountServiceCreateMemberForWxappBindNoBindSalespersonDispatchTest.java",
+          "version": "repo-file-v1:sha256:a3234b3586b0f31cf9c7a0d45078b41fa07132eaee11d357b13dbb2dfc2024f8"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/test/java/cn/shopex/ecshopx/members/service/account/MemberAccountServiceCreateMemberLocalAutoRegisterDispatchTest.java",
+          "version": "repo-file-v1:sha256:bbbbef383d2339639d543799d1f0147a03a413e791b84957d4d2c090808536d9"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/test/java/cn/shopex/ecshopx/members/service/h5/prelogin/H5NewLoginPathsCreateMemberSuccessDispatchProbeTest.java",
+          "version": "repo-file-v1:sha256:9139491c7100daa651d6821100e5cb9d273bd3df321fd164d6b5435276e33b92"
+        }
+      ]
+    },
+    {
+      "id": "claim_f27cf1658268466887506a0df12c1ee9",
+      "statement": "The goods-arrival (缺货订阅) subscribe subsystem is owned by ecshopx-members: the `members_subscribe_notice` table (domain `SubscribeNotice`, `SubscribeNoticeMapper`), the wxapp subscribe/status endpoints in `MembersController`, and the wechat leg of the notify fan-out; the Alipay leg (source=alipay) is implemented in ecshopx-ali's `ItemStoreGoodsArrivalAliTemplateOrchestrator` driven by the ali listener.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-ali/src/main/java/cn/shopex/ecshopx/ali/service/alitemplate/ItemStoreGoodsArrivalAliTemplateOrchestrator.java",
+          "version": "repo-file-v1:sha256:10ef23ede2e52eb719a70bbc9878fa0b93481f779ef13632f9d70408ff1ce2e7"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/domain/SubscribeNotice.java",
+          "version": "repo-file-v1:sha256:d58b4469b779573ca7efe866c0b8dae05548cbdc43af7a59f13aa3f0a5b5b4d4"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/wxapp/WxappGoodsArrivalNoticeSubscribeService.java",
+          "version": "repo-file-v1:sha256:f41bc671a639fc69b8d30e56a0c8ed68fcdad5bca39c01c09b7a8be067981446"
+        }
+      ]
+    },
+    {
+      "id": "claim_c70e7021538a4f769bd52a2957bee9b4",
+      "statement": "`SubscribeNotice` rows are one subscription per (company_id, user_id, rel_id=item_id, source, distributor_id) with sub_type='goods' and a sub_status lifecycle NO→SUCCESS; the schema documents an ERROR state and err_reason column but no Java code path ever writes them, and unsubscribe deletes the row rather than archiving it.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/domain/SubscribeNotice.java#L55-L79",
+          "version": "repo-lines-v1:sha256:8a3e71bb6144fd1ae23feeb313290cdd70110dd0317a2a42c92db9dda32dc455:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY1YzYzYTM1YTc5NGNmYTBhODU2OTJhNzRlN2Y5ZGI3MmRhZjhiNjM5MDFhYjUwMDE1Y2IzMzBkZjVhZDhiYzgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY5NDE0ZDUyYjI5NmQ5YTVhMDJlMzRmY2FiNjVlYzJiZTUzNzA4ZjRlYzkxZDdmMTUxOGZmOTA4YTdlMmY5MmQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjliOWRkNmVhN2EwZjgwNDk2YTI3YjNmYTY4MjAwZDVhY2E4NzhiNjJjZjc5ZDE0M2Y5ZmY5MWMzOGNhZDc5YWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/GoodsArrivalSubscribeMatchService.java#L64-L94",
+          "version": "repo-lines-v1:sha256:0e21ca4b3486ac14d3f7259acbce0e6c5990adec233a1e21cebf142b755ef579:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRlMzlhMGY2NTA0NjhlOTUyYzg0MmIyNmQ5Yjg4NGZhMjI1MjlmYTkwNzcxYThiMDNmYTQyNWE2YjE5OWM5MGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU1NTUxYTQ0NjdhMTM2NmUyYTEzNjEyNjRiYzU4N2FiODk3NzlhMDI0Y2VkY2FlZDM5Zjg0Yjg0OGRlMzY0MjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImIxZGQzNTExODZjZmJjNmU1NjA0ZjA4MzEzMjBlN2U1NzE4MGUyMmZhOWM4NDY0MWRhYTEyZTJiODc0Y2RkMDMifQ"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/wxapp/WxappGoodsArrivalNoticeSubscribeService.java#L58-L112",
+          "version": "repo-lines-v1:sha256:7ffeb2bad6600ae6487440849c003aa07ac29d22c24b14efaa362f8a55587953:eyJzZWxlY3RlZExpbmVDb3VudCI6NTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZjNmRjMzA5OWM4YjM3Y2Q3ZTM3MTIwN2E1MTQ0MTZiMzA5ZWZlNzY3MmNkNTgxZjk1ODdiOGRlYTA2YzMzNGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBhYzM0Mjk0YWVlNWNkNWY3ZTc1MmU0Nzk4NDBkMzM3NGFlMzBkYTIxNjhlNWIyNWMyNDhkY2YxYjZjZGY0OWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg3ZTQzNDA3Y2I1NjMzZjRmNTAyZTJiNGVkZTA4Y2JkNTY1ZmExNGM5ZGFhM2M4OTQ5MjQ0ZjcxMGUzMjBmMjgifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_fbcce78e198041ad827ec3ea2575d6db",
+      "statement": "`POST /api/v1/h5app/wxapp/member/subscribe/item/{item_id}` (缺货订阅) is a toggle: an existing matching row with sub_status=NO is deleted (unsubscribe), otherwise the item must exist (MembersSubscribeNoticeItemNamePort.itemExists, else ResourceException(\"商品不存在\")) and a new row is inserted; the recipient open_id and source (wechat via open_id/wxapp_appid claims, alipay via alipay_user_id) come from the caller's enriched claims.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/api/front/v1/MembersController.java#L1166-L1201",
+          "version": "repo-lines-v1:sha256:df8c2334fcc4d1f60dd7fb9bc77e556eb0852d97e023fef430561da002bab780:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY1ZTE3ZDMxOTVkYjVmYjRiM2Q5ZDkyZDNhMzEyZWM5MWI4MDlkMWE0NjY2ZWQ5ZWMyZWY5ZWZmZGE0MGFhODgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImViNjRjZDI5NmI5OTIwZGEyMzVlMWJmZDIyMjI3ZTVlMjRlYmNjNzRmZTgwNDY0N2E2NGQ1MmYzNWJkNzUzMmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA2YjExMGFjOGZkMDFkZGJmMWRjNDc2OTkxYTBhMDYzYWNjMjdiMzcwODQyMzMwZTNiM2FlMmU2Y2Y1OGEzMTcifQ"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/wxapp/WxappGoodsArrivalNoticeSubscribeService.java#L58-L112",
+          "version": "repo-lines-v1:sha256:7ffeb2bad6600ae6487440849c003aa07ac29d22c24b14efaa362f8a55587953:eyJzZWxlY3RlZExpbmVDb3VudCI6NTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZjNmRjMzA5OWM4YjM3Y2Q3ZTM3MTIwN2E1MTQ0MTZiMzA5ZWZlNzY3MmNkNTgxZjk1ODdiOGRlYTA2YzMzNGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBhYzM0Mjk0YWVlNWNkNWY3ZTc1MmU0Nzk4NDBkMzM3NGFlMzBkYTIxNjhlNWIyNWMyNDhkY2YxYjZjZGY0OWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg3ZTQzNDA3Y2I1NjMzZjRmNTAyZTJiNGVkZTA4Y2JkNTY1ZmExNGM5ZGFhM2M4OTQ5MjQ0ZjcxMGUzMjBmMjgifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_9b9b876ca8254c428e66decea8f51c5a",
+      "statement": "The `arrivalNoticeSub` Redis hash on the shared template is the subscribe/notify contract: the toggle writes/deletes field userId with JSON {open_id, wxa_appid} under key `arrivalNoticeSub:<companyId>:<itemId>[:<distributorId>]` for wechat (a source segment is prepended for alipay); it has no expiry, is read back only by the wechat notify leg (the alipay leg never reads it), and `GET /wxapp/member/item/is_subscribe/{item_id}` answers from this hash rather than the table — so a Redis flush desynchronizes hash and table until the next toggle.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/api/front/v1/MembersController.java#L1652-L1681",
+          "version": "repo-lines-v1:sha256:583cefd42056eb1fbe78e1fc1275c09986ee4f27a6559901dde7233d734016b8:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM2NTI5ODJiN2NkNjRkNDdkODFiMzljY2I4ZTM4OGQzMDY1MzA1NzRjZDlkZTM2NmZmN2JhYTA2ODQ1MzM0ZGEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVmZTA4NGQyM2Y5NTJlYjM3NDA2NDY0YmU4OWY2NTI0MTNmNzRmNWFjZDMzZmFlNjhkNThiMDlhOWI4ZDc1ZjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBiMjk3ZmFiYzdlMDAyNTA5YzRlMDIzYzMyNjQ0ZThjMjhhZGRkZmZiZmJlMWJhMmE1NWZkZTMwYjgyNmEyZjAifQ"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/ItemStoreGoodsArrivalWxaTemplateOrchestrator.java#L127-L153",
+          "version": "repo-lines-v1:sha256:84b10c20254b2dfc2feee29377d78b05b8387d0067febccd905fb6baee64ae71:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA1YjdhMmFjMDI4OTQ1ZDlhZDg2M2NhMWM5NzY4NTM4ZWUxYTAwY2RjNDIwNjgyNTM1MGI2NjJlNDBjYTg2YjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIyZjJmZjVmZWVjNjBmNTg3YzhmYWU0ZTg3ZjgwOWE2NjFjZmZlZDZiNDdhYWU1ZjZkNmEyNjUzYWE4OTUyZWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJkNGIxZGQyMzkxOGMzNWY1ZDMzY2VhOWZhZmY5YzcwZTczNTkwMWI3NTRiYmE4NmVhYWM2ZDBkNTM4OGQ3NDcifQ"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/wxapp/WxappGoodsArrivalNoticeSubscribeService.java#L114-L189",
+          "version": "repo-lines-v1:sha256:38b58c0129e01b719599993b89915cb77b7579a67f2fd9a1ce209e173daec21e:eyJzZWxlY3RlZExpbmVDb3VudCI6NzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA3Mjg5ZTE3MDRjYjBlOGE0YzMxY2IzMDM1YTI2OTk5YzZhOTYwZGUwODUzNzFiMGZkMWNjNzNmYjhmNGVlNWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJhYmJjNzVjMjEyMTM2OTUyMjMxMTA2N2E0MjYzOTI1ZmY0NGY4Njc4MWFlY2IxODIyY2E3ZjUxNmM0MWZkYTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkzY2Q5MTU4MTVjOTA3YzhiNjM2YTQ1YmI3NWM0ZDA5NWY2YmJlZDg2YWMyNjdhNWJlMjljZDA3Yjk2ZjA5ODIifQ"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/wxapp/WxappGoodsArrivalNoticeSubscribeService.java#L92-L100",
+          "version": "repo-lines-v1:sha256:0fecf47be4b2cae78c54c2ac684c6b40e1564cd36271a535239320a7fef24b1e:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjk3ZTA4MGY2ZmU1MmVjYmUxNDcwYmY1MjVlOTllNzRlNzk4Y2FhYWJiM2VhMTU2ZmZhMmQzNjFmM2ExZGFlNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjRlZmM0OTQxOGQyNmRjZjEyOWIyMmE2YWEyMTEwOGNlZWMzNzY3N2EzMmQwOGU5ZDVmZWUzNWRkYTY2YmI5ZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjg5MDgyZGVjYmJkZmVjODU1MzZjMWZiYjJjZWEwN2Y1MzczOTMwMmMzMzIwYWJjZjRiNGIzYzRjNDMxZmFmNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjkwODNlOGJhZDNmMTJjYzM4NzEzMzQ0NWZjOWY4YjZhNzc3ZWFkZDlhYjRhMDAzMTc4ZjljNmViNTg1ZjJhNyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_82ec48c885fd4124b8fe8ffa115a2451",
+      "statement": "The goods bundle publishes `event:258:GoodsBundle\\Events\\ItemStoreUpdateEvent` (GoodsDispatchEventNames.EVENT_ITEM_STORE_UPDATE) with payload {item_id, store, distributor_id} in SYNC mode via DispatchOptions.eventDefaults() from ItemStoreService.saveItemStore/saveItemStoreForWdtSync through the bootstrap ItemStoreUpdatedEventBusPublisherImpl, so all registered listeners run inline in the publisher's thread and transaction; bootstrap registers the members listener as `listener:members.listeners.ItemStoreUpdatedGoodsArrival` (syncDefaults, in ItemStoreUpdatedEventDispatchListenerRegistrationConfig alongside the ali `goods.listeners.SendTemplateMsgListener` registered first) and the Shuyun product-sync listener separately.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ItemStoreUpdatedEventBusPublisherImpl.java#L27-L43",
+          "version": "repo-lines-v1:sha256:58fad95ae59d2746a9b01e317a5e6e4fdb0fd679955551ee71a8a367754cc461:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4ZmExZTlmNDQ5NDlmYTg5YTNiNDJiMDQ5MmRkYmRmZmEyZWI3NjQ4NDhkMzU3NzhjOWZiNTNjMjA3ZWJkYmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk3OGQ3NWRjMzgwY2YzNzJiNmQ5OWNkNjUxYTRhMzJhMzJlZGFkYTU3OGEzZTc4Nzg4YzM0M2Q1NGJhNmVlYTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ItemStoreUpdatedEventDispatchListenerRegistrationConfig.java#L28-L57",
+          "version": "repo-lines-v1:sha256:be71004e9d143b86b40d649c4da2b7eb8bfff09bcab6b12670cae022ba6ba7d6:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiMTQ3NjJhYWFkNThkMTM4NDRjZjJlYzU0NzQwYTRkOTdmNWUwN2VlNTE2ZDMyMGQ2MDM2YzFjN2NlNDJkZmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc1MWY5MTQ3ZGFkYTQ5NDI1NDJiNzE1OWZkYmIyMmQ3M2FjZTAzNmFkMzdjZWUyYjZjY2YwNTIwODM5OWM2ZmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ShuyunOpenPlatformItemStoreProductSyncDispatchListenerRegistrationConfig.java#L26-L45",
+          "version": "repo-lines-v1:sha256:358ac7ced54c8320fa39d3daf5055ce5f56750618b806883c366ba5f16062000:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiMTQ3NjJhYWFkNThkMTM4NDRjZjJlYzU0NzQwYTRkOTdmNWUwN2VlNTE2ZDMyMGQ2MDM2YzFjN2NlNDJkZmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQwMTk1ZjQxMzAzMzM1ZjIyNDQyMzlkY2E3OGRiOGRjNDY3ZDE5NGNkY2I3MzljODlkMjIyYzVjZjliZmFjNGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/GoodsDispatchEventNames.java#L21-L42",
+          "version": "repo-lines-v1:sha256:ee08e09444d20febfc720acf3cfe0d1b63d4327ba3134616db7162d3d04682c7:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ3YzUxMWJhNDI5ZWNmNmIzNjQ3MjYwZjRmN2ViYmRmZDk3MjkyZTEzMzY1YjZkODIyOWU2ZjdkYjE1ZDc4MTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFlZGQyOGUyOWM0MTU5NDg1ZDgwMWYzM2M1NDcxODJlYWU4MzcxYWQxMGNjZmM3ODRkOWM1NTg2NzM1YWJiOTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJjMGExYTJhNDk5ODVmMzI0NzBhNzUwOTMwYWY5N2E2MWZiNTA3Y2MzMWY4N2E0MGM2MDllYThkMTJjOTFiZjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI2ZDM0MTNhZTE2MGVhMjc3OTE1OGNlNmEzOWI2MzAxMzE1OGQ5MDg4OWUwYjQ4ZTQ4YmNiZjZjZWFlMjc2NzQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_40d08bac301840c4b7333aea0bc0a1f6",
+      "statement": "ItemStoreUpdatedGoodsArrivalDispatchListener.onEvent returns immediately when the event's store is zero or negative, so out-of-stock transitions never notify; for a positive store it first dispatches the wechat send through ItemStoreGoodsArrivalWxaTemplateOrchestrator.dispatchIfApplicable, then independently resolves the company via ItemCompanyIdResolver and calls GoodsArrivalSubscribeMatchService.markSuccess with the normalized distributor id — the listener itself has no try/catch, so only the send leg is failure-tolerant while a throwing markSuccess would fail the publisher's SYNC transaction.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/listener/ItemStoreUpdatedGoodsArrivalDispatchListener.java#L34-L71",
+          "version": "repo-lines-v1:sha256:d188f3d32e8a336bcca4f1c327b3a527f2e98109ee99d31937ce26ce3b718990:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNkMjg4NTdkZTVmZTBkM2M5ZTI1MzYwMjRmMzBjMDhkYjVmZGY5ZTJmZmQyYWQxMTQ5NGRlYzBiNGM3ZmJmOTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIwYjJlNDk0ZmZlNmZjNTI5ZGI2OTYxOWQ2NDdiZDI2MGJkMTAxNWM5NDJiMzBmZmFkZTM2MmM0NmVjY2ZlNTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_344785c186a14410960936f537660d78",
+      "statement": "ItemStoreGoodsArrivalWxaTemplateOrchestrator (PHP SendTemplateMsgListener wechat-branch parity) is fully best-effort: dispatchIfApplicable wraps everything in try/catch(RuntimeException) logging at debug, re-checks store>0 and itemId>0, resolves the company, matches pending rows via listPending(companyId, itemId, dist, \"wechat\"), builds data fields {item_name (multi-language name truncated to 20 code points via MembersSubscribeNoticeItemNamePort), notice = 亲！您想要的商品已经到货，可以购买啦！}, and per row with an open_id sends {scenes_name: \"goodsArrivalNotice\", company_id, appid, openid, data, page_query_str: \"id=\"+itemId} through the common GoodsArrivalWxaSubscribeSendPort with forceFire=true (never delayed by send_time_desc).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/port/members/GoodsArrivalWxaSubscribeSendPort.java#L21-L25",
+          "version": "repo-lines-v1:sha256:25fae5a0a0244c0f9cbbae613337168e5af8000194fefd3330c1d1fdd3580fd7:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDU0MDllNGQ0NzIyMTVjYTk2MjFjYWNjZWI0MmZhNzBjODg4ZTMyNjFiYWJkM2UzNzc2MmEzNjRlMDY2Y2Y3NCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMmYyNzhmYzI0OGUzZDIwYWZhZGJhYzg1YzRhMDU3ZjdjMzI0YjY2NTU3YzQ4YjM3MDQzMjE3MDQxNzNhMzNmZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/ItemStoreGoodsArrivalWxaTemplateOrchestrator.java#L41-L125",
+          "version": "repo-lines-v1:sha256:d2bf1ac02f4b17b8f49814fa82d1fc3fb520aecfb7e32d4422f0c256078f8532:eyJzZWxlY3RlZExpbmVDb3VudCI6ODUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhkNzE4NmExODk5MzgwNTZiMjJhZTFjMWUzNzhhMDM1NTQyOWE2M2JiYmZhMzUwMzEwYWE0MjBjMmM2MjhiMTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFhMzU1MjEwNTgyYzU0NTgyM2ZjNTUyODg3ZjZlY2Q1ZGRmMmJjZmYwMDg1ODNmZTNjNzI3Zjg1NDc4ZTkwNWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ4NjhiYTI0YTAzODJjOGY2OTg5ODgzMGU2YzYxODFmOGUxMTA0NjExM2MwMzRiYmM4NTQxY2U0OTAzY2Y1NjYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_effd743768f04808ba3f333d8558ae99",
+      "statement": "Per subscriber row the wechat appid is resolved from the row's own shop-scoped key `arrivalNoticeSub:<companyId>:<itemId>[:<rowDistributorId>]` (hash field userId, JSON value's wxa_appid — the appid the member was on when subscribing); on a hash miss or null user id it falls back to the wechat_weapp authorizer appid for template name yykweishop (WeappAuthorizerAppidRepository.findAuthorizerAppid), and an empty appid skips that row's send.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/ItemStoreGoodsArrivalWxaTemplateOrchestrator.java#L103-L153",
+          "version": "repo-lines-v1:sha256:87acaa19aed5b3dc4880dad702aa16da670af77a620b677be34d6231c04c8d29:eyJzZWxlY3RlZExpbmVDb3VudCI6NTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJkMmU1ODM5MjZiNmQxYTc1ZDc2OWQ5MzFjZTZmMzk1OWM2YmM3MTViZTUyNjZmNTM2MzEwN2FhZDEzMGYyMzciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjEyZmYzM2RkYjE3NzRjNjEyMWMxZjkzMDhiNzI3OTU5YTIwOWQ4ZDUzNWQ1OWY3OWEyNTFkMzdkOWFiNTNhYjEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJkNGIxZGQyMzkxOGMzNWY1ZDMzY2VhOWZhZmY5YzcwZTczNTkwMWI3NTRiYmE4NmVhYWM2ZDBkNTM4OGQ3NDcifQ"
+        },
+        {
+          "resource": "repo://ecshopx-wechat/src/main/java/cn/shopex/ecshopx/wechat/repository/WeappAuthorizerAppidRepository.java#L25-L45",
+          "version": "repo-lines-v1:sha256:d13f7a3bd12b11c7f8b92bc6817d149b5e012d74812cb832e599cfd6d5c3470e:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMzNjQ0ZDNhN2YxMDE1ZTA4YTZmZjkxZDRiYjYwYjlhNTIwNjM0ZDFkY2FjOGE2ZGI3MDVmMzI2YTM2ODc4OGQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQyYTM0MTA2MTI5NzVkOTZlZmZiMWYyYzE4ODcwOTk4YmNjYjk0ZmVkOTljMmNiMTJiMjhkNGZlNzA1ZmFkODAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d07114abcdd94a8bb14b81e2a57612e5",
+      "statement": "GoodsArrivalSubscribeMatchService's matching rule is distributor-scope based: a shop stock event (eventDistributorId>0) matches only rows with exactly that distributor_id (the total-store port is not consulted), while a headquarters event (eventDistributorId==0) additionally matches shop-scoped rows only when that shop currently draws the SKU from headquarters stock, decided by DistributorItemTotalStorePort.filterDistributorIdsUsingTotalStore (goods' impl over distributor_items.is_total_store) — a shop keeping local stock is not notified by a platform restock.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/port/goods/DistributorItemTotalStorePort.java#L22-L30",
+          "version": "repo-lines-v1:sha256:538f6dd22c0e2e9b1326f58ea53fbc9534d05a44bd3fa1319d9b5872e049d071:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZmFhMmYzYzQ2ZGE1NmM1ZDM4YmM4NjdlMDNjYmY2MjE2YmQyYmQ0ZTE1MTIzMzgyODk5MmI3NGI5ZGQ1YWQ1MyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOGU5MzJiMzRlOWQzM2E1NDc2NjUzODUwODhkM2U1ZmE3ZjY2MjdjODJhODVlZWZiNjNmOGQ2ZjZkZjQzNmUwYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/integration/members/DistributorItemTotalStorePortImpl.java#L26-L39",
+          "version": "repo-lines-v1:sha256:6d93796dce0ec06e7866f5b76ebdb7e7dfda49ad76ef38686bcb61f31031633a:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYxYTg4ODNhY2E1MTIzMjVmNGNlYTE5NzliNTk1MmIzMmE2Y2VjYjdlNmE4ZGE2NmE3MTdmYTI5ZDhiZTYyNzAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg0N2NiNWFlMmQxYWU1MjU5MzU1NTc1ODg1ZTE4ZDdkYTU0ZGNkMWMzNjMyMzM3Zjk2MmU3YmJlNjNiOWU0YzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/GoodsArrivalSubscribeMatchService.java#L39-L131",
+          "version": "repo-lines-v1:sha256:f5e65ae923a59a06ba8df502ac5dbb03afb1943b51bacf783f70eafc51a5b301:eyJzZWxlY3RlZExpbmVDb3VudCI6OTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImViZmVkYmY5ODFhNDY3MGE1NDhjODc0N2YwZThjNmEyNDA1MzJkZTg3NTEzZjc2OGM2ZmNiYzU4MjYwNDc2N2YiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZiMTg5NjI4ZDgwMDNmODA3NjJmZTc4MGI1YjQzMzk1Njc4NzQzODRlMzE0ZDQ1ZDA2MTE1ZmJhMGMzMzA3ZjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM0ZGVmNmE4MDA1MjQ0ZDc5NTU0M2NhYzkzZDk0ZWFjM2Q3OTZhYzUwYjEwNDlkZmVhNDVjNWVjNTcxNDZmNzUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_64b6da141b5a42b7ad881bf854487cb1",
+      "statement": "The wechat send is matched with source=wechat (listPending) while the subsequent markSuccess is source-agnostic and is the only writer of SUCCESS on the event:258 path — the alipay leg sends via its own source=alipay listPending but never marks. The consequence is that rows can be marked SUCCESS without their individual send firing (missing appid, missing open_id, or the orchestrator swallowing a runtime error), so both legs must keep the same matching semantics or a row can be silently marked without a send.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-ali/src/main/java/cn/shopex/ecshopx/ali/service/alitemplate/ItemStoreGoodsArrivalAliTemplateOrchestrator.java#L42-L75",
+          "version": "repo-lines-v1:sha256:68e4bc481d874d3a3a699d7b5d6b440b33c4c1ec5284e0ad47e37f9f96372e49:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3M2FkYjRiNGEzM2MwNmU4NWUyZDI3NzQ0YTAwYjQwOTkyMWYyMTU2OTkxZDlhYjA0ODc5OWQxY2FkZTg0ZjAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM1YjI4YTEwNDIxYTFmZWIzYjBmNWUxYWFjYTBmYmI5ZTAzZTZkMTE5MWE5MjI4YzIzYmFlMGE0MTQ5NzdhY2IiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJkNGIxZGQyMzkxOGMzNWY1ZDMzY2VhOWZhZmY5YzcwZTczNTkwMWI3NTRiYmE4NmVhYWM2ZDBkNTM4OGQ3NDcifQ"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/listener/ItemStoreUpdatedGoodsArrivalDispatchListener.java#L40-L56",
+          "version": "repo-lines-v1:sha256:92a8a433a4ca8995c09936967c97ee1943f2b0b006c348243e298d495de30eae:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwOGNjMTVkMDc1NGI2ZjIxZjcxZTBiMDNiOWRkNzg2YmM5ODgwMDNiMmI1NzU2NGM2MDUwYTgwMjI1MTdjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBmODY4YzA0YTcwOTdiY2QyNTc3ODJmZTAwNGRjNjg3Yjk4ZGZhNDdmYmZkYjgzYmRmZGUzMzgwYjYzNTE0MGYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImEyOThhMzAzZjliZjk5NmY0NDAwZDZhZGJhZGI5ZDgzNDg1Mjg5MjY0MDUyMWE1ODcwN2EzOTY3OTA4ZTkzOTMifQ"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/GoodsArrivalSubscribeMatchService.java#L51-L94",
+          "version": "repo-lines-v1:sha256:853730c4facd854836b6a9583a596fc47e3cf3a418a06d0bfe47b336fa1f1e24:eyJzZWxlY3RlZExpbmVDb3VudCI6NDQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ3ZjkwMjIzZGUyZjI5NDdiZThhNTRhMjdjNGQ5YjY3N2VjNDIzNWRhOTFlNWNiMTFmN2ViNzEyNjgyNGNhMzQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY2NDk2NGIxNDgyM2MyY2Y2Yjk5YTNlZGJjYjJkMGI4ODljODY0YjhmYzExMTUwNzcwYTU0NzQ3OTNlNTA5ODciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImIxZGQzNTExODZjZmJjNmU1NjA0ZjA4MzEzMjBlN2U1NzE4MGUyMmZhOWM4NDY0MWRhYTEyZTJiODc0Y2RkMDMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_2feaec5e51a84c07b60cf68d288de1ed",
+      "statement": "The goods-arrival notify path has no retry, no ERROR/err_reason write and no Redis dedupe lock: a failed send still marks the row SUCCESS (the subscriber gets no second chance until re-subscribing), and a repeat event:258 for the same item is naturally a no-op because the marking UPDATE re-guards sub_status='NO' inside the statement, preventing double-marks under concurrency.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/GoodsArrivalSubscribeMatchService.java#L64-L94",
+          "version": "repo-lines-v1:sha256:0e21ca4b3486ac14d3f7259acbce0e6c5990adec233a1e21cebf142b755ef579:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRlMzlhMGY2NTA0NjhlOTUyYzg0MmIyNmQ5Yjg4NGZhMjI1MjlmYTkwNzcxYThiMDNmYTQyNWE2YjE5OWM5MGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU1NTUxYTQ0NjdhMTM2NmUyYTEzNjEyNjRiYzU4N2FiODk3NzlhMDI0Y2VkY2FlZDM5Zjg0Yjg0OGRlMzY0MjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImIxZGQzNTExODZjZmJjNmU1NjA0ZjA4MzEzMjBlN2U1NzE4MGUyMmZhOWM4NDY0MWRhYTEyZTJiODc0Y2RkMDMifQ"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/ItemStoreGoodsArrivalWxaTemplateOrchestrator.java#L76-L125",
+          "version": "repo-lines-v1:sha256:4589647c4772b930095fa1b6e11f8975a66709078d781beb3a2257f188c109a2:eyJzZWxlY3RlZExpbmVDb3VudCI6NTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3M2FkYjRiNGEzM2MwNmU4NWUyZDI3NzQ0YTAwYjQwOTkyMWYyMTU2OTkxZDlhYjA0ODc5OWQxY2FkZTg0ZjAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ2YjgyZWY0ZDY5ZWYzN2ZhMDFmNzVmOGNlZjY2MWI0MjliNGFiMzJmMTU1MDA4YzUyMjg5OTU1NDY4YTM4NWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ4NjhiYTI0YTAzODJjOGY2OTg5ODgzMGU2YzYxODFmOGUxMTA0NjExM2MwMzRiYmM4NTQxY2U0OTAzY2Y1NjYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_ffe895dddb524a7cbf6762ab7369dbdf",
+      "statement": "The send port `GoodsArrivalWxaSubscribeSendPort` (declared in ecshopx-common/port/members so members never depends on promotions) is implemented in promotions by GoodsArrivalWxaSubscribeSendAdapter, delegating to the central WXA subscribe sender WxaTemplateMsgActivityRemindSendService; the goodsArrivalNotice scene is WxaTemplateSceneDefinitions.GOODS_ARRIVAL_NOTICE (template id 5019, 商品到货通知, keywords item_name/notice).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/port/members/GoodsArrivalWxaSubscribeSendPort.java#L21-L25",
+          "version": "repo-lines-v1:sha256:25fae5a0a0244c0f9cbbae613337168e5af8000194fefd3330c1d1fdd3580fd7:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDU0MDllNGQ0NzIyMTVjYTk2MjFjYWNjZWI0MmZhNzBjODg4ZTMyNjFiYWJkM2UzNzc2MmEzNjRlMDY2Y2Y3NCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMmYyNzhmYzI0OGUzZDIwYWZhZGJhYzg1YzRhMDU3ZjdjMzI0YjY2NTU3YzQ4YjM3MDQzMjE3MDQxNzNhMzNmZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/integration/members/GoodsArrivalWxaSubscribeSendAdapter.java#L24-L37",
+          "version": "repo-lines-v1:sha256:ca194eb792f6698d64e506b8e5397ae75bb6fcc732b5469a73245bc06748e2e4:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJiMzM2YzQyYjJmNTIwN2I3NzVlNTBhOGRhY2UyZDZkMTViMjZmNjFlOGNkYTJjYTRkNDNmY2U0YWU0ODQ0ZjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE2YzUwZDg1NDM4OTUwMDE3ZjVmNDY1ZmFhZWVhMTNiNGI2ZGIxOTU0ZmQzM2ZhODVkNmVlMzJkZGIyZDMxNTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/wxatemplate/WxaTemplateSceneDefinitions.java#L250-L261",
+          "version": "repo-lines-v1:sha256:55a012e2192d5eb83dbc1dba6e28fba48cecd0b67eaf13549e0e74d7f3bbfa13:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk2MmY3NmFhMWNjOTI3ZGU4MDQ5Yjk2ODc0YmIzYjNkMGM3OTkzY2RhYTY2N2M5NWQ5ZDA4MGUzMWNhYTJhYTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM1NDNhMzAzNmY3ZTdiMGQ5ZTdiZDFmMmJmZGIyYjgzYTcwNTE0ZjliOTIxNjcxNGFlM2Y4OTE2MWE0ZmQ4ZGYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjExOGQ3MmI5M2FmODM2YjMxNGNlOTM1OWM4MDZkMmU1ZGNiMGY0YTZkYjkwZmU0MzhkNzhlMmVjZmM2YTA2MjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjUyYjUyN2FmYzhkZjRlMjg4NWQ5NWJlOTY4MmQwZDYzNmE1YzBmZWI0OGY4YTZmM2FhYTYxNzI4MGM1ZDk4YWUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_03df1fafa2c94b97b3e7cc83a939155b",
+      "statement": "The admin console reads subscribe notices read-only via `GET /api/v1/members/subscribe/list` (MembersSubscribeController, @AdminAuth + @Activated routeAlias member.subscribe.list) over MembersSubscribeNoticeListService, filtering by sub_type (default goods), sub_status, rel_id and created-time range, joining the member username per row (匿名 fallback) and re-resolving item names for goods rows.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/api/admin/v1/MembersSubscribeController.java#L35-L72",
+          "version": "repo-lines-v1:sha256:cd5523e991300ded2478755c1605cb497a3b5b735d7536eb64cc2713ab15aa92:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFiOGU0YjZlMGE0YjBjMjg3NjY4YzQxZTNhMDZhYWIzNDg2NWVlNWU2YmE3M2Q0Nzc2Yjc4MWFlODI4YjRkNjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYzOTRiOTdjMTU3ZjNhZjA0OWVhNjFkMGY2N2U2M2JiNzQxNWU2OTViZDBlMTk3NzlkNTQ0NmY2YTE1MTZmNjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/admin/MembersSubscribeNoticeListService.java#L67-L174",
+          "version": "repo-lines-v1:sha256:b73010c82f5485b2eeb7662c79f6aed6cd00fcde66acd5c57e8ef7d70bd3691a:eyJzZWxlY3RlZExpbmVDb3VudCI6MTA4LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI0MWUyODQ3ZjJjZWIwYTAyZmZlZWE3MmE0OTI0N2Y2OWU2YjEyMzk3OGEyMjZmY2QxM2MzNmE3ODMwNjVkMzI5IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJjMjI1MDUxOThiNmMxOGQ1NDIwNzM0ODRjMGQwNTFmM2ZjZGVhNTAxNGJlYjdlOWQ0ZTAzNTM5ZmQ5NTNmYWQwIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI4MmM1MGQ0ODk3ODBlZWYwNmE4ZGVkN2QxOWU0YmZlZWQ4NmIyY2RlZDFiZThhOGY0ODExZGUwMDA2ZmNhYjI0IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJkN2E3YmI0YjViM2M5OGQyMGU3MWYzZDlhYzU1ZjZiNzk3OGE3MmFjNThjNWNkYTk5OThhMjJlYjg4ZWI0MmE3In0"
+        }
+      ]
+    },
+    {
+      "id": "claim_0de637a773564d3694146e2c83043bfb",
+      "statement": "The goods-arrival subsystem behavior is pinned by GoodsArrivalSubscribeMatchServiceTest (shop event = exact distributor_id with the total-store port never consulted; headquarters event = distributor_id=0 row plus only is_total_store=true shops), ItemStoreGoodsArrivalWxaTemplateOrchestratorTest (store<=0 skips everything; send payload carries scenes_name=goodsArrivalNotice, resolved appid, openid and page_query_str id=<itemId> with forceFire=true; a headquarters event reads the appid from the row's own arrivalNoticeSub:<companyId>:<itemId>:<rowDistributorId> key), and bootstrap's ItemStoreUpdatedAliTemplateBusDispatchFlowTest (event:258 runs the ali listener before the members listener inline, then the ali template job is enqueued).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/dispatch/ItemStoreUpdatedAliTemplateBusDispatchFlowTest.java#L32-L105",
+          "version": "repo-lines-v1:sha256:670326638f11ee127dfd337ecc695daea87dfd2b9c8a5de14240cb17b729f4ec:eyJzZWxlY3RlZExpbmVDb3VudCI6NzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZmMDgwMjBhYTE3MDU3OTFlZGUwNDY1NjdiOTY2MTkzNzFhNWMxOWM0ZGRhMzlkOWEyOGU1OTAxYmM4YjBlYTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRjNjBiNjg2Yzg5YzUyNGY0NWIxNGFlM2RkNGQxYjU0ZmM4MDY3MmUwMjg5NGI2YWVhZjQ2MTllMDY0NWRjMzciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/test/java/cn/shopex/ecshopx/members/service/GoodsArrivalSubscribeMatchServiceTest.java#L33-L61",
+          "version": "repo-lines-v1:sha256:c05b65281ca5b4acab844e0480b86f198854e414fddbccf06092133cc65971d0:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiYTFiMWYwZDkzOTU3NDJlMjE2ZjcxYzllOTBjOGZiOWFhNmI0Mjk2YWFhNGNlN2NjMDVjOTZlYTViODdiYWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRmMGRiYWY5ZDNmZDRkYTQzZDdiZGQyYzNjNzMzNzk1ZWU4ZWRmNDYxZTIwYjY3YTA0MTZmODhkMDFhMTYxNTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjgzMzVkZDRmYzQ3ZDQyNmNlNTQ3ZjRkOGY5MDQwZWM0ODBkY2Q2YzBjNDVlMmMwZTA4NDc4YWQ0ODJmZDEzYzIifQ"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/test/java/cn/shopex/ecshopx/members/service/ItemStoreGoodsArrivalWxaTemplateOrchestratorTest.java#L57-L112",
+          "version": "repo-lines-v1:sha256:d3d0e7f5622ff0c6dd5d8e5f65499890be6ca9d5995d983b9a2dce144163a372:eyJzZWxlY3RlZExpbmVDb3VudCI6NTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiYTFiMWYwZDkzOTU3NDJlMjE2ZjcxYzllOTBjOGZiOWFhNmI0Mjk2YWFhNGNlN2NjMDVjOTZlYTViODdiYWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU1NzI0MzJhMjRlNzIzMzUxMTQ2NTY0OGI1YWRmMzQ1OWNkMWI1OGY5MGRlYWUzZDhkMmYyMDFiM2Y0OWE0MjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.2",
+    "at": "2026-10-25T17:14:04.348Z"
+  }
+}

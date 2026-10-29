@@ -96,6 +96,7 @@ public class AftersalesReviewService {
 	private final ThirdPartyTradeAftersalesSaasErpDispatchPublisher
 			thirdPartyTradeAftersalesSaasErpDispatchPublisher;
 	private final TradeAftersalesDispatchPublisher tradeAftersalesDispatchPublisher;
+	private final AftersalesRefuseWxaNotifyService aftersalesRefuseWxaNotifyService;
 
 	public AftersalesReviewService(
 			AftersalesMapper aftersalesMapper,
@@ -120,7 +121,8 @@ public class AftersalesReviewService {
 					thirdPartyTradeAftersalesCancelSaasErpDispatchPublisher,
 			ThirdPartyTradeAftersalesSaasErpDispatchPublisher
 					thirdPartyTradeAftersalesSaasErpDispatchPublisher,
-			TradeAftersalesDispatchPublisher tradeAftersalesDispatchPublisher) {
+			TradeAftersalesDispatchPublisher tradeAftersalesDispatchPublisher,
+			AftersalesRefuseWxaNotifyService aftersalesRefuseWxaNotifyService) {
 		this.aftersalesMapper = aftersalesMapper;
 		this.aftersalesDetailMapper = aftersalesDetailMapper;
 		this.aftersalesRefundService = aftersalesRefundService;
@@ -144,6 +146,7 @@ public class AftersalesReviewService {
 		this.thirdPartyTradeAftersalesSaasErpDispatchPublisher =
 				thirdPartyTradeAftersalesSaasErpDispatchPublisher;
 		this.tradeAftersalesDispatchPublisher = tradeAftersalesDispatchPublisher;
+		this.aftersalesRefuseWxaNotifyService = aftersalesRefuseWxaNotifyService;
 	}
 
 	public Map<String, Object> aftersalesReview(LinkedHashMap<String, Object> merged, HttpServletRequest request) {
@@ -625,13 +628,7 @@ public class AftersalesReviewService {
 	}
 
 	private void sendWxaTemplateMsg(int newAftersalesStatus, Map<String, Object> templateData) {
-		log.info(
-				"wxa template (placeholder) aftersales_bn={} order_id={} status={} refuse_reason={} refund_amount={}",
-				templateData.get("aftersales_bn"),
-				templateData.get("order_id"),
-				newAftersalesStatus,
-				templateData.get("refuse_reason"),
-				templateData.get("refund_fee"));
+		aftersalesRefuseWxaNotifyService.sendByStatus(newAftersalesStatus, templateData);
 	}
 
 	private Map<String, Object> aftersalesToSnakeMap(Aftersales a) {

@@ -24,6 +24,7 @@ import cn.shopex.ecshopx.common.order.normal.OrderCreateEmployeePurchaseEmptyCar
 import cn.shopex.ecshopx.common.order.normal.OrderCreatePostCommitPort;
 import cn.shopex.ecshopx.common.order.normal.OrderDirectedCrowdDiscountPort;
 import cn.shopex.ecshopx.common.port.order.OrderProcessLogPublishPort;
+import cn.shopex.ecshopx.common.operatorcart.OperatorCartFastBuyFacade;
 import cn.shopex.ecshopx.companys.service.operatorcart.OperatorCartDeleteDataService;
 import cn.shopex.ecshopx.members.service.account.MemberAccountService;
 import cn.shopex.ecshopx.orders.domain.Cart;
@@ -48,6 +49,7 @@ public class OrderCreatePostCommitPortImpl implements OrderCreatePostCommitPort 
 	private final OrderDirectedCrowdDiscountPort orderDirectedCrowdDiscountPort;
 	private final PointMemberAddPointService pointMemberAddPointService;
 	private final OperatorCartDeleteDataService operatorCartDeleteDataService;
+	private final OperatorCartFastBuyFacade operatorCartFastBuyFacade;
 	private final CartMapper cartMapper;
 	private final StringRedisTemplate stringRedisTemplate;
 	private final SendPayOrdersRemindJobDispatchPublisher sendPayOrdersRemindJobDispatchPublisher;
@@ -61,6 +63,7 @@ public class OrderCreatePostCommitPortImpl implements OrderCreatePostCommitPort 
 			OrderDirectedCrowdDiscountPort orderDirectedCrowdDiscountPort,
 			PointMemberAddPointService pointMemberAddPointService,
 			OperatorCartDeleteDataService operatorCartDeleteDataService,
+			OperatorCartFastBuyFacade operatorCartFastBuyFacade,
 			CartMapper cartMapper,
 			@Qualifier("sharedStringRedisTemplate") StringRedisTemplate stringRedisTemplate,
 			SendPayOrdersRemindJobDispatchPublisher sendPayOrdersRemindJobDispatchPublisher,
@@ -72,6 +75,7 @@ public class OrderCreatePostCommitPortImpl implements OrderCreatePostCommitPort 
 		this.orderDirectedCrowdDiscountPort = orderDirectedCrowdDiscountPort;
 		this.pointMemberAddPointService = pointMemberAddPointService;
 		this.operatorCartDeleteDataService = operatorCartDeleteDataService;
+		this.operatorCartFastBuyFacade = operatorCartFastBuyFacade;
 		this.cartMapper = cartMapper;
 		this.stringRedisTemplate = stringRedisTemplate;
 		this.sendPayOrdersRemindJobDispatchPublisher = sendPayOrdersRemindJobDispatchPublisher;
@@ -214,6 +218,11 @@ public class OrderCreatePostCommitPortImpl implements OrderCreatePostCommitPort 
 			return;
 		}
 		if ("normal_shopadmin".equals(orderType)) {
+			if ("fastbuy".equals(stringVal(pr.get("cart_type")))) {
+				long distributorId = longVal(pr.get("distributor_id"), 0L);
+				operatorCartFastBuyFacade.clearFastBuyCart(companyId, operatorId, distributorId);
+				return;
+			}
 			emptyOperatorCart(companyId, operatorId, list);
 			return;
 		}

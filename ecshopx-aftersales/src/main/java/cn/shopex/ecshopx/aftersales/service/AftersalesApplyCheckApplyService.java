@@ -17,35 +17,81 @@
 package cn.shopex.ecshopx.aftersales.service;
 
 import cn.shopex.ecshopx.aftersales.dto.AftersalesApplyParams;
-import cn.shopex.ecshopx.common.exception.BadRequestException;
 import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.common.port.order.OrderNormalOrderHeaderReadPort;
 import cn.shopex.ecshopx.common.port.order.OrderNormalOrderItemsReadPort;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AftersalesApplyCheckApplyService {
 
+	private static final String MSG_ORDER_NOT_FOUND = "aftersales.apply.order_not_found";
+	private static final String MSG_ORDER_STATUS_INVALID = "aftersales.apply.order_status_invalid";
+	private static final String MSG_APPLY_EXPIRED = "aftersales.apply.apply_expired";
+	private static final String MSG_DETAIL_REQUIRED = "aftersales.apply.detail_required";
+	private static final String MSG_TYPE_REQUIRED = "aftersales.apply.type_required";
+	private static final String MSG_REASON_REQUIRED = "aftersales.apply.reason_required";
+	private static final String MSG_SUB_ORDER_NOT_FOUND = "aftersales.apply.sub_order_not_found";
+	private static final String MSG_QUANTITY_MUST_POSITIVE = "aftersales.apply.quantity_must_positive";
+	private static final String MSG_ORDER_NOT_VERIFIED = "aftersales.apply.order_not_verified";
+	private static final String MSG_NOT_DELIVERED = "aftersales.apply.not_delivered";
+	private static final String MSG_QUANTITY_EXCEEDED = "aftersales.apply.quantity_exceeded";
+	private static final String MSG_ORDER_ITEMS_NOT_FOUND = "aftersales.apply.order_items_not_found";
+	private static final String MSG_FREIGHT_PARTIAL_NOT_SUPPORTED =
+			"aftersales.apply.freight_partial_not_supported";
+	private static final String MSG_FREIGHT_NOT_PAID = "aftersales.apply.freight_not_paid";
+	private static final String MSG_FREIGHT_EXCEEDED = "aftersales.apply.freight_exceeded";
+	private static final String MSG_FREIGHT_POINT_NOT_PAID = "aftersales.apply.freight_point_not_paid";
+	private static final String MSG_FREIGHT_POINT_EXCEEDED = "aftersales.apply.freight_point_exceeded";
+
+	private static final String DEFAULT_ORDER_NOT_FOUND = "系统无此订单，无法申请售后";
+	private static final String DEFAULT_ORDER_STATUS_INVALID = "该订单不能申请售后";
+	private static final String DEFAULT_APPLY_EXPIRED = "该订单已超过售后申请时效";
+	private static final String DEFAULT_DETAIL_REQUIRED = "请提交审核售后的商品";
+	private static final String DEFAULT_TYPE_REQUIRED = "售后类型必选";
+	private static final String DEFAULT_REASON_REQUIRED = "售后理由必选";
+	private static final String DEFAULT_SUB_ORDER_NOT_FOUND = "申请售后商品的订单不存在";
+	private static final String DEFAULT_QUANTITY_MUST_POSITIVE = "{0} 售后的商品数量必须大于0";
+	private static final String DEFAULT_ORDER_NOT_VERIFIED = "请先核销订单";
+	private static final String DEFAULT_NOT_DELIVERED = "{0} 未发货，不能申请退换货";
+	private static final String DEFAULT_QUANTITY_EXCEEDED = "{0} 剩余可申请售后的数量为{1}";
+	private static final String DEFAULT_ORDER_ITEMS_NOT_FOUND = "订单商品不存在";
+	private static final String DEFAULT_FREIGHT_PARTIAL_NOT_SUPPORTED = "部分退不支持退运费";
+	private static final String DEFAULT_FREIGHT_NOT_PAID = "订单未付运费";
+	private static final String DEFAULT_FREIGHT_EXCEEDED = "申请退款运费不能超出支付运费";
+	private static final String DEFAULT_FREIGHT_POINT_NOT_PAID = "订单未付积分运费";
+	private static final String DEFAULT_FREIGHT_POINT_EXCEEDED =
+			"申请退款积分运费不能超出支付积分运费";
+
 	private final OrderNormalOrderHeaderReadPort orderNormalOrderHeaderReadPort;
 	private final OrderNormalOrderItemsReadPort orderNormalOrderItemsReadPort;
 	private final AftersalesApplyDetailQueryService aftersalesApplyDetailQueryService;
+	private final MessageSource messageSource;
 
 	public AftersalesApplyCheckApplyService(
 			OrderNormalOrderHeaderReadPort orderNormalOrderHeaderReadPort,
 			OrderNormalOrderItemsReadPort orderNormalOrderItemsReadPort,
-			AftersalesApplyDetailQueryService aftersalesApplyDetailQueryService) {
+			AftersalesApplyDetailQueryService aftersalesApplyDetailQueryService,
+			MessageSource messageSource) {
 		this.orderNormalOrderHeaderReadPort = orderNormalOrderHeaderReadPort;
 		this.orderNormalOrderItemsReadPort = orderNormalOrderItemsReadPort;
 		this.aftersalesApplyDetailQueryService = aftersalesApplyDetailQueryService;
+		this.messageSource = messageSource;
 	}
 
 	public void checkApply(AftersalesApplyParams params) {
+		checkApply(params, false);
+	}
+
+	public void checkApply(
+			AftersalesApplyParams params, boolean shareFullDeliveredAftersalesQuantity) {
 		Map<String, Object> data = params.toCheckApplyDataMap();
 		long companyId = longVal(data.get("company_id"));
 		long orderId = longVal(data.get("order_id"));
@@ -53,39 +99,42 @@ public class AftersalesApplyCheckApplyService {
 		Optional<Map<String, Object>> headOpt =
 				orderNormalOrderHeaderReadPort.getHeader(companyId, orderId);
 		if (headOpt.isEmpty()) {
-			throw new ResourceException("系统无此订单，无法申请售后");
+			throw new ResourceException(message(MSG_ORDER_NOT_FOUND, DEFAULT_ORDER_NOT_FOUND));
 		}
 		Map<String, Object> orderInfo = headOpt.get();
 		String orderStatus = str(orderInfo.get("order_status"));
 		if ("NOTPAY".equals(orderStatus) || "CANCEL".equals(orderStatus)) {
-			throw new ResourceException("该订单不能申请售后");
+			throw new ResourceException(
+					message(MSG_ORDER_STATUS_INVALID, DEFAULT_ORDER_STATUS_INVALID));
 		}
 		if ("DONE".equals(orderStatus)) {
 			int closeAt = intVal(orderInfo.get("order_auto_close_aftersales_time"));
 			if (closeAt > 0 && System.currentTimeMillis() / 1000L > closeAt) {
-				throw new ResourceException("该订单已超过售后申请时效");
+				throw new ResourceException(message(MSG_APPLY_EXPIRED, DEFAULT_APPLY_EXPIRED));
 			}
 		}
 
 		Object detailObj = data.get("detail");
 		if (!(detailObj instanceof List<?> list) || list.isEmpty()) {
-			throw new ResourceException("请提交审核售后的商品");
+			throw new ResourceException(message(MSG_DETAIL_REQUIRED, DEFAULT_DETAIL_REQUIRED));
 		}
 
-		if (str(data.get("aftersales_type")).isEmpty()) {
-			throw new ResourceException("售后类型必选");
+		String aftersalesType = str(data.get("aftersales_type"));
+		if (aftersalesType.isEmpty()) {
+			throw new ResourceException(message(MSG_TYPE_REQUIRED, DEFAULT_TYPE_REQUIRED));
 		}
 		if (str(data.get("reason")).isEmpty()) {
-			throw new ResourceException("售后原因必选");
+			throw new ResourceException(message(MSG_REASON_REQUIRED, DEFAULT_REASON_REQUIRED));
 		}
 
 		List<Map<String, Object>> orderLineList =
 				orderNormalOrderItemsReadPort.listItems(companyId, orderId);
 
 		int freightReq = intVal(data.get("freight"));
-		if (freightReq > 0) {
+		if (isFreightRefundType(aftersalesType) && freightReq > 0) {
 			if (orderLineList == null || orderLineList.isEmpty()) {
-				throw new ResourceException("订单商品不存在");
+				throw new ResourceException(
+						message(MSG_ORDER_ITEMS_NOT_FOUND, DEFAULT_ORDER_ITEMS_NOT_FOUND));
 			}
 			Map<Long, Integer> applyDetailMap = new HashMap<>();
 			for (Object o : list) {
@@ -119,52 +168,63 @@ public class AftersalesApplyCheckApplyService {
 				}
 			}
 			if (!isLastAftersales) {
-				throw new ResourceException("部分退不支持退运费");
+				throw new ResourceException(
+						message(
+								MSG_FREIGHT_PARTIAL_NOT_SUPPORTED,
+								DEFAULT_FREIGHT_PARTIAL_NOT_SUPPORTED));
 			}
 			String ft = str(orderInfo.get("freight_type"));
 			if ("cash".equals(ft)) {
 				int ff = intVal(orderInfo.get("freight_fee"));
 				if (ff <= 0) {
-					throw new ResourceException("订单未付运费");
+					throw new ResourceException(message(MSG_FREIGHT_NOT_PAID, DEFAULT_FREIGHT_NOT_PAID));
 				}
 				int refunded =
 						aftersalesApplyDetailQueryService.sumAppliedFreightCash(companyId, orderId);
 				int remain = ff - refunded;
 				if (freightReq > remain) {
-					throw new ResourceException("申请退款运费不能超出支付运费");
+					throw new ResourceException(
+							message(MSG_FREIGHT_EXCEEDED, DEFAULT_FREIGHT_EXCEEDED));
 				}
 			} else if ("point".equals(ft)) {
-				int ff = intVal(orderInfo.get("freight_point"));
+				int ff = intVal(orderInfo.get("freight_fee"));
 				if (ff <= 0) {
-					throw new ResourceException("订单未付积分运费");
+					throw new ResourceException(
+							message(MSG_FREIGHT_POINT_NOT_PAID, DEFAULT_FREIGHT_POINT_NOT_PAID));
 				}
 				int refunded =
 						aftersalesApplyDetailQueryService.sumAppliedFreightPoint(companyId, orderId);
 				int remain = ff - refunded;
 				if (freightReq > remain) {
-					throw new ResourceException("申请退款积分运费不能超出支付积分运费");
+					throw new ResourceException(
+							message(MSG_FREIGHT_POINT_EXCEEDED, DEFAULT_FREIGHT_POINT_EXCEEDED));
 				}
 			}
 		}
 
 		for (Object o : list) {
 			if (!(o instanceof Map<?, ?> raw)) {
-				throw new ResourceException("请提交审核售后的商品");
+				throw new ResourceException(message(MSG_DETAIL_REQUIRED, DEFAULT_DETAIL_REQUIRED));
 			}
 			@SuppressWarnings("unchecked")
 			Map<String, Object> v = (Map<String, Object>) raw;
 			long subId = longVal(v.get("id"));
 			Map<String, Object> subOrderInfo = findSubOrder(orderLineList, subId);
 			if (subOrderInfo == null) {
-				throw new ResourceException("申请售后商品的订单不存在");
+				throw new ResourceException(
+						message(MSG_SUB_ORDER_NOT_FOUND, DEFAULT_SUB_ORDER_NOT_FOUND));
 			}
 			int num = intVal(v.get("num"));
 			if (num <= 0) {
-				throw new ResourceException(str(subOrderInfo.get("item_name")) + " 售后的商品数量必须大于0");
+				throw new ResourceException(
+						message(
+								MSG_QUANTITY_MUST_POSITIVE,
+								DEFAULT_QUANTITY_MUST_POSITIVE,
+								str(subOrderInfo.get("item_name"))));
 			}
 			if ("ziti".equals(str(orderInfo.get("receipt_type")))) {
 				if (!"DONE".equals(str(orderInfo.get("delivery_status")))) {
-					throw new ResourceException("请先核销订单");
+					throw new ResourceException(message(MSG_ORDER_NOT_VERIFIED, DEFAULT_ORDER_NOT_VERIFIED));
 				}
 			} else {
 				int deliveryItemNum = intVal(subOrderInfo.get("delivery_item_num"));
@@ -174,153 +234,64 @@ public class AftersalesApplyCheckApplyService {
 				String ast = str(data.get("aftersales_type"));
 				if ("REFUND_GOODS".equals(ast) || "EXCHANGING_GOODS".equals(ast)) {
 					if (deliveryItemNum <= 0) {
-						throw new ResourceException(str(subOrderInfo.get("item_name")) + " 未发货，不能申请退换货");
+						throw new ResourceException(
+								message(
+										MSG_NOT_DELIVERED,
+										DEFAULT_NOT_DELIVERED,
+										str(subOrderInfo.get("item_name"))));
 					}
 				}
 			}
 			boolean partial = Boolean.TRUE.equals(data.get("is_partial_cancel"));
 			if (!partial) {
-				int appliedNum =
-						aftersalesApplyDetailQueryService.sumAppliedNum(companyId, orderId, subId);
+				int lineNum = intVal(subOrderInfo.get("num"));
 				int deliveryItemNum = intVal(subOrderInfo.get("delivery_item_num"));
 				if ("ziti".equals(str(orderInfo.get("receipt_type")))) {
-					deliveryItemNum = intVal(subOrderInfo.get("num"));
+					deliveryItemNum = lineNum;
 				} else {
 					if ("DONE".equals(str(subOrderInfo.get("delivery_status"))) && deliveryItemNum <= 0) {
-						deliveryItemNum = intVal(subOrderInfo.get("num"));
+						deliveryItemNum = lineNum;
 					}
 				}
+				deliveryItemNum = Math.min(deliveryItemNum, lineNum);
 				int cancelItemNum = intVal(subOrderInfo.get("cancel_item_num"));
-				int leftNum = deliveryItemNum + cancelItemNum - appliedNum;
+				int appliedNum;
+				int leftNum;
+				if ("ONLY_REFUND".equals(aftersalesType)
+						&& shareFullDeliveredAftersalesQuantity
+						&& "DONE".equals(str(orderInfo.get("delivery_status")))) {
+					appliedNum =
+							aftersalesApplyDetailQueryService.sumAppliedNum(companyId, orderId, subId);
+					leftNum = deliveryItemNum - appliedNum;
+				} else if ("ONLY_REFUND".equals(aftersalesType)) {
+					appliedNum =
+							aftersalesApplyDetailQueryService.sumAppliedNumByType(
+									companyId, orderId, subId, "ONLY_REFUND");
+					leftNum = lineNum - cancelItemNum - deliveryItemNum - appliedNum;
+				} else {
+					appliedNum =
+							aftersalesApplyDetailQueryService.sumAppliedNumByType(
+									companyId, orderId, subId, "REFUND_GOODS", "EXCHANGING_GOODS");
+					leftNum = deliveryItemNum - appliedNum;
+				}
 				if (num > leftNum) {
 					throw new ResourceException(
-							str(subOrderInfo.get("item_name"))
-									+ " 剩余可申请售后的数量为"
-									+ leftNum
-									+ ",申请售后数量为"
-									+ num
-									+ ",已申请售后数量为:"
-									+ appliedNum);
+							message(
+									MSG_QUANTITY_EXCEEDED,
+									DEFAULT_QUANTITY_EXCEEDED,
+									str(subOrderInfo.get("item_name")),
+									leftNum));
 				}
 			}
 		}
-
-		validateRequestRefundAgainstComputedTotals(companyId, orderId, list, orderLineList, data);
 	}
 
-	private void validateRequestRefundAgainstComputedTotals(
-			long companyId,
-			long orderId,
-			List<?> detailList,
-			List<Map<String, Object>> orderLineList,
-			Map<String, Object> data) {
-		BigDecimal totalRefundFeeBd = BigDecimal.ZERO;
-		BigDecimal totalRefundPointBd = BigDecimal.ZERO;
-
-		for (Object o : detailList) {
-			if (!(o instanceof Map<?, ?> raw)) {
-				continue;
-			}
-			@SuppressWarnings("unchecked")
-			Map<String, Object> v = (Map<String, Object>) raw;
-			long subId = longVal(v.get("id"));
-			Map<String, Object> subOrderInfo = findSubOrder(orderLineList, subId);
-			if (subOrderInfo == null) {
-				throw new ResourceException("申请售后商品的订单不存在");
-			}
-			int num = intVal(v.get("num"));
-			int lineNum = intVal(subOrderInfo.get("num"));
-			BigDecimal lineTotalFeeBd = bdInt(subOrderInfo.get("total_fee"));
-			BigDecimal linePointBd = bdInt(subOrderInfo.get("point"));
-			int appliedNum = aftersalesApplyDetailQueryService.sumAppliedNum(companyId, orderId, subId);
-			int appliedRefundFee =
-					aftersalesApplyDetailQueryService.sumAppliedRefundFee(companyId, orderId, subId);
-			int appliedRefundPoint =
-					aftersalesApplyDetailQueryService.sumAppliedRefundPoint(companyId, orderId, subId);
-
-			BigDecimal refundFeeBd;
-			BigDecimal refundPointBd;
-			if (num == lineNum) {
-				refundFeeBd = lineTotalFeeBd;
-				refundPointBd = linePointBd;
-			} else {
-				int leftNum = lineNum - appliedNum - num;
-				if (leftNum == 0) {
-					refundFeeBd = lineTotalFeeBd.subtract(bdInt(appliedRefundFee));
-					refundPointBd = linePointBd.subtract(bdInt(appliedRefundPoint));
-				} else if (leftNum > 0) {
-					refundFeeBd = floorDivMulBd(lineTotalFeeBd, lineNum, num);
-					refundPointBd = floorDivMulBd(linePointBd, lineNum, num);
-				} else {
-					throw new ResourceException("申请售后单数据异常");
-				}
-			}
-
-			if (v.get("total_fee") != null && intVal(v.get("total_fee")) > 0) {
-				totalRefundFeeBd = totalRefundFeeBd.add(bdInt(v.get("total_fee")));
-			} else {
-				totalRefundFeeBd = totalRefundFeeBd.add(refundFeeBd);
-			}
-			if (v.get("total_point") != null && intVal(v.get("total_point")) > 0) {
-				totalRefundPointBd = totalRefundPointBd.add(bdInt(v.get("total_point")));
-			} else {
-				totalRefundPointBd = totalRefundPointBd.add(refundPointBd);
-			}
+	private String message(String key, String defaultMessage, Object... args) {
+		Locale locale = LocaleContextHolder.getLocale();
+		if (locale == null) {
+			locale = Locale.SIMPLIFIED_CHINESE;
 		}
-
-		// Amounts are fen/points integers; round request values before compare to absorb
-		// JSON/JS float noise such as 440.00000000000006.
-		int reqFee = parseRefundAsNonNegInt(data.get("refund_fee"));
-		int reqPoint = parseRefundAsNonNegInt(data.get("refund_point"));
-		int totalRefundFee = bdToNonNegIntPlain(totalRefundFeeBd);
-		int totalRefundPoint = bdToNonNegIntPlain(totalRefundPointBd);
-
-		if (reqFee > totalRefundFee) {
-			throw new ResourceException(
-					"退款金额不能超过可退金额!" + reqFee + " > " + totalRefundFee);
-		}
-		if (reqPoint > totalRefundPoint) {
-			throw new ResourceException("退还积分不能超过可退积分");
-		}
-	}
-
-	private static int parseRefundAsNonNegInt(Object raw) {
-		if (raw == null) {
-			return 0;
-		}
-		String s = String.valueOf(raw).trim();
-		if (s.isEmpty()) {
-			return 0;
-		}
-		try {
-			return new BigDecimal(s)
-					.setScale(0, RoundingMode.HALF_UP)
-					.max(BigDecimal.ZERO)
-					.intValue();
-		} catch (NumberFormatException e) {
-			throw new BadRequestException("参数类型错误");
-		}
-	}
-
-	private static BigDecimal floorDivMulBd(BigDecimal total, int divisor, int mult) {
-		if (divisor <= 0 || mult <= 0) {
-			return BigDecimal.ZERO;
-		}
-		return total
-				.divide(BigDecimal.valueOf(divisor), 2, RoundingMode.HALF_UP)
-				.multiply(BigDecimal.valueOf(mult))
-				.setScale(0, RoundingMode.FLOOR);
-	}
-
-	private static BigDecimal bdInt(Object o) {
-		return BigDecimal.valueOf(intVal(o));
-	}
-
-	private static int bdToNonNegIntPlain(BigDecimal b) {
-		if (b == null) {
-			return 0;
-		}
-		return b.setScale(0, RoundingMode.FLOOR).max(BigDecimal.ZERO).intValue();
+		return messageSource.getMessage(key, args.length == 0 ? null : args, defaultMessage, locale);
 	}
 
 	private static Map<String, Object> findSubOrder(List<Map<String, Object>> items, long subId) {
@@ -365,5 +336,9 @@ public class AftersalesApplyCheckApplyService {
 
 	private static String str(Object o) {
 		return o == null ? "" : String.valueOf(o).trim();
+	}
+
+	private static boolean isFreightRefundType(String aftersalesType) {
+		return "REFUND_GOODS".equals(aftersalesType) || "EXCHANGING_GOODS".equals(aftersalesType);
 	}
 }

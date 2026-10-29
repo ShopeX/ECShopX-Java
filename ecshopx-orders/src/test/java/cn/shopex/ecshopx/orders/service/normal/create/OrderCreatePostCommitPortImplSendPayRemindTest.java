@@ -3,11 +3,13 @@ package cn.shopex.ecshopx.orders.service.normal.create;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import cn.shopex.ecshopx.common.dispatch.SendPayOrdersRemindJobDispatchPublisher;
+import cn.shopex.ecshopx.common.operatorcart.OperatorCartFastBuyFacade;
 import cn.shopex.ecshopx.common.port.order.OrderProcessLogPublishPort;
 import cn.shopex.ecshopx.common.order.normal.NormalOrderCreateParams;
 import cn.shopex.ecshopx.common.order.normal.OrderCreateCouponConsumePort;
@@ -79,6 +81,7 @@ class OrderCreatePostCommitPortImplSendPayRemindTest {
 						orderDirectedCrowdDiscountPort,
 						pointMemberAddPointService,
 						operatorCartDeleteDataService,
+						mock(OperatorCartFastBuyFacade.class),
 						cartMapper,
 						stringRedisTemplate,
 						sendPayOrdersRemindJobDispatchPublisher,

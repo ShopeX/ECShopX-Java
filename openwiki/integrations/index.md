@@ -1,0 +1,4 @@
+# Files
+
+- [OpenAPI Gateway (ecshopx-openapi)](openapi.md) - How the public Open API surface works — the /api/openapi vs /api/openapi/internal path split, MD5 sign verification in OpenapiAuthInterceptor, the forward-registry dispatch into per-domain internal controllers, the PHP-compatible response envelope and error codes, and the openapi_developer credential lifecycle including the app_secret salt.
+- [Third-Party Integrations (ERP, CRM, Analytics, Cross-border)](third-party.md) - How ECShopX pushes and pulls with external systems — the trade-finish fan-out into Jushuitan, WdtErp, OME, Marketing Center, DmCrm, SaasErp, Shuyun, Youshu, Ali and customs; the per-tenant settings model in Redis/DB; and the http-enabled / NoOp gating that makes an unconfigured integration silently skip instead of failing the request.

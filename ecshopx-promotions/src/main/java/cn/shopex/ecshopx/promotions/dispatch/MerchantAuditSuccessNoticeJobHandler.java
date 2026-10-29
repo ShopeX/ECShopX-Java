@@ -17,7 +17,7 @@
 package cn.shopex.ecshopx.promotions.dispatch;
 
 import cn.shopex.ecshopx.common.dispatch.DispatchHandler;
-import cn.shopex.ecshopx.promotions.service.SmsSendTestService;
+import cn.shopex.ecshopx.companys.service.operator.sms.CompanySceneSmsSendPort;
 import java.util.Collections;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -29,10 +29,10 @@ public class MerchantAuditSuccessNoticeJobHandler implements DispatchHandler {
 
 	private static final Logger log = LoggerFactory.getLogger(MerchantAuditSuccessNoticeJobHandler.class);
 
-	private final SmsSendTestService smsSendTestService;
+	private final CompanySceneSmsSendPort companySceneSmsSendPort;
 
-	public MerchantAuditSuccessNoticeJobHandler(SmsSendTestService smsSendTestService) {
-		this.smsSendTestService = smsSendTestService;
+	public MerchantAuditSuccessNoticeJobHandler(CompanySceneSmsSendPort companySceneSmsSendPort) {
+		this.companySceneSmsSendPort = companySceneSmsSendPort;
 	}
 
 	@Override
@@ -40,14 +40,14 @@ public class MerchantAuditSuccessNoticeJobHandler implements DispatchHandler {
 		long companyId = extractCompanyId(payload.get("company_id"));
 		String mobile = payload.get("mobile") == null ? "" : String.valueOf(payload.get("mobile"));
 		try {
-			smsSendTestService.sendTemplatedNoticeSms(
+			companySceneSmsSendPort.sendSceneTemplatedSms(
 					companyId, mobile, "merchant_audit_success_notice", Collections.emptyMap());
 		} catch (RuntimeException e) {
-			log.debug(
-					"merchant_audit_success_notice failed companyId={} mobileTail={} err={}",
+			log.warn(
+					"merchant_audit_success_notice failed companyId={} mobileTail={}",
 					companyId,
 					maskTail(mobile),
-					e.getMessage());
+					e);
 		}
 	}
 

@@ -11,8 +11,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import cn.shopex.ecshopx.common.dispatch.MerchantDispatchJobNames;
+import cn.shopex.ecshopx.companys.service.operator.sms.CompanySceneSmsSendPort;
 import cn.shopex.ecshopx.promotions.dispatch.MerchantEnterSuccessNoticeJobHandler;
-import cn.shopex.ecshopx.promotions.service.SmsSendTestService;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +23,7 @@ class MerchantEnterSuccessNoticeJobDispatchFlowTest {
 
 	@Test
 	void dispatchJob_async_enqueuesOnSmsQueue_andConsumerInvokesJobHandler() {
-		SmsSendTestService sms = mock(SmsSendTestService.class);
+		CompanySceneSmsSendPort sms = mock(CompanySceneSmsSendPort.class);
 		MerchantEnterSuccessNoticeJobHandler handler = new MerchantEnterSuccessNoticeJobHandler(sms);
 
 		InMemoryDispatchRegistry registry = new InMemoryDispatchRegistry();
@@ -61,7 +61,7 @@ class MerchantEnterSuccessNoticeJobDispatchFlowTest {
 		runtime.consume(msg, 1);
 
 		verify(sms)
-				.sendTemplatedNoticeSms(
+				.sendSceneTemplatedSms(
 						eq(1L),
 						eq("13800138000"),
 						eq("merchant_enter_success_notice"),
@@ -74,10 +74,10 @@ class MerchantEnterSuccessNoticeJobDispatchFlowTest {
 
 	@Test
 	void handler_logsSmsFailureWithoutRethrowing_soConsumeAcks() {
-		SmsSendTestService sms = mock(SmsSendTestService.class);
+		CompanySceneSmsSendPort sms = mock(CompanySceneSmsSendPort.class);
 		doThrow(new RuntimeException("gateway down"))
 				.when(sms)
-				.sendTemplatedNoticeSms(anyLong(), anyString(), anyString(), any());
+				.sendSceneTemplatedSms(anyLong(), anyString(), anyString(), any());
 		MerchantEnterSuccessNoticeJobHandler handler = new MerchantEnterSuccessNoticeJobHandler(sms);
 
 		InMemoryDispatchRegistry registry = new InMemoryDispatchRegistry();
@@ -105,6 +105,6 @@ class MerchantEnterSuccessNoticeJobDispatchFlowTest {
 				new InMemoryDispatchConsumerStateRecorder());
 		runtime.consume(msg, 1);
 
-		verify(sms).sendTemplatedNoticeSms(anyLong(), anyString(), anyString(), any());
+		verify(sms).sendSceneTemplatedSms(anyLong(), anyString(), anyString(), any());
 	}
 }

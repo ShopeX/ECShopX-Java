@@ -46,6 +46,8 @@ public class NormalOrderAdminPaymentService {
 	private final OrderPrescriptionPaymentGuardService orderPrescriptionPaymentGuardService;
 	private final NormalOrdersMapper normalOrdersMapper;
 	private final OrdersPaymentDoPaymentService ordersPaymentDoPaymentService;
+	private final ShopadminDeferredOrderService shopadminDeferredOrderService;
+	private final ShopadminDeferredOrderCache shopadminDeferredOrderCache;
 
 	public NormalOrderAdminPaymentService(
 			OrderAssociationsMapper orderAssociationsMapper,
@@ -53,13 +55,17 @@ public class NormalOrderAdminPaymentService {
 			AdminNormalOrderDetailService adminNormalOrderDetailService,
 			OrderPrescriptionPaymentGuardService orderPrescriptionPaymentGuardService,
 			NormalOrdersMapper normalOrdersMapper,
-			OrdersPaymentDoPaymentService ordersPaymentDoPaymentService) {
+			OrdersPaymentDoPaymentService ordersPaymentDoPaymentService,
+			ShopadminDeferredOrderService shopadminDeferredOrderService,
+			ShopadminDeferredOrderCache shopadminDeferredOrderCache) {
 		this.orderAssociationsMapper = orderAssociationsMapper;
 		this.orderAssociationEffectiveTypeService = orderAssociationEffectiveTypeService;
 		this.adminNormalOrderDetailService = adminNormalOrderDetailService;
 		this.orderPrescriptionPaymentGuardService = orderPrescriptionPaymentGuardService;
 		this.normalOrdersMapper = normalOrdersMapper;
 		this.ordersPaymentDoPaymentService = ordersPaymentDoPaymentService;
+		this.shopadminDeferredOrderService = shopadminDeferredOrderService;
+		this.shopadminDeferredOrderCache = shopadminDeferredOrderCache;
 	}
 
 	public Map<String, Object> payment(HttpServletRequest request, Map<String, Object> mergedInput) {
@@ -105,6 +111,9 @@ public class NormalOrderAdminPaymentService {
 								.eq(OrderAssociations::getOrderId, orderIdLong)
 								.last("LIMIT 1"));
 		if (assoc == null) {
+			if (shopadminDeferredOrderCache.get(companyId, orderIdLong) != null) {
+				return shopadminDeferredOrderService.payDeferredOrder(companyId, authInfo, request, mergedInput);
+			}
 			throw new ResourceException("当前订单不存在");
 		}
 		String assocOrderType = assoc.getOrderType() == null ? "" : assoc.getOrderType().trim();

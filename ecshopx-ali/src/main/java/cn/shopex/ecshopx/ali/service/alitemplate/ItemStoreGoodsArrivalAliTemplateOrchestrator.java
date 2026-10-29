@@ -20,15 +20,13 @@ import cn.shopex.ecshopx.common.goods.ItemCompanyIdResolver;
 import cn.shopex.ecshopx.common.members.port.MembersSubscribeNoticeItemNamePort;
 import cn.shopex.ecshopx.common.promotions.port.AliTemplateMsgSendDispatchPublisher;
 import cn.shopex.ecshopx.members.domain.SubscribeNotice;
-import cn.shopex.ecshopx.members.mapper.SubscribeNoticeMapper;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import cn.shopex.ecshopx.members.service.GoodsArrivalSubscribeMatchService;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -37,7 +35,7 @@ public class ItemStoreGoodsArrivalAliTemplateOrchestrator {
 	private static final String SCENE = "goodsArrivalNotice";
 
 	private final ItemCompanyIdResolver itemCompanyIdResolver;
-	private final SubscribeNoticeMapper subscribeNoticeMapper;
+	private final GoodsArrivalSubscribeMatchService goodsArrivalSubscribeMatchService;
 	private final MembersSubscribeNoticeItemNamePort membersSubscribeNoticeItemNamePort;
 	private final AliTemplateMsgSendDispatchPublisher aliTemplateMsgSendDispatchPublisher;
 
@@ -50,16 +48,9 @@ public class ItemStoreGoodsArrivalAliTemplateOrchestrator {
 			return;
 		}
 		long companyId = companyIdOpt.get();
-		int dist = (int) Math.min(Math.max(distributorId, 0L), Integer.MAX_VALUE);
+		int dist = GoodsArrivalSubscribeMatchService.normalizeDistributorId(distributorId);
 		List<SubscribeNotice> pending =
-				subscribeNoticeMapper.selectList(
-						new LambdaQueryWrapper<SubscribeNotice>()
-								.eq(SubscribeNotice::getCompanyId, companyId)
-								.eq(SubscribeNotice::getRelId, itemId)
-								.eq(SubscribeNotice::getSubType, "goods")
-								.eq(SubscribeNotice::getSubStatus, "NO")
-								.eq(SubscribeNotice::getDistributorId, dist)
-								.eq(SubscribeNotice::getSource, "alipay"));
+				goodsArrivalSubscribeMatchService.listPending(companyId, itemId, dist, "alipay");
 		if (pending.isEmpty()) {
 			return;
 		}
@@ -70,7 +61,7 @@ public class ItemStoreGoodsArrivalAliTemplateOrchestrator {
 		dataFields.put("item_name", displayName);
 		dataFields.put("notice", "您关注的商品已到货，欢迎选购");
 		for (SubscribeNotice row : pending) {
-			if (row.getOpenId() == null || !StringUtils.hasText(row.getOpenId())) {
+			if (!GoodsArrivalSubscribeMatchService.hasOpenId(row)) {
 				continue;
 			}
 			Map<String, Object> send = new LinkedHashMap<>();

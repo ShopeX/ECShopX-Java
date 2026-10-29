@@ -53,11 +53,14 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -85,6 +88,14 @@ import org.springframework.util.StringUtils;
 public class AftersalesApplyShopApplyByNumHandleService {
 
 	private static final String ORDER_PROCESS_LOG_REMARKS_AFTER_SALES = "订单售后";
+	private static final String MSG_DATA_ABNORMAL = "aftersales.apply.data_abnormal";
+	private static final String MSG_REFUND_FEE_EXCEEDED = "aftersales.apply.refund_fee_exceeded";
+	private static final String MSG_REFUND_POINT_EXCEEDED = "aftersales.apply.refund_point_exceeded";
+	private static final String DEFAULT_DATA_ABNORMAL = "申请售后单数据异常";
+	private static final String DEFAULT_REFUND_FEE_EXCEEDED =
+			"售后申请金额不能超过剩余金额! {0} > {1}";
+	private static final String DEFAULT_REFUND_POINT_EXCEEDED =
+			"售后申请积分不能超过剩余积分! {0} > {1}";
 
 	private final AftersalesMapper aftersalesMapper;
 	private final AftersalesDetailMapper aftersalesDetailMapper;
@@ -112,6 +123,7 @@ public class AftersalesApplyShopApplyByNumHandleService {
 	private final TradeRefundDispatchPublisher tradeRefundDispatchPublisher;
 	private final TradeAftersalesDispatchPublisher tradeAftersalesDispatchPublisher;
 	private final ThirdPartyTradeAftersalesSaasErpDispatchPublisher thirdPartyTradeAftersalesSaasErpDispatchPublisher;
+	private final MessageSource messageSource;
 
 	private static final String SQL_DISTRIBUTOR_VALID =
 			"(is_valid = 1 OR LOWER(TRIM(CAST(is_valid AS CHAR))) IN ('true','1'))";
@@ -142,7 +154,8 @@ public class AftersalesApplyShopApplyByNumHandleService {
 			WdtErpTradeAfterSaleBusPayloadBuilder wdtErpTradeAfterSaleBusPayloadBuilder,
 			@Qualifier("tradeRefundAsyncFanOut") TradeRefundDispatchPublisher tradeRefundDispatchPublisher,
 			@Qualifier("tradeAftersalesAsyncFanOut") TradeAftersalesDispatchPublisher tradeAftersalesDispatchPublisher,
-			ThirdPartyTradeAftersalesSaasErpDispatchPublisher thirdPartyTradeAftersalesSaasErpDispatchPublisher) {
+			ThirdPartyTradeAftersalesSaasErpDispatchPublisher thirdPartyTradeAftersalesSaasErpDispatchPublisher,
+			MessageSource messageSource) {
 		this.aftersalesMapper = aftersalesMapper;
 		this.aftersalesDetailMapper = aftersalesDetailMapper;
 		this.aftersalesRefundService = aftersalesRefundService;
@@ -169,6 +182,7 @@ public class AftersalesApplyShopApplyByNumHandleService {
 		this.tradeRefundDispatchPublisher = tradeRefundDispatchPublisher;
 		this.tradeAftersalesDispatchPublisher = tradeAftersalesDispatchPublisher;
 		this.thirdPartyTradeAftersalesSaasErpDispatchPublisher = thirdPartyTradeAftersalesSaasErpDispatchPublisher;
+		this.messageSource = messageSource;
 	}
 
 	/**
@@ -364,7 +378,7 @@ public class AftersalesApplyShopApplyByNumHandleService {
 					refundFeeBd = floorDivMulBd(lineTotalFeeBd, lineNum, num);
 					refundPointBd = floorDivMulBd(linePointBd, lineNum, num);
 				} else {
-					throw new ResourceException("申请售后单数据异常");
+					throw new ResourceException(message(MSG_DATA_ABNORMAL, DEFAULT_DATA_ABNORMAL));
 				}
 			}
 
@@ -420,22 +434,24 @@ public class AftersalesApplyShopApplyByNumHandleService {
 			aftersalesData.put("supplier_id", Math.min(Integer.MAX_VALUE, intVal(subOrderInfo.get("supplier_id"))));
 			aftersalesData.put("item_bn", str(subOrderInfo.get("item_bn")));
 
-			isRefundFreightFlag = isRefundFinishByNum(companyId, orderId, subId, num, orderLines);
+			isRefundFreightFlag = isRefundFinishByNum(companyId, orderId, orderLines);
 		}
 
 		if (subItemFeeBd.compareTo(totalRefundFeeBd) > 0) {
 			throw new ResourceException(
-					"售后申请金额不能超过剩余金额! "
-							+ bdToNonNegInt(subItemFeeBd)
-							+ " > "
-							+ bdToNonNegInt(totalRefundFeeBd));
+					message(
+							MSG_REFUND_FEE_EXCEEDED,
+							DEFAULT_REFUND_FEE_EXCEEDED,
+							bdToNonNegInt(subItemFeeBd),
+							bdToNonNegInt(totalRefundFeeBd)));
 		}
 		if (subItemPointBd.compareTo(totalRefundPointBd) > 0) {
 			throw new ResourceException(
-					"售后申请积分不能超过剩余积分! "
-							+ bdToNonNegInt(subItemPointBd)
-							+ " > "
-							+ bdToNonNegInt(totalRefundPointBd));
+					message(
+							MSG_REFUND_POINT_EXCEEDED,
+							DEFAULT_REFUND_POINT_EXCEEDED,
+							bdToNonNegInt(subItemPointBd),
+							bdToNonNegInt(totalRefundPointBd)));
 		}
 		aftersalesData.put("refund_fee", bdToNonNegInt(subItemFeeBd));
 		aftersalesData.put("refund_point", bdToNonNegInt(subItemPointBd));
@@ -443,7 +459,8 @@ public class AftersalesApplyShopApplyByNumHandleService {
 		BigDecimal freightBd = BigDecimal.ZERO;
 		BigDecimal freightPointBd = BigDecimal.ZERO;
 		String orderFreightType = str(orderInfo.get("freight_type"));
-		if (isRefundFreight && isRefundFreightFlag) {
+		boolean refundFreight = isRefundFreight && isRefundFreightFlag && isFreightRefundType(ast);
+		if (refundFreight) {
 			if ("cash".equals(orderFreightType)) {
 				BigDecimal maxFreightBd = bdInt(orderInfo.get("freight_fee"));
 				int refundedFreight =
@@ -455,7 +472,7 @@ public class AftersalesApplyShopApplyByNumHandleService {
 						reqBd.compareTo(BigDecimal.ZERO) > 0 && reqBd.compareTo(capBd) <= 0 ? reqBd : capBd;
 				aftersalesData.put("freight", bdToNonNegInt(freightBd));
 			} else if ("point".equals(orderFreightType)) {
-				BigDecimal maxFpBd = bdInt(orderInfo.get("freight_point"));
+				BigDecimal maxFpBd = bdInt(orderInfo.get("freight_fee"));
 				int refundedFp =
 						aftersalesApplyDetailQueryService.sumAppliedFreightPoint(companyId, orderId);
 				BigDecimal remainFpBd = maxFpBd.subtract(bdInt(refundedFp));
@@ -465,7 +482,7 @@ public class AftersalesApplyShopApplyByNumHandleService {
 						reqFpBd.compareTo(BigDecimal.ZERO) > 0 && reqFpBd.compareTo(capFpBd) <= 0
 								? reqFpBd
 								: capFpBd;
-				aftersalesData.put("freight", 0);
+				aftersalesData.put("freight", bdToNonNegInt(freightPointBd));
 			}
 			aftersalesData.put("freight_type", orderFreightType);
 		} else {
@@ -550,8 +567,9 @@ public class AftersalesApplyShopApplyByNumHandleService {
 		refundParam.put("merchant_id", longVal(orderInfo.get("merchant_id")));
 		refundParam.put("refund_status", "READY");
 		refundParam.put("supplier_id", longVal(aftersalesData.get("supplier_id")));
-		if (isRefundFreight && isRefundFreightFlag) {
-			refundParam.put("return_freight", 1);
+		if (refundFreight) {
+			boolean returnFreight = freightBd.signum() > 0 || freightPointBd.signum() > 0;
+			refundParam.put("return_freight", returnFreight ? 1 : 0);
 			refundParam.put("freight_type", orderFreightType);
 			if ("cash".equals(orderFreightType)) {
 				refundParam.put("freight", bdToNonNegInt(freightBd));
@@ -681,7 +699,7 @@ public class AftersalesApplyShopApplyByNumHandleService {
 	}
 
 	private boolean isRefundFinishByNum(
-			long companyId, long orderId, long nowId, int nowNum, List<Map<String, Object>> allItems) {
+			long companyId, long orderId, List<Map<String, Object>> allItems) {
 		if (allItems == null || allItems.isEmpty()) {
 			return false;
 		}
@@ -690,19 +708,19 @@ public class AftersalesApplyShopApplyByNumHandleService {
 			if ("gift".equals(str(v.get("order_item_type")))) {
 				continue;
 			}
-			long id = longVal(v.get("id"));
 			int lineNum = intVal(v.get("num"));
+			long id = longVal(v.get("id"));
 			int applied = aftersalesApplyDetailQueryService.sumAppliedNum(companyId, orderId, id);
-			if (id == nowId) {
-				if (nowNum + applied < lineNum) {
-					return false;
-				}
-			} else if (applied < lineNum) {
+			if (applied < lineNum) {
 				return false;
 			}
 			flag = true;
 		}
 		return flag;
+	}
+
+	private static boolean isFreightRefundType(String aftersalesType) {
+		return "REFUND_GOODS".equals(aftersalesType) || "EXCHANGING_GOODS".equals(aftersalesType);
 	}
 
 	private BigDecimal computeReturnPointBd(
@@ -744,9 +762,17 @@ public class AftersalesApplyShopApplyByNumHandleService {
 			return BigDecimal.ZERO;
 		}
 		return total
-				.divide(BigDecimal.valueOf(divisor), 2, RoundingMode.HALF_UP)
+				.divide(BigDecimal.valueOf(divisor), 2, RoundingMode.DOWN)
 				.multiply(BigDecimal.valueOf(mult))
 				.setScale(0, RoundingMode.FLOOR);
+	}
+
+	private String message(String key, String defaultMessage, Object... args) {
+		Locale locale = LocaleContextHolder.getLocale();
+		if (locale == null) {
+			locale = Locale.SIMPLIFIED_CHINESE;
+		}
+		return messageSource.getMessage(key, args.length == 0 ? null : args, defaultMessage, locale);
 	}
 
 	private static BigDecimal bdInt(Object o) {

@@ -60,10 +60,20 @@ public class ShopadminNormalOrderCreateTransactionalRunner {
 
 	@Transactional(rollbackFor = Exception.class)
 	public void runInTransaction(NormalOrderCreateParams p, HttpServletRequest request) {
+		preparePricingSnapshot(p);
+		persistPreparedSnapshot(p);
+	}
+
+	/** 店务延迟建单：计价/改价/积分抵扣已在写缓存前完成，此处只落库并扣资源。 */
+	public void preparePricingSnapshot(NormalOrderCreateParams p) {
 		applyCrossBorderIdentityIfNeeded(p);
 		normalOrderPointDeductFormatter.applyIfNeeded(p);
 		normalOrderMarkdownApplyService.applyIfMarkdownPresent(p);
 		normalOrderCreatePrePersistEnrichmentService.applyBeforePersist(p);
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	public void persistPreparedSnapshot(NormalOrderCreateParams p) {
 		orderCreatePersistencePort.persistOrder(p);
 		orderCreateInventoryPort.minusStores(p);
 		orderCreatePostCommitPort.runAfterOrderInsert(p);

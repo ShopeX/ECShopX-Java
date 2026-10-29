@@ -1,0 +1,352 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:49c904982522c4c3cf1d4d4d84cd8a168b4d04ad4d56c3ebb0b88a7352fe895e",
+  "claims": [
+    {
+      "id": "claim_42c913eebfc94dd384ba446f036982f6",
+      "statement": "MultiRedisConfig in ecshopx-bootstrap hand-builds one LettuceConnectionFactory per logical Redis database (companys, springData, prism, datacube, deposit, members, espier, wechat) instead of relying on Spring Boot Redis auto-configuration, and its Javadoc states this exists so Docker/idle Connection reset is handled there via TCP keepalive plus validateConnection.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MultiRedisConfig.java#L36-L100",
+          "version": "repo-lines-v1:sha256:e34d665c9a656ce22f427aa8ea8a1cb82e0d74dc2e3360def71c0da6bf4975f6:eyJzZWxlY3RlZExpbmVDb3VudCI6NjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImMyODFiODhiYmJkMWRiYzAyYmQwMTc2OTIyNWY3MTViYWVhNGFhMDgyYTgyNjk5NGFjYjIwYjc0OGJlY2JkOGQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE3ZDU4ZDA3NmQ2YzlhMDc5NDgxZjA4MTlhMTg0YjU5ZTMzMWUwNjFmZjRjMWYyOTU2NzVmZDI4ZDMwYzlhZmMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_102c2473e6a24557a402b16f4bc54b8d",
+      "statement": "The shared helper standaloneFactory configures every factory with standalone-only RedisStandaloneConfiguration, socket keepAlive(true), configurable connect timeout, ClientOptions autoReconnect(true), a configurable command timeout, and setValidateConnection; the three knobs come from ecshopx.redis.lettuce.command-timeout (default 5s), connect-timeout (default 10s), validate-connection (default true).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MultiRedisConfig.java#L214-L235",
+          "version": "repo-lines-v1:sha256:cc363257b49ec9546c743fe4bbb90cefd2796c7031c11f666b4299c5f2f55c9d:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4MmUyMTRlYzMyOWQyODRiNmEzYmViNDBjZDc0YTM5MzkxOWQxZGNkYWY2ODQwN2ZjZTM4OWY1YmE1YzVjYjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFmNmRkODcxNjg2ZWE1YjllMzM4YmUwOGU0ZWYyNzAwOTAzNDYzNTdjNTk1ZjZlOTgyYjBkMjQzYTJjNmE0MzkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MultiRedisConfig.java#L44-L51",
+          "version": "repo-lines-v1:sha256:880f806a2ad7aab68eedb747174312d5891038669d7ddcbe03f129851d244bbf:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzY4NTIyNTA1NmE2YzAyMmQ1YjY3MGNhNDBlZGUxM2Q1N2Q3YmRjMTJlZmY2ZGI1NjkzYWQ4NTRhYTE2MDQ4YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjAwOThlMjdlZDkxOWQ3YzZlMjhkYWI5NTA5NGJjNDEzMzBjYWU1ZDliNjJmZDRiY2I1ZjlhNzVhYjU0NzA1YyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYmRhMGZkMjRlNWY4NDM4NjQ0ODgxMGJjYWE5NzY5NWY2MjkzOGM5YWM1YTBjOGY3N2ZkOWY3MDkyNmE0ZWFkNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZjBkYTU2OTU4N2RlODRjYjIxOWY0NjllNjI4NGY1YzJlNThlZjk4MWUzMmEwNzdhYjUyMDdkNDExYTY0NGE3NiJ9"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L47-L49",
+          "version": "repo-lines-v1:sha256:8946d857edcc46e93fa1ec0a066a30b3a73f5cf6146834ead65d9224e805e37b:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMjI3Nzk0YjIzYmQ5OTRiYzNhZDkwYTZiZDA1MzA1OTVjMmRkMDIyZDhkOTkyY2YwYjljODI2YjE5ZWY0MzllMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYzZjZGJmODc4NTYyZDAyYWNjZDlhZmQ4NzlmYWNhMDQ5MDFjYjUzY2Y1Mjk1OWVlNDIwZjA3YjRiMjZlZjJmMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYWUwOWQwMjRjMDZjNzBjOWY2ZGRiMGZkYTQ4OGJjNmRiY2E5ZjlmNzRiNGY2ZDRkYTA2MDg3NTkwYjk1Y2M1ZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTFiMWVhODRlYjg0YWQ4NjdmNTdmNmQ3ZDdkZTgzYjBlN2E1MDdkOTdkYzQwNzQ5ZjM2MTJkYjEyZmM3YmNmNCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_2c926cd7bfd64ec9b5dc0f165d473831",
+      "statement": "Qualifier-to-logical-DB mapping: companysRedisTemplate (and the RedisTemplate<Object,Object> named redisTemplate) use ecshopx.redis.companys.database (default 0); springData-derived sharedStringRedisTemplate and dispatchBusStringRedisTemplate use spring.data.redis.database (default 0); prismRedisTemplate uses ecshopx.redis.prism.database (default 2); datacubeStringRedisTemplate uses ecshopx.redis.datacube.database (default 0); depositStringRedisTemplate uses ecshopx.redis.deposit.database (default 1); members/espier/wechat templates fall back to spring.data.redis.database when their ecshopx.redis.<name>.database key is unset.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MultiRedisConfig.java#L163-L212",
+          "version": "repo-lines-v1:sha256:c3ce08f67cc5052982f75b2eb723c0355704ee16c00ef375f780347b5b9d6525:eyJzZWxlY3RlZExpbmVDb3VudCI6NTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImExNTJiZjgyNDY0MWNkMGYzMmVkYThjNDhiNjg1YzAwM2QzYTY3ZmEwNDlhM2I4MDExNzI0ODY1YzQ2MGM3ZjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVjYTk1NjdiYTRlM2VmZTQ4NzBmMTIxMzRlYTkyNGNkNjkwMjU3MmExOGRlMTQzOTY3OWQwZjNmZGE4MTJiOGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI1NDEzNGZlZWE0YTJlOWI4M2FmYWQxNGZhYTJjMWY1MTcxMWJjMTFlZjNlNDVmNzZkZjVkMDI5YzI5NjdlNmYifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MultiRedisConfig.java#L53-L157",
+          "version": "repo-lines-v1:sha256:d7c64af464faf06b12300ec9ce68d9da0dd2316752027580ff0ca19ef2f8f34e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTA1LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI2MTNlOWUyNDQ5ZjRlNGU4ZDA1NmFkNDFkNTcxZTdhYWI0YmUxYjEyNzg1NDI5ZDQwMjFkZmI5ZDQ3YTc2MzAxIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI2N2NkYTgyZGE2MDYyMzhlMDVlNjIzOTk1NjljNWVlMDM5OTM0MTk2NDhhZTVkNDNhMmJmOGNkNjM0N2Y4MjYzIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJiNGI2YTM1MTExZDg1NjY2ODk3ZWY0YTk2YTRiZDJkMmNlZmNhMTA2ZjU4ZWRiYmRlYzZiYTlmZTQ5Zjk1MzI5IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIwMzkxNjA0MmFmMjBhN2Y1NWFjZjE0MzYwYWZhMWM2M2M2NjViMmY0MjRlNDBjNjBiNDA0OTExNDRhNjU1NTc4In0"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L42-L57",
+          "version": "repo-lines-v1:sha256:e2f0d3f682c74097409cb8a5d0c19c4f99910fba5f46ebc1de46045f4dc9d154:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI0YWFiNjE3ZGI2NWVkMTQ5YzdiZjMzYzZmYzIyMWY4NmNmZjYyZmE5ZjMzMmIzNmMwMjQ3ZTAxMDg5ZWI0OGQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRkMGVkMWY0NGYwNzYwY2NjYWFiZjcxNmUxY2JiNmM0YWVmZWFiY2M4YjVlNDAxMzUyZWQ3NGViMWZiZTVlNWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU5NmNlMGY1MTBjMDEzMmMxYWI0ZWM0NTkzMDg2N2Y3MDI5YWUxODEwMjVhNjAxNWEwNTkwZWNlZmU2NWZjMTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNhNjg2YjYwODRlYjBiYTFmM2UyMWY3ZTYyYmEzMjAyMzEwZWQ2MzI3ZTgxMTRmNWFiYTFiMmY2N2VjNGVhMTMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_29d2d6cda3c547939027b1395c451b1c",
+      "statement": "Only the deposit, members, espier and wechat factories accept dedicated ecshopx.redis.<name>.host|port|password overrides with spring.data.redis.* fallbacks; the companys, springData, prism and datacube factories read host/port/password solely from spring.data.redis.*.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MultiRedisConfig.java#L163-L204",
+          "version": "repo-lines-v1:sha256:bd2b9f5e242e91122077efd46e293033be1818f09a1ac4d0a93f60b21477006a:eyJzZWxlY3RlZExpbmVDb3VudCI6NDIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImExNTJiZjgyNDY0MWNkMGYzMmVkYThjNDhiNjg1YzAwM2QzYTY3ZmEwNDlhM2I4MDExNzI0ODY1YzQ2MGM3ZjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVjYTk1NjdiYTRlM2VmZTQ4NzBmMTIxMzRlYTkyNGNkNjkwMjU3MmExOGRlMTQzOTY3OWQwZjNmZGE4MTJiOGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRiZDcwYTJmMzZlYjRlZWJkMzI1NDY2ZTA3ZjY4MDI2NjQ2MTkwNjE3OTgzYjJhMGM5YzhlNTI1Yzc5NTNkZTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MultiRedisConfig.java#L93-L99",
+          "version": "repo-lines-v1:sha256:84c1795bfa190ae7570d64198e44ba8ccdcfa0376cb5ac601d075ac442e406ea:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTQxYjAwMGMzNDNkYWQzZjE2YjhlMWM1N2FmZmQ2NDAzNWEyMGFiZTU3NmVkMDIxMDQ5ZWU0NGM3MTJhNjg5YSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDQxMWIyZTZjMzUzMTUyYzRjMWI2NDZhNmRiOTkyMDkwZTgzMDlkZjg5N2EyNTMyZjNkZGVhNDhmYjc1MzllMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzdiNzcwNzFhZmUxNDIxZGFmZGY0ZDc2YWMzYTI3NmVhZThjY2Q4NmNhOTllNmZkM2E0ZDY5N2E3NzI5NmU4ZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMTJlMzdlOTgyMjAwYTAyMTMxNTE0YTMyM2QxZjRjZmE5OGY3MjdmYmE5MTI2OGI5ZTNlY2I5MjNjNDRkYzY4YyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_203df7bbc12f4f13938ccb65431fbc7f",
+      "statement": "companysRedisTemplate is the @Primary StringRedisTemplate, so any StringRedisTemplate constructor parameter without @Qualifier resolves to the companys logical DB (e.g. AftersalesRefundSlowQueuePortImpl, StatementSettlementCursorRedisAdapter, OpenPlatformDispatchDedupeService); MerchantWxappLoginSmsVcodeAdapterConfig documents that merchant wxapp login SMS codes must instead inject @Qualifier(\"sharedStringRedisTemplate\") for members-parity DB semantics.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/integration/AftersalesRefundSlowQueuePortImpl.java#L39-L45",
+          "version": "repo-lines-v1:sha256:1c35f742180babcb78aa623d8da742f7a46a6477bec5fec55ab72969a8de6aac:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMGM4ZTk0Y2JjNWIyOTg1NTk0ZGI1MzM1MGYyNWFiNmFjZDhiOTNkYzFjODMwYTI1MzIxZjZkM2NmMzk1ZTQ5ZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMjMxNmFiM2JjOWE5MjBmNTBkNWYyODUxZDc0NjUxYzBhMzEzZTMwZGU5N2JiNTE5MGFiYzU4MWE5NDFhYWQ4YyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTlhYWMwMTAxYjRiOWQyYTk2Mjk4OTdkOTExNTZmODliMzNmMDlkNzg3NDlhYjE3NGIyODI1NDgwMGI5ZWNhZiJ9"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MerchantWxappLoginSmsVcodeAdapterConfig.java#L26-L40",
+          "version": "repo-lines-v1:sha256:10fd5ab5a8c1aed1640f12663ad3272190c54359b056be9fe2dabe03a2b402ca:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ0ZGUwM2U4NGQ1NTVhNjk5NzFkNTc2OWVmZDcwOTQxMjllNTQ5NjJkNjRmMWVkNDk0OTYzOTgzZGUyNDE2MWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MultiRedisConfig.java#L110-L125",
+          "version": "repo-lines-v1:sha256:1dca87d161b6559b169e4e5944387871ea0046a37b78ff675eb2ee050d23e37b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM1YjdkYzQzZjY5YmU4YTRlZDk0ZTg0YmY1ZGRlNDFjMGYzNzhhYWIzZjQ0OTgyNThkMzRmMTg4MzA3YTNkMmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU5YTE0YjQ0MjBiYzNmNWI1YjhjNWE0ZTY4ZjBkNGZlOTI5NGM0NWRjMzE2OWEwZGNhYjBiZGM1NjU1M2Q3ZDYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI2YTE4OGVkMmI3NjQzZjdiYmE5ZTgxOTUzMGFkZWFkZDVkYmE5OWI3ZTQ5MWY0ZWJjODkzYmNlOGYxOWQzY2QifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_52a733053ef745bc8bb2c296f2fce3e8",
+      "statement": "sharedStringRedisTemplate and dispatchBusStringRedisTemplate are two separate qualifier beans built over the same springDataRedisConnectionFactory, so both land in the spring.data.redis.database logical DB; RedisDispatchDriver, RedisDispatchListener and RedisDelayedDispatchMover all inject the dispatchBusStringRedisTemplate qualifier, keeping dispatch:* queue keys in the shared/default DB.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/DispatchBusConfig.java#L60-L75",
+          "version": "repo-lines-v1:sha256:42839f2de761ff9a862aaf5fc99eda1e3535454f1ff78016ea9bb7f2b218d0e9:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNlMjY3YTNkZTc1OWUwZjgxOWVlNjQwNjIyMmQzMWY3YmMyNTY1NmQ4OGU1MmVlNjhiYWIyODM4MDRmMmZjYjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQxN2FmOTRiMTE4ZDJmNmJhNGQ0MTIyZWMxZWIyZTI4NWJkNTBmNmIyODU5OTI1NTQxNjQyNzdkMGRkMGMyYjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjcxMTE2OWFiNmMxNGUwNzkyZTlmMWU5NGQwMDkwMjM0YjY2NjAyYWI3Njk0ZmMyNTkwYWZiODkzMzU3MDgwZGYifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MultiRedisConfig.java#L119-L133",
+          "version": "repo-lines-v1:sha256:ecbc810ff5d27611889ed5b86096c46cd41b308a0f88f5e218370cf93bf5a215:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM1MmFhODUwOWE3ODljMWQzOGVhODJkMjlhZjE4MmY1YjNiOTI1N2M5N2Q4Y2E0Yzg1YzY2MjgyOTE2ODM2OGYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFmNmRkODcxNjg2ZWE1YjllMzM4YmUwOGU0ZWYyNzAwOTAzNDYzNTdjNTk1ZjZlOTgyYjBkMjQzYTJjNmE0MzkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJmMzg5ZTk3YjJjYTAxNTMwNWQ5YThiOTM2ZmVkYWZhODdhNzY0ZmJiZWYxZDRjNTQ1MDU3NmViOGU3MTFlMGQifQ"
+        },
+        {
+          "resource": "repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/redis/RedisDispatchListener.java#L37-L39",
+          "version": "repo-lines-v1:sha256:7fb85793ff679c62025c81e83b6a730474b72b2921a1d6ab393017ed94440b4e:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTNkZmQ5ZWFhMzRjNTcxMmJkZDdlNjZjMTRhZmNiYWIzN2JmZmJkZWU3NWI1MTNhOTQ4NWRkODEyM2QwNzNkYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZGUwMzZmYWUzNmM1NjE0OTAwNjY0YTE2NTY2YmY1NDI5YWNiMWEwZDMzYTBjNDY3MjQ3MzU0ODEyMGJmMTVhNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNzA5ZWIxZGU1MThhNjcxNjVkYmI0ZTQ4ZjdmM2IxYTIwODY1NThkNDM3YWRhYWMyMGZhZjVkODBkYWIwN2U4YSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjE0ODRjZDU1OTU2MDBjYjQ2NGMwYTQwODIzYjIyYmNiYWU4Y2I1YWUzNWE3YTMxMzQ0OGQ1NWVmMTUzY2U2MCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_6b3c1d5fba4744b3b069d9233fe596b9",
+      "statement": "DistributionConfigRedisReadService reads the distribution config from the companys DB under key distribution:config:<sha1(companyId)>, deep-merges the stored JSON over a default distributor structure, tolerates missing/corrupt JSON by keeping defaults, and exposes getPopularizeSellerPercent which goods' ItemsProfitSaveService uses as the fallback popularize profit scale; DistributionConfigSetService is the matching write path (opsForValue().set of the same key).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/service/DistributionConfigRedisReadService.java#L43-L75",
+          "version": "repo-lines-v1:sha256:eba4bdcd3ad9f998c638b77e60b204b477c3fd68e2ad162c67d55f828f1d6788:eyJzZWxlY3RlZExpbmVDb3VudCI6MzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUwOWEzNTcwMTlhMGM5YzliZTBhYThkNjU1NmJlMGU1YjI3YTY0YzgyMjNkODRhOTJmNzdhZDg4YzJiNDE2MGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ2YjgyZWY0ZDY5ZWYzN2ZhMDFmNzVmOGNlZjY2MWI0MjliNGFiMzJmMTU1MDA4YzUyMjg5OTU1NDY4YTM4NWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjUwYmFkMjUwNzhhNjdjNGYyNDNiMTc4ZTUxNGQzNzYwYjdmZGZiZTI5MDA3Mjc1MWYzZDhjM2NjNDJiNThhMGMifQ"
+        },
+        {
+          "resource": "repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/service/DistributionConfigSetService.java#L100-L112",
+          "version": "repo-lines-v1:sha256:68340f2c23153e6e45bd0add8b47df8fbb91ef2f15b67443c1bc28cd8b40463c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVjMzQ0ZWU3MjFiMTFmN2E3MGZmNjkzYmRhNmEwNTAyMzc3ZWJmYzllMzMwMDIxMmE0YWY4ODRkYTllZDIwYTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZhMWJjZWEwMmZjNGNmMDE0M2I3MjZkYjIwNmY3YWQyMjY0YmUzZDI4NDJjNjFjZGJjYzMyMWQ4NmUzNDYyNjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMyMGEzMDI5OGFlMjhjZDI3MGZkN2M5ZmQyNzZjZGU4NzM2OGU0N2ZjYWMwMWFiODE2MmUwOTkyNjczNDU5OWMifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/ItemsProfitSaveService.java#L162-L178",
+          "version": "repo-lines-v1:sha256:4b3d4d15d42eb88e17e8a30f717195364bf652910fc56be3032496f47a38c4d6:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE2OGFhY2E5NzdjODI1ODY5YmY2NmZiMmRiZjg4OThmNzJhNzkxNzRkMTQwOWI2Y2JiYjU0ZmZkYmI4YjJlM2YiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBiMDIyNTYzNzdmYjM0ZGQ0OGZhNWI0MDdjNDU5ZTdhM2I5ZDNjNDQ4ZmYwNGU4NDk5M2M1NmMxZmY0OTQ5NGYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJhNmQ5MDRkMmU3OTA3NWZhN2I1NWRkMzVhMTkyMWFjYzg0NmQ0MzYwZWFhZmRmZjM5OTk1YWJjMTFlNGQ2MzEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNmMzA5M2MxMWYxNjExMmNmYmIzM2JhOTJmYjNjNTRkNGMxY2FlNjRkYTkzZTc4NGRhYWU1MjNjMDRiZDc5NzkifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_422a222eb099469e8a89f9bb5ffa78e9",
+      "statement": "Order validity settings live in a hash key order_validity_setting with companyId as hash field, read by OrderValiditySettingRedisReadService (orders bundle) and OrderValidityPlatformSettingReadService (distribution bundle) — both on companysRedisTemplate and both merging their own DEFAULTS over the parsed JSON so a miss or parse failure degrades to defaults.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/service/OrderValidityPlatformSettingReadService.java#L47-L74",
+          "version": "repo-lines-v1:sha256:a4a4956acb69d9132f0dbc7947f21188fbf6c4646368726c0fd11c1c45f7e548:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBlNmI3OWFjNWUyNWM5NzNhYmU4Njg2MDY2NGY1NTdmNDdiZDg5MTBlZTUxOWRmZTA5MTgwYTM1MjgxMzlmZTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFhNzM2MTZhZWQzZTU4NzM4OWEwMjI5YTgyMjI0ODIzODI0ZjBhZmVmMGIxNzIwYTY2MmUyMmRlMWIxZTNmODgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/setting/OrderValiditySettingRedisReadService.java#L34-L64",
+          "version": "repo-lines-v1:sha256:b596b45fd500adfd3f641b43e50a745d9c80cdcb797c6a3379f29174f53e4b13:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjczODEwNWUyY2E2ZjIxN2YzY2M2MDVlODM2ZDUxMWY5YmIwMmUxNzI4MjJjODQwY2M2NmM3NTgxMmU4M2JhMjAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcyNTUyNzMyMjM0ODI5NTZiNWJmNmYyMTM1YTc3OGJhOTNlYzc3MGQ1ZWNkYzRjYjI3ZTA0MzBjYWJiMWI4NDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM1ZDcxNjc2OWQ4Y2FmMWVjN2E0NmU3NDVhYTM5Njc3YTA1NTJjNzFkNzJmNjc1ZjUwNDhjNzEyNGEzNjk5MDIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_3a2a84021399492595e5d775a150f36c",
+      "statement": "LanguageSettingRedisService persists company language settings in the companys DB under languageSetting:<companyId> through companysRedisTemplate with optimistic version-conflict checking on save, and loadSetting falls back to the default zh-CN-only setting both on a miss and on a Redis read or JSON parse exception (logging a warning in those cases).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/setting/LanguageSettingRedisService.java#L271-L294",
+          "version": "repo-lines-v1:sha256:67236155993ed3508fbd0c13e2cf56e752bbf5bf11e0a6e1314aa89d078b2c7e:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU2OGFjOTYyOTgzYzQ0YjM4MWZkYWZhMzQ3OTI3YjM5NzA0NzYzNDgzZmI3NDgyZDIwOTE1ZGUwOTBiMzdiYWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRhMmQ0NjYyMjgyMTU1ZDU4ZTVhNjZkZjIwN2Q2NGViNjA5MzEzNDdmYzE5MmI1ZWJmMTExMDU4NDc3OGVjMzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRiNjIwMDExOWIwYmEzZWM3MzlmMjUwY2MyNTM5YjY4OWU3NzdjY2MyZGRjZTVhZDJhODY3MTEzZDcwZDdkMTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/setting/LanguageSettingRedisService.java#L333-L341",
+          "version": "repo-lines-v1:sha256:98b8450dc162ae53d9a0ba1af5fc1768d83cf8cca63ee8ae07e1a8c53bc698b1:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzA5MTkzOGI2YzkxOWIyZWUzNDgzN2FhYTljZjRkZjkzN2YyY2VlZWZjYWU5N2EwY2ZkYzEyYjEwMmU1ZjU0NSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNWIyZGIyYTI0NGYyZDM5YmE3YjQ4YmY3OTBmN2E5NDc0ZjcxODNjMjU4NWM4NmJjMDNmYmQzODYwNTJiY2U5NCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNmIyNDViMTU4OTVlNDdhODM1Y2YyYjU3OTU4YmZkZGFkMjZiOTIxZmM4MTMwYjU1Y2JhNTEyY2I2MzcwYmZkYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZjgzMGRkNWI4MWEwYzE0NDRmZjYxOGFkNDk1YTE0NTRkODM4YmFkZDljMDZmZDc5ZTUwNjZkYzhiOGE0M2QzNiJ9"
+        },
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/setting/LanguageSettingRedisService.java#L50-L66",
+          "version": "repo-lines-v1:sha256:a97541a203ffb9ae4735fcc5bc79cfcc002646175de193604ad8e3df5eecce49:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE0MjExYWI2YjA5M2JmOWIwN2M0Y2RhYmU0ZThkNjY1NDhjZDg0NGIzYTI5YzBmMWNiZTZmOWYwMTExYjAzMzUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU0M2NhNzFhNDQ2MTZmZGIwZTQzMjQyMDZhMWU2NWE1Y2U1NmZjYTVhZTU5OWY5MGIxMmVlYzg2ZTI1Yjg5MzEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY2MGE4NjMyNzI3YzM5MzliNjFiZWNkNjNmMDQ0OTQ0ZTNhOTc0NzZlODY4ZjIzYjUxOGRkYTU3NzhiYzFlMGEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_8be87e955551400d967a081295d7186c",
+      "statement": "Tenant settings stored in the companys DB (distribution config, order validity, language setting, payment-channel and ERP/logistics settings) have no MySQL write path in the Java code — their only persistence is Redis, where both compose stacks enable appendonly with a persistent redis-data volume — so Redis is the system of record for them and FLUSHDB on that DB is configuration loss rather than cache invalidation.",
+      "evidence": [
+        {
+          "resource": "repo://docker-compose.dev.yml#L48-L69",
+          "version": "repo-lines-v1:sha256:7a18500c85a9b0ef3f52e40c80f5e463eb19d62019c7291296385221cdb48e48:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkzY2JhNmZmNmJlYzc1YjM4MDM4Y2I3ZTZiZTIxYmFiMThmYmMyYTJlMWI1NmI0ODNkMDg2MjZkMWFiNjhiMjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM1ZjhhMWJjNTk0MDJkZWExY2RjNWU0OWViZDI1MTQxMmE3YzA0YjIzMTc1MTZhZjRkZTFkY2U0MGExNWY5ZmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU2ZTQ4OTM1M2YyZDEzOWI0YzIzNzRjZDE3NWNlMzczY2E0ZTRmNDdiOTJmNzk5Nzc5OGNkYmNhY2QwM2Y2MzciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFiYmViNWEyNjViMGMwMzRjYjdiNGFjNzU5Y2FhN2JmMzczYzk2MGI1MTEwMWVkYjQ0ODA4NDAxYjYzMWZhNzkifQ"
+        },
+        {
+          "resource": "repo://docker-lite/docker-compose.yml#L49-L70",
+          "version": "repo-lines-v1:sha256:d19ee4ffc78c114a5b843e623a76927a95c5c9746fc0fa261b70ba636951d448:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkzY2JhNmZmNmJlYzc1YjM4MDM4Y2I3ZTZiZTIxYmFiMThmYmMyYTJlMWI1NmI0ODNkMDg2MjZkMWFiNjhiMjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc0ZmY5MzA1ZWI5N2RkYWQ1MjVhMmFlZTllMTg1YTg4ZWNlMzBkMjI2OTMyYWE5NjM0MTY5NDQ4OWY3NTU3MjkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZjMzA1MTM5MGRlMjg3NmFjNjFhMjc4NjUyNWI5MzdjMTEzNGQ4MDU0NTdhYTFiYTU5MDE2YTQyN2Y4NWZmOGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNkZjRkYTFlNGI5MmM4ZmEzYWIwN2E1MGQxN2YxMzE4YmQwMWMwYjExMjRhODFmMzQwNmZjMTg1MWY2N2U0OWIifQ"
+        },
+        {
+          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/settings/WxpayPaymentSettingWriter.java#L48-L58",
+          "version": "repo-lines-v1:sha256:84c56e249ca454bd7a2ea29a864fdab470655d390cf0b39eea62b7105f448714:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVkZDBkMjA0MDIwY2E5YzRmYzA4ZTFmZWM4ZGQ3NzBmMDhhMDcyNThlZWYzOGFhYTMyZGE5NWM4YmVkMWY1NTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNkMjdlNmZiNzgxZTBiMDA3ZjY4YjZkZTQ2YWJmZTlkZTRjODdhZWNiZGIwY2E3MWQ5MDM3ZGI1ZDY3ZWRkODIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ2YjgyZWY0ZDY5ZWYzN2ZhMDFmNzVmOGNlZjY2MWI0MjliNGFiMzJmMTU1MDA4YzUyMjg5OTU1NDY4YTM4NWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjlkOWU5Yzg2NDRhYzNhMjhmN2Q4MzE4N2I0NGQ5NDg5YWE0MTY2NzhjYTYwYWUwOWM0ZDAzMTIxNjNjZjU4NjUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_9a40ce235be64dc38fdd854de2ed5c65",
+      "statement": "Prism logical-DB state holds gateway/session credentials rather than tenant settings: H5JwtBlacklistService and OperatorJwtBlacklistService keep sha256-keyed JWT invalidation keys on prismRedisTemplate, CompanysActivationService keeps a 7-day black_token_<operatorId>_<operatorType> cache, and ShopexPrismSmsSignClient stores prism:<sha1(...)> access/refresh/forever tokens; SaaS-cert services also read certificates from the prism DB.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/activation/CompanysActivationService.java#L137-L153",
+          "version": "repo-lines-v1:sha256:530e06de7e181efcd0ef2f919c052acc9a4be769ffb78ae7366f6c62ba3e3f2f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQzOGY1ZmVkZGJhMTM3ZTAwYjMyMDE0ZTdmYWMwNzg4Mjg2Mjk4Y2Y1ZDA0ZGIxNGIyZDc3Y2IwN2I1NzM0M2IiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk0MGUzOTRiZDk1NWFkNGU1OTBkMmJjOTIyNzlkNDYxMjgwYjBiMjg2MjZkYjIyNDhiNTZhNTM0M2FhODU5ZWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBmNGEwOWQzOGVkZGNlOWE3Yjg3OGViNDczZjJkNTMzZDk4ZTkyODc1ZjZjOGJhMzdjOTg3YjBlYmJjNmY1OTcifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/H5JwtBlacklistService.java#L39-L67",
+          "version": "repo-lines-v1:sha256:252c64f7dc6c9b3fc83e48ce47d97600e1ff554e40499c691104ed1b0880ffef:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZiMzNiMzU4ZTJjMTdlM2EyNzVhZmEwMzRlNDJiZTNmYjRkOTAzN2NhZDJjMzljNzJiZmY1NWQ1OWQwNzIzYjQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdjODQzZjM0MTJmNWZjNDAzM2JhOWMzZDZlY2I5MjgxYmJlODIxYzYwMTNkOGNjMzMzOGU0NzI2YjA0ZWViZjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNhZGYyNzEyNzUwMjFkOWM0ZTQwZjc4ZTQwNjBkZWNhZmU0Mzc0ODg2YTczM2ViMTQxYTkwOTY1YjYyOWM5MWYifQ"
+        },
+        {
+          "resource": "repo://ecshopx-third-party/src/main/java/cn/shopex/ecshopx/thirdparty/service/prism/ShopexPrismSmsSignClient.java#L362-L372",
+          "version": "repo-lines-v1:sha256:89db7be33909235a6bf0fbd25fe22c689588e649f72b58d4051a45368ae0e21b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU2YTA0MDliMWZlOGFiNjAwMTQzNzVkNjdkMTVlYjY2M2FlNjM0YzI0NTZhMDA1NDNiNzQzZGY1ZThkNjc5NjQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNmYTlhNmQwOTBhNDQ0OGMzZjU4N2Q4YTI2NjhjMDNjMmQ1NmNlODcwODQ2YmNiMThiMTFiMGU0OGE0NTZlNGQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE3NzQ4MzMwYzM3ODNkMzhkZWIyZTYxYmEzZTRlMjU5MTlmMzU1ODZiNGNkY2FlMTI0NzJjODExMjdjN2VhYzMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_4bfe4caf92054cce990a611e21c74f3f",
+      "statement": "Deposit recharge writers use the shared/default DB, not the deposit DB: AdapayDepositTradeRechargeCallbackService increments shopDepositTotal and dayRechargeTotal<yyyy-MM-dd> hashes (field companyId) via sharedStringRedisTemplate inside the @Transactional callback, DepositTradeConsumeService mirrors it with decrements and dayConsumeTotal increments, and UserDepositBalanceMutationService writes the user_deposit MySQL row then refreshes the userDepositTotal_<companyId> hash (with MySQL fallback on hash miss).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-deposit/src/main/java/cn/shopex/ecshopx/deposit/service/AdapayDepositTradeRechargeCallbackService.java#L117-L122",
+          "version": "repo-lines-v1:sha256:ea5e889b976ac691c1ead3533b02c2dee66ce99802caeacd8852f037913abcb1:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMTY5ZTY5ZjUwYTU1NGVkYWY4NDE5MDAwYTg2NDRjZTgyMmIzNzY5MTEwYmQ0YzRjZDE3YTg1NzQ5NGViOTZhYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDUyNmUwY2FhMjA4YzBmZDdiMzRhZmE3ZWU4MjhiYWJhYmRjYmIyNjY5OGJkYWNhYTFiN2Q4NWE5ZGJkZjZiZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTljOGI4ODVjM2QxYjlkM2Y1NjU4MzRlZWNhODkyOTBmMjIyNGQzYTIyYzRlYTIxODM4OGRmNTFhNWJjOWIxNiJ9"
+        },
+        {
+          "resource": "repo://ecshopx-deposit/src/main/java/cn/shopex/ecshopx/deposit/service/AdapayDepositTradeRechargeCallbackService.java#L54-L91",
+          "version": "repo-lines-v1:sha256:1414aa4a82b06ab52d9f6e23f716597ca17c08aab05487cf1f0b5bb1e1c2dd81:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJkNzU0OGYwODFmM2Y0MjY0OTYxNzRiYjdmMTYwZjg3MDk0NDNjMWM1NmM2NmFmMzNmYjZmNmU4OTdjZjAzZjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc0NmFiNWMwNGIxOTViZTk5YWY0NTczYjg4OTFmZmM4OTExNDQ4ZWZjODg1YzE5NjBmMDY3NTI1YzM5OGMzMDIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ3ZTJhNWMwZTQ0ZTg5MjE4NGQ1NDdlNmY0ZTU3MmNhYWIxN2M2YmIxYWM5YjA0ZGZhZjYzZDkwMDIyYWQxYjgifQ"
+        },
+        {
+          "resource": "repo://ecshopx-deposit/src/main/java/cn/shopex/ecshopx/deposit/service/DepositTradeConsumeService.java#L93-L102",
+          "version": "repo-lines-v1:sha256:243f6330365e527eaf158cfa37ba1900630d49a26dd560d165f0713bd85cc2c1:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMzNzI0YTUxOGVjZmEyOGU0ZTJjYjY3N2Q4M2Q2MGNhMTgyMzVjYjRiMTdjYWUwYmM5MWQzYjI5ZmRiNTUwZjUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEzMGJiOTY1YzViMTQ3Yjc1NzEzMGFiZGNlN2Q0MDM3ZTliYmIyMjk5MmExNTc1MmI3YTAyMzk2OGI3NTQ1NWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjlmNTRmODVkY2JhODU2NjgwZmM4MzAzYjM1Y2E4YjRjNGIwZmNhNWU1YWM2NzMzNTFiMTUxYTVlZjhmMmY2ZWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFlNmZjYjk1YTYxZTgxMDM5ODNhMzM3YTE0ZjFhOTVmNzY5MTc0MjdmMjFkNjM3YmU2NTM1OGQyNWUzZjgzMTIifQ"
+        },
+        {
+          "resource": "repo://ecshopx-deposit/src/main/java/cn/shopex/ecshopx/deposit/service/UserDepositBalanceReadService.java#L40-L62",
+          "version": "repo-lines-v1:sha256:7003390e83fa09326acb9f901ca3d1a6c0e297970b723605f706030f364150f0:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE0MjFmZWZjMjRlZDRhZThmMzhiOTY2ZDA5ODIxMzllOTlhY2FhMThjMGYzYzk3OTlhYThlNjgxMjFlMjcyZGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc4YjYzYmZmZGYyMTA2YzE3NGMxNTNlOTUzNGI3ZGY2NGZjYjBkZGViOWQwODk1N2EzZTYxYTQ4OTVlZmQ3MjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b92e7f4186e04682bd4eeb8ec8ca3388",
+      "statement": "The deposit day-counter is read through two different templates: DepositCountIndexReadService (admin RechargeController deposit count index endpoint) reads shopDepositTotal/dayRechargeTotal/dayConsumeTotal via sharedStringRedisTemplate (same DB as the writers), while CompanysDepositDayRechargeRedisReader.getRechargeTotal — feeding the dashboard real_deposit in CompanysDashboardStatisticsService — reads dayRechargeTotal via depositStringRedisTemplate, whose selector defaults to DB 1 while the shared DB defaults to 0, so the two indexes must be aligned per environment for real_deposit to be non-zero.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/statistics/CompanysDashboardStatisticsService.java#L117-L128",
+          "version": "repo-lines-v1:sha256:4cb29ca3f70214326a4e01f9991a7e0619ba185887b7df4421a22cd9f7c70db8:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM5NzhkZjNmZjZlZDc2OGEwMTliMzRhMDUxM2JiYjllMDg4YzBiODc3M2RmOGRjMTg5Y2M0MTY0MjgwOTYyMGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE3NGRlYTQwN2JkMjFiYjg0Njc2YTI3OGI3NjBhNTdlMGZkMzBmMDM2ZjA4NTU1OTliNTU1OWEzOTM5MmVhNTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI1MTFlNWFhZGJmOWE5ZjJmODllMmI3NTg1ZTlmZWJjODJjNDI1YmQyMjFmNGM5YThhM2NkZGMxNGRjYzY4MGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImYxNDczYjRkMDQyNDJkYTYyMWE3OTA5ZTAwN2EwOTM2ZDM5MzU2OWYxMDhiNGI3MDhmMjM0NTk0YzNkYmIzZjUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/statistics/CompanysDepositDayRechargeRedisReader.java#L28-L48",
+          "version": "repo-lines-v1:sha256:e33df747e2c0dd42481b44725e6b99a2cabe78ca28858bf67b4d8b98605785b6:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIzODJiMGI1Y2RjZGNlNjE4NDY4ODNjODhkMzgxM2FiMzAzOTYzMDJjYTYwYjI5MDExYTFlY2VhYjFhYTQ5NzciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ2ODY1NTNjYzRjMDJmNGIxYWJhYWJlYmFmMTVlOGVhYjc4OWY5ZDk4NmEyM2M3NTk2NGM0NGY2ZjM5OTRhZjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-deposit/src/main/java/cn/shopex/ecshopx/deposit/service/DepositCountIndexReadService.java#L35-L49",
+          "version": "repo-lines-v1:sha256:f77bf693daf042f52ff1b3266ca428ad425f296300190ba84f0fd80875ff0de6:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc5NDcyYjJhODIxNTEwNjA2YmQ5MTlkMDM1MTcyOWQ3ZDBlNGE1NmUyNjRkOGI1ZmRhN2YzMjJlN2IyY2ViNjciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI4N2I3MzFhOTExNmJmOTA5ZmVhNThkYjNjYzIyODE5MGE2N2JkMTRiOTUwZDk3ODIzY2VmMDU4ZDU3YTNhMTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjgyNGI2ZmEyODNjYjk2NjIyMGM5YzE0ZWFmNzIyMWU5MzI5MTkzMmUzMzM1NDk1NWRkOTQwODM4ZDE0NTY5ZmUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d5355685b01441738689f86c0bf1c150",
+      "statement": "OrdersTradePaymentCallbackService allocates the daily tradeNo suffix from the shared DB on payment SUCCESS via nextTodayTradeSequence: it reads h_trade_no_<companyId>_<distributorId>_<MMdd> for an existing orderId, otherwise INCREMENTs c_trade_no_<companyId>_<distributorId>_<MMdd>, writes the mapping hash, and gives both keys a 24-hour TTL.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/payment/OrdersTradePaymentCallbackService.java#L180-L205",
+          "version": "repo-lines-v1:sha256:e1056486e0e2e862130910d9709dd6abf719bcf3d970cef71f13644602cb64c7:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE4MDEyNTgzYjFjNDFiZjNmZDI4YjhkMmZiMTBjODI3ZTBlNzE0YjVjOWIwNjI3MjM0NzAzOWI4ZmRiMTJjNGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAxNjZhOGZkZDRiMzBiNmJmMGQ0YzQzMDlkNWEyYjEyMWYyNzNhZWM3MDRjY2Q3NzMwZjAwOTI1ZDYyMGFkOTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRhZjcwZmExNTlhYWYxNDIwNzllZGZjZWE4NjVkYmI2MGFiOTgxMjk3MjZiOWQ2NTkyODljYzZjNzRiMWY0NDUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_6af2ebf6c64b432cac1676b9ff1f4023",
+      "statement": "Day-scoped ID generators also live in Redis: DepositTradeIdGenerator builds CZ-prefixed deposit trade ids from the deposit_trade_id<yyyyMMdd> hash keyed by 90-second slots with a 24-hour TTL on the shared DB, while HfPayOrderApplyIdGenerator (hfpay_order_id/hfpay_apply_id counters with end-of-day TTL) and NormalOrderNumericIdService (<yyyyMMdd> hash keyed by 90-second slots) run on the companys DB.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-deposit/src/main/java/cn/shopex/ecshopx/deposit/service/DepositTradeIdGenerator.java#L33-L57",
+          "version": "repo-lines-v1:sha256:11399a8e0c22157d268fa4d927d6cd3f3e8b405544fd3a7bc184f761a8517bbd:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlhYzU1NTYxMzM5ODZjNDFhNDE5ODY0ZWY3NzZmZTJkNjY1NTA1ZTIwM2U4Njg4ZmE4OTQ0ODg0YzdhMGNiZDciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJkMjE1YTY2MmM0NGFmM2I3YjU5MmMyYzdiZmZmNTlkOTdhNmRkMGQxZjQyYzUwNjA2NmZjNDEzNjAzYTUwZWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIzM2JmYWQ5YjQ1ZmQ0NDhiOWMwNGRhYzc3MGVjZDhjN2FiODdkOTVhNzE2NDNkYmIxYTRmMDk2YTc1MDEzNmIifQ"
+        },
+        {
+          "resource": "repo://ecshopx-hfpay/src/main/java/cn/shopex/ecshopx/hfpay/service/payment/HfPayOrderApplyIdGenerator.java#L29-L56",
+          "version": "repo-lines-v1:sha256:f1fa40e8e8bc3f574e554a2761f39852c1f55fa9b6561c708663b5d16dfc2eab:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNmNTE4MWRmYTJkN2QxZmRkOGFmOGIwNDVlOGRiYjgwNGI3OThkZjRmMTA2MGExM2I4NjM3Y2YwZWY2ODc3MTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcyY2Q2OWIyM2NmNzU4MDE3NjVjNDIyMDViN2VlNjgzMzIwOWI1OWMyMjhmNGU3NTNhMjU4OGUyNzA2N2RkMTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM3ZmEwMjAxMGZmNzg3MjQ5Nzg5ZmMyMzNhMDE2NjNkZDg1NTIzMzhhNjM2NzlmYTdmM2FhZGVhMGQ1ZDQxZDkifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/excard/NormalOrderNumericIdService.java#L28-L57",
+          "version": "repo-lines-v1:sha256:844acd8fb0f7ff73be61313cc5772a497206684731e6d83b2bf61a3db699c917:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJiMzM2YzQyYjJmNTIwN2I3NzVlNTBhOGRhY2UyZDZkMTViMjZmNjFlOGNkYTJjYTRkNDNmY2U0YWU0ODQ0ZjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQxNDgwMWUwYzc3MWYxZDljYTViZjQ1Y2ZjYzk4ZWQ5NWM4NWMxYmQ4ZGYyNzYzMDM5NDZhODhhODliNzZjMzQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_e1964297c15f43b6b17903c79206fe29",
+      "statement": "Datacube tracking splits its Redis usage: TrackViewNumService increments datecube_tracklog:* PV/UV/member-visitor hashes through datacubeStringRedisTemplate, while UvBloomFilterService's Lua-script bloom filter (uv_bloom_filter:<monitorId>:<sourceId>) runs on sharedStringRedisTemplate, so UV dedup state and the counted hashes can be pointed at different logical DBs.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-data-cube/src/main/java/cn/shopex/ecshopx/datacube/service/TrackViewNumService.java#L38-L70",
+          "version": "repo-lines-v1:sha256:af158b2a8a83b347aa5141c4be6ab4650fb88c74732b93fd0df6e4bfed84bbb3:eyJzZWxlY3RlZExpbmVDb3VudCI6MzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhiMDk1ZjJkOTUxNWU1ZTFkMzllYmRhZDFkYWQ4YzJlOTQ4ZmU5YzBmYmU4OWM1ZmQ2MzlmZjM4ZWU5OWZkZDgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkzZWRjZDJlNTAwMTE3MzAwOWU4MDYwMTBjODExN2I0NTQyNDc2MDY5OWFjYWZkN2Q2OWNiOGE4NTUzOWMwODEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQwMzk5NDVmNzEzY2VjY2MyYTJiZTk4MWFiNWM1ZWVhMzdmOTVmOTc2OWU1NzVjZDhlZDlhOWZjYmFmZGYwNmEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-data-cube/src/main/java/cn/shopex/ecshopx/datacube/service/UvBloomFilterService.java#L61-L84",
+          "version": "repo-lines-v1:sha256:5594af2c00cf7021e32731f7489190d05d15f61d23ca235cb79b5a0694305afa:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM5YjNlZGIyYWFhN2MwMDBlYWNkZjdjNWE1N2Y2YmZjMWQ2N2Y3ZjFmYjFkMjQxZGI2ZTRhMTE1Y2ZkMjg3MWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA4MzQ0MjBjYWQ5OGM2MWVkNjNkNmNlNTg2MWZhOTM2YmMzYTc3MDNhYmExNWFkMDk5ZTEzZDhlMjAzNGNjZjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMzMDcwZTY1NWJmMmJlZWU0MzQ1MDg4MWUyZjY5OWNjNzU0ZTZiMTY5YmU1ODk2OWE0NTFhYzY4OGZiZjJjN2UifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_5ffd772041314415add09255e4c4c7ad",
+      "statement": "WechatFansSyncService throttles fan syncs through membersStringRedisTemplate using a syncUsersCount<yyyyMMdd>:<sha1(companyId)> list capped at three pushes per day with a ten-minute minimum gap, expiring at end of day.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/WechatFansSyncService.java#L56-L83",
+          "version": "repo-lines-v1:sha256:a48392a1a98fb4a725e463ce8b37769cd37a98915f7b09699692d7d5222ed565:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIwYTY3NGU2MzMwYmI2MmJhOTU1ZjUyOWI4ZDkxOThlMTg4Njg1NDZjMTljYzc5MWE3YjdjNzRlY2E1MjUzOWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg3YmRlMjQyNzBlOGI2NzNiNzUyNDhkY2I5NGNiNmI1NWE4MmI0MTYzMzg2ZTEyZjdiYWI4M2MwMTVkYWQ1NTIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ1NzdmNTZlMzY2ZThlYzUwNzBmYWUwMjJlNjMyMWIzNDc3ZTQxYTEwYWU0MDFkZTNjN2I4MDg1Y2I5MzkyNWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc0NmQzODg0NjI0MDNhNjJmYTk3ODIzZTQzMGU1MTU1ZTUwZmJlN2ZiMzZhYjVmZWU3NjU1ZDkzZDI4MDZiOGYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_805bf00016db415b8b1fb6ee50ade023",
+      "statement": "Adding a new logical Redis database requires editing MultiRedisConfig (a @Bean RedisConnectionFactory plus a @Bean StringRedisTemplate wired by @Qualifier) because the ecshopx.redis.*.database selectors are only consumed by @Value annotations inside that class — there is no generic registry — whereas repointing or collapsing existing areas is purely a per-environment override on the tracked selectors shipped in application.properties (spring.data.redis.database=0, ecshopx.redis.companys.database=0, ecshopx.redis.prism.database=2, ecshopx.redis.datacube.database=0, ecshopx.redis.deposit.database=1), applied via environment variables or CLI arguments such as the compose APP_ARGS block (which already overrides spring.data.redis.host|port|password but no database selector), because application-local.properties is git-ignored (.gitignore line 7) and therefore absent from fresh checkouts.",
+      "evidence": [
+        {
+          "resource": "repo://.gitignore#L7-L7",
+          "version": "repo-lines-v1:sha256:0834693538e35870e7c0789da838a6afe5bc6d8676110ad7e7d29c312717f4b0:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDgzNDY5MzUzOGUzNTg3MGU3YzA3ODlkYTgzOGE2YWZlNWJjNmQ4Njc2MTEwYWQ3ZTdkMjljMzEyNzE3ZjRiMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDgzNDY5MzUzOGUzNTg3MGU3YzA3ODlkYTgzOGE2YWZlNWJjNmQ4Njc2MTEwYWQ3ZTdkMjljMzEyNzE3ZjRiMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiODJiZmNkMDk1ZDQ0ZmQ5Zjg1NDY3M2U4MjRiZjhiN2ZkYzYyZGUzMjg5YWU0YjFhMmRiM2I4OTc2YTY1ZGE3MSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMGY2YjQyMDIyZDFiYjIyMTBjZWM2OGZjZDhiY2JlMGZlYzQ2NmQ4ZDYyZGYxM2RiZjQ1ZmIzYjYxM2U0NzU5YiJ9"
+        },
+        {
+          "resource": "repo://docker-compose.dev.yml#L129-L143",
+          "version": "repo-lines-v1:sha256:0a41701c5b2a5882ff2cc41419746661711375b6d9a94f99e449a60089328f2b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE1OTdkZWQ5NjA1N2NjMzhhNDcxZDJiZjA3ZjcyMjJjNmYzZmIyY2U2ZTkxNjJjZmE1NGQ2YzM1ODkxMWViMDciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjljODExNGUyOTMxYTRlNmEyM2QxMGY4MWQ5OTlkOGQ1ODM1MjdkNjBjYzQ2NmM0NmI5MzhkOTMyYmQ3NmUyYzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIyY2E0ZWEwYzRmYzFlYjNiZWViOTU1YTRiOWM0NDk5OTg5OGNmMDFiNWE4NDM4ZjdmMzcyNmRjZWQ1Mjc2NWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY0NGJkY2VlYmFjZjc5MWQwNGVlZTQwOThjMDYyMmI1NGZkZWJlZDc0MDkxOWYzOTEyZDkyZjE3NTE1N2NhY2IifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MultiRedisConfig.java#L53-L212",
+          "version": "repo-lines-v1:sha256:a262e0cb0ebc1fc9de38d7dbff86d35a3293c382c52d995c5dead80fde43082e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYwLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI2MTNlOWUyNDQ5ZjRlNGU4ZDA1NmFkNDFkNTcxZTdhYWI0YmUxYjEyNzg1NDI5ZDQwMjFkZmI5ZDQ3YTc2MzAxIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI2N2NkYTgyZGE2MDYyMzhlMDVlNjIzOTk1NjljNWVlMDM5OTM0MTk2NDhhZTVkNDNhMmJmOGNkNjM0N2Y4MjYzIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJiNGI2YTM1MTExZDg1NjY2ODk3ZWY0YTk2YTRiZDJkMmNlZmNhMTA2ZjU4ZWRiYmRlYzZiYTlmZTQ5Zjk1MzI5IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJiNTQxMzRmZWVhNGEyZTliODNhZmFkMTRmYWEyYzFmNTE3MTFiYzExZWYzZTQ1Zjc2ZGY1ZDAyOWMyOTY3ZTZmIn0"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L41-L57",
+          "version": "repo-lines-v1:sha256:93665e4f72b1714957eaac352cebbd60ea35a9d368949a2f53eefabbc504abf6:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBmNTVkZmI0ODMzNjdmNDQxNWQ0YThlMWE4MDZiNWE3YTdmZTg1YWZhYTM0NjkyNzBhMjI4NDJhYmI1NjZlMWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRkMGVkMWY0NGYwNzYwY2NjYWFiZjcxNmUxY2JiNmM0YWVmZWFiY2M4YjVlNDAxMzUyZWQ3NGViMWZiZTVlNWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg5MWFjMTE0ZDM5NDcyYzAxZWUwYjYzYzIzNDc0YzBkOTYxMDA5ZTQ3YmMyYjgyODA0MDE1YTI0OTc5ZTNlZmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNhNjg2YjYwODRlYjBiYTFmM2UyMWY3ZTYyYmEzMjAyMzEwZWQ2MzI3ZTgxMTRmNWFiYTFiMmY2N2VjNGVhMTMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_7e6f235bd5db47b19e040d5918d6ba1b",
+      "statement": "MultiRedisConfigLettuceFactoryTest is the only test of the wiring itself: it reflects the timeouts into a fresh MultiRedisConfig, calls standaloneFactory, and asserts getValidateConnection(), ClientOptions.isAutoReconnect() and socket keepAlive are all enabled; no test in the repo runs against a real Redis (consumers mock StringRedisTemplate/HashOperations).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/config/MultiRedisConfigLettuceFactoryTest.java#L14-L27",
+          "version": "repo-lines-v1:sha256:00e0eeda6e748d6b8e88f16c5d2444db52bc42e74f8011850e4996ef814bd0ca:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJhNDQ0NjU4ZjJjMjQ5OTBmN2MwMGJkM2JkMWQ5NTczNjk3NjM1ZjAwYjAwYTA0NzlmOGMyM2QzNmI1MzkyMzMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImYwY2YyMWM0ZjEyZDc0YzA4NzZhNTUzMzRkY2RiNmZmZTY1ZDEwMGZhOWU3ODMwMGI1NGU2M2I5YjkwNzVlMjEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/deposit/service/DepositTradeConsumeServiceTest.java#L39-L56",
+          "version": "repo-lines-v1:sha256:7ad99363ad537a889d7d20459fb85d23829f8dae7c7c2c6dce930c760b2c1fc0:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ0YWMyMTZhZGExN2JmYWE3YWUwZjJhM2IzOGYwMTFjZTUwMDFlMDNlYzQ3MTlhYzQ5MjAyZThhMzVmMGYzY2QiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVjYjhhMjkxMGI2ZTA3ODE4OGUxNzY2YTBhNTY5Y2ZmN2E4Mzk1YWJlZmU3NDA1NWJmNTU0ZjVkMGYzZDhiZjgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJiMGU1OWFmYTM0Y2Q3MjNmODI4NWRkZjZlYjVmYzk1Mjc1NWRhMTc2YWE4NmJkODZkNzQ0Njg3ZDdiNjU0YjEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjUzYTZhZWI2YmQxYWU0ZGQ5M2M0N2Y2NzM4NjhmN2ZiMDY2YjFlNDEzOGJiZDAxYWM3ODhmNzFhYmZhZTY1MzAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_01f262c148c24de09f2074b585dd2d11",
+      "statement": "ShopadminDeferredOrderCache persists the operator-side deferred order on sharedStringRedisTemplate instead of a MySQL row: the shopadmin create flow (order_type=normal_shopadmin, ShopadminNormalOrderCreateOrchestrator.create) writes a JSON ShopadminDeferredOrderSnapshot under shopadmin:deferred:<companyId>:<orderId> with status WAIT_PAY and a TTL taken from the auto_cancel_time delta (15-minute fallback when absent or in the past); later failure states (PAID_WAIT_ORDER, REFUNDED, REFUND_FAILED) rewrite the snapshot with the 24-hour COMPENSATION_TTL_SECONDS; a Redis read failure throws ResourceException while a corrupt JSON blob reads as a null miss; and payment of such an order id is routed back into the deferred flow by NormalOrderAdminPaymentService when no order_associations row exists.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/shopadmin/NormalOrderAdminPaymentService.java#L107-L118",
+          "version": "repo-lines-v1:sha256:be97b0ec1807415779ae3f7ee5febb8bfb76d3a52e8251aae1c72922992958ad:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxYjRlNjJiNzZjNWUzOGE5MDllOGE1MmIwZTk1NWMwOGRiYWIyNzhhYTQ0MzUwYjdiYjE3NWYzOGNlMTgxMmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNjMjYxYjNjMmNmMWNiNjYxNGEyZDhjMjkzOTc4YjY0MGQ3YzE3YWFkNjMxYjEzNzRhZTgzYzk1NDNhNzMwM2QiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImEwODVmOWU3ZDhjYzhiNzU2ZDk4OTllOTU4NjBlMzlmZmZmOTIzZmE2M2RlZjIwNjkxMjFiNzdhZDc2YzZmNzcifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/shopadmin/ShopadminDeferredOrderCache.java#L36-L91",
+          "version": "repo-lines-v1:sha256:1a4373f562e85bfde106f0d7ce39df05ccd77f335041c8cb25939c91c0718b63:eyJzZWxlY3RlZExpbmVDb3VudCI6NTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE0NWQxOWE3MzE0MDY5MmI5ZDZhMDZlNTVhNTcwNzNlZjA2ZmZkODk0NThmMjc2NDkyN2RkODk4OWZlZDM4NDEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM3M2MxNjQzMWU2YzAzMWQ3ZjAwYzY0MDRhOWY0MWZlYzE1NTdmNGFkMzJiMGQ4ZDVkYTQ1YWYzM2UzMmE0MzgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJkM2M3NzI4YjBlMDFmOWRhMWU2NTI4YjNkMGY5MzM3NzM2ZWJlZTJhZjljNzc2Yjk1MGJhMjc1ODI3NWJkZTkifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/shopadmin/ShopadminDeferredOrderService.java#L263-L293",
+          "version": "repo-lines-v1:sha256:48dfc6ab27809d5f72dcfb90bee7f57ccd234ce96b8a64b983511e299c24d7d4:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM1Yjg0ZjVjNjQ0YmRjMGIwNzllNmE4ODQ0MTRmMWE2Nzc0Y2ZlMjNmMTFmNzFlN2U5YThiYmU1MGVlYWZhOTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZmMDBlOGQ1MDNlZTM0MTFlM2FlMDA5MDM4OTkxOGU1OWFhYmFlN2ZkNTIzMmQ5ZjUwZWFlYTgxNWZjMjkxMGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY5MmFjN2YxMDAxYTBhNGRhNmMzZjkyZDAzNjM4ZGQ2NzkzOTk1NzIwMWVhZGM2YWMwNmQ5N2VhZmE3ZmExN2UifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/shopadmin/ShopadminNormalOrderCreateOrchestrator.java#L64-L108",
+          "version": "repo-lines-v1:sha256:66a01ea0beaf720e5655db7539da7be0a881797cc7c158a8f5f48d3347c5a7f5:eyJzZWxlY3RlZExpbmVDb3VudCI6NDUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYzY2FmZTY0NTRhZDhhMDhjMGFmYmYwYWIxNDNhZWE2ZjU4ZmQwZTBkY2ZhMTIxM2Q5OGFmNzkxYTBmMjM0MTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU3MWVkNjY0MjUzNGUwN2VmNTVjNzIwNDFjYjI4YjExMTVlMTllYjJmZGFlYzYwZDA1ZjdkYjkyNDEyYWNmMDAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRkOGM5Y2VmZGIyNGVmN2NlOWM2NzdlMDM5ZjM4MmIyNGZkMmU4MTg5YTliYjdkZGFlYTQxMzZkNTA1ZWFkN2IifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b0f5dfa5c73d43a0b7a635d7df494fa7",
+      "statement": "ShopadminDeferredOrderCache.withLock serializes the deferred-order pay/materialize/refund transitions with the shopadmin:deferred:lock:<orderId> key: setIfAbsent with a random UUID token and a 120-second TTL, refusing the action (订单处理中，请稍后查询) when the lock is not acquired, throwing on Redis failure during acquisition, and releasing via a best-effort token-checked unlock that deletes the key only if it still holds this caller's token.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/shopadmin/ShopadminDeferredOrderCache.java#L93-L117",
+          "version": "repo-lines-v1:sha256:961f4858fda38c784925c3bc2278afe727dd0a4b10c442b7f164c65484e8127e:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVkYTBmMzYxNWQwNGQ1NzMxYzI0YzBhNzI0NzYyZGZhMDlkNmQxYTUwZTMyODY0OTMzMGMyODlkODc0NzA2NzIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIyZjJmZjVmZWVjNjBmNTg3YzhmYWU0ZTg3ZjgwOWE2NjFjZmZlZDZiNDdhYWU1ZjZkNmEyNjUzYWE4OTUyZWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImEyNWMxZmJlOGY0MmI1MGM5ZGZhZDU2ZTJjMWZlYTMxNjgzYzc5MzgxZDZhYWRkZGRhZTE5NzQ0ZDVkNDgxMWYifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.2",
+    "at": "2026-10-23T03:04:20.471Z"
+  }
+}

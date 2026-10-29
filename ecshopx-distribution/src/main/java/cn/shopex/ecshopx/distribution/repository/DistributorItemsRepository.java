@@ -387,4 +387,37 @@ public class DistributorItemsRepository {
 		uw.set(DistributorItems::getUpdated, updatedEpochSeconds);
 		return mapper.update(null, uw);
 	}
+
+	/**
+	 * Among given shop ids, those with {@code is_total_store=true} for the SKU (headquarters stock).
+	 */
+	public Set<Integer> filterDistributorIdsUsingTotalStore(
+			long companyId, long itemId, Collection<Integer> distributorIds) {
+		if (distributorIds == null || distributorIds.isEmpty()) {
+			return Collections.emptySet();
+		}
+		LinkedHashSet<Long> asLong = new LinkedHashSet<>();
+		for (Integer id : distributorIds) {
+			if (id != null && id > 0) {
+				asLong.add(id.longValue());
+			}
+		}
+		if (asLong.isEmpty()) {
+			return Collections.emptySet();
+		}
+		LambdaQueryWrapper<DistributorItems> w = new LambdaQueryWrapper<>();
+		w.eq(DistributorItems::getCompanyId, companyId)
+				.eq(DistributorItems::getItemId, itemId)
+				.in(DistributorItems::getDistributorId, asLong)
+				.eq(DistributorItems::getIsTotalStore, Boolean.TRUE)
+				.select(DistributorItems::getDistributorId);
+		List<DistributorItems> rows = mapper.selectList(w);
+		LinkedHashSet<Integer> out = new LinkedHashSet<>();
+		for (DistributorItems row : rows) {
+			if (row.getDistributorId() != null && row.getDistributorId() > 0L) {
+				out.add((int) Math.min(row.getDistributorId(), Integer.MAX_VALUE));
+			}
+		}
+		return out;
+	}
 }

@@ -210,7 +210,8 @@ class AftersalesReviewServiceJushuitanBusPublishTest {
 						new WdtErpTradeAfterSaleBusPayloadBuilder(),
 						thirdPartyTradeAftersalesCancelSaasErpDispatchPublisher,
 						thirdPartyTradeAftersalesSaasErpDispatchPublisher,
-						tradeAftersalesDispatchPublisher);
+						tradeAftersalesDispatchPublisher,
+				mock(AftersalesRefuseWxaNotifyService.class));
 
 		Map<String, Object> param = new LinkedHashMap<>();
 		param.put("company_id", companyId);
@@ -388,7 +389,8 @@ class AftersalesReviewServiceJushuitanBusPublishTest {
 						new WdtErpTradeAfterSaleBusPayloadBuilder(),
 						thirdPartyTradeAftersalesCancelSaasErpDispatchPublisher,
 						thirdPartyTradeAftersalesSaasErpDispatchPublisher,
-						tradeAftersalesDispatchPublisher);
+						tradeAftersalesDispatchPublisher,
+				mock(AftersalesRefuseWxaNotifyService.class));
 
 		Map<String, Object> param = new LinkedHashMap<>();
 		param.put("company_id", companyId);
@@ -578,7 +580,8 @@ class AftersalesReviewServiceJushuitanBusPublishTest {
 						wdtErpTradeAfterSaleBusPayloadBuilder,
 						thirdPartyTradeAftersalesCancelSaasErpDispatchPublisher,
 						thirdPartyTradeAftersalesSaasErpDispatchPublisher,
-						tradeAftersalesDispatchPublisher);
+						tradeAftersalesDispatchPublisher,
+				mock(AftersalesRefuseWxaNotifyService.class));
 
 		Map<String, Object> param = new LinkedHashMap<>();
 		param.put("company_id", companyId);

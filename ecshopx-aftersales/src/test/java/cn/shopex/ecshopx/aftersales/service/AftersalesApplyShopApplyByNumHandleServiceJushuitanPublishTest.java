@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -135,7 +136,8 @@ class AftersalesApplyShopApplyByNumHandleServiceJushuitanPublishTest {
 				.thenReturn(0);
 		when(aftersalesApplyDetailQueryService.sumAppliedRefundPoint(anyLong(), anyLong(), anyLong()))
 				.thenReturn(0);
-		when(aftersalesApplyDetailQueryService.listReturnPointRows(anyLong(), anyLong(), anyLong()))
+		lenient()
+				.when(aftersalesApplyDetailQueryService.listReturnPointRows(anyLong(), anyLong(), anyLong()))
 				.thenReturn(List.of());
 		doAnswer(
 						inv -> {
@@ -199,7 +201,8 @@ class AftersalesApplyShopApplyByNumHandleServiceJushuitanPublishTest {
 						new WdtErpTradeAfterSaleBusPayloadBuilder(),
 						tradeRefundDispatchPublisher,
 						tradeAftersalesDispatchPublisher,
-						thirdPartyTradeAftersalesSaasErpDispatchPublisher);
+						thirdPartyTradeAftersalesSaasErpDispatchPublisher,
+						AftersalesTestMessageSource.FALLBACK);
 	}
 
 	@Test
@@ -429,6 +432,91 @@ class AftersalesApplyShopApplyByNumHandleServiceJushuitanPublishTest {
 		exchangingInOrder.verify(orderRefundCompleteJobDispatchPublisher, never()).publish(anyLong(), anyLong());
 	}
 
+	@Test
+	void refundGoods_pointFreight_usesFreightFeeAndPersistsMainFreight() {
+		long companyId = 10L;
+		long orderId = 100L;
+		when(orderValidityPlatformSettingReadPort.readPlatformSetting(anyLong()))
+				.thenReturn(Map.of("is_refund_freight", true));
+		when(aftersalesApplyDetailQueryService.sumAppliedNum(anyLong(), anyLong(), anyLong()))
+				.thenReturn(1);
+
+		Map<String, Object> orderInfo = baseOrderInfo();
+		orderInfo.put("freight_type", "point");
+		orderInfo.put("freight_fee", 300);
+		orderInfo.put("freight_point", 0);
+		Map<String, Object> data = baseData("REFUND_GOODS", companyId, orderId);
+		data.put("freight", 200);
+
+		service.shopApplyByNumHandle(orderInfo, baseTrade(), data);
+
+		ArgumentCaptor<Aftersales> mainCaptor = ArgumentCaptor.forClass(Aftersales.class);
+		verify(aftersalesMapper).insert(mainCaptor.capture());
+		assertEquals(200, mainCaptor.getValue().getFreight().intValue());
+		assertEquals("point", mainCaptor.getValue().getFreightType());
+
+		@SuppressWarnings("unchecked")
+		ArgumentCaptor<Map<String, Object>> refundCaptor = ArgumentCaptor.forClass(Map.class);
+		verify(aftersalesRefundService).createRefund(refundCaptor.capture());
+		assertEquals(200, ((Number) refundCaptor.getValue().get("freight")).intValue());
+		assertEquals("point", refundCaptor.getValue().get("freight_type"));
+		assertEquals(1, ((Number) refundCaptor.getValue().get("return_freight")).intValue());
+	}
+
+	@Test
+	void onlyRefund_doesNotRefundFreight() {
+		long companyId = 10L;
+		long orderId = 100L;
+		when(orderValidityPlatformSettingReadPort.readPlatformSetting(anyLong()))
+				.thenReturn(Map.of("is_refund_freight", true));
+		when(aftersalesApplyDetailQueryService.sumAppliedNum(anyLong(), anyLong(), anyLong()))
+				.thenReturn(1);
+
+		Map<String, Object> orderInfo = baseOrderInfo();
+		orderInfo.put("freight_fee", 1_000);
+		Map<String, Object> data = baseData("ONLY_REFUND", companyId, orderId);
+		data.put("freight", 1_000);
+
+		service.shopApplyByNumHandle(orderInfo, baseTrade(), data);
+
+		ArgumentCaptor<Aftersales> mainCaptor = ArgumentCaptor.forClass(Aftersales.class);
+		verify(aftersalesMapper).insert(mainCaptor.capture());
+		assertEquals(0, mainCaptor.getValue().getFreight().intValue());
+
+		@SuppressWarnings("unchecked")
+		ArgumentCaptor<Map<String, Object>> refundCaptor = ArgumentCaptor.forClass(Map.class);
+		verify(aftersalesRefundService).createRefund(refundCaptor.capture());
+		assertEquals(0, ((Number) refundCaptor.getValue().get("freight")).intValue());
+		assertEquals(0, ((Number) refundCaptor.getValue().get("return_freight")).intValue());
+		verify(aftersalesApplyDetailQueryService, never())
+				.sumAppliedFreightCash(anyLong(), anyLong());
+	}
+
+	@Test
+	void refundGoods_currentPieceDoesNotCountAsLastTwice() {
+		long companyId = 10L;
+		long orderId = 100L;
+		when(orderValidityPlatformSettingReadPort.readPlatformSetting(anyLong()))
+				.thenReturn(Map.of("is_refund_freight", true));
+		when(orderNormalOrderItemsReadPort.listItems(anyLong(), anyLong()))
+				.thenReturn(List.of(orderLine(2)));
+		when(aftersalesApplyDetailQueryService.sumAppliedNum(anyLong(), anyLong(), anyLong()))
+				.thenReturn(1);
+
+		Map<String, Object> orderInfo = baseOrderInfo();
+		orderInfo.put("freight_fee", 1_000);
+		Map<String, Object> data = baseData("REFUND_GOODS", companyId, orderId);
+		data.put("freight", 0);
+
+		service.shopApplyByNumHandle(orderInfo, baseTrade(), data);
+
+		ArgumentCaptor<Aftersales> mainCaptor = ArgumentCaptor.forClass(Aftersales.class);
+		verify(aftersalesMapper).insert(mainCaptor.capture());
+		assertEquals(0, mainCaptor.getValue().getFreight().intValue());
+		verify(aftersalesApplyDetailQueryService, never())
+				.sumAppliedFreightCash(anyLong(), anyLong());
+	}
+
 	private static Map<String, Object> baseOrderInfo() {
 		Map<String, Object> m = new LinkedHashMap<>();
 		m.put("shop_id", 1L);
@@ -438,6 +526,24 @@ class AftersalesApplyShopApplyByNumHandleServiceJushuitanPublishTest {
 		m.put("freight_type", "cash");
 		m.put("pay_type", "online");
 		return m;
+	}
+
+	private static Map<String, Object> orderLine(int num) {
+		Map<String, Object> line = new LinkedHashMap<>();
+		line.put("id", 501L);
+		line.put("num", num);
+		line.put("total_fee", 10_000);
+		line.put("point", 0);
+		line.put("item_name", "SKU");
+		line.put("supplier_id", 3);
+		line.put("goods_id", 11L);
+		line.put("item_id", 22L);
+		line.put("item_bn", "BN1");
+		line.put("pic", "");
+		line.put("order_item_type", "product");
+		line.put("get_points", 0);
+		line.put("item_spec_desc", "");
+		return line;
 	}
 
 	private static Map<String, Object> baseTrade() {

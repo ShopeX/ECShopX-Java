@@ -7,20 +7,30 @@ import org.junit.jupiter.api.Test;
 class OutsideMultiLangTableSupportTest {
 
 	@Test
-	void legacyLocalesKeepCamelCaseSuffix() {
+	void supportedLocalesUseCamelCaseSuffix() {
 		assertThat(OutsideMultiLangTableSupport.normalizeLangTableSuffix("zh-CN")).isEqualTo("zhCN");
 		assertThat(OutsideMultiLangTableSupport.normalizeLangTableSuffix("en-CN")).isEqualTo("enCN");
 		assertThat(OutsideMultiLangTableSupport.normalizeLangTableSuffix("ar-SA")).isEqualTo("arSA");
+		assertThat(OutsideMultiLangTableSupport.normalizeLangTableSuffix("zh-TW")).isEqualTo("zhTW");
+		assertThat(OutsideMultiLangTableSupport.normalizeLangTableSuffix("ja-JP")).isEqualTo("jaJP");
+		assertThat(OutsideMultiLangTableSupport.normalizeLangTableSuffix("ru-RU")).isEqualTo("ruRU");
 	}
 
 	@Test
-	void zhTwBecomesLowercaseZhtw() {
-		assertThat(OutsideMultiLangTableSupport.normalizeLangTableSuffix("zh-TW")).isEqualTo("zhtw");
+	void caseInsensitiveSupportedTags() {
+		assertThat(OutsideMultiLangTableSupport.normalizeLangTableSuffix("zh-tw")).isEqualTo("zhTW");
+		assertThat(OutsideMultiLangTableSupport.normalizeLangTableSuffix("JA-jp")).isEqualTo("jaJP");
 	}
 
 	@Test
-	void futureLocaleUsesLowercaseRule() {
-		assertThat(OutsideMultiLangTableSupport.normalizeLangTableSuffix("ja-JP")).isEqualTo("jajp");
+	void compactSuffixNormalizedToCamelCase() {
+		assertThat(OutsideMultiLangTableSupport.normalizeLangTableSuffix("zhtw")).isEqualTo("zhTW");
+		assertThat(OutsideMultiLangTableSupport.normalizeLangTableSuffix("jajp")).isEqualTo("jaJP");
+	}
+
+	@Test
+	void futureLocaleUsesCamelCaseRule() {
+		assertThat(OutsideMultiLangTableSupport.normalizeLangTableSuffix("ko-KR")).isEqualTo("koKR");
 	}
 
 	@Test

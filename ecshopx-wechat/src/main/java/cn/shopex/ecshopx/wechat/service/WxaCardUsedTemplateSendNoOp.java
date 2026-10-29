@@ -17,13 +17,17 @@
 package cn.shopex.ecshopx.wechat.service;
 
 import java.util.Map;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 @Service
+@ConditionalOnProperty(
+		name = "ecshopx.wechat.wxa-card-template-send.enabled",
+		havingValue = "false")
 public class WxaCardUsedTemplateSendNoOp implements WxaCardUsedTemplateSendPort {
 
 	@Override
 	public void send(long companyId, long userId, String templateScene, Map<String, String> keywordData) {
-		// 占位：不发起微信 HTTP
+		// explicitly disabled
 	}
 }

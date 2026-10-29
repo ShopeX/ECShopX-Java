@@ -17,8 +17,6 @@
 package cn.shopex.ecshopx.goods.service.wxapp;
 
 import cn.shopex.ecshopx.common.util.ValuePresence;
-import cn.shopex.ecshopx.distribution.domain.Distributor;
-import cn.shopex.ecshopx.distribution.service.DistributorListQueryService;
 import cn.shopex.ecshopx.goods.repository.ItemsListQueryRepository;
 import cn.shopex.ecshopx.goods.repository.ItemsRelTagsRepository;
 import cn.shopex.ecshopx.goods.service.ItemsCategoryDistributorIdResolver;
@@ -52,20 +50,17 @@ public class WxappGoodsItemsListQueryOrchestrator {
 	private final GoodsItemsListFacadeService goodsItemsListFacadeService;
 	private final ItemsRelTagsRepository itemsRelTagsRepository;
 	private final ItemsCategoryDistributorIdResolver itemsCategoryDistributorIdResolver;
-	private final DistributorListQueryService distributorListQueryService;
 
 	public WxappGoodsItemsListQueryOrchestrator(MerchantDisabledDistributorIdsQueryService merchantDisabledDistributorIdsQueryService,
 			WxappItemsListSalesmanDistributorResolveService wxappItemsListSalesmanDistributorResolveService,
 			GoodsItemsListFacadeService goodsItemsListFacadeService,
 			ItemsRelTagsRepository itemsRelTagsRepository,
-			ItemsCategoryDistributorIdResolver itemsCategoryDistributorIdResolver,
-			DistributorListQueryService distributorListQueryService) {
+			ItemsCategoryDistributorIdResolver itemsCategoryDistributorIdResolver) {
 		this.merchantDisabledDistributorIdsQueryService = merchantDisabledDistributorIdsQueryService;
 		this.wxappItemsListSalesmanDistributorResolveService = wxappItemsListSalesmanDistributorResolveService;
 		this.goodsItemsListFacadeService = goodsItemsListFacadeService;
 		this.itemsRelTagsRepository = itemsRelTagsRepository;
 		this.itemsCategoryDistributorIdResolver = itemsCategoryDistributorIdResolver;
-		this.distributorListQueryService = distributorListQueryService;
 	}
 
 	public Map<String, Object> querySkuItemsList(long companyId, LinkedHashMap<String, Object> params, List<Map<String, Object>> orderBy) {
@@ -366,6 +361,10 @@ public class WxappGoodsItemsListQueryOrchestrator {
 		return repo;
 	}
 
+	/**
+	 * standard + 有效 distributor_id：一律按门店上架表（{@code goods_can_sale}）过滤，不区分总店/非总店。
+	 * 非 standard 或未开启 {@code is_can_sale}：仍按 items.distributor_id 直滤。
+	 */
 	private void applyDistributorRepoFilter(long companyId, LinkedHashMap<String, Object> p, LinkedHashMap<String, Object> repo) {
 		Object dist = p.get("distributor_id");
 		if (dist == null) {
@@ -384,15 +383,9 @@ public class WxappGoodsItemsListQueryOrchestrator {
 			repo.put(ItemsListQueryRepository.KEY_DISTRIBUTOR_ID_EQ, 0);
 			return;
 		}
-		List<Distributor> distRows = distributorListQueryService.listByIdsAndCompany(companyId, List.of(distributorId));
-		Distributor distributor = distRows != null && !distRows.isEmpty() ? distRows.get(0) : null;
-		if (distributor != null && isNonSelfDistributor(distributor)) {
-			repo.put(ItemsListQueryRepository.KEY_DIST_REL_VIRT_JOIN, Boolean.TRUE);
-			repo.put(ItemsListQueryRepository.KEY_DIST_REL_VIRT_DISTRIBUTOR_ID, distributorId);
-			repo.put(ItemsListQueryRepository.KEY_DIST_REL_VIRT_GOODS_CAN_SALE, Boolean.TRUE);
-			return;
-		}
-		repo.put(ItemsListQueryRepository.KEY_DISTRIBUTOR_ID_EQ, 0);
+		repo.put(ItemsListQueryRepository.KEY_DIST_REL_VIRT_JOIN, Boolean.TRUE);
+		repo.put(ItemsListQueryRepository.KEY_DIST_REL_VIRT_DISTRIBUTOR_ID, distributorId);
+		repo.put(ItemsListQueryRepository.KEY_DIST_REL_VIRT_GOODS_CAN_SALE, Boolean.TRUE);
 	}
 
 	private static void applyDistributorRepoFilterDirect(Object dist, LinkedHashMap<String, Object> repo) {
@@ -423,11 +416,6 @@ public class WxappGoodsItemsListQueryOrchestrator {
 		}
 		Long v = toLongObj(dist);
 		return v != null ? v : 0L;
-	}
-
-	private static boolean isNonSelfDistributor(Distributor d) {
-		int self = d.getDistributorSelf() != null ? d.getDistributorSelf() : 0;
-		return self == 0;
 	}
 
 	private static int toIntCents(Object o) {

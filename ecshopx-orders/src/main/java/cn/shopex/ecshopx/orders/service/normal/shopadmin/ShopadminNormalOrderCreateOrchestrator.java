@@ -16,19 +16,19 @@
 
 package cn.shopex.ecshopx.orders.service.normal.shopadmin;
 
-import cn.shopex.ecshopx.common.dispatch.NormalOrderAddDispatchPublisher;
 import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.common.order.normal.OrderCheckoutCartPort;
 import cn.shopex.ecshopx.common.order.normal.OrderCreateDistributorCheckPort;
 import cn.shopex.ecshopx.common.order.normal.OrderCreateFormatDataPort;
 import cn.shopex.ecshopx.common.order.normal.OrderCreateItemCheckPort;
 import cn.shopex.ecshopx.common.order.normal.OrderCreateNeedParamsPort;
+import cn.shopex.ecshopx.orders.service.excard.NormalOrderNumericIdService;
+import cn.shopex.ecshopx.orders.service.normal.create.NormalOrderCreateState;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.springframework.stereotype.Service;
-import cn.shopex.ecshopx.orders.service.normal.create.NormalOrderCreateState;
-import cn.shopex.ecshopx.supplier.service.SupplierOrderSplitOnNormalOrderAddService;
+import org.springframework.util.StringUtils;
 
 @Service
 public class ShopadminNormalOrderCreateOrchestrator {
@@ -39,8 +39,8 @@ public class ShopadminNormalOrderCreateOrchestrator {
 	private final OrderCreateDistributorCheckPort orderCreateDistributorCheckPort;
 	private final OrderCreateFormatDataPort orderCreateFormatDataPort;
 	private final ShopadminNormalOrderCreateTransactionalRunner shopadminNormalOrderCreateTransactionalRunner;
-	private final NormalOrderAddDispatchPublisher normalOrderAddDispatchPublisher;
-	private final SupplierOrderSplitOnNormalOrderAddService supplierOrderSplitOnNormalOrderAddService;
+	private final ShopadminDeferredOrderCache shopadminDeferredOrderCache;
+	private final NormalOrderNumericIdService normalOrderNumericIdService;
 
 	public ShopadminNormalOrderCreateOrchestrator(
 			OrderCreateNeedParamsPort orderCreateNeedParamsPort,
@@ -49,16 +49,16 @@ public class ShopadminNormalOrderCreateOrchestrator {
 			OrderCreateDistributorCheckPort orderCreateDistributorCheckPort,
 			OrderCreateFormatDataPort orderCreateFormatDataPort,
 			ShopadminNormalOrderCreateTransactionalRunner shopadminNormalOrderCreateTransactionalRunner,
-			NormalOrderAddDispatchPublisher normalOrderAddDispatchPublisher,
-			SupplierOrderSplitOnNormalOrderAddService supplierOrderSplitOnNormalOrderAddService) {
+			ShopadminDeferredOrderCache shopadminDeferredOrderCache,
+			NormalOrderNumericIdService normalOrderNumericIdService) {
 		this.orderCreateNeedParamsPort = orderCreateNeedParamsPort;
 		this.orderCheckoutCartPort = orderCheckoutCartPort;
 		this.orderCreateItemCheckPort = orderCreateItemCheckPort;
 		this.orderCreateDistributorCheckPort = orderCreateDistributorCheckPort;
 		this.orderCreateFormatDataPort = orderCreateFormatDataPort;
 		this.shopadminNormalOrderCreateTransactionalRunner = shopadminNormalOrderCreateTransactionalRunner;
-		this.normalOrderAddDispatchPublisher = normalOrderAddDispatchPublisher;
-		this.supplierOrderSplitOnNormalOrderAddService = supplierOrderSplitOnNormalOrderAddService;
+		this.shopadminDeferredOrderCache = shopadminDeferredOrderCache;
+		this.normalOrderNumericIdService = normalOrderNumericIdService;
 	}
 
 	public Map<String, Object> create(NormalOrderCreateState state, HttpServletRequest request) {
@@ -69,10 +69,25 @@ public class ShopadminNormalOrderCreateOrchestrator {
 		orderCreateDistributorCheckPort.check(state);
 		orderCreateFormatDataPort.format(state);
 		orderCreateFormatDataPort.assertDepositBalance(state);
-		shopadminNormalOrderCreateTransactionalRunner.runInTransaction(state, request);
-		splitSupplierOrders(state);
-		normalOrderAddDispatchPublisher.publish(buildNormalOrderAddPayload(state));
-		return buildSuccessPayload(state);
+		shopadminNormalOrderCreateTransactionalRunner.preparePricingSnapshot(state);
+
+		Map<String, Object> od = state.getOrderData();
+		long companyId = longVal(od.get("company_id"), longVal(state.getParams().get("company_id"), 0L));
+		long userId = longVal(od.get("user_id"), longVal(state.getParams().get("user_id"), 0L));
+		long orderId = normalOrderNumericIdService.generate(userId);
+		od.put("order_id", orderId);
+
+		String payType = stringVal(od.get("pay_type"));
+		if (!StringUtils.hasText(payType)) {
+			payType = stringVal(state.getParams().get("pay_type"));
+		}
+		if (!StringUtils.hasText(payType)) {
+			payType = "pos";
+		}
+		int totalFee = (int) Math.min(longVal(od.get("total_fee"), 0L), Integer.MAX_VALUE);
+		int ttlSeconds = resolveWaitPayTtlSeconds(od);
+		shopadminDeferredOrderCache.saveWaitPay(state, orderId, companyId, payType, totalFee, ttlSeconds);
+		return buildDeferredCreatePayload(state, orderId, companyId);
 	}
 
 	private static void assertKnownOrderType(NormalOrderCreateState state) {
@@ -82,47 +97,25 @@ public class ShopadminNormalOrderCreateOrchestrator {
 		}
 	}
 
-	private void splitSupplierOrders(NormalOrderCreateState state) {
-		Map<String, Object> insert = state.getOrdersInsertResult();
-		Long companyId = longObject(insert.get("company_id"));
-		Long orderId = longObject(insert.get("order_id"));
-		if (companyId == null || orderId == null) {
-			return;
+	private static int resolveWaitPayTtlSeconds(Map<String, Object> od) {
+		long autoCancel = longVal(od.get("auto_cancel_time"), 0L);
+		long now = System.currentTimeMillis() / 1000L;
+		if (autoCancel > now) {
+			long delta = autoCancel - now;
+			return (int) Math.min(delta, Integer.MAX_VALUE);
 		}
-		supplierOrderSplitOnNormalOrderAddService.split(companyId, orderId);
+		return 15 * 60;
 	}
 
-	private static Long longObject(Object raw) {
-		if (raw == null) {
-			return null;
-		}
-		if (raw instanceof Number n) {
-			return n.longValue();
-		}
-		try {
-			return Long.parseLong(String.valueOf(raw).trim());
-		} catch (NumberFormatException e) {
-			return null;
-		}
-	}
-
-	private static Map<String, Object> buildNormalOrderAddPayload(NormalOrderCreateState state) {
-		Map<String, Object> insert = state.getOrdersInsertResult();
-		Map<String, Object> payload = new LinkedHashMap<>();
-		payload.put("company_id", insert.get("company_id"));
-		payload.put("order_id", insert.get("order_id"));
-		Object payType = insert.get("pay_type");
-		if (payType == null && state.getOrderData() != null) {
-			payType = state.getOrderData().get("pay_type");
-		}
-		payload.put("pay_type", payType);
-		return payload;
-	}
-
-	private static Map<String, Object> buildSuccessPayload(NormalOrderCreateState state) {
-		Map<String, Object> res = new LinkedHashMap<>(state.getOrdersInsertResult());
+	private static Map<String, Object> buildDeferredCreatePayload(
+			NormalOrderCreateState state, long orderId, long companyId) {
+		Map<String, Object> res = new LinkedHashMap<>();
 		Map<String, Object> od = state.getOrderData();
 		Map<String, Object> pr = state.getParams();
+		res.put("order_id", orderId);
+		res.put("company_id", companyId);
+		res.put("order_status", "NOTPAY");
+		res.put("pay_status", "NOTPAY");
 		if (od != null) {
 			copyIfPresent(res, od, "discount_fee");
 			copyIfPresent(res, od, "discount_info");
@@ -157,5 +150,23 @@ public class ShopadminNormalOrderCreateOrchestrator {
 		if (src.containsKey(key)) {
 			dest.put(key, src.get(key));
 		}
+	}
+
+	private static long longVal(Object v, long def) {
+		if (v == null) {
+			return def;
+		}
+		if (v instanceof Number n) {
+			return n.longValue();
+		}
+		try {
+			return Long.parseLong(String.valueOf(v).trim());
+		} catch (NumberFormatException e) {
+			return def;
+		}
+	}
+
+	private static String stringVal(Object v) {
+		return v == null ? "" : v.toString().trim();
 	}
 }

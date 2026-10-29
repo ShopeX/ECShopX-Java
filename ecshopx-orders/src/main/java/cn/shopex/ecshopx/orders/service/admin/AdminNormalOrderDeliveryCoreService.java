@@ -484,6 +484,7 @@ public class AdminNormalOrderDeliveryCoreService {
 		base.put("order_id", orderId);
 		base.put("user_id", params.get("user_id"));
 		base.put("delivery_corp", delivery.getDeliveryCorp());
+		base.put("delivery_corp_name", delivery.getDeliveryCorpName());
 		base.put("delivery_code", delivery.getDeliveryCode());
 		if (StringUtils.hasText(stringParam(params, "logi_name"))) {
 			base.put("logi_name", stringParam(params, "logi_name"));

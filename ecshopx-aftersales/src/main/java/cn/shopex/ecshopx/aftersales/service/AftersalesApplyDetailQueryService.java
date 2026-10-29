@@ -46,12 +46,29 @@ public class AftersalesApplyDetailQueryService {
 	}
 
 	public int sumAppliedNum(long companyId, long orderId, long subOrderId, Long excludeAftersalesBn) {
+		return sumAppliedNum(companyId, orderId, subOrderId, excludeAftersalesBn, null);
+	}
+
+	public int sumAppliedNumByType(
+			long companyId, long orderId, long subOrderId, String... aftersalesTypes) {
+		return sumAppliedNum(companyId, orderId, subOrderId, null, aftersalesTypes);
+	}
+
+	private int sumAppliedNum(
+			long companyId,
+			long orderId,
+			long subOrderId,
+			Long excludeAftersalesBn,
+			String[] aftersalesTypes) {
 		QueryWrapper<AftersalesDetail> q = new QueryWrapper<>();
 		q.select("COALESCE(SUM(num),0) AS s");
 		q.eq("company_id", companyId);
 		q.eq("order_id", String.valueOf(orderId));
 		q.eq("sub_order_id", subOrderId);
 		q.in("aftersales_status", ACTIVE_DETAIL_STATUSES);
+		if (aftersalesTypes != null && aftersalesTypes.length > 0) {
+			q.in("aftersales_type", (Object[]) aftersalesTypes);
+		}
 		if (excludeAftersalesBn != null) {
 			q.ne("aftersales_bn", excludeAftersalesBn);
 		}

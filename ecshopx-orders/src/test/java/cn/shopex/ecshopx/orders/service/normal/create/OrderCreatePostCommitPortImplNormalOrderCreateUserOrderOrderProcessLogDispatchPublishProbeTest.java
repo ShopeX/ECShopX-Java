@@ -9,6 +9,7 @@ import static org.mockito.Mockito.verify;
 
 import cn.shopex.ecshopx.common.dispatch.OrdersDispatchEventNames;
 import cn.shopex.ecshopx.common.dispatch.SendPayOrdersRemindJobDispatchPublisher;
+import cn.shopex.ecshopx.common.operatorcart.OperatorCartFastBuyFacade;
 import cn.shopex.ecshopx.common.order.normal.NormalOrderCreateParams;
 import cn.shopex.ecshopx.common.order.normal.OrderCreateCouponConsumePort;
 import cn.shopex.ecshopx.common.order.normal.OrderCreateEmployeePurchaseEmptyCartPort;
@@ -88,6 +89,7 @@ class OrderCreatePostCommitPortImplNormalOrderCreateUserOrderOrderProcessLogDisp
 						orderDirectedCrowdDiscountPort,
 						pointMemberAddPointService,
 						operatorCartDeleteDataService,
+						mock(OperatorCartFastBuyFacade.class),
 						cartMapper,
 						stringRedisTemplate,
 						sendPayOrdersRemindJobDispatchPublisher,

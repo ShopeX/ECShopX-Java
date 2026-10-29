@@ -1,0 +1,6 @@
+# Files
+
+- [Dispatch Bus (ecshopx-dispatch)](dispatch-bus.md)
+- [Persistence: MySQL, MyBatis-Plus, Mappers, and Tenancy](persistence-mybatis.md) - How every Bundle persists state: MyBatis-Plus mapper scanning and XML discovery, the @MpTable/@MpId/@MpField schema metadata annotations, the hand-written company_id tenancy pattern, idempotency guards, and the datasource/Flyway defaults that back them.
+- [Redis: Logical Database Isolation and Templates](redis-databases.md) - How ECShopX-Java splits one Redis instance into logical databases via hand-built LettuceConnectionFactory beans in MultiRedisConfig, which @Qualifier template lands in which DB, and the settings-store, counter, snapshot, and lock patterns that live there.
+- [Scheduled Jobs: XXL-JOB Executor and Cron Handlers](scheduling-xxljob.md) - How ECShopX-Java runs scheduled work: one XxlJobSpringExecutor bean (appname ecshopx-executor, port 19999) auto-registers against a separately deployed XXL-JOB 2.5.0 admin whose xxl_job schema is seeded from docker/tables_xxl_job.sql; each Bundle contributes cron/Schedule*Handler classes with @XxlJob short names that delegate to services, log cost, publish CronAlertEvent on failure and rethrow — and many of them simply publish a dispatch-bus job.

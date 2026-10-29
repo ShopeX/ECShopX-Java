@@ -85,6 +85,7 @@ public class DistributorListRowFormatService {
 			row.put("rate", "");
 		}
 		numericBool(row, "is_ziti");
+		numericBool(row, "is_platform_store_buy");
 		numericBool(row, "is_delivery");
 		numericBool(row, "is_open_salesman");
 		numericBool(row, "is_default");

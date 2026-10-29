@@ -18,8 +18,10 @@ package cn.shopex.ecshopx.goods.service.operatorcart;
 
 import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.common.operatorcart.OperatorCartDataListFacade;
+import cn.shopex.ecshopx.common.operatorcart.OperatorCartFastBuyFacade;
 import cn.shopex.ecshopx.common.order.normal.NormalOrderCreateParams;
 import cn.shopex.ecshopx.common.order.normal.OrderCheckoutCartPort;
+import cn.shopex.ecshopx.distribution.service.DistributorPlatformStoreBuyGateService;
 import cn.shopex.ecshopx.goods.service.cart.wxapp.CheckoutCartLogisticsSupplierStoreClampService;
 import cn.shopex.ecshopx.goods.service.cart.wxapp.WxappH5CartListService;
 import cn.shopex.ecshopx.goods.service.recommend.GoodsRecommendCheckoutMergeService;
@@ -42,6 +44,10 @@ public class OrderCheckoutCartPortImpl implements OrderCheckoutCartPort {
 
 	private final OperatorCartDataListFacade operatorCartDataListFacade;
 
+	private final OperatorCartFastBuyFacade operatorCartFastBuyFacade;
+
+	private final DistributorPlatformStoreBuyGateService distributorPlatformStoreBuyGateService;
+
 	private final WxappH5CartListService wxappH5CartListService;
 
 	private final StringRedisTemplate stringRedisTemplate;
@@ -50,10 +56,14 @@ public class OrderCheckoutCartPortImpl implements OrderCheckoutCartPort {
 
 	public OrderCheckoutCartPortImpl(
 			OperatorCartDataListFacade operatorCartDataListFacade,
+			OperatorCartFastBuyFacade operatorCartFastBuyFacade,
+			DistributorPlatformStoreBuyGateService distributorPlatformStoreBuyGateService,
 			WxappH5CartListService wxappH5CartListService,
 			@Qualifier("sharedStringRedisTemplate") StringRedisTemplate stringRedisTemplate,
 			ObjectMapper objectMapper) {
 		this.operatorCartDataListFacade = operatorCartDataListFacade;
+		this.operatorCartFastBuyFacade = operatorCartFastBuyFacade;
+		this.distributorPlatformStoreBuyGateService = distributorPlatformStoreBuyGateService;
 		this.wxappH5CartListService = wxappH5CartListService;
 		this.stringRedisTemplate = stringRedisTemplate;
 		this.objectMapper = objectMapper;
@@ -66,8 +76,17 @@ public class OrderCheckoutCartPortImpl implements OrderCheckoutCartPort {
 		long operatorId = longVal(pr.get("operator_id"), 0L);
 		long distributorId = longVal(pr.get("distributor_id"), 0L);
 		long userId = longVal(pr.get("user_id"), 0L);
-		Map<String, Object> cart =
-				operatorCartDataListFacade.getCartDataList(companyId, operatorId, distributorId, userId, request, true);
+		boolean fastBuy = "fastbuy".equals(stringVal(pr.get("cart_type")));
+		Map<String, Object> cart;
+		if (fastBuy) {
+			distributorPlatformStoreBuyGateService.assertShopadminPlatformStoreBuyAllowed(companyId, distributorId);
+			operatorCartFastBuyFacade.revalidateFastBuyPlatformStock(companyId, operatorId, distributorId);
+			cart = operatorCartFastBuyFacade.getFastBuyCartDataList(
+					companyId, operatorId, distributorId, userId, true);
+		} else {
+			cart = operatorCartDataListFacade.getCartDataList(
+					companyId, operatorId, distributorId, userId, request, true);
+		}
 		@SuppressWarnings("unchecked")
 		List<Map<String, Object>> validCart = (List<Map<String, Object>>) cart.get("valid_cart");
 		if (validCart == null || validCart.isEmpty()) {
@@ -590,6 +609,10 @@ public class OrderCheckoutCartPortImpl implements OrderCheckoutCartPort {
 			out.add(row);
 		}
 		return out;
+	}
+
+	private static String stringVal(Object v) {
+		return v == null ? "" : v.toString().trim();
 	}
 
 	private static long longVal(Object v, long def) {

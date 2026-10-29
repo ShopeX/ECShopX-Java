@@ -32,8 +32,10 @@ import cn.shopex.ecshopx.goods.service.popularize.CompanyPopularizeConfigReadSer
 import cn.shopex.ecshopx.distribution.repository.DistributorOnsaleSkuListFilter;
 import cn.shopex.ecshopx.distribution.repository.DistributorOnsaleSkuListRepository;
 import cn.shopex.ecshopx.distribution.service.DistributorListQueryService;
+import cn.shopex.ecshopx.distribution.service.DistributorPlatformStoreBuyGateService;
 import cn.shopex.ecshopx.goods.service.ItemsCategoryDistributorIdResolver;
 import cn.shopex.ecshopx.goods.service.distributor.DistributorItemsListSkuSpecApplier;
+import cn.shopex.ecshopx.goods.service.distributor.DistributorItemsRelListCoreService;
 import cn.shopex.ecshopx.supplier.domain.SupplierItems;
 import cn.shopex.ecshopx.supplier.domain.SupplierItemsAttr;
 import cn.shopex.ecshopx.supplier.repository.SupplierItemsAttrListRepository;
@@ -71,6 +73,8 @@ public class GoodsItemsListFacadeService {
 	private final DistributorOnsaleSkuListRepository distributorOnsaleSkuListRepository;
 	private final DistributorItemsListSkuSpecApplier distributorItemsListSkuSpecApplier;
 	private final ItemLogisticsStoreEnricher itemLogisticsStoreEnricher;
+	private final DistributorPlatformStoreBuyGateService distributorPlatformStoreBuyGateService;
+	private final DistributorItemsRelListCoreService distributorItemsRelListCoreService;
 	private final LangueProperties langueProperties;
 
 	public GoodsItemsListFacadeService(ItemsListQueryRepository itemsListQueryRepository,
@@ -85,6 +89,8 @@ public class GoodsItemsListFacadeService {
 			DistributorOnsaleSkuListRepository distributorOnsaleSkuListRepository,
 			DistributorItemsListSkuSpecApplier distributorItemsListSkuSpecApplier,
 			ItemLogisticsStoreEnricher itemLogisticsStoreEnricher,
+			DistributorPlatformStoreBuyGateService distributorPlatformStoreBuyGateService,
+			DistributorItemsRelListCoreService distributorItemsRelListCoreService,
 			LangueProperties langueProperties) {
 		this.itemsListQueryRepository = itemsListQueryRepository;
 		this.supplierItemsListQueryRepository = supplierItemsListQueryRepository;
@@ -104,6 +110,8 @@ public class GoodsItemsListFacadeService {
 		this.distributorOnsaleSkuListRepository = distributorOnsaleSkuListRepository;
 		this.distributorItemsListSkuSpecApplier = distributorItemsListSkuSpecApplier;
 		this.itemLogisticsStoreEnricher = itemLogisticsStoreEnricher;
+		this.distributorPlatformStoreBuyGateService = distributorPlatformStoreBuyGateService;
+		this.distributorItemsRelListCoreService = distributorItemsRelListCoreService;
 		this.langueProperties = langueProperties;
 	}
 
@@ -260,6 +268,18 @@ public class GoodsItemsListFacadeService {
 		itemsListMultiLangApplier.applyToRows(companyId, resolveListLang(request), rows);
 		goodsItemsListEnrichmentService.enrichAll(companyId, rows, false, null);
 		itemsMedicineService.applyMedicineDataToRows(companyId, rows);
+		itemLogisticsStoreEnricher.enrichListRowsWithLogisticsStore(companyId, rows);
+
+		long onsaleDistributorId = resolveOnsaleDistributorId(request, shopDistributorEq, shopDistributorIn);
+		// 对齐 PHP getDistributorSkuItemsList → getDistributorSkuReplace（门店独立库存覆盖）
+		if (!usePlatformItemsTable && onsaleDistributorId > 0L) {
+			distributorItemsRelListCoreService.applyDistributorSkuReplace(
+					companyId, onsaleDistributorId, rows, true);
+		}
+		boolean exposePlatformStore =
+				onsaleDistributorId > 0L
+						&& distributorPlatformStoreBuyGateService.isEnabled(companyId, onsaleDistributorId);
+		OnsalePlatformStoreSupport.appendPlatformStoreForOnsaleSkuList(rows, exposePlatformStore);
 
 		LinkedHashMap<String, Object> filterInternal = new LinkedHashMap<>(p);
 		if (!usePlatformItemsTable) {
@@ -270,7 +290,32 @@ public class GoodsItemsListFacadeService {
 		out.put("total_count", total);
 		out.put("warning_store", warningStore);
 		out.put("filter", GoodsItemsListResponseFilterBuilder.build(querySnap, filterInternal, true));
+		if (onsaleDistributorId > 0L) {
+			out.put("is_platform_store_buy", exposePlatformStore);
+		}
 		return out;
+	}
+
+	/** PHP getOnsaleItemsList：优先请求 distributor_id，否则取查询分支解析出的门店。 */
+	private long resolveOnsaleDistributorId(
+			HttpServletRequest request, Integer shopDistributorEq, List<Integer> shopDistributorIn) {
+		String raw = resolveDistributorIdRaw(request);
+		if (raw != null) {
+			long v = toLong(raw);
+			if (v > 0L) {
+				return v;
+			}
+		}
+		if (shopDistributorEq != null && shopDistributorEq > 0) {
+			return shopDistributorEq.longValue();
+		}
+		if (shopDistributorIn != null && shopDistributorIn.size() == 1) {
+			Integer only = shopDistributorIn.get(0);
+			if (only != null && only > 0) {
+				return only.longValue();
+			}
+		}
+		return 0L;
 	}
 
 	private Map<String, Object> emptyOnsaleResponseEarly(LinkedHashMap<String, Object> p, long companyId, String operatorType, long operatorId) {

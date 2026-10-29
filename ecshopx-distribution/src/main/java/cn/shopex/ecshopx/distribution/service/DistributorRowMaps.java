@@ -52,6 +52,7 @@ final class DistributorRowMaps {
 		put(m, "is_default", d.getIsDefault());
 		put(m, "is_audit_goods", d.getIsAuditGoods());
 		put(m, "is_ziti", d.getIsZiti());
+		put(m, "is_platform_store_buy", d.getIsPlatformStoreBuy());
 		put(m, "regions_id", decodeJsonList(d.getRegionsId(), objectMapper));
 		put(m, "regions", decodeJsonList(d.getRegions(), objectMapper));
 		put(m, "is_domestic", d.getIsDomestic());

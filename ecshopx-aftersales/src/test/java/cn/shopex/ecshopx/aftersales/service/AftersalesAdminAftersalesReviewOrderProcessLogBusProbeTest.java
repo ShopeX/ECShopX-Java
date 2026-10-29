@@ -190,7 +190,8 @@ class AftersalesAdminAftersalesReviewOrderProcessLogBusProbeTest {
 						new WdtErpTradeAfterSaleBusPayloadBuilder(),
 						thirdPartyTradeAftersalesCancelSaasErpDispatchPublisher,
 						thirdPartyTradeAftersalesSaasErpDispatchPublisher,
-						tradeAftersalesDispatchPublisher);
+						tradeAftersalesDispatchPublisher,
+				mock(AftersalesRefuseWxaNotifyService.class));
 
 		Map<String, Object> body = new LinkedHashMap<>();
 		body.put("aftersales_bn", AFTERSALES_BN);
@@ -304,7 +305,8 @@ class AftersalesAdminAftersalesReviewOrderProcessLogBusProbeTest {
 						new WdtErpTradeAfterSaleBusPayloadBuilder(),
 						thirdPartyTradeAftersalesCancelSaasErpDispatchPublisher,
 						thirdPartyTradeAftersalesSaasErpDispatchPublisher,
-						tradeAftersalesDispatchPublisher);
+						tradeAftersalesDispatchPublisher,
+				mock(AftersalesRefuseWxaNotifyService.class));
 
 		Map<String, Object> body = new LinkedHashMap<>();
 		body.put("aftersales_bn", AFTERSALES_BN);
@@ -415,7 +417,8 @@ class AftersalesAdminAftersalesReviewOrderProcessLogBusProbeTest {
 						new WdtErpTradeAfterSaleBusPayloadBuilder(),
 						thirdPartyTradeAftersalesCancelSaasErpDispatchPublisher,
 						thirdPartyTradeAftersalesSaasErpDispatchPublisher,
-						tradeAftersalesDispatchPublisher);
+						tradeAftersalesDispatchPublisher,
+				mock(AftersalesRefuseWxaNotifyService.class));
 
 		Map<String, Object> body = new LinkedHashMap<>();
 		body.put("aftersales_bn", AFTERSALES_BN);

@@ -19,7 +19,7 @@ import cn.shopex.ecshopx.common.goods.ItemCompanyIdResolver;
 import cn.shopex.ecshopx.common.members.port.MembersSubscribeNoticeItemNamePort;
 import cn.shopex.ecshopx.config.AliTemplateMsgSendDispatchPublisherImpl;
 import cn.shopex.ecshopx.members.domain.SubscribeNotice;
-import cn.shopex.ecshopx.members.mapper.SubscribeNoticeMapper;
+import cn.shopex.ecshopx.members.service.GoodsArrivalSubscribeMatchService;
 import cn.shopex.ecshopx.promotions.dispatch.AliTemplateMsgSendJobHandler;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -46,8 +46,8 @@ class ItemStoreUpdatedAliTemplateBusDispatchFlowTest {
 		sub.setRelId(55L);
 		sub.setUserId(3L);
 
-		SubscribeNoticeMapper subscribeNoticeMapper = mock(SubscribeNoticeMapper.class);
-		when(subscribeNoticeMapper.selectList(any())).thenReturn(List.of(sub));
+		GoodsArrivalSubscribeMatchService matchService = mock(GoodsArrivalSubscribeMatchService.class);
+		when(matchService.listPending(9L, 55L, 0, "alipay")).thenReturn(List.of(sub));
 
 		MembersSubscribeNoticeItemNamePort itemNamePort = mock(MembersSubscribeNoticeItemNamePort.class);
 		when(itemNamePort.resolveItemName(9L, 55L, "zh-CN")).thenReturn("Widget");
@@ -63,7 +63,7 @@ class ItemStoreUpdatedAliTemplateBusDispatchFlowTest {
 
 		ItemStoreGoodsArrivalAliTemplateOrchestrator orchestrator =
 				new ItemStoreGoodsArrivalAliTemplateOrchestrator(
-						companyIdResolver, subscribeNoticeMapper, itemNamePort, publisher);
+						companyIdResolver, matchService, itemNamePort, publisher);
 		ItemStoreUpdateSendAliTemplateDispatchListener aliListener =
 				new ItemStoreUpdateSendAliTemplateDispatchListener(orchestrator);
 
@@ -86,8 +86,8 @@ class ItemStoreUpdatedAliTemplateBusDispatchFlowTest {
 
 		facade.publishEvent(GoodsDispatchEventNames.EVENT_ITEM_STORE_UPDATE, payload, DispatchOptions.eventDefaults());
 
-		InOrder order = inOrder(subscribeNoticeMapper, arrival);
-		order.verify(subscribeNoticeMapper).selectList(any());
+		InOrder order = inOrder(matchService, arrival);
+		order.verify(matchService).listPending(9L, 55L, 0, "alipay");
 		order.verify(arrival).onEvent(any());
 
 		assertEquals(1, captured.size());

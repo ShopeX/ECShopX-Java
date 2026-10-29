@@ -17,6 +17,7 @@
 package cn.shopex.ecshopx.orders.service.admin;
 
 import cn.shopex.ecshopx.aftersales.service.AftersalesDetailAggregateService;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.stereotype.Component;
@@ -31,38 +32,58 @@ public class AdminOrderDetailAftersalesApplier {
 	}
 
 	public void apply(Map<String, Object> orderInfo, List<Map<String, Object>> items) {
-		int canApplyAftersalesSum = 0;
 		orderInfo.put("can_apply_aftersales", 0);
 		long companyId = longVal(orderInfo.get("company_id"));
 		String orderIdStr = str(orderInfo.get("order_id"));
 		int now = (int) (System.currentTimeMillis() / 1000L);
+		boolean canApplyAftersales = false;
 
 		for (Map<String, Object> item : items) {
+			int num = intVal(item.get("num"));
 			int deliveryItemNum = intVal(item.get("delivery_item_num"));
-			if (deliveryItemNum <= 0) {
-				continue;
-			}
 			long subOrderId = longVal(item.get("id"));
-			int appliedNum = aftersalesDetailAggregateService.getAppliedNum(companyId, orderIdStr, subOrderId);
 			int cancelItemNum = intVal(item.get("cancel_item_num"));
-			int leftAftersalesNum = deliveryItemNum + cancelItemNum - appliedNum;
-			item.put("left_aftersales_num", leftAftersalesNum);
-			item.put("show_aftersales", appliedNum > cancelItemNum ? 1 : 0);
+			AftersalesDetailAggregateService.OrderItemAftersalesQuota quota =
+					aftersalesDetailAggregateService.calculateItemQuota(
+							companyId, orderIdStr, subOrderId, num, deliveryItemNum, cancelItemNum);
+			item.put("left_aftersales_num", quota.leftAftersalesNum());
+			item.put("left_refund_only_num", quota.leftRefundOnlyNum());
+			item.put("show_aftersales", quota.appliedNum() > cancelItemNum ? 1 : 0);
+			applyRefundAmount(companyId, orderIdStr, subOrderId, item);
 
 			int autoClose = intVal(item.get("auto_close_aftersales_time"));
-			if (autoClose > 0 && autoClose < now) {
-				canApplyAftersalesSum += leftAftersalesNum;
-				continue;
-			}
-			orderInfo.put("can_apply_aftersales", 1);
-			canApplyAftersalesSum += leftAftersalesNum;
-			if (canApplyAftersalesSum > 0) {
-				orderInfo.put("can_apply_aftersales", 1);
-			}
-			if ("CANCEL".equals(str(orderInfo.get("order_status")))) {
-				orderInfo.put("can_apply_aftersales", 0);
+			if (quota.leftAftersalesNum() + quota.leftRefundOnlyNum() > 0
+					&& !(autoClose > 0 && autoClose < now)) {
+				canApplyAftersales = true;
 			}
 		}
+
+		boolean blocked =
+				"PENDING".equals(str(orderInfo.get("delivery_status")))
+						|| "CANCEL".equals(str(orderInfo.get("order_status")));
+		if (canApplyAftersales && !blocked) {
+			orderInfo.put("can_apply_aftersales", 1);
+		}
+	}
+
+	private void applyRefundAmount(
+			long companyId, String orderId, long subOrderId, Map<String, Object> item) {
+		int totalFee = intVal(item.get("total_fee"));
+		int pointFee = intVal(item.get("point_fee"));
+		AftersalesDetailAggregateService.AppliedRefundAmount refundAmount =
+				aftersalesDetailAggregateService.getAppliedRefundAmount(companyId, orderId, subOrderId);
+		if (!refundAmount.exists()) {
+			item.put("after_sales_fee", 0);
+			item.put("remain_fee", totalFee);
+			item.put("remain_point", pointFee);
+			return;
+		}
+		Map<String, Object> afterSalesFee = new LinkedHashMap<>();
+		afterSalesFee.put("refund_fee", refundAmount.refundFee());
+		afterSalesFee.put("refund_point", refundAmount.refundPoint());
+		item.put("after_sales_fee", afterSalesFee);
+		item.put("remain_fee", totalFee - refundAmount.refundFee());
+		item.put("remain_point", pointFee - refundAmount.refundPoint());
 	}
 
 	private static String str(Object o) {

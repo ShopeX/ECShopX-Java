@@ -241,7 +241,15 @@ public class ActivatedMiddlewareService {
 			}
 			return;
 		}
-		if (isNumericDistributorId(distributorIdParam) && !distributorIds.contains(longOf(distributorIdParam))) {
+		if (!isNumericDistributorId(distributorIdParam)) {
+			return;
+		}
+		long distributorId = longOf(distributorIdParam);
+		// PHP CheckActivedMiddleWare: only validate when distributor_id is truthy (not 0 / omitted).
+		if (distributorId <= 0L) {
+			return;
+		}
+		if (!distributorIds.contains(distributorId)) {
 			throw new ResourceException("您没有权限管理此店铺", 500, 400002);
 		}
 	}

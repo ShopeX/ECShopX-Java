@@ -71,6 +71,7 @@ public class DistributorUpdateParamNormalizer {
 		if (merged.get("regions") instanceof List<?> r && r.size() == 2) {
 			merged.put("area", "");
 		}
+		coerceTriBoolIfPresent(merged, "is_platform_store_buy");
 		coerceTriBoolIfPresent(merged, "is_ziti");
 		coerceTriBoolIfPresent(merged, "is_delivery");
 		coerceTriBoolIfPresent(merged, "is_self_delivery");

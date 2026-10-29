@@ -18,23 +18,24 @@ package cn.shopex.ecshopx.members.listener;
 
 import cn.shopex.ecshopx.common.dispatch.DispatchListener;
 import cn.shopex.ecshopx.common.goods.ItemCompanyIdResolver;
-import cn.shopex.ecshopx.members.domain.SubscribeNotice;
-import cn.shopex.ecshopx.members.mapper.SubscribeNoticeMapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import cn.shopex.ecshopx.members.service.GoodsArrivalSubscribeMatchService;
+import cn.shopex.ecshopx.members.service.ItemStoreGoodsArrivalWxaTemplateOrchestrator;
 import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 /**
- * When store becomes positive, marks matching goods arrival subscribe rows as notified (sub_type=goods, sub_status NO→SUCCESS).
+ * When store becomes positive: send wechat goodsArrivalNotice, then mark matching subscribe rows
+ * notified (sub_type=goods, sub_status NO→SUCCESS).
  */
 @Component
 @RequiredArgsConstructor
 public class ItemStoreUpdatedGoodsArrivalDispatchListener implements DispatchListener {
 
 	private final ItemCompanyIdResolver itemCompanyIdResolver;
-	private final SubscribeNoticeMapper subscribeNoticeMapper;
+	private final GoodsArrivalSubscribeMatchService goodsArrivalSubscribeMatchService;
+	private final ItemStoreGoodsArrivalWxaTemplateOrchestrator itemStoreGoodsArrivalWxaTemplateOrchestrator;
 
 	@Override
 	public void onEvent(Map<String, Object> payload) {
@@ -44,22 +45,14 @@ public class ItemStoreUpdatedGoodsArrivalDispatchListener implements DispatchLis
 		if (store <= 0) {
 			return;
 		}
+		itemStoreGoodsArrivalWxaTemplateOrchestrator.dispatchIfApplicable(itemId, store, distributorId);
+
 		Optional<Long> companyId = itemCompanyIdResolver.findCompanyIdByItemId(itemId);
 		if (companyId.isEmpty()) {
 			return;
 		}
-		int now = (int) (System.currentTimeMillis() / 1000L);
-		int dist = (int) Math.min(distributorId, Integer.MAX_VALUE);
-		subscribeNoticeMapper.update(
-				null,
-				new LambdaUpdateWrapper<SubscribeNotice>()
-						.eq(SubscribeNotice::getCompanyId, companyId.get())
-						.eq(SubscribeNotice::getRelId, itemId)
-						.eq(SubscribeNotice::getSubType, "goods")
-						.eq(SubscribeNotice::getSubStatus, "NO")
-						.eq(SubscribeNotice::getDistributorId, dist)
-						.set(SubscribeNotice::getSubStatus, "SUCCESS")
-						.set(SubscribeNotice::getUpdated, (long) now));
+		int dist = GoodsArrivalSubscribeMatchService.normalizeDistributorId(distributorId);
+		goodsArrivalSubscribeMatchService.markSuccess(companyId.get(), itemId, dist);
 	}
 
 	private static long toLong(Object raw) {

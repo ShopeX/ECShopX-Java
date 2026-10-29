@@ -10,7 +10,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import cn.shopex.ecshopx.distribution.service.DistributorListQueryService;
 import cn.shopex.ecshopx.goods.repository.ItemsListQueryRepository;
 import cn.shopex.ecshopx.goods.repository.ItemsRelTagsRepository;
 import cn.shopex.ecshopx.goods.service.ItemsCategoryDistributorIdResolver;
@@ -41,8 +40,6 @@ class WxappGoodsItemsListQueryOrchestratorKeywordTest {
 	private ItemsRelTagsRepository itemsRelTagsRepository;
 	@Mock
 	private ItemsCategoryDistributorIdResolver itemsCategoryDistributorIdResolver;
-	@Mock
-	private DistributorListQueryService distributorListQueryService;
 
 	private WxappGoodsItemsListQueryOrchestrator sut;
 
@@ -50,7 +47,7 @@ class WxappGoodsItemsListQueryOrchestratorKeywordTest {
 	void setUp() {
 		sut = new WxappGoodsItemsListQueryOrchestrator(merchantDisabledDistributorIdsQueryService,
 				wxappItemsListSalesmanDistributorResolveService, goodsItemsListFacadeService, itemsRelTagsRepository,
-				itemsCategoryDistributorIdResolver, distributorListQueryService);
+				itemsCategoryDistributorIdResolver);
 		when(merchantDisabledDistributorIdsQueryService.listDistributorIdsLinkedToDisabledMerchants(anyLong()))
 				.thenReturn(List.of());
 		when(wxappItemsListSalesmanDistributorResolveService.resolve(anyLong(), anyLong(), any()))

@@ -9,6 +9,7 @@ ecshopx-bootstrap/storage/
 ecshopx-bootstrap/logs/
 logs/
 .env
+.worktrees
 docker-lite/.env
 docker/images/*.tar
 docker/images/*.zip
@@ -44,3 +45,4 @@ build/
 
 # 本机联调冒烟脚本（个人本地使用，不入库）
 scripts/local-api-smoke/
+.shopex/loop-state.json

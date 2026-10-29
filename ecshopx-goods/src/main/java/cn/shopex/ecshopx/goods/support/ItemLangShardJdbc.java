@@ -128,7 +128,7 @@ public class ItemLangShardJdbc {
 		if (dataIds == null || dataIds.isEmpty() || !StringUtils.hasText(tableName)) {
 			return;
 		}
-		for (String suffix : List.of("zhCN", "enCN", "arSA", "zhtw")) {
+		for (String suffix : List.of("zhCN", "enCN", "arSA", "zhTW", "jaJP", "ruRU")) {
 			String table = PREFIX + suffix;
 			MapSqlParameterSource p = new MapSqlParameterSource()
 					.addValue("tableName", tableName)

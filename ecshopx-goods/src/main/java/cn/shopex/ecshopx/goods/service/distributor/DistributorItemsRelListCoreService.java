@@ -493,8 +493,13 @@ public class DistributorItemsRelListCoreService {
 		return "true".equalsIgnoreCase(t) || "1".equals(t);
 	}
 
-	private void applyDistributorSkuReplace(long companyId, long distributorId, List<Map<String, Object>> rows, boolean replaceApprove) {
-		if (rows.isEmpty()) {
+	/**
+	 * 对齐 PHP {@code DistributorItemsService::getDistributorSkuReplace}：
+	 * {@code is_total_store=false} 时 {@code store} 换门店库存，并把原总部库存写入 {@code logistics_store}。
+	 */
+	public void applyDistributorSkuReplace(
+			long companyId, long distributorId, List<Map<String, Object>> rows, boolean replaceApprove) {
+		if (rows == null || rows.isEmpty() || companyId <= 0L || distributorId <= 0L) {
 			return;
 		}
 		List<Long> itemIds = rows.stream().map(r -> longVal(r.get("item_id"))).filter(id -> id > 0).distinct().toList();
@@ -510,8 +515,12 @@ public class DistributorItemsRelListCoreService {
 				row.put("distributor_store", di.getStore() != null ? di.getStore().intValue() : -1);
 				boolean totalStore = Boolean.TRUE.equals(di.getIsTotalStore());
 				if (!totalStore) {
+					// PHP replaceItemInfo：替换店存前保留总部可补货量到 logistics_store（仅 onsale）
+					if ("onsale".equals(str(row.get("approve_status")))) {
+						row.put("logistics_store", intVal(row.get("store")));
+					}
 					if (di.getStore() != null) {
-						row.put("store", di.getStore());
+						row.put("store", di.getStore().intValue());
 					}
 					if (di.getPrice() != null) {
 						row.put("price", di.getPrice().intValue());
@@ -540,6 +549,24 @@ public class DistributorItemsRelListCoreService {
 		}
 	}
 
+	private static String str(Object o) {
+		return o == null ? "" : o.toString().trim();
+	}
+
+	private static int intVal(Object o) {
+		if (o == null) {
+			return 0;
+		}
+		if (o instanceof Number n) {
+			return n.intValue();
+		}
+		try {
+			return Integer.parseInt(o.toString().trim());
+		} catch (NumberFormatException e) {
+			return 0;
+		}
+	}
+
 	private String resolveLang(HttpServletRequest request, String overrideLang) {
 		if (StringUtils.hasText(overrideLang)) {
 			return overrideLang.trim();
@@ -562,9 +589,5 @@ public class DistributorItemsRelListCoreService {
 			}
 		}
 		return 0L;
-	}
-
-	private static String str(Object o) {
-		return o == null ? "" : o.toString();
 	}
 }

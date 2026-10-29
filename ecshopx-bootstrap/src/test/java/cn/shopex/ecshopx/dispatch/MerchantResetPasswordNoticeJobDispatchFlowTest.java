@@ -11,8 +11,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import cn.shopex.ecshopx.common.dispatch.MerchantDispatchJobNames;
+import cn.shopex.ecshopx.companys.service.operator.sms.CompanySceneSmsSendPort;
 import cn.shopex.ecshopx.promotions.dispatch.MerchantResetPasswordNoticeJobHandler;
-import cn.shopex.ecshopx.promotions.service.SmsSendTestService;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +23,7 @@ class MerchantResetPasswordNoticeJobDispatchFlowTest {
 
 	@Test
 	void dispatchJob_async_enqueuesOnSmsQueue_andConsumerInvokesJobHandler() {
-		SmsSendTestService sms = mock(SmsSendTestService.class);
+		CompanySceneSmsSendPort sms = mock(CompanySceneSmsSendPort.class);
 		MerchantResetPasswordNoticeJobHandler handler = new MerchantResetPasswordNoticeJobHandler(sms);
 
 		InMemoryDispatchRegistry registry = new InMemoryDispatchRegistry();
@@ -61,7 +61,7 @@ class MerchantResetPasswordNoticeJobDispatchFlowTest {
 		runtime.consume(msg, 1);
 
 		verify(sms)
-				.sendTemplatedNoticeSms(
+				.sendSceneTemplatedSms(
 						eq(1L),
 						eq("13800138000"),
 						eq("merchant_reset_password_notice"),
@@ -70,10 +70,10 @@ class MerchantResetPasswordNoticeJobDispatchFlowTest {
 
 	@Test
 	void handler_logsSmsFailureWithoutRethrowing_soConsumeAcks() {
-		SmsSendTestService sms = mock(SmsSendTestService.class);
+		CompanySceneSmsSendPort sms = mock(CompanySceneSmsSendPort.class);
 		doThrow(new RuntimeException("gateway down"))
 				.when(sms)
-				.sendTemplatedNoticeSms(anyLong(), anyString(), anyString(), any());
+				.sendSceneTemplatedSms(anyLong(), anyString(), anyString(), any());
 		MerchantResetPasswordNoticeJobHandler handler = new MerchantResetPasswordNoticeJobHandler(sms);
 
 		InMemoryDispatchRegistry registry = new InMemoryDispatchRegistry();
@@ -101,6 +101,6 @@ class MerchantResetPasswordNoticeJobDispatchFlowTest {
 				new InMemoryDispatchConsumerStateRecorder());
 		runtime.consume(msg, 1);
 
-		verify(sms).sendTemplatedNoticeSms(anyLong(), anyString(), anyString(), any());
+		verify(sms).sendSceneTemplatedSms(anyLong(), anyString(), anyString(), any());
 	}
 }

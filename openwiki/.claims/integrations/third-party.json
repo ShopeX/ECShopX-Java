@@ -1,0 +1,414 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:5c665bd73c8ffef0fb9f324b80a3b0c472154e58b22d36562450ee273f9d4e21",
+  "claims": [
+    {
+      "id": "claim_1f618faf51234a25a7a90fd65c384347",
+      "statement": "ECShopX outbound third-party integrations follow a silent-skip invariant: clients check base-URL/credentials before each call and return a `fail_msg` map (or empty map/null) instead of throwing, so an unconfigured install produces no external traffic and business flows never fail on missing integration config. All integration base-urls ship empty in application.properties.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L261-L298",
+          "version": "repo-lines-v1:sha256:ba3c2cbcea2ed0c8c529b29e566e39bfa9a004b313901aa131d83676f13e31c6:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRlYTY5NjgyNDk1MjEzMzI3OThlMmEzMWEwMGM2NDk3YmRiMTgzZWNkMTRhZDNlYzAwOGQwMTkzN2ZlNDY5MjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEyMDMyMDk5NTg1NjRkNmUzYjM2ZTk3MmM0ZTlkOTJmODIyMmZiOWFiNzc2MGEwNGYwNGMwODZiNDk0NGUyY2IiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE4NDBiMDkzZjJmNTMzOTM2NmViMzBkNWM3ODJiYWJhNDVjZDBjMTExMjNmZTE3ZDUxZTU0ZGIyNjNiZjBlNmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImIzNmMzNDljMmVhZGFjYTIwY2I4Zjc1MjUzMTljZjc0YmUxZGNhODE1OGM2ZGRiZjUzY2NiZjBlYWI2MjIyOTYifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L323-L334",
+          "version": "repo-lines-v1:sha256:7b332ba8fb0a87ae56606f0632b5d880a36483f404e271504f7e0601cc5e798b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM4YWJmM2JiNDhlNGIxYTA3ZDg1NDU2YjMwMzM3YjhmZWQyNzlkMTQxY2ViZDZkZTFhMGU4NWVjMDkzNGNkMWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2ZjgyYTc4NjkxZTk3MDMzYzVjZDA4NTQxNzZhMDc0ZmQ0MDkxY2IwMDIyNWRjYjE0NTU3ZmYwNDM0NzcwZWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImEzZDE0OTRkODZjY2NhNjVlZGYxMDhmOWU1MGI5MTEzYjAzMDc0YzQyNzg2Nzc3ZWFkNjk2Yzc5YjdlMjAwOTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImVhZjFjNWM2ZTRkYmZiNGZjNzEzMjliOWYwZjcxNWI0NWY5YWVmMWM1Y2ZlMWMxMDM3MTllMmEwY2U3OWVhNzAifQ"
+        },
+        {
+          "resource": "repo://ecshopx-system-link/src/main/java/cn/shopex/ecshopx/systemlink/jushuitan/JushuitanOpenApiClient.java#L64-L72",
+          "version": "repo-lines-v1:sha256:7b3ff49bdb8f3c651bac3560da6beae2a65fd6e8ffc65b006b91cd9978e373fe:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMjAwNDQwODQ5YjQ1NzMwZjRhYzhmMDYyNTYyMDQwZDVjNjQ5YzhmMDEwZDc4NjQ2NWQ0NzdjNmQ2OGM5NDQ2ZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjRlZmM0OTQxOGQyNmRjZjEyOWIyMmE2YWEyMTEwOGNlZWMzNzY3N2EzMmQwOGU5ZDVmZWUzNWRkYTY2YmI5ZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDZiODJlZjRkNjllZjM3ZmEwMWY3NWY4Y2VmNjYxYjQyOWI0YWIzMmYxNTUwMDhjNTIyODk5NTU0NjhhMzg1YiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjdiYWFjMmM0MGI1OGYyM2EwYWIyYjllMTFkMTg0OGYxYjk3ZGZmZWMyZmMzYjM4MGUzMTVkN2FkMTBlZDg0MyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_141cb29bf3bf441e9d3adaeda7e5cf26",
+      "statement": "JushuitanOpenApiClient form-POSTs to `ecshopx.jushuitan.api-base-url` with params biz/app_key/access_token/timestamp/charset=utf-8/version=2 and md5(appSecret + assembled) sign; six method→path mappings (itemsku/upload, skumap/upload, inventory/query, orders/upload, orders/cancel, aftersales/upload); missing config, unknown method, or transport error all return a fail_msg map rather than throwing.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L264-L268",
+          "version": "repo-lines-v1:sha256:ede4d503b78b1668be847bda2d7e71bc170bf17031bf757cffda1fb5cd1e661d:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjI0MGIwOWNkZTA4Zjg3N2EwNzg5Mzg2YTExNzRjZjkyYjYxZjM2NTU2OWU2OGRmYzNjMWExYjdkNWUyMjM4MSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzAzYjJkMWI1M2U3NWExNDU1NjI2Yjg2ZTU2Zjk5NWFhZDNlNzczYTZjNDhmNWRjMmU0Y2FmMGVhZmE3NzBkYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTAwZjU1OGRmODA1NzMwZjRhNmVkZDdkMWM4YmI5OTQ1MWIzMDg5NDFhZmI2MWJmMGIzYzI1YzQwNDQ5ODE2OSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDdiMGMxZWU3YmNmOWM4MTFiZDE0ODk1Y2QyYzE5MzUyMzRjNjE0YTU3MWMwNWIyMGE5MTJlMDJlOGE4NzFjOSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-system-link/src/main/java/cn/shopex/ecshopx/systemlink/jushuitan/JushuitanOpenApiClient.java#L64-L106",
+          "version": "repo-lines-v1:sha256:2a7e79449acc3e7ba73ee42bf4d4e2068534d85f19c4cc9d4cc09402978e20ea:eyJzZWxlY3RlZExpbmVDb3VudCI6NDMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIwMDQ0MDg0OWI0NTczMGY0YWM4ZjA2MjU2MjA0MGQ1YzY0OWM4ZjAxMGQ3ODY0NjVkNDc3YzZkNjhjOTQ0NmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ2YjgyZWY0ZDY5ZWYzN2ZhMDFmNzVmOGNlZjY2MWI0MjliNGFiMzJmMTU1MDA4YzUyMjg5OTU1NDY4YTM4NWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE4YzFlMDU1YzY1YjNkZDk2Y2NkNTExYzQzMzNkNjk0ZjUzNTA1MDI5ZDI0YzBjNjFiNDY2YmEzOWFmYmM4NDQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_192cb9a52819480ca2884ab0942cc1c9",
+      "statement": "WdtErpOpenApiClient signs with a legacy epoch offset (epochSeconds - 1325347200), splits the app secret into `secretPart:salt` (sign = md5(secretPart + sortedKV + secretPart), salt sent as query param), sends the `X-Version-SDK: java-ecshopx` header, and reads platform credentials from `ecshopx.wdterp.*` @Value properties which are absent from application.properties — per-tenant WdtErpSetting Redis values win when present; all nine API method names are individually overridable via `ecshopx.wdterp.methods.*`.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties",
+          "version": "repo-file-v1:sha256:af18d520bda5d4d149aed9dd498b642244350e456bc2b04fec87262a51a76d8b"
+        },
+        {
+          "resource": "repo://ecshopx-system-link/src/main/java/cn/shopex/ecshopx/systemlink/wdterp/WdtErpInventoryPortImpl.java#L44-L53",
+          "version": "repo-lines-v1:sha256:b62861c20b20a4962abaef09a706bd8ce2e78062ddad0173c883d98d31d3bf15:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdlY2I0NmUyYTI0ZTk1YmI2YWFhZmQ5MTkzMWM2NTZmMzM1MTBjNTNkNDI2MGFkOWM4OGY5YmE5YWRmYTc0NzQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFkZWMxYTQ5NjY5ZDEzMjg0ODliZTBjMDUyNDZjZGFmNWJjMDJlNzVmYjcxZWExOTZhMTk2NjEyOTU3MDQ2NDYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjEwNjRkMzFiMzI5ZjYwMGEzNTNmZTRiZGM2YjgyYmM3YzYyYTExNzA4NmI4NjQwZGU1ODAwYTk3OTg0YWY4MWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg1ZmJkMmFkNzg5NzJkYmJlOTk5YmQ4Mzg3ODY1NDA5NzhkOWY3ZWI0ZTY4YjM4NTM2NDg3NjNhNjkwYjZhODcifQ"
+        },
+        {
+          "resource": "repo://ecshopx-system-link/src/main/java/cn/shopex/ecshopx/systemlink/wdterp/WdtErpOpenApiClient.java#L43-L57",
+          "version": "repo-lines-v1:sha256:b59b2ecfdc166e53871c11710c6a75d64f50b2e9a446690b7134fdce4f457493:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxMjFkZjQyNDBiMzQ4ZWQwY2RhNDZmMGFjOTIxZDJlN2Y3OTdmYmY5ZmExMWY5Yzk2MDdjNzcyMDY3MDM3ODkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg4NDVjNjZkOWYzZDdmMDI0YjNjODQ5N2ZkN2EwMjQyODQ4YzM5OGI1YmExMzQ4YzkwMTNiYzFkNzZhMjQyMmQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFhY2NmZWYyMGZkNTZmMmFkYTI0MTljZDIwM2RhZjRhZTBiYzliYjdjYWUyNjkwMzYyZjU2MTM0NTFiZjQwOTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM0ZTdjNDJjYThiMjUwOTFkOWY0Y2ZhYzAwYTZiYWRjMGMzNTgzZGUyZmU2YmY2NDNmMjU2NTMxMjE2YjQ3NTQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_c7c7a37e4e5f40a2bafc58a9e17c41f4",
+      "statement": "On payment success, OrdersTradePaymentCallbackService publishes the snake_case trade row on three independent planes: dedicated ASYNC+REDIS events `event:systemlink:jushuitan_trade_finish` and `event:systemlink:wdt_erp_trade_finish`, plus the shared orders trade-finish event via `OrdersTradeFinishAfterCommitDispatchPublisher` (@Primary for event:291; bean `ordersTradeFinishDispatchPublisherOfflineCsv292` publishes event:292 for offline bank-transfer approval) which registers an after-commit TransactionSynchronization and publishes with DispatchOptions.eventDefaults() = SYNC mode so all listeners on that plane run in-process in @Order sequence once the payment transaction commits.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/OrdersTradeFinishDispatchPublisherBeansConfig.java#L30-L42",
+          "version": "repo-lines-v1:sha256:6fe247c6b0ee19c501308d2624963c0e1cc033693d69b83ec5b311b2e94e8e70:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcyMWM3NjAzYTEzYzMyYzU0MWZkNTVmMmNkM2UxMTJiNWMxZWZmNmQ0ODA1OGFhNmYxMzc5ZWVmMjE3NGYxYzMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc2Y2I2ZDU1MGUzODFmM2NiOGQzMjIzYzEyMjhlYTI5NmEyZDdmMDQxYmRlMTkwMWVmMDA3YTg3MGYzMzU1YjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/SystemLinkDispatchEventNames.java#L21-L41",
+          "version": "repo-lines-v1:sha256:da5c6946930f1d25c826b77e0efe008cbe00258f195e566b24f1baae409d0fda:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE1N2VmNzExYmU4NWRiZDNhYTgyY2M3MGVmNmJmMmRkZjM3ODUyNmRkZDM5ZDk1ZmFjMjJmMDA3ZDFjNDU1YTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIwMmZkOWY5ZGIwYTM1M2QyNTZkYjJiZmIxN2ViMzNiNjYzNDhkMzVmMGNlYWE5YTY0NGNhMjNlYWMzZjg3ZDIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU3ZjhiNzMwZWY5ZjlhZWRhNmI1MWVmNGQzODk1ZGE0ZGZkNzBjNzIzMDQ5ZmYyMDQxZTQ2ODFiZDY1OTQzMmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk4NzMzNzdlZjgzODRjMDMxZDc1ZDczMjQ3YzRiZTlhZTE1ZDEyOGU4NmNiNGY3NWZlOTlmZmZmZDkxYWU1ZjcifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/payment/OrdersTradePaymentCallbackService.java#L135-L150",
+          "version": "repo-lines-v1:sha256:eb2cef155f84ff0497ee934f118743e26708220c32661addd36fc1ca3fe054d4:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIzYWM0NjU5YjU1NmE5MDUyN2I3N2JiYzM2N2MzNDU3YTlkYzI5NGY0YjUwMTkxYTE0OTA2MjczMTlhODk3MTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIyZjJmZjVmZWVjNjBmNTg3YzhmYWU0ZTg3ZjgwOWE2NjFjZmZlZDZiNDdhYWU1ZjZkNmEyNjUzYWE4OTUyZWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjlkYTk0OWNkZTFjMzY1MWMwMzljODAzNjgwMzkyNTMyYzYwYjU2YzVmMTY3ZjUzOTljNDM0ZDEyNTdjYzU1MTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_4b468933f8394039810602c9bbe972ea",
+      "statement": "The SYNC trade-finish plane (event:291/event:292) carries registered listeners in @Order sequence: 77 `listener:orders.trade_finish_normal_order_pay_success_bridge` (marks mall orders paid and republishes `event:288` normal-order pay-success ASYNC+REDIS), 82 `listener:thirdparty.dm_crm.trade_finish`, 83 `listener:thirdparty.marketing_center.trade_finish_basics_order_pay`, 92 `listener:systemlink.trade_finish_send_ome`, 95 `listener:orders.listeners.TradeFinishCustomDeclareOrder` (WeChat customs).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/OrdersTradeFinishNormalOrderPaySuccessBridgeDispatchListenerRegistrationConfig.java#L28-L28",
+          "version": "repo-lines-v1:sha256:56f321534d732ed910a3fa30e3152e68aaf6cf13a82880dd6a01eab277bb39fe:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTZmMzIxNTM0ZDczMmVkOTEwYTNmYTMwZTMxNTJlNjhhYWY2Y2YxM2E4Mjg4MGRkNmEwMWVhYjI3N2JiMzlmZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTZmMzIxNTM0ZDczMmVkOTEwYTNmYTMwZTMxNTJlNjhhYWY2Y2YxM2E4Mjg4MGRkNmEwMWVhYjI3N2JiMzlmZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDRkYmJkNzczMTBkMWZkZTFjMGQ5YmIwYTA5MzE1MjdhODgzNTZjMjMwYWU2ZWFkNGYxN2YyY2VhNjRlODdlMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNWI4ZjNhZjBmYzZmNmQwOGQ4ZTE4MTYxYWU1MTQ5YTRiNWNmOTljMzFiOWRjMTZjOGE3ZTM2OGIwNjQ0YWRjZCJ9"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ThirdPartyDmCrmTradeFinishDispatchListenerRegistrationConfig.java#L28-L28",
+          "version": "repo-lines-v1:sha256:880144099b5c8269f60758400a688768dbcd015a09349b5e43c073f88b6ba350:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODgwMTQ0MDk5YjVjODI2OWY2MDc1ODQwMGE2ODg3NjhkYmNkMDE1YTA5MzQ5YjVlNDNjMDczZjg4YjZiYTM1MCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiODgwMTQ0MDk5YjVjODI2OWY2MDc1ODQwMGE2ODg3NjhkYmNkMDE1YTA5MzQ5YjVlNDNjMDczZjg4YjZiYTM1MCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDRkYmJkNzczMTBkMWZkZTFjMGQ5YmIwYTA5MzE1MjdhODgzNTZjMjMwYWU2ZWFkNGYxN2YyY2VhNjRlODdlMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMGJlNjE5NDY3Mzc4NTAwNjc5ODczYzk4OWQ0M2E3MTZmZjZjOWVhZjRhYmRlMjcwYzczMTQ4ZTdiYTU3NDUwOSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ThirdPartyMarketingCenterTradeFinishDispatchListenerRegistrationConfig.java#L28-L28",
+          "version": "repo-lines-v1:sha256:4e7948d5a568900035c07a9127af257d1b13fc49ab194a058c55c1f67db4e335:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNGU3OTQ4ZDVhNTY4OTAwMDM1YzA3YTkxMjdhZjI1N2QxYjEzZmM0OWFiMTk0YTA1OGM1NWMxZjY3ZGI0ZTMzNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNGU3OTQ4ZDVhNTY4OTAwMDM1YzA3YTkxMjdhZjI1N2QxYjEzZmM0OWFiMTk0YTA1OGM1NWMxZjY3ZGI0ZTMzNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDRkYmJkNzczMTBkMWZkZTFjMGQ5YmIwYTA5MzE1MjdhODgzNTZjMjMwYWU2ZWFkNGYxN2YyY2VhNjRlODdlMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMWE4OTQxMGQyZWMxODlhYjNkNTFmYzZhYWUzYmQ1N2FlODgyMjRjMjc1NGQ3N2NiMThmYjQxZDQxYzU3ZDI1NiJ9"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/TradeFinishCustomDeclareOrderDispatchListenerRegistrationConfig.java#L28-L28",
+          "version": "repo-lines-v1:sha256:3cb6c817d3e125ee3217139f967dd328b79be709bb26185496c5e6802d13eda2:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiM2NiNmM4MTdkM2UxMjVlZTMyMTcxMzlmOTY3ZGQzMjhiNzliZTcwOWJiMjYxODU0OTZjNWU2ODAyZDEzZWRhMiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiM2NiNmM4MTdkM2UxMjVlZTMyMTcxMzlmOTY3ZGQzMjhiNzliZTcwOWJiMjYxODU0OTZjNWU2ODAyZDEzZWRhMiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDRkYmJkNzczMTBkMWZkZTFjMGQ5YmIwYTA5MzE1MjdhODgzNTZjMjMwYWU2ZWFkNGYxN2YyY2VhNjRlODdlMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMGUxMmRmNTIwNzlhODJmMTU5OTlkYThjNjRhYjMyNmJhZTlmZmRjZjEzNDVhYTNiNzAyMjAwNTdjMDVhOWYyNyJ9"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/TradeFinishSendOmeDispatchListenerRegistrationConfig.java#L28-L28",
+          "version": "repo-lines-v1:sha256:db0d4b815a43ffd6304c910d23a8c9c14a895d352b28b781f51eba3d7054774e:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZGIwZDRiODE1YTQzZmZkNjMwNGM5MTBkMjNhOGM5YzE0YTg5NWQzNTJiMjhiNzgxZjUxZWJhM2Q3MDU0Nzc0ZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZGIwZDRiODE1YTQzZmZkNjMwNGM5MTBkMjNhOGM5YzE0YTg5NWQzNTJiMjhiNzgxZjUxZWJhM2Q3MDU0Nzc0ZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDRkYmJkNzczMTBkMWZkZTFjMGQ5YmIwYTA5MzE1MjdhODgzNTZjMjMwYWU2ZWFkNGYxN2YyY2VhNjRlODdlMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODM4NWE3ODY1ZjVhZjAwY2YzNDhmYWQyYmVkMGY5NDc0YWVlMDU1YzY5NjU2NTEyMmU3MzFkZGYxNTY0ODJkMCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_9110aa655c25430ca1515741b0b15b01",
+      "statement": "`event:thirdparty:trade_refund_finish` is published SYNC and carries four sync listeners: Marketing Center push, DmCrm, Shuyun open-platform refund sync, and Shuyun trade re-sync (`shuyun.open_platform.refund_sync_on_trade_refund_finish` plus the trade_sync re-push).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ShuyunOpenPlatformTradeRefundFinishDispatchListenerRegistrationConfig.java#L38-L45",
+          "version": "repo-lines-v1:sha256:92a20f99882dbc783ae32c820bc2b9094ba1ef13da81bb4a77d19ac2fbca9145:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDRjYzNmMmMwYmE5MjM2YjY4ZDc5Zjc1ZWUyZmQ0YmM4NjliZWQ5MjhlOWYzOWZhY2M1NTFlOWU4YTQ4NGM1ZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDUxYWYzY2IxMjY4ODlkMGU2NjMxMWI1MDU5ZjRhZDQwYjk3MDU2M2E3OTk1Nzg0ZGFkZGM3M2U2MTI3ZmYyOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ThirdPartyTradeRefundFinishDispatchListenerRegistrationConfig.java#L43-L55",
+          "version": "repo-lines-v1:sha256:72949b0247d30a4f7842ccfc6408e012b17fcc9ef5aa38a2f676ca549a3ccad6:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ0Y2MzZjJjMGJhOTIzNmI2OGQ3OWY3NWVlMmZkNGJjODY5YmVkOTI4ZTlmMzlmYWNjNTUxZTllOGE0ODRjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI0OGFjYWUxYTMyNTFhMjAyOThiZjQwZGQ5NDRmODhmZWVhM2QzZjkyMDg0MDI4ZDY5MmQ4ODdiOTIxYjFjMTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/ThirdPartyDispatchEventNames.java",
+          "version": "repo-file-v1:sha256:640bceecec26976a554301302e8e541b61f6617716b9ed69b563c390cab43f06"
+        }
+      ]
+    },
+    {
+      "id": "claim_abf532e6692448bf9cdbd7a4e08b6ce5",
+      "statement": "The shared `event:systemlink:*` family (ome_trade_update, trade_refund, trade_aftersales, trade_aftersales_cancel, trade_aftersales_logi) carries multiple downstream listeners each — OME plus Marketing Center and/or SaasErp — published through ASYNC+REDIS fan-out publisher wrappers so one aftersales state change becomes one queued message per downstream rather than a serial blocking chain.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/SystemLinkJushuitanTradeFinishDispatchListenerRegistrationConfig.java#L39-L46",
+          "version": "repo-lines-v1:sha256:f19afc2256fa3d352ca738b5a5bd08c4081e26080dfcbd0723557d07ea237f1d:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDRjYzNmMmMwYmE5MjM2YjY4ZDc5Zjc1ZWUyZmQ0YmM4NjliZWQ5MjhlOWYzOWZhY2M1NTFlOWU4YTQ4NGM1ZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMWQ3YTUwNTc0MDNmZGQxZWMzNWEzNWJmOTE0MjgzZWNjMjE2YzQ2MThmZTlmYjA3NWNkMmU0YjU5YmVmOTQ1ZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/SystemLinkDispatchEventNames.java#L35-L41",
+          "version": "repo-lines-v1:sha256:43ebf56aeef5312b3481cdc16b1f2373f748f0c37d23703722f162be2360f9f7:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTFiY2RiMGUyMDhiZTZlMDk5MDUyMDdmYjVkYTJlYWQzZDRmOWNjMDdhM2JhODI2ZDI4YTk5ODA1YzFmZDRiZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYjAyZmQ5ZjlkYjBhMzUzZDI1NmRiMmJmYjE3ZWIzM2I2NjM0OGQzNWYwY2VhYTlhNjQ0Y2EyM2VhYzNmODdkMiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZWIwYmRlMTE2ZjhiNWQyMzU2NWYxOTdkN2FjZmVkMmEyM2E2YTc2MGZjNjg5OGIzYjRmMjRkZDc3NWQ0ZGMyNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOTg3MzM3N2VmODM4NGMwMzFkNzVkNzMyNDdjNGJlOWFlMTVkMTI4ZTg2Y2I0Zjc1ZmU5OWZmZmZkOTFhZTVmNyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_77938a8356b0448680e618b77dae3989",
+      "statement": "Optional outbound HTTP capabilities in ecshopx-third-party are port interfaces with two bean implementations: an HTTP impl registered by @ConditionalOnProperty(name=\"http-enabled\", havingValue=\"true\") and a NoOp registered by havingValue=\"false\", matchIfMissing=true — so an unset key means NoOp and the NoOp returns an empty result. Gated keys include dm-crm.point-detail-list.http-enabled, dm-crm.update-member-info-by-mobile.http-enabled, dm-crm.setting-read.redis-enabled (true default, @Primary Redis read vs NoOp treating point integration as off), shuyun.member-modify/member-unbind.http-enabled, shopex-crm.sync-single-member.http-enabled, plus dada/shansong local-delivery clients.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L288-L296",
+          "version": "repo-lines-v1:sha256:71098961267b4cd2c0682c5b6c017ef214c5c370995b0ee89bcd43d0f767c64d:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMWY0NjNlOGZjN2IxOTI5N2Q4YWZjMmY2MjRhNjU2MGQ2ZmU0YmQ1YzU2MmZiMmJjNWIyNTg0NDdjMDE0NWU4NSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZDY5M2M4NWM5Yjg2YmQ5MjVhMGVjMTQ2NjJlYTQ1YjA2MGY3Mjk5ZjZhZTU2N2Q0Y2YzNzAwMGExMWFlNjYyZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNGZmMjI5ZTVhZmU5YzczZDEwZjdkODhmZGNjMTRlYmU4NTM0NzYwMGEyMTA5MWJkYTNkM2QzZTAzYTllZWM2NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOTBiZjk1ZmIyZjljNzI4YWQzMzY5MDg1MjIyZTg0MWYxNDJkZTgzMThhZmViZDM5YWRmOTY5YjgzOWIwNzE3NCJ9"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L324-L334",
+          "version": "repo-lines-v1:sha256:7a395f5077e405fc5020189f83af2532793c2e0bed026795db329defdf50c3fc:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkzNDk5MGRjOWM1MjQ3ZDYwMDA3ODA3NjI0OWU4MDgwMDgyOGExMWU5MzhlYmMyNDA1MGEyN2M1NThmY2IyYTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2ZjgyYTc4NjkxZTk3MDMzYzVjZDA4NTQxNzZhMDc0ZmQ0MDkxY2IwMDIyNWRjYjE0NTU3ZmYwNDM0NzcwZWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRjMzBhOWRiMzMwOGM0ZGEzNjMxOTU4YTlkM2U0ODRhOGJlN2I3NjdmMjY4ZmE0MDk2NGZjZmMxMGU1NDQyMjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImVhZjFjNWM2ZTRkYmZiNGZjNzEzMjliOWYwZjcxNWI0NWY5YWVmMWM1Y2ZlMWMxMDM3MTllMmEwY2U3OWVhNzAifQ"
+        },
+        {
+          "resource": "repo://ecshopx-third-party/src/main/java/cn/shopex/ecshopx/thirdparty/service/shopexcrm/ShopexCrmSyncSingleMemberNoOp.java#L20-L30",
+          "version": "repo-lines-v1:sha256:43b7bfef4a1129bfe055bbe0b84d2ef8acb72e0f8e35d200f356e6b93503f1e2:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMzNzgxMzY2ZWMzOGI3ZjAxMTJlMGEyMDEzZjgyMzIxNWMwYjcwMzE3NzEzMzUxZWQzZWEyNDdjZWU3MjBiNTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwOGNjMTVkMDc1NGI2ZjIxZjcxZTBiMDNiOWRkNzg2YmM5ODgwMDNiMmI1NzU2NGM2MDUwYTgwMjI1MTdjNWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIxOGMzMTgxZDQ4Y2E3ZDc5YzBlMThhNDBlZTY2YjY5ZTVkYmI1YzNkNGE0N2ViNmY0NDBjYjYyYjYwYjRmZWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNiOGU2NWRlN2FjMWZiOGQ5ZjU1OWQ0OTRhZTZmNGQ1OTVkODMzNGVmODQ1N2Y4NWVjMWNhMjg3YWIyOTlhNGMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_601bc1d6c5724d2f8c817bf7363040e5",
+      "statement": "DmCrm (达摩 Hope) HTTP services share the fixed base https://hope.demogic.com with /cgi-api workers, cache tokens in Redis `damo_token:{companyId}` (reused only while >1h validity remains, else /cgi-api/auth/get_token with appKey/appSecret from DmCrmSetting:{sha1(companyId)}), and the trade-finish orchestrator runs two phases — point change (guarded by isPointIntegrationOpen and dm_point_preid) and order sync (header+items with goods overlay) — swallowing all exceptions at log.debug so a Hope outage never breaks order flow.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-third-party/src/main/java/cn/shopex/ecshopx/thirdparty/service/dmcrm/DmCrmPointDetailListHttpService.java#L284-L284",
+          "version": "repo-lines-v1:sha256:b9ea024d27c375c4cedafd49010fa21908a29c9a915618087f83b6011d9f2c0c:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjllYTAyNGQyN2MzNzVjNGNlZGFmZDQ5MDEwZmEyMTkwOGEyOWM5YTkxNTYxODA4N2Y4M2I2MDExZDlmMmMwYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYjllYTAyNGQyN2MzNzVjNGNlZGFmZDQ5MDEwZmEyMTkwOGEyOWM5YTkxNTYxODA4N2Y4M2I2MDExZDlmMmMwYyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiODNlY2U3ZTAwMTY5NDhiYzRiMTE3NzhkYzRkMWMwNTgyOTkwODkzNmIzOGM2MDhmZDNhYmM3ZDYzZDQyNWQ1MiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMjU0NzAwMjI2ZGVjM2U5ZTM2NjZkMGQwOGRjMWZkYzViNzI2ZWE1NzU4MzA1NjA3ZGEzZmUzNzhmNDhiMTIzNCJ9"
+        },
+        {
+          "resource": "repo://ecshopx-third-party/src/main/java/cn/shopex/ecshopx/thirdparty/service/dmcrm/DmCrmPointDetailListHttpService.java#L49-L51",
+          "version": "repo-lines-v1:sha256:5e3af219a7174c5c45e2387d7e9d727c864a397069a4ad2b9967b81d8d02282a:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMTY1ODkwMzA0MTcwNTkzMDUzZTMyMzM4MTE5N2VhZjQzMGNlMTJjYmFkZjllMDQ3NTQyODQyYmViZmY1Mzg1OCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOWZkMmYwYjQxZjY0ZjM3YzVhMjQ2MjViZDFmMGNhOTZkODA3NDVmMWY1Y2M3ZGQxNzkyZmJmZGQ2MDFiOGE3ZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZWVhNmQ2ZGY1MmU2ODYxZjYwYzk0MGU5ZDNlYmUyYTA0YjQ5MDBiOThmODc3OGY4M2VmNmU5NmM5MWRiZTE5ZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjI1ZTZmNGJjNTcwODljMmQ3OWIyY2I2ODQ0NzczOGI3ZGFjZTI1M2ZkODI4NzQzNjFjZjU1NTE3MTAzNjQ0OCJ9"
+        },
+        {
+          "resource": "repo://ecshopx-third-party/src/main/java/cn/shopex/ecshopx/thirdparty/service/dmcrm/DmCrmSettingReadRedisService.java#L31-L43",
+          "version": "repo-lines-v1:sha256:be3a72f08c7592761b80af3f2df75e9660423ec6889cb14d8fa1264a4684a613:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNmNTFjM2NhMThlYzgxMWJiYWNkZWIxYjk2OTYxZWE3NzY0NGRkOTIyZTllZGUxOTBlYTAxM2ZiMjM1MjIxN2QiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMxMzJjY2U3ODdhYWRhYWUwMTg5YTdmYjE5YmI1YmNhNzg0YjE5N2ZiM2UwNDEwY2QzOThjNjBiNzlhYTQ3NmQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkyZTEyMzdmMmMxNzM4NGIwZWNjNDRkMTJlMGI5ZGI1YTExNDhlM2Q3Yzc3Y2IyNzUzMzhlYzEzZGFhODk2OGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY4ZWUxMGI0ODkzNzgyNjVlNWM0YWI1MGY3OTIyYjc5NWUxMmIyMWJkMzM0ZjIzZTdjYjYxYzY3NzVmZjY3YjkifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_9ebd1058f2e1497ba746246a5bf7081a",
+      "statement": "MarketingCenterOpenApiSignedFormClient is the outbound twin of the inbound OpenAPI gateway: it reads the company's openapi_developer row (external_base_uri/external_app_key/external_app_secret), builds {data, timestamp 'yyyy-MM-dd HH:mm:ss', app_key, version 1.0, method}, signs md5Upper(appSecret + assemble + appSecret), form-POSTs to {base}/api/openapi, and returns an empty map for every failure mode (missing developer row, missing external fields, non-2xx, unparseable body) so a marketing-center outage never breaks order flow.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-third-party/src/main/java/cn/shopex/ecshopx/thirdparty/service/marketingcenter/MarketingCenterOpenApiSignedFormClient.java#L89-L144",
+          "version": "repo-lines-v1:sha256:45a97200b009569c79431254fe3dc4b2f046b4d4c14b4c641068ab6c20a2b57d:eyJzZWxlY3RlZExpbmVDb3VudCI6NTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4MzdkNDIyOGQ3NDE0M2VmZjdjY2E0M2ZmM2JkMGU5MmQ3MzY3ZGQzOTk0MzczZjQ3MWM1MWU4ZDgzZTJlNTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU2ODA2ZjE1NWM1YWMxYWUyNzIyY2EwNmYyYWM5Y2FkY2I4ODFiOTEyM2NiNjI0YTNjMTA0NzViNDQ0OWRjMmUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA4YzFmOGJhOTgyYTllOGNlNGM4YmU2ZWZkYmIyZDljYmMzMjU0ZjU4MzY0NGUwN2Q3OTdlYjQxNDAzMDI3OWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFlM2ExYTY1ZjA2N2ZjYmJlYzM1ZjgzZjNiODU4OTk2YTc2NWU2ZGQ5NjViMzAzM2IyMGNkZDUxOTEzYzgwY2UifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_9076cb9f27434152860fb2c2388ed2d2",
+      "statement": "PrismCoreHttpClient and PrismIshopexHttpClient share one sign contract (PrismIshopexHttpClient.produceSign): md5Upper(secret & METHOD & rawUrlEncode(path) & rawUrlEncode(headers) & rawUrlEncode(query) & rawUrlEncode(postData) & secret) with RFC-3986 encoding and only Authorization/X-Api-* headers signed; both add client_id/sign_method=md5/sign_time to the query, over https the signed query is replaced by client_id+client_secret, and unconfigured or failed calls return null so business services (OAuth token exchange, certificate issuing, lead capture) degrade.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L275-L282",
+          "version": "repo-lines-v1:sha256:7fe6a86728bdabf5b805aba755622fde314a1a1f00524cc9085759a6bd37fb75:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODYwNjhiZGQwN2Y4NzVhMjE3NWZhYTFhMzc3ZjU0YTg2OGI0NmNmMDNlNzNjYTU0ZjRhZWUyNDU4ZDVhZDYxZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOWYwNTAwZTQyYTUzNzQyZTk5OTZmNjIzZmQxMTk1ZDRiNTBkZDk0MGVkZmY5MmZkMDNhNjg1OTIxZjUyODc4OSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOGNjZTNiNzRiZTY2ZjgwZDEyNGJhZmY1Y2JlODhlMmE5YWE2NGVkNjM4YWIwODlkYTliMmIwMGY4ZTUwYzk3NyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMTZhMzZmMDFlNWQxYjc0OTQyZTBmYzFkZDZmYzY2NDAyMzQ0NWM0NDA0OTlmMGI2Yjc4MjBmYzIxZDZhMjBjMSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-third-party/src/main/java/cn/shopex/ecshopx/thirdparty/service/prism/PrismIshopexHttpClient.java#L106-L153",
+          "version": "repo-lines-v1:sha256:6677a1f58c36dc2bd6d300a5555f090115f5218f3ef2fc5096da509aa9b9ec3c:eyJzZWxlY3RlZExpbmVDb3VudCI6NDgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcwZmQ0OWVlNDMyNjQ0YjljMDdmMDk5YmUxNWE4Y2U3ZTE4MGY3YWIyODlhYTJjNjMwY2I2ZDc4YTA0OGRhODAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdmM2Y0ZmQ0NzVkY2E4MGU3OGFmN2VkMzYzNmY5ZTRjYThiZGE0NWU5NDg5ZGM2Njg0YjNiZjhlNTdhZWNkMzYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJmYzAyMWQzYWJkZTgwZjdkMjRmZmJlMmEyNWI0MGU5MjE2MDlkMjg3MjgxMGYxNGQ3MDlhMWM0ZWNmZTZjOGYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA5ZGFiYzNmZDU2MGY5ZGZjZjRhZTFhMjQxNGQ1OWZlMzllMjg0ZTEzZjg1ZmY2NzQwNzAzODg5OGJlZjk3NGEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_e51967d6efd6416aad85c1c39319ddc4",
+      "statement": "The Shuyun open-platform gateway (ShuyunOpenGatewayClient, in ecshopx-shuyun) is the deliberate exception to fail-soft: it throws IllegalStateException on missing per-company config row and on non-2xx HTTP responses, because its listeners run on queued messages where the platform-default retry (3 attempts) is the correct behavior; it signs via Gateway-* headers (Gateway-Authid, Gateway-Sign, Gateway-Action-Method, Gateway-Request-Time, Gateway-Access-Token) with the per-company app_secret from company_shuyun_open_platform_config, and persists every call to a traffic-audit table.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L293-L298",
+          "version": "repo-lines-v1:sha256:c5c24c23cfaf05b037876c129b57c6b7fb6263ee42e6d55b5a5537a5404fd9bc:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZDI3ZTA4YTNjZjliMmU1Y2U3ZGMyNThhY2ZhOTZhMWIxNGRmZjFlOGFjMmJkN2NjMjAwMmM2YmQ2ODE5YTQxZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMTIwMzIwOTk1ODU2NGQ2ZTNiMzZlOTcyYzRlOWQ5MmY4MjIyZmI5YWI3NzYwYTA0ZjA0YzA4NmI0OTQ0ZTJjYiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjhhNzg1ZjI5ZDVjYzEyZWU5YTBhYjUyNTc2MTM0NTgyNjM2YzZjNWJmZjY1MmJkNTEzYTExMjA1YTQzMjhkNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjM2YzM0OWMyZWFkYWNhMjBjYjhmNzUyNTMxOWNmNzRiZTFkY2E4MTU4YzZkZGJmNTNjY2JmMGVhYjYyMjI5NiJ9"
+        },
+        {
+          "resource": "repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/gateway/ShuyunOpenGatewayClient.java#L103-L125",
+          "version": "repo-lines-v1:sha256:28afb695663271953fb954e333dd9266e173a38ab956af2e1b931b3ed2948bf5:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVmYjFlMmRjMjI5NWY1NGY5ZDA1ZDVmNjM1NjUxMzMxNGViZWY3MGZmNzE1YzUyMDIyZjFmZjkwODA2MDFlOWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImMzNjNhM2VmMDIxYWUxNzQzZDNmZTcwNDQwODRjNzg4Mjg4ZWM0ZDZmZDM5MDM5NjNlNzk3NmQ3MjNkMDA0ZDEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImYzMmJhNDRkYzkxNDkyZWRmM2UxMzkxMTM2Mjg0ZTRjN2E5YTMxNzU2MGRhZWFkNTdjZTg5MmMyNDQ2OWE3YzkifQ"
+        },
+        {
+          "resource": "repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/gateway/ShuyunOpenGatewayClient.java#L167-L179",
+          "version": "repo-lines-v1:sha256:7d0e8ce07d4ef277e0e188f287d163b7e414a793c526ccbacbaeeba83bce79e4:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRlMDAyZmMzZTdmZjk0NWNjYzRiYjg0OTlmNTA4MTkxZmY3NTg1YzQyMjNkODE5NTZjNmIyYjVmODdiOGJjMzgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU3ZDBkNDY3ZGJiODNlYzU3OWI4MWJlMGU0YWIwZDlmZjJlZjQwOWU2OWVhZDljNzlhMWExODVlYmIxZDAxOTgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYxZjE3MWFhZWE1YjM2MzYzNzE3YWY5M2RhNjIwNjJjMzljOTYxZmY4OWUyZjM3MjI1YzAxMzc4NTRhNDJmMzgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIyZjJmZjVmZWVjNjBmNTg3YzhmYWU0ZTg3ZjgwOWE2NjFjZmZlZDZiNDdhYWU1ZjZkNmEyNjUzYWE4OTUyZWYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d1ffea16d320403a8fd0ef567cd2784d",
+      "statement": "Shuyun open-platform tokens are refreshed daily by TokenRefreshScheduler with @Scheduled(cron = \"0 15 4 * * ?\") (04:15, aligned with the PHP dailyAt('4:15')) against token-refresh-base-uri (default http://open-client.shuyun.com), with Shuyun calling back to store the new token; the fallbackGatewayAccessToken is deliberately empty by default so outbound calls are refused rather than sent unsigned.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/config/TokenRefreshScheduler.java#L38-L38",
+          "version": "repo-lines-v1:sha256:276419588f1dd4c0addc9f58349f5c9c63b37df2f7e9695546f161ec78b7a8f0:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMjc2NDE5NTg4ZjFkZDRjMGFkZGM5ZjU4MzQ5ZjVjOWM2M2IzN2RmMmY3ZTk2OTU1NDZmMTYxZWM3OGI3YThmMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjc2NDE5NTg4ZjFkZDRjMGFkZGM5ZjU4MzQ5ZjVjOWM2M2IzN2RmMmY3ZTk2OTU1NDZmMTYxZWM3OGI3YThmMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiN2MyMWU4MmY5NTZhYjcwNjlhZjM4MTRjN2M1NzRhOWFhOGY5MWMwMzM5MGE4MWZlZDhkMTIwZWIxODYxZmU1MyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDA4NTQwY2JjZDhiMTM0ZmViY2M5ZmIzNGY3OTgzZDAwN2ZiZTdiNDY0ZDFlZTNkOTkwN2JlN2JmZjE5YjU1YSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_95e12012d1f64c1aa0161f0ae1764fb2",
+      "statement": "Shuyun has two independent stacks: the legacy UAPI (ShuyunSignedGatewayClient in ecshopx-third-party, u_* query-param md5 signing, remaining uses member modify/unbind behind http-enabled flags, otherwise degrades at the business layer) and the open platform (ecshopx-shuyun, Gateway-* header signing, per-company config in company_shuyun_open_platform_config) — the ecshopx-shuyun package-info documents this split explicitly as 遗留 UAPI + 开放平台 open-api.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/package-info.java#L17-L22",
+          "version": "repo-lines-v1:sha256:a225c52b991c77aca1512a774f07186bcff83efefd1bfbae19e73384a2b60e6d:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZWFmMjJjZjA3MzI1OTJjMjQ3MTQxY2JlNjFlZmExMTAxMjYxMmY1YTMxMjJiOWFmOWJiYWY1MmY1NzI0ZDE5NCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTcyYTQyOTM4MmIyZTE0NzE4ZTBlMzdiMDU3MGE4YTE3MDI5OTFmY2Q4NDk4Y2Q4NDA2MGE4YmY0ZjA1MDE3YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjk2YTA5MzE1YzVhMDU1NGQwMjU4ZjE1NzljOWE3MDJhZTZlNWVmNDUxZTUxNGRiY2NiMWRkZTFkNGUxNzE5MiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNGFlOGFjNTgwM2MwYjBiM2FmYzlhZTA3NzY0YWQ0ZTkzMTkxYjdmNmNjOTE4YmVlMWJkNjM5ZTQ5ZmM1OTVlMCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_8aa91cf3e982406a8d126ee45410adf2",
+      "statement": "Youshu analytics integration stores credentials in the youshu_setting DB table (not Redis) and signs every call via YoushuOpenApiSignSupport: 32-char random nonce, epoch timestamp, sign=sha256, and signature = HMAC-SHA256(appSecret, sorted query string) in lowercase hex appended as query params; the data source is bootstrapped get-then-add against /data-api/v1/data_source.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-youshu/src/main/java/cn/shopex/ecshopx/youshu/domain/YoushuSetting.java",
+          "version": "repo-file-v1:sha256:020bf03a563e3d7cd5ac48344b9a29f9d5148ff0830dc3cd9003c682e4b8c709"
+        },
+        {
+          "resource": "repo://ecshopx-youshu/src/main/java/cn/shopex/ecshopx/youshu/integration/YoushuOpenApiSignSupport.java#L61-L62",
+          "version": "repo-lines-v1:sha256:6f2c2d201a463f8153654411134bf68fa00eae93cb07d64eb5bc0b0b96ae00a0:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNzBlMjQxZWE0ZWMxMGUxNDNjMDg1NzlmMjIzZjg2ZTk4MjNmNTYwMzM5Mjg3N2VmN2U4YWFlYTY2MGNkZGE4NiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjRlMTM3MTQ5N2Q1YWE1NjIwZWYwMTJlZTM5YzJlNjAzZDE3ODYzMTJlYWFiYWUwZTk4MDgyNWJjZWIyOWZjMiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYWJkNzY1YmEzY2M1NzMyMzg2ZmRhMGZjN2NhZmIwNTlmOWIwOGZiMGI5YzQ1YzYzODU4OTgxNDgwMzZmOGU5NyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDY1ZWEzN2RjNDI4YmYzYWVkNGY3MTA5OTdlYmYwYjEwYTUwZjRiMzNlM2ZjYjVlMmJkMTMwOWEzNDQ2MDAzOCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_1d354428cb004973ab551d117a515f98",
+      "statement": "WdtErp's pull side (WdtErpSyncService, driven by XxlJob handlers sync-wdt-inventory and sync-wdt-logistics) iterates `companysRedisTemplate.keys(\"WdtErpSetting:*\")`, skips tenants without is_open=true, pages through Wdt's wait-sync lists, and writes results back into item stores and order shipment records, with promotion-aware inventory exclusion before overwriting stock.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-system-link/src/main/java/cn/shopex/ecshopx/systemlink/service/wdterp/WdtErpSyncService.java#L107-L107",
+          "version": "repo-lines-v1:sha256:c47438f9a7823164e2369e95376dc5e23362f391670e1ba4160b7dd437e6e4a0:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzQ3NDM4ZjlhNzgyMzE2NGUyMzY5ZTk1Mzc2ZGM1ZTIzMzYyZjM5MTY3MGUxYmE0MTYwYjdkZDQzN2U2ZTRhMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYzQ3NDM4ZjlhNzgyMzE2NGUyMzY5ZTk1Mzc2ZGM1ZTIzMzYyZjM5MTY3MGUxYmE0MTYwYjdkZDQzN2U2ZTRhMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTllMzYyYTQwNGVkODRjMWI3ZTg2NGY2MmRmZjM0OTBiMDIxNWQ1OWE3Njc2NTg0OTY0OWFiZGFiMGRmOWI1YSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMmE3ZDA4Mzg1YjRhYzI5ZWRhNTAyYmQ2NWVhODNkZjMxYjgxZTYyYmY5ODcwY2Y1NmJmMTFlZThkYzI5NTYzMiJ9"
+        },
+        {
+          "resource": "repo://ecshopx-system-link/src/main/java/cn/shopex/ecshopx/systemlink/service/wdterp/WdtErpSyncService.java#L271-L271",
+          "version": "repo-lines-v1:sha256:c47438f9a7823164e2369e95376dc5e23362f391670e1ba4160b7dd437e6e4a0:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzQ3NDM4ZjlhNzgyMzE2NGUyMzY5ZTk1Mzc2ZGM1ZTIzMzYyZjM5MTY3MGUxYmE0MTYwYjdkZDQzN2U2ZTRhMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYzQ3NDM4ZjlhNzgyMzE2NGUyMzY5ZTk1Mzc2ZGM1ZTIzMzYyZjM5MTY3MGUxYmE0MTYwYjdkZDQzN2U2ZTRhMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTdjMTg1MDE2YmJkODgyZTllOWE1ZDkwODE0ZWQyYjhjYmEyZmI1MjhkODczY2NlZmFmMDYzNzViNGE4NzE4OSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMmE3ZDA4Mzg1YjRhYzI5ZWRhNTAyYmQ2NWVhODNkZjMxYjgxZTYyYmY5ODcwY2Y1NmJmMTFlZThkYzI5NTYzMiJ9"
+        },
+        {
+          "resource": "repo://ecshopx-system-link/src/main/java/cn/shopex/ecshopx/systemlink/service/wdterp/WdtErpSyncService.java#L58-L58",
+          "version": "repo-lines-v1:sha256:820507af48cbb02c1acc0481976dc56f453e99f4ba869a6e90db77e581906028:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODIwNTA3YWY0OGNiYjAyYzFhY2MwNDgxOTc2ZGM1NmY0NTNlOTlmNGJhODY5YTZlOTBkYjc3ZTU4MTkwNjAyOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiODIwNTA3YWY0OGNiYjAyYzFhY2MwNDgxOTc2ZGM1NmY0NTNlOTlmNGJhODY5YTZlOTBkYjc3ZTU4MTkwNjAyOCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNzFiMGMzOWQxOTI3NDY0OTQxYjUyZjJmYzE4NmZhYTU5ZGI2ODRmYWZkM2FkNzU2NzhkNGIyN2Y4NGIzMDcyOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMTYwM2JhYjdiMTUyYjFjZGM4NzRkZDdkY2RhOTU0ZjExMmIyNTNjY2RlNDhkNDg3MTU5MWRkODk1ZDU0NWQ3YyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_de4ff77a2722450ba04e3f8f32b66cc5",
+      "statement": "System-link never reads order tables directly: payload assembly for Jushuitan order upload and WdtErp pushSelf/aftersale is declared as port interfaces in ecshopx-common/port/systemlink (JushuitanTradeFinishOrderUploadAssemblePort, WdtErpTradeFinishPushSelfAssemblePort, WdtErpTradeAfterSaleAssemblePort, WdtErpTradeCancelOrderAddAssemblePort, JushuitanAftersaleAddPayloadAssemblePort) and implemented in the data-owning modules (ecshopx-orders for trade finish; bootstrap for aftersales mapping) — the same dependency inversion the OpenAPI gateway uses.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/port/systemlink/JushuitanTradeFinishOrderUploadAssemblePort.java",
+          "version": "repo-file-v1:sha256:eef6bebb2481fa62263311fe118ea24b91f05b17e75475c02df1453071754c20"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/port/systemlink/WdtErpTradeAfterSaleAssemblePort.java",
+          "version": "repo-file-v1:sha256:39c60a59b9c95747fbab3b4219df96765aaf3cf14da60f15a259da1fda6fc484"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/port/systemlink/WdtErpTradeFinishPushSelfAssemblePort.java",
+          "version": "repo-file-v1:sha256:297d96ef017e8adf3d4bc1038ab29b2a48bb425ce2050f47006346837ce1270c"
+        }
+      ]
+    },
+    {
+      "id": "claim_b86b024addc941d9a2e271f23cb3490f",
+      "statement": "The OME (Shopex ERP) client ShopexErpOpenApiClient lives in ecshopx-goods (service/ome) because goods import was its first consumer, and is configured by a single `ecshopx.ome.openapi-url` (empty in application.properties ⇒ fail_msg skip); it signs per tenant with double-MD5-upper over ShopexerpSetting Redis values and form-POSTs with flag/method/type=json/charset/ver/timestamp.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L259-L259",
+          "version": "repo-lines-v1:sha256:c0e2df59224240ce933ac97b62beeccbc2d4fd23f8a5391222c2137b927009f4:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzBlMmRmNTkyMjQyNDBjZTkzM2FjOTdiNjJiZWVjY2JjMmQ0ZmQyM2Y4YTUzOTEyMjJjMjEzN2I5MjcwMDlmNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYzBlMmRmNTkyMjQyNDBjZTkzM2FjOTdiNjJiZWVjY2JjMmQ0ZmQyM2Y4YTUzOTEyMjJjMjEzN2I5MjcwMDlmNCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYWZjZmRmOTVlZDA2NGU5OTJlOWFlMGU2MmEwMTlkYWJiOTIwM2Y2MjgxM2ZhNmIxMGZhNTJhNDMwNTdkOGVmMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTY4NTdmNTYwYzY5YmE2N2FhMmUzNjY1OThiMThiOWJiODZmNWE2MmJiYjVjMGI1YTNkNjRkNmQ0MjcwNTRiOSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/ome/ShopexErpOpenApiClient.java#L58-L58",
+          "version": "repo-lines-v1:sha256:1c080179bd012473949ba826cf9871490acfa244ef1531c0ee566775e7e06ebd:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMWMwODAxNzliZDAxMjQ3Mzk0OWJhODI2Y2Y5ODcxNDkwYWNmYTI0NGVmMTUzMWMwZWU1NjY3NzVlN2UwNmViZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMWMwODAxNzliZDAxMjQ3Mzk0OWJhODI2Y2Y5ODcxNDkwYWNmYTI0NGVmMTUzMWMwZWU1NjY3NzVlN2UwNmViZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTBiZDdhMWVkODY2NDZhZGRlNDgyNTY5NGFhNWU4ODBkMzQwM2JmMGEwZDE2NzJhMWNmNjU2NDRjOWYzYTY5MCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODRjYzRmOWU3NTBiZGNmMjNjZTU3ZjZmMzUxZDg2YTkxY2I3NTgzZTQ2NjJkYjY5ZTNhNzBhMThhMWE4ZTFjNyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_8732a5bf485f47eab90433b5b79eae8f",
+      "statement": "The WeChat customs declaration for cross-border orders lives in ecshopx-orders, not ecshopx-cross-border: TradeFinishCustomDeclareOrderBusService (trade-finish listener @Order 95) POSTs XML to https://api.mch.weixin.qq.com/cgi-bin/mch/customs/customdeclareorder only for pay_type=wxpay (point/deposit/membercard skipped), order.type != 0 (cross-border marker), present transaction_id, third_params customs code + merchant customs no, and non-empty identity_id/identity_name; it persists the result into custom_declare_order_result keyed by order_id, and every skip/failure path is a debug log so a cross-border order never fails its payment flow.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/customs/TradeFinishCustomDeclareOrderBusService.java#L57-L58",
+          "version": "repo-lines-v1:sha256:b17cb9959fb81d923bab657087228170c9ba182cba7524d41cc85bb90588b31a:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzc0ZTUxNTg0YzFkOGUwNGMzNWJiN2VlMDdhMTBiZGNhZWQ1NWUwZmZlYzZiNTcwZjhhYmQ4MmZjZDA5ZDliZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzNkZGVmNDNhNTNhYjY1YzA5MmRhN2RlNzIzZDliYjRjY2I1N2E3OGJiYWFmZTM0YzRhNWYxNmFkMjc1OGZiMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYmI3MWYyNzhiY2QyNmE5YTg2NzQ5NGNmYjFjNzMxMWYyYjJlOTExZmJjNTUwYzU4MDBhYzBmZjkzYmJhMTJkYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTRhNDNjYjJhMDU4MmRhOWY3MzdlNDhjZGJhMzA0YmM0NmU3ZDhkZWZkNjgzODIwYzc4NmFkOWNmM2E4NTVhYyJ9"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/customs/TradeFinishCustomDeclareOrderBusService.java#L81-L147",
+          "version": "repo-lines-v1:sha256:aef2d13561ffb0c99bbd383e38ebc5787ff4d158a47de01a360b1e02ac9c1b21:eyJzZWxlY3RlZExpbmVDb3VudCI6NjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImViNzFkNDQ3ZWQzMTRmMzc0Nzg3ZGZlOTk1NmM5M2IyNTA5MWNmYjgwZjhlZGIyYjY0OWRkZmM0OTBmN2Q5NWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRmMzc5OWI4MjBmNWUyNzI0ZjBmODY4ZjUzNjI5MDZmYTIzNWZmYmQxNWRjNWE1MjA2OWY4Zjg0ZjhmNDQ5MDAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRlNWViNGZkMDI0YTlhMzM2OThmZGY2Y2NiMTQwNzA2NzEwNmVlMzA2NmQ2ZDcyODRjNDY4OGI4ZjczYmRkZGIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b027996ee362499e816493b52233b2bf",
+      "statement": "ecshopx-cross-border is settings-only CRUD with no outbound HTTP: three admin controllers over crossborder_set, crossborder_taxstrategy (TaxstrategyListService pages by company with state=1 and name LIKE filter), and crossborder_origincountry, all gated by CrossBorderShopRoutePermissionService.assertRouteAllowed (crossborder.* role-menu aliases with whitelists and a salesperson_workwechat bypass).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-cross-border/src/main/java/cn/shopex/ecshopx/crossborder/service/TaxstrategyListService.java#L39-L62",
+          "version": "repo-lines-v1:sha256:d89ad1649d2a2a2231ea2cdbbe333edf8ac2cf47b1a75d7fcb5e5d9572bab76c:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE2M2U5YjAyYTM0YWQ5MWIyOWYyZWFhYTRiYjIzYjZhOTEwYWZmOTE5NjNlN2JiNzQ1MjIyODVhMTVjN2ZmYTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdhNWY5NDU1MzU5MzZjNmRkNWQ1NThjODA1OGNkOTE3MTAyOTQ1NTQwNGFlOTAxYjNlMzUzODY1ODQ4MmRlYjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_1c516f4c38e84734a724adba30183e7c",
+      "statement": "Aliyun SMS sign/template lifecycle is modeled as twelve dispatch jobs job:48–job:59 (Add/Modify/Delete/QuerySmsSign, AddSmsBatchRecord, QuerySendDetail, Add/Modify/Delete/QuerySmsTemplate, SyncSmsSigns, SyncSmsTemplates) registered in bootstrap configs via dispatchRegistry.registerJob, plus five XxlJob handlers polling audit status and send details; CompanySmsChannelRouter picks Aliyun vs Shuyun-OEM vs Shopex channel per company.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/AliyunsmsAddSmsSignJobRegistrationConfig.java#L37-L40",
+          "version": "repo-lines-v1:sha256:dbf9077c94952ccd8a3c48cd16e7a7f33d30c05c4ad5de640b0a22ee566d4d5e:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDRjYzNmMmMwYmE5MjM2YjY4ZDc5Zjc1ZWUyZmQ0YmM4NjliZWQ5MjhlOWYzOWZhY2M1NTFlOWU4YTQ4NGM1ZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYWRiNjBlZjEwY2NkZTk4NmFkYzJkOWQxNTk1YmUwZDMzZDI0OGEzZjk3OTQ2YTYxM2U1OTdiMjE5MjgwZDA1NCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/AliyunsmsDispatchJobNames.java#L21-L43",
+          "version": "repo-lines-v1:sha256:e746e8608550221ba2af531eaac7a0199ae510da36d985d18461ea0d47849458:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNlZDU4OTdiZWM5OTYzZTFlNDNlM2RkNDk4YmE0YTU2ZjRjMDMyNWE0YWIxZDhiMDU0NjRlNmVkNTVjNGM5YzAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjllMjExNGJkYmY0NDIyNWY4NDcxMWEyMzg5NDVmOTRhZDdlZTkxMmIzMzg4ZGYxZTE5NDE3MGZkNTdmNTkyYTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhkN2YwNWU3ZjMyNWZiZDMwNzk2MDZlYWE3NmYzMjAxZmJmNzNiYjZlYmQxNTIxNjQ3ZGVhNDQ5YmNkN2U3YWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA0NjgwYjU2MzdlNTdmODlmOWE5YThiNmM1MmI4NWY4YTgwZmFjMzg4NmY0ZDFlYTU4ODUyNDUyNTQzZGMzZWIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_65cb1f2f2e384960b36457da9aff7015",
+      "statement": "Alipay mini-program template messages (ecshopx-ali AliTemplateMsgService.send) go through the EasySDK Factory.Marketing.TemplateMessage().send guarded by a static SDK_LOCK because EasySDK options are process-global; templates resolve per company/scene from Redis `aliopen_template_library:{companyId}:{scenesName}`, and a future send_time_desc causes the publisher to enqueue with a delay so job:136 fires it later (re-checking the delay).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-ali/src/main/java/cn/shopex/ecshopx/ali/service/alitemplate/AliTemplateMsgService.java#L130-L130",
+          "version": "repo-lines-v1:sha256:35784fdf4e1a90214cfeb206e8c9fa325b3360012eed84f880b9c2be06fb29d3:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzU3ODRmZGY0ZTFhOTAyMTRjZmViMjA2ZThjOWZhMzI1YjMzNjAwMTJlZWQ4NGY4ODBiOWMyYmUwNmZiMjlkMyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzU3ODRmZGY0ZTFhOTAyMTRjZmViMjA2ZThjOWZhMzI1YjMzNjAwMTJlZWQ4NGY4ODBiOWMyYmUwNmZiMjlkMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTdmMWYwOGFkMjdiYzFlYjdmM2JjNmY1NDg4N2RiZmNjMzgxODQxYWM5NTlkNzI5YWJmNDc1ZDM5NDY2YzM2MyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzJjYTVkMDA4YWFjOWQ2ZWRiMmI3ZGI3ZGMzZmE4MDRkYTkxNzlhOTZhZDk1YmJhN2Q2NDEyMDBkMWViYWZlNCJ9"
+        },
+        {
+          "resource": "repo://ecshopx-ali/src/main/java/cn/shopex/ecshopx/ali/service/alitemplate/AliTemplateMsgService.java#L41-L41",
+          "version": "repo-lines-v1:sha256:99adcac0746ab5b8a79bf6caa1d6637a0fd08f15efe2de4ffedf453581e536fa:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOTlhZGNhYzA3NDZhYjViOGE3OWJmNmNhYTFkNjYzN2EwZmQwOGYxNWVmZTJkZTRmZmVkZjQ1MzU4MWU1MzZmYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTlhZGNhYzA3NDZhYjViOGE3OWJmNmNhYTFkNjYzN2EwZmQwOGYxNWVmZTJkZTRmZmVkZjQ1MzU4MWU1MzZmYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiM2FlZGI5YzdiODQ4ZDk0ZTdkNWZjYzFkOGU2MjBlODgyNjI3OWYzZDI0MjlhYjUwYjVhM2EwMTFlYThjNDRlOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDc1M2M2YWQzZDNlMDlkNzgzNWY5NWI4ZGJjNTM3ODQ0MGViZDJiNTZlNTJkZjhhNDk1NDEyYWQwZTZhNjZiZSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_e8e2864a61bb468cb568efb103772264",
+      "statement": "DispatchOptions.eventDefaults() is SYNC mode while jobDefaults() and the systemlink ERP publishers use ASYNC with Redis driver; SYNC-published events execute every registered listener in-process via the sync driver (order controlled by @Order on registration configs), while ASYNC+REDIS events queue one message per listener, decoupling the payment callback from slow ERPs.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/DispatchOptions.java#L28-L34",
+          "version": "repo-lines-v1:sha256:fc6c604b784be17262a5ea02add645586bdabbde6861650f7bc2ac65cbb49dc0:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYWZlNDRmZmQ4MzMxYzg4NjE5NjkxYzQ5ZWZhY2YxMWE0NzcxZGQ4MzA0ZTUyZWFlMTA1MWM4MzFiY2FhMzc1OSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDg5M2Y0MGUzNzgxZWI4OTZjODJkMDQ2YTA4MDY3YTExZTM1Y2RmMmYxZGZhZjI2ZmVhOTBiOGRiNjY3NjQxMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDAyNTIzNWU5OWU5MTdjMDYyZmRkOTE4NDg5Yzc3ZTRjYmU0NGZhNjY1NjFiZDY2NTY2NmIzNGEyNDUyZTUxYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZGM5MGQzMmJkMzk2ZTVjZDcyYjZlNTRhYzFiZWZlNzY4YjYzZDBkMTc3ODU3MmM0YzczYjg5MDFjZmJkOGM1YiJ9"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/dispatch/OrdersTradeFinishAfterCommitDispatchPublisher.java#L37-L51",
+          "version": "repo-lines-v1:sha256:ccafaa70818d6b00b1ad982991c2df101e03f58d1595e6b12549f0d5f7c73b14:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwOGNjMTVkMDc1NGI2ZjIxZjcxZTBiMDNiOWRkNzg2YmM5ODgwMDNiMmI1NzU2NGM2MDUwYTgwMjI1MTdjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkwODhlYzE2NGJiM2NiZDM2MGE0N2Q5OTM0ZjZiY2M2NWRhNmU3NGFhMmIzYjA1YWYxMWIwMmUyZTc0ZTE1ZWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_5f769634ae9a4437958f687ca10d9afa",
+      "statement": "Two OrdersTradeFinishDispatchPublisher beans exist in bootstrap: the @Primary one publishing event:291 (EVENT_TRADE_FINISH) and the named `ordersTradeFinishDispatchPublisherOfflineCsv292` publishing event:292 used by OfflinePaymentDoCheckService for offline bank-transfer approval; both wrap OrdersTradeFinishAfterCommitDispatchPublisher, deferring the publish until after commit when a transaction is active.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/OrdersTradeFinishDispatchPublisherBeansConfig.java#L30-L42",
+          "version": "repo-lines-v1:sha256:6fe247c6b0ee19c501308d2624963c0e1cc033693d69b83ec5b311b2e94e8e70:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcyMWM3NjAzYTEzYzMyYzU0MWZkNTVmMmNkM2UxMTJiNWMxZWZmNmQ0ODA1OGFhNmYxMzc5ZWVmMjE3NGYxYzMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc2Y2I2ZDU1MGUzODFmM2NiOGQzMjIzYzEyMjhlYTI5NmEyZDdmMDQxYmRlMTkwMWVmMDA3YTg3MGYzMzU1YjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/offline/OfflinePaymentDoCheckService.java#L87-L87",
+          "version": "repo-lines-v1:sha256:3154287f0e8cee17bc37f789472d79fd304b6b3a842c7cf6f1ea2ff3263bf7db:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzE1NDI4N2YwZThjZWUxN2JjMzdmNzg5NDcyZDc5ZmQzMDRiNmIzYTg0MmM3Y2Y2ZjFlYTJmZjMyNjNiZjdkYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzE1NDI4N2YwZThjZWUxN2JjMzdmNzg5NDcyZDc5ZmQzMDRiNmIzYTg0MmM3Y2Y2ZjFlYTJmZjMyNjNiZjdkYiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZWE0ZWQ1YWJhZGUyMGUwZmFjYTEwNzMzNGI1YmMyMjNkZGU4MmM3YzliZmM0MmEwNGMzMmUxYThlNDU5ZTI0ZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTI4MThmMzBjN2I0NjJjZWIzYTk2NWU4M2ZmZTM3OTdlM2RjOGE4ODFjYTMwNWMwNDNjYzM5MzhhODNjMDdhMiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_235abd5f2d0e40b4bd597fa40d27c63f",
+      "statement": "Module roles: ecshopx-system-link is the ERP connectivity domain (系统联通域) covering Jushuitan, WdtErp and OME; ecshopx-third-party is the third-party integration domain (第三方对接域) hosting Prism gateways, Marketing Center, DmCrm, Shopex CRM, SaasErp, Shuyun legacy UAPI, Dada/Shansong, AMap; ecshopx-youshu is the Youshu analytics domain (有数分析配置域); ecshopx-shuyun carries the Shuyun open-platform stack.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-system-link/src/main/java/cn/shopex/ecshopx/systemlink/package-info.java#L17-L19",
+          "version": "repo-lines-v1:sha256:35ac5796c8685ba657104f0aea96398a3505afef83b99f99fc6f929d986c0599:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZWFmMjJjZjA3MzI1OTJjMjQ3MTQxY2JlNjFlZmExMTAxMjYxMmY1YTMxMjJiOWFmOWJiYWY1MmY1NzI0ZDE5NCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTcyYTQyOTM4MmIyZTE0NzE4ZTBlMzdiMDU3MGE4YTE3MDI5OTFmY2Q4NDk4Y2Q4NDA2MGE4YmY0ZjA1MDE3YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjk2YTA5MzE1YzVhMDU1NGQwMjU4ZjE1NzljOWE3MDJhZTZlNWVmNDUxZTUxNGRiY2NiMWRkZTFkNGUxNzE5MiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjI2NzJkZDAwZWNkN2NhNTE1NTA4ZDE0ZjhjYzEwODA0ZmNiZjVmYjg3MjgyYTI0NTUxNTM0OTVhNjk5NWZhYSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-third-party/src/main/java/cn/shopex/ecshopx/thirdparty/package-info.java#L17-L19",
+          "version": "repo-lines-v1:sha256:320ed9a5bdc40ae30495000906fb900467b53a78f996d25015f4f8eb1108a046:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZWFmMjJjZjA3MzI1OTJjMjQ3MTQxY2JlNjFlZmExMTAxMjYxMmY1YTMxMjJiOWFmOWJiYWY1MmY1NzI0ZDE5NCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTcyYTQyOTM4MmIyZTE0NzE4ZTBlMzdiMDU3MGE4YTE3MDI5OTFmY2Q4NDk4Y2Q4NDA2MGE4YmY0ZjA1MDE3YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjk2YTA5MzE1YzVhMDU1NGQwMjU4ZjE1NzljOWE3MDJhZTZlNWVmNDUxZTUxNGRiY2NiMWRkZTFkNGUxNzE5MiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDYwZjVkZmJhZmY0MWJiMmNiOTUwNDc3YzI3YzY2NzQyMmFjMmVhNGIzNTA4YThiNWZjYjRiMmM2NTcxYzhmMSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-youshu/src/main/java/cn/shopex/ecshopx/youshu/package-info.java#L17-L19",
+          "version": "repo-lines-v1:sha256:aad6f8cb3eb0e60eeef827f00b3d56e0dd083c26df56809d8a7a96f1be104230:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZWFmMjJjZjA3MzI1OTJjMjQ3MTQxY2JlNjFlZmExMTAxMjYxMmY1YTMxMjJiOWFmOWJiYWY1MmY1NzI0ZDE5NCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTcyYTQyOTM4MmIyZTE0NzE4ZTBlMzdiMDU3MGE4YTE3MDI5OTFmY2Q4NDk4Y2Q4NDA2MGE4YmY0ZjA1MDE3YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjk2YTA5MzE1YzVhMDU1NGQwMjU4ZjE1NzljOWE3MDJhZTZlNWVmNDUxZTUxNGRiY2NiMWRkZTFkNGUxNzE5MiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzU2ZTYxMWE3NmNkMjJhYjhmOGMxYzFlYzljNzMxYjBjNGM4YWNkY2ZhZTk3NTc0YWE3ZjQ2NTZjYzQ2YWQ2NyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_0c693f8b325e41da9c6fb3f840106884",
+      "statement": "Per-tenant integration state lives outside static config: Redis keys on the companys template — JushuitanSetting:{sha1(companyId)}, WdtErpSetting:{sha1(companyId)}, ShopexerpSetting:{sha1(companyId)}, DmCrmSetting:{sha1(companyId)}, damo_token:{companyId}, aliopen_template_library:{companyId}:{scenesName} — plus DB tables company_shuyun_open_platform_config, youshu_setting, and openapi_developer (external_* fields feed Marketing Center); static properties carry only platform-level credentials.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/domain/CompanyShuyunOpenPlatformConfig.java",
+          "version": "repo-file-v1:sha256:223a9a7a47729f0d549684b6d31b75cdd41156f0cc81f399c5f1d2bf93143622"
+        },
+        {
+          "resource": "repo://ecshopx-system-link/src/main/java/cn/shopex/ecshopx/systemlink/service/wdterp/WdtErpSyncService.java#L58-L58",
+          "version": "repo-lines-v1:sha256:820507af48cbb02c1acc0481976dc56f453e99f4ba869a6e90db77e581906028:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODIwNTA3YWY0OGNiYjAyYzFhY2MwNDgxOTc2ZGM1NmY0NTNlOTlmNGJhODY5YTZlOTBkYjc3ZTU4MTkwNjAyOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiODIwNTA3YWY0OGNiYjAyYzFhY2MwNDgxOTc2ZGM1NmY0NTNlOTlmNGJhODY5YTZlOTBkYjc3ZTU4MTkwNjAyOCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNzFiMGMzOWQxOTI3NDY0OTQxYjUyZjJmYzE4NmZhYTU5ZGI2ODRmYWZkM2FkNzU2NzhkNGIyN2Y4NGIzMDcyOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMTYwM2JhYjdiMTUyYjFjZGM4NzRkZDdkY2RhOTU0ZjExMmIyNTNjY2RlNDhkNDg3MTU5MWRkODk1ZDU0NWQ3YyJ9"
+        },
+        {
+          "resource": "repo://ecshopx-third-party/src/main/java/cn/shopex/ecshopx/thirdparty/service/dmcrm/DmCrmSettingReadRedisService.java#L31-L43",
+          "version": "repo-lines-v1:sha256:be3a72f08c7592761b80af3f2df75e9660423ec6889cb14d8fa1264a4684a613:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNmNTFjM2NhMThlYzgxMWJiYWNkZWIxYjk2OTYxZWE3NzY0NGRkOTIyZTllZGUxOTBlYTAxM2ZiMjM1MjIxN2QiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMxMzJjY2U3ODdhYWRhYWUwMTg5YTdmYjE5YmI1YmNhNzg0YjE5N2ZiM2UwNDEwY2QzOThjNjBiNzlhYTQ3NmQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkyZTEyMzdmMmMxNzM4NGIwZWNjNDRkMTJlMGI5ZGI1YTExNDhlM2Q3Yzc3Y2IyNzUzMzhlYzEzZGFhODk2OGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY4ZWUxMGI0ODkzNzgyNjVlNWM0YWI1MGY3OTIyYjc5NWUxMmIyMWJkMzM0ZjIzZTdjYjYxYzY3NzVmZjY3YjkifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.2",
+    "at": "2026-10-21T12:26:22.580Z"
+  }
+}

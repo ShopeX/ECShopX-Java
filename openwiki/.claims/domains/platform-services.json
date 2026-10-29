@@ -1,0 +1,758 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:f80a00568ff336c59f007427ff513294688dd39291bd916b34d70e6d2cb96f23",
+  "claims": [
+    {
+      "id": "claim_8d9a39ff21104a5e9f8a87abb98360a9",
+      "statement": "ecshopx-espier is the platform-common-capabilities bundle (upload, address, upgrade etc.), declared in its package-info; its OperatorJwtAuthenticationFilter attribute key is imported by super-admin, shopmenu-border, comments, tdkset and one-code controllers to read the operator context that espier's own interceptor sets, and data-cube depends on it in its POM.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-data-cube/pom.xml#L44-L47",
+          "version": "repo-lines-v1:sha256:0d3e09a4d85b042cf359a1385ff457bb73a551587e778f0e50f3ed196beccbe5:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTE1ZjlmNTdlYTMxNzZmYTVjZDk5N2U3NzRiZDUxZWQ3YTNiMmUyZWU3YjhhMmJkNDQ2M2YxYjg4NTg2Mzk5OSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTVlMmNlZjVhMjM2NGFiNGVhMzYwODkwNjkyOTlkMWJjMzZhZTBkNGI5YzJiNmEwOTQyZDdmOWMzYWQ5ZjA5MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDIwMTEyOTUzYjljZGY5NTYyZTgxNzM3ZjQ1MmUyMDgxOWU0NjZlMjQzZTk5ODFiNTQ3OTkwMWNmMDQwNGUyMyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiM2Y0MGRlNmJiM2RlNTllMjBlNTJhZWY5MTU3MDNmMWI1NjNiMTRlOWZiZGExNWUyZGIyNjhhMTM5MGE1OTQ2NSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/package-info.java#L17-L20",
+          "version": "repo-lines-v1:sha256:cb42e0d69399700ac03150efa2e88b525578ff0ff6e586a6346b79c104ac7d01:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZWFmMjJjZjA3MzI1OTJjMjQ3MTQxY2JlNjFlZmExMTAxMjYxMmY1YTMxMjJiOWFmOWJiYWY1MmY1NzI0ZDE5NCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYTcyOGM4NDhkMTAxMjU5NGYzYWExODAwMGMyYWExMjRmMGExM2IzYTA2NDViNmE2OGY3MThlZWUzNGU5MWZhOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjk2YTA5MzE1YzVhMDU1NGQwMjU4ZjE1NzljOWE3MDJhZTZlNWVmNDUxZTUxNGRiY2NiMWRkZTFkNGUxNzE5MiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-super-admin/src/main/java/cn/shopex/ecshopx/superadmin/api/admin/v1/ShopNoticeController.java#L42-L49",
+          "version": "repo-lines-v1:sha256:4df4b4110a5c3b99ad935421f42b4f903aaa9f9b24b5ef5c770da434fbe29d5b:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMWI4ZTRiNmUwYTRiMGMyODc2NjhjNDFlM2EwNmFhYjM0ODY1ZWU1ZTZiYTczZDQ3NzZiNzgxYWU4MjhiNGQ2OCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTkxYjY1ODI1OTZhOWQ1OGRmZjJhMjlkNGZmOWNkMjlmODI2ZGJkMGE1ZWJkMzk2ODkxOTkxMzQzMmJkODM0MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYWRiNTUxOTdiMDM2MWRhNjA5MWM5OGRmYmQ0MGFkMTk4ZjEwNGE5M2E5OGYzOWU1YzcwZDVkY2U2OWE1MDcwYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZmU0NmEyYWUyNmM4NjRmMGQ3ZDIyZTc1YjAzM2U2YmE5NDc5OTM5YmZhMzQ0Y2JkOWE5YmFlNjAyNDM4NDg2NyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_679502992de040b0b4e5e465dd74a2e8",
+      "statement": "StorageFactory selects the storage driver from ecshopx.storage.driver (local/oss/aws/qiniu/cosv5, any other value throws BadRequestException) and caches one StorageDriver instance per driver:fileType pair in a ConcurrentHashMap, so driver config is fixed at startup; for oss/qiniu/cosv5 each of the three disks (file/image/videos) has its own bucket/endpoint/domain block while local and aws use a single bucket.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/storage/StorageFactory.java#L48-L64",
+          "version": "repo-lines-v1:sha256:f03aa95083a7ae4a1fd57106d4c3f4807ac1e79b4f2ff53377b59da9d8c1c9b3:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI5MjIzMjkxYjMxNGEyYzMyZmYwMmM2MGQ5MDQ1ZDU5OTY3YTJiM2RjYTdmNTRjMzhlOTAwMjcxNGNhOTk5YjciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM4ZjAxZDhiNTY5OTBkYTk5NTI5MDU2MGVjMDgwYTkyMmExN2Q0ODkxNTQyOWZlYjg1YmU5ZTkwZjkzMzBiYjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRkMzdjMjdlYjMwNmFkOGM2ZjE5ZWJmYzQzNzc4ZDhlNzFmODdkYzAwNWFmNmQ2MWZjNDA3NzE1ZjFkZmMxYWEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/storage/StorageProperties.java#L25-L42",
+          "version": "repo-lines-v1:sha256:b3f5b6ef84444bd1090e4b19ff880196b8b77d57f8fc84b670590e9d8cee2e5e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA4ODI0ODQ3ZDZkNmI5MmY3M2VkYTE3NmNiZTRlOGQyMTBkYjlhZDljNjgyYjkzYzhkMThjM2I4ZDYzOTllOGYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg0MmVkMjFkZmNmNTMyNWJhMmZhYWQ2ZjhlZjQ5NDdkNzZkYWRjNDM2MjYyZDkyY2M2ODhmNmIzMTUzNzQ0MjIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjMyMThjNTM4NzIyZWM3YzY5OTdhMzY5Y2U0ZjFlMGY5ODdiZmExMzk2Y2IwNGRkNDljMzk4NThhMzJiODI2YzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjljYWNhZWFhODczMGI1ZGQyNjdjMjU1ZmRiNTk0MTI2OTRmMjk4MDNmMDQyNGFkMDYyMWEwZTg0OTg2NGMxODMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_105cc833e22e46b1b0c295d20b5e73a1",
+      "statement": "FileStorageService.buildUploadKey derives every upload object key as [projectName/]{fileType}/{companyId}/{yyyy/MM/dd}[/{group}]/{md5(yyyyMMddHHmmss)}{filename}, where projectName (ecshopx.storage.project-name, PHP-parity OSS_PROJECT_NAME) isolates tenants sharing one bucket and is omitted when blank; filename falls back to a 32-hex UUID when empty.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L153-L158",
+          "version": "repo-lines-v1:sha256:440a789d36ca9612eb12cdc2213ffbf75dacc4a4bdf84407fd7f6a9767d863bb:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOWE0ZjIwNTBlZThhYTJmMTFiN2JhZjAxZjYwNmZjZTY4ZmRmM2FmZWI2ZTRhN2E5OTFkNTg2NDhhZTllMmFkYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMmU2MGIxOGY2NTYyNjQ3OGJjMjhmNDczZTJlNjc4Y2Q3ZDVhNjU1ZDhkNzNiNGEwN2JmY2I0ZDBjMjNhYjZkNyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzA1NWYzMmJiNGE3YjdlNTY0MzZmN2IyOWYyM2E2OTJkYjkzMWFlOWZhY2FjNTIwOTk2ODU5MjUyNmJiN2U3NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNWY5MjhjYWFiNTRhNjlhMDYyMDk2MjU4ZTRmMjI2ZGFmNmMwODEwNTNjYzY1N2JlNTAxZTUyMDExM2NhZjAyYiJ9"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/storage/FileStorageService.java#L337-L356",
+          "version": "repo-lines-v1:sha256:f8f510590898f500634851c7e0fa451ba66ef8ff5842b22ff36386f4cacb33bc:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRiYzNiMjEwYmEzNjQ1OGMxMDkyNTgyNTAwZGM2NTM5ODFiYTdkYjM3ZGRjNmI5MWMyYTdmZGQzZjU3OWZjZjEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU0MjUyZjVjYTA1ZWQyOGQ2ZTNmMjZmMDNhZTI4ODA2OGEzMWI1NDE4YmZmYTlkYjE2ZGY1NmU0YzNlYmViZTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZjNGJkNWIwNmQxODMyNzE0MjA4NDM4N2VjNGQyNzc0MGJlMDI5YzJlMjI0NTlkNWY0MDE1MThmNjEzMmUxNjQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_5143e397ec964480934293456b180337",
+      "statement": "FileStorageService exposes two different multipart validation regimes: upload() rejects the file disk outright, requires image/* ≤ 2 MB or video/* ≤ 50 MB (BadRequestException), while uploadeImage()/uploadImportLocalRelativePath() restrict to image/jpeg|jpg|png|gif ≤ 2 MB and video/mp4 ≤ 50 MB, with the exception type chosen per caller (ResourceException vs BadRequestException); upload() always appends a literal .png extension under the local driver regardless of actual bytes, and uploadImportLocalRelativePath is local-only and returns the bare relative key.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/storage/FileStorageService.java#L199-L269",
+          "version": "repo-lines-v1:sha256:77b6e7d18b19ef018a050c0f775e05de0b1d877ad6a3b6312d4bb57b01c0b6be:eyJzZWxlY3RlZExpbmVDb3VudCI6NzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBhZWY4MjAzZGJlYzRjY2JlY2M5YTVhZDM1MjMyY2M3M2VlMzBjZjg0MDkyNzBkYzExZTQ3NmNlMDY4NmVmYjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE0ODYzNmJjODJmZTI2NDQ4NzFmM2IyNThiNTlkZDljMGNjZDdiNjdkMDkwY2JhNmVkYzg3MjY5ZjQ1YWFkZWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU3MDMyYzFhNTJmYWJjODI2MjA1ZDJkZTk5YWZmYzg2MGFmMTBmM2UzN2ViNTg4NjA3ODk2NDZmZWQ1MmMwMzYifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/storage/FileStorageService.java#L459-L538",
+          "version": "repo-lines-v1:sha256:9b9e47c71781880805e2e4cad5a9b5e43b8b4823d390db918c36c36665d206a5:eyJzZWxlY3RlZExpbmVDb3VudCI6ODAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJhYjY4YjFjOTk3ODJlMmUyNDhiNmI2MTNjNTQ3ODk0Nzg5YmM1OTNjMmI3YTI2OWM4NTM5NzFlZWM1YzU2YTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIyZjJmZjVmZWVjNjBmNTg3YzhmYWU0ZTg3ZjgwOWE2NjFjZmZlZDZiNDdhYWU1ZjZkNmEyNjUzYWE4OTUyZWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk0MmY2MjA1ZDYzODZhOGI4MzJmZGVlNDFlNjQ4NWFmMzJlNDFkNmMzNDRjOTZhN2MyY2UyY2M3NzY0NTYzYTkifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_0690ba59e42b4bcd8a4e55fdb3c7dd45",
+      "statement": "getUploadToken returns a driver-specific credential envelope: local returns {domain, key}; oss fills an OSS Web-Post policy; aws returns a 3600-second presigned PUT URL; qiniu and cosv5 fill their vendor upload-token fields; under cosv5 a non-blank supplied filename must contain a non-empty extension (assertCosNonBlankFilenameHasExtensionIfNeeded), applied on both the token and direct-upload paths.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/storage/FileStorageService.java#L62-L130",
+          "version": "repo-lines-v1:sha256:566fa5e842a9b3c152cb8ad2185c564db7d5aa737c776751e31013be054ca020:eyJzZWxlY3RlZExpbmVDb3VudCI6NjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFmYzJlM2ZkNzhkYjZmYTE5NGNiYTk4NmY5M2Y5MzcxYTg0MDkzMzRjZjRjZjRlYTk0NWM5OTJhYTQ4ZmRiMmYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAwNDU4ODBlNzg1MTNlZDBjY2RlZmJlODFjZjEyNDhkYjcxOGY0NzRjYWIxMDJhODgzMzMxYmY3MjA2NzYxM2QiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMzZTg0Mzc4MjRiMmY3ZDVlNmVjOTM0OTcwZWJiOTNkMjc3OTA1MzEwYWE0Njk5MDI5NDIyZjRmNDFmMzk0MDMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_6b3f1908abf44a54b4c6af74998012ae",
+      "statement": "When ecshopx.storage.driver=local (or is unset), StorageWebMvcConfigurer maps the configured local root directory onto /storage/** as static resources so uploaded files are directly fetchable over HTTP; LocalStorageDriver creates its root at construction and its privateDownloadUrl is just the public URL (no signing on local disk), while LocalStoragePublicUrl prefers the configured ecshopx.storage.local.url base and falls back to a request-derived absolute /storage/... URL when it is blank.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/storage/LocalStorageDriver.java#L27-L91",
+          "version": "repo-lines-v1:sha256:f2761198c94936ca75b43fd965aba4000e052f435bbc3605014acd582a57fbbb:eyJzZWxlY3RlZExpbmVDb3VudCI6NjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdkMGVmZGI5OGEyZGNiNWZkYzg4NGFiYzA3ODI4ZjZiYzA1NGQ0MjI1ZmFiYzhhMGZjMDcyZjYwMWI3NDk0ZjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM5NmUwZjE2ZDEwZmY3MjI1NDFjNGZmYjZkNTc4Mzk2MTIzYmE4NmJjZGM5NzgyYzljNmFmZTc0NTZmMDdhZWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/storage/LocalStoragePublicUrl.java#L22-L59",
+          "version": "repo-lines-v1:sha256:89c6e95d2fbe1d471260e4a8704f34a2e63f2f828ce7f98c99b2aee2a58339fd:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNkYmQ0MzcxMzY0YmJhOTVjMzNhYTFiZDUxODRkMmMyMmFmMTViMzAzNjRiMjlkYTFjNGQwMzI4Njk3YWJlOGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/storage/StorageWebMvcConfigurer.java#L28-L47",
+          "version": "repo-lines-v1:sha256:b50a1aa05bac551f7426269da115d0631566f30660189da3cbe0c9b8ad408005:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiMTQ3NjJhYWFkNThkMTM4NDRjZjJlYzU0NzQwYTRkOTdmNWUwN2VlNTE2ZDMyMGQ2MDM2YzFjN2NlNDJkZmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIwYjU0MDk3MTY2NTlhN2RjODcyNGEzZWEwZjcxM2Q5MTdkMDQxNWIxYjBkYmMzMmU2MWJmMDE2NmE1MjU4ZTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_775e84076e3042098814830aafd4e039",
+      "statement": "Espier's Excel import machinery has two extension points: EspierUploadFileHandler/UploadFileService-side beans (supportedFileType, check, optional trySyncProcess, handleAfterInsertInRequestThread) registered in EspierUploadFileHandlerRegistry which fails startup on a duplicate file_type, and EspierImportRowSink — the row-level hook declared in ecshopx-common and implemented in domain bundles (goods, distribution, employee-purchase, promotions, adapay, selfservice, pointsmall) — assembled into the espierImportRowSinkByType map by EspierImportRowSinkMapConfiguration, which also fails on duplicates.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/espier/upload/EspierImportRowSink.java#L21-L37",
+          "version": "repo-lines-v1:sha256:2d073d43c90d020fc3c02bd41a00a3c09fe89c2bd8ad17e162e5419e93ee2920:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJmMjc4ZmMyNDhlM2QyMGFmYWRiYWM4NWM0YTA1N2Y3YzMyNGI2NjU1N2M0OGIzNzA0MzIxNzA0MTczYTMzZmQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/upload/EspierImportRowSinkMapConfiguration.java#L26-L39",
+          "version": "repo-lines-v1:sha256:dc4ae893a005812560c1a1cc3744a37e48e977de717a12e39344edc240f37f69:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiMTQ3NjJhYWFkNThkMTM4NDRjZjJlYzU0NzQwYTRkOTdmNWUwN2VlNTE2ZDMyMGQ2MDM2YzFjN2NlNDJkZmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUxZGM2YzUxZWRjNDFiZDY4OTMxNTQyYTVjNTA0YWIwMGRiMmRmMzUzYTAyZDM5ZmEzZjBjMGZlMmQzNWFkMzEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/upload/EspierUploadFileHandlerRegistry.java#L35-L48",
+          "version": "repo-lines-v1:sha256:e4c455567680ab3fc4ede5c12dcb4eea805b0d3434851d65472de8d170da031c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ0Y2MzZjJjMGJhOTIzNmI2OGQ3OWY3NWVlMmZkNGJjODY5YmVkOTI4ZTlmMzlmYWNjNTUxZTllOGE0ODRjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU0ZjcxMjY4YTlkYzliYTc1OGYxZTQzOWUyOTQwYmE0ZjViZDg1MGEyNjk5OTY1MjY0Y2M2NmY5NjRlYTMyZmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/espier/UploadTbItemsEspierImportRowSink.java#L23-L47",
+          "version": "repo-lines-v1:sha256:61d8dba3e7f652f8202b9eb1711fede9a5a5aaa2462c323d0c4890b6363234aa:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4ZmExZTlmNDQ5NDlmYTg5YTNiNDJiMDQ5MmRkYmRmZmEyZWI3NjQ4NDhkMzU3NzhjOWZiNTNjMjA3ZWJkYmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk3OGQ3NWRjMzgwY2YzNzJiNmQ5OWNkNjUxYTRhMzJhMzJlZGFkYTU3OGEzZTc4Nzg4YzM0M2Q1NGJhNmVlYTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_f8d6c2faab6f4f3e8610e1a819ed226c",
+      "statement": "EspierUploadHandlerBeans declares the ~25 built-in import types (member_info, member_update, member_consume, supplier_goods, normal_goods and variants, normal_orders(_cancel), distributor_info, upload_tb_items, employee_purchase_*, whitelist_create, update_distribution_item, limit_sale_item, adapay_tradedata, community_chief, selfform_registration_record, ...) as anonymous AbstractEspierTableUploadHandler subclasses that each bind one EspierUploadHeaderCatalog header set to the matching EspierImportRowSink; the upload_tb_items handler additionally rejects non-xlsx files.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/upload/EspierUploadHandlerBeans.java#L198-L225",
+          "version": "repo-lines-v1:sha256:99ea88ea5d453c0e2a2b1b11becc104981ef5f328b4ed1a573119be230b1eabe:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEyOGQ2Y2U0MWZhZmE3ZDE5ZDY0MDYxZTQ2M2YzZWVhZDQxNzkxNTE2OTUzMjEzYTdiZmU3YWJhNWJmM2RkOTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFiNmZlOTAxYjViYTFhY2I0NGM3MThhNTk0NWNmY2RmYWExODUzOWMxNzEzYmRiYmMxODNjM2RkYzQ4MWQxYWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/upload/EspierUploadHandlerBeans.java#L29-L196",
+          "version": "repo-lines-v1:sha256:24a5b7ac6f5faf0bf5994bd3b4b1b0670c6f87dc947feb76ec5e57077a90ae26:eyJzZWxlY3RlZExpbmVDb3VudCI6MTY4LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI3MjFjNzYwM2ExM2MzMmM1NDFmZDU1ZjJjZDNlMTEyYjVjMWVmZjZkNDgwNThhYTZmMTM3OWVlZjIxNzRmMWMzIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI2N2NkYTgyZGE2MDYyMzhlMDVlNjIzOTk1NjljNWVlMDM5OTM0MTk2NDhhZTVkNDNhMmJmOGNkNjM0N2Y4MjYzIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJjYmM2M2EzYTg3NDg3NzliYzEzYzlmOGIzYzczNTIwNGI3OGI2M2VmOWUxNmQ4MWQ5NGEzZjRiZmZkMDkxN2Q1IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJiZjdmMWQ0MzMzZTcwYzM1OTg2MjE1ODI5ZGYzYTFkMzcyZjAwOWY2NDRjZGRmMDU2ZmRlNTc2NmE5NDIxNmE0In0"
+        }
+      ]
+    },
+    {
+      "id": "claim_6ef29b13d2994651a2a6c706787c26ed",
+      "statement": "The Excel import runs as two dispatch-bus jobs on the slow Redis queue with names from EspierDispatchJobNames in ecshopx-common: job:168 UploadFileJob (EspierUploadFileJobHandler → EspierUploadFileAsyncRunner, which re-reads the workbook, builds the column map and splits rows into chunks) and job:169 ImportDataJob (ImportDataJobHandler → UploadFileImportDataService, which processes rows and merges results); both handlers are registered by bootstrap *JobRegistrationConfig classes and published by bootstrap DispatchPublisher impls.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/EspierUploadFileJobDispatchPublisherImpl.java#L42-L67",
+          "version": "repo-lines-v1:sha256:71b02f131ff4b31d19fab1c0968cce2a087fecd757646461dfd8e4d3f1a21715:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwOGNjMTVkMDc1NGI2ZjIxZjcxZTBiMDNiOWRkNzg2YmM5ODgwMDNiMmI1NzU2NGM2MDUwYTgwMjI1MTdjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE0ZGJiNjE0NzA1MDU0NGY0NDhmYjk2ZmIxZmNkMmYyODE3MjQxY2ZkZGYxNTVjM2M4MzRjZTA3YjM4YTljMTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg2Yzc3NTVmMzYwZTJjNjk0M2Y0MDM3MTdmNGNlOGE4YmZlZTgxNTJhOGMyZTMzNjIzYTU5NTgxM2YzYjQxZDcifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ImportDataJobDispatchPublisherImpl.java#L43-L84",
+          "version": "repo-lines-v1:sha256:b478b3ad4a05f0316ae03d578f87ea9739c5470dfb9c6fcf5519a803d27989e8:eyJzZWxlY3RlZExpbmVDb3VudCI6NDIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwOGNjMTVkMDc1NGI2ZjIxZjcxZTBiMDNiOWRkNzg2YmM5ODgwMDNiMmI1NzU2NGM2MDUwYTgwMjI1MTdjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE0ZGJiNjE0NzA1MDU0NGY0NDhmYjk2ZmIxZmNkMmYyODE3MjQxY2ZkZGYxNTVjM2M4MzRjZTA3YjM4YTljMTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/EspierDispatchJobNames.java#L66-L68",
+          "version": "repo-lines-v1:sha256:c355526c9abc65de3b99b42ed312b04d1a7ec3a6c2bfc124b6c752c935b122ed:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZmUzMzhhNDU1YWMyMWE0Y2MzNjgxOGJjYzYyMmYxM2MwYzYyYWU5M2I4ZWZjYTU2N2E2MmU2ZDU3ODU4NTI1ZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTBiNWRiZTcwOWU3MDExMWZjMzgyNWU3M2QxNmVkOGU5ZWFiNDQ5OTgyMmJkZmVhYmE0NTc4ODhhOTE2ZjY4MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNzBjMTUwODc0NjgzYmYwZTUzOWNiNDgzOWQxMjZhYzA5OWM1MGQyNmJhYTE0MDJkOTY3OWViODZhZTBkNWRmZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMjhjNzIzNmY2MTY0OGUzNjM2NTI3MjY3YTdjZWYwYmQzZTY0ZjQ5MGZhZjlhZWYyYjA5Nzc5YzFjNjRmZDNkZiJ9"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/dispatch/EspierUploadFileJobHandler.java#L26-L55",
+          "version": "repo-lines-v1:sha256:34e7b24e09f616ac8e45f027fb491c5f7451ba7ca980af4ed68f195dcf2e9463:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4ZmExZTlmNDQ5NDlmYTg5YTNiNDJiMDQ5MmRkYmRmZmEyZWI3NjQ4NDhkMzU3NzhjOWZiNTNjMjA3ZWJkYmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk3OGQ3NWRjMzgwY2YzNzJiNmQ5OWNkNjUxYTRhMzJhMzJlZGFkYTU3OGEzZTc4Nzg4YzM0M2Q1NGJhNmVlYTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/dispatch/ImportDataJobHandler.java#L28-L58",
+          "version": "repo-lines-v1:sha256:5f96d1cd7bafa884994fa251684a7860c101e14f5f0f3b3162f989ef76656232:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4ZmExZTlmNDQ5NDlmYTg5YTNiNDJiMDQ5MmRkYmRmZmEyZWI3NjQ4NDhkMzU3NzhjOWZiNTNjMjA3ZWJkYmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk3OGQ3NWRjMzgwY2YzNzJiNmQ5OWNkNjUxYTRhMzJhMzJlZGFkYTU3OGEzZTc4Nzg4YzM0M2Q1NGJhNmVlYTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBhYjdiOTc0OTYzYTlmMTg5MmZhYWIyOWY5OWM2NTNkOWQxZTY4MGQ0YjMwODk2Y2MzN2RhMThiMDQ2MzNjMjIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_606843cf3a9745af912416e2f3d0350b",
+      "statement": "POST /api/v1/espier/upload_file (@AdminAuth @ShopLog @Activated(espier.upload)) is the single entry point; UploadFileService.handleUploadFile is @Transactional(rollbackFor = Exception.class) and, when shouldQueue is true, publishes the UploadFileJob only via a TransactionSynchronization.afterCommit hook so a rolled-back transaction never enqueues, while the controller forces shouldQueue=false under the local Spring profile to run the import inline.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/EspierUploadFileJobDispatchPublisherImpl.java#L43-L55",
+          "version": "repo-lines-v1:sha256:65ec31587a5d6d5e036ca69beac43a6dc95d900d8003091c5be4d855fd8f8aa6:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIyNzg4MjViNGQ1NDMwOTkyN2M2M2VjM2M4NDllNWZjY2IxN2M3NmI0Y2RiZDQ3ZWE0ODAwYjUxMDMyNTEyMTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU2ODczODY4ZGE1Y2FlZDIxYzlmZGY2OTg2MmIwZGE1NDA2OWVjZGYxODgyYzIxNjUzNTZjNzRmNWE3ZDFkMDMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAwYzJlZWE5MDMxN2VjNGRlYzVkMjJmNzZhMzIwOGE1YjkxNzU3ZWQ0MzdhNTQ5MmJiNTI5NGMxOWU5ODM3OWYifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/api/admin/v1/UploadFileController.java#L46-L113",
+          "version": "repo-lines-v1:sha256:1881107eeb60b3c66bb3285982d63f6d8d65e2e76f9c7c178dc3ebf0fe5a8919:eyJzZWxlY3RlZExpbmVDb3VudCI6NjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFiOGU0YjZlMGE0YjBjMjg3NjY4YzQxZTNhMDZhYWIzNDg2NWVlNWU2YmE3M2Q0Nzc2Yjc4MWFlODI4YjRkNjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFhZTk2ZDY2YTU0NWU3NmJkMDVhM2I1ZWViMzZiMDI0YmJiNGRhZGVlZDc2YzhjNjg2Y2I0YjNmNDliMGNkNmQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJiMDUyMTI0MWEyMTIwZTkzZDM2ZGNkODkxMjk2YjFmZjllNDE5YjI1Yjk0MGQ5YTY3YWQxYWU4OGExZWZmMjQifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/UploadFileService.java#L189-L257",
+          "version": "repo-lines-v1:sha256:5540d59151fe30de62245a34fe9d39829818b0547a4d4a9b9f60a942ddf03009:eyJzZWxlY3RlZExpbmVDb3VudCI6NjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJkNzU0OGYwODFmM2Y0MjY0OTYxNzRiYjdmMTYwZjg3MDk0NDNjMWM1NmM2NmFmMzNmYjZmNmU4OTdjZjAzZjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYyZTk2OGJiMGMzNWI3NjA0YWRmN2E1YzllYjJhMDdmNDUwN2JiYjA3MTgxNmVhNzc4ZGZjYjQ1MGI2Y2IzMjAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImViOTIyZDgzYmU1YjU1N2VlMGE1MjNlMjRkNDU3NzM4NDZlNmM3NTY0OWY0ZDQzMmI4MjA2ZDM3MWNkZjNlNzEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk3NDg3ODRhNTc5NjJjODJhYTRiN2JhMTJhYmMzODczZGI3YTBkZGRlMzE5Njg0YWRiZWMyMmM3OTJkNTgwMDAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_60743083f27544b6b2f18e77f793025e",
+      "statement": "EspierUploadFileAsyncRunner chunks imported rows at 500 per ImportDataJob, pre-writes left_job_num = ceil(rows/500) on the espier_uploadefile row, and dispatches chunks with descending sort (numChunks down to 1); UploadFileImportDataService processes every row in its own REQUIRES_NEW transaction (a bad row increments errorLine and appends an aligned error row instead of aborting) and mergeFinishState spins until left_job_num equals the chunk's sort, then decrements it via an optimistic where id=? and left_job_num=? update (retrying on ResourceException), so chunks merge in descending sort order and the highest-sort chunk flips the row to finish; EspierUploadFileAsyncRunnerChunkDispatchTest pins the 501-row → two-chunk (500+1), left_job_num=2, sorts [2,1] behaviour.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/EspierUploadFileAsyncRunner.java#L186-L201",
+          "version": "repo-lines-v1:sha256:7a675acb3e136b0dfd70fc8f1c16afb67643e4c7ec55f7628f7720c6596b2ed0:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgwZDA3MmJmZDk3Y2EzNDBkMzgzYzVhMDI3YmJiYmM3ZWU3NzNiNWFlNmEzZWVhMzRmZTlhNmQ0MWQ2YTc1N2QiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg3YzliMTgwZGQ5NzVmZjRjNzAzYjNkM2NmYTMzNGUyZjVhNmRkMGU2ZDZmOTI5YWY4OGJiODQxNTQ3NWIzYWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjEyMWVmOWQ0YjcyZjQyYWUyNTgwMzRlNzlkYjQwNWZhZTZhOThiNjAwNTBlOGVjNzA0ZDE5MmIyNDM0MzNmYzUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/UploadFileImportDataService.java#L152-L231",
+          "version": "repo-lines-v1:sha256:19521c4d134d65829b15e13934b8f8eafa92e98cece7c9a89005f1e1385a2c92:eyJzZWxlY3RlZExpbmVDb3VudCI6ODAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIwMzQxMWM3OTdhOTZiZWM1YTc1MTU1NmM1Yzk1YTFmMGE4ZWY2OGE5NDgyMTA0YzU0ODA3MjJkNzAyZTViZWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQwOTFiYWZiZmQ1NjY4OTIyNDNkODBhMDBiOWRkN2U5OWIzMGFhMGFiMjI5NTA4NGFhNGM5MWU5N2JjNDM3NWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg1ZTQ1MTBlYTdlZmQ2YTk4YzVmMGJhM2NhZjBlMTFiN2MxMGU0N2E1YTRmNGE4OTU4NzIzNzczYzhkNThmNjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg0NjIyMTRmOTgzYTMxNzI0MDFkOWFiZWRiN2RmNjI3NGY2MGFhYzFhYWNmOGUxMjFjOTczMDYzOWE1NjkwOWQifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/UploadFileImportDataService.java#L59-L124",
+          "version": "repo-lines-v1:sha256:d58cee18d5998faf771481861d4ef769cc9136134516375145a1a1589857312b:eyJzZWxlY3RlZExpbmVDb3VudCI6NjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk4ZmFlNmY4M2E1MzFkY2Y0Zjc1Y2Q0M2YwYWNlYWEwOWFlMWQzZWU3ZTUzZDE4OGI5ODQ3M2M5YWExYTQ2NTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ0MzVhMDUzZjcwMThmMjgxOTEzOTFjNjFhOTZiNzQ3MWU1MTJlMGMzYTA1M2Y0Y2ZlNmZjY2Y4YjY1ZmViMTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY3MTQ2ZWJjZTI1ZjRkZWEwMWMzOWIwOTYyYmMzMGM0NTEwZWYyZTg0YmUxMGQxZTEzMWM3ZWRiNGNlNDc3MTkifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/UploadeFileRepository.java#L177-L195",
+          "version": "repo-lines-v1:sha256:964017198994e4ba86c62c529c36ab6105867e90e89f92f14a3dd3c0e15796b4:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNmZTVhMzVhN2EyM2YxMjc1NmJhOGM0NTBkZDMxNDI2NTMyNjM4MTEwZmM2Y2E5OWQ0ZjU2ZThjNmM1MzY2MjAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFiNWJmMzA0NjJjM2VjYWEyZjQ4ZjdiODU3NDQyMDZhZTdmOWM5MjRkZWYzMThkNDRlMzBlYmEwN2MzMTEwYzQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIzN2VmNjBhYTVjOTg0YjkxYTgyYzE0OTY2NTQwNGYzMTg3ZDQ5ZWYzNjQ4YzI5ZDEwYTI2YjUxYjRmN2NiOTcifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/test/java/cn/shopex/ecshopx/espier/service/EspierUploadFileAsyncRunnerChunkDispatchTest.java#L99-L150",
+          "version": "repo-lines-v1:sha256:0b499287453a7b8463ba4a2db1944d18f96088de8200c393a41daef1258ca0f9:eyJzZWxlY3RlZExpbmVDb3VudCI6NTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiYTFiMWYwZDkzOTU3NDJlMjE2ZjcxYzllOTBjOGZiOWFhNmI0Mjk2YWFhNGNlN2NjMDVjOTZlYTViODdiYWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIyNDUxZmU3NDY0MWJmZmQ0MDY0NzhkM2JmMGRkYmE0NTlhNzVhOWRkOTUwMmYzZmZiODg2ZGIxOTM2NGJjNGYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE1NTMwNjU5MmViNzk0MWIzZjhjYTE1NWZjZjY1ZTEyYTM0ZTYwMzBjN2I0ODA5YjZiYzliNDZkMTBkZmViYmIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d722000e045e49d295ace7ed07538cb7",
+      "statement": "EspierUploadFileAsyncRunner is idempotent-by-status: it re-reads the espier_uploadefile row and bails unless handle_status equals wait, then sets processing before parsing; empty-table, storage-read and header/parse failures each persist a finish row with a handle_message errorlog, delete the stored file, and still invoke the handler's handleAfterInsertInRequestThread.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/EspierUploadFileAsyncRunner.java#L218-L265",
+          "version": "repo-lines-v1:sha256:6af177ab64814bc731658d974a484c7b3532de2c71d14ec4d49bbcd44a8ee8e2:eyJzZWxlY3RlZExpbmVDb3VudCI6NDgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE1MWVkZjYwODNmZTY4MWQwZjdmYzQxNTk4Y2I5MTIwYzM4NDNjMzk0OGY2YjkwYWEwN2ZjZTBkMTFlNzkwM2EiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIyZjJmZjVmZWVjNjBmNTg3YzhmYWU0ZTg3ZjgwOWE2NjFjZmZlZDZiNDdhYWU1ZjZkNmEyNjUzYWE4OTUyZWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjlkZjVmMDE2ZjNkMWYyYmMzNjQ1MzUwM2ZkZjMxNGUyZDRhMTA1YjdlYjIyNTg0YmI0YzEwY2I5NTM2NTc1YzkifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/EspierUploadFileAsyncRunner.java#L280-L372",
+          "version": "repo-lines-v1:sha256:27a7f86b69aef8a24549a3cc88c834935a90d5e19b14d43aea74050f8a918b41:eyJzZWxlY3RlZExpbmVDb3VudCI6OTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE2MDQ2NTc4MWJhOWEyZDFkNmRmZDM2ZTNmN2ViYmFiMjUzZDM4ZjNkZjczNDM2YzE0MjNlZWQ0MmY5MmJjODkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJhYmJjNzVjMjEyMTM2OTUyMjMxMTA2N2E0MjYzOTI1ZmY0NGY4Njc4MWFlY2IxODIyY2E3ZjUxNmM0MWZkYTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU3MDkyNGNmZGU5Mjk0YWE3NGE3MTkxMWFkOTljZjU2OWRhYzNhNDgwYjk2OWMxOGMyY2Q3ZTM3NGVkNGZkYzkifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/EspierUploadFileAsyncRunner.java#L62-L140",
+          "version": "repo-lines-v1:sha256:9e4fb7129ac53b961c3bb62c70fca5a7c88506448f4831699a474d8834698686:eyJzZWxlY3RlZExpbmVDb3VudCI6NzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIwMzNlNDU1NjUzMzQ1MzhlMzczOTdjMTBjMDQwYjJmNjI5NmE0OTAzMTVhZjJkOWUxOTQxOGU0MDBmODRkYTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcxZDJkZWExNDQwMTQ3Y2U2ZGM2NjI1ZjFmMTljNDkxZWYxZTZkYTQyYzdlMjkzOTZlZTRhMTU0OTAzMjc5YmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ4M2EyMGRhMjRlOTI5YzE4OTUyMTFmZjJiOGQwY2Y4ZjE5Y2I2ZTkwZGZlMGVkZmU3NTg2MjBmYjQ0YWExODIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_c893b127db0b40d8a4c614e279e1c041",
+      "statement": "EspierUploadFileStorageWriter always writes imported workbooks to the file disk under the deterministic relative path {file_type}/{companyId}/{uploadEpochSeconds}/{md5(fileName)}{ext}, and the same rule is exposed as buildRelativePathForImport(fileType, companyId, fileName, uploadEpochSeconds) so delete-error-file can rebuild the path from row metadata alone.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/UploadFileService.java#L108-L153",
+          "version": "repo-lines-v1:sha256:3146143709ee04fd5cd95201f1c58a85ac1a49d20b36a79f61a16f03f50b0e98:eyJzZWxlY3RlZExpbmVDb3VudCI6NDYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjllODgyNDU3YWY3ZTZhMGVlNDcxYWUzMzMzZjJkZjliZjQyZmI5YmIyNzA0YTkyZTZhMjY4ODMwMjUzMzYxY2YiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkzZTVmYzIwNWVkYTI1ZTk5YzEwMmI2MDQ2OTUyODQ0YTc5NjUwMTlkODQ4ZWQxNWY4OTg3Nzg4ODA2ZDQ3M2UiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjUzODA0Njg4OGIwNjM1YjRkOWIwN2U1YWE0ZWZjM2UzYmJkMGY5MjhiN2Y2ZTI2NDJiNWYyOGM0MTU4N2Y1MDMifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/upload/EspierUploadFileStorageWriter.java#L37-L62",
+          "version": "repo-lines-v1:sha256:876b1ee9c5c0a82c5c89b02f02aceefd48cc0aea0ea96a50cd2130137af9d24a:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI0M2UyZTYyYTY1YjFkNDg0NWU5MjdjYzBiZGM3ZDA2ZWFmM2ViYmZiNGYyYmVlMjc4OGM1NDI1OTM4MDlkMjUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU4YjA4NTJiMjA5YTgzODQxZmM1NDllODM1MmM2YjRkNGZkMDE2MzNlZjJmYTI5NDUyMmYwM2NjMmEwYWYyNGYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjE0Yjg4NmY2NTU5NDhkYmY2ZjQ2M2EwOWI1ZWRjYjMzOTY1NDVhZTY1YTE3ZDJlMDNhZmU1NTA3YjdhNDczNmIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_578b89ee2a524b59b6496631dd7e5965",
+      "statement": "Two XXL-JOB handlers in espier follow the shared alert-and-rethrow template (log, publish CronAlertEvent, rethrow): delete-error-file → UploadFileService.scheduleDeleteErrorFile pages 100 rows at a time over espier_uploadefile rows older than 15 days whose handle_message.errorLine is non-zero and deletes the stored workbook, and delete-history-file → ExportLogService.scheduleDeleteHistoryFile removes the export/zip/<fileName> object and the export_log row for finished exports older than 3 hours.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/cron/ScheduleDeleteErrorFileHandler.java#L30-L49",
+          "version": "repo-lines-v1:sha256:15f6969106dc532cb8d02f36ccf52ab8643e1b5ebb9816da7a37235e0ad2976c:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYyZGIxNzk5ODliZGQwMDljYTNiY2Q1MmYzZDI5M2ZkN2IzMDE1NDcwN2RmOWYxZGZlNTk4YWI5MmUwZTk5MDQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg0Y2VlNGVjNTY4N2JkODRlMWIyOTcyZjAxZWQxNjg4MzU5OWRhYTFjMDQyNWU4ZmIwZmM2ODhlZDE5ZDE1MDEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/cron/ScheduleDeleteHistoryFileHandler.java#L30-L49",
+          "version": "repo-lines-v1:sha256:2ec526220b1261a21a0367303b6d9c7964241bf52d59488f33b57f95d373cc8b:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJkOTFiOWVhZGI4NTVjNDYwYTc0ZjFhMmY3NGNmZDcyMjNhZmIxZGE4YzJjYzA0ZmFmNmQ2ZTQ1OGViMzViZTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg0Y2VlNGVjNTY4N2JkODRlMWIyOTcyZjAxZWQxNjg4MzU5OWRhYTFjMDQyNWU4ZmIwZmM2ODhlZDE5ZDE1MDEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/ExportLogService.java#L42-L62",
+          "version": "repo-lines-v1:sha256:d9f0314e80626c7a92e950bd434a2d05167a1a3be0932f8c90de7ac3625954c0:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIyMjY1OTQ1NDhkYTNhNzI5YmFjM2JlYzU2YjMxY2I1OTdlZmZmYmM4NzJjOTJhOTI2OTM3ODAzNTAwYzM3ODIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImViZTg5NzVlMzljMDIzYzQ0ZDlmYjAwNTg0MDU3MmU3MjJiYzA4ZDRiODRiMWEzMTg4ZDk5M2IyYzMwZTM4NWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/UploadFileService.java#L108-L153",
+          "version": "repo-lines-v1:sha256:3146143709ee04fd5cd95201f1c58a85ac1a49d20b36a79f61a16f03f50b0e98:eyJzZWxlY3RlZExpbmVDb3VudCI6NDYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjllODgyNDU3YWY3ZTZhMGVlNDcxYWUzMzMzZjJkZjliZjQyZmI5YmIyNzA0YTkyZTZhMjY4ODMwMjUzMzYxY2YiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkzZTVmYzIwNWVkYTI1ZTk5YzEwMmI2MDQ2OTUyODQ0YTc5NjUwMTlkODQ4ZWQxNWY4OTg3Nzg4ODA2ZDQ3M2UiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjUzODA0Njg4OGIwNjM1YjRkOWIwN2U1YWE0ZWZjM2UzYmJkMGY5MjhiN2Y2ZTI2NDJiNWYyOGM0MTU4N2Y1MDMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_868b7faac12f4f56bf7821e5dc17fbad",
+      "statement": "MiddlewareWebMvcConfigurer registers the whole HTTP middleware chain on /api/** for every bundle in the single Spring context, in order: EspierAgreementRateLimitInterceptor (order 5, path-scoped to /api/v1/espier/system/agreement), AdminAuthInterceptor (order 10, /api/** minus operator login/oauth/captcha/sms/third-saascert exclusions), FrontNoAuthInterceptor (15), FrontAuthInterceptor (20), ActivatedInterceptor (100), DataPassInterceptor (200), ShopLogInterceptor (300).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/web/interceptor/MiddlewareWebMvcConfigurer.java#L65-L102",
+          "version": "repo-lines-v1:sha256:56ac643d476eb08f47a4372904a8f5a9224033b0cc3c47c7a3c30668d3a69083:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwOGNjMTVkMDc1NGI2ZjIxZjcxZTBiMDNiOWRkNzg2YmM5ODgwMDNiMmI1NzU2NGM2MDUwYTgwMjI1MTdjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU0NGZhYmFlMjhkOTQ3NTFkYjk0Y2MxY2E4ODgzNDBlNWM0ZjJjZmM1OTRkY2U0MjlmZmQzM2I1MjBhYzNhYWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_446350d06b044a37b8c010f8d87db0ea",
+      "statement": "AdminAuthInterceptor (triggered by @AdminAuth on method or class) verifies the operator Bearer JWT with OperatorJwtCompactCodec against an HMAC key built from JWT_SECRET (base64-decoded or raw UTF-8), rejects expired tokens, enriches shop-app member tokens, runs CompanysActivationService.checkUserAuth (403 on failure), attaches the selected distributor for operator_type=distributor via OperatorDistributorSelectionService, and stores the claims in the request attribute OperatorJwtAuthenticationFilter.OPERATOR_JWT_USER_DATA that all controllers read.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/web/interceptor/AdminAuthInterceptor.java#L127-L143",
+          "version": "repo-lines-v1:sha256:1947ddcc11bccee95db183ca0ad50d483d573670303f09c1be565d89e7ecb712:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY1OGYwMzdhZGVjM2FkNDhjMTJlNThhYjlkNzE2M2MzNWE0MzQ5NTRlOTYwY2YzY2RiNTVkMGE1MTdiMWRmNmEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY3YWJlM2M0ZjU5OWMzOGM2OWQ2ZmQyY2MzMWE2ZDVlZjE4YTZhYzg2OTVkMTY3MTAzMzBkNjlkMzMzMzFjNDgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQwYWE0ZDc0M2NmMjZjOGYwY2JlZDRhOGIwYjM1YzhlMmJkN2Q4YTBiOTdmNTcyZGRhNzUyNzE1NjBhNzRkNTgifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/web/interceptor/AdminAuthInterceptor.java#L56-L124",
+          "version": "repo-lines-v1:sha256:056371cb928c21d51d73672307a45f7e90a1f72cba528ffd85c7c1f7a1222191:eyJzZWxlY3RlZExpbmVDb3VudCI6NjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE2ZGU0NjUyZTA1YTE0OTQ1ZmUxZjljNjNlYWExMzNlNDQxNTlmZGU4OTk3ZjU5ZjllZWZkNDI4OGEyNWMwMDEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY2YWMwM2VkNmRmNWE5NjNkMTcxZDdiOTk2Y2ZmNzg3MDZmN2YxZDJiZTExYzEzNWQwMWYzNmM1ZWYyMTY1N2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRiY2FjMTllY2Q0YThiM2FkYTQxMWRiNmQyNzAxMzc3NzQwM2NhY2QyZjBiMDY5MmE4MTcxMzMzNTljOWY4NWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM4NmE1ODk0MGI4ZWUxMTI2NDZhZWIzNmQ0N2NjN2E0OWEwMDBiNTYwNzU0Mzk0ZmFjNmZkZmY5NDBjYWJjNGUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_260362b43e6843ff9ccc6727e09f9782",
+      "statement": "FrontAuthInterceptor (triggered by @FrontAuth unless the method carries @FrontNoAuth) verifies the H5 Bearer JWT, rejects disabled accounts with 403, and stores the claims plus company_id in the H5FrontAuthAttributes request attributes; the agreement rate-limit interceptor uses an IP-keyed Redis counter espier:agreement:throttle:<ip> on companysRedisTemplate with a 1-minute expiry and 429 over 30 hits.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/web/interceptor/EspierAgreementRateLimitInterceptor.java#L42-L67",
+          "version": "repo-lines-v1:sha256:32531f403ded52fa69a76341b2f9d431d6a6c7135378481b2754d2a0e0e71273:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwOGNjMTVkMDc1NGI2ZjIxZjcxZTBiMDNiOWRkNzg2YmM5ODgwMDNiMmI1NzU2NGM2MDUwYTgwMjI1MTdjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc4YjYzYmZmZGYyMTA2YzE3NGMxNTNlOTUzNGI3ZGY2NGZjYjBkZGViOWQwODk1N2EzZTYxYTQ4OTVlZmQ3MjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/web/interceptor/FrontAuthInterceptor.java#L50-L85",
+          "version": "repo-lines-v1:sha256:6ca0e1567a5d15088dc88db7be80527e8a6dd7bc48238f24435bea35be68fa3b:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwOGNjMTVkMDc1NGI2ZjIxZjcxZTBiMDNiOWRkNzg2YmM5ODgwMDNiMmI1NzU2NGM2MDUwYTgwMjI1MTdjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ2YjgyZWY0ZDY5ZWYzN2ZhMDFmNzVmOGNlZjY2MWI0MjliNGFiMzJmMTU1MDA4YzUyMjg5OTU1NDY4YTM4NWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFlMWI5ZTdiNGZjNWY4ZjRjMjllN2RjZGM2ZjIzOGE4YTI3NDcxOTQ3YTQyZGQxMzE1NDA1ZGQ1YzNlM2FiNDEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_28b5328298a1462cb5d5824a8dd30fa2",
+      "statement": "ShopLogInterceptor writes an operator log row in afterCompletion for every non-GET request on @ShopLog-annotated handlers (company/operator/merchant ids, resolved mapping name, URI, X-Forwarded-For-aware IP); DataPassInterceptor applies sensitive-data audit for @DataPass-annotated methods by delegating to ShopOperatorDatapassApplyService, and ActivatedInterceptor delegates menu-permission/activation/shop-permission checks to ActivatedMiddlewareService for @Activated handlers.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/web/interceptor/ActivatedInterceptor.java#L41-L61",
+          "version": "repo-lines-v1:sha256:5897d3e87c9daa8fc7aa713241cf33d6914fc09f7a67d3db61585665cc7ab730:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwOGNjMTVkMDc1NGI2ZjIxZjcxZTBiMDNiOWRkNzg2YmM5ODgwMDNiMmI1NzU2NGM2MDUwYTgwMjI1MTdjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNlMjRhYjIxZWNhYTUzMmNkZTBmODkwOGE0MzQwYTZmYWE4ZGQzMTM0MzFjNDMxYjE3M2MyMzlhN2MwMGI0OWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/web/interceptor/DataPassInterceptor.java#L49-L74",
+          "version": "repo-lines-v1:sha256:c4f330ab6da1f9b4ba6e857fde7b2741d8a09d1c9b7b3e489ee9cfd263a50ab0:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwOGNjMTVkMDc1NGI2ZjIxZjcxZTBiMDNiOWRkNzg2YmM5ODgwMDNiMmI1NzU2NGM2MDUwYTgwMjI1MTdjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA5ZDBjYzI2ZGJiNDRkNWNkMGE5Zjk4MjFlODhiZDc2NmM3ZTM5MDYxNjVjYjIyZGUzNjVlYTViZjBkMzk5NTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/web/interceptor/ShopLogInterceptor.java#L46-L86",
+          "version": "repo-lines-v1:sha256:9c492e7d16a6fbc2cb12f5198e2878069a2fe140dec7a8517e7d2e54ed8074da:eyJzZWxlY3RlZExpbmVDb3VudCI6NDEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwOGNjMTVkMDc1NGI2ZjIxZjcxZTBiMDNiOWRkNzg2YmM5ODgwMDNiMmI1NzU2NGM2MDUwYTgwMjI1MTdjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIxMzJlZmU0YzIxNDI1N2IzMzUwZGU2ZGIzYjc4MGMxNmMyOTE5YmQ2NGE1NmU3OTAyMzY5ODNhNDBhZDZiMjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImViYWU3NzBlNTViM2U0NDBhMzFkOTBiOWUzZmM3YTI3OTdlOTE2OGZmMzZhZWFmNmJjNzlkOGFkNDdmYmMzOWEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d0d389481e9445fe9224230cd1c298da",
+      "statement": "ShopLoginAuditFilter is a OncePerRequestFilter that applies only to POST /api/v1/operator/login: it wraps the response and, on a 200 whose JSON body contains data.token, writes an operator_name=login operator-log entry with the request URI, remote IP and the serialized response, then copies the body back.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/web/ShopLoginAuditFilter.java#L35-L82",
+          "version": "repo-lines-v1:sha256:74c1bee6a34a4be9bed4dc170e13e9fd7d468937ba670a2cb4a96728e48f18ca:eyJzZWxlY3RlZExpbmVDb3VudCI6NDgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4ZmExZTlmNDQ5NDlmYTg5YTNiNDJiMDQ5MmRkYmRmZmEyZWI3NjQ4NDhkMzU3NzhjOWZiNTNjMjA3ZWJkYmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM4ZThjMTkzNDQxNmFiN2Q0Mjc4YTJmNGE1M2E5MzczYjIzNGI5MmFlZTk4Y2I3ZTk2ZWFlZWZjZDQ2N2Q0ZWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_68ce6966a3b6419f93857e10524a9e38",
+      "statement": "EspierAddressTreeApplicationService builds the province/city/district address tree from the address key on the espierStringRedisTemplate (logical DB ecshopx.redis.espier.database): on a cache miss or parse failure it deletes the key, rebuilds the tree via three AddressMapper queries (provinces → cities → districts), re-caches the JSON, and normalizes ids to Long while expanding 省直辖县级行政区划 (province-administered county) nodes into one node per grandchild to match the PHP shape.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/address/EspierAddressTreeApplicationService.java#L137-L203",
+          "version": "repo-lines-v1:sha256:9c3f32540a9f87418ffa04fece16f08bbbb44f23590940e68f5ca84211766e7b:eyJzZWxlY3RlZExpbmVDb3VudCI6NjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYxNmI3YWNhYzQ0ZjAyNTNlMTJlMWY2NDhkMTJjZjczMTk0NzE1ZjIyNTcyMGQ4ZTE4M2Y5MTY0MDk0ZjRjMjEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQwM2RlYjgyY2JiNWRmNjMyNzIxODQzZDc0NTNmZGM0Y2VkYTI2MTY5YmMxNmEwNjExYTE5YmFmODA4OTZhYTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/address/EspierAddressTreeApplicationService.java#L35-L135",
+          "version": "repo-lines-v1:sha256:a0769b57a73b2be19f99ec05a70a0e68af93f0c723bc7505ce0e129d25e171bd:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAxLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJiYjMzNmM0MmIyZjUyMDdiNzc1ZTUwYThkYWNlMmQ2ZDE1YjI2ZjYxZThjZGEyY2E0ZDQzZmNlNGFlNDg0NGY4IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI2N2NkYTgyZGE2MDYyMzhlMDVlNjIzOTk1NjljNWVlMDM5OTM0MTk2NDhhZTVkNDNhMmJmOGNkNjM0N2Y4MjYzIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJkMTQ4MDFlMGM3NzFmMWQ5Y2E1YmY0NWNmY2M5OGVkOTVjODVjMWJkOGRmMjc2MzAzOTQ2YTg4YTg5Yjc2YzM0IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI0MjQyZTVjMjQxOTc2MTg1YTZjMTQxOGU1MGRkOWQ4N2QwMmZkYzEwZDlhMjU5YTIwZmY1Zjc0Y2VjN2ExMmIyIn0"
+        }
+      ]
+    },
+    {
+      "id": "claim_d90217c35d3f43fa9115edafcd65d2ce",
+      "statement": "Espier's upgrade flow talks to the Shopex user center: UpgradeAgreementQueryService reads espier.shopex-usercenter.base-uri plus agreement-path/docs-path/patch-path (signed with espier.shopex-usercenter.secret) and compares the remote package version against espier.platform-version using Maven ComparableVersion; UpgradeExecuteService requires a writable espier.upgrade.storage-root, downloads the signed patch through the dedicated espierShopexUsercenterUpgradeDownloadRestTemplate and unpacks the tar.gz under an ecshopx2_free_patch mark directory, with UpgradeRollbackService reversing it; the agreement endpoint is the one the order-5 rate-limit interceptor protects.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/upgrade/UpgradeAgreementQueryService.java#L63-L88",
+          "version": "repo-lines-v1:sha256:cc5c0d3025dab0226ae79718893c43c7c27fb3c102482480133154b5814ed757:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE3ZTg5YWJiNGJlNGYyNzE2ZDVmZjJiYTZiN2YwMjdiN2Q1OTM5ZTgxMDNkYWQxZjU1YjE2ZmQ5YjgzNTcxM2YiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAwYzY2YjFlMjhkOTJjNTc5MjE1YjFjMjMwZmYwYmQzY2Y5YTk4ODcxYjk2ZTgxY2JlZmViYmNmMGU5M2U1MTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk3ZDk0OTU5ZDhmYmM4ZTEyZmMwYjkwZTdlYjhhYjU4YTMyNDM3ZmMyN2FhMjBiNTZhM2IwNjNhMDEzNDMyZWYifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/upgrade/UpgradeExecuteService.java#L65-L126",
+          "version": "repo-lines-v1:sha256:70b1c5046d4eada8ee3088a67fbfb4ce896f550f62fe94000da003fa65f5a981:eyJzZWxlY3RlZExpbmVDb3VudCI6NjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM3MmZiYjQxNGRkOWIwZjQ1OThiYWJlZjUxMzVjMjFkMGNmZjkzNDk3MmUzYmM5Y2U4OTA5Yjc1ZTQ1N2I2MTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIxN2NhMWFiM2ExZWQ3OTQ5NmQ0ZWU0Yzk2NWIzZWZmZGE0MTlkOGFiNTk2ODkwZGFiYTkzMjY4NjM1ZTJiZjUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNlYTllNTRhMTcwY2Q5ODhkYWUxZDA4YWMwNTVkMDQzZWFmY2YyOTI0YTdhMDA5Y2IxOTljNjU1NGMxNDdiMTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZhYzY0ZDQxMGI4ZmFlMTc5YzI5NGM0MjU5ZTU3MmNjMDM1ZThkMTY3ZDllNTQxOWRkNTY1NWFhZWI4MTc4ZGEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_8d2290901ca5439c9c8fcbb5c42fb215",
+      "statement": "FrontWxappEspierUploadImageService enforces a per-user daily upload quota with the membersStringRedisTemplate key uploadImageNum:<companyId>:<userId> (capped by USER_UPLOAD_IMAGE_NUM, default 10, 86400-second expiry), validates jpg/jpeg/png ≤ 2 MB, writes to the image disk with an MD5-of-time+content object key under an Asia/Shanghai yyyy/MM/dd path, and returns the public URL; getPicUploadToken enforces the same quota before delegating to FileStorageService.getUploadToken.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/front/FrontWxappEspierUploadImageService.java#L47-L71",
+          "version": "repo-lines-v1:sha256:1440100120e9cf8ac2e6faf638494fbcad1739057e7aedd1addf2466dbde7632:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJiMzM2YzQyYjJmNTIwN2I3NzVlNTBhOGRhY2UyZDZkMTViMjZmNjFlOGNkYTJjYTRkNDNmY2U0YWU0ODQ0ZjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZhMWE1NmQzOGIwMjgwNGZhMDQxZDQxZTE0MzJhYzllZDQ1MTQ2MmNlZmI3ZWJhZmI4MThmZDYyYzk4MmIwYmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxOWRjMjBkNTY2NGRiNzMxMDEyZDRkY2FlNWRiOTljNWI4ZjFhNDE2NzRmZGRjMDhmYTU5MTIyMzY1NDdmYWIifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/front/FrontWxappEspierUploadImageService.java#L73-L181",
+          "version": "repo-lines-v1:sha256:2458870701af4f9db3c7fde96d8fce7a027c9295f1c0bb14d207a71f16afa131:eyJzZWxlY3RlZExpbmVDb3VudCI6MTA5LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI1ZTI4Y2RlMmRhY2MzNjI4NjJmN2VhZTRkNTA4NTIxOGJjZTVmNjI3NjcxODZlODFlN2I1Nzg5NmE5YTRmZmViIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI5YjE5NjZmMGQ3MmFjN2IwYzc0Y2ZlYWQ3ZmRjOGY1M2M3OGQwYThmNzc0MGUyZDU1N2MxYjViZDdmMmU4M2QyIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJlZjI3NzBmNGZiYjhhODY5YWUzOTVjOTNlZjJiMDdmOWU0ZWVhMzMwYjU4ZTgyMWMzZWEyZTVkMzRlNzU0MzYyIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIxZTE3NmM1ZjU4ODMxNDM0MmI4NjIxZTc2OTZlNDBjZTllYjJlZWM1YTEwOTBmZGVjZWIxMDM5YWYxN2I1ZjEzIn0"
+        }
+      ]
+    },
+    {
+      "id": "claim_a4de1c22bfa34c0a8a9c14efe97a1f69",
+      "statement": "ecshopx-super-admin (package-info: platform-level announcements) has one HTTP surface — ShopNoticeController GET /api/v1/notice/list (@AdminAuth @ShopLog @Activated(super.notice.list)) over ShopNoticeListService — but owns the shared reference tables other bundles read: ShopMenu/ShopMenuRelType via ShopMenuService (product-model name ↔ menu_type id mapping all=1/b2c=2/platform=3/standard=4/in_purchase=5, collectApisFromMenus merging the space-separated shop_menu.apis field with a 1000-row cap when unrestricted, PHP-parity assertAliasNameNotConflict/checkParentMenuType), Logistics, WxappTemplate and Accounts.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-super-admin/src/main/java/cn/shopex/ecshopx/superadmin/api/admin/v1/ShopNoticeController.java#L42-L81",
+          "version": "repo-lines-v1:sha256:5bab62480489d8705ceb0b57045a78d33094960d48e6ca1e081ecd90cfc633d8:eyJzZWxlY3RlZExpbmVDb3VudCI6NDAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFiOGU0YjZlMGE0YjBjMjg3NjY4YzQxZTNhMDZhYWIzNDg2NWVlNWU2YmE3M2Q0Nzc2Yjc4MWFlODI4YjRkNjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFkYjU1MTk3YjAzNjFkYTYwOTFjOThkZmJkNDBhZDE5OGYxMDRhOTNhOThmMzllNWM3MGQ1ZGNlNjlhNTA3MGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImVkMzQ0OGMyYTM2OGFkZjczZjQ4NzA0NzJhNGIwZDJiMzkwMGE3NWJiYTc2M2RmNTBlYmU3MDlhZDlkNDM4ZGMifQ"
+        },
+        {
+          "resource": "repo://ecshopx-super-admin/src/main/java/cn/shopex/ecshopx/superadmin/service/ShopMenuService.java#L171-L251",
+          "version": "repo-lines-v1:sha256:4728d92fb07e46078536f45fcdb0514aedb802813a0cf66ef15cab6677674a67:eyJzZWxlY3RlZExpbmVDb3VudCI6ODEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM4Zjg4MjQxZGE3YmM5MWM5MjU2Zjk5YTNjOGI5NWNhZmRjZjFlMzQ1MzViZmRlZjg4OGE3ODQ4YjA1MjUwZmYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJhOTBhMmRlMDRhNDQ4OGE2NDI2ZjJlOTQwYTRhYjk3NTExODFlYWQzYTVmM2U0ZTM2NjE1YTMzNjNkODU5MGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImVlYTZjMWQ1YTJkMzliY2ViYjI3OTQzOGRkYzkyNTVmMWFmZjg0NzhiNDNlMjFhMDNiM2Y4MTAyYzg5MWRkMmYifQ"
+        },
+        {
+          "resource": "repo://ecshopx-super-admin/src/main/java/cn/shopex/ecshopx/superadmin/service/ShopMenuService.java#L41-L59",
+          "version": "repo-lines-v1:sha256:875698c00be6b56cb9b5c68fd7c706ede04afb686b7e2325dbb397c1bb0dafd0:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJlNjBiNWE4OGRkNzhhNTdmNjA1NzZhYjk5N2E1ZWRkY2FmNmVlY2Q1NTk5NGJkYTkwMzFiMzRlNzM0NjZkOTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdmNjYwYmFlOWNiYTk3NWZlYjI3MjE1OWVlNTBhZjhkNjkxMDVhZDMzMDQ5ZTBiZGNkOTgwMTdjMGQ1M2I2YjEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU2NTIxMjY2NjcyMmYxZTdhYTZjNjVjZjU5YTkyM2IwNmQwOWJkYTRiNmNlZDJjYWU3ZGJiYzFjMTYxYzJjZmYifQ"
+        },
+        {
+          "resource": "repo://ecshopx-super-admin/src/main/java/cn/shopex/ecshopx/superadmin/service/ShopMenuService.java#L83-L117",
+          "version": "repo-lines-v1:sha256:bf58f5f97e11143bd0b9e3a2d8c4d46126fb7f182bd18159286e3ba713fb6cfe:eyJzZWxlY3RlZExpbmVDb3VudCI6MzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMwYWE2NTJmMDVmNzU1MWNhOThhYWIzMmEyYmU2ZTcwODg3MzhmYjhlMDg1YTE4Y2VkMDMwMjFhNjA4MDUxMjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVmNzczMGU2NTVjYWUwNTcyNjQyMDIzYjg4MDA1NmM1ZGU2NTU1OWJiMjc2OGEzMDhmYTk1NTdmYzNmMzFlMmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRhMzk3YWFhMWE1YjI3YjUxMDk0N2E0ZjQ2ZGFjZjI1ZDNjNTA1NTRkNjdiYjQ1OGI2YzU1OWExMmVmMTMwZjkifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_6decaa4712b841088a1834b607a19657",
+      "statement": "ecshopx-shopmenu-border is the write-side companion to super-admin's read side: ShopMenuController (/api/v1, @AdminAuth @ShopLog) serves GET/POST/PUT/DELETE /shopmenu plus GET /shopmenu/down and POST /shopmenu/upload through border services that write super-admin's ShopMenu/ShopMenuRelType entities directly; ShopMenuCreateService.createFromBorderRequest defaults the company id to 0 (platform-owned rows), resolves menu types via ShopMenuService.menuTypeNamesToIds, validates alias/parent-type compatibility, and performs the insert + rel-type rows + outside-language upsert in one TransactionTemplate, appending an audit line to shopmenu.is-show-audit-log-path (default logs/shopmenu_is_show_hidden.log) when an import marks a menu hidden.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-shopmenu-border/src/main/java/cn/shopex/ecshopx/shopmenuborder/api/admin/v1/ShopMenuController.java#L64-L73",
+          "version": "repo-lines-v1:sha256:d334a8af865d6f1434c773bad21d6e2ad5c5fe8f1ba9b34226e21fd9e243d1ac:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVmNjE2ZDk4ZGJhODI3MTUzYjNjYTA4Mjc2MTllMWNmYWJiYTQzYTZjZGYzOWEzMTYwYTg1YzdmZmQwMTkyZDEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM3YmRjMjM4NzQ4NzgwZmJmMzM4N2RkYjcwMjg2M2E4YWI5MzM1YzdhNjY2OGUxMGZlYzVlY2ZkNjQ3NTBlY2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRhN2Q1Y2ZhMzBkODIzZDM4Yzc0NzllNGI1OTk1YWUyNWMwMjIxMGY4NjZiZWEyYWZjNDJiNmRiZWE4MTc4ZDgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ3MGEzNWEwYzFmNjgwOWVhYzk1Njc1NzExMzFkNDczYzA3YWZkNzhmZGU0ZDcxZjgzOTA4ZGFiYWZhN2ExOWYifQ"
+        },
+        {
+          "resource": "repo://ecshopx-shopmenu-border/src/main/java/cn/shopex/ecshopx/shopmenuborder/config/ShopmenuAuditLogProperties.java#L21-L33",
+          "version": "repo-lines-v1:sha256:8ad7fcac96980eaec8cc2fe1daace808d317d432304885ea898edafc9d947991:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZjYzg2N2JiZWU4NzlhYmJjNGZhMDUwMWZkM2Q0MjBkZDU2YmJiZDg3MTY2NzM0YjZlZmE5YjVlY2Q4MThkNDIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImMwM2RlZmYwZTJhNmQyNTg3MjM3MWRkOTYyZTRiZTk5MDU3NjI0MzYxYzZhZWY2ZmU0ZjdhMWIyM2Q2YTg3M2YiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-shopmenu-border/src/main/java/cn/shopex/ecshopx/shopmenuborder/service/ShopMenuCreateService.java#L43-L144",
+          "version": "repo-lines-v1:sha256:7871a4619dcb9e1b473c78b59a9d6aecd1ec71ebf079a8bcad8314ec415971ed:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAyLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI3NDVjNTU3Y2VkZjZmMWJlMTYyMjAzNWU1MmNlNGJiNmZjM2UyOTJiZTBkZGJlMjUyZDMwMDU5OGMxNTRiNjRiIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI2N2NkYTgyZGE2MDYyMzhlMDVlNjIzOTk1NjljNWVlMDM5OTM0MTk2NDhhZTVkNDNhMmJmOGNkNjM0N2Y4MjYzIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI0MmVkMDliMWFkZjQ5OTMzMTY0YzBjYTgxYWFhYjM2ZmU5ZjYyNDQ3MDcxNTA1ZTdhMDNkMjE2ZGIwNGM1MzA5IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI3YTM0ZjVkNTkxN2EzMjJlYjVmODQzYmI4MDFmNDFkMjZiNmUzOTUyODA0YTkxZDFkNjUwYzMzYzRmMDc4ZWU3In0"
+        }
+      ]
+    },
+    {
+      "id": "claim_02ea553ce25642a49be1578d02e9a224",
+      "statement": "ecshopx-theme (package-info: decoration, templates and page configuration) is the largest supporting bundle, with nine admin controllers (PagesTemplateController /api/v1/pagestemplate, PcTemplateController /api/v1/pctemplate, PagesTemplateSetController, WebMenuController /api/v1/web-menus, WebMenuItemController, PagesAdPlaceController /api/v1/adplace/{popup,carousel} with submit/audit/withdraw, PagesSideBarController /api/v1/sidebar, OpenScreenAdController /api/v1/openscreenad, MemberCenterShareController) and seven front controllers under /api/v1/h5app mirroring them; theme's front PagesTemplateController also exposes GET /gettdk backed by tdkset's TdkGivenSaveService.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-theme/src/main/java/cn/shopex/ecshopx/theme/api/admin/v1/PagesTemplateController.java#L70-L300",
+          "version": "repo-lines-v1:sha256:f90d6d2bdac1221d1a8ab3126aa975fb23dba2c08efda324d733989810a3c4a6:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMxLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIyM2M5MWYwN2YyMDcwYWZhZDAyMTllZDg5NTEzMzFkZTNlNTdkNWRjNTBmYmE3ODY4MTA0ZTMxNTI3YjQ3ZGFkIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0MThhNDk3N2E4ZGRkZmI2YzMyNmQzMGQxY2NjMDc1ZGIzMjViZjAxMzNjNDI4OTM2MGQ3OWRmODg2NGE4NjQ5IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI5NmFlYjIzYzczMDMxODNkMjllOGE0NzVhNDQzODIxZDliNTM1N2M1NzI1OTc4MGEyOGIwZjVhMTNjNGQwMzFjIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI4ZWM3OGJjOTg2OWNkOTFiMzE5NjA2MWZkNGExMjhjMThjZTNlZGI4OTA4NzZiZTRiNjE1ZjI2ZGQxMGMyN2NkIn0"
+        },
+        {
+          "resource": "repo://ecshopx-theme/src/main/java/cn/shopex/ecshopx/theme/api/front/v1/PagesTemplateController.java#L186-L200",
+          "version": "repo-lines-v1:sha256:15883e8a9a54ab351b9d1006c6e20b8852866a298ac5bbeacdff45445d527128:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjExZDllNDUwNDRlZTc0OGM4YTQyYjlmYWQ2YTgwYWI2NDFkNjQ2Mzg5YjAyYjZhODc4NmFiNWIxZGQ1OGYxZDMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIyNzRiYjU2ZjQ2OTUwODlhZTI1YzJlOWFhYmMxODgyZTg0ZGQ2MmZhODJhM2IwMzQ5MWFlNTI5YjAyZGZlMTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY0MDE2NDMyNmU0NTY4YjQwMGNlMGEzYjJhNDI2ZmQ4ZTg3OWY3OGVkNjllMTIzYTBhODZmZDlhNzYxMjRjMTkifQ"
+        },
+        {
+          "resource": "repo://ecshopx-theme/src/main/java/cn/shopex/ecshopx/theme/package-info.java#L17-L20",
+          "version": "repo-lines-v1:sha256:e3c5acd6ce17f02ccb935a575f35f684aa2fbb55ea836ca9b0da738fdcef644f:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZWFmMjJjZjA3MzI1OTJjMjQ3MTQxY2JlNjFlZmExMTAxMjYxMmY1YTMxMjJiOWFmOWJiYWY1MmY1NzI0ZDE5NCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNWU5MTU1NjEyN2Y2OTNlM2RlYmQ3ZTFmNmY3MDI3MTJmNjM1YTc2MTI1MWQyYWI4YjBiZDc1OWIyZmIyNzRmOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjk2YTA5MzE1YzVhMDU1NGQwMjU4ZjE1NzljOWE3MDJhZTZlNWVmNDUxZTUxNGRiY2NiMWRkZTFkNGUxNzE5MiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_fe25726a538b489eab0ba9a7dbd83cf9",
+      "statement": "theme's enable-theme-template XXL-JOB handler (alert-and-rethrow) calls PagesTemplateServices.scheduleEnableTemplate, which selects up to 1000 pages_template rows with timer_status = 1 (newest first) whose timer_time has passed and, per row in its own TransactionTemplate, demotes all same-company/region/distributor/page siblings from status 1 to status 2 and promotes the scheduled row itself to status 1 with timer_status 2 and a stamped template_status_modify_time.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-theme/src/main/java/cn/shopex/ecshopx/theme/cron/ScheduleEnableTemplateHandler.java#L30-L55",
+          "version": "repo-lines-v1:sha256:e2d3bb5d4aa05829e591bf8bb406c63c0412f744483ad30a6f484bb85c903462:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJhYzA2YWNlMjQzZmM0ZDFmMTI5NTA3ZGQ4OTRiZDFhZjljZTIzM2U3ZjE3MmVmMDM2YmU3NWE1ODNmNzU2M2UiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg0Y2VlNGVjNTY4N2JkODRlMWIyOTcyZjAxZWQxNjg4MzU5OWRhYTFjMDQyNWU4ZmIwZmM2ODhlZDE5ZDE1MDEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-theme/src/main/java/cn/shopex/ecshopx/theme/service/PagesTemplateServices.java#L43-L98",
+          "version": "repo-lines-v1:sha256:652dedb5094974efb811ac9d2fe02bac8f94a2a1d35c2046c01d15f7762939f7:eyJzZWxlY3RlZExpbmVDb3VudCI6NTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBmYWYxZDViNjExYzFkNTc0NjI1NjQ5YmQwNjY2ZWU5OTJiZjY2OTQxMDZjNGZiMzNlYWVkZTMxZDBmYmUzNWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkwYjU3MTUxYzZkNTE5YzcyY2UxNGU1ZDkzYWZjNWRjY2YxZjMyZjM2YjY5NmRhYzdiNWQ5YjcxZjJmMmFhNmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_49b5165b58d544e6bfbcb351b1d36147",
+      "statement": "theme has two dispatch handlers: PagesTemplateSyncJobHandler fans a template edit out to distributors (all, or an explicit id list), reading the distributor set from distribution's PagesTemplateSyncDistributorQueryService and applying it via PagesTemplateStoreSyncApplyService always for the fixed wxapp page distributor_index, and CreateDistributorJobHandler seeds default templates for a newly created distributor through distribution's PagesTemplateNewDistributorFacade; NewDistributorPagesTemplatePortImpl is theme's reverse-direction port impl.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-theme/src/main/java/cn/shopex/ecshopx/theme/dispatch/CreateDistributorJobHandler.java#L24-L37",
+          "version": "repo-lines-v1:sha256:aa0ccb15ef1b01d0d269e1b3e559345087415a05f4735e70c10d2178b69173bd:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4ZmExZTlmNDQ5NDlmYTg5YTNiNDJiMDQ5MmRkYmRmZmEyZWI3NjQ4NDhkMzU3NzhjOWZiNTNjMjA3ZWJkYmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk3OGQ3NWRjMzgwY2YzNzJiNmQ5OWNkNjUxYTRhMzJhMzJlZGFkYTU3OGEzZTc4Nzg4YzM0M2Q1NGJhNmVlYTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-theme/src/main/java/cn/shopex/ecshopx/theme/dispatch/PagesTemplateSyncJobHandler.java#L39-L90",
+          "version": "repo-lines-v1:sha256:78962d60856ade950ef720aa31a2f1a1c8c807e78ea64a0e9ef06a40f1de990a:eyJzZWxlY3RlZExpbmVDb3VudCI6NTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4ZmExZTlmNDQ5NDlmYTg5YTNiNDJiMDQ5MmRkYmRmZmEyZWI3NjQ4NDhkMzU3NzhjOWZiNTNjMjA3ZWJkYmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU2ODA2ZjE1NWM1YWMxYWUyNzIyY2EwNmYyYWM5Y2FkY2I4ODFiOTEyM2NiNjI0YTNjMTA0NzViNDQ0OWRjMmUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg0Y2RkZGUzZTg0MTQwZTAxYjY1YzI1MGVkZDc5MjNiODk5ODYxOGM3Mjg1NTA3M2U4N2I3Y2NhMjgzMWEyZjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImEzYjQ3ZmQ3N2VkMGIwOWZkYmJjZDFlY2MyMGQzMjcwNDAyODE2ZTYyYWMyMmI4Zjg5ODFiOTg2ZDAzNjExMDQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_53f11d3464de4816b607d08f21031ea5",
+      "statement": "data-cube's six XXL-JOB handlers (daily-statistics, goods-daily-statistics, merchant-daily-statistic, distributor-daily-statistic, employee-purchase-daily-statistic, employee-purchase-goods-daily-statistics) all follow the alert-and-rethrow template and only enqueue: CompanyDataService.scheduleInitStatistic walks every company, inserts a zeroed company_data row for yesterday if absent and calls CompanyDataStatisticAsyncExecutor.runStatisticsAsync, which defaults to enqueueing job:163 DataCubeBundle\\Jobs\\StatisticJob via bootstrap's StatisticJobDispatchPublisherImpl (ASYNC/REDIS/slow queue) and only runs inline when datacube.cron.daily-statistics.sync-inline=true; StatisticJobHandler consumes the job and CompanyDataService.runStatistics recomputes member/aftersales/refunded/amount-payed/order/order-payed/gmv counters inside the Asia/Shanghai day window.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/StatisticJobDispatchPublisherImpl.java#L33-L62",
+          "version": "repo-lines-v1:sha256:cbb9525f9a3034dff362285d24db8f0312a343c2d17d6230bd29e2515a5298eb:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4ZmExZTlmNDQ5NDlmYTg5YTNiNDJiMDQ5MmRkYmRmZmEyZWI3NjQ4NDhkMzU3NzhjOWZiNTNjMjA3ZWJkYmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY4ZjAxM2U0ZjJjYWM4ZmYxZWI0OWJhZmE1YTNjNGViZjVmMTdhNGI5N2NlY2Y3ZmY0MDNiYTlmNzY4MTU1MWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-data-cube/src/main/java/cn/shopex/ecshopx/datacube/cron/ScheduleDailyStatisticsHandler.java#L30-L55",
+          "version": "repo-lines-v1:sha256:2044db52f4c87ec423071faf05f920beb9ca1835f7d4b1c1c3bbb5e56cfb28b1:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVjZmQyYmJkMTA2ZjkyODYwZDgzYTZjYjI1MGVmNmJhNDkyOGVlMDM3NzRmMmExMTZhZjk4ZjZiYThmNTg5ZmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg0Y2VlNGVjNTY4N2JkODRlMWIyOTcyZjAxZWQxNjg4MzU5OWRhYTFjMDQyNWU4ZmIwZmM2ODhlZDE5ZDE1MDEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-data-cube/src/main/java/cn/shopex/ecshopx/datacube/dispatch/StatisticJobHandler.java#L29-L51",
+          "version": "repo-lines-v1:sha256:793d3cac0e1936ec38e484c8f1f5b314b448dbdae952a4e0f22ca9add55416cd:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4ZmExZTlmNDQ5NDlmYTg5YTNiNDJiMDQ5MmRkYmRmZmEyZWI3NjQ4NDhkMzU3NzhjOWZiNTNjMjA3ZWJkYmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY4ZjAxM2U0ZjJjYWM4ZmYxZWI0OWJhZmE1YTNjNGViZjVmMTdhNGI5N2NlY2Y3ZmY0MDNiYTlmNzY4MTU1MWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjcxYWIzMzJmNTlhN2FkMzczY2IzMjdhNjVmNjkyNzZiODkxNDQ1NmY1ZTA5ZGFiYzk1NTA3OTMwMTIzZDkxZmUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-data-cube/src/main/java/cn/shopex/ecshopx/datacube/service/CompanyDataService.java#L93-L174",
+          "version": "repo-lines-v1:sha256:9131a5e969d2e028b1dba7e30bbfc5b83bcd654eee52203a1a4319269a788718:eyJzZWxlY3RlZExpbmVDb3VudCI6ODIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdlMWMwOTg5NDRkZWIxZWU4ZGQxMDU3NmVjNGY0YjJkNjk0ODBjODVhODVhNzdjN2UyMjA5MWFlMDhhOGQzNzgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJhZmE5OTQxOWVmMzYzNjA3NTg0NDkwNDRkM2FkZWUzMzFlZmZhMzQ0ZTljZmRiNDMwMDc2Zjg0MzA0Y2M2MTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjlkNDViNTU3ODA2MTUxYzA0ZTBkMDA5YTAxMjdjMTY2MmYxZmQ1MjYxZDMzYmUyZTE4ZjRmOWNmODA4YjQzMDEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-data-cube/src/main/java/cn/shopex/ecshopx/datacube/service/companydata/CompanyDataStatisticAsyncExecutor.java#L34-L70",
+          "version": "repo-lines-v1:sha256:79565fc4724d3674b6fa1b9b03e1f9d85dfbc7c7fd75ce0dd1b6a57f3069ce98:eyJzZWxlY3RlZExpbmVDb3VudCI6MzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ3YzYxZTMxOGMzOTA3MWE4ZjI4NjM5ZWQ1OTA3NDc4Y2JlZTZlMTkxNjE5NTY3MjdjNmQ0NmZhN2ZkZjdjNTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNjMzAxOWQ3ZWEwMjhjMWY3NzMwNWJiMjM0ZTA2Y2ZjZTA2Yzc0OTk5YzI2MjYwMzYyYjdlYTBmMTIyMzA3ZGQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_ca42b94492dd4fbb822add4da7271557",
+      "statement": "DatacubeDispatchJobNames in ecshopx-common defines the four statistics dispatch job names — job:160 DistributorDataJob, job:161 GoodsStatisticJob, job:162 MerchantStatisticJob, job:163 StatisticJob — and bootstrap's *JobRegistrationConfig classes register the corresponding handlers on the DispatchRegistry; goods-daily-statistics pages the yesterday trade window 100 rows at a time (PAGE = 100) and enqueues one batch job per page.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/StatisticJobRegistrationConfig.java#L25-L39",
+          "version": "repo-lines-v1:sha256:ca6f504238ecf286ed9ec41ca7d8e9bb2ee279d87cff1f370214baed9851ebb3:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiMTQ3NjJhYWFkNThkMTM4NDRjZjJlYzU0NzQwYTRkOTdmNWUwN2VlNTE2ZDMyMGQ2MDM2YzFjN2NlNDJkZmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBkNDU0NTI5YzI5NWE1ZWM2MjlmZDQxNjU3YWNmYjRhYzczYWM3MzQ2YzQ5OWUzMWIzZWFjZTY5ZTY5ZGQ3MDEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQwMTk1ZjQxMzAzMzM1ZjIyNDQyMzlkY2E3OGRiOGRjNDY3ZDE5NGNkY2I3MzljODlkMjIyYzVjZjliZmFjNGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQwMzk5NDVmNzEzY2VjY2MyYTJiZTk4MWFiNWM1ZWVhMzdmOTVmOTc2OWU1NzVjZDhlZDlhOWZjYmFmZGYwNmEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/DatacubeDispatchJobNames.java#L19-L30",
+          "version": "repo-lines-v1:sha256:700a987ce79dd904558648c89cc1fb904d774095a2947d190516dec887929f3e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZjZTQ1OWMyY2NiZDQ2ZTkwNWRlNGIwMjRhNzg0ZmMyOGJhMjY0MTM2ZTMwOTFhNWEyYmQ4OGMxMzI5MjhlNDEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFkMjNhZTdkN2UxMTJkODMyM2QyODUxYjQyNGQ1NDE2MjM2M2I4ZGUxYmVmOWUzMWRkZmU2NTZiNWRmMmU4MDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMwNzQyNWMyMGNiYjA4M2M5OWM1MDVkMTE1NDliNWY2NjI3NjQ5YTI3ZDczZmZjNTRjMDRhOWMxY2EyZGM5MTAifQ"
+        },
+        {
+          "resource": "repo://ecshopx-data-cube/src/main/java/cn/shopex/ecshopx/datacube/service/GoodsDataService.java#L51-L96",
+          "version": "repo-lines-v1:sha256:e0a072e23faa1f88222acca817cbf121836bb052b8f8df4713894fdc714800a8:eyJzZWxlY3RlZExpbmVDb3VudCI6NDYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZlZjk3NDk3MDMyNTM5YTljYWJmMTNjNGI1ZDMyNjNmN2Y2ZDQyZGYyOTc1MDY0NmE5MmQyN2E4OWIzMTdlODgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjEwNjMxODA1ZDA3YmZmY2Y3N2M3NmU3YTA2MmRhZjE4MThiM2I0M2JlZGRlNjNkYTFjYjE0YjgwNjgzMDA4MjQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjlhZTEyODc4MTU4NDk5ZGEyZGVlZDdlOWQzYTZhMDc3NDdmYWNkY2E4YzE1MTQyODI0YjIyNzg5YTliNmNkZGEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_80183fec2f7c45ddba214cfccb040f68",
+      "statement": "data-cube statistics always derive the target date from the injected companyDataStatisticsClock bean (DataCubeTimeConfig, Clock.system(Asia/Shanghai)) so tests can pin it, defaulting to yesterday; the employee-purchase variants scope the same init to active employee-purchase activities (order_class=employee_purchase, act_id=<activity>) enumerated via ActivitiesMapper.selectActiveIdsForCubeStatistic.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-data-cube/src/main/java/cn/shopex/ecshopx/datacube/config/DataCubeTimeConfig.java#L25-L30",
+          "version": "repo-lines-v1:sha256:f9212bb8298162b7282fb77d4c46d89e6439f9255f4e8c6efd56ce6becab37c1:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNWIwYzhhOWQ2Zjg1YzkwMDZlODJkNjEyNmQxMmJlYTIzNjA1MTg0NzRlNjUwZTUxM2YxZGFmZmRmYjg0MGI3ZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDNhOWM5OGNiOWRhMjJkZWYxNzZlNGVhNzhjNjgxZGVmYmJiY2MxOWI3NDkyNmU1MDViZDhlYmUxMjRiOGJiZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-data-cube/src/main/java/cn/shopex/ecshopx/datacube/service/CompanyDataService.java#L69-L129",
+          "version": "repo-lines-v1:sha256:af630ecdb44137ff36c79cffd64818b986876932b3365661187c3e1864e82fbf:eyJzZWxlY3RlZExpbmVDb3VudCI6NjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUxMTdmNjA0NjY1ZTQ4NGY4NjU3YjYxNDVjOGFiNDJlYTYyZTU4MmJlNzlmOGQxMTdmOWIzZmJkZjRjOTAxYTkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIyOTI0ZmQwMTNlNGJlNjYxNGIzYWMyYWE4NTY4MmUxNGFhMjU3OGQ1MzJhYzFhNjcyNTViN2MyYTY0NDZkZjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQwZTMwY2Q5YzQ4ZDBhN2U4MzViN2IzNTQwOGQxMGI4Y2E4YTkxNTNjM2EzNmVjODE3MjQ1NTJhNmNjMzdiZTMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_6609a37fb1a64b3a8a1c305f042e4dca",
+      "statement": "data-cube's PV/UV/register counters are day-scoped Redis hashes on the datacubeStringRedisTemplate (logical DB ecshopx.redis.datacube.database, default 0): the @FrontNoAuth beacon POST /api/v1/h5app/wxapp/track/viewnum → TrackViewNumService.addViewNum increments datecube_tracklog:viewnum:<companyId>|<monitorId>:page_view:<sourceId> (always), :unique_visitor:<sourceId> (only for new open ids) and :member_visitor:<sourceId> (only when the open id resolves to a member via MemberAccountService.getWechatSimpleUser).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MultiRedisConfig.java#L84-L91",
+          "version": "repo-lines-v1:sha256:f1bed396768923827825cb9d9575a5648ae174cbc2f21a5c76be07d4c8cc3f98:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZmRhZDVmMWZiZTY3MDUzNGJiZDhlNDNiMmJmZDYwMDRmYjQ5Yjk0OTYxNDdjYzZmNDgxMGE5NWFjODFhZjIyNyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzdiNzcwNzFhZmUxNDIxZGFmZGY0ZDc2YWMzYTI3NmVhZThjY2Q4NmNhOTllNmZkM2E0ZDY5N2E3NzI5NmU4ZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMjkwMDljYjQ4YjMzOWQ4MWNiYmMyYmM0ZGZhZTFlZTY2NWRkOWQzYjYwNjI0ZTQ0ZTRkODhhNTBlNDk4ZmU2NyJ9"
+        },
+        {
+          "resource": "repo://ecshopx-data-cube/src/main/java/cn/shopex/ecshopx/datacube/api/front/v1/TrackController.java#L34-L67",
+          "version": "repo-lines-v1:sha256:cd5f5520227f5c6e91373f3c1d9af2ee42b82f62a79f4ef7022f2e8b0a3f86ed:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFmN2NjN2E3ODc3NGQzNzBkMTYzM2Y3MTAyY2M0OTY1MmJmZjNjNzdlOTkyM2JiYjZjZDYwNjc2YjAwMmNiZjAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYzOTRiOTdjMTU3ZjNhZjA0OWVhNjFkMGY2N2U2M2JiNzQxNWU2OTViZDBlMTk3NzlkNTQ0NmY2YTE1MTZmNjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBlYzgyOTYzNDgyZmRiZGNhNDFmYzhlMDNiNWQ4NjE0ZDI3MTJmNzkwNzQzMTRiMDgxYmE3ZDdmMDFhZjg1ZjcifQ"
+        },
+        {
+          "resource": "repo://ecshopx-data-cube/src/main/java/cn/shopex/ecshopx/datacube/service/TrackViewNumService.java#L29-L71",
+          "version": "repo-lines-v1:sha256:be0d884296b544235fa6849e617b8967f06bdc3dec735c42f293b9f31ee853e5:eyJzZWxlY3RlZExpbmVDb3VudCI6NDMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJiMzM2YzQyYjJmNTIwN2I3NzVlNTBhOGRhY2UyZDZkMTViMjZmNjFlOGNkYTJjYTRkNDNmY2U0YWU0ODQ0ZjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdkMzcwN2E5NDBhMjJmOWM3Yzg1YmZhY2E0NWJjYTExNzE2Mzc2ZWZkYzA4MjM3NTg5ZjEwNTc3Y2VlMDhkMTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_bbbba1c8c287463684883f3390432c1e",
+      "statement": "UV deduplication uses UvBloomFilterService, a Lua-script bloom filter (GETBIT/SETBIT loop sized for 100 000 expected items at 1% FPR, key uv_bloom_filter:<monitorId>:<sourceId>) executed on the sharedStringRedisTemplate — so the dedup bitset lives on the shared/default Redis DB while the counts it gates live on the datacube DB; MonitorsStatsService.buildStats then reads the counters back with one HMGET (multiGet) per key over the requested day range and joins them with paid-order aggregates from NormalOrdersMapper.selectPaidAggsByMonitorSource.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-data-cube/src/main/java/cn/shopex/ecshopx/datacube/service/MonitorsStatsService.java#L137-L193",
+          "version": "repo-lines-v1:sha256:a1a22accd408fc9c77510f64b1ed5547f7513d1db45352a87676d7cec886f719:eyJzZWxlY3RlZExpbmVDb3VudCI6NTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3YTRmODI4NTViNjEyNjhkZWM2MGFhMGE2OGFkYWU1M2I3YTFiMTRiNDI2ZDA5MDNlMjhlMDM5NmM0MmI1YTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhkMjliNWJjM2I5YzA4ZmQzNTc2YTJlYjk4MGFkOWFlOWE0ODA3OWNiNGEyNmMwM2E4ZWMzZDRlMWM3YzA3ZjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY1YWZkZmEwYTg0MzY5MjQ1NDljMzVlZTJlNWJiN2E2NDUwOWJlMjkwOTg1YzIwMzQ1NTJlNmNhMWUyNDE2ZDUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-data-cube/src/main/java/cn/shopex/ecshopx/datacube/service/MonitorsStatsService.java#L269-L328",
+          "version": "repo-lines-v1:sha256:5be59cca11a602e2ef7140dbf260602b35a3eb2c7277657fb52423a76a5ca03e:eyJzZWxlY3RlZExpbmVDb3VudCI6NjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUzMTlmNmYzYmQ3NDNmNDI0MGZlNGM2YzA1MDYxZGVlZmJmNGNmM2MzMGI1ZjE5ZDIxM2E5YmJmNjA1ZDNiNDIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVkMjg4MWU4NDVlOWE0ZjFlNDFmMzBlMmFkN2JmNWRhN2JmMGJjYTY5Njc1ZTJhYzRmNDljMmFlZjFlNDNlMDEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY0Njk0MmJhZGY0OTIwYjRkMDkzZTFjY2IxYTQ3ZGRjZGJhNTc1MDMyNTA4MDM3Njk0NTFjNDgyZmQyMmMyY2MifQ"
+        },
+        {
+          "resource": "repo://ecshopx-data-cube/src/main/java/cn/shopex/ecshopx/datacube/service/UvBloomFilterService.java#L32-L87",
+          "version": "repo-lines-v1:sha256:efab40099dccad2eecad235aaad91579f62d07e16d6ec7aab5bdb88909e2cccb:eyJzZWxlY3RlZExpbmVDb3VudCI6NTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM5Mzg2NTdlZGU1MzMxNjA0ZTNlNzY2YThjNzYzMjdkZDVmNDQyNTk1NzY5ODhlY2U5YzVlOTBiYzhhNDQ2MDAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImYwN2JmZjRiYWU1NDA0NGE0NTEwMjc0MGFlZjkxNDk0MTBkYTllNTJkMTNjNTc0MjcxYzZmMGU5YTRkZmY5ZmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM4ODRiZDc2ZDA2YmViZjk3ODlhZGViMjcyYWJmNzc3MjU3Nzg2MWRlN2VjMTI1YTUyNDBkZDU5MjhlMTI1MDgifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_93b7dd0af549408c84ad245fb163a680",
+      "statement": "DatacubeShopRoutePermissionService is data-cube's route-alias gate: with common.check-superadmin-permission=false (the default) source APIs deliberately skip the alias gate to match the PHP route registration (api.auth + activated + shoplog only), admin/empty operator_type and specific distributor paths pass, and otherwise the alias is checked against OperatorRoleMenuAliasService.listShopMenuAliases plus ShopMenuService.collectApisFromMenus with the menu version chosen by operator type (distributor=3, dealer=5, merchant=6, supplier=7, else 1); self_delivery_staff operators are whitelisted for the delivery-staff paths.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-data-cube/src/main/java/cn/shopex/ecshopx/datacube/service/DatacubeShopRoutePermissionService.java#L175-L230",
+          "version": "repo-lines-v1:sha256:7f7294aa15a7057e8693726ea3ce03fa760820011a4b0aaa065d764eced939d8:eyJzZWxlY3RlZExpbmVDb3VudCI6NTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYzMjJlMDVmYTFjMGRkMTQwMDJiMmU5YTZhNjgwZDExMWExMTliMGIzZTJkODM0ZjdhOGUzNzE4YzNkNzllN2UiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAxM2U1YjIyNGE2MTJhOTc4NmJhOTk5YTJjYjM0YjFiMmI2MDViNzQyNDUyZDllYjdiZGMwMmJlM2E3N2ZlZmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg1MDgxMjY3ZGY3YTk5NzkwNjdlYTdkYTQ3YzMyMmIxMGQ0YjZkOTBjMTZmZmY1YTk3YTE0YmZlOGRmMWU4Y2IifQ"
+        },
+        {
+          "resource": "repo://ecshopx-data-cube/src/main/java/cn/shopex/ecshopx/datacube/service/DatacubeShopRoutePermissionService.java#L55-L101",
+          "version": "repo-lines-v1:sha256:21813790ea3d817249ac57cd2ff1d511296c1fe256a753c081d237fd2d685cb5:eyJzZWxlY3RlZExpbmVDb3VudCI6NDcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBlYmJhMTQyMmRjNTI5MDg4ZTY1OWE4NDliYTQxZTE1MDE5MjJkNjhlNmRjYzNhN2RiOGM2NDFiODQyNGViYTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE5ZGMzYjFmMDYwNDI2YWMyM2E0ZTg4MDIyMmZjZWE1MDI1NmIzMzllZGRjNzNiNDU1NDlkODQwYTEyY2Q2NWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU2N2Q2OTdhZDQ5NDU0MjJjNWMwNjgwYTc5Y2IzZjI3M2Q1ZmJhYmNmMzU2YmY4NTA3OTMyOGRjOGU2NDM3YjAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_6035113d63e3434c8b99aea8fcba10e4",
+      "statement": "ecshopx-tdkset (package-info: TDK settings) is two admin controllers under /api/v1 with @AdminAuth @ShopLog @DingoResponse(DINGO_422): TdkGlobalSetController (GET/POST /pcdecoration/tdkglobalset, route aliases pcdecoration.tdkglobalset.info/save) for site-wide defaults and TdkGivenSetController (GET/POST /pcdecoration/tdkgivenset/{type}) for per-page-type overrides; TdkGivenSetMenuPermissionService performs the menu-alias check and TdkGivenSaveService the persistence, with theme's front controller exposing the read side as GET /api/v1/h5app/wxapp/pagestemplate/gettdk.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-tdkset/src/main/java/cn/shopex/ecshopx/tdkset/api/admin/v1/TdkGivenSetController.java#L78-L119",
+          "version": "repo-lines-v1:sha256:ec00dfcc1b2fbf7419d95423de71b02879b6390ea3f5897222bd7661459484a0:eyJzZWxlY3RlZExpbmVDb3VudCI6NDIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY5ZTA5ZTM3Zjc4YWU4MTFjZWRkNWJlMWRjZjUwOGQxNTk3ZGZjOTU1Y2ZkMjI3ZTZiOTVjN2IzZjY4NjNiMGQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ3ZGEyNzI4NDNkNDA5YjNiYjIzZjE4MzM0YWFjN2E3MjM3ODJkYTRmMDliMzYxNTg1YmE5ZjEyOTBiYzQ3YjIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ2YjgyZWY0ZDY5ZWYzN2ZhMDFmNzVmOGNlZjY2MWI0MjliNGFiMzJmMTU1MDA4YzUyMjg5OTU1NDY4YTM4NWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNlY2I3NzY1NjY0NGNlZjViOTdkNTllZGJhMGRiNTVjMjdiZWRiODVkYjRhMTU3ZmY0MTc1MTc1OWY3OGI2ODIifQ"
+        },
+        {
+          "resource": "repo://ecshopx-tdkset/src/main/java/cn/shopex/ecshopx/tdkset/api/admin/v1/TdkGlobalSetController.java#L46-L77",
+          "version": "repo-lines-v1:sha256:81bab675f07f58079f93a28179c73941535eb4df576eb8ada6831f302297c078:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVmNjE2ZDk4ZGJhODI3MTUzYjNjYTA4Mjc2MTllMWNmYWJiYTQzYTZjZGYzOWEzMTYwYTg1YzdmZmQwMTkyZDEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgyMTEzOWFiMjVjOGI0YzRmYmQ3OGNlM2U5ODlkOGFiNDkyZmFkM2I0YjIyOTU4MjUzMDIwYWZjNTExMWQ1MzgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFkYjU1MTk3YjAzNjFkYTYwOTFjOThkZmJkNDBhZDE5OGYxMDRhOTNhOThmMzllNWM3MGQ1ZGNlNjlhNTA3MGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImEwOGVhZTRkMmJhNTQ3ZjQ2YzUyODAyM2NiNzZkM2RkNGE5M2EzOWU1MTlmNzE4ZmYyNTM1YTI4Y2M1MDQ2MDkifQ"
+        },
+        {
+          "resource": "repo://ecshopx-theme/src/main/java/cn/shopex/ecshopx/theme/api/front/v1/PagesTemplateController.java#L186-L200",
+          "version": "repo-lines-v1:sha256:15883e8a9a54ab351b9d1006c6e20b8852866a298ac5bbeacdff45445d527128:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjExZDllNDUwNDRlZTc0OGM4YTQyYjlmYWQ2YTgwYWI2NDFkNjQ2Mzg5YjAyYjZhODc4NmFiNWIxZGQ1OGYxZDMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIyNzRiYjU2ZjQ2OTUwODlhZTI1YzJlOWFhYmMxODgyZTg0ZGQ2MmZhODJhM2IwMzQ5MWFlNTI5YjAyZGZlMTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY0MDE2NDMyNmU0NTY4YjQwMGNlMGEzYjJhNDI2ZmQ4ZTg3OWY3OGVkNjllMTIzYTBhODZmZDlhNzYxMjRjMTkifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_903fa168615642669eb0097b245e4a0c",
+      "statement": "ecshopx-comments (package-info: comments domain) is the product/order comment domain: admin CommentsController (/api/v1, @AdminAuth @ShopLog @DingoResponse(DINGO_400)) offers POST /comment (route alias comment.create), PATCH /comment/{comment_id} (comment.update) and GET /comments, the front CommentsController under /api/v1/h5app serves the member surface, and ShopComment{Create,Update,List}Service persist to shop_comments via ShopCommentsMapper; CommentsCreateRequestGate and CommentsMenuPermissionService implement the route-alias gates.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-comments/src/main/java/cn/shopex/ecshopx/comments/api/admin/v1/CommentsController.java#L47-L106",
+          "version": "repo-lines-v1:sha256:9efaaf80f61da88f2193bee532758ef8251ddd6b2c5881ee2955f35f0f277c39:eyJzZWxlY3RlZExpbmVDb3VudCI6NjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFiOGU0YjZlMGE0YjBjMjg3NjY4YzQxZTNhMDZhYWIzNDg2NWVlNWU2YmE3M2Q0Nzc2Yjc4MWFlODI4YjRkNjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU2ZTFlNzIzZWIyZGI5N2ZjYjRjMzQ5MWY1ZWIyYjQzN2QyYWU2MDJjN2QzNmM2ZDNmYTFhNWU4YjRhZDJkZDMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYzOTRiOTdjMTU3ZjNhZjA0OWVhNjFkMGY2N2U2M2JiNzQxNWU2OTViZDBlMTk3NzlkNTQ0NmY2YTE1MTZmNjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjlkMTM2ZGFjODI0YWM5MjUzMzVlMmM4Y2U2Y2U4YjRhNjkxODg0YThmZDJhNDhkODUwNWU4ZDhkNWI2MDYzMDgifQ"
+        },
+        {
+          "resource": "repo://ecshopx-comments/src/main/java/cn/shopex/ecshopx/comments/api/front/v1/CommentsController.java#L46-L86",
+          "version": "repo-lines-v1:sha256:170f789df79953bfedf42441c41935a8de6ae37627c4c6af178eabdbfad034f0:eyJzZWxlY3RlZExpbmVDb3VudCI6NDEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZmZThiNTc2ZWYwZTAzOGI3NTg5ZDk0MmUxY2EwNzRhMmMzODA0OTBlZjQwYmUzNjA2NTk0NDQ4MTk0Yzc5MzIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjViMTE5MDkxZGQ3ZjRiOGJmZjZkYjUzZDA1YmY3ZTY5YzI3MTBmY2YyM2Y1ZjM1OWI2NTYyYzYyYmM1MGY4NDEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM0ZGI2ZjhkZDgyY2ZmYTRmNzlkMmM3MDU2ZDI2YzNkNjg2ZGNkYTY1OGJjMWM2MjM4MmQ3ZmI2M2QwMDZmZjgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg4OTQ2N2Q5NTgyYzM4ZjM1MWJhMDZiMjRlNWJjYTRkODIwOGU5MjYzMjkzNDZiMzk2ZmYyYjZhNGIwNGRiYmEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-comments/src/main/java/cn/shopex/ecshopx/comments/service/CommentsMenuPermissionService.java#L31-L33",
+          "version": "repo-lines-v1:sha256:3b491a6ed3d6e847748181cff291173aed366cd694782f8879e1d0413d4b9297:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNzJmODVlNzE3MzVjZmU3YzYzNWVhZjRkNjljMDlhNWI3ZjEyZGQ3MTJlNjc1MjExZDkxMDVkNmFmYTg0YzE5MCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTM1ZDk5NDE2NGYwMWUyODE2YjI3ODY0NzNiZTIwMDNmNTJiN2QwMmUxM2I2NDNiYjEzMzA5MDFhY2Q5N2FkMiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMjljNGQwNzgwYjM3MjYzYjJmNTU3YWY1Yzg3MzMzOTRkM2IzYzZkZjY2OTY1ODYzZjMzYjYwOTljOGNlZjgwNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMWQ3YjdmMzU1MTU5YTY4MDhiM2IzMDQyYWI2YmIwYTFjODU3YjkzM2Q2ODg3NDRjODc0NTZlYjI2NTk0ZWIzMyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_2ac705b89c954a36aceb13134cbdea96",
+      "statement": "ecshopx-wsugc (package-info: user generated content) is the community module — posts, topics, tags, badges, post comments, likes, favourites, followers, messages, per-company settings — with admin controllers under /api/v1/ugc/{post,topic,tag,badge,comment,setting/point} and front controllers under /api/v1/h5app (e.g. POST /wxapp/ugc/post/{create,delete,share,like,favorite} and no-login GET /wxapp/ugc/post/{detail,list}); like/favourite/follower and comment counters live in Redis on the sharedStringRedisTemplate, and text/media are screened through WeChat content-safety services before visibility; NormalOrderPaySuccessWsugcDispatchListener is the order-pay-success dispatch hook whose applyAfterNormalOrderPaySuccess is currently an intentional no-op placeholder.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-wsugc/src/main/java/cn/shopex/ecshopx/wsugc/api/front/v1/PostController.java#L67-L402",
+          "version": "repo-lines-v1:sha256:b09fa0c7b2d8ee28d575990491dd1d7f4c08db074f61c71c8856684e519cd994:eyJzZWxlY3RlZExpbmVDb3VudCI6MzM2LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI2ZmU4YjU3NmVmMGUwMzhiNzU4OWQ5NDJlMWNhMDc0YTJjMzgwNDkwZWY0MGJlMzYwNjU5NDQ0ODE5NGM3OTMyIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0ZDVjODQxZGI1OTczMThiOWY1NTk0ZjE1YmZjYmY2ZjhmYjRjN2QyZjJkNTBiN2ExNDFhMTQ2NzMzZDk1ZGJlIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiIzOWVmNzA4NjYyMTM4YmE5ZTYzZTRmNGI0ZmM0NmQ1MDIwZThlNzkzNThhNjAwNDBlM2FkMDlkOWMyMWJhM2U3IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI5ZWZhNmZkNjllODNlZmQ2ODMxMWM1NWQwZGIzZDU3YjkxZjQ2MjU2MzgyMzUxMjkwYWI4MDAwMTk5YmM4OTAxIn0"
+        },
+        {
+          "resource": "repo://ecshopx-wsugc/src/main/java/cn/shopex/ecshopx/wsugc/service/WsugcNormalOrderPaySuccessApplyService.java#L21-L31",
+          "version": "repo-lines-v1:sha256:23015d2a97964ff795ac60a1b7606b0ccee0f72b26855c3e688cc40c1acce4c9:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJiMzM2YzQyYjJmNTIwN2I3NzVlNTBhOGRhY2UyZDZkMTViMjZmNjFlOGNkYTJjYTRkNDNmY2U0YWU0ODQ0ZjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFhMWIyNDM2ZTYyYjMxNWExNzU2ZjFhODNiM2JhM2NlNTBkNWUyOGU0ZjUyOGE1YTlhYjE2MjA5YTE1MWU1YzEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-wsugc/src/main/java/cn/shopex/ecshopx/wsugc/service/post/UgcPostLikeRedisService.java#L29-L29",
+          "version": "repo-lines-v1:sha256:656b7ade163bb90dc007b18c75ac704e86a226be17d08c5022004d875440ed64:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjU2YjdhZGUxNjNiYjkwZGMwMDdiMThjNzVhYzcwNGU4NmEyMjZiZTE3ZDA4YzUwMjIwMDRkODc1NDQwZWQ2NCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjU2YjdhZGUxNjNiYjkwZGMwMDdiMThjNzVhYzcwNGU4NmEyMjZiZTE3ZDA4YzUwMjIwMDRkODc1NDQwZWQ2NCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiN2U3OTJkOGE2N2I4NmIyYjAyOTlhOGQ4OTNhZGUyNWNhYmIwNGZkMzZkYmExMzk4MGY3NjU2YjE5NmJhNDFlOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzhiNjNiZmZkZjIxMDZjMTc0YzE1M2U5NTM0YjdkZjY0ZmNiMGRkZWI5ZDA4OTU3YTNlNjFhNDg5NWVmZDcyNyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_fc06957c8354470fb232c3b972683019",
+      "statement": "ecshopx-im is configuration-only customer-service chat settings: MeiqiaConfigService stores JSON blobs under im:meiqia:<companyId> and im:meiqia:distributor:<companyId>:<distributorId> on the sharedStringRedisTemplate, where the store-level blob only takes effect when the company-level is_distributor_open flag is true and per-channel URL defaults are patched back in on read; EChatConfigService does the same under im:echat:<companyId>; both degrade to defaults when the blob is missing or unparsable, and the front controllers hand the same configs to clients under /api/v1/h5app.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-im/src/main/java/cn/shopex/ecshopx/im/service/EChatConfigService.java#L95-L95",
+          "version": "repo-lines-v1:sha256:0590115c3353ef49c90aef0c32eb352ea94d498dbe5c172e8fbe712cff1db2f0:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDU5MDExNWMzMzUzZWY0OWM5MGFlZjBjMzJlYjM1MmVhOTRkNDk4ZGJlNWMxNzJlOGZiZTcxMmNmZjFkYjJmMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDU5MDExNWMzMzUzZWY0OWM5MGFlZjBjMzJlYjM1MmVhOTRkNDk4ZGJlNWMxNzJlOGZiZTcxMmNmZjFkYjJmMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZWViYWEwNjdjNjRhYTdkZDBmOGViMGNjNTU2Njc0N2I0NjNkM2FhYTEzMTc4OTQ3MWNlMzBkNGVhNjRhMDY3OCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjIsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDAzOTk0NWY3MTNjZWNjYzJhMmJlOTgxYWI1YzVlZWEzN2Y5NWY5NzY5ZTU3NWNkOGVkOWE5ZmNiYWZkZjA2YSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-im/src/main/java/cn/shopex/ecshopx/im/service/MeiqiaConfigService.java#L218-L222",
+          "version": "repo-lines-v1:sha256:f253a2ecebe9084ebe39c5f6d9e3bd8a03ac4c2010b9a0da8e1b60384ecb47d6:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTAyODM4NDNmYjFjODk5NTNjOGIzYjQxY2M1ZjM5NWYzMDAwZDQ3NmFmNDNiMDdlMTI1MzkxNWFhMjJjY2Q4ZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjI1MGRlMTBkNWRkMWRkNjA3Mzg3OWYzZTFhMTBkMDgwYmRiNzEwZDM5N2NhMTA5OWZjOTVjNDI2MDYxMjI4YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZWViYWEwNjdjNjRhYTdkZDBmOGViMGNjNTU2Njc0N2I0NjNkM2FhYTEzMTc4OTQ3MWNlMzBkNGVhNjRhMDY3OCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjIsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDAzOTk0NWY3MTNjZWNjYzJhMmJlOTgxYWI1YzVlZWEzN2Y5NWY5NzY5ZTU3NWNkOGVkOWE5ZmNiYWZkZjA2YSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-im/src/main/java/cn/shopex/ecshopx/im/service/MeiqiaConfigService.java#L44-L135",
+          "version": "repo-lines-v1:sha256:3dca0153cf551e228024e93c8f4b4353f0bfbc595c122466ac8edc6ba6bd28a9:eyJzZWxlY3RlZExpbmVDb3VudCI6OTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYyZDVlOTY5NWE4ZTA5MGM0ZmQwYmVjNzVhZGFkYjAxMzE1YTY1MmI1NWNiY2JiNTM3ZjBjMzEyODA4OWE2NTkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ2YjgyZWY0ZDY5ZWYzN2ZhMDFmNzVmOGNlZjY2MWI0MjliNGFiMzJmMTU1MDA4YzUyMjg5OTU1NDY4YTM4NWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI5OGJmY2Q0YzUxNGM1OTc4MjY5M2NkMWE5MjcyNzMzYjNkMGZlMGRiYTQ4ZDE1M2ZjZjYxMDgzZjdiOGJkZTMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_64ad02578a0a4caea9b96c33871ace5a",
+      "statement": "ecshopx-form (package-info: forms and transcripts) has two admin controllers under /api/v1: TranscriptsController (POST /transcript, GET/PATCH/DELETE /transcript/{transcript_id}) over Transcripts plus TranscriptProperties (form schema as key/value rows) and UserTranscriptsController (POST/GET /usertranscript) over submitted UserTranscripts, with FormRoutePermissionService as the route-alias gate; it is the survey/form backend that the selfform_registration_record espier import type in ecshopx-selfservice feeds.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-form/src/main/java/cn/shopex/ecshopx/form/api/admin/v1/TranscriptsController.java#L52-L78",
+          "version": "repo-lines-v1:sha256:093c0fd3590ef16efede489251008b7e0e1f38560cd1f8dd3f5ddc506384381d:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE4MzA4NTJmY2MyYTM2ZGNjNWRlODE1YzRhMmU4YjY5NDBhZGQ5N2YxZDY4MTEyZWFhMjhhNTA0OGQ4YTZmNGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRiOGU4Mjk1YzQwMTQzM2Q3YTIxYTMxNGE0Yjk4YTNiNDFmZGNjOGE3ZDQwZjhlMTlkZjA2ZTVhZmVhN2I1MDAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM2OGM0YmZkMTM3OGUzMWFmMGRhYjRiNzUwMWMyZjBmMDg1MzhkOGNiZDMwNDBlMDYzMjlhMWM1NGFmNTg5YmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImEwZTBjZGViNzQ5ZGMwY2RlMzgzZDcwZDhhODEzY2I1YmZiN2M1ZTY2ZjlkN2FkNDc4YzM2ZGRkNzU4ZjU0ODAifQ"
+        },
+        {
+          "resource": "repo://ecshopx-form/src/main/java/cn/shopex/ecshopx/form/api/admin/v1/UserTranscriptsController.java#L57-L80",
+          "version": "repo-lines-v1:sha256:12c2f8b30a906f448f4905556f5f281775422263730fb495422863c756fddb5d:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE4MzA4NTJmY2MyYTM2ZGNjNWRlODE1YzRhMmU4YjY5NDBhZGQ5N2YxZDY4MTEyZWFhMjhhNTA0OGQ4YTZmNGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM1NDMxMWQxYmRlOTFmNGYzZTg1ODA3OTY2Zjc3YWZkMjlmZTk3MWExYjZhZmY1YjEwNDc0NWFlMzRjMDliMGMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcwZjAxYzdmNTFmN2FmYWZhOTcwNWZjMzdmZGU4NGRkOGUyMDYyNTQ2N2I5Zjg4OWZkNzRlZDg2Zjg5MDQ3YzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjVlMWUwMzE0MTIxMTZjN2RmZDRlMWM4YWFiYzUwM2ZiMjM5ZjgyMzYxNzExZDRlNTRiZmEwYjAwOTQ0ZTY2NjMifQ"
+        },
+        {
+          "resource": "repo://ecshopx-selfservice/src/main/java/cn/shopex/ecshopx/selfservice/service/espier/SelformRegistrationRecordEspierImportRowSink.java",
+          "version": "repo-file-v1:sha256:9a47965e3abaf91b27c2aae592538c8994e706da18a87f78f68c24bbe1dc535c"
+        }
+      ]
+    },
+    {
+      "id": "claim_4cbbeb6a87c548d3af450393acebbec5",
+      "statement": "ecshopx-one-code (package-info: one item one code) has two admin controllers under /api/v1: BatchsController (POST/GET /onecode/batchs, GET/DELETE/PUT /onecode/batchs/{batch_id} and GET /onecode/wxaOneCodeStream for the WeChat mini-program code stream) and ThingsController (POST/GET/GET{id}/DELETE/PUT /onecode/things) over the Things/Batchs entities, with OneCodeBatchsWxaQrcodeService generating the wxa QR codes and OneCodeShopRoutePermissionService/OneCodeShopOperatorContextGate as the permission/context gates.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-one-code/src/main/java/cn/shopex/ecshopx/onecode/api/admin/v1/BatchsController.java#L64-L109",
+          "version": "repo-lines-v1:sha256:803952858f926eea2d5b98872939285de5c71c8c5a4a33e4153d2f3e85c49969:eyJzZWxlY3RlZExpbmVDb3VudCI6NDYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE4MzA4NTJmY2MyYTM2ZGNjNWRlODE1YzRhMmU4YjY5NDBhZGQ5N2YxZDY4MTEyZWFhMjhhNTA0OGQ4YTZmNGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE1OTY3ZGY0OTg5MWMyZDI0ZGEyYzFmMjFiMDljMjMxOTA3OTVkZjg0Y2NmYWFlM2NkZDJhYjZmMTBjNzE5ODYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE4OWUwM2YyMDg4NWViMDQ5NmQxOGIxYmNiZTdhMzQ5MjE1MmQ3ZWRkYmQ3ODk0YzAyYWU5NTJiMzE3NDUwYWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJjNzVkODg2MDE1ODYyNWQ2MTExMjlhNjgxYTFhMWM0ZmNmNmQxNWVmZDYxYmMwZDZiNGQ0YTE4N2EwZGVjZTMifQ"
+        },
+        {
+          "resource": "repo://ecshopx-one-code/src/main/java/cn/shopex/ecshopx/onecode/api/admin/v1/ThingsController.java#L63-L103",
+          "version": "repo-lines-v1:sha256:b01c9aa0328dcc875328e5af4e26365c80965203d3ba38035d51fdbdd02bafa8:eyJzZWxlY3RlZExpbmVDb3VudCI6NDEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE4MzA4NTJmY2MyYTM2ZGNjNWRlODE1YzRhMmU4YjY5NDBhZGQ5N2YxZDY4MTEyZWFhMjhhNTA0OGQ4YTZmNGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU1NzA1NzVmNmNhYmYxYmJmZjJmNDQxZWY2NmRiOTAwNTcxZjJhZTAxOWYyNTg5NzczOTVhY2FjYWQyYWNjY2EiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRjZDIzMDBlNDUyMDg5MTlmMDUzZDM2NWMwMjMxZmM0MjEzZTZmYzJkNjQ3MDE4YzRlOTNhNTI5NzViZDNkY2QiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJhOTkwNWUyYzk5NDA2OTMyZGFhMDEyYmYyM2U4N2JhNzI2OGM4MGQ5ZDY2YmJlNTBkMTRiYTRjNzY5ODBiODEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_6be015a6a50b4ca9a382b26c984cc0bf",
+      "statement": "ecshopx-tb-items owns no controllers: the module contains only its package-info.java (declaring an external-goods-sync domain that may host service implementations without a v1 HTTP stub), and the actual Taobao item import behaviour lives in the upload_tb_items espier upload type — the handler registered by EspierUploadHandlerBeans (with the xlsx-only check) and the row work in goods' UploadTbItemsEspierImportRowSink → UploadTbItemsImportRowService.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/upload/EspierUploadHandlerBeans.java#L184-L196",
+          "version": "repo-lines-v1:sha256:98b5d05252c8eab7693fc3854c34cb914ab5fc75926bcbf0dc418a21852fa1ed:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcyMWM3NjAzYTEzYzMyYzU0MWZkNTVmMmNkM2UxMTJiNWMxZWZmNmQ0ODA1OGFhNmYxMzc5ZWVmMjE3NGYxYzMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhjNTBlNzM0ZDY3YjYxZWYxNWM3OTgzNzllYzM1MmQ0ZmQ0ODEyYTI3MDliNmNmMjc0MzM5ZjJjNzlkM2U0MGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJmN2YxZDQzMzNlNzBjMzU5ODYyMTU4MjlkZjNhMWQzNzJmMDA5ZjY0NGNkZGYwNTZmZGU1NzY2YTk0MjE2YTQifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/espier/UploadTbItemsEspierImportRowSink.java#L23-L47",
+          "version": "repo-lines-v1:sha256:61d8dba3e7f652f8202b9eb1711fede9a5a5aaa2462c323d0c4890b6363234aa:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4ZmExZTlmNDQ5NDlmYTg5YTNiNDJiMDQ5MmRkYmRmZmEyZWI3NjQ4NDhkMzU3NzhjOWZiNTNjMjA3ZWJkYmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk3OGQ3NWRjMzgwY2YzNzJiNmQ5OWNkNjUxYTRhMzJhMzJlZGFkYTU3OGEzZTc4Nzg4YzM0M2Q1NGJhNmVlYTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-tb-items/src/main/java/cn/shopex/ecshopx/tbitems/package-info.java#L17-L20",
+          "version": "repo-lines-v1:sha256:af3005858d0f3346f12a30f0d3cc9d79737e7857b4c713d710ec65c706ca6ebe:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZWFmMjJjZjA3MzI1OTJjMjQ3MTQxY2JlNjFlZmExMTAxMjYxMmY1YTMxMjJiOWFmOWJiYWY1MmY1NzI0ZDE5NCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTA5ZWJiM2ZmMzBiYWRjNDQzMTJmOGU5NzUzNmQwZGMxY2M1NDJmZjVhOWQ0ODQyODI4ODhkN2FhN2RhMzAwZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjk2YTA5MzE1YzVhMDU1NGQwMjU4ZjE1NzljOWE3MDJhZTZlNWVmNDUxZTUxNGRiY2NiMWRkZTFkNGUxNzE5MiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_1fc4991644d64e0d93273ad14df2b307",
+      "statement": "ecshopx-kujiale (package-info: Kujiale domain) serves the designer-works showcase — admin KuController (/api/v1: bind-item/unbind-item/items/list) and front KuController (/api/v1/h5app) — and its two cross-bundle integrations are: KujialeDesignerWorksByItemIdPortImpl, which implements the KujialeDesignerWorksByItemIdPort declared in ecshopx-goods so goods detail can decorate itself with linked design works, and KujialeH5CitiesClient, which fetches https://qhstatic-cos.kujiale.com/openapi/cities.json with a 10 s connect/read timeout and an optional insecure-TLS RestTemplate behind ecshopx.kujiale.cities-json.insecure-tls.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-kujiale/src/main/java/cn/shopex/ecshopx/kujiale/api/admin/v1/KuController.java#L49-L68",
+          "version": "repo-lines-v1:sha256:79a65f0143e4f3404745bdaf98d37b2de761e43eec831cd5c9d3ab473eabedb0:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE4MzA4NTJmY2MyYTM2ZGNjNWRlODE1YzRhMmU4YjY5NDBhZGQ5N2YxZDY4MTEyZWFhMjhhNTA0OGQ4YTZmNGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNiZTQ5NmZjNjlkNGY1ZmQ5NTZiODUzYjQxZDcwNDZhODQwYjI1OTJkNzU5OTc4NjcxZjM5MzRkMTRjMjhkZDkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE5ZjY1OThkOGNkZDM3MTVlMWFjNTYzMWZlZGE2Y2U1MDQwNmU5NWRiNjdiY2RmNDkxMDg5ODQ1ZjEzMGQ3MzYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM1Njk3NjZiMzlmNWQ1OWYwMzQ4YjBkM2YzYWEwNjg5NDI4MDRmZGMzZDk2ZmI2YWMzYTRkZWFjMTA5NGIxYzQifQ"
+        },
+        {
+          "resource": "repo://ecshopx-kujiale/src/main/java/cn/shopex/ecshopx/kujiale/integration/KujialeDesignerWorksByItemIdPortImpl.java#L29-L59",
+          "version": "repo-lines-v1:sha256:2377cef903706d75d25ff80e2b20371a7bca5fe2bcde84ee9fe546598d089de6:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4ZmExZTlmNDQ5NDlmYTg5YTNiNDJiMDQ5MmRkYmRmZmEyZWI3NjQ4NDhkMzU3NzhjOWZiNTNjMjA3ZWJkYmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk3OGQ3NWRjMzgwY2YzNzJiNmQ5OWNkNjUxYTRhMzJhMzJlZGFkYTU3OGEzZTc4Nzg4YzM0M2Q1NGJhNmVlYTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-kujiale/src/main/java/cn/shopex/ecshopx/kujiale/integration/KujialeH5CitiesClient.java#L34-L61",
+          "version": "repo-lines-v1:sha256:7e5a6b913fe5d1732cece72b115f2cc8b1d7b7634478f186f8c740847b6db492:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJiMzM2YzQyYjJmNTIwN2I3NzVlNTBhOGRhY2UyZDZkMTViMjZmNjFlOGNkYTJjYTRkNDNmY2U0YWU0ODQ0ZjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkwM2MyNTU5YjhmODI4MzVlYzU2ZDRjMGVhNDU3NTE0ZDMxZDE4Nzk5ZjQ3ZTE3MzU3Y2QxNmU4ZWQ1M2E1OTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRkYjZlMjYwM2FiZjIyNDg2YTI3MDBmYWJiZmZlZTkzNTM2OGYyN2UzNGY0NDlkNDcyNmZjMzY2YzY5MmVlMDIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_62b5add71bde49728368602a4b71285b",
+      "statement": "ecshopx-shopex-ai's outfit generation is queue-or-direct behind shopexai.outfit.use-queue (default true): OutfitAnyoneGenerateOrchestratorService.generateOutfitQueued inserts a MemberOutfitLog row (UUID request_id as cache key), validates the model image, writes a pending status into OutfitGenerationResultCacheService (plain StringRedisTemplate SETEX, 3600-second TTL) and enqueues GENERATE_OUTFIT_JOB on the slow Redis queue via bootstrap's GenerateOutfitJobDispatchPublisherImpl (2 retries / 3 s); GenerateOutfitJobHandler then calls OutfitAnyoneGenerationService.generateOutfit and stores either the result (plus job_completed/completed_at) or an error:true marker back into the same cache key; the controller currently hardcodes companyId=1, operatorId=1, distributorId=0 and GET /status/{task_id} is an empty-200 stub.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/GenerateOutfitJobDispatchPublisherImpl.java#L40-L69",
+          "version": "repo-lines-v1:sha256:71ecfff41c154da3188dc049dcee67611418307846228beb2e2d691c050af951:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwOGNjMTVkMDc1NGI2ZjIxZjcxZTBiMDNiOWRkNzg2YmM5ODgwMDNiMmI1NzU2NGM2MDUwYTgwMjI1MTdjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE0ZGJiNjE0NzA1MDU0NGY0NDhmYjk2ZmIxZmNkMmYyODE3MjQxY2ZkZGYxNTVjM2M4MzRjZTA3YjM4YTljMTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-shopex-ai/src/main/java/cn/shopex/ecshopx/shopexai/api/admin/v1/OutfitAnyoneController.java#L34-L69",
+          "version": "repo-lines-v1:sha256:4dbd4fcaa8d835a8d4eef16f917c48e9d9be7063064d499780c9cc8bf8353a61:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFiOGU0YjZlMGE0YjBjMjg3NjY4YzQxZTNhMDZhYWIzNDg2NWVlNWU2YmE3M2Q0Nzc2Yjc4MWFlODI4YjRkNjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYzOTRiOTdjMTU3ZjNhZjA0OWVhNjFkMGY2N2U2M2JiNzQxNWU2OTViZDBlMTk3NzlkNTQ0NmY2YTE1MTZmNjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-shopex-ai/src/main/java/cn/shopex/ecshopx/shopexai/dispatch/GenerateOutfitJobHandler.java#L28-L65",
+          "version": "repo-lines-v1:sha256:3df55a37a69903fdad93a830386d5522950d3e624fe08edeb618bc22eb3f9912:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUxYjMyOGU4NmIxN2U4MDUzMGFmMDBjMjRhYzhlYjIxODI4MTkzZGI4Y2M2YjkwNzdiN2Q5N2IyMGM1Y2M1NjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcyY2Q2OWIyM2NmNzU4MDE3NjVjNDIyMDViN2VlNjgzMzIwOWI1OWMyMjhmNGU3NTNhMjU4OGUyNzA2N2RkMTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRmMzhhMTdjOGEyMGI2OWM2ZTNiMmJiODRiZGUxNjRiNDdjNDRhMDE4ZWE1ZDdiMzYwZDlkZDJmOTgzNDc2M2MifQ"
+        },
+        {
+          "resource": "repo://ecshopx-shopex-ai/src/main/java/cn/shopex/ecshopx/shopexai/service/OutfitAnyoneGenerateOrchestratorService.java#L58-L86",
+          "version": "repo-lines-v1:sha256:766c6990bb307d521c454db9918b452af0e3fd717414181dabe5488a73ceb64d:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg3OTM3NWVjNjFmMTMxNjVmMzQ1NTJlYjUyZGZkMDdjZjcwMTQ4ZDJmOTI4ZjVhM2QxODg2ZGMxMDI5OTZjY2QiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJhMjM5MzYzY2RiZjA5NzU3N2JjMDM4NTA0ZDFiM2MxYmEyNzI2YmY2Y2RiYmFiNzg3ZjEzNGZjMmQ1MDU5NTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjEzZjcxODZkY2VhZDZjNmM1OGI4OTdiZTJiZjU2MjkwYzg5MmFlMWVkZWQ5NTExOGVmYTY5MmQ0M2EwNTNlYWEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_85cf3c4b51e64846a297e24e515536a1",
+      "statement": "The supporting bundles divide their Redis usage across named StringRedisTemplate beans defined in bootstrap's MultiRedisConfig, where companysRedisTemplate is @Primary: datacube counters use datacubeStringRedisTemplate (ecshopx.redis.datacube.database, default 0), the UV bloom filter and all UGC/IM blobs use sharedStringRedisTemplate (spring.data.redis.database), the agreement throttle uses companysRedisTemplate, the address tree cache uses espierStringRedisTemplate (ecshopx.redis.espier.database), and the front upload-image day quota uses membersStringRedisTemplate — so the qualifier matters for where a key physically lands.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MultiRedisConfig.java#L102-L157",
+          "version": "repo-lines-v1:sha256:455d667c231317326bae9a50cef008a9e0023c630c56927570af6fa09172b428:eyJzZWxlY3RlZExpbmVDb3VudCI6NTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAzZjQ1NjM0YThjYmIzMTM3OThjZjVlNTM1ZDk1NTYwYTllMzY0MzIwZmQ5NjUzY2QyMjVlMTJmMTgyYTA3ZDUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM3Yjc3MDcxYWZlMTQyMWRhZmRmNGQ3NmFjM2EyNzZlYWU4Y2NkODZjYTk5ZTZmZDNhNGQ2OTdhNzcyOTZlOGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAzOTE2MDQyYWYyMGE3ZjU1YWNmMTQzNjBhZmExYzYzYzY2NWIyZjQyNGU0MGM2MGI0MDQ5MTE0NGE2NTU1NzgifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MultiRedisConfig.java#L180-L195",
+          "version": "repo-lines-v1:sha256:1096fa599c3a398ad3054371a294f375537edd60a1865757c9d988bd7fde6eb3:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkwNmNlNzNkMTJkMGQyMjJhM2U4YTg5ZmI5MzJkZjQyMzk3MmI3YjQwNjM1MzRiOGYzYzkyNmYzMDNjODg5ZjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFmNmRkODcxNjg2ZWE1YjllMzM4YmUwOGU0ZWYyNzAwOTAzNDYzNTdjNTk1ZjZlOTgyYjBkMjQzYTJjNmE0MzkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU4MDJmNDU1MThlZjA3YmFlMjExZGVlZDllNTc1ODBiOGYxNGU2YTgxNzE3YzhkNDZiMGJkNGQ1YmI0MjY5ODkifQ"
+        },
+        {
+          "resource": "repo://ecshopx-data-cube/src/main/java/cn/shopex/ecshopx/datacube/service/TrackViewNumService.java#L38-L45",
+          "version": "repo-lines-v1:sha256:0c8e20b4fc2c3c4286d908cc0f374048d0ea371c174c89a9e775e481a2fa1a8e:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOGIwOTVmMmQ5NTE1ZTVlMWQzOWViZGFkMWRhZDhjMmU5NDhmZTljMGZiZTg5YzVmZDYzOWZmMzhlZTk5ZmRkOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTNlZGNkMmU1MDAxMTczMDA5ZTgwNjAxMGM4MTE3YjQ1NDI0NzYwNjk5YWNhZmQ3ZDY5Y2I4YTg1NTM5YzA4MSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzM5YjI5ODEzNGMyMTc3MTQyY2I2MGI4MWZkMmVlNTIwZDFjYjQ5NjU0NzUyODQ0YTVhNTc4NTc4NjIxM2M4MyJ9"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/address/EspierAddressTreeApplicationService.java#L44-L51",
+          "version": "repo-lines-v1:sha256:7c91e522ed8ad516e647672d98cdddc579cf85391c466add29fa678e2d889c9f:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTkzYzkyM2ZjNDkyMzdmMDQwOWQ2ZmM2ODJiODM2M2Q0YTM2ZmYyMjViYjMzYWVjODE2Zjc0Yzk2MDI4MDU0OCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZWZjMjdkODRjNzYxM2E4Mjk5NTc5NDg4NGY5ZTY2Yjg5YTcxNWE0M2NhZThkYWEwZjI0NDUzMzYwNjNhNmI4ZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiY2JlZDNmNzMyNTJhZjU3ZjkyOTk0N2YzODUwMDBiMWMyMmI4NTk3YTk4NzFkZDAxMjUzMmJkNGRiMjIyYzMxMyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_eb91ee2304de464b83e05851334cbf12",
+      "statement": "Espier's export half reads the filter blob for CSV export from the export_key:<key> entry on the sharedStringRedisTemplate (ExportCsvDataService), and ExportDataController (/api/v1/espier, @AdminAuth @ShopLog @Activated(espier.export.file.down)) returns HTTP 200 with the error semantics inside data (status_code 500, key error) when the export session key is missing rather than an HTTP error status.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/api/admin/v1/ExportDataController.java#L50-L63",
+          "version": "repo-lines-v1:sha256:2bebc89dfe55bd40452a49a917c35b465e048875b00b1af0652b2aeb1c412479:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVkNmQwMDIxMzlhMTIzMjlmZmZmMGZkNGRhYjk1ODY0MmZjODM5ZjdjMDRlZTc5MDYwMjEzM2VkYTIxMmFkYjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJhNzBhN2ZkNDQzNmI3NzQyNTkwOWI1OGZkYTRlZWEzNWQyMjA2ZTM1NTY0NzM3YmIzMWQ4MzNmZGIxMjY3NmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/ExportCsvDataService.java#L44-L67",
+          "version": "repo-lines-v1:sha256:f7d2711c074a53224d8d3b33516a7270654182846220af89fb2ef59b9bd5585e:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJkN2Y3YmFiOTYwZDU2ZmJiNzRjZDkxOTJmYzZiNjFlYTIwNjNjYWQ4NmIzNjU2ODg0NGU0NjhmYWZkNzYwNjkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA3OTEzODI5NDhiYzczNGM4YmE4OGI4NmU5MTk3YTYyYjczNzRmNTkxMDAzYWE3ZWEyZTEwZGUyNzQ5ZmExMGQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQzNzNkZmU2MWNhYWI3Mjc2ZmZhYjdlN2I5ZGFhNDlkZmRjY2IyYjFmODUyNmRlZTJjYmYzOGQzOTI4ZGRlMGIifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.2",
+    "at": "2026-10-21T12:26:22.580Z"
+  }
+}

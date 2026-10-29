@@ -17,7 +17,7 @@
 package cn.shopex.ecshopx.promotions.dispatch;
 
 import cn.shopex.ecshopx.common.dispatch.DispatchHandler;
-import cn.shopex.ecshopx.promotions.service.SmsSendTestService;
+import cn.shopex.ecshopx.companys.service.operator.sms.CompanySceneSmsSendPort;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,10 +28,10 @@ public class MerchantResetPasswordNoticeJobHandler implements DispatchHandler {
 
 	private static final Logger log = LoggerFactory.getLogger(MerchantResetPasswordNoticeJobHandler.class);
 
-	private final SmsSendTestService smsSendTestService;
+	private final CompanySceneSmsSendPort companySceneSmsSendPort;
 
-	public MerchantResetPasswordNoticeJobHandler(SmsSendTestService smsSendTestService) {
-		this.smsSendTestService = smsSendTestService;
+	public MerchantResetPasswordNoticeJobHandler(CompanySceneSmsSendPort companySceneSmsSendPort) {
+		this.companySceneSmsSendPort = companySceneSmsSendPort;
 	}
 
 	@Override
@@ -40,14 +40,14 @@ public class MerchantResetPasswordNoticeJobHandler implements DispatchHandler {
 		String mobile = payload.get("mobile") == null ? "" : String.valueOf(payload.get("mobile"));
 		String passwordPlain = String.valueOf(payload.get("password"));
 		try {
-			smsSendTestService.sendTemplatedNoticeSms(
+			companySceneSmsSendPort.sendSceneTemplatedSms(
 					companyId, mobile, "merchant_reset_password_notice", Map.of("password", passwordPlain));
 		} catch (RuntimeException e) {
-			log.debug(
-					"merchant_reset_password_notice failed companyId={} mobileTail={} err={}",
+			log.warn(
+					"merchant_reset_password_notice failed companyId={} mobileTail={}",
 					companyId,
 					maskTail(mobile),
-					e.getMessage());
+					e);
 		}
 	}
 

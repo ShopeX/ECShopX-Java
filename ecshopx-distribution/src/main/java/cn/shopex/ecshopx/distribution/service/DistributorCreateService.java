@@ -104,6 +104,7 @@ public class DistributorCreateService {
 		e.setRegions(jsonOrRaw(merged.get("regions")));
 		e.setRegionsId(jsonOrRaw(merged.get("regions_id")));
 		e.setIsZiti(truthy(merged.get("is_ziti")));
+		e.setIsPlatformStoreBuy(truthy(merged.get("is_platform_store_buy")));
 		e.setIsDelivery(truthy(merged.get("is_delivery")));
 		e.setIsSelfDelivery(truthy(merged.get("is_self_delivery")));
 		e.setShopCode(shopCode);

@@ -72,7 +72,10 @@ public class NormalOrderAdminCreateUserOrderParamBuilder {
 		state.getParams().put("promotion", "normal");
 		state.getParams().put("order_source", "shop_offline");
 		state.getParams().put("is_online_order", Boolean.FALSE);
-		state.getParams().put("receipt_type", "ziti");
+		// Align PHP NormalOrder create params: fastbuy → logistics + cart_type
+		String cartType = firstString(mergedInput.get("cart_type"), "cart");
+		state.getParams().put("cart_type", cartType);
+		state.getParams().put("receipt_type", "fastbuy".equals(cartType) ? "logistics" : "ziti");
 		state.getParams().put("order_type", "normal_shopadmin");
 		state.getParams().put("source_from", "dianwu");
 		state.getParams().put("pay_type", firstString(mergedInput.get("pay_type"), "pos"));
@@ -82,6 +85,20 @@ public class NormalOrderAdminCreateUserOrderParamBuilder {
 		state.getParams().put("remark", firstString(mergedInput.get("remark"), ""));
 		state.getParams().put("distributor_id", parseNonNegativeLongLoose(mergedInput.get("distributor_id")));
 		state.getParams().put("user_id", uid);
+		for (String addrKey :
+				new String[] {
+					"receiver_name",
+					"receiver_mobile",
+					"receiver_zip",
+					"receiver_state",
+					"receiver_city",
+					"receiver_district",
+					"receiver_address"
+				}) {
+			if (mergedInput.containsKey(addrKey)) {
+				state.getParams().put(addrKey, mergedInput.get(addrKey));
+			}
+		}
 		if (userinfo != null) {
 			state.getParams().put("mobile", stringOrEmpty(userinfo.get("mobile")));
 			state.getParams().put("authorizer_appid", stringOrEmpty(userinfo.get("woa_appid")));

@@ -50,8 +50,10 @@ public class AftersalesApplyParams {
 	private String description;
 	private Object evidencePic;
 
+	/** Accepted for API compatibility. Quantity-split apply ignores it and recomputes per item. */
 	private String refundFeeRaw;
 
+	/** Accepted for API compatibility. Quantity-split apply ignores it and recomputes per item. */
 	private String refundPointRaw;
 
 	private Integer freight;

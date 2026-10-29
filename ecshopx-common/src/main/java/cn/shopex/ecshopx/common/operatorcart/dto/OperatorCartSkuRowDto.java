@@ -28,6 +28,12 @@ public class OperatorCartSkuRowDto {
 	/** 销售单价，分 */
 	private int unitPriceFen;
 	private int store;
+	/** 配送维度总部库存标记（店铺商品 is_total_store）；null 表示未知。 */
+	private Boolean isTotalStore;
+	/** 供应商共享/物流仓可售库存。 */
+	private int logisticsStore;
+	/** 店铺独立库存快照；null 表示行上无 distributor_store 键语义。 */
+	private Integer distributorStore;
 	private boolean saleDisabled;
 	private String itemCategory;
 	private Integer brandId;
