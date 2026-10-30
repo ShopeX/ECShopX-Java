@@ -20,6 +20,7 @@ services:
   mysql:
     image: ${MYSQL_IMAGE:-mysql:8.0}
     container_name: ecshopx-mysql
+    platform: linux/amd64
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
@@ -49,6 +50,7 @@ services:
   redis:
     image: ${REDIS_IMAGE:-redis:7-alpine}
     container_name: ecshopx-redis
+    platform: linux/amd64
     restart: unless-stopped
     command:
       - redis-server
@@ -98,6 +100,7 @@ services:
     # Runtime base from private registry; jar + entrypoint/nginx from host mounts.
     image: ${APP_IMAGE:-ecshopx-java:17-node22-openresty}
     container_name: ecshopx-app
+    platform: linux/amd64
     restart: unless-stopped
     entrypoint: ["/bin/sh", "/data/httpd/ECShopX-Java/docker/app-entrypoint.sh"]
     depends_on:

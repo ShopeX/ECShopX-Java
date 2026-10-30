@@ -401,7 +401,7 @@ deploy_ensure_bind_mount_traverse() {
 
 compose_up() {
   release_log_info "docker compose up -d ..."
-  if ! compose up -d; then
+  if ! compose --progress=plain up -d --quiet-pull; then
     release_log_error "compose up 失败"
     compose logs --tail=80 || true
     return 1
