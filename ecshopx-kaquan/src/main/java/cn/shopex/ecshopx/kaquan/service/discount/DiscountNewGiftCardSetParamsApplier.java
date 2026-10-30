@@ -80,13 +80,14 @@ public class DiscountNewGiftCardSetParamsApplier {
 		params.remove("end_time");
 		Object distRaw = params.get("distributor_ids");
 		if (distRaw instanceof List<?> dl) {
-			if (!dl.isEmpty()) {
-				List<Integer> distributorIds = parseJsonIntList(distRaw);
-				if (!distributorIds.isEmpty()) {
-					params.put("distributor_id", distributorIds);
-					params.remove("distributor_ids");
-					params.put("use_all_shops", "false");
-				}
+			List<Integer> distributorIds = dl.isEmpty() ? List.of() : parseJsonIntList(distRaw);
+			if (!distributorIds.isEmpty()) {
+				params.put("distributor_id", distributorIds);
+				params.remove("distributor_ids");
+				params.put("use_all_shops", "false");
+			} else {
+				// 空店铺列表 = 全部店铺适用；必须带上 distributor_id，INIT→NORMAL 升状态才认
+				applyAllShopsDistributor(params);
 			}
 		} else if (distRaw != null && StringUtils.hasText(String.valueOf(distRaw).trim())) {
 			List<Integer> distributorIds = parseJsonIntList(distRaw);
@@ -95,8 +96,7 @@ public class DiscountNewGiftCardSetParamsApplier {
 				params.remove("distributor_ids");
 				params.put("use_all_shops", "false");
 			} else {
-				params.remove("distributor_ids");
-				params.put("use_all_shops", "true");
+				applyAllShopsDistributor(params);
 			}
 		}
 		Object ut = params.get("user_tag_ids");
@@ -132,6 +132,13 @@ public class DiscountNewGiftCardSetParamsApplier {
 		if ("forbid".equals(DiscountCardParamNormalize.stringVal(params.get("use_all_items")))) {
 			params.put("use_all_items", "false");
 		}
+	}
+
+	/** 不选店铺 = 全店铺；写入空 distributor_id 供更新升状态与 ColumnApplier 使用。 */
+	private static void applyAllShopsDistributor(Map<String, Object> params) {
+		params.put("distributor_id", List.of());
+		params.remove("distributor_ids");
+		params.put("use_all_shops", "true");
 	}
 
 	private List<Integer> parseJsonIntList(Object raw) {

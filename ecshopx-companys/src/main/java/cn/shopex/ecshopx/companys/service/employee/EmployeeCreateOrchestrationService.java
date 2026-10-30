@@ -18,6 +18,7 @@ package cn.shopex.ecshopx.companys.service.employee;
 
 import cn.shopex.ecshopx.common.exception.BadRequestException;
 import cn.shopex.ecshopx.common.exception.ResourceException;
+import cn.shopex.ecshopx.common.util.MobilePhoneValidator;
 import cn.shopex.ecshopx.companys.dto.DistributorIdRef;
 import cn.shopex.ecshopx.companys.dto.EmployeeCreateRequest;
 import cn.shopex.ecshopx.companys.mapper.DistributionDistributorSelfReadMapper;
@@ -31,7 +32,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Pattern;
 import org.springframework.stereotype.Service;
 
 /**
@@ -42,8 +42,6 @@ public class EmployeeCreateOrchestrationService {
 
 	private static final Set<String> HTTP_OPERATOR_TYPES = Set.of(
 			"staff", "merchant", "distributor", "dealer", "supplier", "agent", "self_delivery_staff");
-
-	private static final Pattern MOBILE_PATTERN = Pattern.compile("^1[3456789]\\d{9}$");
 
 	private static final Set<String> PLATFORM_LIKE_JWT = Set.of("admin", "staff", "merchant");
 
@@ -214,7 +212,10 @@ public class EmployeeCreateOrchestrationService {
 		}
 
 		String mobile = nullToEmpty(p.get("mobile"));
-		if (!MOBILE_PATTERN.matcher(mobile).matches()) {
+		boolean mobileOk = "supplier".equals(newOpType)
+				? MobilePhoneValidator.isCnOrEgMobile(mobile)
+				: MobilePhoneValidator.isCnMobile(mobile);
+		if (!mobileOk) {
 			throw new BadRequestException("请填写正确的手机号");
 		}
 

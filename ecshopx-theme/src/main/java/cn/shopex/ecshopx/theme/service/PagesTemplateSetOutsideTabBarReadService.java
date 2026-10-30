@@ -21,6 +21,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import cn.shopex.ecshopx.common.companys.language.LanguageCanonicalCodes;
 import cn.shopex.ecshopx.common.marketing.support.OutsideMultiLangTableSupport;
 
 @Service
@@ -31,10 +32,6 @@ public class PagesTemplateSetOutsideTabBarReadService {
 	private static final String TABLE_PAGES_TEMPLATE_SET = "pages_template_set";
 	private static final String MODULE_PAGES_TEMPLATE_SET = "pages_template_set";
 	private static final String FIELD_TAB_BAR = "tab_bar";
-
-	private static final String LANG_ZH_CN = "zh-CN";
-	private static final String LANG_EN_CN = "en-CN";
-	private static final String LANG_AR_SA = "ar-SA";
 
 	private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
@@ -50,13 +47,7 @@ public class PagesTemplateSetOutsideTabBarReadService {
 		if (requestLang == null) {
 			return null;
 		}
-		String lang = requestLang.trim();
-		if (!LANG_ZH_CN.equalsIgnoreCase(lang)
-				&& !LANG_EN_CN.equalsIgnoreCase(lang)
-				&& !LANG_AR_SA.equalsIgnoreCase(lang)) {
-			return null;
-		}
-		String canonicalLang = canonicalCommonLangLocaleTag(lang);
+		String canonicalLang = canonicalCommonLangLocaleTag(requestLang.trim());
 		if (canonicalLang == null) {
 			return null;
 		}
@@ -91,16 +82,7 @@ public class PagesTemplateSetOutsideTabBarReadService {
 	}
 
 	private static String canonicalCommonLangLocaleTag(String langRaw) {
-		if (LANG_ZH_CN.equalsIgnoreCase(langRaw)) {
-			return LANG_ZH_CN;
-		}
-		if (LANG_EN_CN.equalsIgnoreCase(langRaw)) {
-			return LANG_EN_CN;
-		}
-		if (LANG_AR_SA.equalsIgnoreCase(langRaw)) {
-			return LANG_AR_SA;
-		}
-		return null;
+		return LanguageCanonicalCodes.normalize(langRaw);
 	}
 
 	private static String normalizeLangTableSuffix(String langTag) {

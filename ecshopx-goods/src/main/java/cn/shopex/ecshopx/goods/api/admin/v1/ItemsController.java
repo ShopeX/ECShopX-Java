@@ -502,6 +502,51 @@ public class ItemsController {
 		throw new BadRequestException("请填写排序编号");
 	}
 
+	/**
+	 * 前端批量赠品提交形如 {@code Object.assign({}, ids)} → {@code {"0":8472}}；
+	 * 亦兼容标量 / JSON 数组，与 PHP {@code $input_data['item_id']} 一致（按 goods_id 使用）。
+	 */
+	static List<Long> parseRequiredGoodsIdsForIsGiftUpdate(Object raw) {
+		if (raw == null) {
+			throw new BadRequestException("未指定商品");
+		}
+		List<Object> elements = new ArrayList<>();
+		if (raw instanceof Number || raw instanceof String) {
+			elements.add(raw);
+		} else if (raw instanceof Collection<?> col) {
+			elements.addAll(col);
+		} else if (raw instanceof Map<?, ?> map) {
+			elements.addAll(map.values());
+		} else if (raw instanceof Object[] arr) {
+			Collections.addAll(elements, arr);
+		} else {
+			throw new BadRequestException("商品id无效");
+		}
+		if (elements.isEmpty()) {
+			throw new BadRequestException("未指定商品");
+		}
+		List<Long> out = new ArrayList<>(elements.size());
+		for (Object el : elements) {
+			if (el == null) {
+				throw new BadRequestException("商品id无效");
+			}
+			if (el instanceof Number n) {
+				out.add(n.longValue());
+				continue;
+			}
+			String s = el.toString().trim();
+			if (!StringUtils.hasText(s)) {
+				throw new BadRequestException("商品id无效");
+			}
+			try {
+				out.add(Long.parseLong(s));
+			} catch (NumberFormatException e) {
+				throw new BadRequestException("商品id无效");
+			}
+		}
+		return out;
+	}
+
 	private static List<Long> parseRequiredGoodsIdList(Object raw) {
 		if (raw == null) {
 			throw new BadRequestException("请选择要同步的商品");
@@ -1246,20 +1291,7 @@ public class ItemsController {
 		long companyId = readRequiredLong(ud, "company_id");
 		String operatorType = ud.get("operator_type") != null ? ud.get("operator_type").toString() : "";
 		Map<String, Object> merged = mergeInputLikeFlexibleResolver(request, body);
-		Object itemIdObj = merged.get("item_id");
-		if (itemIdObj == null) {
-			throw new BadRequestException("未指定商品");
-		}
-		String itemIdStr = itemIdObj.toString().trim();
-		if (!StringUtils.hasText(itemIdStr)) {
-			throw new BadRequestException("未指定商品");
-		}
-		long goodsId;
-		try {
-			goodsId = Long.parseLong(itemIdStr);
-		} catch (NumberFormatException e) {
-			throw new BadRequestException("商品id无效");
-		}
+		List<Long> goodsIds = parseRequiredGoodsIdsForIsGiftUpdate(merged.get("item_id"));
 		Object st = merged.get("status");
 		if (st == null) {
 			throw new BadRequestException("状态必填,且必须是 true 或 false");
@@ -1268,7 +1300,7 @@ public class ItemsController {
 		if (!StringUtils.hasText(statusString) || (!"true".equals(statusString) && !"false".equals(statusString))) {
 			throw new BadRequestException("状态必填,且必须是 true 或 false");
 		}
-		itemsIsGiftBatchUpdateService.batchUpdateItemGift(companyId, operatorType, goodsId, statusString);
+		itemsIsGiftBatchUpdateService.batchUpdateItemGift(companyId, operatorType, goodsIds, statusString);
 		return ResponseEntity.ok(ApiResult.ok(Map.of("status", true)));
 	}
 

@@ -85,6 +85,10 @@ public class ItemsTagActivityCheckService {
 			for (int kk = k + 1; kk < relItemArr.size(); kk++) {
 				LimitItemTagCheckRow v = relItemArr.get(k);
 				LimitItemTagCheckRow vv = relItemArr.get(kk);
+				// 同一限购下多条 scope 行不算互斥（对齐活动编辑侧 exclude 自身）
+				if (v.getLimitId() != null && Objects.equals(v.getLimitId(), vv.getLimitId())) {
+					continue;
+				}
 				int vst = nz(v.getStartTime());
 				int vet = nz(v.getEndTime());
 				int vvst = nz(vv.getStartTime());
@@ -134,6 +138,10 @@ public class ItemsTagActivityCheckService {
 				for (int kk = k + 1; kk < group.size(); kk++) {
 					MarketingActivityItemTagCheckRow v = group.get(k);
 					MarketingActivityItemTagCheckRow vv = group.get(kk);
+					// 同一活动下多条 scope 行不算互斥（对齐 CrossPromotionGuard 跳过同 marketing_id）
+					if (v.getMarketingId() != null && Objects.equals(v.getMarketingId(), vv.getMarketingId())) {
+						continue;
+					}
 					int vst = nz(v.getStartTime());
 					int vet = nz(v.getEndTime());
 					int vvst = nz(vv.getStartTime());

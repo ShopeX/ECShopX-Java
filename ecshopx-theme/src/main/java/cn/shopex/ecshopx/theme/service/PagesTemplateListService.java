@@ -16,6 +16,7 @@
 
 package cn.shopex.ecshopx.theme.service;
 
+import cn.shopex.ecshopx.common.companys.language.LanguageCanonicalCodes;
 import cn.shopex.ecshopx.companys.domain.Regionauth;
 import cn.shopex.ecshopx.companys.mapper.RegionauthMapper;
 import cn.shopex.ecshopx.companys.service.CommonLangModReadService;
@@ -38,8 +39,6 @@ import org.springframework.util.StringUtils;
 public class PagesTemplateListService {
 
 	private static final String LANG_ZH_CN = "zh-CN";
-	private static final String LANG_EN_CN = "en-CN";
-	private static final String LANG_AR_SA = "ar-SA";
 
 	private final PagesTemplateMapper pagesTemplateMapper;
 
@@ -195,16 +194,7 @@ public class PagesTemplateListService {
 	}
 
 	private static String canonicalCommonLangLocaleTagForList(String langRaw) {
-		if (LANG_ZH_CN.equalsIgnoreCase(langRaw)) {
-			return LANG_ZH_CN;
-		}
-		if (LANG_EN_CN.equalsIgnoreCase(langRaw)) {
-			return LANG_EN_CN;
-		}
-		if (LANG_AR_SA.equalsIgnoreCase(langRaw)) {
-			return LANG_AR_SA;
-		}
-		return null;
+		return LanguageCanonicalCodes.normalize(langRaw);
 	}
 
 	private static Long parseRegionauthIdKey(Object o) {

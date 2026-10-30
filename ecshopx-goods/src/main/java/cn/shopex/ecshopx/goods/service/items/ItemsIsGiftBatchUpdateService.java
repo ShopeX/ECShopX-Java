@@ -36,11 +36,23 @@ public class ItemsIsGiftBatchUpdateService {
 		this.itemCreatePromotionGuardService = itemCreatePromotionGuardService;
 	}
 
-	public void batchUpdateItemGift(long companyId, String operatorType, long goodsId, String statusRaw) {
+	public void batchUpdateItemGift(long companyId, String operatorType, List<Long> goodsIds, String statusRaw) {
 		String op = operatorType == null ? "" : operatorType.trim();
 		if ("supplier".equalsIgnoreCase(op)) {
 			throw new ResourceException("供应商不支持该操作");
 		}
+		if (goodsIds == null || goodsIds.isEmpty()) {
+			return;
+		}
+		for (Long goodsId : goodsIds) {
+			if (goodsId == null) {
+				continue;
+			}
+			updateOneGoodsGift(companyId, goodsId, statusRaw);
+		}
+	}
+
+	private void updateOneGoodsGift(long companyId, long goodsId, String statusRaw) {
 		if ("false".equals(statusRaw)) {
 			List<Items> listPositivePrice = itemsRepository.listByCompanyIdAndGoodsId(companyId, goodsId, true);
 			List<Items> listAll = itemsRepository.listByCompanyIdAndGoodsId(companyId, goodsId, false);

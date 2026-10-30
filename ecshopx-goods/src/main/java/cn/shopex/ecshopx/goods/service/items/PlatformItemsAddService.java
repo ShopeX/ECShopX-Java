@@ -388,6 +388,7 @@ public class PlatformItemsAddService {
 		data.put("templates_id", params.get("templates_id"));
 		data.put("is_show_specimg", truthy(params.get("is_show_specimg")));
 		data.put("pics", params.get("pics"));
+		data.put("other_product_materials", params.get("other_product_materials"));
 		data.put("videos", params.get("videos"));
 		data.put("intro", intro);
 		data.put("special_type", str(params.getOrDefault("special_type", "normal")));
@@ -483,6 +484,7 @@ public class PlatformItemsAddService {
 		}
 		it.setIsShowSpecimg(Boolean.TRUE.equals(work.get("is_show_specimg")));
 		it.setPics(encodeJsonColumn(work.get("pics"), true));
+		it.setOtherProductMaterials(encodeJsonColumn(work.get("other_product_materials"), true));
 		it.setPicsCreateQrcode(encodeJsonColumn(work.get("pics_create_qrcode"), true));
 		it.setVideoType(str(work.getOrDefault("video_type", "local")));
 		it.setVideoPicUrl(str(work.get("video_pic_url")));

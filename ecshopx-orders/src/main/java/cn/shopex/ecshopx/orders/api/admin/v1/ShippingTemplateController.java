@@ -130,8 +130,10 @@ public class ShippingTemplateController {
 		} else {
 			supplierId = 0L;
 		}
+		String requestLang = RequestLangTag.current(langueProperties);
 		Map<String, Object> data =
-				shippingTemplateAdminCreateService.createShippingTemplates(companyId, distributorId, supplierId, merged);
+				shippingTemplateAdminCreateService.createShippingTemplates(
+						companyId, distributorId, supplierId, merged, requestLang);
 		return ApiResult.ok(data);
 	}
 
@@ -160,9 +162,10 @@ public class ShippingTemplateController {
 		} else {
 			supplierId = 0L;
 		}
+		String requestLang = RequestLangTag.current(langueProperties);
 		Map<String, Object> data =
 				shippingTemplateAdminCreateService.updateShippingTemplates(
-						id, companyId, distributorId, supplierId, merged);
+						id, companyId, distributorId, supplierId, merged, requestLang);
 		return ApiResult.ok(data);
 	}
 

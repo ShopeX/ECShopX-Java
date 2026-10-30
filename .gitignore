@@ -46,3 +46,5 @@ build/
 # 本机联调冒烟脚本（个人本地使用，不入库）
 scripts/local-api-smoke/
 .shopex/loop-state.json
+.shopex/release.local.json
+

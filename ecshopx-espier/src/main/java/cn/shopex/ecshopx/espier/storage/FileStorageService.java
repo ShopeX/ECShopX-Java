@@ -18,6 +18,7 @@ package cn.shopex.ecshopx.espier.storage;
 
 import cn.shopex.ecshopx.common.exception.BadRequestException;
 import cn.shopex.ecshopx.common.exception.ResourceException;
+import cn.shopex.ecshopx.espier.support.EspierUploadMessages;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -31,6 +32,7 @@ import java.util.Set;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -51,9 +53,11 @@ public class FileStorageService {
 	private static final DateTimeFormatter UPLOAD_YMDHIS_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
 	private final StorageFactory storageFactory;
+	private final MessageSource messageSource;
 
-	public FileStorageService(StorageFactory storageFactory) {
+	public FileStorageService(StorageFactory storageFactory, MessageSource messageSource) {
 		this.storageFactory = storageFactory;
+		this.messageSource = messageSource;
 	}
 
 	/**
@@ -481,8 +485,8 @@ public class FileStorageService {
 			if (!Set.of("jpeg", "jpg", "png", "gif").contains(sub)) {
 				throwEspierUploadeImageMultipartViolation(kind, "不支持的图片存储类型" + mainPart);
 			}
-			if (file.getSize() > 2L * 1024 * 1024) {
-				throwEspierUploadeImageMultipartViolation(kind, "图片大小超过" + (2L * 1024 * 1024));
+			if (file.getSize() > EspierUploadMessages.MAX_UPLOAD_BYTES) {
+				throwEspierUploadeImageMultipartViolation(kind, EspierUploadMessages.imageMaxSize(messageSource));
 			}
 		} else if ("videos".equals(fileType)) {
 			if (!"video".equals(primary)) {
@@ -491,8 +495,8 @@ public class FileStorageService {
 			if (!"mp4".equals(sub)) {
 				throwEspierUploadeImageMultipartViolation(kind, "不支持的图片存储类型" + mainPart);
 			}
-			if (file.getSize() > 50L * 1024 * 1024) {
-				throwEspierUploadeImageMultipartViolation(kind, "图片大小超过" + (50L * 1024 * 1024));
+			if (file.getSize() > EspierUploadMessages.MAX_UPLOAD_BYTES) {
+				throwEspierUploadeImageMultipartViolation(kind, EspierUploadMessages.imageMaxSize(messageSource));
 			}
 		}
 	}
@@ -524,15 +528,15 @@ public class FileStorageService {
 			if (!"image".equals(primary)) {
 				throw new BadRequestException(String.format("上传文件只支持%s格式", "image"), 400);
 			}
-			if (file.getSize() > 2L * 1024 * 1024) {
-				throw new BadRequestException("上传文件大小超出限制", 400);
+			if (file.getSize() > EspierUploadMessages.MAX_UPLOAD_BYTES) {
+				throw new BadRequestException(EspierUploadMessages.fileSizeExceeded(messageSource), 400);
 			}
 		} else if ("videos".equals(fileType)) {
 			if (!"video".equals(primary)) {
 				throw new BadRequestException(String.format("上传文件只支持%s格式", "video"), 400);
 			}
-			if (file.getSize() > 50L * 1024 * 1024) {
-				throw new BadRequestException("上传文件大小超出限制", 400);
+			if (file.getSize() > EspierUploadMessages.MAX_UPLOAD_BYTES) {
+				throw new BadRequestException(EspierUploadMessages.fileSizeExceeded(messageSource), 400);
 			}
 		}
 	}

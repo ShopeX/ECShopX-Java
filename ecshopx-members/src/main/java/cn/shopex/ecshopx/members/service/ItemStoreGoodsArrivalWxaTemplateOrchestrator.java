@@ -20,6 +20,7 @@ import cn.shopex.ecshopx.common.goods.ItemCompanyIdResolver;
 import cn.shopex.ecshopx.common.members.port.MembersSubscribeNoticeItemNamePort;
 import cn.shopex.ecshopx.common.port.members.GoodsArrivalWxaSubscribeSendPort;
 import cn.shopex.ecshopx.members.domain.SubscribeNotice;
+import cn.shopex.ecshopx.members.service.wxapp.GoodsArrivalNoticeSubscribeRedisKeys;
 import cn.shopex.ecshopx.wechat.repository.WeappAuthorizerAppidRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -45,7 +46,6 @@ public class ItemStoreGoodsArrivalWxaTemplateOrchestrator {
 
 	private static final String SCENE = "goodsArrivalNotice";
 	private static final String TEMPLATE_YYKWEISHOP = "yykweishop";
-	private static final String REDIS_KEY_PREFIX = "arrivalNoticeSub";
 	private static final String NOTICE_TEXT = "亲！您想要的商品已经到货，可以购买啦！";
 
 	private final ItemCompanyIdResolver itemCompanyIdResolver;
@@ -144,12 +144,7 @@ public class ItemStoreGoodsArrivalWxaTemplateOrchestrator {
 	}
 
 	private static String buildArrivalNoticeRedisKey(long companyId, long itemId, int distributorId) {
-		String cid = String.valueOf(companyId);
-		String iid = String.valueOf(itemId);
-		if (distributorId > 0) {
-			return REDIS_KEY_PREFIX + ":" + cid + ":" + iid + ":" + distributorId;
-		}
-		return REDIS_KEY_PREFIX + ":" + cid + ":" + iid;
+		return GoodsArrivalNoticeSubscribeRedisKeys.hashKey("wechat", companyId, itemId, distributorId);
 	}
 
 	private static String truncateByCodePoints(String s, int maxCodePoints) {

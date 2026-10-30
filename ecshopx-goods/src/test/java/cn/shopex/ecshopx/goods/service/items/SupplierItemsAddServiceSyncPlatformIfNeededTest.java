@@ -98,6 +98,7 @@ class SupplierItemsAddServiceSyncPlatformIfNeededTest {
 		SupplierLinkedItemsSyncPatch patch = patchCaptor.getValue();
 		org.junit.jupiter.api.Assertions.assertEquals(42, patch.store());
 		org.junit.jupiter.api.Assertions.assertEquals("[\"https://img/a.jpg\"]", patch.pics());
+		org.junit.jupiter.api.Assertions.assertEquals("[]", patch.otherProductMaterials());
 		org.junit.jupiter.api.Assertions.assertEquals("onsale", patch.approveStatus());
 		org.junit.jupiter.api.Assertions.assertEquals("测试商品", patch.itemName());
 		org.junit.jupiter.api.Assertions.assertEquals(1200, patch.costPrice());

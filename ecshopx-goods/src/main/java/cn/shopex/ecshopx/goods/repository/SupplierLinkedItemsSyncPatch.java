@@ -22,6 +22,7 @@ package cn.shopex.ecshopx.goods.repository;
 public record SupplierLinkedItemsSyncPatch(
 		int store,
 		String pics,
+		String otherProductMaterials,
 		String approveStatus,
 		String itemName,
 		Integer costPrice,
@@ -37,6 +38,7 @@ public record SupplierLinkedItemsSyncPatch(
 	public static final class Builder {
 		private int store;
 		private String pics;
+		private String otherProductMaterials;
 		private String approveStatus;
 		private String itemName;
 		private Integer costPrice;
@@ -52,6 +54,11 @@ public record SupplierLinkedItemsSyncPatch(
 
 		public Builder pics(String pics) {
 			this.pics = pics;
+			return this;
+		}
+
+		public Builder otherProductMaterials(String otherProductMaterials) {
+			this.otherProductMaterials = otherProductMaterials;
 			return this;
 		}
 
@@ -92,7 +99,16 @@ public record SupplierLinkedItemsSyncPatch(
 
 		public SupplierLinkedItemsSyncPatch build() {
 			return new SupplierLinkedItemsSyncPatch(
-					store, pics, approveStatus, itemName, costPrice, startNum, auditStatus, auditReason, auditDate);
+					store,
+					pics,
+					otherProductMaterials,
+					approveStatus,
+					itemName,
+					costPrice,
+					startNum,
+					auditStatus,
+					auditReason,
+					auditDate);
 		}
 	}
 }

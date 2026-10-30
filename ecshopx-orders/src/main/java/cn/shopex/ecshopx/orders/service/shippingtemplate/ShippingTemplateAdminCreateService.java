@@ -16,8 +16,11 @@
 
 package cn.shopex.ecshopx.orders.service.shippingtemplate;
 
+import cn.shopex.ecshopx.common.config.LangueProperties;
 import cn.shopex.ecshopx.common.exception.BadRequestException;
 import cn.shopex.ecshopx.common.exception.ResourceException;
+import cn.shopex.ecshopx.companys.service.CommonLangModReadService;
+import cn.shopex.ecshopx.companys.service.CommonLangModWriteService;
 import cn.shopex.ecshopx.orders.domain.ShippingTemplates;
 import cn.shopex.ecshopx.orders.mapper.ShippingTemplatesMapper;
 import cn.shopex.ecshopx.orders.repository.ShippingTemplatesQueryRepository;
@@ -34,37 +37,59 @@ import java.util.Map;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 @Service
 public class ShippingTemplateAdminCreateService {
 
+	private static final String LANG_TABLE = "shipping_templates";
+	private static final String LANG_MODULE = "shipping_templates";
+	private static final String LANG_FIELD_NAME = "name";
+
 	private final ShippingTemplatesMapper shippingTemplatesMapper;
 	private final ShippingTemplatesQueryRepository shippingTemplatesQueryRepository;
 	private final ObjectMapper objectMapper;
+	private final LangueProperties langueProperties;
+	private final CommonLangModWriteService commonLangModWriteService;
+	private final CommonLangModReadService commonLangModReadService;
 
 	public ShippingTemplateAdminCreateService(
 			ShippingTemplatesMapper shippingTemplatesMapper,
 			ShippingTemplatesQueryRepository shippingTemplatesQueryRepository,
-			ObjectMapper objectMapper) {
+			ObjectMapper objectMapper,
+			LangueProperties langueProperties,
+			CommonLangModWriteService commonLangModWriteService,
+			CommonLangModReadService commonLangModReadService) {
 		this.shippingTemplatesMapper = shippingTemplatesMapper;
 		this.shippingTemplatesQueryRepository = shippingTemplatesQueryRepository;
 		this.objectMapper = objectMapper;
+		this.langueProperties = langueProperties;
+		this.commonLangModWriteService = commonLangModWriteService;
+		this.commonLangModReadService = commonLangModReadService;
 	}
 
 	@Transactional(rollbackFor = Exception.class)
 	public Map<String, Object> createShippingTemplates(
-			long companyId, long distributorId, long supplierId, Map<String, Object> mergedIn) {
+			long companyId,
+			long distributorId,
+			long supplierId,
+			Map<String, Object> mergedIn,
+			String requestLang) {
 		Map<String, Object> params = new LinkedHashMap<>(mergedIn);
 		params.put("company_id", companyId);
 		params.put("distributor_id", distributorId);
 		params.put("supplier_id", supplierId);
 
+		String lang = resolveRequestLang(requestLang);
+		boolean defaultLang = langueProperties.isDefaultLang(lang);
+
 		Map<String, Object> info = formatCityData(params);
 		String nameTrimmed = (String) info.get("name");
-		if (shippingTemplatesQueryRepository
-				.findTemplateIdByNameCompanySupplierAndDistributor(
-						companyId, nameTrimmed, supplierId, distributorId)
-				.isPresent()) {
+		if (defaultLang
+				&& shippingTemplatesQueryRepository
+						.findTemplateIdByNameCompanySupplierAndDistributor(
+								companyId, nameTrimmed, supplierId, distributorId)
+						.isPresent()) {
 			throw new ResourceException("运费模板已存在");
 		}
 
@@ -92,7 +117,12 @@ public class ShippingTemplateAdminCreateService {
 		if (entity.getTemplateId() == null) {
 			throw new ResourceException("运费模板创建失败");
 		}
-		return toTemplateDetailRow(entity);
+
+		saveOrUpdateNameLang((int) companyId, entity.getTemplateId(), nameTrimmed, lang, true);
+
+		Map<String, Object> row = toTemplateDetailRow(entity);
+		commonLangModReadService.applyShippingTemplateDetailNameLangOverlay(companyId, row, lang);
+		return row;
 	}
 
 	@Transactional(rollbackFor = Exception.class)
@@ -101,11 +131,15 @@ public class ShippingTemplateAdminCreateService {
 			long companyId,
 			long distributorId,
 			long supplierId,
-			Map<String, Object> mergedIn) {
+			Map<String, Object> mergedIn,
+			String requestLang) {
 		Map<String, Object> params = new LinkedHashMap<>(mergedIn);
 		params.put("company_id", companyId);
 		params.put("distributor_id", distributorId);
 		params.put("supplier_id", supplierId);
+
+		String lang = resolveRequestLang(requestLang);
+		boolean defaultLang = langueProperties.isDefaultLang(lang);
 
 		Optional<ShippingTemplates> existingOpt =
 				shippingTemplatesQueryRepository.findByTemplateBusinessKey(
@@ -113,11 +147,13 @@ public class ShippingTemplateAdminCreateService {
 		ShippingTemplates existing =
 				existingOpt.orElseThrow(() -> new ResourceException("运费模板未创建"));
 
-		if (looseNameNotEqual(params.get("name"), existing.getName())) {
-			String lookupName = normalizeScalarForLooseName(params.get("name"));
+		Map<String, Object> info = formatCityData(params);
+		String nameTrimmed = (String) info.get("name");
+
+		if (defaultLang && looseNameNotEqual(nameTrimmed, existing.getName())) {
 			Optional<Long> dupId =
 					shippingTemplatesQueryRepository.findTemplateIdByNameCompanySupplierAndDistributor(
-							companyId, lookupName, supplierId, distributorId);
+							companyId, nameTrimmed, supplierId, distributorId);
 			if (dupId.isPresent() && !dupId.get().equals(existing.getTemplateId())) {
 				throw new ResourceException("运费模板已存在");
 			}
@@ -130,8 +166,6 @@ public class ShippingTemplateAdminCreateService {
 			throw new ResourceException("计价方式不能修改");
 		}
 
-		Map<String, Object> info = formatCityData(params);
-
 		LambdaUpdateWrapper<ShippingTemplates> wrapper = new LambdaUpdateWrapper<>();
 		wrapper.eq(ShippingTemplates::getTemplateId, existing.getTemplateId())
 				.eq(ShippingTemplates::getCompanyId, companyId)
@@ -140,7 +174,9 @@ public class ShippingTemplateAdminCreateService {
 
 		Integer statusInt = (Integer) info.get("status");
 		wrapper.set(ShippingTemplates::getStatus, Integer.valueOf(1).equals(statusInt));
-		wrapper.set(ShippingTemplates::getName, (String) info.get("name"));
+		if (defaultLang) {
+			wrapper.set(ShippingTemplates::getName, nameTrimmed);
+		}
 		if (info.containsKey("is_free")) {
 			wrapper.set(ShippingTemplates::getIsFree, (String) info.get("is_free"));
 		}
@@ -162,11 +198,37 @@ public class ShippingTemplateAdminCreateService {
 			throw new ResourceException("未查询到更新数据");
 		}
 
+		saveOrUpdateNameLang((int) companyId, existing.getTemplateId(), nameTrimmed, lang, false);
+
 		ShippingTemplates fresh =
 				shippingTemplatesQueryRepository
 						.findByTemplateBusinessKey(templateIdStr, companyId, distributorId, supplierId)
 						.orElseThrow(() -> new ResourceException("未查询到更新数据"));
-		return toTemplateDetailRow(fresh);
+		Map<String, Object> row = toTemplateDetailRow(fresh);
+		commonLangModReadService.applyShippingTemplateDetailNameLangOverlay(companyId, row, lang);
+		return row;
+	}
+
+	private String resolveRequestLang(String requestLang) {
+		if (!StringUtils.hasText(requestLang)) {
+			return langueProperties.getDefaultLang();
+		}
+		return langueProperties.resolveToSupportedTag(requestLang.trim());
+	}
+
+	private void saveOrUpdateNameLang(
+			int companyId, Long templateId, String name, String lang, boolean create) {
+		if (templateId == null || !StringUtils.hasText(name) || !StringUtils.hasText(lang)) {
+			return;
+		}
+		Map<String, String> langBag = Map.of(LANG_FIELD_NAME, name);
+		int dataId = templateId.intValue();
+		if (create) {
+			commonLangModWriteService.saveLang(companyId, langBag, LANG_TABLE, dataId, LANG_MODULE, lang);
+		} else {
+			commonLangModWriteService.updateLangData(
+					companyId, langBag, LANG_TABLE, dataId, LANG_MODULE, lang);
+		}
 	}
 
 	private Map<String, Object> formatCityData(Map<String, Object> params) {

@@ -16,6 +16,7 @@
 
 package cn.shopex.ecshopx.theme.service;
 
+import cn.shopex.ecshopx.common.companys.language.LanguageCanonicalCodes;
 import cn.shopex.ecshopx.common.config.LangueProperties;
 import cn.shopex.ecshopx.theme.domain.PagesTemplateSet;
 import cn.shopex.ecshopx.theme.mapper.PagesTemplateSetMapper;
@@ -100,16 +101,7 @@ public class PagesTemplateSetGetInfoService {
 		if (t.isEmpty()) {
 			return null;
 		}
-		if ("zh-CN".equalsIgnoreCase(t)) {
-			return "zh-CN";
-		}
-		if ("en-CN".equalsIgnoreCase(t)) {
-			return "en-CN";
-		}
-		if ("ar-SA".equalsIgnoreCase(t)) {
-			return "ar-SA";
-		}
-		return null;
+		return LanguageCanonicalCodes.normalize(t);
 	}
 
 	private static boolean isLooseEmpty(Object v) {

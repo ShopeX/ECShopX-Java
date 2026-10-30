@@ -18,7 +18,7 @@
 	<description>Ecshopx Java</description>
 
 	<properties>
-		<revision>5.3.0</revision>
+		<revision>5.4.0</revision>
 		<java.version>17</java.version>
 		<mybatis-plus.version>3.5.16</mybatis-plus.version>
 		<lombok.version>1.18.36</lombok.version>

@@ -62,7 +62,7 @@ class OssIntegrationTest {
 		props.setOss(oss);
 
 		StorageFactory factory = new StorageFactory(props);
-		service = new FileStorageService(factory);
+		service = new FileStorageService(factory, new org.springframework.context.support.StaticMessageSource());
 	}
 
 	@Test

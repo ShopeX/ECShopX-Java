@@ -5,6 +5,8 @@ langue:
     - en-CN
     - ar-SA
     - zh-TW
+    - ja-JP
+    - ru-RU
   default: zh-CN
 shopmenu:
   is-show-audit-log-path: logs/shopmenu_is_show_hidden.log

@@ -127,7 +127,10 @@ public class DiscountNewGiftCardUpdateService {
 			}
 		}
 		if (kq == STATUS_INIT) {
-			if (!merged.containsKey("items") || !merged.containsKey("distributor_id")) {
+			// 全店铺：distributor_ids=[] 会落成 use_all_shops=true + 空 distributor_id，也应可升为正常
+			boolean hasItems = merged.containsKey("items");
+			boolean hasShopScope = merged.containsKey("distributor_id") || isUseAllShops(merged.get("use_all_shops"));
+			if (!hasItems || !hasShopScope) {
 				merged.put("kq_status", STATUS_INIT);
 			} else if (merged.containsKey("kq_status")
 					&& DiscountCardParamNormalize.parseIntFlexible(merged.get("kq_status"), -1) == STATUS_INIT) {
@@ -259,6 +262,17 @@ public class DiscountNewGiftCardUpdateService {
 			}
 		}
 		return out;
+	}
+
+	private static boolean isUseAllShops(Object raw) {
+		if (raw == null) {
+			return false;
+		}
+		if (raw instanceof Boolean b) {
+			return b;
+		}
+		String s = String.valueOf(raw).trim();
+		return "true".equalsIgnoreCase(s) || "1".equals(s);
 	}
 
 	private static boolean computeIsActive(DiscountCards detail, long nowEpochSeconds) {

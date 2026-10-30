@@ -32,7 +32,8 @@ public final class CurrencyPresetCatalog {
 					new CurrencyPreset("USD", "美国美元", "美元", "$"),
 					new CurrencyPreset("TWD", "台湾台币", "台币", "NT$"),
 					new CurrencyPreset("JPY", "日本日元", "日元", "¥"),
-					new CurrencyPreset("RUB", "俄罗斯卢布", "卢布", "₽"));
+					new CurrencyPreset("RUB", "俄罗斯卢布", "卢布", "₽"),
+					new CurrencyPreset("EGP", "埃及镑", "埃及镑", "E£"));
 
 	private CurrencyPresetCatalog() {}
 

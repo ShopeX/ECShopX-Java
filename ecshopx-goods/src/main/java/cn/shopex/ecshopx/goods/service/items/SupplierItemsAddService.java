@@ -307,6 +307,7 @@ public class SupplierItemsAddService {
 		SupplierLinkedItemsSyncPatch.Builder b = SupplierLinkedItemsSyncPatch.builder()
 				.store(toInt(sku.get("store")))
 				.pics(encodeJsonColumn(sku.get("pics"), true))
+				.otherProductMaterials(encodeJsonColumn(sku.get("other_product_materials"), true))
 				.approveStatus(str(sku.get("approve_status")))
 				.itemName(str(sku.get("item_name")));
 		if (sku.get("cost_price") != null && StringUtils.hasText(str(sku.get("cost_price")))) {
@@ -346,6 +347,7 @@ public class SupplierItemsAddService {
 		}
 		it.setIsShowSpecimg(Boolean.TRUE.equals(work.get("is_show_specimg")));
 		it.setPics(encodeJsonColumn(work.get("pics"), true));
+		it.setOtherProductMaterials(encodeJsonColumn(work.get("other_product_materials"), true));
 		it.setVideos(encodeJsonColumn(work.get("videos"), false));
 		it.setIntro(str(work.get("intro")));
 		it.setSpecialType(str(work.get("special_type")));
@@ -400,6 +402,7 @@ public class SupplierItemsAddService {
 		data.put("templates_id", params.get("templates_id"));
 		data.put("is_show_specimg", truthy(params.get("is_show_specimg")));
 		data.put("pics", params.get("pics"));
+		data.put("other_product_materials", params.get("other_product_materials"));
 		data.put("videos", params.get("videos"));
 		data.put("intro", intro);
 		data.put("special_type", str(params.getOrDefault("special_type", "normal")));

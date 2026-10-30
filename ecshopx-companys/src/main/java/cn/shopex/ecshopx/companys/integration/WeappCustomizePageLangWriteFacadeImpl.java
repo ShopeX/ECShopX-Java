@@ -16,6 +16,7 @@
 
 package cn.shopex.ecshopx.companys.integration;
 
+import cn.shopex.ecshopx.common.companys.language.LanguageCanonicalCodes;
 import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.common.wechat.WeappCustomizePageLangWriteFacade;
 import cn.shopex.ecshopx.companys.service.CommonLangModWriteService;
@@ -30,8 +31,6 @@ public class WeappCustomizePageLangWriteFacadeImpl implements WeappCustomizePage
 	private static final String MODULE_WECHAT_WEAPP_CUSTOMIZE_PAGE = "wechat_weapp_customize_page";
 
 	private static final String LANG_ZH_CN = "zh-CN";
-	private static final String LANG_EN_CN = "en-CN";
-	private static final String LANG_AR_SA = "ar-SA";
 
 	private final CommonLangModWriteService commonLangModWriteService;
 
@@ -46,16 +45,10 @@ public class WeappCustomizePageLangWriteFacadeImpl implements WeappCustomizePage
 		if (!StringUtils.hasText(lang)) {
 			return;
 		}
-		if (!LANG_ZH_CN.equalsIgnoreCase(lang) && !LANG_EN_CN.equalsIgnoreCase(lang) && !LANG_AR_SA.equalsIgnoreCase(lang)) {
-			return;
-		}
 
 		String langRaw = extractPrimaryLanguageTag(lang);
 		String canonical = canonicalCommonLangLocaleTag(langRaw);
-		if (canonical == null) {
-			canonical = LANG_ZH_CN;
-		}
-		if (LANG_ZH_CN.equals(canonical)) {
+		if (canonical == null || LANG_ZH_CN.equals(canonical)) {
 			return;
 		}
 
@@ -69,13 +62,8 @@ public class WeappCustomizePageLangWriteFacadeImpl implements WeappCustomizePage
 		int cid = (int) companyId;
 		int did = (int) dataId;
 
-		if (LANG_EN_CN.equals(canonical)) {
-			commonLangModWriteService.saveLang(cid, langFieldValues, TABLE_WECHAT_WEAPP_CUSTOMIZE_PAGE, did,
-					MODULE_WECHAT_WEAPP_CUSTOMIZE_PAGE, LANG_EN_CN);
-		} else if (LANG_AR_SA.equals(canonical)) {
-			commonLangModWriteService.saveLang(cid, langFieldValues, TABLE_WECHAT_WEAPP_CUSTOMIZE_PAGE, did,
-					MODULE_WECHAT_WEAPP_CUSTOMIZE_PAGE, LANG_AR_SA);
-		}
+		commonLangModWriteService.saveLang(cid, langFieldValues, TABLE_WECHAT_WEAPP_CUSTOMIZE_PAGE, did,
+				MODULE_WECHAT_WEAPP_CUSTOMIZE_PAGE, canonical);
 	}
 
 	private static String extractPrimaryLanguageTag(String raw) {
@@ -95,15 +83,6 @@ public class WeappCustomizePageLangWriteFacadeImpl implements WeappCustomizePage
 	}
 
 	private static String canonicalCommonLangLocaleTag(String langRaw) {
-		if (LANG_ZH_CN.equalsIgnoreCase(langRaw)) {
-			return LANG_ZH_CN;
-		}
-		if (LANG_EN_CN.equalsIgnoreCase(langRaw)) {
-			return LANG_EN_CN;
-		}
-		if (LANG_AR_SA.equalsIgnoreCase(langRaw)) {
-			return LANG_AR_SA;
-		}
-		return null;
+		return LanguageCanonicalCodes.normalize(langRaw);
 	}
 }

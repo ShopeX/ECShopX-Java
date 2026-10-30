@@ -13,6 +13,10 @@ class LanguageCanonicalCodesTest {
 		assertThat(LanguageCanonicalCodes.normalize("en-US")).isEqualTo("en-CN");
 		assertThat(LanguageCanonicalCodes.normalize("ar")).isEqualTo("ar-SA");
 		assertThat(LanguageCanonicalCodes.normalize("zh-cn")).isEqualTo("zh-CN");
+		assertThat(LanguageCanonicalCodes.normalize("ja")).isEqualTo("ja-JP");
+		assertThat(LanguageCanonicalCodes.normalize("ru")).isEqualTo("ru-RU");
+		assertThat(LanguageCanonicalCodes.normalize("ja-jp")).isEqualTo("ja-JP");
+		assertThat(LanguageCanonicalCodes.normalize("ru-ru")).isEqualTo("ru-RU");
 	}
 
 	@Test
@@ -22,7 +26,9 @@ class LanguageCanonicalCodesTest {
 				.containsExactly("zh-CN", "en-CN", "ar-SA", "zh-TW", "ja-JP", "ru-RU");
 		assertThat(LanguageCanonicalCodes.displayName("en-CN")).isEqualTo("English");
 		assertThat(LanguageCanonicalCodes.displayName("ja-JP")).isEqualTo("日本語");
+		assertThat(LanguageCanonicalCodes.displayName("ru-RU")).isEqualTo("Русский");
 		assertThat(LanguageCanonicalCodes.sortOf("zh-TW")).isEqualTo(4);
+		assertThat(LanguageCanonicalCodes.sortOf("ja-JP")).isEqualTo(5);
 		assertThat(LanguageCanonicalCodes.sortOf("ru-RU")).isEqualTo(6);
 	}
 }

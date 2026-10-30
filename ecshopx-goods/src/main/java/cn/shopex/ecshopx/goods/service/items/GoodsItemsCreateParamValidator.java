@@ -17,10 +17,17 @@
 package cn.shopex.ecshopx.goods.service.items;
 
 import cn.shopex.ecshopx.common.exception.BadRequestException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import org.springframework.util.StringUtils;
 
 public final class GoodsItemsCreateParamValidator {
+
+	private static final ObjectMapper OM = new ObjectMapper();
+	private static final int OTHER_PRODUCT_MATERIALS_MAX = 20;
 
 	private GoodsItemsCreateParamValidator() {
 	}
@@ -43,6 +50,7 @@ public final class GoodsItemsCreateParamValidator {
 		if (p.get("pics") == null || !StringUtils.hasText(str(p.get("pics")))) {
 			throw new BadRequestException("请上传商品图片");
 		}
+		validateOtherProductMaterials(p.get("other_product_materials"));
 		if (p.get("sort") == null) {
 			throw new BadRequestException("排序值必须为整数");
 		}
@@ -102,6 +110,7 @@ public final class GoodsItemsCreateParamValidator {
 		if (p.get("pics") == null || !StringUtils.hasText(str(p.get("pics")))) {
 			throw new BadRequestException("请上传商品图片");
 		}
+		validateOtherProductMaterials(p.get("other_product_materials"));
 		if (p.get("sort") == null) {
 			throw new BadRequestException("排序值必须为整数");
 		}
@@ -129,6 +138,48 @@ public final class GoodsItemsCreateParamValidator {
 				}
 			}
 		}
+	}
+
+	static void validateOtherProductMaterials(Object raw) {
+		if (raw == null) {
+			return;
+		}
+		List<?> list = toMaterialsList(raw);
+		if (list == null) {
+			throw new BadRequestException("其他产品资料格式不正确");
+		}
+		if (list.size() > OTHER_PRODUCT_MATERIALS_MAX) {
+			throw new BadRequestException("其他产品资料最多上传" + OTHER_PRODUCT_MATERIALS_MAX + "个文件");
+		}
+		for (Object el : list) {
+			if (!(el instanceof Map<?, ?> m)) {
+				throw new BadRequestException("其他产品资料格式不正确");
+			}
+			Object url = m.get("url");
+			if (!StringUtils.hasText(str(url))) {
+				throw new BadRequestException("其他产品资料文件地址不能为空");
+			}
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private static List<?> toMaterialsList(Object raw) {
+		if (raw instanceof Collection<?> c) {
+			return List.copyOf(c);
+		}
+		if (raw instanceof String s) {
+			String t = s.trim();
+			if (t.isEmpty()) {
+				return List.of();
+			}
+			try {
+				return OM.readValue(t, new TypeReference<List<Object>>() {
+				});
+			} catch (Exception e) {
+				return null;
+			}
+		}
+		return null;
 	}
 
 	private static String str(Object o) {

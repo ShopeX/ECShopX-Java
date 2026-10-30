@@ -115,7 +115,9 @@ class LanguageSettingRedisServiceTest {
 						Map.of("code", "zh-CN", "enabled", true, "sort", 1),
 						Map.of("code", "en-CN", "enabled", false, "sort", 2),
 						Map.of("code", "ar-SA", "enabled", false, "sort", 3),
-						Map.of("code", "zh-TW", "enabled", false, "sort", 4)));
+						Map.of("code", "zh-TW", "enabled", false, "sort", 4),
+						Map.of("code", "ja-JP", "enabled", false, "sort", 5),
+						Map.of("code", "ru-RU", "enabled", false, "sort", 6)));
 		when(valueOperations.get("languageSetting:1001"))
 				.thenReturn(new ObjectMapper().writeValueAsString(stored));
 
@@ -138,7 +140,9 @@ class LanguageSettingRedisServiceTest {
 						Map.of("code", "zh-CN", "enabled", true, "sort", 1),
 						Map.of("code", "en-CN", "enabled", false, "sort", 2),
 						Map.of("code", "ar-SA", "enabled", false, "sort", 3),
-						Map.of("code", "zh-TW", "enabled", false, "sort", 4)));
+						Map.of("code", "zh-TW", "enabled", false, "sort", 4),
+						Map.of("code", "ja-JP", "enabled", false, "sort", 5),
+						Map.of("code", "ru-RU", "enabled", false, "sort", 6)));
 		when(valueOperations.get("languageSetting:1001"))
 				.thenReturn(new ObjectMapper().writeValueAsString(stored));
 
@@ -159,7 +163,9 @@ class LanguageSettingRedisServiceTest {
 						Map.of("code", "zh-CN", "enabled", true, "sort", 1),
 						Map.of("code", "en-CN", "enabled", true, "sort", 2),
 						Map.of("code", "ar-SA", "enabled", false, "sort", 3),
-					 Map.of("code", "zh-TW", "enabled", false, "sort", 4)));
+						Map.of("code", "zh-TW", "enabled", false, "sort", 4),
+						Map.of("code", "ja-JP", "enabled", false, "sort", 5),
+						Map.of("code", "ru-RU", "enabled", false, "sort", 6)));
 		when(valueOperations.get("languageSetting:1001"))
 				.thenReturn(new ObjectMapper().writeValueAsString(stored));
 

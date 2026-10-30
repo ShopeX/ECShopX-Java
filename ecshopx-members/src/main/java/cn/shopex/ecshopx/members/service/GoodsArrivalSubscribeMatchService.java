@@ -19,12 +19,15 @@ package cn.shopex.ecshopx.members.service;
 import cn.shopex.ecshopx.common.port.goods.DistributorItemTotalStorePort;
 import cn.shopex.ecshopx.members.domain.SubscribeNotice;
 import cn.shopex.ecshopx.members.mapper.SubscribeNoticeMapper;
+import cn.shopex.ecshopx.members.service.wxapp.GoodsArrivalNoticeSubscribeRedisKeys;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -40,12 +43,15 @@ public class GoodsArrivalSubscribeMatchService {
 
 	private final SubscribeNoticeMapper subscribeNoticeMapper;
 	private final DistributorItemTotalStorePort distributorItemTotalStorePort;
+	private final StringRedisTemplate sharedStringRedisTemplate;
 
 	public GoodsArrivalSubscribeMatchService(
 			SubscribeNoticeMapper subscribeNoticeMapper,
-			DistributorItemTotalStorePort distributorItemTotalStorePort) {
+			DistributorItemTotalStorePort distributorItemTotalStorePort,
+			@Qualifier("sharedStringRedisTemplate") StringRedisTemplate sharedStringRedisTemplate) {
 		this.subscribeNoticeMapper = subscribeNoticeMapper;
 		this.distributorItemTotalStorePort = distributorItemTotalStorePort;
+		this.sharedStringRedisTemplate = sharedStringRedisTemplate;
 	}
 
 	public List<SubscribeNotice> listPending(
@@ -91,6 +97,24 @@ public class GoodsArrivalSubscribeMatchService {
 						.eq(SubscribeNotice::getSubStatus, "NO")
 						.set(SubscribeNotice::getSubStatus, "SUCCESS")
 						.set(SubscribeNotice::getUpdated, (long) now));
+		clearArrivalNoticeSubscribeRedis(companyId, matched);
+	}
+
+	/**
+	 * Clears mini-program {@code is_subscribe} Redis markers after notify, so detail / SKU panel no
+	 * longer show「已订阅到货通知」while stock is still zero.
+	 */
+	private void clearArrivalNoticeSubscribeRedis(long companyId, List<SubscribeNotice> matched) {
+		for (SubscribeNotice row : matched) {
+			if (row == null || row.getUserId() == null || row.getRelId() == null) {
+				continue;
+			}
+			String source = StringUtils.hasText(row.getSource()) ? row.getSource().trim() : "wechat";
+			int dist = row.getDistributorId() == null ? 0 : row.getDistributorId();
+			String redisKey =
+					GoodsArrivalNoticeSubscribeRedisKeys.hashKey(source, companyId, row.getRelId(), dist);
+			sharedStringRedisTemplate.opsForHash().delete(redisKey, String.valueOf(row.getUserId()));
+		}
 	}
 
 	private List<SubscribeNotice> filterForHeadquartersEvent(

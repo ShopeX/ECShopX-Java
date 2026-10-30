@@ -17,7 +17,9 @@
 package cn.shopex.ecshopx.espier.web.advice;
 
 import cn.shopex.ecshopx.common.exception.ResourceException;
+import cn.shopex.ecshopx.espier.support.EspierUploadMessages;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.context.MessageSource;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -30,6 +32,12 @@ import org.springframework.web.multipart.MultipartException;
 public class EspierMultipartMaxUploadSizeExceptionAdvice {
 
 	private static final String H5_WXAPP_ESPIER_UPLOAD_SUFFIX = "/wxapp/espier/upload";
+
+	private final MessageSource messageSource;
+
+	public EspierMultipartMaxUploadSizeExceptionAdvice(MessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
 
 	@ExceptionHandler(MaxUploadSizeExceededException.class)
 	public void handleMaxUploadSizeExceeded(MaxUploadSizeExceededException ex, HttpServletRequest request) {
@@ -46,11 +54,11 @@ public class EspierMultipartMaxUploadSizeExceptionAdvice {
 		throw ex;
 	}
 
-	private static ResourceException multipartTooLargeMessage(HttpServletRequest request) {
+	private ResourceException multipartTooLargeMessage(HttpServletRequest request) {
 		if (request != null && isH5WxappEspierUpload(request)) {
-			return new ResourceException("图片上传最大为2M");
+			return new ResourceException(EspierUploadMessages.imageMaxSize(messageSource));
 		}
-		return new ResourceException("请上传正确格式或标准大小文件");
+		return new ResourceException(EspierUploadMessages.invalidFormatOrSize(messageSource));
 	}
 
 	private static boolean isH5WxappEspierUpload(HttpServletRequest request) {

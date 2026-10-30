@@ -759,6 +759,7 @@ public class ItemsRepository {
 		u.eq(Items::getCompanyId, companyId)
 				.in(Items::getItemId, itemIds)
 				.set(Items::getPics, patch.pics())
+				.set(Items::getOtherProductMaterials, patch.otherProductMaterials())
 				.set(Items::getApproveStatus, patch.approveStatus())
 				.set(Items::getItemName, patch.itemName())
 				.set(Items::getUpdated, now);

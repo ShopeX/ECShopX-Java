@@ -83,6 +83,7 @@ public final class GoodsItemsListRowMapper {
 		it.setIsEpidemic(s.getIsEpidemic());
 		it.setTemplatesId(s.getTemplatesId());
 		it.setPics(s.getPics());
+		it.setOtherProductMaterials(s.getOtherProductMaterials());
 		it.setPicsCreateQrcode(s.getPicsCreateQrcode());
 		it.setVideoType(s.getVideoType());
 		it.setVideos(s.getVideos());
@@ -145,6 +146,7 @@ public final class GoodsItemsListRowMapper {
 		m.put("item_type", it.getItemType());
 		m.put("consume_type", it.getConsumeType() != null ? it.getConsumeType() : "every");
 		m.put("pics", resolvePicsForListRow(it.getPics()));
+		m.put("other_product_materials", resolveOtherProductMaterialsForRow(it.getOtherProductMaterials()));
 		m.put("type_labels", List.of());
 		m.put("brand_logo", it.getBrandLogo());
 		m.put("goods_brand", it.getGoodsBrand());
@@ -356,6 +358,37 @@ public final class GoodsItemsListRowMapper {
 			}
 		}
 		return List.of();
+	}
+
+	/**
+	 * {@code other_product_materials} is a JSON object array
+	 * {@code [{name,url,size?}]}；空或非法值回 {@code []}.
+	 */
+	public static List<Map<String, Object>> resolveOtherProductMaterialsForRow(String raw) {
+		if (!StringUtils.hasText(raw)) {
+			return List.of();
+		}
+		String t = raw.trim();
+		try {
+			JsonNode root = OM.readTree(t);
+			if (!root.isArray()) {
+				return List.of();
+			}
+			List<Map<String, Object>> out = new ArrayList<>();
+			for (JsonNode n : root) {
+				if (n == null || !n.isObject()) {
+					continue;
+				}
+				Map<String, Object> row = OM.convertValue(n, new TypeReference<Map<String, Object>>() {
+				});
+				if (row != null && !row.isEmpty()) {
+					out.add(row);
+				}
+			}
+			return out;
+		} catch (Exception ignored) {
+			return List.of();
+		}
 	}
 
 	/** {@code pics} is normally a JSON array; a JSON string column value is returned as-is for correct wire typing. */

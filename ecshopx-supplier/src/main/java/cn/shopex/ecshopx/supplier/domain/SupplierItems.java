@@ -197,6 +197,10 @@ public class SupplierItems {
     @MpField(value = "pics", columnType = "json_array", comment = "图片")
     private String pics;
 
+    /** 其他产品资料（文件列表 JSON 数组） */
+    @MpField(value = "other_product_materials", columnType = "json_array", nullable = true, comment = "其他产品资料")
+    private String otherProductMaterials;
+
     /** 图片是否生成小程序码 */
     @MpField(value = "pics_create_qrcode", columnType = "json_array", nullable = true, comment = "图片是否生成小程序码")
     private String picsCreateQrcode;

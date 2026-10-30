@@ -18,6 +18,7 @@ package cn.shopex.ecshopx.selfservice.api.front.v1;
 
 import cn.shopex.ecshopx.common.annotation.DingoResponse;
 import cn.shopex.ecshopx.common.annotation.FrontAuth;
+import cn.shopex.ecshopx.common.annotation.FrontNoAuth;
 import cn.shopex.ecshopx.common.companys.language.CompanyLanguageResolver;
 import cn.shopex.ecshopx.common.config.LangueProperties;
 import cn.shopex.ecshopx.common.core.domain.ApiResult;
@@ -247,6 +248,7 @@ public class RegistrationActivityController {
 		return ResponseEntity.ok(ApiResult.ok(data));
 	}
 
+	@FrontNoAuth
 	@GetMapping(value = "/wxapp/registrationActivityList", name = "报名活动列表")
 	public ResponseEntity<ApiResult<Map<String, Object>>> getRegistrationActivityList(
 			HttpServletRequest request,

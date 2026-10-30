@@ -23,6 +23,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.MessageSource;
+import org.springframework.context.support.StaticMessageSource;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 
@@ -38,13 +40,15 @@ class FrontWxappEspierUploadImageServiceTest {
 	@Mock
 	private ValueOperations<String, String> valueOps;
 
+	private final MessageSource messageSource = new StaticMessageSource();
+
 	@Test
 	@DisplayName("日配额已满时抛出 ResourceException 且不执行 INCR")
 	void assertUnderDailyUploadImageLimitAndIncrement_quotaFull_throwsResourceException() {
 		when(membersRedis.opsForValue()).thenReturn(valueOps);
 		when(valueOps.get("uploadImageNum:1:2")).thenReturn("10");
 		FrontWxappEspierUploadImageService svc = new FrontWxappEspierUploadImageService(
-				membersRedis, fileStorageService, 10);
+				membersRedis, fileStorageService, messageSource, 10);
 		ResourceException ex = assertThrows(
 				ResourceException.class,
 				() -> svc.getPicUploadToken(1L, 2L, "a.png", "g", "image"));
@@ -59,7 +63,7 @@ class FrontWxappEspierUploadImageServiceTest {
 		when(membersRedis.opsForValue()).thenReturn(valueOps);
 		when(valueOps.get(anyString())).thenReturn(null);
 		FrontWxappEspierUploadImageService svc = new FrontWxappEspierUploadImageService(
-				membersRedis, fileStorageService, 10);
+				membersRedis, fileStorageService, messageSource, 10);
 		ResourceException ex1 = assertThrows(
 				ResourceException.class,
 				() -> svc.getPicUploadToken(1L, 2L, "a.png", "g", null));
@@ -83,7 +87,7 @@ class FrontWxappEspierUploadImageServiceTest {
 				.thenReturn(tokenMap);
 
 		FrontWxappEspierUploadImageService svc = new FrontWxappEspierUploadImageService(
-				membersRedis, fileStorageService, 10);
+				membersRedis, fileStorageService, messageSource, 10);
 		Map<String, Object> result = svc.getPicUploadToken(5L, 7L, "f.png", "grp", "image");
 
 		assertSame(tokenMap, result);

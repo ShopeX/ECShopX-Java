@@ -16,6 +16,7 @@
 
 package cn.shopex.ecshopx.companys.service;
 
+import cn.shopex.ecshopx.common.companys.language.LanguageCanonicalCodes;
 import cn.shopex.ecshopx.common.marketing.support.OutsideMultiLangTableSupport;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -47,8 +48,6 @@ public class CommonLangModReadService {
 	private static final String OUTSIDE_LANG_TABLE_PREFIX = "outside_item_multi_lang_mod_lang_";
 
 	private static final String LANG_ZH_CN = "zh-CN";
-	private static final String LANG_EN_CN = "en-CN";
-	private static final String LANG_AR_SA = "ar-SA";
 
 	private static final String TABLE_COMPANYS_ARTICLE = "companys_article";
 	private static final List<String> ARTICLE_LIST_LANG_FIELDS =
@@ -94,10 +93,8 @@ public class CommonLangModReadService {
 		if (field == null || requestLang == null) {
 			return null;
 		}
-		String lang = requestLang.trim();
-		if (!LANG_ZH_CN.equalsIgnoreCase(lang)
-				&& !LANG_EN_CN.equalsIgnoreCase(lang)
-				&& !LANG_AR_SA.equalsIgnoreCase(lang)) {
+		String lang = canonicalCommonLangLocaleTag(requestLang.trim());
+		if (lang == null) {
 			return null;
 		}
 		String tableName = "pages_template_set";
@@ -288,12 +285,13 @@ public class CommonLangModReadService {
 	/**
 	 * Applies a locale-specific display name to one shipping-template detail map. The row must carry
 	 * {@code template_id} as the logical template primary key. The request locale is normalized to a canonical tag
-	 * ({@code zh-CN}, {@code en-CN}, or {@code ar-SA}); other tags leave the row unchanged. For a supported tag, loads
-	 * overrides from the matching {@code outside_item_multi_lang_mod_lang_*} table using {@code table_name} and
-	 * {@code module_name} {@code shipping_templates}, {@code field} {@code name}, and {@code data_id} equal to
-	 * {@code template_id} (no {@code company_id} predicate on that table). When the query yields a last non-empty
-	 * {@code attribute_value} in ascending {@code id} order, replaces {@code name} and sets {@code name_lang} to a
-	 * single-entry map keyed by the canonical tag.
+	 * via {@link #canonicalCommonLangLocaleTag(String)} ({@link LanguageCanonicalCodes} fixed six codes); other tags
+	 * leave the row unchanged. For a supported tag, loads overrides from the matching
+	 * {@code outside_item_multi_lang_mod_lang_*} table using {@code table_name} and {@code module_name}
+	 * {@code shipping_templates}, {@code field} {@code name}, and {@code data_id} equal to {@code template_id} (no
+	 * {@code company_id} predicate on that table). When the query yields a last non-empty {@code attribute_value} in
+	 * ascending {@code id} order, replaces {@code name} and sets {@code name_lang} to a single-entry map keyed by the
+	 * canonical tag.
 	 */
 	public void applyShippingTemplateDetailNameLangOverlay(
 			long companyId, Map<String, Object> row, String requestLocaleTag) {
@@ -378,11 +376,6 @@ public class CommonLangModReadService {
 		if (dataIds == null || dataIds.isEmpty()) {
 			return Map.of();
 		}
-		if (!LANG_ZH_CN.equals(canonicalTag)
-				&& !LANG_EN_CN.equals(canonicalTag)
-				&& !LANG_AR_SA.equals(canonicalTag)) {
-			return Map.of();
-		}
 		String table = OUTSIDE_LANG_TABLE_PREFIX + normalizeLangTableSuffix(canonicalTag);
 		List<Long> ids = new ArrayList<>(dataIds);
 		String sql =
@@ -415,12 +408,7 @@ public class CommonLangModReadService {
 
 	@SuppressWarnings("unused")
 	private String loadShippingTemplateDetailNameMod(long companyId, long dataId, String canonicalTag) {
-		if (LANG_ZH_CN.equals(canonicalTag)
-				|| LANG_EN_CN.equals(canonicalTag)
-				|| LANG_AR_SA.equals(canonicalTag)) {
-			return loadShippingTemplateDetailNameModFromOutside(dataId, canonicalTag);
-		}
-		return "";
+		return loadShippingTemplateDetailNameModFromOutside(dataId, canonicalTag);
 	}
 
 	/**
@@ -464,33 +452,7 @@ public class CommonLangModReadService {
 
 	private Map<Long, String> loadEspierPrinterNamesByCanonical(
 			long companyId, List<Long> dataIds, String canonicalTag) {
-		if (LANG_ZH_CN.equals(canonicalTag)) {
-			return loadEspierPrinterNamesCn(companyId, dataIds);
-		}
-		if (LANG_EN_CN.equals(canonicalTag)) {
-			return loadEspierPrinterNamesEn(companyId, dataIds);
-		}
-		if (LANG_AR_SA.equals(canonicalTag)) {
-			return loadEspierPrinterNamesAr(companyId, dataIds);
-		}
-		return Map.of();
-	}
-
-	/**
-	 * Batch-loads {@code name} for {@code espier_printer} from {@code outside_item_multi_lang_mod_lang_*}
-	 * ({@code company_id}, {@code table_name}, {@code field}, {@code data_id}); rows are read in {@code id} order so
-	 * the last non-empty {@code attribute_value} wins per {@code data_id}.
-	 */
-	private Map<Long, String> loadEspierPrinterNamesCn(long companyId, List<Long> dataIds) {
-		return loadEspierPrinterNamesFromOutsideTable(companyId, dataIds, normalizeLangTableSuffix(LANG_ZH_CN));
-	}
-
-	private Map<Long, String> loadEspierPrinterNamesEn(long companyId, List<Long> dataIds) {
-		return loadEspierPrinterNamesFromOutsideTable(companyId, dataIds, normalizeLangTableSuffix(LANG_EN_CN));
-	}
-
-	private Map<Long, String> loadEspierPrinterNamesAr(long companyId, List<Long> dataIds) {
-		return loadEspierPrinterNamesFromOutsideTable(companyId, dataIds, normalizeLangTableSuffix(LANG_AR_SA));
+		return loadEspierPrinterNamesFromOutsideTable(companyId, dataIds, normalizeLangTableSuffix(canonicalTag));
 	}
 
 	/**
@@ -532,28 +494,7 @@ public class CommonLangModReadService {
 
 	private Map<Long, String> loadEspierUploadImagesCatImageCatNamesByCanonical(
 			long companyId, List<Long> dataIds, String canonicalTag) {
-		if (LANG_ZH_CN.equals(canonicalTag)) {
-			return loadEspierUploadImagesCatImageCatNamesCn(companyId, dataIds);
-		}
-		if (LANG_EN_CN.equals(canonicalTag)) {
-			return loadEspierUploadImagesCatImageCatNamesEn(companyId, dataIds);
-		}
-		if (LANG_AR_SA.equals(canonicalTag)) {
-			return loadEspierUploadImagesCatImageCatNamesAr(companyId, dataIds);
-		}
-		return Map.of();
-	}
-
-	private Map<Long, String> loadEspierUploadImagesCatImageCatNamesCn(long companyId, List<Long> dataIds) {
-		return loadEspierUploadImagesCatNamesFromOutside(companyId, dataIds, normalizeLangTableSuffix(LANG_ZH_CN));
-	}
-
-	private Map<Long, String> loadEspierUploadImagesCatImageCatNamesEn(long companyId, List<Long> dataIds) {
-		return loadEspierUploadImagesCatNamesFromOutside(companyId, dataIds, normalizeLangTableSuffix(LANG_EN_CN));
-	}
-
-	private Map<Long, String> loadEspierUploadImagesCatImageCatNamesAr(long companyId, List<Long> dataIds) {
-		return loadEspierUploadImagesCatNamesFromOutside(companyId, dataIds, normalizeLangTableSuffix(LANG_AR_SA));
+		return loadEspierUploadImagesCatNamesFromOutside(companyId, dataIds, normalizeLangTableSuffix(canonicalTag));
 	}
 
 	private Map<Long, String> loadEspierUploadImagesCatNamesFromOutside(
@@ -691,45 +632,13 @@ public class CommonLangModReadService {
 	}
 
 	private static String canonicalCommonLangLocaleTag(String langRaw) {
-		if (LANG_ZH_CN.equalsIgnoreCase(langRaw)) {
-			return LANG_ZH_CN;
-		}
-		if (LANG_EN_CN.equalsIgnoreCase(langRaw)) {
-			return LANG_EN_CN;
-		}
-		if (LANG_AR_SA.equalsIgnoreCase(langRaw)) {
-			return LANG_AR_SA;
-		}
-		return null;
+		return LanguageCanonicalCodes.normalize(langRaw);
 	}
 
 	private String loadPagesTemplateTemplateContentOverlay(
 			long companyId, long dataId, String canonicalTag, boolean restrictModuleName) {
-		if (LANG_ZH_CN.equals(canonicalTag)) {
-			return loadPagesTemplateTemplateContentCn(companyId, dataId, restrictModuleName);
-		}
-		if (LANG_EN_CN.equals(canonicalTag)) {
-			return loadPagesTemplateTemplateContentEn(companyId, dataId, restrictModuleName);
-		}
-		if (LANG_AR_SA.equals(canonicalTag)) {
-			return loadPagesTemplateTemplateContentAr(companyId, dataId, restrictModuleName);
-		}
-		return "";
-	}
-
-	private String loadPagesTemplateTemplateContentCn(long companyId, long dataId, boolean restrictModuleName) {
 		return loadPagesTemplateFieldFromOutside(
-				companyId, dataId, FIELD_PAGES_TEMPLATE_CONTENT, LANG_ZH_CN, restrictModuleName);
-	}
-
-	private String loadPagesTemplateTemplateContentEn(long companyId, long dataId, boolean restrictModuleName) {
-		return loadPagesTemplateFieldFromOutside(
-				companyId, dataId, FIELD_PAGES_TEMPLATE_CONTENT, LANG_EN_CN, restrictModuleName);
-	}
-
-	private String loadPagesTemplateTemplateContentAr(long companyId, long dataId, boolean restrictModuleName) {
-		return loadPagesTemplateFieldFromOutside(
-				companyId, dataId, FIELD_PAGES_TEMPLATE_CONTENT, LANG_AR_SA, restrictModuleName);
+				companyId, dataId, FIELD_PAGES_TEMPLATE_CONTENT, canonicalTag, restrictModuleName);
 	}
 
 	private String loadPagesTemplateFieldFromOutside(
@@ -811,28 +720,7 @@ public class CommonLangModReadService {
 
 	private Map<String, String> loadPagesTemplateNameTitleOverlay(
 			long companyId, long dataId, String canonicalTag, boolean restrictModuleName) {
-		if (LANG_ZH_CN.equals(canonicalTag)) {
-			return loadPagesTemplateNameTitleCn(companyId, dataId, restrictModuleName);
-		}
-		if (LANG_EN_CN.equals(canonicalTag)) {
-			return loadPagesTemplateNameTitleEn(companyId, dataId, restrictModuleName);
-		}
-		if (LANG_AR_SA.equals(canonicalTag)) {
-			return loadPagesTemplateNameTitleAr(companyId, dataId, restrictModuleName);
-		}
-		return Map.of();
-	}
-
-	private Map<String, String> loadPagesTemplateNameTitleCn(long companyId, long dataId, boolean restrictModuleName) {
-		return loadPagesTemplateNameTitleFromOutside(companyId, dataId, LANG_ZH_CN, restrictModuleName);
-	}
-
-	private Map<String, String> loadPagesTemplateNameTitleEn(long companyId, long dataId, boolean restrictModuleName) {
-		return loadPagesTemplateNameTitleFromOutside(companyId, dataId, LANG_EN_CN, restrictModuleName);
-	}
-
-	private Map<String, String> loadPagesTemplateNameTitleAr(long companyId, long dataId, boolean restrictModuleName) {
-		return loadPagesTemplateNameTitleFromOutside(companyId, dataId, LANG_AR_SA, restrictModuleName);
+		return loadPagesTemplateNameTitleFromOutside(companyId, dataId, canonicalTag, restrictModuleName);
 	}
 
 	private Map<String, String> loadPagesTemplateNameTitleFromOutside(
@@ -935,29 +823,7 @@ public class CommonLangModReadService {
 		if (!StringUtils.hasText(lang)) {
 			return Map.of();
 		}
-		if (LANG_ZH_CN.equalsIgnoreCase(lang)) {
-			return loadRolesRoleNamesCn(companyId, roleIds);
-		}
-		if (LANG_EN_CN.equalsIgnoreCase(lang)) {
-			return loadRolesRoleNamesEn(companyId, roleIds);
-		}
-		if (LANG_AR_SA.equalsIgnoreCase(lang)) {
-			return loadRolesRoleNamesAr(companyId, roleIds);
-		}
-		// zh-TW and future locales: route by shard suffix (zhTW, ...)
 		return loadRolesRoleNamesFromOutside(companyId, roleIds, normalizeLangTableSuffix(lang));
-	}
-
-	private Map<Long, String> loadRolesRoleNamesCn(long companyId, Collection<Long> roleIds) {
-		return loadRolesRoleNamesFromOutside(companyId, roleIds, normalizeLangTableSuffix(LANG_ZH_CN));
-	}
-
-	private Map<Long, String> loadRolesRoleNamesEn(long companyId, Collection<Long> roleIds) {
-		return loadRolesRoleNamesFromOutside(companyId, roleIds, normalizeLangTableSuffix(LANG_EN_CN));
-	}
-
-	private Map<Long, String> loadRolesRoleNamesAr(long companyId, Collection<Long> roleIds) {
-		return loadRolesRoleNamesFromOutside(companyId, roleIds, normalizeLangTableSuffix(LANG_AR_SA));
 	}
 
 	private Map<Long, String> loadRolesRoleNamesFromOutside(
@@ -994,7 +860,7 @@ public class CommonLangModReadService {
 	}
 
 	/**
-	 * Batch-load {@code role_name} translations for {@code companys_roles} rows from CN / EN / AR mod tables.
+	 * Batch-load {@code role_name} translations for {@code companys_roles} rows from all canonical-locale mod tables.
 	 *
 	 * @return map {@code role_id -> (locale tag -> attribute_value)}; only locales with non-empty values appear
 	 */
@@ -1003,9 +869,10 @@ public class CommonLangModReadService {
 			return Map.of();
 		}
 		Map<Long, Map<String, String>> out = new LinkedHashMap<>();
-		mergeRoleLocaleMap(out, LANG_ZH_CN, loadRolesRoleNamesCn(companyId, roleIds));
-		mergeRoleLocaleMap(out, LANG_EN_CN, loadRolesRoleNamesEn(companyId, roleIds));
-		mergeRoleLocaleMap(out, LANG_AR_SA, loadRolesRoleNamesAr(companyId, roleIds));
+		for (String canonical : LanguageCanonicalCodes.FIXED_ORDER) {
+			mergeRoleLocaleMap(
+					out, canonical, loadRolesRoleNamesFromOutside(companyId, roleIds, normalizeLangTableSuffix(canonical)));
+		}
 		return out;
 	}
 
@@ -1037,20 +904,11 @@ public class CommonLangModReadService {
 		if (!StringUtils.hasText(lang)) {
 			return Map.of();
 		}
-		if (LANG_ZH_CN.equalsIgnoreCase(lang)) {
-			return loadArticleCategoryCategoryNamesCn(companyId, dataIds);
-		}
-		if (LANG_EN_CN.equalsIgnoreCase(lang)) {
-			return loadArticleCategoryCategoryNamesEn(companyId, dataIds);
-		}
-		if (LANG_AR_SA.equalsIgnoreCase(lang)) {
-			return loadArticleCategoryCategoryNamesAr(companyId, dataIds);
-		}
-		return Map.of();
+		return loadArticleCategoryNamesFromOutsideTable(companyId, dataIds, normalizeLangTableSuffix(lang));
 	}
 
 	/**
-	 * Batch-load {@code category_name} translations for article category rows from CN / EN / AR mod tables.
+	 * Batch-load {@code category_name} translations for article category rows from all canonical-locale mod tables.
 	 *
 	 * @return map {@code data_id -> (locale tag -> attribute_value)}; only locales with non-empty values appear
 	 */
@@ -1060,9 +918,12 @@ public class CommonLangModReadService {
 			return Map.of();
 		}
 		Map<Long, Map<String, String>> out = new LinkedHashMap<>();
-		mergeArticleCategoryLocaleMap(out, LANG_ZH_CN, loadArticleCategoryCategoryNamesCn(companyId, dataIds));
-		mergeArticleCategoryLocaleMap(out, LANG_EN_CN, loadArticleCategoryCategoryNamesEn(companyId, dataIds));
-		mergeArticleCategoryLocaleMap(out, LANG_AR_SA, loadArticleCategoryCategoryNamesAr(companyId, dataIds));
+		for (String canonical : LanguageCanonicalCodes.FIXED_ORDER) {
+			mergeArticleCategoryLocaleMap(
+					out,
+					canonical,
+					loadArticleCategoryNamesFromOutsideTable(companyId, dataIds, normalizeLangTableSuffix(canonical)));
+		}
 		return out;
 	}
 
@@ -1077,18 +938,6 @@ public class CommonLangModReadService {
 			}
 			acc.computeIfAbsent(e.getKey(), k -> new LinkedHashMap<>()).put(localeTag, e.getValue());
 		}
-	}
-
-	private Map<Long, String> loadArticleCategoryCategoryNamesCn(long companyId, Collection<Long> dataIds) {
-		return loadArticleCategoryNamesFromOutsideTable(companyId, dataIds, normalizeLangTableSuffix(LANG_ZH_CN));
-	}
-
-	private Map<Long, String> loadArticleCategoryCategoryNamesEn(long companyId, Collection<Long> dataIds) {
-		return loadArticleCategoryNamesFromOutsideTable(companyId, dataIds, normalizeLangTableSuffix(LANG_EN_CN));
-	}
-
-	private Map<Long, String> loadArticleCategoryCategoryNamesAr(long companyId, Collection<Long> dataIds) {
-		return loadArticleCategoryNamesFromOutsideTable(companyId, dataIds, normalizeLangTableSuffix(LANG_AR_SA));
 	}
 
 	/**
@@ -1138,13 +987,12 @@ public class CommonLangModReadService {
 			return List.of();
 		}
 		String lang = requestLang == null ? "" : requestLang.trim();
-		if (!LANG_ZH_CN.equalsIgnoreCase(lang)
-				&& !LANG_EN_CN.equalsIgnoreCase(lang)
-				&& !LANG_AR_SA.equalsIgnoreCase(lang)) {
+		String canonical = canonicalCommonLangLocaleTag(extractPrimaryLanguageTag(lang));
+		if (canonical == null) {
 			return List.of();
 		}
 		String like = "%" + escapeLike(containsNeedle.trim()) + "%";
-		String outsideTable = OUTSIDE_LANG_TABLE_PREFIX + normalizeLangTableSuffix(lang);
+		String outsideTable = OUTSIDE_LANG_TABLE_PREFIX + normalizeLangTableSuffix(canonical);
 		String sql =
 				"SELECT DISTINCT data_id FROM "
 						+ outsideTable
@@ -1174,13 +1022,9 @@ public class CommonLangModReadService {
 		if (rows == null || rows.isEmpty()) {
 			return;
 		}
-		String lang = requestLang == null ? "" : requestLang.trim();
-		if (!StringUtils.hasText(lang)) {
-			return;
-		}
-		if (!LANG_ZH_CN.equalsIgnoreCase(lang)
-				&& !LANG_EN_CN.equalsIgnoreCase(lang)
-				&& !LANG_AR_SA.equalsIgnoreCase(lang)) {
+		String langRaw = requestLang == null ? "" : requestLang.trim();
+		String lang = canonicalCommonLangLocaleTag(extractPrimaryLanguageTag(langRaw));
+		if (lang == null) {
 			return;
 		}
 
@@ -1214,11 +1058,6 @@ public class CommonLangModReadService {
 		}
 		String lang = requestLang == null ? "" : requestLang.trim();
 		if (!StringUtils.hasText(lang)) {
-			return;
-		}
-		if (!LANG_ZH_CN.equalsIgnoreCase(lang)
-				&& !LANG_EN_CN.equalsIgnoreCase(lang)
-				&& !LANG_AR_SA.equalsIgnoreCase(lang)) {
 			return;
 		}
 

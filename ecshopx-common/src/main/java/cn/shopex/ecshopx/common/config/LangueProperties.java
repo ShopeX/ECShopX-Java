@@ -26,7 +26,8 @@ import org.springframework.util.StringUtils;
 @ConfigurationProperties(prefix = "langue")
 public class LangueProperties {
 
-	private List<String> list = new ArrayList<>(List.of("zh-CN", "en-CN", "ar-SA", "zh-TW"));
+	private List<String> list =
+			new ArrayList<>(List.of("zh-CN", "en-CN", "ar-SA", "zh-TW", "ja-JP", "ru-RU"));
 
 	private String defaultLang = "zh-CN";
 

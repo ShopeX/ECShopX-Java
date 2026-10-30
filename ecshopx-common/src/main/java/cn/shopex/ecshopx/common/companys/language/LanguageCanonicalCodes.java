@@ -35,19 +35,19 @@ public final class LanguageCanonicalCodes {
 					"ar", "ar-SA",
 					"ar-sa", "ar-SA",
 					"ja", "ja-JP",
-					"ru", "ru-RU");
+					"ja-jp", "ja-JP",
+					"ru", "ru-RU",
+					"ru-ru", "ru-RU");
 
-	private static final Map<String, String> DISPLAY_NAMES;
-
-	static {
-		DISPLAY_NAMES = new LinkedHashMap<>();
-		DISPLAY_NAMES.put("zh-CN", "中文");
-		DISPLAY_NAMES.put("en-CN", "English");
-		DISPLAY_NAMES.put("ar-SA", "العربية");
-		DISPLAY_NAMES.put("zh-TW", "中文繁体");
-		DISPLAY_NAMES.put("ja-JP", "日本語");
-		DISPLAY_NAMES.put("ru-RU", "Русский");
-	}
+	private static final Map<String, String> DISPLAY_NAMES =
+			new LinkedHashMap<>(
+					Map.of(
+							"zh-CN", "中文",
+							"en-CN", "English",
+							"ar-SA", "العربية",
+							"zh-TW", "中文繁体",
+							"ja-JP", "日本語",
+							"ru-RU", "Русский"));
 
 	private LanguageCanonicalCodes() {}
 

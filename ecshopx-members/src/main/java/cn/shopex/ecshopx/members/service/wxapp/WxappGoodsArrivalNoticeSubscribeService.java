@@ -34,8 +34,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class WxappGoodsArrivalNoticeSubscribeService {
 
-	private static final String REDIS_KEY_PREFIX = "arrivalNoticeSub";
-
 	private static final Pattern POSITIVE_ITEM_ID = Pattern.compile("^[1-9]\\d*$");
 
 	private final SubscribeNoticeMapper subscribeNoticeMapper;
@@ -158,34 +156,12 @@ public class WxappGoodsArrivalNoticeSubscribeService {
 	}
 
 	private String buildArrivalNoticeRedisKey(String source, long companyId, long itemId, int distributorId) {
-		String cid = String.valueOf(companyId);
-		String iid = String.valueOf(itemId);
-		if ("wechat".equals(source)) {
-			if (distributorId > 0) {
-				return REDIS_KEY_PREFIX + ":" + cid + ":" + iid + ":" + distributorId;
-			}
-			return REDIS_KEY_PREFIX + ":" + cid + ":" + iid;
-		}
-		if (distributorId > 0) {
-			return REDIS_KEY_PREFIX + ":" + source + ":" + cid + ":" + iid + ":" + distributorId;
-		}
-		return REDIS_KEY_PREFIX + ":" + source + ":" + cid + ":" + iid;
+		return GoodsArrivalNoticeSubscribeRedisKeys.hashKey(source, companyId, itemId, distributorId);
 	}
 
 	private String buildArrivalNoticeRedisKey(
 			String source, long companyId, String itemIdPathRaw, int distributorId) {
-		String cid = String.valueOf(companyId);
-		String iid = itemIdPathRaw == null ? "" : itemIdPathRaw;
-		if ("wechat".equals(source)) {
-			if (distributorId > 0) {
-				return REDIS_KEY_PREFIX + ":" + cid + ":" + iid + ":" + distributorId;
-			}
-			return REDIS_KEY_PREFIX + ":" + cid + ":" + iid;
-		}
-		if (distributorId > 0) {
-			return REDIS_KEY_PREFIX + ":" + source + ":" + cid + ":" + iid + ":" + distributorId;
-		}
-		return REDIS_KEY_PREFIX + ":" + source + ":" + cid + ":" + iid;
+		return GoodsArrivalNoticeSubscribeRedisKeys.hashKey(source, companyId, itemIdPathRaw, distributorId);
 	}
 
 	private String buildSubscribeJson(String openId, Object wxaAppidRaw) {

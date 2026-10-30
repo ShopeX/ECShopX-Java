@@ -104,35 +104,40 @@ public class NormalOrderPointDeductionApplyService {
 
 		int remainingPoints = (int) itemPointUse;
 		long remainingFee = itemFeeByPointFee;
-		BigDecimal totalItemFeeBd =
-				totalItemFee > 0L ? BigDecimal.valueOf(totalItemFee) : BigDecimal.ZERO;
+		int itemCount = items.size();
 
-		for (int k = 0; k < items.size(); k++) {
+		// 第一轮：按金额比例分摊（非末行 floor，末行吃剩余），避免 6 位小数 + ceil 留下 1 分现金尾差（ECX-10614）
+		for (int k = 0; k < itemCount; k++) {
 			Map<String, Object> itemInfo = items.get(k);
 			long itemTf = longVal(itemInfo.get("total_fee"), 0L);
-			BigDecimal proportion =
-					totalItemFee > 0L
-							? BigDecimal.valueOf(itemTf).divide(totalItemFeeBd, 6, RoundingMode.HALF_UP)
-							: BigDecimal.ZERO;
 
-			if (k == items.size() - 1) {
-				itemInfo.put("share_points", String.valueOf(remainingPoints));
-				itemInfo.put("point_fee", remainingFee);
+			if (k == itemCount - 1) {
+				int sharePoints = remainingPoints;
+				long shareFee = remainingFee;
+				if (shareFee > itemTf) {
+					shareFee = itemTf;
+				}
+				itemInfo.put("share_points", String.valueOf(sharePoints));
+				itemInfo.put("point_fee", shareFee);
 				remainingPoints = 0;
-				remainingFee = 0L;
+				remainingFee -= shareFee;
 			} else {
+				// 整数比例 floor：floor(pool * line / total)
 				int sharePoints =
-						BigDecimal.valueOf(itemPointUse)
-								.multiply(proportion)
-								.setScale(6, RoundingMode.HALF_UP)
-								.setScale(0, RoundingMode.CEILING)
-								.intValue();
+						totalItemFee > 0L
+								? (int)
+										BigDecimal.valueOf(itemPointUse)
+												.multiply(BigDecimal.valueOf(itemTf))
+												.divide(BigDecimal.valueOf(totalItemFee), 0, RoundingMode.DOWN)
+												.longValue()
+								: 0;
 				long shareFee =
-						BigDecimal.valueOf(itemFeeByPointFee)
-								.multiply(proportion)
-								.setScale(6, RoundingMode.HALF_UP)
-								.setScale(0, RoundingMode.CEILING)
-								.longValue();
+						totalItemFee > 0L
+								? BigDecimal.valueOf(itemFeeByPointFee)
+										.multiply(BigDecimal.valueOf(itemTf))
+										.divide(BigDecimal.valueOf(totalItemFee), 0, RoundingMode.DOWN)
+										.longValue()
+								: 0L;
 
 				if (sharePoints > remainingPoints) {
 					sharePoints = remainingPoints;
@@ -151,6 +156,26 @@ public class NormalOrderPointDeductionApplyService {
 				remainingFee -= shareFee;
 			}
 		}
+
+		// 第二轮：末行兜底后仍有未分完的抵扣金额，回填到仍有现金尾差的行
+		if (remainingFee > 0L) {
+			for (Map<String, Object> itemInfo : items) {
+				if (remainingFee <= 0L) {
+					break;
+				}
+				long itemTf = longVal(itemInfo.get("total_fee"), 0L);
+				long ptFee = longVal(itemInfo.get("point_fee"), 0L);
+				long lineRemain = itemTf - ptFee;
+				if (lineRemain <= 0L) {
+					continue;
+				}
+				long addFee = Math.min(remainingFee, lineRemain);
+				itemInfo.put("point_fee", ptFee + addFee);
+				remainingFee -= addFee;
+			}
+		}
+
+		orderData.put("items", items);
 
 		for (Map<String, Object> itemInfo : items) {
 			int sharePts = intVal(itemInfo.get("share_points"), 0);

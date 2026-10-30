@@ -111,7 +111,7 @@ class CurrencyExchangeRateCreateServiceTest {
 	}
 
 	@Test
-	@DisplayName("六码均属允许集")
+	@DisplayName("允许集均属白名单可创建")
 	void allAllowedCodesPassWhitelist() {
 		when(currencyExchangeRateMapper.selectOne(any())).thenReturn(null);
 		when(currencyExchangeRateMapper.insert(any(CurrencyExchangeRate.class)))

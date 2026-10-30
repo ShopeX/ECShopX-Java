@@ -27,6 +27,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import cn.shopex.ecshopx.common.companys.language.LanguageCanonicalCodes;
 import cn.shopex.ecshopx.common.marketing.support.OutsideMultiLangTableSupport;
 
 /**
@@ -44,8 +45,6 @@ public class ThemePcTemplateContentLangReadService {
 	private static final String OUTSIDE_LANG_TABLE_PREFIX = "outside_item_multi_lang_mod_lang_";
 
 	private static final String LANG_ZH_CN = "zh-CN";
-	private static final String LANG_EN_CN = "en-CN";
-	private static final String LANG_AR_SA = "ar-SA";
 
 	private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
@@ -189,16 +188,7 @@ public class ThemePcTemplateContentLangReadService {
 	}
 
 	private static String canonicalCommonLangLocaleTag(String langRaw) {
-		if (LANG_ZH_CN.equalsIgnoreCase(langRaw)) {
-			return LANG_ZH_CN;
-		}
-		if (LANG_EN_CN.equalsIgnoreCase(langRaw)) {
-			return LANG_EN_CN;
-		}
-		if (LANG_AR_SA.equalsIgnoreCase(langRaw)) {
-			return LANG_AR_SA;
-		}
-		return null;
+		return LanguageCanonicalCodes.normalize(langRaw);
 	}
 
 	private static String normalizeLangTableSuffix(String langTag) {

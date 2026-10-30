@@ -214,6 +214,11 @@ public class WxappOrderListFilterAssembler {
 				Object isRate = paramMap.get("is_rate");
 				f.put("is_rate", isRate == null ? 0 : isRate);
 			}
+			case 8 -> {
+				// 部分发货（个人中心订单列表 TAB，对齐管理端 payed_partial）
+				f.put("order_status", "PAYED");
+				f.put("delivery_status", "PARTAIL");
+			}
 			default -> {
 			}
 		}

@@ -19,6 +19,7 @@ package cn.shopex.ecshopx.espier.service.front;
 import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.espier.storage.FileStorageService;
 import cn.shopex.ecshopx.espier.storage.StorageException;
+import cn.shopex.ecshopx.espier.support.EspierUploadMessages;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -35,6 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -51,7 +53,6 @@ public class FrontWxappEspierUploadImageService {
 
 	private static final String REDIS_KEY_PREFIX = "uploadImageNum:";
 	private static final String STORAGE_FILE_TYPE = "image";
-	private static final long MAX_BYTES = 2097152L;
 	private static final ZoneId ASIA_SHANGHAI = ZoneId.of("Asia/Shanghai");
 	private static final DateTimeFormatter YMD_SLASH = DateTimeFormatter.ofPattern("yyyy/MM/dd").withZone(ASIA_SHANGHAI);
 	private static final DateTimeFormatter YMDHIS_COMPACT = DateTimeFormatter.ofPattern("yyyyMMddHHmmss").withZone(ASIA_SHANGHAI);
@@ -59,14 +60,17 @@ public class FrontWxappEspierUploadImageService {
 
 	private final StringRedisTemplate membersRedis;
 	private final FileStorageService fileStorageService;
+	private final MessageSource messageSource;
 	private final int userUploadImageNum;
 
 	public FrontWxappEspierUploadImageService(
 			@Qualifier("membersStringRedisTemplate") StringRedisTemplate membersRedis,
 			FileStorageService fileStorageService,
+			MessageSource messageSource,
 			@Value("${USER_UPLOAD_IMAGE_NUM:10}") int userUploadImageNum) {
 		this.membersRedis = membersRedis;
 		this.fileStorageService = fileStorageService;
+		this.messageSource = messageSource;
 		this.userUploadImageNum = userUploadImageNum;
 	}
 
@@ -79,8 +83,8 @@ public class FrontWxappEspierUploadImageService {
 
 		long size = file.getSize();
 		byte[] fileBytes = null;
-		if (size > MAX_BYTES) {
-			throw new ResourceException("图片上传最大为2M");
+		if (size > EspierUploadMessages.MAX_UPLOAD_BYTES) {
+			throw new ResourceException(EspierUploadMessages.imageMaxSize(messageSource));
 		}
 		if (size < 0) {
 			try {
@@ -89,8 +93,8 @@ public class FrontWxappEspierUploadImageService {
 				log.warn("上传失败", e);
 				throw new ResourceException("上传失败");
 			}
-			if (fileBytes.length > MAX_BYTES) {
-				throw new ResourceException("图片上传最大为2M");
+			if (fileBytes.length > EspierUploadMessages.MAX_UPLOAD_BYTES) {
+				throw new ResourceException(EspierUploadMessages.imageMaxSize(messageSource));
 			}
 		}
 
@@ -112,8 +116,8 @@ public class FrontWxappEspierUploadImageService {
 				throw new ResourceException("上传失败");
 			}
 		}
-		if (fileBytes.length > MAX_BYTES) {
-			throw new ResourceException("图片上传最大为2M");
+		if (fileBytes.length > EspierUploadMessages.MAX_UPLOAD_BYTES) {
+			throw new ResourceException(EspierUploadMessages.imageMaxSize(messageSource));
 		}
 		String md5Content = md5BytesHex(fileBytes);
 

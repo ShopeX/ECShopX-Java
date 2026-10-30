@@ -48,7 +48,7 @@ public class AliTemplateMsgService {
 		Map<String, List<String>> m = new LinkedHashMap<>();
 		m.put("logistics_order", List.of("paymentSucc", "payOrdersRemind", "orderDeliverySucc"));
 		m.put("ziti_order", List.of("paymentSucc", "payOrdersRemind"));
-		m.put("after_refund", List.of("aftersalesRefuse"));
+		m.put("after_refund", List.of("aftersalesRefuse", "aftersalesSuccess"));
 		m.put("activity", List.of("registrationResultNotice"));
 		m.put("member", List.of("memberCreateSucc"));
 		m.put("coupon", List.of("userGetCardSucc"));
