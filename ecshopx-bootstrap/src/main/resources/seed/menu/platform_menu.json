@@ -5828,37 +5828,6 @@
     }
   },
   {
-    "shopmenu_id": 784,
-    "company_id": 0,
-    "name": "进销存设置",
-    "url": "/applications/digios-psi-config",
-    "sort": 1,
-    "is_menu": true,
-    "pid": 609,
-    "apis": null,
-    "icon": null,
-    "is_show": true,
-    "alias_name": "digios-psi-config",
-    "version": 1,
-    "disabled": false,
-    "created": 1793241905,
-    "updated": 1793241905,
-    "level": 2,
-    "parent_name": "应用",
-    "isChildrenMenu": false,
-    "menu_type": [
-      "all"
-    ],
-    "name_lang": {
-      "zh-CN": "进销存设置",
-      "en-CN": "",
-      "ar-SA": "",
-      "zh-TW": "",
-      "ja-JP": "",
-      "ru-RU": ""
-    }
-  },
-  {
     "shopmenu_id": 610,
     "company_id": 0,
     "name": "斗拱分账",
@@ -6011,68 +5980,6 @@
       "zh-TW": "CRM設置",
       "ja-JP": "CRM設定",
       "ru-RU": "Настройки CRM"
-    }
-  },
-  {
-    "shopmenu_id": 782,
-    "company_id": 0,
-    "name": "POS",
-    "url": "/applications/pos",
-    "sort": 2,
-    "is_menu": true,
-    "pid": 609,
-    "apis": null,
-    "icon": null,
-    "is_show": true,
-    "alias_name": "pos",
-    "version": 1,
-    "disabled": false,
-    "created": 1792376041,
-    "updated": 1793242001,
-    "level": 2,
-    "parent_name": "应用",
-    "isChildrenMenu": true,
-    "menu_type": [
-      "all"
-    ],
-    "name_lang": {
-      "zh-CN": "POS",
-      "en-CN": "",
-      "ar-SA": "",
-      "zh-TW": "",
-      "ja-JP": "",
-      "ru-RU": ""
-    }
-  },
-  {
-    "shopmenu_id": 783,
-    "company_id": 0,
-    "name": "POS账号管理",
-    "url": "/applications/pos/pos_accounts",
-    "sort": 1,
-    "is_menu": true,
-    "pid": 782,
-    "apis": null,
-    "icon": null,
-    "is_show": true,
-    "alias_name": "pos_accounts",
-    "version": 1,
-    "disabled": false,
-    "created": 1792376073,
-    "updated": 1792376073,
-    "level": 3,
-    "parent_name": "POS",
-    "isChildrenMenu": false,
-    "menu_type": [
-      "all"
-    ],
-    "name_lang": {
-      "zh-CN": "POS账号管理",
-      "en-CN": "",
-      "ar-SA": "",
-      "zh-TW": "",
-      "ja-JP": "",
-      "ru-RU": ""
     }
   },
   {

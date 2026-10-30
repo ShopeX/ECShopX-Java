@@ -735,7 +735,14 @@ def canonical_type(t):
 def normalize_default(value):
     if value is None:
         return None
-    return clean_default_value(value)
+    value = clean_default_value(value)
+    # Align domain defaultValue True/False with MySQL tinyint defaults 1/0.
+    upper = str(value).upper()
+    if upper == "TRUE":
+        return "1"
+    if upper == "FALSE":
+        return "0"
+    return value
 
 
 def column_differs(domain, actual):

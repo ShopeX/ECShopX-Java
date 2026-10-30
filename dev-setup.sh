@@ -24,6 +24,8 @@ MAVEN_BUILD_IMAGE="${MAVEN_BUILD_IMAGE:-maven:3.9-eclipse-temurin-17}"
 source "$PROJECT_ROOT/docker/install-secrets.sh"
 # shellcheck source=docker/install-docker-images.sh
 source "$PROJECT_ROOT/docker/install-docker-images.sh"
+# shellcheck source=docker/install-open-source-stat.sh
+source "$PROJECT_ROOT/docker/install-open-source-stat.sh"
 
 PUBLIC_REPO_BASE_URL="${PUBLIC_REPO_BASE_URL:-https://gitee.com/ShopeX}"
 
@@ -744,6 +746,7 @@ show_success_info() {
     log_info "  停止服务: $DOCKER_COMPOSE_CMD -f $DOCKER_COMPOSE_FILE down"
     log_info "  重新构建: $0 --rebuild"
     log_info "执行时间: ${minutes}分${seconds}秒"
+    report_open_source_install_stat "$PROJECT_ROOT/pom.xml"
     log_success "=========================================="
 }
 

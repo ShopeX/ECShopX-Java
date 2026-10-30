@@ -14,6 +14,8 @@ source "$LITE_DIR/lib/artifacts.sh"
 source "$LITE_DIR/lib/images.sh"
 # shellcheck source=../docker/install-secrets.sh
 source "$LITE_DIR/../docker/install-secrets.sh"
+# shellcheck source=../docker/install-open-source-stat.sh
+source "$LITE_DIR/../docker/install-open-source-stat.sh"
 
 release_init_paths "$SCRIPT_PATH"
 
@@ -594,6 +596,7 @@ show_success_info() {
   release_log_info "  查看日志: $DOCKER_COMPOSE_CMD -f $COMPOSE_FILE --project-directory $RELEASE_LITE_DIR logs -f"
   release_log_info "  停止服务: $DOCKER_COMPOSE_CMD -f $COMPOSE_FILE --project-directory $RELEASE_LITE_DIR down"
   release_log_info "执行时间: ${minutes}分${seconds}秒"
+  report_open_source_install_stat "$RELEASE_ECSHOPX_ROOT/pom.xml"
   release_log_success "=========================================="
 }
 
