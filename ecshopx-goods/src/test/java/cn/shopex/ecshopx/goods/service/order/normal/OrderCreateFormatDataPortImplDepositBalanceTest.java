@@ -56,6 +56,9 @@ class OrderCreateFormatDataPortImplDepositBalanceTest {
 	@Mock
 	private MessageSource messageSource;
 
+	@Mock
+	private cn.shopex.ecshopx.goods.service.items.ItemSpecImageLookupService itemSpecImageLookupService;
+
 	private OrderCreateFormatDataPortImpl port;
 
 	@BeforeEach
@@ -68,6 +71,7 @@ class OrderCreateFormatDataPortImplDepositBalanceTest {
 						wxappGoodsItemsListQueryOrchestrator,
 						orderCheckoutFullGiftService,
 						orderCheckoutPlusBuyService,
+						itemSpecImageLookupService,
 						messageSource);
 		doNothing().when(normalOrderCheckoutCouponFacade).applyOptimalCouponAndSilentDeduction(any());
 		doNothing().when(orderDirectedCrowdDiscountPort).applySetUserTotalDiscountIfNeeded(any());

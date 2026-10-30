@@ -19,6 +19,7 @@ package cn.shopex.ecshopx.goods.service.cart.salesperson;
 import cn.shopex.ecshopx.common.config.LangueProperties;
 import cn.shopex.ecshopx.common.web.locale.RequestLangTag;
 import cn.shopex.ecshopx.goods.service.distributor.DistributorItemsListSkuSpecApplier;
+import cn.shopex.ecshopx.goods.service.items.ItemSpecImageLookupService;
 import cn.shopex.ecshopx.goods.service.wxapp.WxappGoodsItemsListQueryOrchestrator;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -35,13 +36,16 @@ public class SalespersonCartSkuLoadService {
 
 	private final WxappGoodsItemsListQueryOrchestrator wxappGoodsItemsListQueryOrchestrator;
 	private final DistributorItemsListSkuSpecApplier distributorItemsListSkuSpecApplier;
+	private final ItemSpecImageLookupService itemSpecImageLookupService;
 	private final LangueProperties langueProperties;
 
 	public SalespersonCartSkuLoadService(WxappGoodsItemsListQueryOrchestrator wxappGoodsItemsListQueryOrchestrator,
 			DistributorItemsListSkuSpecApplier distributorItemsListSkuSpecApplier,
+			ItemSpecImageLookupService itemSpecImageLookupService,
 			LangueProperties langueProperties) {
 		this.wxappGoodsItemsListQueryOrchestrator = wxappGoodsItemsListQueryOrchestrator;
 		this.distributorItemsListSkuSpecApplier = distributorItemsListSkuSpecApplier;
+		this.itemSpecImageLookupService = itemSpecImageLookupService;
 		this.langueProperties = langueProperties;
 	}
 
@@ -69,6 +73,7 @@ public class SalespersonCartSkuLoadService {
 			list = Collections.emptyList();
 		} else {
 			distributorItemsListSkuSpecApplier.apply(companyId, list);
+			itemSpecImageLookupService.applySpecImageUrl(companyId, list);
 		}
 		Map<String, Object> out = new LinkedHashMap<>();
 		out.put("total_count", pack.get("total_count"));

@@ -27,6 +27,7 @@ import cn.shopex.ecshopx.goods.repository.ItemsMedicineRepository;
 import cn.shopex.ecshopx.goods.repository.ItemsRepository;
 import cn.shopex.ecshopx.goods.service.distributor.DistributorItemSkuInfoForStoreService;
 import cn.shopex.ecshopx.goods.service.items.ItemLogisticsStoreEnricher;
+import cn.shopex.ecshopx.goods.service.items.ItemSpecImageLookupService;
 import cn.shopex.ecshopx.goods.service.wxapp.WxappGoodsItemsDetailPromotionActivityService;
 import cn.shopex.ecshopx.orders.service.front.wxapp.OrdersCartColumnNamesMapSupport;
 import cn.shopex.ecshopx.pointsmall.domain.PointsmallItems;
@@ -53,6 +54,7 @@ public class WxappH5CartAddSupport {
 	private final CartMemberpreferenceValidationService cartMemberpreferenceValidationService;
 	private final ItemLogisticsStoreEnricher itemLogisticsStoreEnricher;
 	private final WxappH5DistributorCartPromotionService wxappH5DistributorCartPromotionService;
+	private final ItemSpecImageLookupService itemSpecImageLookupService;
 
 	public WxappH5CartAddSupport(
 			ItemsRepository itemsRepository,
@@ -65,7 +67,8 @@ public class WxappH5CartAddSupport {
 			PointsmallCartSkuLoadService pointsmallCartSkuLoadService,
 			CartMemberpreferenceValidationService cartMemberpreferenceValidationService,
 			ItemLogisticsStoreEnricher itemLogisticsStoreEnricher,
-			WxappH5DistributorCartPromotionService wxappH5DistributorCartPromotionService) {
+			WxappH5DistributorCartPromotionService wxappH5DistributorCartPromotionService,
+			ItemSpecImageLookupService itemSpecImageLookupService) {
 		this.itemsRepository = itemsRepository;
 		this.itemsMedicineRepository = itemsMedicineRepository;
 		this.distributorMapper = distributorMapper;
@@ -77,6 +80,7 @@ public class WxappH5CartAddSupport {
 		this.cartMemberpreferenceValidationService = cartMemberpreferenceValidationService;
 		this.itemLogisticsStoreEnricher = itemLogisticsStoreEnricher;
 		this.wxappH5DistributorCartPromotionService = wxappH5DistributorCartPromotionService;
+		this.itemSpecImageLookupService = itemSpecImageLookupService;
 	}
 
 	public Map<String, Object> formatAddCartData(Map<String, Object> params, Map<String, Object> cartInfo) {
@@ -104,11 +108,10 @@ public class WxappH5CartAddSupport {
 		ResolvedSku resolved = resolveSkuForCart(companyId, itemId, shopId, shopType, baseItem);
 		assertSellable(resolved);
 		assertMedicineMaxIfNeeded(companyId, itemId, num, baseItem);
-		long userId = longVal(params.get("user_id"));
 		Map<String, Object> activity =
-				wxappGoodsItemsDetailPromotionActivityService.getCurrentActivityByItemId(
-						companyId, itemId, shopId, userId);
+				wxappGoodsItemsDetailPromotionActivityService.getCurrentActivityByItemId(companyId, itemId, shopId);
 		assertStockWithActivity(resolved, num, activity, itemId);
+		long userId = longVal(params.get("user_id"));
 		if (userId > 0L && !"shop_offline".equals(shopType)) {
 			wxappH5DistributorCartPromotionService.assertLimitedBuyOnAdd(
 					companyId, userId, itemId, shopId, num, activity);
@@ -146,7 +149,7 @@ public class WxappH5CartAddSupport {
 		}
 		applyActivityFields(out, activity);
 		List<Map<String, Object>> oneRow = List.of(out);
-		goodsItemsListPromotionEnrichmentService.enrich(oneRow, userId);
+		goodsItemsListPromotionEnrichmentService.enrich(oneRow);
 		return out;
 	}
 
@@ -254,15 +257,13 @@ public class WxappH5CartAddSupport {
 			return cartInfo;
 		}
 		long lineShopId = longVal(cartInfo.get("shop_id"));
-		long userId = longVal(cartInfo.get("user_id"));
 		int num = intVal(cartInfo.get("num"));
 		String cartMarketingType = stringVal(cartInfo.get("marketing_type"));
 		long cartMarketingId = longVal(cartInfo.get("marketing_id"));
 		boolean cartClaimsPromotion = StringUtils.hasText(cartMarketingType) || cartMarketingId > 0L;
 
 		Map<String, Object> live =
-				wxappGoodsItemsDetailPromotionActivityService.getCurrentActivityByItemId(
-						companyId, itemId, lineShopId, userId);
+				wxappGoodsItemsDetailPromotionActivityService.getCurrentActivityByItemId(companyId, itemId, lineShopId);
 
 		if (!cartClaimsPromotion) {
 			if (live != null && !live.isEmpty()) {
@@ -312,7 +313,7 @@ public class WxappH5CartAddSupport {
 
 	private ResolvedSku resolveSkuForCart(long companyId, long itemId, long shopId, String shopType, Items baseItem) {
 		String itemName = baseItem.getItemName() != null ? baseItem.getItemName() : "";
-		String pics = firstPic(baseItem.getPics());
+		String pics = itemSpecImageLookupService.resolveDisplayPic(companyId, itemId, baseItem.getPics());
 		int price = baseItem.getPrice() != null ? baseItem.getPrice() : 0;
 		String approve = baseItem.getApproveStatus() != null ? baseItem.getApproveStatus() : "";
 		int hqStore = baseItem.getStore() != null ? baseItem.getStore() : 0;

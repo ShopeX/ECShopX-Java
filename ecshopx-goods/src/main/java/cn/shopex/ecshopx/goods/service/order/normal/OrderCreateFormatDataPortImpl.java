@@ -22,6 +22,7 @@ import cn.shopex.ecshopx.common.order.normal.NormalOrderCreateParams;
 import cn.shopex.ecshopx.common.order.normal.OrderCreateFormatDataPort;
 import cn.shopex.ecshopx.common.order.normal.OrderDirectedCrowdDiscountPort;
 import cn.shopex.ecshopx.deposit.service.UserDepositBalanceReadService;
+import cn.shopex.ecshopx.goods.service.items.ItemSpecImageLookupService;
 import cn.shopex.ecshopx.goods.service.recommend.GoodsRecommendCheckoutMergeService;
 import cn.shopex.ecshopx.goods.service.wxapp.WxappGoodsItemsListQueryOrchestrator;
 import cn.shopex.ecshopx.kaquan.service.order.normal.NormalOrderCheckoutCouponFacade;
@@ -56,6 +57,7 @@ public class OrderCreateFormatDataPortImpl implements OrderCreateFormatDataPort 
 	private final OrderCheckoutFullGiftService orderCheckoutFullGiftService;
 
 	private final OrderCheckoutPlusBuyService orderCheckoutPlusBuyService;
+	private final ItemSpecImageLookupService itemSpecImageLookupService;
 	private final MessageSource messageSource;
 
 	public OrderCreateFormatDataPortImpl(
@@ -65,6 +67,7 @@ public class OrderCreateFormatDataPortImpl implements OrderCreateFormatDataPort 
 			WxappGoodsItemsListQueryOrchestrator wxappGoodsItemsListQueryOrchestrator,
 			OrderCheckoutFullGiftService orderCheckoutFullGiftService,
 			OrderCheckoutPlusBuyService orderCheckoutPlusBuyService,
+			ItemSpecImageLookupService itemSpecImageLookupService,
 			MessageSource messageSource) {
 		this.orderDirectedCrowdDiscountPort = orderDirectedCrowdDiscountPort;
 		this.normalOrderCheckoutCouponFacade = normalOrderCheckoutCouponFacade;
@@ -72,6 +75,7 @@ public class OrderCreateFormatDataPortImpl implements OrderCreateFormatDataPort 
 		this.wxappGoodsItemsListQueryOrchestrator = wxappGoodsItemsListQueryOrchestrator;
 		this.orderCheckoutFullGiftService = orderCheckoutFullGiftService;
 		this.orderCheckoutPlusBuyService = orderCheckoutPlusBuyService;
+		this.itemSpecImageLookupService = itemSpecImageLookupService;
 		this.messageSource = messageSource;
 	}
 
@@ -117,11 +121,6 @@ public class OrderCreateFormatDataPortImpl implements OrderCreateFormatDataPort 
 		od.put("order_type", typed.orderType());
 		od.put("order_class", typed.orderClass());
 		od.put("order_type_slug", slug);
-		if (pr.containsKey("is_online_order")) {
-			od.put("is_online_order", pr.get("is_online_order"));
-		} else if ("shopadmin".equals(typed.orderClass())) {
-			od.put("is_online_order", Boolean.FALSE);
-		}
 		// PHP OrderService::_formatOrderData uses_platform_item_stock
 		boolean shopadminFastBuy =
 				"shopadmin".equals(typed.orderClass()) && "fastbuy".equals(stringVal(pr.get("cart_type")));
@@ -277,7 +276,14 @@ public class OrderCreateFormatDataPortImpl implements OrderCreateFormatDataPort 
 										activityType);
 						if (!pkgChild.isEmpty()) {
 							childLine.put("item_name", stringVal(pkgChild.get("item_name")));
-							childLine.put("pic", stringVal(pkgChild.get("pics")));
+							childLine.put(
+									"pic",
+									itemSpecImageLookupService.resolveDisplayPic(
+											companyId,
+											childId,
+											pkgChild.get("pic"),
+											pkgChild.get("pics"),
+											pkgChild.get("spec_image_url")));
 							if (pkgChild.get("item_spec_desc") != null) {
 								childLine.put("item_spec_desc", pkgChild.get("item_spec_desc"));
 							}
@@ -458,6 +464,9 @@ public class OrderCreateFormatDataPortImpl implements OrderCreateFormatDataPort 
 				}
 			}
 		}
+		if (!byId.isEmpty()) {
+			itemSpecImageLookupService.applySpecImageUrl(companyId, new ArrayList<>(byId.values()));
+		}
 		List<Map<String, Object>> merged = new ArrayList<>();
 		for (Object o : itemList) {
 			if (!(o instanceof Map<?, ?> lineRaw)) {
@@ -467,6 +476,12 @@ public class OrderCreateFormatDataPortImpl implements OrderCreateFormatDataPort 
 			long itemId = longVal(line.get("item_id"), 0L);
 			Map<String, Object> sku = byId.get(itemId);
 			if (sku == null) {
+				if (!StringUtils.hasText(stringVal(line.get("pic")))) {
+					line.put(
+							"pic",
+							itemSpecImageLookupService.resolveDisplayPic(
+									companyId, itemId, line.get("pic"), line.get("pics"), line.get("spec_image_url")));
+				}
 				merged.add(line);
 				continue;
 			}
@@ -482,9 +497,16 @@ public class OrderCreateFormatDataPortImpl implements OrderCreateFormatDataPort 
 			if (!StringUtils.hasText(stringVal(line.get("item_unit")))) {
 				line.put("item_unit", stringVal(sku.get("item_unit")));
 			}
-			if (!StringUtils.hasText(stringVal(line.get("pic")))) {
-				line.put("pic", firstPicFromSku(sku));
-			}
+			line.put(
+					"pic",
+					itemSpecImageLookupService.resolveDisplayPic(
+							companyId,
+							itemId,
+							line.get("pic"),
+							line.get("pics"),
+							line.get("spec_image_url"),
+							sku.get("spec_image_url"),
+							sku.get("pics")));
 			if (sku.get("templates_id") != null) {
 				line.put("templates_id", sku.get("templates_id"));
 			} else if (sku.get("template_id") != null) {
@@ -782,21 +804,6 @@ public class OrderCreateFormatDataPortImpl implements OrderCreateFormatDataPort 
 		return StringUtils.hasText(s) ? s : fallback;
 	}
 
-	private static String firstPicFromSku(Map<String, Object> sku) {
-		Object pics = sku.get("pics");
-		if (pics == null) {
-			return "";
-		}
-		if (pics instanceof String s) {
-			return s.trim();
-		}
-		if (pics instanceof List<?> lst && !lst.isEmpty()) {
-			Object first = lst.get(0);
-			return first == null ? "" : String.valueOf(first).trim();
-		}
-		return String.valueOf(pics).trim();
-	}
-
 	private static int intFromPointUse(Object v) {
 		if (v == null) {
 			return 0;
@@ -904,7 +911,7 @@ public class OrderCreateFormatDataPortImpl implements OrderCreateFormatDataPort 
 		}
 	}
 
-	private static Map<String, Object> buildOrderLineSkeleton(
+	private Map<String, Object> buildOrderLineSkeleton(
 			long itemId,
 			int num,
 			long companyId,
@@ -936,10 +943,14 @@ public class OrderCreateFormatDataPortImpl implements OrderCreateFormatDataPort 
 		if (cartRow.get("weight") != null) {
 			line.put("weight", cartRow.get("weight"));
 		}
-		line.put("pic", stringVal(cartRow.get("pic")));
-		if (!StringUtils.hasText(stringVal(line.get("pic")))) {
-			line.put("pic", stringVal(cartRow.get("pics")));
-		}
+		line.put(
+				"pic",
+				itemSpecImageLookupService.resolveDisplayPic(
+						companyId,
+						itemId,
+						cartRow.get("pic"),
+						cartRow.get("pics"),
+						cartRow.get("spec_image_url")));
 		line.put("cost_price", intVal(cartRow.get("cost_price"), 0));
 		line.put("market_price", intVal(cartRow.get("market_price"), price));
 		line.put("is_total_store", !Boolean.FALSE.equals(cartRow.get("is_total_store")));

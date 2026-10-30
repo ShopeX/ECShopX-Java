@@ -26,6 +26,7 @@ import cn.shopex.ecshopx.goods.repository.ItemsMedicineRepository;
 import cn.shopex.ecshopx.goods.repository.ItemsRepository;
 import cn.shopex.ecshopx.goods.service.distributor.DistributorItemSkuInfoForStoreService;
 import cn.shopex.ecshopx.goods.service.items.ItemLogisticsStoreEnricher;
+import cn.shopex.ecshopx.goods.service.items.ItemSpecImageLookupService;
 import cn.shopex.ecshopx.orders.domain.Cart;
 import cn.shopex.ecshopx.orders.mapper.CartMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -51,6 +52,7 @@ public class WxappDistributorCartAddCoreService {
 	private final DistributorItemSkuInfoForStoreService distributorItemSkuInfoForStoreService;
 	private final ItemsMedicineRepository itemsMedicineRepository;
 	private final ItemLogisticsStoreEnricher itemLogisticsStoreEnricher;
+	private final ItemSpecImageLookupService itemSpecImageLookupService;
 
 	public WxappDistributorCartAddCoreService(
 			CartMapper cartMapper,
@@ -58,13 +60,15 @@ public class WxappDistributorCartAddCoreService {
 			ItemsRepository itemsRepository,
 			DistributorItemSkuInfoForStoreService distributorItemSkuInfoForStoreService,
 			ItemsMedicineRepository itemsMedicineRepository,
-			ItemLogisticsStoreEnricher itemLogisticsStoreEnricher) {
+			ItemLogisticsStoreEnricher itemLogisticsStoreEnricher,
+			ItemSpecImageLookupService itemSpecImageLookupService) {
 		this.cartMapper = cartMapper;
 		this.distributorMapper = distributorMapper;
 		this.itemsRepository = itemsRepository;
 		this.distributorItemSkuInfoForStoreService = distributorItemSkuInfoForStoreService;
 		this.itemsMedicineRepository = itemsMedicineRepository;
 		this.itemLogisticsStoreEnricher = itemLogisticsStoreEnricher;
+		this.itemSpecImageLookupService = itemSpecImageLookupService;
 	}
 
 	public Map<String, Object> addCart(
@@ -163,7 +167,7 @@ public class WxappDistributorCartAddCoreService {
 
 	private ResolvedSku resolveSkuForCart(long companyId, long itemId, long shopId, String shopType, Items baseItem) {
 		String itemName = baseItem.getItemName() != null ? baseItem.getItemName() : "";
-		String pics = firstPic(baseItem.getPics());
+		String pics = itemSpecImageLookupService.resolveDisplayPic(companyId, itemId, baseItem.getPics());
 		int price = baseItem.getPrice() != null ? baseItem.getPrice() : 0;
 		String approve = baseItem.getApproveStatus() != null ? baseItem.getApproveStatus() : "";
 		int hqStore = baseItem.getStore() != null ? baseItem.getStore() : 0;
