@@ -1,13 +1,13 @@
-# App image: Maven build + runtime base (Temurin 17 + Node 20 + OpenResty).
+# App image: Maven build + runtime base (Temurin 17 + Node 22 + OpenResty).
 #
 # Manual build example:
 #   docker build -f docker/Dockerfile.app \
 #     --build-arg MAVEN_BUILD_IMAGE=maven:3.9-eclipse-temurin-17 \
-#     --build-arg RUNTIME_BASE_IMAGE=ecshopx-java:17-node20-openresty \
+#     --build-arg RUNTIME_BASE_IMAGE=ecshopx-java:17-node22-openresty \
 #     -t ecshopx-app:latest .
 
 ARG MAVEN_BUILD_IMAGE=maven:3.9-eclipse-temurin-17
-ARG RUNTIME_BASE_IMAGE=ecshopx-java:17-node20-openresty
+ARG RUNTIME_BASE_IMAGE=ecshopx-java:17-node22-openresty
 
 FROM ${MAVEN_BUILD_IMAGE} AS builder
 WORKDIR /build

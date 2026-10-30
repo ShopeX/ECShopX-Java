@@ -100,7 +100,7 @@ services:
       pull: false
       args:
         MAVEN_BUILD_IMAGE: ${MAVEN_BUILD_IMAGE:-maven:3.9-eclipse-temurin-17}
-        RUNTIME_BASE_IMAGE: ${RUNTIME_BASE_IMAGE:-ecshopx-java:17-node20-openresty}
+        RUNTIME_BASE_IMAGE: ${RUNTIME_BASE_IMAGE:-ecshopx-java:17-node22-openresty}
     image: ecshopx-app:latest
     container_name: ecshopx-dev-app
     restart: unless-stopped

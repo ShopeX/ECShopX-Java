@@ -14,8 +14,8 @@ PARENT_DIR="$(cd "$PROJECT_ROOT/.." && pwd)"
 DOCKER_COMPOSE_FILE="$PROJECT_ROOT/docker-compose.dev.yml"
 COMPOSE_ENV_FILE="$PROJECT_ROOT/.env"
 APP_PROPERTIES="$PROJECT_ROOT/ecshopx-bootstrap/src/main/resources/application.properties"
-RUNTIME_BASE_IMAGE="${RUNTIME_BASE_IMAGE:-ecshopx-java:17-node20-openresty}"
-# Frontend builds reuse the same runtime base image (Node 20 already included).
+RUNTIME_BASE_IMAGE="${RUNTIME_BASE_IMAGE:-ecshopx-java:17-node22-openresty}"
+# Frontend builds reuse the same runtime base image (Node 22 already included).
 NODE_BUILD_IMAGE="${NODE_BUILD_IMAGE:-$RUNTIME_BASE_IMAGE}"
 # Full-install Java compile stage (must be in CDN docker-save bundle).
 MAVEN_BUILD_IMAGE="${MAVEN_BUILD_IMAGE:-maven:3.9-eclipse-temurin-17}"

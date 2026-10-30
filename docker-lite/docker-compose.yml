@@ -96,7 +96,7 @@ services:
 
   ecshopx-app:
     # Runtime base from private registry; jar + entrypoint/nginx from host mounts.
-    image: ${APP_IMAGE:-ecshopx-java:17-node20-openresty}
+    image: ${APP_IMAGE:-ecshopx-java:17-node22-openresty}
     container_name: ecshopx-app
     restart: unless-stopped
     entrypoint: ["/bin/sh", "/data/httpd/ECShopX-Java/docker/app-entrypoint.sh"]

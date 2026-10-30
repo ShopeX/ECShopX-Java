@@ -13,6 +13,7 @@ logs/
 docker-lite/.env
 docker/images/*.tar
 docker/images/*.zip
+docker/vendor/*.tar.gz
 
 
 ### STS ###

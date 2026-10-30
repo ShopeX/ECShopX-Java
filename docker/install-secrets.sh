@@ -154,7 +154,7 @@ install_resolve_runtime_image() {
     "${RUNTIME_BASE_IMAGE:-}" \
     "${APP_IMAGE:-}" \
     ecshopx-app:latest \
-    ecshopx-java:17-node20-openresty
+    ecshopx-java:17-node22-openresty
   do
     [ -n "$img" ] || continue
     if docker image inspect "$img" >/dev/null 2>&1; then
@@ -217,7 +217,7 @@ install_hash_bcrypt() {
     }
   else
     echo "ERROR: 未找到运行中的 app 容器（ecshopx-app / ecshopx-dev-app），也没有本地 runtime 镜像" >&2
-    echo "ERROR: 请确认 compose 已启动，或已导入 ecshopx-java:17-node20-openresty" >&2
+    echo "ERROR: 请确认 compose 已启动，或已导入 ecshopx-java:17-node22-openresty" >&2
     return 1
   fi
 

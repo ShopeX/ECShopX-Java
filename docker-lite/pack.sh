@@ -13,8 +13,8 @@ source "$LITE_DIR/lib/package.sh"
 source "$LITE_DIR/lib/images.sh"
 release_init_paths "$SCRIPT_PATH"
 
-# Admin / mobile / PC all build on Node 20 (no longer switch to 16).
-RELEASE_NODE="${RELEASE_NODE:-20.19}"
+# Admin / mobile / PC all build on Node 22.
+RELEASE_NODE="${RELEASE_NODE:-22.23}"
 RELEASE_PNPM_VERSION="${RELEASE_PNPM_VERSION:-10.13.0}"
 APP_IMAGE_CDN="${APP_IMAGE_CDN:-https://ecshopx-vshop-images.oss-cn-shanghai.aliyuncs.com}"
 WITH_IMAGES=false
@@ -79,7 +79,7 @@ release_build_jar_host() {
 release_build_jar_docker() {
   local tmpdir jar_src
   local maven_img="${MAVEN_BUILD_IMAGE:-maven:3.9-eclipse-temurin-17}"
-  local runtime_img="${RUNTIME_BASE_IMAGE:-ecshopx-java:17-node20-openresty}"
+  local runtime_img="${RUNTIME_BASE_IMAGE:-ecshopx-java:17-node22-openresty}"
   release_log_info "build jar via docker (docker/Dockerfile.app builder stage)"
   release_require_cmds docker || return 1
   if ! docker image inspect "$maven_img" >/dev/null 2>&1; then
