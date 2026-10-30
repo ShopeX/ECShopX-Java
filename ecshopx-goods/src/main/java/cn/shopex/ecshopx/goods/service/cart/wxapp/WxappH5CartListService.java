@@ -26,6 +26,7 @@ import cn.shopex.ecshopx.goods.service.distributor.DistributorItemSkuInfoForStor
 import cn.shopex.ecshopx.goods.service.distributor.DistributorItemsRelListCoreService;
 import cn.shopex.ecshopx.goods.service.items.ItemAvailableStoreResolver;
 import cn.shopex.ecshopx.goods.service.items.ItemLogisticsStoreEnricher;
+import cn.shopex.ecshopx.goods.service.items.ItemSpecImageLookupService;
 import cn.shopex.ecshopx.goods.service.order.normal.GiftActivityStoreAdjustService;
 import cn.shopex.ecshopx.goods.service.wxapp.WxappGoodsItemsListQueryOrchestrator;
 import cn.shopex.ecshopx.orders.domain.Cart;
@@ -138,6 +139,7 @@ public class WxappH5CartListService {
 	private final ItemLogisticsStoreEnricher itemLogisticsStoreEnricher;
 	private final GiftActivityStoreAdjustService giftActivityStoreAdjustService;
 	private final ItemAvailableStoreResolver itemAvailableStoreResolver;
+	private final ItemSpecImageLookupService itemSpecImageLookupService;
 
 	public WxappH5CartListService(
 			CartMapper cartMapper,
@@ -162,7 +164,8 @@ public class WxappH5CartListService {
 			CheckoutCartDistributorStoreOverlayService checkoutCartDistributorStoreOverlayService,
 			ItemLogisticsStoreEnricher itemLogisticsStoreEnricher,
 			GiftActivityStoreAdjustService giftActivityStoreAdjustService,
-			ItemAvailableStoreResolver itemAvailableStoreResolver) {
+			ItemAvailableStoreResolver itemAvailableStoreResolver,
+			ItemSpecImageLookupService itemSpecImageLookupService) {
 		this.cartMapper = cartMapper;
 		this.stringRedisTemplate = stringRedisTemplate;
 		this.wxappGoodsItemsListQueryOrchestrator = wxappGoodsItemsListQueryOrchestrator;
@@ -186,6 +189,7 @@ public class WxappH5CartListService {
 		this.itemLogisticsStoreEnricher = itemLogisticsStoreEnricher;
 		this.giftActivityStoreAdjustService = giftActivityStoreAdjustService;
 		this.itemAvailableStoreResolver = itemAvailableStoreResolver;
+		this.itemSpecImageLookupService = itemSpecImageLookupService;
 	}
 
 	public Map<String, Object> getCartList(
@@ -281,7 +285,7 @@ public class WxappH5CartListService {
 			if (isCheckout) {
 				throw new ResourceException("购物车选中商品为空");
 			}
-			wxappH5CartListTotalAndPromotionAggregator.apply(companyId, userId, out);
+			wxappH5CartListTotalAndPromotionAggregator.apply(companyId, out);
 			return out;
 		}
 		assembleCartLinesIntoOut(
@@ -304,6 +308,9 @@ public class WxappH5CartListService {
 			long buyUserId) {
 		assertInjected();
 		long effectiveUserId = authUserId;
+		if (promoterUserId != 0L && buyUserId != 0L) {
+			effectiveUserId = buyUserId;
+		}
 		assertShopTypeSupportedForList(shopType == null ? "" : shopType.trim());
 
 		LambdaQueryWrapper<Cart> outerWrapper = Wrappers.lambdaQuery();
@@ -415,6 +422,9 @@ public class WxappH5CartListService {
 		w.eq(Cart::getCompanyId, companyId)
 				.eq(Cart::getUserId, effectiveUserId)
 				.eq(Cart::getShopType, shopType);
+		if (promoterUserId != 0L && buyUserId != 0L) {
+			w.eq(Cart::getPromoterUserId, promoterUserId);
+		}
 		if (isShopScreen != 0 || shopId > 0L) {
 			w.eq(Cart::getShopId, shopId);
 		}
@@ -652,6 +662,9 @@ public class WxappH5CartListService {
 						companyId, userId, shopId, shopTypeForList, itemIds, isShopScreen, userDevice, inputData);
 		@SuppressWarnings("unchecked")
 		List<Map<String, Object>> skuList = (List<Map<String, Object>>) skuPack.getOrDefault("list", List.of());
+		if (skuList != null && !skuList.isEmpty()) {
+			itemSpecImageLookupService.applySpecImageUrl(companyId, skuList);
+		}
 		Map<Long, Map<String, Object>> skuByItem = new LinkedHashMap<>();
 		indexSkuRowsByItemId(skuList, skuByItem);
 
@@ -745,7 +758,7 @@ public class WxappH5CartListService {
 			out.put("is_check_store", Boolean.TRUE);
 		} else {
 			out.put("valid_cart", groupValidByShop(validLines));
-			wxappH5CartListTotalAndPromotionAggregator.apply(companyId, userId, out);
+			wxappH5CartListTotalAndPromotionAggregator.apply(companyId, out);
 		}
 	}
 
@@ -836,22 +849,6 @@ public class WxappH5CartListService {
 						cartLines.add((Map<String, Object>) m);
 					}
 				}
-			}
-			long shopId = longObj(shop.get("shop_id"));
-			if (shopId > 0L) {
-				List<Map<String, Object>> giftMaps = new ArrayList<>();
-				for (Map<String, Object> act : activities) {
-					Object giftsRaw = act.get("gifts");
-					if (!(giftsRaw instanceof List<?> gl)) {
-						continue;
-					}
-					for (Object g : gl) {
-						if (g instanceof Map<?, ?>) {
-							giftMaps.add((Map<String, Object>) g);
-						}
-					}
-				}
-				checkoutCartDistributorStoreOverlayService.applyForSkuMaps(companyId, shopId, giftMaps);
 			}
 			List<Map<String, Object>> adjusted =
 					giftActivityStoreAdjustService.adjustGiftActivities(
@@ -997,6 +994,12 @@ public class WxappH5CartListService {
 		q.put(WxappGoodsItemsListQueryOrchestrator.KEY_INTERNAL_ACCEPT_LANGUAGE, "zh-CN");
 		if (StringUtils.hasText(userDevice)) {
 			q.put("user_device", userDevice);
+		}
+		if (inputData != null && inputData.get("promoter_user_id") != null) {
+			Object p = inputData.get("promoter_user_id");
+			if (longObj(p) != 0L) {
+				q.put("promoter_user_id", p);
+			}
 		}
 		Map<String, Object> pack = wxappGoodsItemsListQueryOrchestrator.querySkuItemsList(companyId, q, List.of());
 		@SuppressWarnings("unchecked")
@@ -1373,6 +1376,11 @@ public class WxappH5CartListService {
 				if (sku.containsKey(k)) {
 					line.put(k, sku.get(k));
 				}
+			}
+			// Prefer SKU 规格图 over items.pics (same as operator/salesperson cart).
+			Object spec = sku.get("spec_image_url");
+			if (spec != null && StringUtils.hasText(spec.toString())) {
+				line.put("pics", spec.toString().trim());
 			}
 		}
 		line.put("item_type", c.getItemType() != null ? c.getItemType() : line.get("item_type"));

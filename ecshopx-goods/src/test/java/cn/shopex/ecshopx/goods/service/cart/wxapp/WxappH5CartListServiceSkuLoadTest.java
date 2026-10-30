@@ -17,6 +17,7 @@ import cn.shopex.ecshopx.goods.service.distributor.DistributorItemSkuInfoForStor
 import cn.shopex.ecshopx.goods.service.distributor.DistributorItemsRelListCoreService;
 import cn.shopex.ecshopx.goods.service.items.ItemAvailableStoreResolver;
 import cn.shopex.ecshopx.goods.service.items.ItemLogisticsStoreEnricher;
+import cn.shopex.ecshopx.goods.service.items.ItemSpecImageLookupService;
 import cn.shopex.ecshopx.goods.service.order.normal.GiftActivityStoreAdjustService;
 import cn.shopex.ecshopx.goods.service.wxapp.WxappGoodsItemsListQueryOrchestrator;
 import cn.shopex.ecshopx.kaquan.service.vipgrade.VipGradeUserVipGradeGetService;
@@ -61,6 +62,7 @@ class WxappH5CartListServiceSkuLoadTest {
 	@Mock private ItemLogisticsStoreEnricher itemLogisticsStoreEnricher;
 	@Mock private GiftActivityStoreAdjustService giftActivityStoreAdjustService;
 	@Mock private ItemAvailableStoreResolver itemAvailableStoreResolver;
+	@Mock private ItemSpecImageLookupService itemSpecImageLookupService;
 
 	private WxappH5CartListService service;
 
@@ -90,7 +92,8 @@ class WxappH5CartListServiceSkuLoadTest {
 						checkoutCartDistributorStoreOverlayService,
 						itemLogisticsStoreEnricher,
 						giftActivityStoreAdjustService,
-						itemAvailableStoreResolver);
+						itemAvailableStoreResolver,
+						itemSpecImageLookupService);
 		when(wxappGoodsItemsListQueryOrchestrator.querySkuItemsList(anyLong(), any(), anyList()))
 				.thenReturn(Map.of("list", List.of(), "total_count", 0L));
 	}
