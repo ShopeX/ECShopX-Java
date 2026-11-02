@@ -18,6 +18,7 @@ package cn.shopex.ecshopx.orders.api.admin.v1;
 
 import cn.shopex.ecshopx.common.annotation.AdminAuth;
 import cn.shopex.ecshopx.common.annotation.DingoResponse;
+import cn.shopex.ecshopx.common.auth.DualJwtSupport;
 import cn.shopex.ecshopx.common.auth.OperatorJwtRequestAttributes;
 import cn.shopex.ecshopx.common.core.domain.ApiResult;
 import cn.shopex.ecshopx.common.exception.BadRequestException;
@@ -173,13 +174,11 @@ public class OrderController {
 	@Activated(routeAlias = "order.list.get")
 	@GetMapping(value = "/orders", name = "订单列表")
 	public ApiResult<Map<String, Object>> getOrderList(HttpServletRequest request) {
-		long companyId = readCompanyIdFromJwt(request);
-		Object attr = request.getAttribute(OperatorJwtRequestAttributes.OPERATOR_JWT_USER_DATA);
-		if (!(attr instanceof Map<?, ?> rawJwt)) {
+		long companyId = DualJwtSupport.requireCompanyId(request);
+		Map<String, Object> jwt = DualJwtSupport.claims(request);
+		if (jwt == null || jwt.isEmpty()) {
 			throw new UnauthorizedException("未登录");
 		}
-		@SuppressWarnings("unchecked")
-		Map<String, Object> jwt = (Map<String, Object>) rawJwt;
 		return ApiResult.ok(adminOrderListService.getOrderList(companyId, jwt, request));
 	}
 
@@ -193,13 +192,11 @@ public class OrderController {
 	@GetMapping(value = "/order/{order_id}", name = "订单详情")
 	public ApiResult<Map<String, Object>> getOrderDetail(
 			HttpServletRequest request, @PathVariable("order_id") String orderId) {
-		long companyId = readCompanyIdFromJwt(request);
-		Object attr = request.getAttribute(OperatorJwtRequestAttributes.OPERATOR_JWT_USER_DATA);
-		if (!(attr instanceof Map<?, ?> rawJwt)) {
+		long companyId = DualJwtSupport.requireCompanyId(request);
+		Map<String, Object> jwt = DualJwtSupport.claims(request);
+		if (jwt == null || jwt.isEmpty()) {
 			throw new UnauthorizedException("未登录");
 		}
-		@SuppressWarnings("unchecked")
-		Map<String, Object> jwt = (Map<String, Object>) rawJwt;
 		return ApiResult.ok(adminOrderDetailService.getOrderDetail(companyId, orderId, jwt, request));
 	}
 
@@ -338,11 +335,10 @@ public class OrderController {
 	}
 
 	private static long readCompanyIdFromJwt(HttpServletRequest request) {
-		Object attr = request.getAttribute(OperatorJwtRequestAttributes.OPERATOR_JWT_USER_DATA);
-		if (!(attr instanceof Map<?, ?>)) {
+		Map<String, Object> jwt = cn.shopex.ecshopx.common.auth.DualJwtSupport.claims(request);
+		if (jwt == null) {
 			throw new UnauthorizedException("未登录");
 		}
-		Map<?, ?> jwt = (Map<?, ?>) attr;
 		Object companyIdObj = jwt.get("company_id");
 		if (companyIdObj == null) {
 			throw new UnauthorizedException("未登录");
@@ -600,13 +596,13 @@ public class OrderController {
 		if (orderIdRaw == null) {
 			throw new ResourceException("订单号缺少！");
 		}
-		long companyId = readCompanyIdFromJwt(request);
-		Object attr = request.getAttribute(OperatorJwtRequestAttributes.OPERATOR_JWT_USER_DATA);
-		String operatorType = "";
-		if (attr instanceof Map<?, ?> jwt) {
-			operatorType = EspierAdminJwtControllerSupport.optionalTrimmedString(jwt.get("operator_type"));
-		}
-		long operatorId = readOperatorIdFromJwt(request);
+		long companyId = DualJwtSupport.requireCompanyId(request);
+		Map<String, Object> jwt = DualJwtSupport.claims(request);
+		String operatorType =
+				jwt == null
+						? ""
+						: EspierAdminJwtControllerSupport.optionalTrimmedString(jwt.get("operator_type"));
+		long operatorId = DualJwtSupport.requireActingOperatorId(request);
 		Map<String, Object> merged = new LinkedHashMap<>();
 		if (body != null) {
 			merged.putAll(body);
@@ -929,13 +925,23 @@ public class OrderController {
 			@RequestParam(name = "code", required = false) String codeParam,
 			@FlexibleBody(required = false) Map<String, Object> body) {
 		long companyId = readCompanyIdFromJwt(request);
-		long operatorId = readOperatorIdFromJwt(request);
-		Object attr = request.getAttribute(OperatorJwtRequestAttributes.OPERATOR_JWT_USER_DATA);
+		long operatorId;
 		List<Long> shopIds = List.of();
 		List<Long> distributorIds = List.of();
-		if (attr instanceof Map<?, ?> jwt) {
-			shopIds = extractOperatorShopIds(jwt.get("shop_ids"));
-			distributorIds = extractOperatorDistributorIds(jwt.get("distributor_ids"));
+		if (DualJwtSupport.isPosSession(request)) {
+			operatorId = DualJwtSupport.requireActingOperatorId(request);
+			Map<String, Object> posJwt = DualJwtSupport.claims(request);
+			Long posDistributorId = DualJwtSupport.longClaim(posJwt, "distributor_id");
+			if (posDistributorId != null && posDistributorId > 0L) {
+				distributorIds = List.of(posDistributorId);
+			}
+		} else {
+			operatorId = readOperatorIdFromJwt(request);
+			Object attr = request.getAttribute(OperatorJwtRequestAttributes.OPERATOR_JWT_USER_DATA);
+			if (attr instanceof Map<?, ?> jwt) {
+				shopIds = extractOperatorShopIds(jwt.get("shop_ids"));
+				distributorIds = extractOperatorDistributorIds(jwt.get("distributor_ids"));
+			}
 		}
 		Map<String, Object> merged = new LinkedHashMap<>();
 		if (body != null) {

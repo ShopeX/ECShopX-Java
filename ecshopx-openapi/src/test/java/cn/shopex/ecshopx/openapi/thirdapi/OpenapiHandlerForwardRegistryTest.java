@@ -7,6 +7,12 @@ import org.junit.jupiter.api.Test;
 class OpenapiHandlerForwardRegistryTest {
 
 	@Test
+	void digiosStockPushV1IsRegistered() {
+		OpenapiHandlerForwardRegistry registry = new OpenapiHandlerForwardRegistry();
+		assertTrue(registry.isImplemented("1.0", "POST", "ecx.digios.product.stock_push"));
+	}
+
+	@Test
 	void writeoffIsRegistered() {
 		OpenapiHandlerForwardRegistry registry = new OpenapiHandlerForwardRegistry();
 		assertTrue(registry.isImplemented("2.0", "POST", "ecx.order.writeoff"));

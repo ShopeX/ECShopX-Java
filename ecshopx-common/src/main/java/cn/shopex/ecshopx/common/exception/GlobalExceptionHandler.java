@@ -97,8 +97,14 @@ public class GlobalExceptionHandler {
 	}
 
 	private static ResponseEntity<?> dingoStyleUnauthorized401() {
+		return dingoStyleUnauthorized401("Unable to authenticate user.");
+	}
+
+	private static ResponseEntity<?> dingoStyleUnauthorized401(String message) {
 		Map<String, Object> data = new LinkedHashMap<>();
-		data.put("message", "Unable to authenticate user.");
+		data.put(
+				"message",
+				message != null && !message.isBlank() ? message : "Unable to authenticate user.");
 		data.put("code", 401001);
 		data.put("status_code", 401);
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
@@ -169,6 +175,9 @@ public class GlobalExceptionHandler {
 		}
 		if (H5JwtBlacklistPort.TOKEN_BLACKLISTED_MESSAGE.equals(ex.getMessage())) {
 			return dingoStyleUnauthorized401NoBusinessCode(ex.getMessage());
+		}
+		if (ann.unauthorizedPassMessage()) {
+			return dingoStyleUnauthorized401(ex.getMessage());
 		}
 		return dingoStyleUnauthorized401();
 	}

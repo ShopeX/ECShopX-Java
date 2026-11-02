@@ -46,4 +46,5 @@ public class AdminMemberListQueryFilter {
 	private String storeBnEq;
 	private Long distributorIdForChiefBranch;
 	private Long opDistributorEq;
+	private String userCardCodeEq;
 }

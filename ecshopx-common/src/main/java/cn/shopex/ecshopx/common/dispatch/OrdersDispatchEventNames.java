@@ -97,6 +97,10 @@ public final class OrdersDispatchEventNames {
 	public static final String LISTENER_SHUYUN_OPEN_PLATFORM_TRADE_SYNC_ON_NORMAL_ORDER_DELIVERY =
 			"listener:shuyun.open_platform.trade_sync_on_normal_order_delivery";
 
+	/** DigiOS：订单发货 → 门店库存调整单出站 */
+	public static final String LISTENER_DIGIOS_STORE_ADJUSTMENT_ON_NORMAL_ORDER_DELIVERY =
+			"listener:digios.store_adjustment_on_normal_order_delivery";
+
 	/** 数云开放平台：确认收货 → trade.sync */
 	public static final String LISTENER_SHUYUN_OPEN_PLATFORM_TRADE_SYNC_ON_NORMAL_ORDER_CONFIRM_RECEIPT =
 			"listener:shuyun.open_platform.trade_sync_on_normal_order_confirm_receipt";

@@ -41,4 +41,10 @@ public interface DistributionDistributorSelfReadMapper {
 
 	List<Map<String, Object>> listMerchantNamesByCompanyAndIds(
 			@Param("companyId") long companyId, @Param("merchantIds") List<Long> merchantIds);
+
+	Map<String, Object> selectShopByCompanyAndId(
+			@Param("companyId") long companyId, @Param("distributorId") long distributorId);
+
+	Map<String, Object> selectShopByCompanyAndShopCode(
+			@Param("companyId") long companyId, @Param("shopCode") String shopCode);
 }

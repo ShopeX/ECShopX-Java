@@ -87,6 +87,10 @@
 		</dependency>
 		<dependency>
 			<groupId>cn.shopex</groupId>
+			<artifactId>ecshopx-digios</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>cn.shopex</groupId>
 			<artifactId>ecshopx-distribution</artifactId>
 		</dependency>
 		<dependency>

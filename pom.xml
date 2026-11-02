@@ -18,7 +18,7 @@
 	<description>Ecshopx Java</description>
 
 	<properties>
-		<revision>5.4.3</revision>
+		<revision>5.4.4</revision>
 		<java.version>17</java.version>
 		<mybatis-plus.version>3.5.16</mybatis-plus.version>
 		<lombok.version>1.18.36</lombok.version>
@@ -149,6 +149,11 @@
 			<dependency>
 				<groupId>cn.shopex</groupId>
 				<artifactId>ecshopx-deposit</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>cn.shopex</groupId>
+				<artifactId>ecshopx-digios</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
@@ -376,6 +381,7 @@
 		<module>ecshopx-cross-border</module>
 		<module>ecshopx-data-cube</module>
 		<module>ecshopx-deposit</module>
+		<module>ecshopx-digios</module>
 		<module>ecshopx-distribution</module>
 		<module>ecshopx-employee-purchase</module>
 		<module>ecshopx-espier</module>

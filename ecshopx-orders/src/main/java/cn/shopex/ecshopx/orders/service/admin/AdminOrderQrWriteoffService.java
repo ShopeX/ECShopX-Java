@@ -65,12 +65,16 @@ public class AdminOrderQrWriteoffService {
 			throw new ResourceException("订单不存在");
 		}
 
+		List<Long> shops = shopIds == null ? List.of() : shopIds;
+		List<Long> distributors = distributorIds == null ? List.of() : distributorIds;
+		// POS 仅有 distributor_id 范围：shopIds 空且 distributorIds 非空时跳过 shop 校验
+		boolean posDistributorScoped = shops.isEmpty() && !distributors.isEmpty();
 		Long sid = order.getShopId();
-		if (sid != null && sid > 0L && !shopIds.contains(sid)) {
+		if (!posDistributorScoped && sid != null && sid > 0L && !shops.contains(sid)) {
 			throw new ResourceException("请确认是否有店铺核销权限！");
 		}
 		Long did = order.getDistributorId();
-		if (did != null && did > 0L && !distributorIds.contains(did)) {
+		if (did != null && did > 0L && !distributors.contains(did)) {
 			throw new ResourceException("请确认是否有店铺核销权限！");
 		}
 

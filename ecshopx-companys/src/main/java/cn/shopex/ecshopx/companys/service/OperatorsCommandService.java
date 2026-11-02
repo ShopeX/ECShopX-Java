@@ -16,6 +16,7 @@
 
 package cn.shopex.ecshopx.companys.service;
 
+import cn.shopex.ecshopx.common.dispatch.OperatorCreateEventDispatchPublisher;
 import cn.shopex.ecshopx.common.exception.ForbiddenException;
 import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.companys.domain.Operators;
@@ -31,6 +32,8 @@ import java.util.Set;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.StringUtils;
 
 /**
@@ -46,17 +49,20 @@ public class OperatorsCommandService {
 	private final ObjectMapper objectMapper;
 	private final OperatorResponseAssembler operatorResponseAssembler;
 	private final OperatorAccountOutsideLangWriteService operatorAccountOutsideLangWriteService;
+	private final OperatorCreateEventDispatchPublisher operatorCreateEventDispatchPublisher;
 	private final BCryptPasswordEncoder bcrypt = new BCryptPasswordEncoder();
 
 	public OperatorsCommandService(
 			OperatorsMapper operatorsMapper,
 			ObjectMapper objectMapper,
 			OperatorResponseAssembler operatorResponseAssembler,
-			OperatorAccountOutsideLangWriteService operatorAccountOutsideLangWriteService) {
+			OperatorAccountOutsideLangWriteService operatorAccountOutsideLangWriteService,
+			OperatorCreateEventDispatchPublisher operatorCreateEventDispatchPublisher) {
 		this.operatorsMapper = operatorsMapper;
 		this.objectMapper = objectMapper;
 		this.operatorResponseAssembler = operatorResponseAssembler;
 		this.operatorAccountOutsideLangWriteService = operatorAccountOutsideLangWriteService;
+		this.operatorCreateEventDispatchPublisher = operatorCreateEventDispatchPublisher;
 	}
 
 	@Transactional(rollbackFor = Exception.class)
@@ -127,7 +133,23 @@ public class OperatorsCommandService {
 		}
 
 		Operators persisted = operatorsMapper.selectById(id);
-		return operatorResponseAssembler.toStatusMap(persisted != null ? persisted : op);
+		Map<String, Object> created = operatorResponseAssembler.toStatusMap(persisted != null ? persisted : op);
+		scheduleOperatorCreateDispatch(created);
+		return created;
+	}
+
+	private void scheduleOperatorCreateDispatch(Map<String, Object> created) {
+		if (!TransactionSynchronizationManager.isSynchronizationActive()) {
+			operatorCreateEventDispatchPublisher.publish(created);
+			return;
+		}
+		TransactionSynchronizationManager.registerSynchronization(
+				new TransactionSynchronization() {
+					@Override
+					public void afterCommit() {
+						operatorCreateEventDispatchPublisher.publish(created);
+					}
+				});
 	}
 
 	private String jsonOrRaw(Object v) {

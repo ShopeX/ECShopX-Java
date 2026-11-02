@@ -107,6 +107,7 @@ public final class SupplierAdminItemsListWireMapper {
 		stringifyNum(row, "profit_fee", src.getProfitFee());
 		stringifyNum(row, "type", src.getType());
 		stringifyNum(row, "is_market", src.getIsMarket());
+		stringifyNum(row, "is_sync_platform", src.getIsSyncPlatform());
 		stringifyNum(row, "is_epidemic", src.getIsEpidemic());
 		stringifyNum(row, "is_medicine", src.getIsMedicine());
 		stringifyNum(row, "is_prescription", src.getIsPrescription());

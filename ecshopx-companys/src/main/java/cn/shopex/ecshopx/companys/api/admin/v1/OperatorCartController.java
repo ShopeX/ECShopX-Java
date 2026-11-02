@@ -19,8 +19,8 @@ package cn.shopex.ecshopx.companys.api.admin.v1;
 import cn.shopex.ecshopx.common.annotation.Activated;
 import cn.shopex.ecshopx.common.annotation.AdminAuth;
 import cn.shopex.ecshopx.common.annotation.DingoResponse;
+import cn.shopex.ecshopx.common.auth.DualJwtSupport;
 import cn.shopex.ecshopx.common.core.domain.ApiResult;
-import cn.shopex.ecshopx.common.exception.UnauthorizedException;
 import cn.shopex.ecshopx.common.operatorcart.OperatorCartDataListFacade;
 import cn.shopex.ecshopx.common.operatorcart.OperatorCartFastBuyFacade;
 import cn.shopex.ecshopx.common.operatorcart.OperatorCartScanBarcodeFacade;
@@ -30,7 +30,6 @@ import cn.shopex.ecshopx.companys.service.operatorcart.OperatorCartDeleteDataSer
 import cn.shopex.ecshopx.companys.web.CompanysAdminRequestMerge;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -49,9 +48,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController("companysAdminV1OperatorCart")
 @RequestMapping("/api/v1/operator")
 public class OperatorCartController {
-
-	private static final String OPERATOR_JWT_USER_DATA =
-			"cn.shopex.ecshopx.espier.security.OperatorJwtAuthenticationFilter.OPERATOR_JWT_USER_DATA";
 
 	private final OperatorCartAddDataService operatorCartAddDataService;
 	private final OperatorCartScanBarcodeFacade scanBarcodeFacade;
@@ -75,9 +71,8 @@ public class OperatorCartController {
 	public ResponseEntity<ApiResult<Object>> scanCodeSales(HttpServletRequest request,
 			@FlexibleBody(required = false) Map<String, Object> body) {
 		Map<String, Object> input = CompanysAdminRequestMerge.mergeInputLikeFlexibleResolver(request, body);
-		Map<String, Object> jwt = readOperatorJwtMap(request);
-		long companyId = readLongClaimRelaxed(jwt, "company_id");
-		long operatorId = readLongClaimRelaxed(jwt, "operator_id");
+		long companyId = DualJwtSupport.requireCompanyId(request);
+		long operatorId = DualJwtSupport.requireActingOperatorId(request);
 		long distributorId = longVal(input.get("distributor_id"), 0L);
 		String barcodeStr = normalizeOperatorScanBarcode(input.get("barcode"));
 		long itemId = scanBarcodeFacade.resolveItemIdForOperatorScan(companyId, distributorId, barcodeStr);
@@ -94,9 +89,8 @@ public class OperatorCartController {
 	public ResponseEntity<ApiResult<Object>> cartFastBuyAdd(HttpServletRequest request,
 			@FlexibleBody(required = false) Map<String, Object> body) {
 		Map<String, Object> input = CompanysAdminRequestMerge.mergeInputLikeFlexibleResolver(request, body);
-		Map<String, Object> jwt = readOperatorJwtMap(request);
-		long companyId = readLongClaimRelaxed(jwt, "company_id");
-		long operatorId = readLongClaimRelaxed(jwt, "operator_id");
+		long companyId = DualJwtSupport.requireCompanyId(request);
+		long operatorId = DualJwtSupport.requireActingOperatorId(request);
 		long itemId = longVal(input.get("item_id"), 0L);
 		long num = longVal(input.get("num"), 0L);
 		long distributorId = longVal(input.get("distributor_id"), 0L);
@@ -112,9 +106,8 @@ public class OperatorCartController {
 	public ResponseEntity<ApiResult<Object>> cartDataAdd(HttpServletRequest request,
 			@FlexibleBody(required = false) Map<String, Object> body) {
 		Map<String, Object> input = CompanysAdminRequestMerge.mergeInputLikeFlexibleResolver(request, body);
-		Map<String, Object> jwt = readOperatorJwtMap(request);
-		long companyId = readLongClaimRelaxed(jwt, "company_id");
-		long operatorId = readLongClaimRelaxed(jwt, "operator_id");
+		long companyId = DualJwtSupport.requireCompanyId(request);
+		long operatorId = DualJwtSupport.requireActingOperatorId(request);
 		boolean itemIdPresent = input.containsKey("item_id");
 		boolean distributorIdPresent = input.containsKey("distributor_id");
 		long itemId = longVal(input.get("item_id"), 0L);
@@ -136,9 +129,8 @@ public class OperatorCartController {
 	public ResponseEntity<ApiResult<Object>> updateCartData(HttpServletRequest request,
 			@FlexibleBody(required = false) Map<String, Object> body) {
 		Map<String, Object> input = CompanysAdminRequestMerge.mergeInputLikeFlexibleResolver(request, body);
-		Map<String, Object> jwt = readOperatorJwtMap(request);
-		long companyId = readLongClaimRelaxed(jwt, "company_id");
-		long operatorId = readLongClaimRelaxed(jwt, "operator_id");
+		long companyId = DualJwtSupport.requireCompanyId(request);
+		long operatorId = DualJwtSupport.requireActingOperatorId(request);
 		boolean itemIdPresent = input.containsKey("item_id");
 		long cartId = longVal(input.get("cart_id"), 0L);
 		long itemId = longVal(input.get("item_id"), 0L);
@@ -155,9 +147,8 @@ public class OperatorCartController {
 	public ResponseEntity<ApiResult<Map<String, Object>>> getCartDataList(HttpServletRequest request,
 			@RequestParam(value = "user_id", required = false, defaultValue = "0") String userIdRaw,
 			@RequestParam(value = "distributor_id", required = false, defaultValue = "0") String distributorIdRaw) {
-		Map<String, Object> jwt = readOperatorJwtMap(request);
-		long companyId = readLongClaimRelaxed(jwt, "company_id");
-		long operatorId = readLongClaimRelaxed(jwt, "operator_id");
+		long companyId = DualJwtSupport.requireCompanyId(request);
+		long operatorId = DualJwtSupport.requireActingOperatorId(request);
 		long distributorId = longVal(distributorIdRaw, 0L);
 		long targetUserId = longVal(userIdRaw, 0L);
 		Map<String, Object> data = operatorCartDataListFacade.getCartDataList(companyId, operatorId, distributorId,
@@ -170,40 +161,12 @@ public class OperatorCartController {
 	public ResponseEntity<ApiResult<Map<String, Object>>> delCartData(HttpServletRequest request,
 			@FlexibleBody(required = false) Map<String, Object> body) {
 		Map<String, Object> input = CompanysAdminRequestMerge.mergeInputLikeFlexibleResolver(request, body);
-		Map<String, Object> jwt = readOperatorJwtMap(request);
-		long companyId = readLongClaimRelaxed(jwt, "company_id");
-		long operatorId = readLongClaimRelaxed(jwt, "operator_id");
+		long companyId = DualJwtSupport.requireCompanyId(request);
+		long operatorId = DualJwtSupport.requireActingOperatorId(request);
 		Long cartF = nullableTruthyCartFilterLong(input.get("cart_id"));
 		Long itemF = nullableTruthyCartFilterLong(input.get("item_id"));
 		operatorCartDeleteDataService.delCartData(companyId, operatorId, cartF, itemF);
 		return ResponseEntity.ok(ApiResult.ok(Map.of("status", true)));
-	}
-
-	private static Map<String, Object> readOperatorJwtMap(HttpServletRequest request) {
-		Object raw = request.getAttribute(OPERATOR_JWT_USER_DATA);
-		if (!(raw instanceof Map<?, ?> ud) || ud.isEmpty()) {
-			throw new UnauthorizedException("未登录");
-		}
-		LinkedHashMap<String, Object> out = new LinkedHashMap<>();
-		for (Map.Entry<?, ?> e : ud.entrySet()) {
-			Object k = e.getKey();
-			if (k != null) {
-				out.put(k.toString(), e.getValue());
-			}
-		}
-		return out;
-	}
-
-	private static long readLongClaimRelaxed(Map<String, Object> jwt, String key) {
-		Object v = jwt.get(key);
-		if (v == null) {
-			return 0L;
-		}
-		try {
-			return v instanceof Number n ? n.longValue() : Long.parseLong(v.toString().trim());
-		} catch (NumberFormatException e) {
-			return 0L;
-		}
 	}
 
 	/** 条码缺省为 {@code "0"}；数字转为 long 的十进制字符串。 */

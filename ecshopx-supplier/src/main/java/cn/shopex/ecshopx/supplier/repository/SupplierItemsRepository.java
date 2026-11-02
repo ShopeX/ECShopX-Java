@@ -134,6 +134,29 @@ public class SupplierItemsRepository {
 		return mapper.selectList(w);
 	}
 
+	public void updateIsSyncPlatformByGoodsId(long companyId, long goodsId, int isSyncPlatform) {
+		if (companyId <= 0L || goodsId <= 0L) {
+			return;
+		}
+		int now = (int) (System.currentTimeMillis() / 1000L);
+		LambdaUpdateWrapper<SupplierItems> u = new LambdaUpdateWrapper<>();
+		u.eq(SupplierItems::getCompanyId, companyId)
+				.eq(SupplierItems::getGoodsId, goodsId)
+				.set(SupplierItems::getIsSyncPlatform, isSyncPlatform)
+				.set(SupplierItems::getUpdated, now);
+		mapper.update(null, u);
+	}
+
+	public boolean isSyncPlatformEnabledForGoods(long companyId, long goodsId) {
+		if (companyId <= 0L || goodsId <= 0L) {
+			return false;
+		}
+		LambdaQueryWrapper<SupplierItems> w = new LambdaQueryWrapper<>();
+		w.eq(SupplierItems::getCompanyId, companyId).eq(SupplierItems::getGoodsId, goodsId).last("LIMIT 1");
+		SupplierItems row = mapper.selectOne(w);
+		return row != null && row.getIsSyncPlatform() != null && row.getIsSyncPlatform() == 1;
+	}
+
 	public void updateAuditByGoodsId(long companyId, long goodsId, SupplierItemsAuditPatch patch) {
 		int now = (int) (System.currentTimeMillis() / 1000L);
 		LambdaUpdateWrapper<SupplierItems> u = new LambdaUpdateWrapper<>();

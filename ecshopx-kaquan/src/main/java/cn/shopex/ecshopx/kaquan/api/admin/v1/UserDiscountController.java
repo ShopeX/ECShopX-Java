@@ -19,8 +19,7 @@ package cn.shopex.ecshopx.kaquan.api.admin.v1;
 import cn.shopex.ecshopx.common.annotation.Activated;
 import cn.shopex.ecshopx.common.annotation.AdminAuth;
 import cn.shopex.ecshopx.common.annotation.DingoResponse;
-import cn.shopex.ecshopx.common.exception.UnauthorizedException;
-import cn.shopex.ecshopx.espier.security.OperatorJwtAuthenticationFilter;
+import cn.shopex.ecshopx.common.auth.DualJwtSupport;
 import cn.shopex.ecshopx.kaquan.service.discount.AdminUserCardListFacadeService;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -59,22 +58,8 @@ public class UserDiscountController {
 		if (userId == 0L) {
 			return ResponseEntity.ok(Map.of("data", Map.of("list", List.of(), "count", 0)));
 		}
-		Object raw = request.getAttribute(OperatorJwtAuthenticationFilter.OPERATOR_JWT_USER_DATA);
-		if (!(raw instanceof Map<?, ?> jwtMap) || jwtMap.isEmpty()) {
-			throw new UnauthorizedException("未登录");
-		}
-		@SuppressWarnings("unchecked")
-		Map<String, Object> operatorJwt = (Map<String, Object>) raw;
-		Object companyIdRaw = operatorJwt.get("company_id");
-		Object operatorIdRaw = operatorJwt.get("operator_id");
-		if (!(companyIdRaw instanceof Number) || ((Number) companyIdRaw).longValue() <= 0L) {
-			throw new UnauthorizedException("未登录");
-		}
-		if (!(operatorIdRaw instanceof Number)) {
-			throw new UnauthorizedException("未登录");
-		}
-		long companyId = ((Number) companyIdRaw).longValue();
-		long operatorId = ((Number) operatorIdRaw).longValue();
+		long companyId = DualJwtSupport.requireCompanyId(request);
+		long operatorId = DualJwtSupport.requireActingOperatorId(request);
 		boolean hasItemsParam = request.getParameter("items") != null;
 		Map<String, Object> body = adminUserCardListFacadeService.buildList(companyId, operatorId, userId, distributorId, code, cardId,
 				amount, hasItemsParam, pageNo, pageSize);

@@ -244,15 +244,21 @@ class AftersalesAdminApplyOrderProcessLogDispatchPublishProbeTest {
 		when(validator.validate(any(AftersalesApplyParams.class))).thenReturn(Set.of());
 
 		AftersalesApplyService applyService =
-				new AftersalesApplyService(objectMapper, associationReadPort, shopApplyService, validator);
+				new AftersalesApplyService(objectMapper, associationReadPort, shopApplyService, validator, mock(cn.shopex.ecshopx.common.auth.PosOrderDocAccessPort.class));
 
 		HttpServletRequest request = mock(HttpServletRequest.class);
-		when(request.getAttribute(OperatorJwtRequestAttributes.OPERATOR_JWT_USER_DATA))
-				.thenReturn(
-						Map.of(
-								"company_id", COMPANY_ID,
-								"operator_type", "admin",
-								"operator_id", ADMIN_OPERATOR_ID));
+		when(request.getAttribute(org.mockito.ArgumentMatchers.anyString()))
+				.thenAnswer(
+						inv -> {
+							String name = inv.getArgument(0);
+							if (OperatorJwtRequestAttributes.OPERATOR_JWT_USER_DATA.equals(name)) {
+								return Map.of(
+										"company_id", COMPANY_ID,
+										"operator_type", "admin",
+										"operator_id", ADMIN_OPERATOR_ID);
+							}
+							return null;
+						});
 
 		AftersalesApplyParams params = new AftersalesApplyParams();
 		params.setOrderId(ORDER_ID);

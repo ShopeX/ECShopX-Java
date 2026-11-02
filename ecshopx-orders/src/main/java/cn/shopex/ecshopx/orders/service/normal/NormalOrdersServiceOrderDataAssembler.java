@@ -86,6 +86,9 @@ public class NormalOrdersServiceOrderDataAssembler {
 		m.put("source_id", order.getSourceId());
 		m.put("monitor_id", order.getMonitorId());
 		m.put("salesman_id", order.getSalesmanId());
+		m.put(
+				"pos_store_account_id",
+				order.getPosStoreAccountId() == null ? 0L : order.getPosStoreAccountId());
 		m.put("delivery_corp", order.getDeliveryCorp());
 		m.put("delivery_corp_source", order.getDeliveryCorpSource());
 		m.put("delivery_code", order.getDeliveryCode());

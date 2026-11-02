@@ -35,6 +35,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -264,6 +265,7 @@ public class EmployeeManagementListService {
 				long pruneShopDistributorId = resolvePruneShopDistributorId(jwt, jwtOperatorId, companyId);
 				list = pruneDistributorSubshops(list, pruneShopDistributorId);
 			}
+			attachDistributorShopCodes(companyId, list);
 			if ("supplier".equals(inputOperatorType)) {
 				attachSupplierNames(companyId, list);
 			}
@@ -510,6 +512,52 @@ public class EmployeeManagementListService {
 		for (Map<String, Object> row : list) {
 			long oid = toLong(row.get("operator_id"), 0L);
 			row.put("supplier_name", nameByOp.getOrDefault(oid, ""));
+		}
+	}
+
+	private void attachDistributorShopCodes(long companyId, List<Map<String, Object>> list) {
+		Set<Long> ids = new HashSet<>();
+		for (Map<String, Object> row : list) {
+			Object raw = row.get("distributor_ids");
+			if (!(raw instanceof List<?> items)) {
+				continue;
+			}
+			for (Object itemObj : items) {
+				if (itemObj instanceof Map<?, ?> item) {
+					long id = toLong(item.get("distributor_id"), 0L);
+					if (id > 0L) {
+						ids.add(id);
+					}
+				}
+			}
+		}
+
+		Map<Long, String> shopCodeById = new HashMap<>();
+		if (!ids.isEmpty()) {
+			List<Map<String, Object>> shops =
+					distributionDistributorSelfReadMapper.listDistributorNamesByCompanyAndIds(
+							companyId, new ArrayList<>(ids));
+			for (Map<String, Object> shop : shops) {
+				long id = toLong(shop.get("distributor_id"), 0L);
+				if (id > 0L) {
+					shopCodeById.put(id, Objects.toString(shop.get("shop_code"), ""));
+				}
+			}
+		}
+
+		for (Map<String, Object> row : list) {
+			Object raw = row.get("distributor_ids");
+			if (!(raw instanceof List<?> items)) {
+				continue;
+			}
+			for (Object itemObj : items) {
+				if (itemObj instanceof Map<?, ?> rawItem) {
+					@SuppressWarnings("unchecked")
+					Map<String, Object> item = (Map<String, Object>) rawItem;
+					long id = toLong(item.get("distributor_id"), 0L);
+					item.put("shop_code", shopCodeById.getOrDefault(id, ""));
+				}
+			}
 		}
 	}
 

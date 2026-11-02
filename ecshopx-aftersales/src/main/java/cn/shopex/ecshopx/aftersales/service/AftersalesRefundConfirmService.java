@@ -24,7 +24,8 @@ import cn.shopex.ecshopx.aftersales.mapper.AftersalesMapper;
 import cn.shopex.ecshopx.aftersales.port.AftersalesRefundAsyncPort;
 import cn.shopex.ecshopx.aftersales.jushuitan.JushuitanTradeAftersalesBusPayloadBuilder;
 import cn.shopex.ecshopx.aftersales.wdterp.WdtErpTradeAfterSaleBusPayloadBuilder;
-import cn.shopex.ecshopx.common.auth.OperatorJwtRequestAttributes;
+import cn.shopex.ecshopx.common.auth.DualJwtSupport;
+import cn.shopex.ecshopx.common.auth.PosOrderDocAccessPort;
 import cn.shopex.ecshopx.common.dispatch.JushuitanTradeAftersalesDispatchPublisher;
 import cn.shopex.ecshopx.common.dispatch.ThirdPartyTradeAftersalesCancelSaasErpDispatchPublisher;
 import cn.shopex.ecshopx.common.dispatch.ThirdPartyTradeAftersalesSaasErpDispatchPublisher;
@@ -78,6 +79,7 @@ public class AftersalesRefundConfirmService {
 	private final WdtErpTradeAfterSaleBusPayloadBuilder wdtErpTradeAfterSaleBusPayloadBuilder;
 	private final ThirdPartyTradeAftersalesCancelSaasErpDispatchPublisher thirdPartyTradeAftersalesCancelSaasErpDispatchPublisher;
 	private final ThirdPartyTradeAftersalesSaasErpDispatchPublisher thirdPartyTradeAftersalesSaasErpDispatchPublisher;
+	private final PosOrderDocAccessPort posOrderDocAccessPort;
 	private final AftersalesRefuseWxaNotifyService aftersalesRefuseWxaNotifyService;
 
 	public AftersalesRefundConfirmService(
@@ -98,6 +100,7 @@ public class AftersalesRefundConfirmService {
 			WdtErpTradeAfterSaleBusPayloadBuilder wdtErpTradeAfterSaleBusPayloadBuilder,
 			ThirdPartyTradeAftersalesCancelSaasErpDispatchPublisher thirdPartyTradeAftersalesCancelSaasErpDispatchPublisher,
 			ThirdPartyTradeAftersalesSaasErpDispatchPublisher thirdPartyTradeAftersalesSaasErpDispatchPublisher,
+			PosOrderDocAccessPort posOrderDocAccessPort,
 			AftersalesRefuseWxaNotifyService aftersalesRefuseWxaNotifyService) {
 		this.aftersalesMapper = aftersalesMapper;
 		this.aftersalesDetailMapper = aftersalesDetailMapper;
@@ -116,6 +119,7 @@ public class AftersalesRefundConfirmService {
 		this.wdtErpTradeAfterSaleBusPayloadBuilder = wdtErpTradeAfterSaleBusPayloadBuilder;
 		this.thirdPartyTradeAftersalesCancelSaasErpDispatchPublisher = thirdPartyTradeAftersalesCancelSaasErpDispatchPublisher;
 		this.thirdPartyTradeAftersalesSaasErpDispatchPublisher = thirdPartyTradeAftersalesSaasErpDispatchPublisher;
+		this.posOrderDocAccessPort = posOrderDocAccessPort;
 		this.aftersalesRefuseWxaNotifyService = aftersalesRefuseWxaNotifyService;
 	}
 
@@ -132,10 +136,11 @@ public class AftersalesRefundConfirmService {
 			List<Long> bns = parseBnList(rawBn);
 			List<Object> resultList = new ArrayList<>();
 			for (long bn : bns) {
+				assertPosOnAftersalesBn(request, companyId, bn);
 				LinkedHashMap<String, Object> per = new LinkedHashMap<>(merged);
 				per.put("aftersales_bn", bn);
 				fillRefundFeePointFromDbIfEmpty(companyId, bn, per);
-				per.put("operator_type", "admin");
+				per.put("operator_type", DualJwtSupport.isPosSession(request) ? "pos" : "admin");
 				per.put("operator_id", merged.get("operator_id"));
 				resultList.add(confirmRefund(per));
 			}
@@ -145,8 +150,9 @@ public class AftersalesRefundConfirmService {
 			return out;
 		}
 		long singleBn = longVal(rawBn);
+		assertPosOnAftersalesBn(request, companyId, singleBn);
 		fillRefundFeePointFromDbIfEmpty(companyId, singleBn, merged);
-		merged.put("operator_type", "admin");
+		merged.put("operator_type", DualJwtSupport.isPosSession(request) ? "pos" : "admin");
 		Map<String, Object> single = confirmRefund(merged);
 		Map<String, Object> out = new LinkedHashMap<>();
 		out.put("status", true);
@@ -154,9 +160,22 @@ public class AftersalesRefundConfirmService {
 		return out;
 	}
 
+	private void assertPosOnAftersalesBn(HttpServletRequest request, long companyId, long aftersalesBn) {
+		Aftersales row =
+				aftersalesMapper.selectOne(
+						new LambdaQueryWrapper<Aftersales>()
+								.eq(Aftersales::getCompanyId, companyId)
+								.eq(Aftersales::getAftersalesBn, aftersalesBn)
+								.last("LIMIT 1"));
+		if (row == null || row.getOrderId() == null) {
+			return;
+		}
+		posOrderDocAccessPort.assertWriteAccess(request, companyId, row.getOrderId());
+	}
+
 	private void mergeJwt(HttpServletRequest request, LinkedHashMap<String, Object> merged) {
-		Object attr = request.getAttribute(OperatorJwtRequestAttributes.OPERATOR_JWT_USER_DATA);
-		if (!(attr instanceof Map<?, ?> jwt)) {
+		Map<String, Object> jwt = DualJwtSupport.claims(request);
+		if (jwt == null) {
 			throw new UnauthorizedException("未登录");
 		}
 		Object companyIdObj = jwt.get("company_id");
@@ -164,6 +183,15 @@ public class AftersalesRefundConfirmService {
 			throw new BadRequestException("企业id必填");
 		}
 		merged.put("company_id", longVal(companyIdObj));
+		if (DualJwtSupport.isPosSession(request)) {
+			merged.put("operator_type", "pos");
+			Long posId = DualJwtSupport.longClaim(jwt, "pos_store_account_id");
+			if (posId == null) {
+				posId = DualJwtSupport.longClaim(jwt, "id");
+			}
+			merged.put("operator_id", posId == null ? 0L : posId);
+			return;
+		}
 		merged.put("operator_type", str(jwt.get("operator_type")));
 		merged.put("operator_id", longVal(jwt.get("operator_id")));
 	}

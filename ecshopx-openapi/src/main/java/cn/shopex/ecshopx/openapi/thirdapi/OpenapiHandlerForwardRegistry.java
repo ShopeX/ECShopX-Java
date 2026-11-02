@@ -31,6 +31,11 @@ public class OpenapiHandlerForwardRegistry {
 		register("1.0", "POST", "ecx.product.sku_list", "/api/openapi/internal/v1/ecx.product.sku_list");
 		register("1.0", "POST", "ecx.product.goods_list", "/api/openapi/internal/v1/ecx.product.goods_list");
 		register("1.0", "POST", "ecx.product.stock_update", "/api/openapi/internal/v1/ecx.product.stock_update");
+		register(
+				"1.0",
+				"POST",
+				"ecx.digios.product.stock_push",
+				"/api/openapi/internal/v1/ecx.digios.product.stock_push");
 		register("1.0", "POST", "ecx.order.deliver", "/api/openapi/internal/v1/ecx.order.deliver");
 		register("1.0", "POST", "ecx.order.list", "/api/openapi/internal/v1/ecx.order.list");
 		register("1.0", "POST", "ecx.coupon.create", "/api/openapi/internal/v1/ecx.coupon.create");

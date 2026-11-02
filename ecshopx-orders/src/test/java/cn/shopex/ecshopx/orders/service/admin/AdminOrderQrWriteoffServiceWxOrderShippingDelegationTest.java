@@ -71,4 +71,35 @@ class AdminOrderQrWriteoffServiceWxOrderShippingDelegationTest {
 		verifyNoMoreInteractions(normalOrderZitiWriteoffService);
 		assertThat(result).isEqualTo(Map.of());
 	}
+
+	@Test
+	void orderWriteoffQR_whenPosDistributorScoped_skipsShopIdAndChecksDistributor() {
+		long companyId = 38L;
+		long operatorId = 13L;
+		long orderId = 200L;
+		long distributorId = 306L;
+		String code = "6543210001";
+
+		when(orderZitiQrCodeRedisService.resolveOrderIdOrThrow(code)).thenReturn(orderId);
+
+		NormalOrders order = new NormalOrders();
+		order.setCompanyId(companyId);
+		order.setOrderId(orderId);
+		order.setShopId(99L);
+		order.setDistributorId(distributorId);
+		order.setZitiCode(654321L);
+		order.setZitiStatus("PENDING");
+		order.setOrderStatus("PAYED");
+		order.setCancelStatus("NO_APPLY_CANCEL");
+
+		when(normalOrdersMapper.selectOne(any())).thenReturn(order);
+		when(normalOrdersServiceOrderDataAssembler.toServiceOrderData(any())).thenReturn(Map.of());
+
+		Map<String, Object> result =
+				adminOrderQrWriteoffService.orderWriteoffQR(
+						companyId, operatorId, List.of(), List.of(distributorId), code);
+
+		verify(normalOrderZitiWriteoffService).orderZitiWriteoffForAdmin(companyId, orderId, operatorId);
+		assertThat(result).isEqualTo(Map.of());
+	}
 }

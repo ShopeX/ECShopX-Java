@@ -20,6 +20,7 @@ import cn.shopex.ecshopx.common.exception.BadRequestException;
 import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.common.orders.port.AdminOrderDetailDistributionSupportPort;
 import cn.shopex.ecshopx.common.orders.port.AdminOrderDetailSalespersonLookupPort;
+import cn.shopex.ecshopx.companys.service.posaccount.PosStoreAccountQueryService;
 import cn.shopex.ecshopx.members.service.account.MemberAccountService;
 import cn.shopex.ecshopx.orders.domain.CommunityOrderRelActivity;
 import cn.shopex.ecshopx.orders.domain.OrderAssociations;
@@ -53,6 +54,7 @@ public class AdminOrderDetailService {
 	private final CommunityOrderRelActivityMapper communityOrderRelActivityMapper;
 	private final AdminEntityOrderDetailTypePolicy adminEntityOrderDetailTypePolicy;
 	private final AdminOrderDetailPhpParityApplier adminOrderDetailPhpParityApplier;
+	private final PosStoreAccountQueryService posStoreAccountQueryService;
 
 	public AdminOrderDetailService(
 			OrderAssociationsMapper orderAssociationsMapper,
@@ -68,7 +70,8 @@ public class AdminOrderDetailService {
 			AdminOrderDetailSalespersonLookupPort adminOrderDetailSalespersonLookupPort,
 			CommunityOrderRelActivityMapper communityOrderRelActivityMapper,
 			AdminEntityOrderDetailTypePolicy adminEntityOrderDetailTypePolicy,
-			AdminOrderDetailPhpParityApplier adminOrderDetailPhpParityApplier) {
+			AdminOrderDetailPhpParityApplier adminOrderDetailPhpParityApplier,
+			PosStoreAccountQueryService posStoreAccountQueryService) {
 		this.orderAssociationsMapper = orderAssociationsMapper;
 		this.orderAssociationEffectiveTypeService = orderAssociationEffectiveTypeService;
 		this.adminNormalOrderDetailService = adminNormalOrderDetailService;
@@ -83,6 +86,7 @@ public class AdminOrderDetailService {
 		this.communityOrderRelActivityMapper = communityOrderRelActivityMapper;
 		this.adminEntityOrderDetailTypePolicy = adminEntityOrderDetailTypePolicy;
 		this.adminOrderDetailPhpParityApplier = adminOrderDetailPhpParityApplier;
+		this.posStoreAccountQueryService = posStoreAccountQueryService;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -161,6 +165,15 @@ public class AdminOrderDetailService {
 							? adminOrderDetailSalespersonLookupPort.loadSalespersonForOrderDetail(companyId, spId)
 							: Map.of();
 			orderInfo.put("salespersonInfo", spInfo.isEmpty() ? new ArrayList<>() : new LinkedHashMap<>(spInfo));
+		}
+
+		long posAccountId = longVal(orderInfo.get("pos_store_account_id"));
+		if (posAccountId > 0L) {
+			Map<String, Object> posInfo =
+					posStoreAccountQueryService.mapOrderInfoByIds(companyId, List.of(posAccountId)).get(posAccountId);
+			orderInfo.put("pos_store_account_info", PosStoreAccountQueryService.asInfoMap(posInfo));
+		} else {
+			orderInfo.put("pos_store_account_info", Map.of());
 		}
 
 		if (orderInfo.containsKey("sale_salesman_distributor_id")) {

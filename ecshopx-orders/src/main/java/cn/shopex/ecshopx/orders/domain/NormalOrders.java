@@ -172,6 +172,10 @@ public class NormalOrders {
     @MpField(value = "salesman_id", columnType = "bigint", nullable = true, comment = "导购员ID", defaultValue = "0")
     private Long salesmanId = 0L;
 
+    /** POS 经手账号（ECX-10536；0=未绑定） */
+    @MpField(value = "pos_store_account_id", columnType = "bigint", nullable = false, comment = "POS经手账号", defaultValue = "0")
+    private Long posStoreAccountId = 0L;
+
     /** 快递公司 */
     @MpField(value = "delivery_corp", columnType = "string", nullable = true, comment = "快递公司")
     private String deliveryCorp;

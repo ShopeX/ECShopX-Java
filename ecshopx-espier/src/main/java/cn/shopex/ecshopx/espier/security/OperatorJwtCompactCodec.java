@@ -33,8 +33,14 @@ import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 
 /**
- * Operator JWT compact 序列化：签发使用标准 Base64（ecshopx-admin {@code atob} 兼容），
- * 验签按 token 内原始 segment 字符串计算 HMAC。
+ * Operator / POS JWT compact 序列化。
+ *
+ * <ul>
+ *   <li>运营端：{@link #compactHs256} — 标准 Base64 + HS256（ecshopx-admin {@code atob} 兼容）
+ *   <li>POS（对齐 PHP tymon/jwt-auth）：{@link #compactHs512Url} — Base64URL + HS512
+ * </ul>
+ *
+ * 验签按 token 内原始 segment 字符串计算 HMAC；segment 解码兼容标准 Base64 与 Base64URL。
  */
 public final class OperatorJwtCompactCodec {
 
@@ -43,18 +49,36 @@ public final class OperatorJwtCompactCodec {
 	private OperatorJwtCompactCodec() {}
 
 	public static String compactHs256(ObjectMapper objectMapper, Map<String, Object> payload, SecretKey signingKey) {
+		return compact(objectMapper, payload, signingKey, "HS256", "HmacSHA256", Base64.getEncoder());
+	}
+
+	/**
+	 * POS JWT：与 PHP {@code JWT_ALGO=HS512} + Lcobucci（Base64URL、无 padding）对齐，供 DigiOS 等标准 JWT 验签方使用。
+	 */
+	public static String compactHs512Url(ObjectMapper objectMapper, Map<String, Object> payload, SecretKey signingKey) {
+		return compact(
+				objectMapper, payload, signingKey, "HS512", "HmacSHA512", Base64.getUrlEncoder().withoutPadding());
+	}
+
+	private static String compact(
+			ObjectMapper objectMapper,
+			Map<String, Object> payload,
+			SecretKey signingKey,
+			String alg,
+			String macAlgorithm,
+			Base64.Encoder encoder) {
 		try {
-			String headerJson = objectMapper.writeValueAsString(Map.of("alg", "HS256"));
+			String headerJson = objectMapper.writeValueAsString(Map.of("alg", alg));
 			String payloadJson = objectMapper.writeValueAsString(payload);
-			String headerB64 = Base64.getEncoder().encodeToString(headerJson.getBytes(StandardCharsets.UTF_8));
-			String payloadB64 = Base64.getEncoder().encodeToString(payloadJson.getBytes(StandardCharsets.UTF_8));
+			String headerB64 = encoder.encodeToString(headerJson.getBytes(StandardCharsets.UTF_8));
+			String payloadB64 = encoder.encodeToString(payloadJson.getBytes(StandardCharsets.UTF_8));
 			String signingInput = headerB64 + "." + payloadB64;
-			Mac mac = Mac.getInstance("HmacSHA256");
+			Mac mac = Mac.getInstance(macAlgorithm);
 			mac.init(signingKey);
 			byte[] signature = mac.doFinal(signingInput.getBytes(StandardCharsets.UTF_8));
-			return signingInput + "." + Base64.getEncoder().encodeToString(signature);
+			return signingInput + "." + encoder.encodeToString(signature);
 		} catch (JsonProcessingException | NoSuchAlgorithmException | InvalidKeyException e) {
-			throw new IllegalStateException("Failed to issue operator JWT", e);
+			throw new IllegalStateException("Failed to issue JWT (" + alg + ")", e);
 		}
 	}
 
@@ -104,7 +128,8 @@ public final class OperatorJwtCompactCodec {
 		}
 		String signingInput = parts[0] + "." + parts[1];
 		byte[] providedSig = decodeSegment(parts[2]);
-		Mac mac = Mac.getInstance("HmacSHA256");
+		String macAlgorithm = resolveMacAlgorithm(objectMapper, parts[0]);
+		Mac mac = Mac.getInstance(macAlgorithm);
 		mac.init(signingKey);
 		byte[] expectedSig = mac.doFinal(signingInput.getBytes(StandardCharsets.UTF_8));
 		if (!MessageDigest.isEqual(expectedSig, providedSig)) {
@@ -113,6 +138,19 @@ public final class OperatorJwtCompactCodec {
 		byte[] payloadBytes = decodeSegment(parts[1]);
 		Map<String, Object> payload = objectMapper.readValue(payloadBytes, MAP_TYPE);
 		return new LinkedHashMap<>(payload);
+	}
+
+	private static String resolveMacAlgorithm(ObjectMapper objectMapper, String headerSegment) {
+		try {
+			Map<String, Object> header = objectMapper.readValue(decodeSegment(headerSegment), MAP_TYPE);
+			Object alg = header.get("alg");
+			if (alg != null && "HS512".equalsIgnoreCase(alg.toString().trim())) {
+				return "HmacSHA512";
+			}
+		} catch (Exception ignored) {
+			// fall through to HS256 default (legacy operator / early POS tokens)
+		}
+		return "HmacSHA256";
 	}
 
 	private static byte[] decodeSegment(String segment) {

@@ -17,6 +17,7 @@
 package cn.shopex.ecshopx.espier.web.interceptor;
 
 import cn.shopex.ecshopx.common.annotation.AdminAuth;
+import cn.shopex.ecshopx.common.auth.PosJwtRequestAttributes;
 import cn.shopex.ecshopx.common.core.domain.ApiResult;
 import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.companys.service.OperatorDistributorSelectionService;
@@ -86,6 +87,10 @@ public class AdminAuthInterceptor implements HandlerInterceptor {
 			return true;
 		}
 		if (!hasAnnotation(hm)) {
+			return true;
+		}
+		// 双 JWT：POS 已由 PosJwtAuthenticationFilter 鉴权并通过白名单
+		if (request.getAttribute(PosJwtRequestAttributes.POS_JWT_USER_DATA) != null) {
 			return true;
 		}
 		String auth = request.getHeader(HttpHeaders.AUTHORIZATION);

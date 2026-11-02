@@ -21,6 +21,7 @@ import cn.shopex.ecshopx.common.annotation.AdminAuth;
 import cn.shopex.ecshopx.common.annotation.DataPass;
 import cn.shopex.ecshopx.common.annotation.DingoResponse;
 import cn.shopex.ecshopx.common.annotation.ShopLog;
+import cn.shopex.ecshopx.common.auth.DualJwtSupport;
 import cn.shopex.ecshopx.common.auth.OperatorJwtRequestAttributes;
 import cn.shopex.ecshopx.common.core.domain.ApiResult;
 import cn.shopex.ecshopx.common.exception.BadRequestException;
@@ -213,21 +214,7 @@ public class MembersController {
 	@GetMapping(value = "/members", name = "会员列表", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ApiResult<Object>> getMemberList(HttpServletRequest request) {
 		LinkedHashMap<String, Object> merged = new LinkedHashMap<>(FlexibleHttpServletParameterMap.toObjectMap(request));
-		Object attr = request.getAttribute(OperatorJwtRequestAttributes.OPERATOR_JWT_USER_DATA);
-		if (!(attr instanceof Map<?, ?>)) {
-			throw new UnauthorizedException("未登录");
-		}
-		Map<?, ?> map = (Map<?, ?>) attr;
-		Object companyIdObj = map.get("company_id");
-		if (companyIdObj == null) {
-			throw new UnauthorizedException("未登录");
-		}
-		long companyId;
-		try {
-			companyId = Long.parseLong(String.valueOf(companyIdObj).trim());
-		} catch (NumberFormatException e) {
-			throw new UnauthorizedException("未登录");
-		}
+		long companyId = DualJwtSupport.requireCompanyId(request);
 		Object payload = adminMemberGetMemberListService.getMemberList(companyId, merged, request);
 		return ResponseEntity.ok(ApiResult.ok(payload));
 	}
@@ -247,21 +234,7 @@ public class MembersController {
 		if (body != null) {
 			merged.putAll(body);
 		}
-		Object attr = request.getAttribute(OperatorJwtRequestAttributes.OPERATOR_JWT_USER_DATA);
-		if (!(attr instanceof Map<?, ?>)) {
-			throw new UnauthorizedException("未登录");
-		}
-		Map<?, ?> map = (Map<?, ?>) attr;
-		Object companyIdObj = map.get("company_id");
-		if (companyIdObj == null) {
-			throw new UnauthorizedException("未登录");
-		}
-		long companyId;
-		try {
-			companyId = Long.parseLong(String.valueOf(companyIdObj).trim());
-		} catch (NumberFormatException e) {
-			throw new UnauthorizedException("未登录");
-		}
+		long companyId = DualJwtSupport.requireCompanyId(request);
 		Object payload = adminMemberGetMemberInfoService.getMemberInfo(companyId, merged, request);
 		return ResponseEntity.ok(ApiResult.ok(payload));
 	}
@@ -273,21 +246,7 @@ public class MembersController {
 			notFound = false)
 	@GetMapping(value = "/member/sms/code", name = "短信验证码", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ApiResult<Map<String, Object>>> getSmsCode(HttpServletRequest request) {
-		Object attr = request.getAttribute(OperatorJwtRequestAttributes.OPERATOR_JWT_USER_DATA);
-		if (!(attr instanceof Map<?, ?>)) {
-			throw new UnauthorizedException("未登录");
-		}
-		Map<?, ?> map = (Map<?, ?>) attr;
-		Object companyIdObj = map.get("company_id");
-		if (companyIdObj == null) {
-			throw new UnauthorizedException("未登录");
-		}
-		long companyId;
-		try {
-			companyId = Long.parseLong(String.valueOf(companyIdObj).trim());
-		} catch (NumberFormatException e) {
-			throw new UnauthorizedException("未登录");
-		}
+		long companyId = DualJwtSupport.requireCompanyId(request);
 		String mobile = request.getParameter("mobile");
 		String type = request.getParameter("type");
 		String token = request.getParameter("token");
@@ -303,21 +262,7 @@ public class MembersController {
 			notFound = false)
 	@GetMapping(value = "/member/image/code", name = "图片验证码", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ApiResult<Map<String, String>>> getImageVcode(HttpServletRequest request) {
-		Object attr = request.getAttribute(OperatorJwtRequestAttributes.OPERATOR_JWT_USER_DATA);
-		if (!(attr instanceof Map<?, ?>)) {
-			throw new UnauthorizedException("未登录");
-		}
-		Map<?, ?> map = (Map<?, ?>) attr;
-		Object companyIdObj = map.get("company_id");
-		if (companyIdObj == null) {
-			throw new UnauthorizedException("未登录");
-		}
-		long companyId;
-		try {
-			companyId = Long.parseLong(String.valueOf(companyIdObj).trim());
-		} catch (NumberFormatException e) {
-			throw new UnauthorizedException("未登录");
-		}
+		long companyId = DualJwtSupport.requireCompanyId(request);
 		String raw = request.getParameter("type");
 		String type = raw == null ? "sign" : raw;
 		Map<String, String> data = adminMemberRegisterSettingService.generateImageVcode(companyId, type);
@@ -338,21 +283,7 @@ public class MembersController {
 		if (body != null) {
 			merged.putAll(body);
 		}
-		Object attr = request.getAttribute(OperatorJwtRequestAttributes.OPERATOR_JWT_USER_DATA);
-		if (!(attr instanceof Map<?, ?>)) {
-			throw new UnauthorizedException("未登录");
-		}
-		Map<?, ?> map = (Map<?, ?>) attr;
-		Object companyIdObj = map.get("company_id");
-		if (companyIdObj == null) {
-			throw new UnauthorizedException("未登录");
-		}
-		long companyId;
-		try {
-			companyId = Long.parseLong(String.valueOf(companyIdObj).trim());
-		} catch (NumberFormatException e) {
-			throw new UnauthorizedException("未登录");
-		}
+		long companyId = DualJwtSupport.requireCompanyId(request);
 		return ResponseEntity.ok(ApiResult.ok(adminMemberCreateMemberService.createMember(companyId, merged)));
 	}
 
@@ -390,21 +321,7 @@ public class MembersController {
 		if (userId <= 0L) {
 			throw new BadRequestException("会员id格式错误");
 		}
-		Object attr = request.getAttribute(OperatorJwtRequestAttributes.OPERATOR_JWT_USER_DATA);
-		if (!(attr instanceof Map<?, ?>)) {
-			throw new UnauthorizedException("未登录");
-		}
-		Map<?, ?> map = (Map<?, ?>) attr;
-		Object companyIdObj = map.get("company_id");
-		if (companyIdObj == null) {
-			throw new UnauthorizedException("未登录");
-		}
-		long companyId;
-		try {
-			companyId = Long.parseLong(String.valueOf(companyIdObj).trim());
-		} catch (NumberFormatException e) {
-			throw new UnauthorizedException("未登录");
-		}
+		long companyId = DualJwtSupport.requireCompanyId(request);
 		Map<String, Object> payload = new LinkedHashMap<>();
 		if (merged.containsKey("disabled")) {
 			payload.put("disabled", merged.get("disabled"));
@@ -434,23 +351,13 @@ public class MembersController {
 		if (body != null) {
 			merged.putAll(body);
 		}
-		Object attr = request.getAttribute(OperatorJwtRequestAttributes.OPERATOR_JWT_USER_DATA);
-		if (!(attr instanceof Map<?, ?>)) {
+		Map<String, Object> jwt = DualJwtSupport.claims(request);
+		if (jwt == null || jwt.isEmpty()) {
 			throw new UnauthorizedException("未登录");
 		}
-		Map<?, ?> map = (Map<?, ?>) attr;
-		Object companyIdObj = map.get("company_id");
-		if (companyIdObj == null) {
-			throw new UnauthorizedException("未登录");
-		}
-		long companyId;
-		try {
-			companyId = Long.parseLong(String.valueOf(companyIdObj).trim());
-		} catch (NumberFormatException e) {
-			throw new UnauthorizedException("未登录");
-		}
+		long companyId = DualJwtSupport.requireCompanyId(request);
 		LinkedHashMap<String, Object> data =
-				adminMemberUpdateMobileService.updateMobileById(companyId, map, merged);
+				adminMemberUpdateMobileService.updateMobileById(companyId, jwt, merged);
 		return ResponseEntity.ok(ApiResult.ok(data));
 	}
 

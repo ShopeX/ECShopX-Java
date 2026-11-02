@@ -17,6 +17,7 @@
 package cn.shopex.ecshopx.distribution.api.admin.v1;
 
 import cn.shopex.ecshopx.common.annotation.AdminAuth;
+import cn.shopex.ecshopx.common.auth.DualJwtSupport;
 import cn.shopex.ecshopx.common.core.domain.ApiResult;
 import cn.shopex.ecshopx.common.exception.BadRequestException;
 import cn.shopex.ecshopx.common.exception.ResourceException;
@@ -381,16 +382,14 @@ public class DistributorController {
 	@GetMapping(value = "/distributors", name = "获取店铺列表")
 	public ResponseEntity<ApiResult<Map<String, Object>>> getDistributorList(
 			HttpServletRequest request, @FlexibleBody(required = false) Map<String, Object> body) {
-		Object raw = request.getAttribute(OperatorJwtAuthenticationFilter.OPERATOR_JWT_USER_DATA);
-		if (!(raw instanceof Map<?, ?> ud)) {
+		Map<String, Object> claims = DualJwtSupport.claims(request);
+		if (claims == null || claims.isEmpty()) {
 			throw new UnauthorizedException("未登录");
 		}
-		Map<String, Object> user = new LinkedHashMap<>();
-		for (Map.Entry<?, ?> e : ud.entrySet()) {
-			user.put(String.valueOf(e.getKey()), e.getValue());
-		}
-		long companyId = toLong(ud.get("company_id"));
+		Map<String, Object> user = new LinkedHashMap<>(claims);
+		long companyId = DualJwtSupport.requireCompanyId(request);
 		companysActivationService.assertShopOperatorCompanyActive(companyId);
+		// POS 无 operator_type：assertRouteAllowed 在非超管校验模式下对空类型直接放行
 		distributorMenuPermissionService.assertRouteAllowed(user, DistributorMenuPermissionService.ROUTE_ALIAS_DISTRIBUTOR_LIST);
 		Map<String, Object> merged = mergeInputLikeFlexibleResolver(request, body);
 		Map<String, Object> data = distributorListQueryHandler.handle(request, user, merged);

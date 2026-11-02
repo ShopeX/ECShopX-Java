@@ -107,7 +107,8 @@ class AdminOrderDeliveryServiceAdminApiOrdersDeliveryNormalOrderDeliveryTriggerP
 						adminDeliveryLogisticsNameService,
 						orderAssociationEffectiveTypeService,
 						adminNormalOrderDeliveryCoreService,
-						orderAssociationAssociationDataAssembler);
+						orderAssociationAssociationDataAssembler,
+						(request, cid, oid) -> {});
 	}
 
 	@Test

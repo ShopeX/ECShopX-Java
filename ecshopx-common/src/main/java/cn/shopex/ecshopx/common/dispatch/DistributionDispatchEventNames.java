@@ -65,6 +65,14 @@ public final class DistributionDispatchEventNames {
 	public static final String LISTENER_SHUYUN_OPEN_PLATFORM_SHOP_SYNC_ON_DISTRIBUTOR_UPDATE =
 			"listener:shuyun.open_platform.shop_sync_on_distributor_update";
 
+	/** DigiOS：门店创建 → 档案 PUT + 建仓 */
+	public static final String LISTENER_DIGIOS_DISTRIBUTOR_SYNC_ON_DISTRIBUTOR_CREATE =
+			"listener:digios.distributor_sync_on_distributor_create";
+
+	/** DigiOS：门店更新 → 档案 POST */
+	public static final String LISTENER_DIGIOS_DISTRIBUTOR_SYNC_ON_DISTRIBUTOR_UPDATE =
+			"listener:digios.distributor_sync_on_distributor_update";
+
 	public static final String EVENT_REFUND_FREIGHT_AUTO_ZY =
 			"event:266:DistributionBundle\\Events\\RefundFreightAutoZyEvent";
 

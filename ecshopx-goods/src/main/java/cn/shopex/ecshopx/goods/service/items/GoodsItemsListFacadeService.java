@@ -21,6 +21,7 @@ import cn.shopex.ecshopx.common.config.LangueProperties;
 import cn.shopex.ecshopx.common.web.ActivatedRequestAttributes;
 import cn.shopex.ecshopx.common.web.locale.RequestLangTag;
 import cn.shopex.ecshopx.common.exception.ResourceException;
+import cn.shopex.ecshopx.common.auth.DualJwtSupport;
 import cn.shopex.ecshopx.common.exception.UnauthorizedException;
 import cn.shopex.ecshopx.espier.security.OperatorJwtAuthenticationFilter;
 import cn.shopex.ecshopx.goods.domain.Items;
@@ -154,13 +155,11 @@ public class GoodsItemsListFacadeService {
 		itemLogisticsStoreEnricher.enrichListRowsAndApplyDisplayTotal(companyId, 0L, rows);
 	}
 
-	@SuppressWarnings("unchecked")
 	public Map<String, Object> listOnsaleItems(HttpServletRequest request) {
-		Object raw = request.getAttribute(OperatorJwtAuthenticationFilter.OPERATOR_JWT_USER_DATA);
-		if (!(raw instanceof Map<?, ?> jwtRaw)) {
+		Map<String, Object> jwt = DualJwtSupport.claims(request);
+		if (jwt == null || jwt.isEmpty()) {
 			throw new UnauthorizedException("未登录");
 		}
-		Map<String, Object> jwt = (Map<String, Object>) jwtRaw;
 		GoodsItemsListParamBuilder pb = new GoodsItemsListParamBuilder(request, jwt, Integer.valueOf(2000));
 		LinkedHashMap<String, Object> p = pb.toParamsMap();
 		p.put("type", Integer.valueOf(0));
@@ -839,13 +838,11 @@ public class GoodsItemsListFacadeService {
 		return itemStoreService.getPlatformWarningStore(companyId);
 	}
 
-	@SuppressWarnings("unchecked")
 	public Map<String, Object> list(HttpServletRequest request) {
-		Object raw = request.getAttribute(OperatorJwtAuthenticationFilter.OPERATOR_JWT_USER_DATA);
-		if (!(raw instanceof Map<?, ?> jwtRaw)) {
+		Map<String, Object> jwt = DualJwtSupport.claims(request);
+		if (jwt == null || jwt.isEmpty()) {
 			throw new UnauthorizedException("未登录");
 		}
-		Map<String, Object> jwt = (Map<String, Object>) jwtRaw;
 		GoodsItemsListParamBuilder pb = new GoodsItemsListParamBuilder(request, jwt);
 		LinkedHashMap<String, Object> p = pb.toParamsMap();
 		LinkedHashMap<String, Object> querySnap = new LinkedHashMap<>(p);

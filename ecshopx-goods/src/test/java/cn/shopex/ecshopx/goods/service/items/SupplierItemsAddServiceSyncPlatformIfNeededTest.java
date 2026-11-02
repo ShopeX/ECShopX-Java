@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 
 import cn.shopex.ecshopx.goods.domain.Items;
 import cn.shopex.ecshopx.goods.repository.ItemsRepository;
+import cn.shopex.ecshopx.supplier.domain.SupplierItems;
 import cn.shopex.ecshopx.goods.repository.SupplierLinkedItemsSyncPatch;
 import cn.shopex.ecshopx.promotions.service.ItemCreatePromotionGuardService;
 import cn.shopex.ecshopx.supplier.repository.SupplierItemsRepository;
@@ -81,6 +82,11 @@ class SupplierItemsAddServiceSyncPlatformIfNeededTest {
 		pool.setItemId(5001L);
 		pool.setDistributorId(0);
 		when(itemsRepository.listByCompanyIdAndSupplierItemIds(7001L, List.of(88L))).thenReturn(List.of(shop, pool));
+		SupplierItems supplierRow = new SupplierItems();
+		supplierRow.setGoodsId(100L);
+		supplierRow.setIsSyncPlatform(1);
+		when(supplierItemsRepository.getByItemIdAndCompany(88L, 7001L)).thenReturn(supplierRow);
+		when(supplierItemsRepository.isSyncPlatformEnabledForGoods(7001L, 100L)).thenReturn(true);
 
 		ItemsCreateContext ctx = new ItemsCreateContext(7001L, "supplier", "normal", false, true);
 		Map<String, Object> sku = Map.of(
@@ -116,6 +122,11 @@ class SupplierItemsAddServiceSyncPlatformIfNeededTest {
 		pool.setItemId(5001L);
 		pool.setDistributorId(0);
 		when(itemsRepository.listByCompanyIdAndSupplierItemIds(7001L, List.of(88L))).thenReturn(List.of(pool));
+		SupplierItems supplierRow = new SupplierItems();
+		supplierRow.setGoodsId(100L);
+		supplierRow.setIsSyncPlatform(1);
+		when(supplierItemsRepository.getByItemIdAndCompany(88L, 7001L)).thenReturn(supplierRow);
+		when(supplierItemsRepository.isSyncPlatformEnabledForGoods(7001L, 100L)).thenReturn(true);
 
 		ItemsCreateContext ctx = new ItemsCreateContext(7001L, "supplier", "normal", false, true);
 		Map<String, Object> sku = Map.of(
@@ -138,6 +149,11 @@ class SupplierItemsAddServiceSyncPlatformIfNeededTest {
 		pool.setItemId(5001L);
 		pool.setDistributorId(0);
 		when(itemsRepository.listByCompanyIdAndSupplierItemIds(7001L, List.of(88L))).thenReturn(List.of(pool));
+		SupplierItems supplierRow = new SupplierItems();
+		supplierRow.setGoodsId(100L);
+		supplierRow.setIsSyncPlatform(1);
+		when(supplierItemsRepository.getByItemIdAndCompany(88L, 7001L)).thenReturn(supplierRow);
+		when(supplierItemsRepository.isSyncPlatformEnabledForGoods(7001L, 100L)).thenReturn(true);
 
 		ItemsCreateContext ctx = new ItemsCreateContext(7001L, "supplier", "normal", false, true);
 		Map<String, Object> sku = Map.of(
@@ -151,5 +167,21 @@ class SupplierItemsAddServiceSyncPlatformIfNeededTest {
 		ArgumentCaptor<SupplierLinkedItemsSyncPatch> patchCaptor = ArgumentCaptor.forClass(SupplierLinkedItemsSyncPatch.class);
 		verify(itemsRepository).updateLinkedItemsOnSupplierEdit(eq(7001L), eq(List.of(5001L)), patchCaptor.capture());
 		org.junit.jupiter.api.Assertions.assertNull(patchCaptor.getValue().auditStatus());
+	}
+
+	@Test
+	void syncPlatformIfNeeded_skipsWhenNotSyncedToPlatform() {
+		SupplierItems supplierRow = new SupplierItems();
+		supplierRow.setGoodsId(100L);
+		supplierRow.setIsSyncPlatform(0);
+		when(supplierItemsRepository.getByItemIdAndCompany(88L, 7001L)).thenReturn(supplierRow);
+		when(supplierItemsRepository.isSyncPlatformEnabledForGoods(7001L, 100L)).thenReturn(false);
+
+		ItemsCreateContext ctx = new ItemsCreateContext(7001L, "supplier", "normal", false, true);
+		Map<String, Object> sku = Map.of("store", 10, "pics", "[]", "approve_status", "onsale", "item_name", "A");
+		ReflectionTestUtils.invokeMethod(sut, "syncPlatformIfNeeded", 88L, sku, ctx);
+
+		verify(itemsRepository, never()).listByCompanyIdAndSupplierItemIds(anyLong(), any());
+		verify(itemsRepository, never()).updateLinkedItemsOnSupplierEdit(anyLong(), any(), any());
 	}
 }

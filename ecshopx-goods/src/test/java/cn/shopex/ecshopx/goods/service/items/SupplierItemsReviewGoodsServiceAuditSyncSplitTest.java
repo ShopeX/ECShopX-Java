@@ -1,9 +1,11 @@
 package cn.shopex.ecshopx.goods.service.items;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -61,29 +63,16 @@ class SupplierItemsReviewGoodsServiceAuditSyncSplitTest {
 	private SupplierItemsReviewGoodsService sut;
 
 	@Test
-	void reviewGoods_approved_updatesAuditAndSyncsToPoolWithStore() {
+	void reviewGoods_approved_updatesAuditOnlyWithoutPoolSync() {
 		SupplierItems supplier = new SupplierItems();
 		supplier.setCompanyId(7001L);
 		supplier.setGoodsId(100L);
 		supplier.setSupplierId(9);
 		supplier.setIsMarket(1);
-		supplier.setAuditStatus("approved");
+		supplier.setAuditStatus("processing");
 		supplier.setDefaultItemId(42L);
 		supplier.setItemId(42L);
-		supplier.setBarcode("690001");
-		supplier.setIsDefault(true);
-		supplier.setStore(60);
 		when(supplierItemsRepository.findByItemId(42L)).thenReturn(supplier);
-		when(supplierItemsRepository.listByCompanyIdAndGoodsId(7001L, 100L)).thenReturn(java.util.List.of(supplier));
-		when(itemsRepository.getBySupplierItemIdAndCompany(100L, 7001L)).thenReturn(null);
-		when(itemsRepository.getBySupplierItemIdAndCompany(42L, 7001L)).thenReturn(null);
-		when(supplierItemsAttrPersistenceService.listByCompanyIdAndItemIdAndAttributeType(anyLong(), anyLong(), any()))
-				.thenReturn(java.util.List.of());
-		doAnswer(invocation -> {
-			Items row = invocation.getArgument(0);
-			row.setItemId(9001L);
-			return null;
-		}).when(itemsRepository).insert(any());
 
 		Map<String, Object> params = new HashMap<>();
 		params.put("audit_status", "approved");
@@ -92,9 +81,9 @@ class SupplierItemsReviewGoodsServiceAuditSyncSplitTest {
 		sut.reviewGoods(params, 42L);
 
 		verify(supplierItemsRepository).updateAuditByGoodsId(eq(7001L), eq(100L), any(SupplierItemsAuditPatch.class));
-		verify(itemsRepository).insert(any());
-		verify(itemStoreService).saveItemStore(eq(9001L), eq(60), eq(0L));
-		verify(itemsBarcodeRepository).saveBarcode(eq(7001L), eq(0L), eq(9001L), eq(9001L), eq("690001"));
+		verify(itemsRepository, never()).insert(any());
+		verify(itemStoreService, never()).saveItemStore(anyLong(), anyInt(), anyLong());
+		verify(itemsBarcodeRepository, never()).saveBarcode(anyLong(), anyLong(), anyLong(), anyLong(), any());
 	}
 
 	@Test
@@ -122,10 +111,13 @@ class SupplierItemsReviewGoodsServiceAuditSyncSplitTest {
 			return null;
 		}).when(itemsRepository).insert(any());
 
+		when(itemsCategoryDistributorIdResolver.resolveProductModel(7001L)).thenReturn("standard");
+
 		sut.syncToPool(7001L, 42L);
 
 		verify(itemsRepository).insert(any());
 		verify(itemStoreService, times(1)).saveItemStore(eq(9001L), eq(42), eq(0L));
 		verify(itemsBarcodeRepository).saveBarcode(eq(7001L), eq(0L), eq(9001L), eq(9001L), eq("690001"));
+		verify(supplierItemsRepository).updateIsSyncPlatformByGoodsId(7001L, 100L, 1);
 	}
 }

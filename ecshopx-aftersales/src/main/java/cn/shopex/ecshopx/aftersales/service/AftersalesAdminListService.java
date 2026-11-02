@@ -23,7 +23,7 @@ import cn.shopex.ecshopx.aftersales.dto.AftersalesAdminListQuery;
 import cn.shopex.ecshopx.aftersales.dto.AftersalesLogExportQuery;
 import cn.shopex.ecshopx.aftersales.mapper.AftersalesDetailMapper;
 import cn.shopex.ecshopx.aftersales.mapper.AftersalesMapper;
-import cn.shopex.ecshopx.common.auth.OperatorJwtRequestAttributes;
+import cn.shopex.ecshopx.common.auth.DualJwtSupport;
 import cn.shopex.ecshopx.common.distribution.DistributorGetInfoSimpleByDistributorIdPort;
 import cn.shopex.ecshopx.common.exception.BadRequestException;
 import cn.shopex.ecshopx.common.exception.UnauthorizedException;
@@ -332,11 +332,7 @@ public class AftersalesAdminListService {
 
 	private void applyDistributorRequestAndJwtForLogExport(
 			LinkedHashMap<String, Object> filter, AftersalesLogExportQuery q, HttpServletRequest request) {
-		Object attr = request.getAttribute(OperatorJwtRequestAttributes.OPERATOR_JWT_USER_DATA);
-		List<Long> jwtDist = List.of();
-		if (attr instanceof Map<?, ?> jwt) {
-			jwtDist = extractOperatorDistributorIds(jwt.get("distributor_ids"));
-		}
+		List<Long> jwtDist = jwtDistributorScope(request);
 
 		putDistributorFilterFromRequest(
 				filter,
@@ -422,8 +418,8 @@ public class AftersalesAdminListService {
 	}
 
 	private void mergeOperatorJwt(HttpServletRequest request, LinkedHashMap<String, Object> merged) {
-		Object attr = request.getAttribute(OperatorJwtRequestAttributes.OPERATOR_JWT_USER_DATA);
-		if (!(attr instanceof Map<?, ?> jwt)) {
+		Map<String, Object> jwt = DualJwtSupport.claims(request);
+		if (jwt == null || jwt.isEmpty()) {
 			throw new UnauthorizedException("未登录");
 		}
 		Object companyIdObj = jwt.get("company_id");
@@ -431,18 +427,38 @@ public class AftersalesAdminListService {
 			throw new BadRequestException("企业id必填");
 		}
 		merged.put("company_id", longVal(companyIdObj));
-		merged.put("operator_type", str(jwt.get("operator_type")));
-		merged.put("operator_id", longVal(jwt.get("operator_id")));
-		merged.put("merchant_id", jwt.get("merchant_id"));
+		if (DualJwtSupport.isPosSession(request)) {
+			merged.put("operator_type", "pos");
+			merged.put("operator_id", DualJwtSupport.requireActingOperatorId(request));
+		} else {
+			merged.put("operator_type", str(jwt.get("operator_type")));
+			merged.put("operator_id", longVal(jwt.get("operator_id")));
+			merged.put("merchant_id", jwt.get("merchant_id"));
+		}
+	}
+
+	/** Operator JWT {@code distributor_ids}；POS JWT 单店 {@code distributor_id}。 */
+	private static List<Long> jwtDistributorScope(HttpServletRequest request) {
+		Map<String, Object> jwt = DualJwtSupport.claims(request);
+		if (jwt == null || jwt.isEmpty()) {
+			return List.of();
+		}
+		List<Long> fromIds = extractOperatorDistributorIds(jwt.get("distributor_ids"));
+		if (!fromIds.isEmpty()) {
+			return fromIds;
+		}
+		if (DualJwtSupport.isPosSession(request)) {
+			Long did = DualJwtSupport.longClaim(jwt, "distributor_id");
+			if (did != null && did > 0L) {
+				return List.of(did);
+			}
+		}
+		return List.of();
 	}
 
 	private void applyDistributorRequestAndJwt(
 			LinkedHashMap<String, Object> filter, AftersalesAdminListQuery q, HttpServletRequest request) {
-		Object attr = request.getAttribute(OperatorJwtRequestAttributes.OPERATOR_JWT_USER_DATA);
-		List<Long> jwtDist = List.of();
-		if (attr instanceof Map<?, ?> jwt) {
-			jwtDist = extractOperatorDistributorIds(jwt.get("distributor_ids"));
-		}
+		List<Long> jwtDist = jwtDistributorScope(request);
 
 		putDistributorFilterFromRequest(filter, request, q.getDistributorId(), q.getDistributorIds());
 

@@ -16,7 +16,7 @@
 
 package cn.shopex.ecshopx.members.service.admin;
 
-import cn.shopex.ecshopx.common.auth.OperatorJwtRequestAttributes;
+import cn.shopex.ecshopx.common.auth.DualJwtSupport;
 import cn.shopex.ecshopx.common.crypto.SensitiveFieldEncryptor;
 import cn.shopex.ecshopx.common.exception.BadRequestException;
 import cn.shopex.ecshopx.common.exception.UnauthorizedException;
@@ -470,11 +470,11 @@ public class AdminMemberGetMemberListService {
 	}
 
 	private static Map<?, ?> readOperatorJwtClaims(HttpServletRequest request) {
-		Object raw = request.getAttribute(OperatorJwtRequestAttributes.OPERATOR_JWT_USER_DATA);
-		if (!(raw instanceof Map<?, ?> operatorJwtClaims)) {
+		Map<String, Object> jwt = DualJwtSupport.claims(request);
+		if (jwt == null || jwt.isEmpty()) {
 			throw new UnauthorizedException("未登录");
 		}
-		return operatorJwtClaims;
+		return jwt;
 	}
 
 	private boolean applyDataFilterCore(
@@ -782,6 +782,10 @@ public class AdminMemberGetMemberListService {
 		Object mob = merged.get("mobile");
 		if (mob != null && StringUtils.hasText(String.valueOf(mob).trim())) {
 			f.setMobileEncEq(sensitiveFieldEncryptor.encrypt(String.valueOf(mob).trim()));
+		}
+		String userCardCodeEq = AdminMemberListUserCardCodeQuery.normalizeForExactMatch(merged.get("user_card_code"));
+		if (userCardCodeEq != null) {
+			f.setUserCardCodeEq(userCardCodeEq);
 		}
 		Object remarks = merged.get("remarks");
 		if (remarks != null && StringUtils.hasText(String.valueOf(remarks).trim())) {
