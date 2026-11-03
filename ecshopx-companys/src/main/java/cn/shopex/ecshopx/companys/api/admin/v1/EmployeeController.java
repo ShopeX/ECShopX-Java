@@ -21,6 +21,7 @@ import cn.shopex.ecshopx.common.annotation.AdminAuth;
 import cn.shopex.ecshopx.common.annotation.DataPass;
 import cn.shopex.ecshopx.common.annotation.DingoResponse;
 import cn.shopex.ecshopx.common.annotation.ShopLog;
+import cn.shopex.ecshopx.common.auth.DualJwtSupport;
 import cn.shopex.ecshopx.common.core.domain.ApiResult;
 import cn.shopex.ecshopx.common.exception.BadRequestException;
 import cn.shopex.ecshopx.common.exception.UnauthorizedException;
@@ -35,6 +36,7 @@ import cn.shopex.ecshopx.companys.service.employee.EmployeeManagementListService
 import cn.shopex.ecshopx.companys.service.employee.EmployeeUpdateOrchestrationService;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.http.ResponseEntity;
@@ -113,12 +115,7 @@ public class EmployeeController {
 			@RequestParam(value = "is_disable", required = false) String isDisable,
 			@RequestParam(value = "supplier_name", required = false) String supplierName,
 			@RequestParam(value = "operator_type", required = false) String operatorType) {
-		@SuppressWarnings("unchecked")
-		Map<String, Object> jwt =
-				(Map<String, Object>) request.getAttribute(OPERATOR_JWT_USER_DATA);
-		if (jwt == null || jwt.isEmpty()) {
-			throw new UnauthorizedException("Failed to authenticate because of bad credentials or an invalid authorization header.");
-		}
+		Map<String, Object> jwt = dualJwtClaimsForEmployeeRead(request);
 		EmployeeAccountManagementListQuery query = new EmployeeAccountManagementListQuery();
 		query.setOperatorId(operatorId);
 		query.setMobile(mobile);
@@ -175,18 +172,41 @@ public class EmployeeController {
 		} catch (NumberFormatException ex) {
 			throw new BadRequestException("无效的 operator_id");
 		}
-		@SuppressWarnings("unchecked")
-		Map<String, Object> jwt =
-				(Map<String, Object>) request.getAttribute(OPERATOR_JWT_USER_DATA);
-		if (jwt == null || jwt.isEmpty()) {
-			throw new UnauthorizedException("Failed to authenticate because of bad credentials or an invalid authorization header.");
-		}
+		Map<String, Object> jwt = dualJwtClaimsForEmployeeRead(request);
 		String cc = request.getParameter("country_code");
 		String requestLangTag = StringUtils.hasText(cc) ? cc.trim() : "zh-CN";
 		Map<String, Object> row =
 				employeeManagementDetailService.getInfoData(jwt, targetOperatorId, requestLangTag);
 		return ResponseEntity.ok(
 				row == null ? ApiResult.ok(Collections.emptyList()) : ApiResult.ok(row));
+	}
+
+	/**
+	 * POS JWT 无 operator_id；列表服务仍 require 该 claim。收银只读场景用 pos_store_account_id 填占位，
+	 * 不走 distributor/staff 分支。
+	 */
+	private static Map<String, Object> dualJwtClaimsForEmployeeRead(HttpServletRequest request) {
+		Map<String, Object> raw = DualJwtSupport.claims(request);
+		if (raw == null || raw.isEmpty()) {
+			throw new UnauthorizedException(
+					"Failed to authenticate because of bad credentials or an invalid authorization header.");
+		}
+		if (!DualJwtSupport.isPosSession(request)) {
+			return raw;
+		}
+		Map<String, Object> jwt = new LinkedHashMap<>(raw);
+		if (DualJwtSupport.longClaim(jwt, "operator_id") == null) {
+			Long posId = DualJwtSupport.longClaim(jwt, "pos_store_account_id");
+			if (posId == null) {
+				posId = DualJwtSupport.longClaim(jwt, "id");
+			}
+			if (posId == null || posId <= 0L) {
+				throw new UnauthorizedException(
+						"Failed to authenticate because of bad credentials or an invalid authorization header.");
+			}
+			jwt.put("operator_id", posId);
+		}
+		return jwt;
 	}
 
 	@Activated(routeAlias = "account.update")

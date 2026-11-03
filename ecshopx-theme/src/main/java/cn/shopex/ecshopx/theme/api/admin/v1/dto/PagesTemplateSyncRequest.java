@@ -30,4 +30,7 @@ public class PagesTemplateSyncRequest {
 
 	@JsonProperty("distributor_ids")
 	private String distributorIds;
+
+	@JsonProperty("country_code")
+	private String countryCode;
 }

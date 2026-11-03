@@ -20,6 +20,18 @@ public final class CompanysDispatchEventNames {
 
 	public static final String EVENT_COMPANY_CREATE = "event:companys:company_create";
 
+	/** 对齐 PHP {@code CompanysBundle\\Events\\OperatorCreateEvent} */
+	public static final String EVENT_OPERATOR_CREATE = "event:CompanysBundle\\Events\\OperatorCreateEvent";
+
+	public static final String LISTENER_DIGIOS_ACCOUNT_SYNC_ON_OPERATOR_CREATE =
+			"listener:digios.account_sync_on_operator_create";
+
+	/** POS 门店账号新建成功 */
+	public static final String EVENT_POS_STORE_ACCOUNT_CREATE = "event:companys:pos_store_account_create";
+
+	public static final String LISTENER_DIGIOS_ACCOUNT_SYNC_ON_POS_STORE_ACCOUNT_CREATE =
+			"listener:digios.account_sync_on_pos_store_account_create";
+
 	private CompanysDispatchEventNames() {
 	}
 }

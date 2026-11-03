@@ -86,8 +86,9 @@ public class ExportItemsController {
 		String operatorType = ud.get("operator_type") != null ? ud.get("operator_type").toString() : "";
 		Long merchantId = readOptionalLong(ud.get("merchant_id"));
 
+		Map<String, Object> operatorJwt = copyOperatorJwt(ud);
 		ExportItemsApiFileNameResult r = exportItemsApiFileNameService.writeKeyOrEmptyList(companyId, operatorId,
-				operatorType, merchantId, merged);
+				operatorType, merchantId, merged, operatorJwt);
 		if (r instanceof ExportItemsApiFileNameResult.EmptyItemBnList) {
 			return ResponseEntity.ok(ApiResult.ok(Map.of("list", List.of(), "total_count", 0)));
 		}
@@ -111,8 +112,9 @@ public class ExportItemsController {
 		String operatorType = ud.get("operator_type") != null ? ud.get("operator_type").toString() : "";
 		Long merchantId = readOptionalLong(ud.get("merchant_id"));
 
+		Map<String, Object> operatorJwt = copyOperatorJwt(ud);
 		ExportItemsDataOrchestratorResult r = exportItemsDataOrchestratorService.submitOrEmptyList(companyId, operatorId,
-				operatorType, merchantId, merged);
+				operatorType, merchantId, merged, operatorJwt);
 		if (r instanceof ExportItemsDataOrchestratorResult.EmptyItemBnList) {
 			return ResponseEntity.ok(ApiResult.ok(Map.of("list", List.of(), "total_count", 0)));
 		}
@@ -135,8 +137,9 @@ public class ExportItemsController {
 		String operatorType = ud.get("operator_type") != null ? ud.get("operator_type").toString() : "";
 		Long merchantId = readOptionalLong(ud.get("merchant_id"));
 
+		Map<String, Object> operatorJwt = copyOperatorJwt(ud);
 		ExportItemsTagOrchestratorResult r = exportItemsTagDataOrchestratorService.submitOrEmptyList(companyId, operatorId,
-				operatorType, merchantId, merged);
+				operatorType, merchantId, merged, operatorJwt);
 		if (r instanceof ExportItemsTagOrchestratorResult.EmptyList) {
 			return ResponseEntity.ok(ApiResult.ok(Map.of("list", List.of(), "total_count", 0)));
 		}
@@ -151,7 +154,7 @@ public class ExportItemsController {
 		if (!(raw instanceof Map<?, ?> ud)) {
 			throw new UnauthorizedException("未登录");
 		}
-		Map<String, Object> merged = mergeInput(request, body);
+		Map<String, Object> merged = AdminGoodsUploadRequestMerge.mergeInputLikeFlexibleResolver(request, body);
 		normalizeItemSource(merged);
 
 		long companyId = readRequiredLong(ud, "company_id");
@@ -159,8 +162,9 @@ public class ExportItemsController {
 		String operatorType = ud.get("operator_type") != null ? ud.get("operator_type").toString() : "";
 		Long merchantId = readOptionalLong(ud.get("merchant_id"));
 
+		Map<String, Object> operatorJwt = copyOperatorJwt(ud);
 		ExportItemsCodeOrchestratorResult r = exportItemsCodeDataOrchestratorService.submitOrEmptyList(companyId, operatorId,
-				operatorType, merchantId, merged);
+				operatorType, merchantId, merged, operatorJwt);
 		if (r instanceof ExportItemsCodeOrchestratorResult.EmptyItemBnList) {
 			return ResponseEntity.ok(ApiResult.ok(Map.of("list", List.of(), "total_count", 0)));
 		}
@@ -193,34 +197,6 @@ public class ExportItemsController {
 		}
 	}
 
-	private static Map<String, Object> mergeInput(HttpServletRequest request, Map<String, Object> body) {
-		String ct = request.getContentType();
-		boolean jsonLike = ct != null && ct.toLowerCase().contains("application/json");
-		if (jsonLike) {
-			LinkedHashMap<String, Object> input = new LinkedHashMap<>(parameterMapToMap(request));
-			if (body != null) {
-				input.putAll(body);
-			}
-			return input;
-		}
-		if (body != null) {
-			LinkedHashMap<String, Object> m = new LinkedHashMap<>(body);
-			parameterMapToMap(request).forEach(m::putIfAbsent);
-			return m;
-		}
-		return new LinkedHashMap<>(parameterMapToMap(request));
-	}
-
-	private static Map<String, Object> parameterMapToMap(HttpServletRequest request) {
-		Map<String, Object> m = new LinkedHashMap<>();
-		request.getParameterMap().forEach((k, v) -> {
-			if (v != null && v.length > 0 && StringUtils.hasText(v[0])) {
-				m.put(k, v[0]);
-			}
-		});
-		return m;
-	}
-
 	private static long readRequiredLong(Map<?, ?> ud, String key) {
 		Object v = ud.get(key);
 		if (v == null) {
@@ -234,6 +210,14 @@ public class ExportItemsController {
 		} catch (NumberFormatException e) {
 			throw new BadRequestException(key + " 缺失或无效");
 		}
+	}
+
+	private static Map<String, Object> copyOperatorJwt(Map<?, ?> ud) {
+		LinkedHashMap<String, Object> operatorJwt = new LinkedHashMap<>();
+		for (Map.Entry<?, ?> e : ud.entrySet()) {
+			operatorJwt.put(String.valueOf(e.getKey()), e.getValue());
+		}
+		return operatorJwt;
 	}
 
 	private static Long readOptionalLong(Object v) {

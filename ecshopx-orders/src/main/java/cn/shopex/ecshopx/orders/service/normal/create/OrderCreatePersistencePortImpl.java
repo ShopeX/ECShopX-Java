@@ -34,6 +34,7 @@ import cn.shopex.ecshopx.orders.mapper.OrderAssociationsMapper;
 import cn.shopex.ecshopx.orders.mapper.OrderPromotionsMapper;
 import cn.shopex.ecshopx.orders.service.excard.NormalOrderNumericIdService;
 import cn.shopex.ecshopx.orders.service.normal.OrderDiscountInfoSupport;
+import cn.shopex.ecshopx.orders.service.pos.PosOrderBinder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
@@ -174,6 +175,11 @@ public class OrderCreatePersistencePortImpl implements OrderCreatePersistencePor
 		}
 		order.setIsOnlineOrder(Boolean.FALSE.equals(od.get("is_online_order")) ? Boolean.FALSE : Boolean.TRUE);
 		order.setSalesmanId(longVal(od.get("salesman_id"), 0L));
+		long posAccountId = longVal(od.get("pos_store_account_id"), 0L);
+		if (posAccountId <= 0L) {
+			posAccountId = PosOrderBinder.currentPosStoreAccountId();
+		}
+		order.setPosStoreAccountId(posAccountId);
 		long opId = longVal(od.get("operator_id"), 0L);
 		order.setOperatorId(opId > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) opId);
 		order.setUsesPlatformItemStock(intVal(od.get("uses_platform_item_stock"), 0) != 0 ? 1 : 0);

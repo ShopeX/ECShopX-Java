@@ -30,6 +30,7 @@ import cn.shopex.ecshopx.aftersales.service.AftersalesReviewService;
 import cn.shopex.ecshopx.aftersales.service.AftersalesSendbackService;
 import cn.shopex.ecshopx.aftersales.service.AftersalesService;
 import cn.shopex.ecshopx.aftersales.service.export.AftersalesFinancialExportService;
+import cn.shopex.ecshopx.common.auth.DualJwtSupport;
 import cn.shopex.ecshopx.common.auth.OperatorJwtRequestAttributes;
 import cn.shopex.ecshopx.common.exception.BadRequestException;
 import cn.shopex.ecshopx.common.annotation.Activated;
@@ -326,36 +327,18 @@ public class AftersalesController {
 		return ApiResult.ok(Map.of("status", true));
 	}
 
-	private static Map<?, ?> readJwtMap(HttpServletRequest request) {
-		Object attr = request.getAttribute(OperatorJwtRequestAttributes.OPERATOR_JWT_USER_DATA);
-		if (attr instanceof Map<?, ?> jwt) {
-			return jwt;
-		}
-		throw new UnauthorizedException("未登录");
-	}
-
 	private static long readCompanyIdFromJwt(HttpServletRequest request) {
-		Map<?, ?> jwt = readJwtMap(request);
-		Object companyIdObj = jwt.get("company_id");
-		if (companyIdObj == null) {
-			throw new ResourceException("登录验证错误");
-		}
 		try {
-			return Long.parseLong(String.valueOf(companyIdObj).trim());
-		} catch (NumberFormatException e) {
+			return DualJwtSupport.requireCompanyId(request);
+		} catch (UnauthorizedException e) {
 			throw new ResourceException("登录验证错误");
 		}
 	}
 
 	private static long readOperatorIdFromJwt(HttpServletRequest request) {
-		Map<?, ?> jwt = readJwtMap(request);
-		Object operatorIdObj = jwt.get("operator_id");
-		if (operatorIdObj == null) {
-			throw new ResourceException("登录验证错误");
-		}
 		try {
-			return Long.parseLong(String.valueOf(operatorIdObj).trim());
-		} catch (NumberFormatException e) {
+			return DualJwtSupport.requireActingOperatorId(request);
+		} catch (UnauthorizedException e) {
 			throw new ResourceException("登录验证错误");
 		}
 	}

@@ -16,7 +16,7 @@
 
 package cn.shopex.ecshopx.aftersales.service;
 
-import cn.shopex.ecshopx.common.auth.OperatorJwtRequestAttributes;
+import cn.shopex.ecshopx.common.auth.DualJwtSupport;
 import cn.shopex.ecshopx.common.exception.BadRequestException;
 import cn.shopex.ecshopx.common.exception.UnauthorizedException;
 import cn.shopex.ecshopx.common.web.H5FrontAuthAttributes;
@@ -142,8 +142,8 @@ public class AftersalesRemindService {
 			merged.put("company_id", frontMap.get("company_id"));
 			return;
 		}
-		Object attr = request.getAttribute(OperatorJwtRequestAttributes.OPERATOR_JWT_USER_DATA);
-		if (!(attr instanceof Map<?, ?> jwt)) {
+		Map<String, Object> jwt = DualJwtSupport.claims(request);
+		if (jwt == null || jwt.isEmpty()) {
 			throw new UnauthorizedException("未登录");
 		}
 		Object companyIdObj = jwt.get("company_id");

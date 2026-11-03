@@ -28,8 +28,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class OrderCreateDistributorCheckPortImpl implements OrderCreateDistributorCheckPort {
 
-	private static final String SQL_IS_VALID_ACTIVE =
-			"(is_valid = 1 OR LOWER(TRIM(CAST(is_valid AS CHAR))) IN ('true','1'))";
+	/**
+	 * 店铺四态可买：启用 true/1、禁用 false/0；闭店 closed、撤店 delete 不可买。
+	 */
+	private static final String SQL_IS_VALID_PURCHASABLE =
+			"(is_valid IN (0, 1) OR LOWER(TRIM(CAST(is_valid AS CHAR))) IN ('true','false','1','0'))";
 
 	private final DistributorMapper distributorMapper;
 
@@ -48,7 +51,7 @@ public class OrderCreateDistributorCheckPortImpl implements OrderCreateDistribut
 		Distributor d = distributorMapper.selectOne(new LambdaQueryWrapper<Distributor>()
 				.eq(Distributor::getCompanyId, companyId)
 				.eq(Distributor::getDistributorId, distributorId)
-				.apply(SQL_IS_VALID_ACTIVE)
+				.apply(SQL_IS_VALID_PURCHASABLE)
 				.last("LIMIT 1"));
 		if (d == null) {
 			throw new ResourceException("店铺不存在或已失效");

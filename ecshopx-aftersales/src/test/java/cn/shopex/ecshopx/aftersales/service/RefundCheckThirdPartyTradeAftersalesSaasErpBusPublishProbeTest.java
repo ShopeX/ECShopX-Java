@@ -166,7 +166,8 @@ class RefundCheckThirdPartyTradeAftersalesSaasErpBusPublishProbeTest {
 						wdtPayloadBuilder,
 						thirdPartyTradeAftersalesCancelSaasErpPublisher,
 						thirdPartyTradeAftersalesSaasErpDispatchPublisher,
-				mock(AftersalesRefuseWxaNotifyService.class));
+						mock(cn.shopex.ecshopx.common.auth.PosOrderDocAccessPort.class),
+						mock(AftersalesRefuseWxaNotifyService.class));
 
 		Map<String, Object> param = new LinkedHashMap<>();
 		param.put("company_id", COMPANY_ID);
@@ -224,8 +225,15 @@ class RefundCheckThirdPartyTradeAftersalesSaasErpBusPublishProbeTest {
 		ObjectMapper objectMapper = new ObjectMapper();
 
 		HttpServletRequest request = mock(HttpServletRequest.class);
-		when(request.getAttribute(OperatorJwtRequestAttributes.OPERATOR_JWT_USER_DATA))
-				.thenReturn(Map.of("company_id", COMPANY_ID, "operator_id", 77L, "operator_type", "admin"));
+		when(request.getAttribute(org.mockito.ArgumentMatchers.anyString()))
+				.thenAnswer(
+						inv -> {
+							String name = inv.getArgument(0);
+							if (OperatorJwtRequestAttributes.OPERATOR_JWT_USER_DATA.equals(name)) {
+								return Map.of("company_id", COMPANY_ID, "operator_id", 77L, "operator_type", "admin");
+							}
+							return null;
+						});
 
 		Aftersales aftersales = new Aftersales();
 		aftersales.setCompanyId(COMPANY_ID);
@@ -291,7 +299,8 @@ class RefundCheckThirdPartyTradeAftersalesSaasErpBusPublishProbeTest {
 						wdtPayloadBuilder,
 						thirdPartyTradeAftersalesCancelSaasErpPublisher,
 						thirdPartyTradeAftersalesSaasErpDispatchPublisher,
-				mock(AftersalesRefuseWxaNotifyService.class));
+						mock(cn.shopex.ecshopx.common.auth.PosOrderDocAccessPort.class),
+						mock(AftersalesRefuseWxaNotifyService.class));
 
 		LinkedHashMap<String, Object> merged = new LinkedHashMap<>();
 		merged.put("aftersales_bn", AFTERSALES_BN);
@@ -418,7 +427,8 @@ class RefundCheckThirdPartyTradeAftersalesSaasErpBusPublishProbeTest {
 						wdtPayloadBuilder,
 						thirdPartyTradeAftersalesCancelSaasErpPublisher,
 						thirdPartyTradeAftersalesSaasErpDispatchPublisher,
-				mock(AftersalesRefuseWxaNotifyService.class));
+						mock(cn.shopex.ecshopx.common.auth.PosOrderDocAccessPort.class),
+						mock(AftersalesRefuseWxaNotifyService.class));
 
 		Map<String, Object> param = new LinkedHashMap<>();
 		param.put("company_id", COMPANY_ID);

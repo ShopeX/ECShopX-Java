@@ -26,7 +26,7 @@
 	</select>
 
 	<select id="listDistributorNamesByCompanyAndIds" resultType="java.util.HashMap">
-		SELECT distributor_id AS distributor_id, name AS name
+		SELECT distributor_id AS distributor_id, name AS name, shop_code AS shop_code
 		FROM distribution_distributor
 		WHERE company_id = #{companyId}
 		  AND distributor_id IN
@@ -43,5 +43,21 @@
 		<foreach collection="merchantIds" item="id" open="(" separator="," close=")">
 			#{id}
 		</foreach>
+	</select>
+
+	<select id="selectShopByCompanyAndId" resultType="java.util.HashMap">
+		SELECT distributor_id AS distributor_id, name AS name, shop_code AS shop_code, is_valid AS is_valid
+		FROM distribution_distributor
+		WHERE company_id = #{companyId}
+		  AND distributor_id = #{distributorId}
+		LIMIT 1
+	</select>
+
+	<select id="selectShopByCompanyAndShopCode" resultType="java.util.HashMap">
+		SELECT distributor_id AS distributor_id, name AS name, shop_code AS shop_code, is_valid AS is_valid
+		FROM distribution_distributor
+		WHERE company_id = #{companyId}
+		  AND shop_code = #{shopCode}
+		LIMIT 1
 	</select>
 </mapper>

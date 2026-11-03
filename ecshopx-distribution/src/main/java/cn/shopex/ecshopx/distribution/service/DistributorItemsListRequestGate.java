@@ -90,14 +90,8 @@ public class DistributorItemsListRequestGate {
 			throw new ForbiddenException("权限信息有误");
 		}
 
+		DistributorShopOperatorIdResolver.applyJwtDistributorWhenQueryUnsetOrZero(merged, operatorType, user);
 		long targetDistributorId = merged.get("distributor_id") != null ? toLong(merged.get("distributor_id")) : 0L;
-		if ("distributor".equals(operatorType) && targetDistributorId <= 0L) {
-			long selected = toLong(user.get("distributor_id"));
-			if (selected > 0L) {
-				targetDistributorId = selected;
-				merged.put("distributor_id", selected);
-			}
-		}
 		if (targetDistributorId <= 0L) {
 			return;
 		}

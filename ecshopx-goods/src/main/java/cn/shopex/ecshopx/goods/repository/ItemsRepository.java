@@ -362,6 +362,21 @@ public class ItemsRepository {
 		return mapper.selectList(w);
 	}
 
+	/** 已有店铺副本的 distributor_id（platform 供应商商品同步到店铺后的 items 行）。 */
+	public List<Long> listDistinctShopDistributorIdsBySupplierItemIds(long companyId, Collection<Long> supplierItemIds) {
+		if (supplierItemIds == null || supplierItemIds.isEmpty()) {
+			return List.of();
+		}
+		List<Items> rows = listByCompanyIdAndSupplierItemIds(companyId, supplierItemIds);
+		return rows.stream()
+				.map(Items::getDistributorId)
+				.filter(d -> d != null && d > 0)
+				.map(Integer::longValue)
+				.distinct()
+				.sorted()
+				.toList();
+	}
+
 	public Items getBySupplierItemIdAndCompany(long supplierItemId, long companyId) {
 		LambdaQueryWrapper<Items> w = new LambdaQueryWrapper<>();
 		w.eq(Items::getSupplierItemId, (int) supplierItemId).eq(Items::getCompanyId, companyId).last("LIMIT 1");

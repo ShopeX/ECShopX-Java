@@ -90,6 +90,9 @@
 		<if test="f.mobileEncEq != null and f.mobileEncEq != ''">
 			AND m.mobile = #{f.mobileEncEq}
 		</if>
+		<if test="f.userCardCodeEq != null and f.userCardCodeEq != ''">
+			AND m.user_card_code = #{f.userCardCodeEq}
+		</if>
 		<if test="f.remarksLike != null and f.remarksLike != ''">
 			AND m.remarks LIKE CONCAT('%', #{f.remarksLike}, '%')
 		</if>

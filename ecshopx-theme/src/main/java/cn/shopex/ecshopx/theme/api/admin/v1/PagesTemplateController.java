@@ -21,10 +21,12 @@ import cn.shopex.ecshopx.common.annotation.AdminAuth;
 import cn.shopex.ecshopx.common.annotation.DingoResponse;
 import cn.shopex.ecshopx.common.annotation.ShopLog;
 import cn.shopex.ecshopx.common.auth.OperatorJwtRequestAttributes;
+import cn.shopex.ecshopx.common.config.LangueProperties;
 import cn.shopex.ecshopx.common.core.domain.ApiResult;
 import cn.shopex.ecshopx.common.exception.BadRequestException;
 import cn.shopex.ecshopx.common.exception.UnauthorizedException;
 import cn.shopex.ecshopx.common.web.FlexibleBody;
+import cn.shopex.ecshopx.common.web.locale.RequestCountryCode;
 import cn.shopex.ecshopx.theme.api.admin.v1.dto.PagesTemplateAddRequest;
 import cn.shopex.ecshopx.theme.api.admin.v1.dto.PagesTemplateCopyRequest;
 import cn.shopex.ecshopx.theme.api.admin.v1.dto.PagesTemplateModifyStatusRequest;
@@ -87,6 +89,8 @@ public class PagesTemplateController {
 	private final PagesTemplateModifyStatusService pagesTemplateModifyStatusService;
 
 	private final PagesTemplateSyncService pagesTemplateSyncService;
+
+	private final LangueProperties langueProperties;
 
 	private final PagesTemplateWidgetItemsService pagesTemplateWidgetItemsService;
 
@@ -307,12 +311,11 @@ public class PagesTemplateController {
 		}
 		Map<String, Object> jwt = toStringKeyMap(m);
 		long companyId = parsePositiveLongClaim(jwt, "company_id", "company_id 无效");
-		String locale = request.getHeader("country-code");
-		if (!StringUtils.hasText(locale)) {
-			locale = "zh-CN";
-		} else {
-			locale = locale.trim();
+		Map<String, Object> localeBody = new LinkedHashMap<>();
+		if (body != null && StringUtils.hasText(body.getCountryCode())) {
+			localeBody.put("country_code", body.getCountryCode());
 		}
+		String locale = RequestCountryCode.resolve(langueProperties, request.getParameter("country_code"), localeBody);
 		Map<String, Object> syncResult = pagesTemplateSyncService.sync(companyId, body, locale);
 		return ResponseEntity.ok(Map.of("data", syncResult));
 	}

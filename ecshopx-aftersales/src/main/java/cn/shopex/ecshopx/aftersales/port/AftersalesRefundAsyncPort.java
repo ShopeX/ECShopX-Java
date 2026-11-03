@@ -29,4 +29,7 @@ public interface AftersalesRefundAsyncPort {
 	void scheduleSendAfterSaleWaitConfirmNotice(long companyId, long aftersalesBn);
 
 	void scheduleSendAftersaleCancelNotice(long companyId, long aftersalesBn);
+
+	/** DigiOS 退货入库库存调整（对齐 PHP {@code dispatchOnAftersalesReturnIfEnabled}）。 */
+	void scheduleDigiOsStoreAdjustmentOnAftersalesReturn(long companyId, long aftersalesBn);
 }

@@ -41,7 +41,7 @@ class AdminOrderCancelServiceTradeRefundRoutingProbeTest {
 						orderCancelReasonConfig,
 						full,
 						partial,
-						mock(PlatformSelfSubCancelSupport.class));
+						mock(PlatformSelfSubCancelSupport.class), mock(cn.shopex.ecshopx.common.auth.PosOrderDocAccessPort.class));
 
 		OrderAssociations assoc = new OrderAssociations();
 		assoc.setCompanyId(1L);
@@ -103,7 +103,7 @@ class AdminOrderCancelServiceTradeRefundRoutingProbeTest {
 						orderCancelReasonConfig,
 						full,
 						partial,
-						mock(PlatformSelfSubCancelSupport.class));
+						mock(PlatformSelfSubCancelSupport.class), mock(cn.shopex.ecshopx.common.auth.PosOrderDocAccessPort.class));
 
 		OrderAssociations assoc = new OrderAssociations();
 		assoc.setCompanyId(1L);
@@ -149,7 +149,7 @@ class AdminOrderCancelServiceTradeRefundRoutingProbeTest {
 						orderCancelReasonConfig,
 						full,
 						partial,
-						mock(PlatformSelfSubCancelSupport.class));
+						mock(PlatformSelfSubCancelSupport.class), mock(cn.shopex.ecshopx.common.auth.PosOrderDocAccessPort.class));
 
 		OrderAssociations assoc = new OrderAssociations();
 		assoc.setCompanyId(1L);
@@ -212,7 +212,7 @@ class AdminOrderCancelServiceTradeRefundRoutingProbeTest {
 						orderCancelReasonConfig,
 						full,
 						partial,
-						platformSupport);
+						platformSupport, mock(cn.shopex.ecshopx.common.auth.PosOrderDocAccessPort.class));
 
 		OrderAssociations assoc = new OrderAssociations();
 		assoc.setCompanyId(1L);
@@ -276,7 +276,7 @@ class AdminOrderCancelServiceTradeRefundRoutingProbeTest {
 						orderCancelReasonConfig,
 						full,
 						partial,
-						platformSupport);
+						platformSupport, mock(cn.shopex.ecshopx.common.auth.PosOrderDocAccessPort.class));
 
 		OrderAssociations assoc = new OrderAssociations();
 		assoc.setCompanyId(1L);

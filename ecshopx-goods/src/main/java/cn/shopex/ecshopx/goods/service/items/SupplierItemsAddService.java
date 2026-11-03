@@ -99,6 +99,9 @@ public class SupplierItemsAddService {
 				goodsId = cur.getGoodsId() != null ? cur.getGoodsId() : 0L;
 			}
 		}
+		if (goodsId > 0L) {
+			supplierItemsRepository.updateIsSyncPlatformByGoodsId(companyId, goodsId, 0);
+		}
 
 		List<Long> itemIds = new ArrayList<>();
 		Map<Long, Long> supplierPriceFen = new LinkedHashMap<>();
@@ -153,6 +156,9 @@ public class SupplierItemsAddService {
 
 		if (goodsId == 0) {
 			goodsId = defaultItemId != null ? defaultItemId : 0L;
+		}
+		if (goodsId > 0L) {
+			supplierItemsRepository.updateIsSyncPlatformByGoodsId(companyId, goodsId, 0);
 		}
 
 		List<Items> platformRows = itemsRepository.listBySupplierItemIds(itemIds);
@@ -283,6 +289,14 @@ public class SupplierItemsAddService {
 
 	private void syncPlatformIfNeeded(long supplierItemId, Map<String, Object> sku, ItemsCreateContext ctx) {
 		long companyId = ctx.getCompanyId();
+		SupplierItems supplierRow = supplierItemsRepository.getByItemIdAndCompany(supplierItemId, companyId);
+		if (supplierRow == null) {
+			return;
+		}
+		long goodsId = supplierRow.getGoodsId() != null ? supplierRow.getGoodsId() : 0L;
+		if (goodsId <= 0L || !supplierItemsRepository.isSyncPlatformEnabledForGoods(companyId, goodsId)) {
+			return;
+		}
 		List<Items> linked = itemsRepository.listByCompanyIdAndSupplierItemIds(companyId, List.of(supplierItemId));
 		if (linked.isEmpty()) {
 			return;

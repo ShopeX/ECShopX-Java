@@ -98,12 +98,6 @@ public class SupplierItemsReviewGoodsService
 		params.put("supplier_id", supplierGoods.getSupplierId());
 		params.put("goods_id", supplierGoods.getGoodsId());
 		params.put("is_market", supplierGoods.getIsMarket());
-
-		// 对齐 PHP reviewGoods(approved)：审核通过后自动入商品池（无 draft 时等价 merge 空操作后再 sync）
-		if ("approved".equals(auditStatus)) {
-			SupplierItems approvedGoods = requireSupplierItem(pathItemId);
-			syncApprovedGoodsToPool(approvedGoods, pathItemId);
-		}
 	}
 
 	@Override
@@ -227,6 +221,28 @@ public class SupplierItemsReviewGoodsService
 			syncRelCats(companyId, defaultItemId, supplierDefaultItemId);
 			syncRelBrand(companyId, defaultItemId, supplierDefaultItemId);
 			syncRelParams(companyId, defaultItemId, supplierDefaultItemId);
+		}
+
+		supplierItemsRepository.updateIsSyncPlatformByGoodsId(companyId, supplierGoodsId, 1);
+		syncPreviouslyShopCopiedSupplierGoods(supplierGoods, pathItemId, supplierGoodsList);
+	}
+
+	private void syncPreviouslyShopCopiedSupplierGoods(
+			SupplierItems supplierGoods, long pathItemId, List<SupplierItems> supplierGoodsList) {
+		if (!"platform".equalsIgnoreCase(itemsCategoryDistributorIdResolver.resolveProductModel(supplierGoods.getCompanyId()))) {
+			return;
+		}
+		long companyId = supplierGoods.getCompanyId();
+		List<Long> supplierSkuIds = supplierGoodsList.stream().map(SupplierItems::getItemId).filter(Objects::nonNull).toList();
+		if (supplierSkuIds.isEmpty()) {
+			return;
+		}
+		List<Long> shopIds = itemsRepository.listDistinctShopDistributorIdsBySupplierItemIds(companyId, supplierSkuIds);
+		for (Long shopId : shopIds) {
+			if (shopId == null || shopId <= 0L) {
+				continue;
+			}
+			syncApprovedGoodsToShop(supplierGoods, pathItemId, shopId);
 		}
 	}
 

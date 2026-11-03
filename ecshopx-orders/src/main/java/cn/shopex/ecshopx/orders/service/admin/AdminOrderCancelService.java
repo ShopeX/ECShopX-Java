@@ -16,6 +16,7 @@
 
 package cn.shopex.ecshopx.orders.service.admin;
 
+import cn.shopex.ecshopx.common.auth.PosOrderDocAccessPort;
 import cn.shopex.ecshopx.common.exception.BadRequestException;
 import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.orders.domain.OrderAssociations;
@@ -23,9 +24,12 @@ import cn.shopex.ecshopx.orders.mapper.OrderAssociationsMapper;
 import cn.shopex.ecshopx.supplier.domain.SupplierOrder;
 import cn.shopex.ecshopx.supplier.mapper.SupplierOrderMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 @Service
 public class AdminOrderCancelService {
@@ -36,6 +40,7 @@ public class AdminOrderCancelService {
 	private final AdminNormalOrderFullCancelService adminNormalOrderFullCancelService;
 	private final AdminNormalOrderPartialCancelService adminNormalOrderPartialCancelService;
 	private final PlatformSelfSubCancelSupport platformSelfSubCancelSupport;
+	private final PosOrderDocAccessPort posOrderDocAccessPort;
 
 	public AdminOrderCancelService(
 			OrderAssociationsMapper orderAssociationsMapper,
@@ -43,13 +48,15 @@ public class AdminOrderCancelService {
 			OrderCancelReasonConfig orderCancelReasonConfig,
 			AdminNormalOrderFullCancelService adminNormalOrderFullCancelService,
 			AdminNormalOrderPartialCancelService adminNormalOrderPartialCancelService,
-			PlatformSelfSubCancelSupport platformSelfSubCancelSupport) {
+			PlatformSelfSubCancelSupport platformSelfSubCancelSupport,
+			PosOrderDocAccessPort posOrderDocAccessPort) {
 		this.orderAssociationsMapper = orderAssociationsMapper;
 		this.supplierOrderMapper = supplierOrderMapper;
 		this.orderCancelReasonConfig = orderCancelReasonConfig;
 		this.adminNormalOrderFullCancelService = adminNormalOrderFullCancelService;
 		this.adminNormalOrderPartialCancelService = adminNormalOrderPartialCancelService;
 		this.platformSelfSubCancelSupport = platformSelfSubCancelSupport;
+		this.posOrderDocAccessPort = posOrderDocAccessPort;
 	}
 
 	/**
@@ -70,6 +77,10 @@ public class AdminOrderCancelService {
 			orderIdNum = Long.parseLong(orderIdFromPath == null ? "" : orderIdFromPath.trim());
 		} catch (NumberFormatException e) {
 			throw new BadRequestException("订单号格式错误");
+		}
+		HttpServletRequest request = currentRequestOrNull();
+		if (request != null) {
+			posOrderDocAccessPort.assertWriteAccess(request, companyId, orderIdNum);
 		}
 		OrderAssociations assoc =
 				orderAssociationsMapper.selectOne(
@@ -170,5 +181,13 @@ public class AdminOrderCancelService {
 
 	private static String safe(String s) {
 		return s == null ? "" : s.trim();
+	}
+
+	private static HttpServletRequest currentRequestOrNull() {
+		var attrs = RequestContextHolder.getRequestAttributes();
+		if (attrs instanceof ServletRequestAttributes sra) {
+			return sra.getRequest();
+		}
+		return null;
 	}
 }

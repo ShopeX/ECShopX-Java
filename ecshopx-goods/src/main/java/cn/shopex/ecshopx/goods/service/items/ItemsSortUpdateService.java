@@ -47,6 +47,10 @@ public class ItemsSortUpdateService {
 			SupplierItems patch = new SupplierItems();
 			patch.setSort(sort);
 			supplierItemsRepository.updateOneByItemId(itemId, companyId, patch);
+			Long goodsId = si.getGoodsId();
+			if (goodsId != null && goodsId > 0L) {
+				supplierItemsRepository.updateIsSyncPlatformByGoodsId(companyId, goodsId, 0);
+			}
 			return;
 		}
 

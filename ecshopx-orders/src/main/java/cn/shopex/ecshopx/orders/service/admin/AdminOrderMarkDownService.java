@@ -16,6 +16,7 @@
 
 package cn.shopex.ecshopx.orders.service.admin;
 
+import cn.shopex.ecshopx.common.auth.PosOrderDocAccessPort;
 import cn.shopex.ecshopx.common.exception.BadRequestException;
 import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.common.util.ValuePresence;
@@ -26,12 +27,15 @@ import cn.shopex.ecshopx.orders.service.normal.create.NormalOrderMarkdownApplySe
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 @Service
 public class AdminOrderMarkDownService {
@@ -42,6 +46,7 @@ public class AdminOrderMarkDownService {
 	private final NormalOrderMemberGetPointsService normalOrderMemberGetPointsService;
 	private final AdminOrderMarkDownPersistService adminOrderMarkDownPersistService;
 	private final ObjectMapper objectMapper;
+	private final PosOrderDocAccessPort posOrderDocAccessPort;
 
 	public AdminOrderMarkDownService(
 			OrderAssociationsMapper orderAssociationsMapper,
@@ -49,13 +54,15 @@ public class AdminOrderMarkDownService {
 			NormalOrderMarkdownApplyService normalOrderMarkdownApplyService,
 			NormalOrderMemberGetPointsService normalOrderMemberGetPointsService,
 			AdminOrderMarkDownPersistService adminOrderMarkDownPersistService,
-			ObjectMapper objectMapper) {
+			ObjectMapper objectMapper,
+			PosOrderDocAccessPort posOrderDocAccessPort) {
 		this.orderAssociationsMapper = orderAssociationsMapper;
 		this.adminNormalOrderDetailService = adminNormalOrderDetailService;
 		this.normalOrderMarkdownApplyService = normalOrderMarkdownApplyService;
 		this.normalOrderMemberGetPointsService = normalOrderMemberGetPointsService;
 		this.adminOrderMarkDownPersistService = adminOrderMarkDownPersistService;
 		this.objectMapper = objectMapper;
+		this.posOrderDocAccessPort = posOrderDocAccessPort;
 	}
 
 	public Map<String, Object> markDown(long companyId, Map<String, Object> mergedParams) {
@@ -80,6 +87,7 @@ public class AdminOrderMarkDownService {
 		} catch (NumberFormatException e) {
 			throw new BadRequestException("参数错误");
 		}
+		assertPosWriteIfPresent(companyId, orderIdNum);
 
 		OrderAssociations assoc = loadAssociationOrThrow(companyId, orderIdNum);
 		assertMarkdownOrderState(assoc);
@@ -137,6 +145,7 @@ public class AdminOrderMarkDownService {
 		} catch (NumberFormatException e) {
 			throw new BadRequestException("参数错误");
 		}
+		assertPosWriteIfPresent(companyId, orderIdNum);
 
 		OrderAssociations assoc = loadAssociationOrThrow(companyId, orderIdNum);
 		assertMarkdownOrderState(assoc);
@@ -288,5 +297,20 @@ public class AdminOrderMarkDownService {
 			return true;
 		}
 		return effective.startsWith("normal_");
+	}
+
+	private void assertPosWriteIfPresent(long companyId, long orderIdNum) {
+		HttpServletRequest request = currentRequestOrNull();
+		if (request != null) {
+			posOrderDocAccessPort.assertWriteAccess(request, companyId, orderIdNum);
+		}
+	}
+
+	private static HttpServletRequest currentRequestOrNull() {
+		var attrs = RequestContextHolder.getRequestAttributes();
+		if (attrs instanceof ServletRequestAttributes sra) {
+			return sra.getRequest();
+		}
+		return null;
 	}
 }

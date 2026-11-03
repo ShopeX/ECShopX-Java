@@ -17,6 +17,7 @@
 package cn.shopex.ecshopx.orders.service.admin;
 
 import cn.shopex.ecshopx.common.port.order.OrderExportEmployeePurchaseInfoLookupPort;
+import cn.shopex.ecshopx.companys.service.posaccount.PosStoreAccountQueryService;
 import cn.shopex.ecshopx.companys.service.setting.TradeCancelSettingRedisService;
 import cn.shopex.ecshopx.espier.domain.Subdistrict;
 import cn.shopex.ecshopx.espier.mapper.SubdistrictMapper;
@@ -72,6 +73,7 @@ public class AdminNormalOrderListRowDecorator {
 	private final ObjectMapper objectMapper;
 	private final ObjectProvider<OrderExportEmployeePurchaseInfoLookupPort> employeePurchaseInfoLookupPort;
 	private final TradeCancelSettingRedisService tradeCancelSettingRedisService;
+	private final PosStoreAccountQueryService posStoreAccountQueryService;
 
 	public AdminNormalOrderListRowDecorator(
 			NormalOrdersItemsMapper normalOrdersItemsMapper,
@@ -86,7 +88,8 @@ public class AdminNormalOrderListRowDecorator {
 			OrdersDiagnosisMapper ordersDiagnosisMapper,
 			ObjectMapper objectMapper,
 			ObjectProvider<OrderExportEmployeePurchaseInfoLookupPort> employeePurchaseInfoLookupPort,
-			TradeCancelSettingRedisService tradeCancelSettingRedisService) {
+			TradeCancelSettingRedisService tradeCancelSettingRedisService,
+			PosStoreAccountQueryService posStoreAccountQueryService) {
 		this.normalOrdersItemsMapper = normalOrdersItemsMapper;
 		this.tradeMapper = tradeMapper;
 		this.cancelOrdersMapper = cancelOrdersMapper;
@@ -100,6 +103,7 @@ public class AdminNormalOrderListRowDecorator {
 		this.objectMapper = objectMapper;
 		this.employeePurchaseInfoLookupPort = employeePurchaseInfoLookupPort;
 		this.tradeCancelSettingRedisService = tradeCancelSettingRedisService;
+		this.posStoreAccountQueryService = posStoreAccountQueryService;
 	}
 
 	public void decorateBatch(long companyId, List<Map<String, Object>> rows) {
@@ -124,11 +128,13 @@ public class AdminNormalOrderListRowDecorator {
 		PrescriptionDiagnosisBatch pdBatch = loadPrescriptionAndDiagnosis(companyId, rows);
 		Map<Long, OrderExportEmployeePurchaseInfoLookupPort.Info> purchaseByOrder =
 				loadEmployeePurchaseInfo(companyId, orderIds);
+		Map<Long, Map<String, Object>> posById = loadPosStoreAccountInfo(companyId, rows);
 
 		for (Map<String, Object> orderInfo : rows) {
 			long orderIdNum = parseOrderIdLong(orderInfo.get("order_id"));
 			applySyntheticNotpayCancel(orderInfo);
 			applyEmployeePurchaseFields(orderInfo, purchaseByOrder.get(orderIdNum));
+			applyPosStoreAccountInfo(orderInfo, posById);
 
 			applySubdistrictLabels(orderInfo, subdistrictLabelById);
 			String oidStr = String.valueOf(orderIdNum);
@@ -252,6 +258,47 @@ public class AdminNormalOrderListRowDecorator {
 			return Map.of();
 		}
 		return port.lookupByOrderIds(companyId, orderIds);
+	}
+
+	private Map<Long, Map<String, Object>> loadPosStoreAccountInfo(
+			long companyId, List<Map<String, Object>> rows) {
+		Set<Long> ids = new LinkedHashSet<>();
+		for (Map<String, Object> row : rows) {
+			long id = longVal(row.get("pos_store_account_id"));
+			if (id > 0L) {
+				ids.add(id);
+			}
+		}
+		if (ids.isEmpty()) {
+			return Map.of();
+		}
+		return posStoreAccountQueryService.mapOrderInfoByIds(companyId, ids);
+	}
+
+	private static void applyPosStoreAccountInfo(
+			Map<String, Object> orderInfo, Map<Long, Map<String, Object>> posById) {
+		long id = longVal(orderInfo.get("pos_store_account_id"));
+		if (id <= 0L) {
+			orderInfo.put("pos_store_account_info", Map.of());
+			return;
+		}
+		orderInfo.put(
+				"pos_store_account_info",
+				PosStoreAccountQueryService.asInfoMap(posById.get(id)));
+	}
+
+	private static long longVal(Object o) {
+		if (o == null) {
+			return 0L;
+		}
+		if (o instanceof Number n) {
+			return n.longValue();
+		}
+		try {
+			return Long.parseLong(String.valueOf(o).trim());
+		} catch (NumberFormatException e) {
+			return 0L;
+		}
 	}
 
 	private static void applyEmployeePurchaseFields(

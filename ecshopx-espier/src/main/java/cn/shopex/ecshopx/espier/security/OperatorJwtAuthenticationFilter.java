@@ -18,6 +18,7 @@ package cn.shopex.ecshopx.espier.security;
 
 import cn.shopex.ecshopx.common.auth.OperatorJwtBlacklistPort;
 import cn.shopex.ecshopx.common.auth.OperatorJwtRequestAttributes;
+import cn.shopex.ecshopx.common.auth.PosJwtRequestAttributes;
 import cn.shopex.ecshopx.common.core.domain.ApiResult;
 import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.companys.service.OperatorDistributorSelectionService;
@@ -95,6 +96,13 @@ public class OperatorJwtAuthenticationFilter extends OncePerRequestFilter {
 		String path = request.getServletPath();
 		// 未映射到任何 Controller 的 path：交由 DispatcherServlet 走正常 404 流程，不在此处返回 401
 		if (!hasHandler(request)) {
+			return true;
+		}
+		// POS 鉴权路径与已通过 POS JWT 的请求：不走运营 JWT
+		if (path != null && path.startsWith("/api/v1/pos/")) {
+			return true;
+		}
+		if (request.getAttribute(PosJwtRequestAttributes.POS_JWT_USER_DATA) != null) {
 			return true;
 		}
 		if ("POST".equalsIgnoreCase(request.getMethod()) && path != null && path.equals("/api/v1/operator/login")) {

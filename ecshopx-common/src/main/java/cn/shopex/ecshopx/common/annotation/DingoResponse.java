@@ -67,6 +67,12 @@ public @interface DingoResponse {
 	boolean unauthorizedHttpOk() default false;
 
 	/**
+	 * 与 {@link #unauthorized()} 同时使用时：401 信封的 {@code data.message} 透传异常原文（如中文/i18n），
+	 * 仍带 {@code code=401001}；未开启时保持 PHP Dingo 固定英文句。
+	 */
+	boolean unauthorizedPassMessage() default false;
+
+	/**
 	 * 是否将 {@code NoResourceFoundException} 包装为兼容 404 格式。
 	 */
 	boolean notFound() default false;

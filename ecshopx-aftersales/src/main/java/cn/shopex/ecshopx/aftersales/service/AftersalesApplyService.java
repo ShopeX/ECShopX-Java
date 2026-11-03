@@ -17,7 +17,8 @@
 package cn.shopex.ecshopx.aftersales.service;
 
 import cn.shopex.ecshopx.aftersales.dto.AftersalesApplyParams;
-import cn.shopex.ecshopx.common.auth.OperatorJwtRequestAttributes;
+import cn.shopex.ecshopx.common.auth.DualJwtSupport;
+import cn.shopex.ecshopx.common.auth.PosOrderDocAccessPort;
 import cn.shopex.ecshopx.common.exception.BadRequestException;
 import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.common.exception.UnauthorizedException;
@@ -45,16 +46,19 @@ public class AftersalesApplyService {
 	private final OrderAssociationReadPort orderAssociationReadPort;
 	private final AftersalesApplyShopApplyByNumService aftersalesApplyShopApplyByNumService;
 	private final Validator validator;
+	private final PosOrderDocAccessPort posOrderDocAccessPort;
 
 	public AftersalesApplyService(
 			ObjectMapper objectMapper,
 			OrderAssociationReadPort orderAssociationReadPort,
 			AftersalesApplyShopApplyByNumService aftersalesApplyShopApplyByNumService,
-			Validator validator) {
+			Validator validator,
+			PosOrderDocAccessPort posOrderDocAccessPort) {
 		this.objectMapper = objectMapper;
 		this.orderAssociationReadPort = orderAssociationReadPort;
 		this.aftersalesApplyShopApplyByNumService = aftersalesApplyShopApplyByNumService;
 		this.validator = validator;
+		this.posOrderDocAccessPort = posOrderDocAccessPort;
 	}
 
 	/**
@@ -80,6 +84,7 @@ public class AftersalesApplyService {
 
 		long companyId = params.getCompanyId();
 		long orderId = params.getOrderId();
+		posOrderDocAccessPort.assertWriteAccess(request, companyId, orderId);
 		Optional<Map<String, Object>> assoc = orderAssociationReadPort.getAssociation(companyId, orderId);
 		if (assoc.isEmpty()) {
 			throw new ResourceException("订单号为" + orderId + "的订单不存在");
@@ -122,8 +127,8 @@ public class AftersalesApplyService {
 	}
 
 	private void mergeJwt(HttpServletRequest request, AftersalesApplyParams params) {
-		Object attr = request.getAttribute(OperatorJwtRequestAttributes.OPERATOR_JWT_USER_DATA);
-		if (!(attr instanceof Map<?, ?> jwt)) {
+		Map<String, Object> jwt = DualJwtSupport.claims(request);
+		if (jwt == null) {
 			throw new UnauthorizedException("未登录");
 		}
 		Object companyIdObj = jwt.get("company_id");
@@ -131,8 +136,17 @@ public class AftersalesApplyService {
 			throw new BadRequestException("企业id必填");
 		}
 		params.setCompanyId(longVal(companyIdObj));
-		params.setOperatorType(str(jwt.get("operator_type")));
-		params.setOperatorId(longVal(jwt.get("operator_id")));
+		if (DualJwtSupport.isPosSession(request)) {
+			params.setOperatorType("pos");
+			Long posId = DualJwtSupport.longClaim(jwt, "pos_store_account_id");
+			if (posId == null) {
+				posId = DualJwtSupport.longClaim(jwt, "id");
+			}
+			params.setOperatorId(posId == null ? 0L : posId);
+		} else {
+			params.setOperatorType(str(jwt.get("operator_type")));
+			params.setOperatorId(longVal(jwt.get("operator_id")));
+		}
 	}
 
 	private void parseAndSetDetail(AftersalesApplyParams params) {

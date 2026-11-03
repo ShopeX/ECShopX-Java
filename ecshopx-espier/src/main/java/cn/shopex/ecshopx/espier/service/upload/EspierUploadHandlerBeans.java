@@ -182,6 +182,12 @@ public class EspierUploadHandlerBeans {
 	}
 
 	@Bean
+	public EspierUploadFileHandler espierUploadPosStoreAccountHandler(
+			@Qualifier("espierImportRowSinkByType") Map<String, EspierImportRowSink> sinks) {
+		return delegating("pos_store_account", EspierUploadHeaderCatalog.POS_STORE_ACCOUNT(), null, sinks);
+	}
+
+	@Bean
 	public EspierUploadFileHandler espierUploadUploadTbItemsHandler(
 			@Qualifier("espierImportRowSinkByType") Map<String, EspierImportRowSink> sinks) {
 		return delegating(

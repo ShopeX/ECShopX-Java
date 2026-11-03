@@ -171,7 +171,8 @@ class RefundCheckOrderRefundCompletePostCommitProbeTest {
 						wdtPayloadBuilder,
 						thirdPartyTradeAftersalesCancelSaasErpPublisher,
 						thirdPartyTradeAftersalesSaasErpDispatchPublisher,
-				mock(AftersalesRefuseWxaNotifyService.class));
+						mock(cn.shopex.ecshopx.common.auth.PosOrderDocAccessPort.class),
+						mock(AftersalesRefuseWxaNotifyService.class));
 
 		Map<String, Object> param = new LinkedHashMap<>();
 		param.put("company_id", COMPANY_ID);
@@ -318,7 +319,8 @@ class RefundCheckOrderRefundCompletePostCommitProbeTest {
 						wdtPayloadBuilder,
 						thirdPartyTradeAftersalesCancelSaasErpPublisher,
 						thirdPartyTradeAftersalesSaasErpDispatchPublisher,
-				mock(AftersalesRefuseWxaNotifyService.class));
+						mock(cn.shopex.ecshopx.common.auth.PosOrderDocAccessPort.class),
+						mock(AftersalesRefuseWxaNotifyService.class));
 
 		Map<String, Object> param = new LinkedHashMap<>();
 		param.put("company_id", COMPANY_ID);
@@ -425,7 +427,8 @@ class RefundCheckOrderRefundCompletePostCommitProbeTest {
 						wdtPayloadBuilder,
 						thirdPartyTradeAftersalesCancelSaasErpPublisher,
 						thirdPartyTradeAftersalesSaasErpDispatchPublisher,
-				mock(AftersalesRefuseWxaNotifyService.class));
+						mock(cn.shopex.ecshopx.common.auth.PosOrderDocAccessPort.class),
+						mock(AftersalesRefuseWxaNotifyService.class));
 
 		String refuseMemo = "拒绝原因";
 		Map<String, Object> param = new LinkedHashMap<>();
@@ -549,7 +552,8 @@ class RefundCheckOrderRefundCompletePostCommitProbeTest {
 						wdtPayloadBuilder,
 						thirdPartyTradeAftersalesCancelSaasErpPublisher,
 						thirdPartyTradeAftersalesSaasErpDispatchPublisher,
-				mock(AftersalesRefuseWxaNotifyService.class));
+						mock(cn.shopex.ecshopx.common.auth.PosOrderDocAccessPort.class),
+						mock(AftersalesRefuseWxaNotifyService.class));
 
 		String refundsMemo = "质检不合格";
 		String bnLabel = String.valueOf(AFTERSALES_BN);
@@ -675,7 +679,8 @@ class RefundCheckOrderRefundCompletePostCommitProbeTest {
 						wdtPayloadBuilder,
 						thirdPartyTradeAftersalesCancelSaasErpPublisher,
 						thirdPartyTradeAftersalesSaasErpDispatchPublisher,
-				mock(AftersalesRefuseWxaNotifyService.class));
+						mock(cn.shopex.ecshopx.common.auth.PosOrderDocAccessPort.class),
+						mock(AftersalesRefuseWxaNotifyService.class));
 
 		String bnLabel = String.valueOf(AFTERSALES_BN);
 		long operatorId = 99L;
@@ -798,7 +803,8 @@ class RefundCheckOrderRefundCompletePostCommitProbeTest {
 						wdtPayloadBuilder,
 						thirdPartyTradeAftersalesCancelSaasErpPublisher,
 						thirdPartyTradeAftersalesSaasErpDispatchPublisher,
-				mock(AftersalesRefuseWxaNotifyService.class));
+						mock(cn.shopex.ecshopx.common.auth.PosOrderDocAccessPort.class),
+						mock(AftersalesRefuseWxaNotifyService.class));
 
 		String bnLabel = String.valueOf(AFTERSALES_BN);
 		long paramOperatorId = 99L;
@@ -922,7 +928,8 @@ class RefundCheckOrderRefundCompletePostCommitProbeTest {
 						wdtPayloadBuilder,
 						thirdPartyTradeAftersalesCancelSaasErpPublisher,
 						thirdPartyTradeAftersalesSaasErpDispatchPublisher,
-				mock(AftersalesRefuseWxaNotifyService.class));
+						mock(cn.shopex.ecshopx.common.auth.PosOrderDocAccessPort.class),
+						mock(AftersalesRefuseWxaNotifyService.class));
 
 		String bnLabel = String.valueOf(AFTERSALES_BN);
 		String refundMemo = "退款审核备注";
@@ -1042,7 +1049,8 @@ class RefundCheckOrderRefundCompletePostCommitProbeTest {
 						wdtPayloadBuilder,
 						thirdPartyTradeAftersalesCancelSaasErpPublisher,
 						thirdPartyTradeAftersalesSaasErpDispatchPublisher,
-				mock(AftersalesRefuseWxaNotifyService.class));
+						mock(cn.shopex.ecshopx.common.auth.PosOrderDocAccessPort.class),
+						mock(AftersalesRefuseWxaNotifyService.class));
 
 		String refundMemoOnly = "后台单键拒绝原因";
 		String bnLabel = String.valueOf(AFTERSALES_BN);
@@ -1163,7 +1171,8 @@ class RefundCheckOrderRefundCompletePostCommitProbeTest {
 						wdtPayloadBuilder,
 						thirdPartyTradeAftersalesCancelSaasErpPublisher,
 						thirdPartyTradeAftersalesSaasErpDispatchPublisher,
-				mock(AftersalesRefuseWxaNotifyService.class));
+						mock(cn.shopex.ecshopx.common.auth.PosOrderDocAccessPort.class),
+						mock(AftersalesRefuseWxaNotifyService.class));
 
 		String refundsMemo = "缺货";
 		String bnLabel = String.valueOf(AFTERSALES_BN);

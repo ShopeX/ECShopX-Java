@@ -16,7 +16,7 @@
 
 package cn.shopex.ecshopx.orders.service.normal.shopadmin;
 
-import cn.shopex.ecshopx.common.auth.OperatorJwtRequestAttributes;
+import cn.shopex.ecshopx.common.auth.DualJwtSupport;
 import cn.shopex.ecshopx.common.exception.BadRequestException;
 import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.common.exception.UnauthorizedException;
@@ -378,13 +378,12 @@ public class NormalOrderAdminPaymentService {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	private static Map<String, Object> readAuthInfoMap(HttpServletRequest request) {
-		Object attr = request.getAttribute(OperatorJwtRequestAttributes.OPERATOR_JWT_USER_DATA);
-		if (!(attr instanceof Map<?, ?>)) {
+		Map<String, Object> claims = DualJwtSupport.claims(request);
+		if (claims == null || claims.isEmpty()) {
 			throw new UnauthorizedException("未登录");
 		}
-		return (Map<String, Object>) attr;
+		return claims;
 	}
 
 	private static long readCompanyIdFromAuth(Map<String, Object> authInfo) {

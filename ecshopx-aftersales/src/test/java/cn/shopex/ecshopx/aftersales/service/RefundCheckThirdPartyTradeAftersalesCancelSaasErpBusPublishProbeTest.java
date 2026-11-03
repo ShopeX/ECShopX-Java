@@ -163,7 +163,8 @@ class RefundCheckThirdPartyTradeAftersalesCancelSaasErpBusPublishProbeTest {
 						wdtPayloadBuilder,
 						thirdPartyTradeAftersalesCancelSaasErpPublisher,
 						thirdPartyTradeAftersalesSaasErpDispatchPublisher,
-				mock(AftersalesRefuseWxaNotifyService.class));
+						mock(cn.shopex.ecshopx.common.auth.PosOrderDocAccessPort.class),
+						mock(AftersalesRefuseWxaNotifyService.class));
 
 		Map<String, Object> param = new LinkedHashMap<>();
 		param.put("company_id", COMPANY_ID);
@@ -283,7 +284,8 @@ class RefundCheckThirdPartyTradeAftersalesCancelSaasErpBusPublishProbeTest {
 						wdtPayloadBuilder,
 						thirdPartyTradeAftersalesCancelSaasErpPublisher,
 						thirdPartyTradeAftersalesSaasErpDispatchPublisher,
-				mock(AftersalesRefuseWxaNotifyService.class));
+						mock(cn.shopex.ecshopx.common.auth.PosOrderDocAccessPort.class),
+						mock(AftersalesRefuseWxaNotifyService.class));
 
 		final String adminRefundMemo = "管理员拒绝备注";
 		Map<String, Object> param = new LinkedHashMap<>();
@@ -405,7 +407,8 @@ class RefundCheckThirdPartyTradeAftersalesCancelSaasErpBusPublishProbeTest {
 						wdtPayloadBuilder,
 						thirdPartyTradeAftersalesCancelSaasErpPublisher,
 						thirdPartyTradeAftersalesSaasErpDispatchPublisher,
-				mock(AftersalesRefuseWxaNotifyService.class));
+						mock(cn.shopex.ecshopx.common.auth.PosOrderDocAccessPort.class),
+						mock(AftersalesRefuseWxaNotifyService.class));
 
 		Map<String, Object> param = new LinkedHashMap<>();
 		param.put("company_id", COMPANY_ID);

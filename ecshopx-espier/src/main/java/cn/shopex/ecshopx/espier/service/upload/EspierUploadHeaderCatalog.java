@@ -37,6 +37,7 @@ import cn.shopex.ecshopx.espier.service.upload.headerinfo.NormalOrdersCancelHead
 import cn.shopex.ecshopx.espier.service.upload.headerinfo.NormalOrdersHeaderInfo;
 import cn.shopex.ecshopx.espier.service.upload.headerinfo.NormalPointsmallGoodsHeaderInfo;
 import cn.shopex.ecshopx.espier.service.upload.headerinfo.NormalPointsmallGoodsStoreHeaderInfo;
+import cn.shopex.ecshopx.espier.service.upload.headerinfo.PosStoreAccountHeaderInfo;
 import cn.shopex.ecshopx.espier.service.upload.headerinfo.PurchaseGoodsHeaderInfo;
 import cn.shopex.ecshopx.espier.service.upload.headerinfo.SelformRegistrationRecordHeaderInfo;
 import cn.shopex.ecshopx.espier.service.upload.headerinfo.SupplierGoodsHeaderInfo;
@@ -707,6 +708,28 @@ public final class EspierUploadHeaderCatalog {
 		return new UploadHeaderTitle(HDR_WHITELIST_CREATE, NEED_WHITELIST_CREATE, WhitelistCreateHeaderInfo.map());
 	}
 
+	private static final Map<String, String> HDR_POS_STORE_ACCOUNT;
+	static {
+		HDR_POS_STORE_ACCOUNT = new LinkedHashMap<>();
+		HDR_POS_STORE_ACCOUNT.put("姓名", "name");
+		HDR_POS_STORE_ACCOUNT.put("员工号", "employee_no");
+		HDR_POS_STORE_ACCOUNT.put("邮箱", "email");
+		HDR_POS_STORE_ACCOUNT.put("手机号", "mobile");
+		HDR_POS_STORE_ACCOUNT.put("角色", "role");
+		HDR_POS_STORE_ACCOUNT.put("门店", "shop_code");
+		HDR_POS_STORE_ACCOUNT.put("状态", "status");
+	}
+
+	private static final Map<String, String> NEED_POS_STORE_ACCOUNT;
+	static {
+		NEED_POS_STORE_ACCOUNT = new LinkedHashMap<>(HDR_POS_STORE_ACCOUNT);
+	}
+
+	public static UploadHeaderTitle POS_STORE_ACCOUNT() {
+		return new UploadHeaderTitle(
+				HDR_POS_STORE_ACCOUNT, NEED_POS_STORE_ACCOUNT, PosStoreAccountHeaderInfo.map());
+	}
+
 	public static UploadHeaderTitle forFileType(String fileType) {
 		return switch (fileType) {
 			case "adapay_tradedata" -> ADAPAY_TRADEDATA();
@@ -730,6 +753,7 @@ public final class EspierUploadHeaderCatalog {
 			case "normal_orders_cancel" -> NORMAL_ORDERS_CANCEL();
 			case "normal_pointsmall_goods" -> NORMAL_POINTSMALL_GOODS();
 			case "normal_pointsmall_goods_store" -> NORMAL_POINTSMALL_GOODS_STORE();
+			case "pos_store_account" -> POS_STORE_ACCOUNT();
 			case "purchase_goods" -> PURCHASE_GOODS();
 			case "selform_registration_record" -> SELFORM_REGISTRATION_RECORD();
 			case "supplier_goods" -> SUPPLIER_GOODS();

@@ -20,6 +20,7 @@ import cn.shopex.ecshopx.common.annotation.Activated;
 import cn.shopex.ecshopx.common.annotation.AdminAuth;
 import cn.shopex.ecshopx.common.annotation.DingoResponse;
 import cn.shopex.ecshopx.common.annotation.ShopLog;
+import cn.shopex.ecshopx.common.auth.DualJwtSupport;
 import cn.shopex.ecshopx.common.config.LangueProperties;
 import cn.shopex.ecshopx.common.core.domain.ApiResult;
 import cn.shopex.ecshopx.common.exception.BadRequestException;
@@ -888,8 +889,8 @@ public class ItemsController {
 	@Activated(routeAlias = "goods.items.lists")
 	@GetMapping(value = "/items", name = "商品列表")
 	public ResponseEntity<ApiResult<Map<String, Object>>> getItemsList(HttpServletRequest request) {
-		Object raw = request.getAttribute(OperatorJwtAuthenticationFilter.OPERATOR_JWT_USER_DATA);
-		if (!(raw instanceof Map<?, ?>)) {
+		Map<String, Object> ud = DualJwtSupport.claims(request);
+		if (ud == null || ud.isEmpty()) {
 			throw new UnauthorizedException("未登录");
 		}
 		Map<String, Object> data = goodsItemsListFacadeService.list(request);
@@ -899,8 +900,8 @@ public class ItemsController {
 	@Activated(routeAlias = "goods.items.onsale.lists")
 	@GetMapping(value = "/items/onsale", name = "可售商品列表")
 	public ResponseEntity<ApiResult<Map<String, Object>>> getOnsaleItemsList(HttpServletRequest request) {
-		Object raw = request.getAttribute(OperatorJwtAuthenticationFilter.OPERATOR_JWT_USER_DATA);
-		if (!(raw instanceof Map<?, ?> ud)) {
+		Map<String, Object> ud = DualJwtSupport.claims(request);
+		if (ud == null || ud.isEmpty()) {
 			throw new UnauthorizedException("未登录");
 		}
 		validateOnsaleDistributorQueryParam(request);

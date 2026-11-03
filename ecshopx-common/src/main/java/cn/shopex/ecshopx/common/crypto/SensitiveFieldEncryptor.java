@@ -100,6 +100,34 @@ public class SensitiveFieldEncryptor {
 		}
 	}
 
+	public String encryptAlways(String value) {
+		if (value == null || value.isEmpty()) {
+			throw new IllegalArgumentException("password required");
+		}
+		if (cipherKey == null) {
+			throw new IllegalStateException("compat-crypto.app-key missing");
+		}
+		try {
+			return doEncrypt(value);
+		} catch (Exception e) {
+			throw new IllegalStateException("encrypt failed", e);
+		}
+	}
+
+	public String decryptAlways(String stored) {
+		if (stored == null || stored.isEmpty()) {
+			throw new IllegalArgumentException("cipher required");
+		}
+		if (cipherKey == null) {
+			throw new IllegalStateException("compat-crypto.app-key missing");
+		}
+		try {
+			return doDecrypt(stored);
+		} catch (Exception e) {
+			throw new IllegalStateException("decrypt failed", e);
+		}
+	}
+
 	private String doEncrypt(String plain) throws Exception {
 		byte[] serialized = serializeString(plain).getBytes(StandardCharsets.UTF_8);
 		Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");

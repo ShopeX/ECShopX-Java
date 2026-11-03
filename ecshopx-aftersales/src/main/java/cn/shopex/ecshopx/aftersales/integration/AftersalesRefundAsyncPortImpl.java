@@ -21,6 +21,7 @@ import cn.shopex.ecshopx.common.dispatch.AftersalesSuccessSendMsgJobDispatchPubl
 import cn.shopex.ecshopx.common.dispatch.InvoiceRedJobDispatchPublisher;
 import cn.shopex.ecshopx.common.dispatch.OrderRefundCompleteJobDispatchPublisher;
 import cn.shopex.ecshopx.common.dispatch.SendAfterSaleCancelNoticeJobDispatchPublisher;
+import cn.shopex.ecshopx.common.dispatch.DigiOsAftersalesReturnAdjustmentDispatchPublisher;
 import cn.shopex.ecshopx.common.dispatch.SendAfterSaleWaitConfirmNoticeJobDispatchPublisher;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -38,18 +39,21 @@ public class AftersalesRefundAsyncPortImpl implements AftersalesRefundAsyncPort 
 	private final AftersalesSuccessSendMsgJobDispatchPublisher aftersalesSuccessSendMsgJobDispatchPublisher;
 	private final SendAfterSaleWaitConfirmNoticeJobDispatchPublisher sendAfterSaleWaitConfirmNoticeJobDispatchPublisher;
 	private final SendAfterSaleCancelNoticeJobDispatchPublisher sendAfterSaleCancelNoticeJobDispatchPublisher;
+	private final DigiOsAftersalesReturnAdjustmentDispatchPublisher digiOsAftersalesReturnAdjustmentDispatchPublisher;
 
 	public AftersalesRefundAsyncPortImpl(
 			OrderRefundCompleteJobDispatchPublisher orderRefundCompleteJobDispatchPublisher,
 			InvoiceRedJobDispatchPublisher invoiceRedJobDispatchPublisher,
 			AftersalesSuccessSendMsgJobDispatchPublisher aftersalesSuccessSendMsgJobDispatchPublisher,
 			SendAfterSaleWaitConfirmNoticeJobDispatchPublisher sendAfterSaleWaitConfirmNoticeJobDispatchPublisher,
-			SendAfterSaleCancelNoticeJobDispatchPublisher sendAfterSaleCancelNoticeJobDispatchPublisher) {
+			SendAfterSaleCancelNoticeJobDispatchPublisher sendAfterSaleCancelNoticeJobDispatchPublisher,
+			DigiOsAftersalesReturnAdjustmentDispatchPublisher digiOsAftersalesReturnAdjustmentDispatchPublisher) {
 		this.orderRefundCompleteJobDispatchPublisher = orderRefundCompleteJobDispatchPublisher;
 		this.invoiceRedJobDispatchPublisher = invoiceRedJobDispatchPublisher;
 		this.aftersalesSuccessSendMsgJobDispatchPublisher = aftersalesSuccessSendMsgJobDispatchPublisher;
 		this.sendAfterSaleWaitConfirmNoticeJobDispatchPublisher = sendAfterSaleWaitConfirmNoticeJobDispatchPublisher;
 		this.sendAfterSaleCancelNoticeJobDispatchPublisher = sendAfterSaleCancelNoticeJobDispatchPublisher;
+		this.digiOsAftersalesReturnAdjustmentDispatchPublisher = digiOsAftersalesReturnAdjustmentDispatchPublisher;
 	}
 
 	@Override
@@ -107,5 +111,10 @@ public class AftersalesRefundAsyncPortImpl implements AftersalesRefundAsyncPort 
 	@Override
 	public void scheduleSendAftersaleCancelNotice(long companyId, long aftersalesBn) {
 		sendAfterSaleCancelNoticeJobDispatchPublisher.publish(companyId, aftersalesBn);
+	}
+
+	@Override
+	public void scheduleDigiOsStoreAdjustmentOnAftersalesReturn(long companyId, long aftersalesBn) {
+		digiOsAftersalesReturnAdjustmentDispatchPublisher.publish(companyId, aftersalesBn);
 	}
 }

@@ -29,7 +29,7 @@ import cn.shopex.ecshopx.common.dispatch.ThirdPartyTradeAftersalesCancelSaasErpD
 import cn.shopex.ecshopx.common.dispatch.ThirdPartyTradeAftersalesSaasErpDispatchPublisher;
 import cn.shopex.ecshopx.common.dispatch.TradeAftersalesDispatchPublisher;
 import cn.shopex.ecshopx.common.dispatch.WdtErpTradeAfterSaleDispatchPublisher;
-import cn.shopex.ecshopx.common.auth.OperatorJwtRequestAttributes;
+import cn.shopex.ecshopx.common.auth.DualJwtSupport;
 import cn.shopex.ecshopx.common.config.LangueProperties;
 import cn.shopex.ecshopx.common.exception.BadRequestException;
 import cn.shopex.ecshopx.common.exception.ResourceException;
@@ -602,8 +602,8 @@ public class AftersalesReviewService {
 	}
 
 	private void mergeJwt(HttpServletRequest request, LinkedHashMap<String, Object> merged) {
-		Object attr = request.getAttribute(OperatorJwtRequestAttributes.OPERATOR_JWT_USER_DATA);
-		if (!(attr instanceof Map<?, ?> jwt)) {
+		Map<String, Object> jwt = DualJwtSupport.claims(request);
+		if (jwt == null || jwt.isEmpty()) {
 			throw new UnauthorizedException("未登录");
 		}
 		Object companyIdObj = jwt.get("company_id");
@@ -611,8 +611,13 @@ public class AftersalesReviewService {
 			throw new BadRequestException("企业id必填");
 		}
 		merged.put("company_id", longVal(companyIdObj));
-		merged.put("operator_type", str(jwt.get("operator_type")));
-		merged.put("operator_id", longVal(jwt.get("operator_id")));
+		if (DualJwtSupport.isPosSession(request)) {
+			merged.put("operator_type", "pos");
+			merged.put("operator_id", DualJwtSupport.requireActingOperatorId(request));
+		} else {
+			merged.put("operator_type", str(jwt.get("operator_type")));
+			merged.put("operator_id", longVal(jwt.get("operator_id")));
+		}
 	}
 
 	private Map<String, Object> buildTemplateData(Map<String, Object> param, Aftersales a) {

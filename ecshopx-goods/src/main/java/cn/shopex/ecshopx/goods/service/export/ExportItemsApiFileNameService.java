@@ -46,9 +46,9 @@ public class ExportItemsApiFileNameService {
 	}
 
 	public ExportItemsApiFileNameResult writeKeyOrEmptyList(long companyId, long operatorId, String operatorType,
-			Long merchantId, Map<String, Object> inputData) {
+			Long merchantId, Map<String, Object> inputData, Map<String, Object> operatorJwt) {
 		ExportItemsCodeFilterBuildResult built = exportItemsCodeFilterBuildService.build(companyId, operatorId,
-				operatorType, merchantId, inputData);
+				operatorType, merchantId, inputData, operatorJwt);
 		if (built instanceof ExportItemsCodeFilterBuildResult.EmptyItemBnList) {
 			return new ExportItemsApiFileNameResult.EmptyItemBnList();
 		}

@@ -351,6 +351,10 @@ public class SupplierItems {
     @MpField(value = "is_market", columnType = "integer", length = 4, comment = "供应商控制商品是否可售，0不可售，1可售", defaultValue = "1")
     private Integer isMarket = 1;
 
+    /** 是否已同步到平台商品库：0未同步，1已同步 */
+    @MpField(value = "is_sync_platform", columnType = "integer", length = 4, comment = "是否已同步到平台商品库：0未同步，1已同步", defaultValue = "0")
+    private Integer isSyncPlatform = 0;
+
     /** SPU编码 */
     @MpField(value = "goods_bn", columnType = "string", length = 255, nullable = true, comment = "SPU编码")
     private String goodsBn;

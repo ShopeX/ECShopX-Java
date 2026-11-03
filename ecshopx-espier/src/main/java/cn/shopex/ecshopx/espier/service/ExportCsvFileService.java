@@ -106,7 +106,7 @@ public class ExportCsvFileService {
 	}
 
 	private static void writeCsvField(BufferedWriter w, String s) throws IOException {
-		boolean needQuote = s.indexOf(',') >= 0 || s.indexOf('"') >= 0 || s.indexOf('\\') >= 0 || s.indexOf('\n') >= 0
+		boolean needQuote = s.indexOf(',') >= 0 || s.indexOf('"') >= 0 || s.indexOf('\n') >= 0
 				|| s.indexOf('\r') >= 0;
 		if (!needQuote) {
 			w.write(s);
@@ -115,10 +115,8 @@ public class ExportCsvFileService {
 		w.write('"');
 		for (int i = 0; i < s.length(); i++) {
 			char c = s.charAt(i);
-			if (c == '\\') {
-				w.write("\\\\");
-			} else if (c == '"') {
-				w.write("\\\"");
+			if (c == '"') {
+				w.write("\"\"");
 			} else {
 				w.write(c);
 			}

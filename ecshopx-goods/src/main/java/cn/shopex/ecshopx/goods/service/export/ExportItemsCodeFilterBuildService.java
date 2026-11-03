@@ -20,6 +20,7 @@ import cn.shopex.ecshopx.common.exception.BadRequestException;
 import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.distribution.repository.DistributorItemsRepository;
 import cn.shopex.ecshopx.distribution.service.DistributorListQueryService;
+import cn.shopex.ecshopx.distribution.service.DistributorShopOperatorIdResolver;
 import cn.shopex.ecshopx.goods.repository.ItemsListQueryRepository;
 import cn.shopex.ecshopx.goods.service.ItemsCategoryDistributorIdResolver;
 import cn.shopex.ecshopx.goods.service.ItemsTagsQueryService;
@@ -30,6 +31,7 @@ import cn.shopex.ecshopx.supplier.repository.SupplierItemsListQueryRepository;
 import cn.shopex.ecshopx.supplier.repository.SupplierOperatorQueryRepository;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -68,8 +70,14 @@ public class ExportItemsCodeFilterBuildService {
 
 	public ExportItemsCodeFilterBuildResult build(long companyId, long operatorId, String operatorType, Long merchantId,
 			Map<String, Object> inputData) {
+		return build(companyId, operatorId, operatorType, merchantId, inputData, null);
+	}
+
+	public ExportItemsCodeFilterBuildResult build(long companyId, long operatorId, String operatorType, Long merchantId,
+			Map<String, Object> inputData, Map<String, Object> operatorJwt) {
 		validateRebateIfPresent(inputData);
 		String opType = operatorType != null ? operatorType : "";
+		DistributorShopOperatorIdResolver.applyJwtDistributorWhenQueryUnsetOrZero(inputData, opType, operatorJwt);
 		boolean platformPath = !"supplier".equalsIgnoreCase(opType);
 
 		LinkedHashMap<String, Object> p = new LinkedHashMap<>();
@@ -280,6 +288,22 @@ public class ExportItemsCodeFilterBuildService {
 		if (distributorIds.isEmpty()) {
 			return List.of();
 		}
+		if ("standard".equals(itemsCategoryDistributorIdResolver.resolveProductModel(companyId))) {
+			LinkedHashSet<Long> ids = new LinkedHashSet<>();
+			for (Long distributorId : distributorIds) {
+				if (distributorId == null || distributorId <= 0L) {
+					continue;
+				}
+				LinkedHashMap<String, Object> q = new LinkedHashMap<>();
+				q.put(ItemsListQueryRepository.KEY_COMPANY_ID, companyId);
+				q.put(ItemsListQueryRepository.KEY_DIST_REL_VIRT_JOIN, Boolean.TRUE);
+				q.put(ItemsListQueryRepository.KEY_DIST_REL_VIRT_DISTRIBUTOR_ID, distributorId);
+				q.put("item_type", "normal");
+				q.put("is_default_true", Boolean.TRUE);
+				ids.addAll(itemsListQueryRepository.listDistinctDefaultItemIdsByFullParams(q));
+			}
+			return new ArrayList<>(ids);
+		}
 		LinkedHashMap<String, Object> q = new LinkedHashMap<>();
 		q.put(ItemsListQueryRepository.KEY_COMPANY_ID, companyId);
 		if (distributorIds.size() == 1) {
@@ -309,9 +333,12 @@ public class ExportItemsCodeFilterBuildService {
 			return o;
 		}
 		if (distributorIdRaw != null && StringUtils.hasText(str(distributorIdRaw))) {
-			return List.of(parseLong(distributorIdRaw));
+			long parsed = parseLong(distributorIdRaw);
+			if (parsed > 0L) {
+				return List.of(parsed);
+			}
 		}
-		return List.of(0L);
+		return List.of();
 	}
 
 	private void applyNonMerchantDistributor(LinkedHashMap<String, Object> p,
@@ -335,11 +362,13 @@ public class ExportItemsCodeFilterBuildService {
 				long v = Long.parseLong(didStr.trim());
 				if (v > 0) {
 					p.put(ItemsListQueryRepository.KEY_DISTRIBUTOR_ID_IN, List.of((int) v));
-				} else {
+				} else if ("admin".equalsIgnoreCase(opType) || "staff".equalsIgnoreCase(opType)) {
 					p.put(ItemsListQueryRepository.KEY_DISTRIBUTOR_ID_EQ, 0);
 				}
 			} catch (NumberFormatException e) {
-				p.put(ItemsListQueryRepository.KEY_DISTRIBUTOR_ID_EQ, 0);
+				if ("admin".equalsIgnoreCase(opType) || "staff".equalsIgnoreCase(opType)) {
+					p.put(ItemsListQueryRepository.KEY_DISTRIBUTOR_ID_EQ, 0);
+				}
 			}
 			return;
 		}

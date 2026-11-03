@@ -45,12 +45,12 @@ public class ExportItemsCodeDataOrchestratorService {
 	}
 
 	public ExportItemsCodeOrchestratorResult submitOrEmptyList(long companyId, long operatorId, String operatorType,
-			Long merchantId, Map<String, Object> inputData) {
+			Long merchantId, Map<String, Object> inputData, Map<String, Object> operatorJwt) {
 		String exportType = Optional.ofNullable(inputData.get("export_type")).map(Object::toString).filter(StringUtils::hasText)
 				.orElse("wxa");
 
 		ExportItemsCodeFilterBuildResult built = exportItemsCodeFilterBuildService.build(companyId, operatorId, operatorType,
-				merchantId, inputData);
+				merchantId, inputData, operatorJwt);
 		if (built instanceof ExportItemsCodeFilterBuildResult.EmptyItemBnList) {
 			return new ExportItemsCodeOrchestratorResult.EmptyItemBnList();
 		}

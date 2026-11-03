@@ -19,10 +19,9 @@ package cn.shopex.ecshopx.orders.api.admin.v1;
 import cn.shopex.ecshopx.common.annotation.Activated;
 import cn.shopex.ecshopx.common.annotation.AdminAuth;
 import cn.shopex.ecshopx.common.annotation.DingoResponse;
-import cn.shopex.ecshopx.common.auth.OperatorJwtRequestAttributes;
+import cn.shopex.ecshopx.common.auth.DualJwtSupport;
 import cn.shopex.ecshopx.common.core.domain.ApiResult;
 import cn.shopex.ecshopx.common.exception.BadRequestException;
-import cn.shopex.ecshopx.common.exception.UnauthorizedException;
 import cn.shopex.ecshopx.common.web.FlexibleBody;
 import cn.shopex.ecshopx.common.web.FlexibleHttpServletParameterMap;
 import cn.shopex.ecshopx.orders.service.normal.shopadmin.NormalOrderAdminCheckoutService;
@@ -73,8 +72,8 @@ public class NormalOrderController {
 		if (body != null) {
 			merged.putAll(body);
 		}
-		long companyId = readCompanyIdFromJwt(request);
-		long operatorId = readOperatorIdFromJwt(request);
+		long companyId = DualJwtSupport.requireCompanyId(request);
+		long operatorId = DualJwtSupport.requireActingOperatorId(request);
 		Map<String, Object> data = normalOrderAdminCheckoutService.checkout(companyId, operatorId, request, merged);
 		return ApiResult.ok(data);
 	}
@@ -88,8 +87,8 @@ public class NormalOrderController {
 		if (body != null) {
 			merged.putAll(body);
 		}
-		long companyId = readCompanyIdFromJwt(request);
-		long operatorId = readOperatorIdFromJwt(request);
+		long companyId = DualJwtSupport.requireCompanyId(request);
+		long operatorId = DualJwtSupport.requireActingOperatorId(request);
 		Map<String, Object> data =
 				normalOrderAdminCreateUserOrderService.createUserOrder(companyId, operatorId, request, merged);
 		return ApiResult.ok(data);
@@ -126,37 +125,4 @@ public class NormalOrderController {
 		return ApiResult.ok(data);
 	}
 
-	private static long readCompanyIdFromJwt(HttpServletRequest request) {
-		Object attr = request.getAttribute(OperatorJwtRequestAttributes.OPERATOR_JWT_USER_DATA);
-		if (!(attr instanceof Map<?, ?>)) {
-			throw new UnauthorizedException("未登录");
-		}
-		Map<?, ?> jwt = (Map<?, ?>) attr;
-		Object companyIdObj = jwt.get("company_id");
-		if (companyIdObj == null) {
-			throw new UnauthorizedException("未登录");
-		}
-		try {
-			return Long.parseLong(String.valueOf(companyIdObj).trim());
-		} catch (NumberFormatException e) {
-			throw new UnauthorizedException("未登录");
-		}
-	}
-
-	private static long readOperatorIdFromJwt(HttpServletRequest request) {
-		Object attr = request.getAttribute(OperatorJwtRequestAttributes.OPERATOR_JWT_USER_DATA);
-		if (!(attr instanceof Map<?, ?>)) {
-			throw new UnauthorizedException("未登录");
-		}
-		Map<?, ?> jwt = (Map<?, ?>) attr;
-		Object operatorIdObj = jwt.get("operator_id");
-		if (operatorIdObj == null) {
-			throw new UnauthorizedException("未登录");
-		}
-		try {
-			return Long.parseLong(String.valueOf(operatorIdObj).trim());
-		} catch (NumberFormatException e) {
-			throw new UnauthorizedException("未登录");
-		}
-	}
 }

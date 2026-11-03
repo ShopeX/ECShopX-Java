@@ -16,13 +16,17 @@
 
 package cn.shopex.ecshopx.orders.service.admin;
 
+import cn.shopex.ecshopx.common.auth.PosOrderDocAccessPort;
 import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.orders.domain.OrderAssociations;
 import cn.shopex.ecshopx.orders.mapper.OrderAssociationsMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 /**
  * Admin order shipment API: merges JWT context into params and delegates physical delivery to
@@ -43,6 +47,7 @@ public class AdminOrderDeliveryService {
 	private final OrderAssociationEffectiveTypeService orderAssociationEffectiveTypeService;
 	private final AdminNormalOrderDeliveryCoreService adminNormalOrderDeliveryCoreService;
 	private final OrderAssociationAssociationDataAssembler orderAssociationAssociationDataAssembler;
+	private final PosOrderDocAccessPort posOrderDocAccessPort;
 
 	public AdminOrderDeliveryService(
 			OrderAssociationsMapper orderAssociationsMapper,
@@ -50,13 +55,15 @@ public class AdminOrderDeliveryService {
 			AdminDeliveryLogisticsNameService adminDeliveryLogisticsNameService,
 			OrderAssociationEffectiveTypeService orderAssociationEffectiveTypeService,
 			AdminNormalOrderDeliveryCoreService adminNormalOrderDeliveryCoreService,
-			OrderAssociationAssociationDataAssembler orderAssociationAssociationDataAssembler) {
+			OrderAssociationAssociationDataAssembler orderAssociationAssociationDataAssembler,
+			PosOrderDocAccessPort posOrderDocAccessPort) {
 		this.orderAssociationsMapper = orderAssociationsMapper;
 		this.adminSupplierDeliveryParamsAdjustService = adminSupplierDeliveryParamsAdjustService;
 		this.adminDeliveryLogisticsNameService = adminDeliveryLogisticsNameService;
 		this.orderAssociationEffectiveTypeService = orderAssociationEffectiveTypeService;
 		this.adminNormalOrderDeliveryCoreService = adminNormalOrderDeliveryCoreService;
 		this.orderAssociationAssociationDataAssembler = orderAssociationAssociationDataAssembler;
+		this.posOrderDocAccessPort = posOrderDocAccessPort;
 	}
 
 	public Map<String, Object> delivery(
@@ -79,6 +86,7 @@ public class AdminOrderDeliveryService {
 			throw new ResourceException("订单号缺少！");
 		}
 		p.put("order_id", orderId);
+		assertPosWriteIfPresent(companyId, orderId);
 
 		OrderAssociations assoc =
 				orderAssociationsMapper.selectOne(
@@ -147,5 +155,21 @@ public class AdminOrderDeliveryService {
 		} catch (NumberFormatException e) {
 			return 0L;
 		}
+	}
+
+	/** G-P2：POS 店员发货仅自己经手；Operator 会话跳过。 */
+	private void assertPosWriteIfPresent(long companyId, long orderId) {
+		HttpServletRequest request = currentRequestOrNull();
+		if (request != null) {
+			posOrderDocAccessPort.assertWriteAccess(request, companyId, orderId);
+		}
+	}
+
+	private static HttpServletRequest currentRequestOrNull() {
+		var attrs = RequestContextHolder.getRequestAttributes();
+		if (attrs instanceof ServletRequestAttributes sra) {
+			return sra.getRequest();
+		}
+		return null;
 	}
 }

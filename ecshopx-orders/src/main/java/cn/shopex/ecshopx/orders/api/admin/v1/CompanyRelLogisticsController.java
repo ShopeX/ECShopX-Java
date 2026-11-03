@@ -20,7 +20,7 @@ import cn.shopex.ecshopx.common.annotation.Activated;
 import cn.shopex.ecshopx.common.annotation.AdminAuth;
 import cn.shopex.ecshopx.common.annotation.DingoResponse;
 import cn.shopex.ecshopx.common.annotation.ShopLog;
-import cn.shopex.ecshopx.common.auth.OperatorJwtRequestAttributes;
+import cn.shopex.ecshopx.common.auth.DualJwtSupport;
 import cn.shopex.ecshopx.common.core.domain.ApiResult;
 import cn.shopex.ecshopx.common.exception.UnauthorizedException;
 import cn.shopex.ecshopx.common.web.ActivatedRequestAttributes;
@@ -84,10 +84,8 @@ public class CompanyRelLogisticsController {
 		if (body != null) {
 			merged.putAll(body);
 		}
-		long companyId = readCompanyIdFromJwt(request);
-		@SuppressWarnings("unchecked")
-		Map<String, Object> jwt =
-				(Map<String, Object>) request.getAttribute(OperatorJwtRequestAttributes.OPERATOR_JWT_USER_DATA);
+		long companyId = DualJwtSupport.requireCompanyId(request);
+		Map<String, Object> jwt = requireDualJwtClaims(request);
 		String operatorType = EspierAdminJwtControllerSupport.optionalTrimmedString(jwt.get("operator_type"));
 		Long operatorIdOrNull = EspierAdminJwtControllerSupport.parseLongOrNull(jwt.get("operator_id"));
 		Map<String, Object> data =
@@ -102,10 +100,8 @@ public class CompanyRelLogisticsController {
 			@RequestParam(value = "distributor_id", required = false, defaultValue = "0") String distributorIdRaw,
 			@RequestParam(value = "corp_name", required = false) String corpName,
 			@RequestParam(value = "status", required = false) String status) {
-		long companyId = readCompanyIdFromJwt(request);
-		@SuppressWarnings("unchecked")
-		Map<String, Object> jwt =
-				(Map<String, Object>) request.getAttribute(OperatorJwtRequestAttributes.OPERATOR_JWT_USER_DATA);
+		long companyId = DualJwtSupport.requireCompanyId(request);
+		Map<String, Object> jwt = requireDualJwtClaims(request);
 		String operatorType = EspierAdminJwtControllerSupport.optionalTrimmedString(jwt.get("operator_type"));
 		Long operatorIdOrNull = EspierAdminJwtControllerSupport.parseLongOrNull(jwt.get("operator_id"));
 		int distributorId = resolveDistributorId(request, distributorIdRaw, operatorType, jwt);
@@ -120,10 +116,8 @@ public class CompanyRelLogisticsController {
 			HttpServletRequest request,
 			@PathVariable("id") String id,
 			@RequestParam(value = "distributor_id", required = false, defaultValue = "0") String distributorIdRaw) {
-		long companyId = readCompanyIdFromJwt(request);
-		@SuppressWarnings("unchecked")
-		Map<String, Object> jwt =
-				(Map<String, Object>) request.getAttribute(OperatorJwtRequestAttributes.OPERATOR_JWT_USER_DATA);
+		long companyId = DualJwtSupport.requireCompanyId(request);
+		Map<String, Object> jwt = requireDualJwtClaims(request);
 		String operatorType = EspierAdminJwtControllerSupport.optionalTrimmedString(jwt.get("operator_type"));
 		Long operatorIdOrNull = EspierAdminJwtControllerSupport.parseLongOrNull(jwt.get("operator_id"));
 		int distributorId = resolveDistributorId(request, distributorIdRaw, operatorType, jwt);
@@ -137,10 +131,8 @@ public class CompanyRelLogisticsController {
 	public ApiResult<Map<String, Object>> getLogisticsList(
 			HttpServletRequest request,
 			@RequestParam(value = "distributor_id", required = false, defaultValue = "0") String distributorIdRaw) {
-		long companyId = readCompanyIdFromJwt(request);
-		@SuppressWarnings("unchecked")
-		Map<String, Object> jwt =
-				(Map<String, Object>) request.getAttribute(OperatorJwtRequestAttributes.OPERATOR_JWT_USER_DATA);
+		long companyId = DualJwtSupport.requireCompanyId(request);
+		Map<String, Object> jwt = requireDualJwtClaims(request);
 		String operatorType = EspierAdminJwtControllerSupport.optionalTrimmedString(jwt.get("operator_type"));
 		Long operatorIdOrNull = EspierAdminJwtControllerSupport.parseLongOrNull(jwt.get("operator_id"));
 		int distributorId = resolveDistributorId(request, distributorIdRaw, operatorType, jwt);
@@ -158,7 +150,7 @@ public class CompanyRelLogisticsController {
 		if (body != null) {
 			merged.putAll(body);
 		}
-		long companyId = readCompanyIdFromJwt(request);
+		long companyId = DualJwtSupport.requireCompanyId(request);
 		kdniaoQinglongSettingAdminService.setQinglongcode(companyId, merged);
 		return ApiResult.ok(Map.of("status", true));
 	}
@@ -166,7 +158,7 @@ public class CompanyRelLogisticsController {
 	@Activated(routeAlias = "company.logistics.qinglongcode.info")
 	@GetMapping(value = "/company/logistics/qinglongcode", name = "青龙编码", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ApiResult<Map<String, Object>> getQinglongcode(HttpServletRequest request) {
-		long companyId = readCompanyIdFromJwt(request);
+		long companyId = DualJwtSupport.requireCompanyId(request);
 		String code = kdniaoQinglongSettingAdminService.getQinglongcode(companyId);
 		return ApiResult.ok(Map.of("qinglong_code", code));
 	}
@@ -176,6 +168,12 @@ public class CompanyRelLogisticsController {
 			String distributorIdRaw,
 			String operatorType,
 			Map<String, Object> jwt) {
+		if (DualJwtSupport.isPosSession(request)) {
+			Long posDistributorId = DualJwtSupport.longClaim(jwt, "distributor_id");
+			if (posDistributorId != null && posDistributorId > 0L) {
+				return posDistributorId.intValue();
+			}
+		}
 		if ("distributor".equals(operatorType)) {
 			Long selected = EspierAdminJwtControllerSupport.parseLongOrNull(jwt.get("distributor_id"));
 			if (selected == null || selected <= 0L) {
@@ -201,20 +199,11 @@ public class CompanyRelLogisticsController {
 		}
 	}
 
-	private static long readCompanyIdFromJwt(HttpServletRequest request) {
-		Object attr = request.getAttribute(OperatorJwtRequestAttributes.OPERATOR_JWT_USER_DATA);
-		if (!(attr instanceof Map<?, ?>)) {
+	private static Map<String, Object> requireDualJwtClaims(HttpServletRequest request) {
+		Map<String, Object> jwt = DualJwtSupport.claims(request);
+		if (jwt == null || jwt.isEmpty()) {
 			throw new UnauthorizedException("未登录");
 		}
-		Map<?, ?> jwt = (Map<?, ?>) attr;
-		Object companyIdObj = jwt.get("company_id");
-		if (companyIdObj == null) {
-			throw new UnauthorizedException("未登录");
-		}
-		try {
-			return Long.parseLong(String.valueOf(companyIdObj).trim());
-		} catch (NumberFormatException e) {
-			throw new UnauthorizedException("未登录");
-		}
+		return jwt;
 	}
 }

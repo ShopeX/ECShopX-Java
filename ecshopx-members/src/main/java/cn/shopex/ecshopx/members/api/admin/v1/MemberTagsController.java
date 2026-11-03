@@ -20,7 +20,7 @@ import cn.shopex.ecshopx.common.annotation.Activated;
 import cn.shopex.ecshopx.common.annotation.AdminAuth;
 import cn.shopex.ecshopx.common.annotation.DingoResponse;
 import cn.shopex.ecshopx.common.annotation.ShopLog;
-import cn.shopex.ecshopx.common.auth.OperatorJwtRequestAttributes;
+import cn.shopex.ecshopx.common.auth.DualJwtSupport;
 import cn.shopex.ecshopx.common.core.domain.ApiResult;
 import cn.shopex.ecshopx.common.exception.BadRequestException;
 import cn.shopex.ecshopx.common.exception.UnauthorizedException;
@@ -121,23 +121,13 @@ public class MemberTagsController {
 	}
 
 	private long[] readCompanyAndDistributorFromJwt(HttpServletRequest request) {
-		Object attr = request.getAttribute(OperatorJwtRequestAttributes.OPERATOR_JWT_USER_DATA);
-		if (!(attr instanceof Map<?, ?>)) {
+		Map<String, Object> jwt = DualJwtSupport.claims(request);
+		if (jwt == null || jwt.isEmpty()) {
 			throw new UnauthorizedException("未登录");
 		}
-		Map<?, ?> jwt = (Map<?, ?>) attr;
-		Object companyIdObj = jwt.get("company_id");
-		if (companyIdObj == null) {
-			throw new UnauthorizedException("未登录");
-		}
-		long companyId;
-		try {
-			companyId = Long.parseLong(String.valueOf(companyIdObj).trim());
-		} catch (NumberFormatException e) {
-			throw new UnauthorizedException("未登录");
-		}
-		long distributorId = parseLongOrZero(jwt.get("distributor_id"));
-		return new long[] {companyId, distributorId};
+		long companyId = DualJwtSupport.requireCompanyId(request);
+		Long distributorId = DualJwtSupport.longClaim(jwt, "distributor_id");
+		return new long[] {companyId, distributorId == null ? 0L : distributorId};
 	}
 
 	private static boolean isTagIdsCommaSplitCandidate(Object v) {

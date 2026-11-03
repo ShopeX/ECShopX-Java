@@ -29,6 +29,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class HandleValidCartValidShopIdsService {
 
+	/**
+	 * 店铺四态可买：启用 {@code true}/{@code 1}、禁用 {@code false}/{@code 0}；
+	 * 闭店 {@code closed}、撤店 {@code delete} 不可买。
+	 */
+	static final List<String> PURCHASABLE_IS_VALID = List.of("true", "false", "1", "0");
+
 	private final DistributorMapper distributorMapper;
 	private final MerchantDisabledDistributorIdsQueryService merchantDisabledDistributorIdsQueryService;
 
@@ -56,7 +62,7 @@ public class HandleValidCartValidShopIdsService {
 		LambdaQueryWrapper<Distributor> w = new LambdaQueryWrapper<>();
 		w.eq(Distributor::getCompanyId, companyId)
 				.in(Distributor::getDistributorId, shopIdList)
-				.eq(Distributor::getIsValid, "true");
+				.in(Distributor::getIsValid, PURCHASABLE_IS_VALID);
 		List<Distributor> validShopList = distributorMapper.selectList(w);
 		List<Long> validShopIds = new ArrayList<>();
 		for (Distributor d : validShopList) {

@@ -36,9 +36,9 @@ public class ExportItemsTagDataOrchestratorService {
 	}
 
 	public ExportItemsTagOrchestratorResult submitOrEmptyList(long companyId, long operatorId, String operatorType,
-			Long merchantId, Map<String, Object> inputData) {
+			Long merchantId, Map<String, Object> inputData, Map<String, Object> operatorJwt) {
 		ExportItemsCodeFilterBuildResult built = tagFilterBuildService.build(companyId, operatorId, operatorType, merchantId,
-				inputData);
+				inputData, operatorJwt);
 		if (built instanceof ExportItemsCodeFilterBuildResult.EmptyItemBnList) {
 			return new ExportItemsTagOrchestratorResult.EmptyList();
 		}

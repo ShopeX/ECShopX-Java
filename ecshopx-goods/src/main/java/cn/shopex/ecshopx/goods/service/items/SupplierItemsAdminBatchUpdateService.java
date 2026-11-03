@@ -58,6 +58,31 @@ public class SupplierItemsAdminBatchUpdateService {
 				filter.getIsMarketEqOrNull(),
 				filter.getAuditStatusInOrNull(),
 				patch);
+		markSyncPlatformDirty(companyId, filter);
+	}
+
+	private void markSyncPlatformDirty(long companyId, SupplierItemsFilter filter) {
+		List<Long> goodsIds = filter.getGoodsIdsOrNull();
+		if (goodsIds != null) {
+			for (Long goodsId : goodsIds) {
+				if (goodsId != null && goodsId > 0L) {
+					supplierItemsRepository.updateIsSyncPlatformByGoodsId(companyId, goodsId, 0);
+				}
+			}
+		}
+		List<Long> itemIds = filter.getItemIdsOrNull();
+		if (itemIds == null || itemIds.isEmpty()) {
+			return;
+		}
+		for (Long itemId : itemIds) {
+			if (itemId == null || itemId <= 0L) {
+				continue;
+			}
+			var row = supplierItemsRepository.findByItemId(itemId);
+			if (row != null && row.getGoodsId() != null && row.getGoodsId() > 0L) {
+				supplierItemsRepository.updateIsSyncPlatformByGoodsId(companyId, row.getGoodsId(), 0);
+			}
+		}
 	}
 
 	/** Loose truthiness for raw is_market values (scalar cast semantics for filter branch). */
