@@ -191,6 +191,7 @@ public class EmployeeManagementListService {
 				}
 			}
 		}
+		applyShopCodeFilter(filter, companyId, query.getShopCode());
 
 		if (filter.getMobile() != null && !filter.getMobile().isEmpty()) {
 			filter.setMobile(sensitiveFieldEncryptor.encrypt(filter.getMobile()));
@@ -733,6 +734,23 @@ public class EmployeeManagementListService {
 		if (effective.isPresent() && effective.getAsLong() > 0) {
 			filter.setDistributorIds(List.of(effective.getAsLong()));
 		}
+	}
+
+	private void applyShopCodeFilter(AccountManagementOperatorsFilter filter, long companyId, String shopCode) {
+		if (!StringUtils.hasText(shopCode)) {
+			return;
+		}
+		Map<String, Object> shop = distributionDistributorSelfReadMapper.selectShopByCompanyAndShopCode(
+				companyId, shopCode.trim());
+		OptionalLong shopDistributorId =
+				shop == null ? OptionalLong.empty() : normalizePositiveOperatorId(shop.get("distributor_id"));
+		if (shopDistributorId.isEmpty()
+				|| (filter.getDistributorIds() != null
+						&& !filter.getDistributorIds().contains(shopDistributorId.getAsLong()))) {
+			filter.setOperatorIds(List.of(-1L));
+			return;
+		}
+		filter.setDistributorIds(List.of(shopDistributorId.getAsLong()));
 	}
 
 	private static OptionalLong normalizePositiveOperatorId(Object raw) {

@@ -20,6 +20,14 @@ import java.util.Map;
 
 public interface AlipayNotifyOrderSidePort {
 
+	/**
+	 * Resolve the owning company id for a trade used to bind Alipay verify keys.
+	 *
+	 * @throws cn.shopex.ecshopx.common.exception.BadRequestException if the trade is missing or
+	 *     company_id is invalid
+	 */
+	long requireCompanyIdByTradeId(String outTradeNo);
+
 	long resolveDistributorIdForAlipayRedis(long companyId, String outTradeNo);
 
 	void applyTradePaymentAfterAlipay(String outTradeNo, String status, Map<String, Object> options);

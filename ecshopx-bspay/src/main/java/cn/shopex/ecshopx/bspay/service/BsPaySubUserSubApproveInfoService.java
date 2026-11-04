@@ -116,7 +116,12 @@ public class BsPaySubUserSubApproveInfoService {
 			throw new BadRequestException("参数错误");
 		}
 
-		EntryApply apply = entryApplyMapper.selectById(applyId);
+		// ECX-10855: bind apply + KYC subjects to JWT company before assembling detail.
+		EntryApply apply =
+				entryApplyMapper.selectOne(
+						new LambdaQueryWrapper<EntryApply>()
+								.eq(EntryApply::getId, applyId)
+								.eq(EntryApply::getCompanyId, companyId));
 		if (apply == null) {
 			throw new ResourceException("没有开户详情");
 		}
@@ -128,7 +133,11 @@ public class BsPaySubUserSubApproveInfoService {
 		long userSubjectPk;
 
 		if ("ent".equalsIgnoreCase(userType)) {
-			UserEnt ent = userEntMapper.selectById(parseUserId(apply.getUserId()));
+			UserEnt ent =
+					userEntMapper.selectOne(
+							new LambdaQueryWrapper<UserEnt>()
+									.eq(UserEnt::getId, parseUserId(apply.getUserId()))
+									.eq(UserEnt::getCompanyId, companyId));
 			if (ent == null) {
 				throw new ResourceException("没有开户详情");
 			}
@@ -146,7 +155,11 @@ public class BsPaySubUserSubApproveInfoService {
 							+ areaName(ent.getRegDistrictId());
 			entryInfo.put("reg_area", regArea);
 		} else if ("indv".equalsIgnoreCase(userType)) {
-			UserIndv indv = userIndvMapper.selectById(parseUserId(apply.getUserId()));
+			UserIndv indv =
+					userIndvMapper.selectOne(
+							new LambdaQueryWrapper<UserIndv>()
+									.eq(UserIndv::getId, parseUserId(apply.getUserId()))
+									.eq(UserIndv::getCompanyId, companyId));
 			if (indv == null) {
 				throw new ResourceException("没有开户详情");
 			}

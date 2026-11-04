@@ -34,6 +34,7 @@ class WithdrawJobDispatchFlowTest {
 
 		LinkedHashMap<String, Object> payload = new LinkedHashMap<>();
 		payload.put("apply_id", 123L);
+		payload.put("company_id", 55L);
 		facade.dispatchJob(
 				BsPayBundleDispatchJobNames.WITHDRAW_JOB,
 				payload,
@@ -51,6 +52,7 @@ class WithdrawJobDispatchFlowTest {
 		assertNull(msg.delay());
 		assertEquals(BsPayBundleDispatchJobNames.WITHDRAW_JOB, msg.messageName());
 		assertEquals(123L, ((Number) msg.payload().get("apply_id")).longValue());
+		assertEquals(55L, ((Number) msg.payload().get("company_id")).longValue());
 
 		DispatchConsumerRuntime runtime =
 				new DispatchConsumerRuntime(
@@ -61,7 +63,7 @@ class WithdrawJobDispatchFlowTest {
 						new InMemoryDispatchConsumerStateRecorder());
 		runtime.consume(msg, 1);
 
-		verify(withdrawApplyService, times(1)).executeHuifuWithdraw(123L);
+		verify(withdrawApplyService, times(1)).executeHuifuWithdraw(123L, 55L);
 	}
 
 	@Test

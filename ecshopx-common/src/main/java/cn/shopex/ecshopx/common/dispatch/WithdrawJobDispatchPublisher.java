@@ -18,5 +18,5 @@ package cn.shopex.ecshopx.common.dispatch;
 
 public interface WithdrawJobDispatchPublisher {
 
-	void enqueueWithdrawJob(long applyId);
+	void enqueueWithdrawJob(long applyId, long companyId);
 }

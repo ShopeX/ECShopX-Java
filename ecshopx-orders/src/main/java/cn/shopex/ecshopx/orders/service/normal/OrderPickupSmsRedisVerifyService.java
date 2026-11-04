@@ -25,10 +25,13 @@ import org.springframework.stereotype.Service;
 public class OrderPickupSmsRedisVerifyService {
 
 	private final StringRedisTemplate companysRedisTemplate;
+	private final OrderZitiQrCodeRedisService orderZitiQrCodeRedisService;
 
 	public OrderPickupSmsRedisVerifyService(
-			@Qualifier("companysRedisTemplate") StringRedisTemplate companysRedisTemplate) {
+			@Qualifier("companysRedisTemplate") StringRedisTemplate companysRedisTemplate,
+			OrderZitiQrCodeRedisService orderZitiQrCodeRedisService) {
 		this.companysRedisTemplate = companysRedisTemplate;
+		this.orderZitiQrCodeRedisService = orderZitiQrCodeRedisService;
 	}
 
 	public void verifyAndConsumePickupCode(long orderId, String phoneRaw, String pickupcodeRaw) {
@@ -48,14 +51,21 @@ public class OrderPickupSmsRedisVerifyService {
 		}
 		String key = "admin-pickupcode:" + orderId + "|" + phone;
 		String stored = companysRedisTemplate.opsForValue().get(key);
-		if (stored == null) {
-			throw new ResourceException("提货码验证错误");
+		if (stored != null) {
+			String vcode = stored.trim();
+			if (submitted.equals(vcode) || looseNumericEquals(submitted, vcode)) {
+				companysRedisTemplate.delete(key);
+				orderZitiQrCodeRedisService.deleteZitiCodeOrderMapping(submitted);
+				return;
+			}
 		}
-		String vcode = stored.trim();
-		if (!(submitted.equals(vcode) || looseNumericEquals(submitted, vcode))) {
-			throw new ResourceException("提货码验证错误");
+		Long mapped = orderZitiQrCodeRedisService.resolveOrderIdNullable(submitted);
+		if (mapped != null && mapped.longValue() == orderId) {
+			companysRedisTemplate.delete(key);
+			orderZitiQrCodeRedisService.deleteZitiCodeOrderMapping(submitted);
+			return;
 		}
-		companysRedisTemplate.delete(key);
+		throw new ResourceException("提货码验证错误");
 	}
 
 	private static boolean looseNumericEquals(String a, String b) {

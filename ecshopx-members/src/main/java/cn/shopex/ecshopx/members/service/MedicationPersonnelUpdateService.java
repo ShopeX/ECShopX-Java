@@ -49,10 +49,17 @@ public class MedicationPersonnelUpdateService {
 			int userFamilyGender,
 			String userFamilyPhone,
 			int relationship) {
-		LambdaQueryWrapper<MedicationPersonnel> byIdOnly = new LambdaQueryWrapper<MedicationPersonnel>()
-				.eq(MedicationPersonnel::getId, id);
-		MedicationPersonnel info = medicationPersonnelMapper.selectOne(byIdOnly);
-		if (info == null) {
+		LambdaQueryWrapper<MedicationPersonnel> owned =
+				new LambdaQueryWrapper<MedicationPersonnel>()
+						.eq(MedicationPersonnel::getId, id)
+						.eq(MedicationPersonnel::getCompanyId, companyId)
+						.eq(MedicationPersonnel::getUserId, userId);
+		MedicationPersonnel info = medicationPersonnelMapper.selectOne(owned);
+		if (info == null
+				|| info.getCompanyId() == null
+				|| info.getUserId() == null
+				|| !Objects.equals(info.getCompanyId(), companyId)
+				|| !Objects.equals(info.getUserId(), userId)) {
 			throw new ResourceException("不存在该用药人");
 		}
 
@@ -87,8 +94,8 @@ public class MedicationPersonnelUpdateService {
 		int nowSec = (int) (System.currentTimeMillis() / 1000L);
 		LambdaUpdateWrapper<MedicationPersonnel> uw = new LambdaUpdateWrapper<MedicationPersonnel>()
 				.eq(MedicationPersonnel::getId, info.getId())
-				.set(MedicationPersonnel::getCompanyId, companyId)
-				.set(MedicationPersonnel::getUserId, userId)
+				.eq(MedicationPersonnel::getCompanyId, companyId)
+				.eq(MedicationPersonnel::getUserId, userId)
 				.set(MedicationPersonnel::getUserFamilyName, userFamilyName)
 				.set(MedicationPersonnel::getUserFamilyIdCard, userFamilyIdCard)
 				.set(MedicationPersonnel::getUserFamilyAge, userFamilyAge)

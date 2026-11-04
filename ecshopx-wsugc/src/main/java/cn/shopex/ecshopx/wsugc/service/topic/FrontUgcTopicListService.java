@@ -66,17 +66,7 @@ public class FrontUgcTopicListService {
 			}
 		}
 
-		String sortParam = sort == null ? "" : sort;
-		if (sortParam.isEmpty() || sortParam.trim().isEmpty()) {
-			w.orderByAsc(Topic::getPOrder).orderByDesc(Topic::getCreated);
-		} else {
-			String[] parts = sortParam.split(" ", -1);
-			String fieldRaw = parts[0];
-			String dirRaw = parts.length > 1 ? parts[1] : null;
-			String dirSql = sqlDirection(dirRaw);
-			String quoted = "`" + quoteBacktickIdentifier(fieldRaw) + "`";
-			w.last("ORDER BY " + quoted + " " + dirSql + ", `p_order` ASC");
-		}
+		applySort(w, sort);
 
 		Long total = topicMapper.selectCount(w);
 		if (total == null || total == 0L) {
@@ -126,28 +116,126 @@ public class FrontUgcTopicListService {
 		return s.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_");
 	}
 
-	private static String quoteBacktickIdentifier(String raw) {
-		if (raw == null) {
-			return "";
+	private static void applySort(LambdaQueryWrapper<Topic> wrapper, String sort) {
+		if (sort == null || sort.trim().isEmpty()) {
+			wrapper.orderByAsc(Topic::getPOrder).orderByDesc(Topic::getCreated);
+			return;
 		}
-		return raw.replace("`", "``");
-	}
-
-	private static String sqlDirection(String dirRaw) {
-		if (dirRaw == null) {
-			return "ASC";
+		String trimmed = sort.trim();
+		int sp = trimmed.indexOf(' ');
+		if (sp <= 0 || sp >= trimmed.length() - 1) {
+			wrapper.orderByAsc(Topic::getPOrder).orderByDesc(Topic::getCreated);
+			return;
 		}
-		if (dirRaw.isEmpty()) {
-			return "ASC";
+		String field = trimmed.substring(0, sp).trim();
+		String direction = trimmed.substring(sp + 1).trim();
+		if (!StringUtils.hasText(field) || !StringUtils.hasText(direction)) {
+			wrapper.orderByAsc(Topic::getPOrder).orderByDesc(Topic::getCreated);
+			return;
 		}
-		String d = dirRaw.trim();
-		if (d.equalsIgnoreCase("desc")) {
-			return "DESC";
+		String dirLower = direction.toLowerCase();
+		boolean asc;
+		if ("asc".equals(dirLower)) {
+			asc = true;
+		} else if ("desc".equals(dirLower)) {
+			asc = false;
+		} else {
+			wrapper.orderByAsc(Topic::getPOrder).orderByDesc(Topic::getCreated);
+			return;
 		}
-		if (d.equalsIgnoreCase("asc")) {
-			return "ASC";
+		switch (field) {
+			case "p_order" -> {
+				if (asc) {
+					wrapper.orderByAsc(Topic::getPOrder);
+				} else {
+					wrapper.orderByDesc(Topic::getPOrder);
+				}
+			}
+			case "created" -> {
+				if (asc) {
+					wrapper.orderByAsc(Topic::getCreated);
+				} else {
+					wrapper.orderByDesc(Topic::getCreated);
+				}
+			}
+			case "updated" -> {
+				if (asc) {
+					wrapper.orderByAsc(Topic::getUpdated);
+				} else {
+					wrapper.orderByDesc(Topic::getUpdated);
+				}
+			}
+			case "topic_id" -> {
+				if (asc) {
+					wrapper.orderByAsc(Topic::getTopicId);
+				} else {
+					wrapper.orderByDesc(Topic::getTopicId);
+				}
+			}
+			case "user_id" -> {
+				if (asc) {
+					wrapper.orderByAsc(Topic::getUserId);
+				} else {
+					wrapper.orderByDesc(Topic::getUserId);
+				}
+			}
+			case "status" -> {
+				if (asc) {
+					wrapper.orderByAsc(Topic::getStatus);
+				} else {
+					wrapper.orderByDesc(Topic::getStatus);
+				}
+			}
+			case "source" -> {
+				if (asc) {
+					wrapper.orderByAsc(Topic::getSource);
+				} else {
+					wrapper.orderByDesc(Topic::getSource);
+				}
+			}
+			case "is_top" -> {
+				if (asc) {
+					wrapper.orderByAsc(Topic::getIsTop);
+				} else {
+					wrapper.orderByDesc(Topic::getIsTop);
+				}
+			}
+			case "enabled" -> {
+				if (asc) {
+					wrapper.orderByAsc(Topic::getEnabled);
+				} else {
+					wrapper.orderByDesc(Topic::getEnabled);
+				}
+			}
+			case "operator_id" -> {
+				if (asc) {
+					wrapper.orderByAsc(Topic::getOperatorId);
+				} else {
+					wrapper.orderByDesc(Topic::getOperatorId);
+				}
+			}
+			case "company_id" -> {
+				if (asc) {
+					wrapper.orderByAsc(Topic::getCompanyId);
+				} else {
+					wrapper.orderByDesc(Topic::getCompanyId);
+				}
+			}
+			case "topic_name" -> {
+				if (asc) {
+					wrapper.orderByAsc(Topic::getTopicName);
+				} else {
+					wrapper.orderByDesc(Topic::getTopicName);
+				}
+			}
+			default -> {
+				wrapper.orderByAsc(Topic::getPOrder).orderByDesc(Topic::getCreated);
+				return;
+			}
 		}
-		return dirRaw;
+		if (!"p_order".equals(field)) {
+			wrapper.orderByAsc(Topic::getPOrder);
+		}
 	}
 
 	private static LinkedHashMap<String, Object> ksortRowMap(Map<String, Object> src) {

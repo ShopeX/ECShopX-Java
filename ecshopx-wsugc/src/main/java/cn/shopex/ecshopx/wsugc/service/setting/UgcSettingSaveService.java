@@ -20,6 +20,7 @@ import cn.shopex.ecshopx.common.exception.BadRequestException;
 import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.wsugc.domain.Setting;
 import cn.shopex.ecshopx.wsugc.mapper.SettingMapper;
+import cn.shopex.ecshopx.wsugc.service.content.UgcWxContentCheckBaseUriGuard;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -53,6 +54,9 @@ public class UgcSettingSaveService {
 		String effectiveType = typeRaw != null ? typeRaw : "point";
 
 		LinkedHashMap<String, Object> settingMap = normalizeSettingMap(settingRaw, jsonRequestBody);
+		if (settingMap.containsKey("contentCheck_url")) {
+			UgcWxContentCheckBaseUriGuard.requireOptional(stringifyValue(settingMap.get("contentCheck_url")));
+		}
 
 		Map<String, Object> lastRow = null;
 		int now = (int) (System.currentTimeMillis() / 1000);
@@ -61,6 +65,11 @@ public class UgcSettingSaveService {
 		for (Map.Entry<String, Object> e : settingMap.entrySet()) {
 			String k = e.getKey();
 			String strVal = stringifyValue(e.getValue());
+			if ("contentCheck_url".equals(k)) {
+				strVal = StringUtils.hasText(strVal)
+						? UgcWxContentCheckBaseUriGuard.normalizeAndRequire(strVal)
+						: "";
+			}
 
 			LambdaQueryWrapper<Setting> w = new LambdaQueryWrapper<Setting>()
 					.eq(Setting::getCompanyId, companyIdLong)

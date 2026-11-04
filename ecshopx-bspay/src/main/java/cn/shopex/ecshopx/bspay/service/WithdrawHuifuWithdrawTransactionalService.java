@@ -45,9 +45,15 @@ public class WithdrawHuifuWithdrawTransactionalService {
 			throw new IllegalStateException("applyForLog must be the row for applyId=" + applyId);
 		}
 
+		Long companyId = applyForLog.getCompanyId();
+		if (companyId == null || companyId <= 0L) {
+			throw new ResourceException("提现申请缺少公司信息");
+		}
+
 		int nowSec = (int) (System.currentTimeMillis() / 1000L);
 		LambdaUpdateWrapper<WithdrawApply> lockUw = Wrappers.lambdaUpdate();
 		lockUw.eq(WithdrawApply::getId, applyId)
+				.eq(WithdrawApply::getCompanyId, companyId)
 				.in(WithdrawApply::getStatus, List.of(1, 5))
 				.set(WithdrawApply::getStatus, 3)
 				.set(WithdrawApply::getUpdated, nowSec);
@@ -63,6 +69,7 @@ public class WithdrawHuifuWithdrawTransactionalService {
 		int persistNow = (int) (System.currentTimeMillis() / 1000L);
 		LambdaUpdateWrapper<WithdrawApply> uw2 = Wrappers.lambdaUpdate();
 		uw2.eq(WithdrawApply::getId, applyId)
+				.eq(WithdrawApply::getCompanyId, companyId)
 				.set(WithdrawApply::getHfSeqId, str(result.get("hf_seq_id")))
 				.set(WithdrawApply::getReqSeqId, str(result.get("req_seq_id")))
 				.set(WithdrawApply::getRequestTime, requestTime)

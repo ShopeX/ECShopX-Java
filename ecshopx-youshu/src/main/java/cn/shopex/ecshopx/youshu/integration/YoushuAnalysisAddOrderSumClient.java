@@ -49,7 +49,7 @@ public class YoushuAnalysisAddOrderSumClient implements YoushuAnalysisAddOrderSu
 	@Override
 	public void addOrderSum(
 			String dataSourceId, YoushuOrderSumRow orderSum, YoushuOpenApiCredentials credentials) {
-		String base = normalizeBase(credentials.baseUri());
+		String base = YoushuBaseUriGuard.normalizeAndRequire(credentials.baseUri());
 		String appId = credentials.appId();
 		String appSecret = credentials.appSecret();
 		Map<String, String> sig = YoushuOpenApiSignSupport.buildSignedQueryParams(appId, appSecret);
@@ -90,14 +90,4 @@ public class YoushuAnalysisAddOrderSumClient implements YoushuAnalysisAddOrderSu
 		}
 	}
 
-	private static String normalizeBase(String baseUri) {
-		if (baseUri == null) {
-			return "";
-		}
-		String t = baseUri.trim();
-		while (t.endsWith("/")) {
-			t = t.substring(0, t.length() - 1);
-		}
-		return t;
-	}
 }

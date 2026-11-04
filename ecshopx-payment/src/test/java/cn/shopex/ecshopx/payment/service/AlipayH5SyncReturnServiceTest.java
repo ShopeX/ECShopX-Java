@@ -1,6 +1,7 @@
 package cn.shopex.ecshopx.payment.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -11,12 +12,15 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import cn.shopex.ecshopx.common.exception.BadRequestException;
 import cn.shopex.ecshopx.common.web.H5FrontAuthAttributes;
 import cn.shopex.ecshopx.payment.integration.alipay.AlipayNotifyDepositSidePort;
 import cn.shopex.ecshopx.payment.integration.alipay.AlipayNotifyOrderSidePort;
 import cn.shopex.ecshopx.payment.service.dto.AlipayTradeQueryParsedResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -93,6 +97,7 @@ class AlipayH5SyncReturnServiceTest {
 		AlipayTradeQueryParsedResponse parsed =
 				new AlipayTradeQueryParsedResponse("10000", "TRADE_SUCCESS", "2024050622001", "", null);
 		when(alipayOpenapiTradeQueryService.queryTrade(1L, 0L, OUT_TRADE_NO)).thenReturn(parsed);
+		when(alipayNotifyOrderSidePort.requireCompanyIdByTradeId(OUT_TRADE_NO)).thenReturn(1L);
 
 		String status = alipayH5SyncReturnService.alipayResult(request);
 
@@ -106,5 +111,115 @@ class AlipayH5SyncReturnServiceTest {
 										"alipay".equals(m.get("pay_type"))
 												&& "2024050622001".equals(m.get("transaction_id"))));
 		verify(alipayNotifyDepositSidePort, never()).rechargeCallback(anyString(), anyString(), any());
+	}
+
+	@Test
+	void alipayResult_nonDeposit_sessionCompanyMismatch_rejectsWithoutApply() {
+		HttpServletRequest request = org.mockito.Mockito.mock(HttpServletRequest.class);
+		when(request.getAttribute(H5FrontAuthAttributes.H5_COMPANY_ID)).thenReturn(1L);
+		Map<String, String[]> pm = new HashMap<>();
+		pm.put("out_trade_no", new String[] {OUT_TRADE_NO});
+		pm.put("charset", new String[] {"UTF-8"});
+		when(request.getParameterMap()).thenReturn(pm);
+
+		when(alipayNotifyOrderSidePort.resolveDistributorIdForAlipayRedis(1L, OUT_TRADE_NO)).thenReturn(0L);
+		doNothing()
+				.when(alipayPaymentConfigValidationService)
+				.assertAsyncNotifyConfigComplete(anyLong(), anyLong());
+		doNothing().when(alipayAsyncNotifyVerificationService).verifySignedNotify(any(), any());
+
+		when(companysRedisTemplate.opsForValue()).thenReturn(valueOperations);
+		when(valueOperations.get(anyString()))
+				.thenReturn(
+						"{\"app_id\":\"test_app\",\"ali_public_key\":\"MIIB\",\"private_key\":\"MIIE\"}");
+
+		AlipayTradeQueryParsedResponse parsed =
+				new AlipayTradeQueryParsedResponse("10000", "TRADE_SUCCESS", "2024050622001", "", null);
+		when(alipayOpenapiTradeQueryService.queryTrade(1L, 0L, OUT_TRADE_NO)).thenReturn(parsed);
+		when(alipayNotifyOrderSidePort.requireCompanyIdByTradeId(OUT_TRADE_NO)).thenReturn(99L);
+
+		assertThatThrownBy(() -> alipayH5SyncReturnService.alipayResult(request))
+				.isInstanceOf(BadRequestException.class)
+				.hasMessageContaining("订单企业与回调企业不一致");
+
+		verify(alipayNotifyOrderSidePort, never())
+				.applyTradePaymentAfterAlipay(anyString(), anyString(), any());
+		verify(alipayNotifyDepositSidePort, never()).rechargeCallback(anyString(), anyString(), any());
+	}
+
+	@Test
+	void alipayResult_depositRecharge_sessionCompanyMismatch_rejectsWithoutRecharge() {
+		HttpServletRequest request = org.mockito.Mockito.mock(HttpServletRequest.class);
+		when(request.getAttribute(H5FrontAuthAttributes.H5_COMPANY_ID)).thenReturn(1L);
+		Map<String, String[]> pm = new HashMap<>();
+		pm.put("out_trade_no", new String[] {OUT_TRADE_NO});
+		pm.put("charset", new String[] {"UTF-8"});
+		when(request.getParameterMap()).thenReturn(pm);
+
+		when(alipayNotifyOrderSidePort.resolveDistributorIdForAlipayRedis(1L, OUT_TRADE_NO)).thenReturn(0L);
+		doNothing()
+				.when(alipayPaymentConfigValidationService)
+				.assertAsyncNotifyConfigComplete(anyLong(), anyLong());
+		doNothing().when(alipayAsyncNotifyVerificationService).verifySignedNotify(any(), any());
+
+		when(companysRedisTemplate.opsForValue()).thenReturn(valueOperations);
+		when(valueOperations.get(anyString()))
+				.thenReturn(
+						"{\"app_id\":\"test_app\",\"ali_public_key\":\"MIIB\",\"private_key\":\"MIIE\"}");
+
+		String passback =
+				URLEncoder.encode("attach=depositRecharge&company_id=99", StandardCharsets.UTF_8);
+		AlipayTradeQueryParsedResponse parsed =
+				new AlipayTradeQueryParsedResponse(
+						"10000", "TRADE_SUCCESS", "2024050622001", passback, null);
+		when(alipayOpenapiTradeQueryService.queryTrade(1L, 0L, OUT_TRADE_NO)).thenReturn(parsed);
+		when(alipayNotifyDepositSidePort.requireCompanyIdByDepositTradeId(OUT_TRADE_NO)).thenReturn(99L);
+
+		assertThatThrownBy(() -> alipayH5SyncReturnService.alipayResult(request))
+				.isInstanceOf(BadRequestException.class)
+				.hasMessageContaining("储值单企业与回调企业不一致");
+
+		verify(alipayNotifyDepositSidePort, never()).rechargeCallback(anyString(), anyString(), any());
+	}
+
+	@Test
+	void alipayResult_depositRecharge_matchingCompany_invokesRechargeCallback() {
+		HttpServletRequest request = org.mockito.Mockito.mock(HttpServletRequest.class);
+		when(request.getAttribute(H5FrontAuthAttributes.H5_COMPANY_ID)).thenReturn(1L);
+		Map<String, String[]> pm = new HashMap<>();
+		pm.put("out_trade_no", new String[] {OUT_TRADE_NO});
+		pm.put("charset", new String[] {"UTF-8"});
+		when(request.getParameterMap()).thenReturn(pm);
+
+		when(alipayNotifyOrderSidePort.resolveDistributorIdForAlipayRedis(1L, OUT_TRADE_NO)).thenReturn(0L);
+		doNothing()
+				.when(alipayPaymentConfigValidationService)
+				.assertAsyncNotifyConfigComplete(anyLong(), anyLong());
+		doNothing().when(alipayAsyncNotifyVerificationService).verifySignedNotify(any(), any());
+
+		when(companysRedisTemplate.opsForValue()).thenReturn(valueOperations);
+		when(valueOperations.get(anyString()))
+				.thenReturn(
+						"{\"app_id\":\"test_app\",\"ali_public_key\":\"MIIB\",\"private_key\":\"MIIE\"}");
+
+		String passback =
+				URLEncoder.encode("attach=depositRecharge&company_id=1", StandardCharsets.UTF_8);
+		AlipayTradeQueryParsedResponse parsed =
+				new AlipayTradeQueryParsedResponse(
+						"10000", "TRADE_SUCCESS", "2024050622001", passback, null);
+		when(alipayOpenapiTradeQueryService.queryTrade(1L, 0L, OUT_TRADE_NO)).thenReturn(parsed);
+		when(alipayNotifyDepositSidePort.requireCompanyIdByDepositTradeId(OUT_TRADE_NO)).thenReturn(1L);
+
+		String status = alipayH5SyncReturnService.alipayResult(request);
+
+		assertThat(status).isEqualTo("SUCCESS");
+		verify(alipayNotifyDepositSidePort)
+				.rechargeCallback(
+						eq(OUT_TRADE_NO),
+						eq("SUCCESS"),
+						argThat(
+								m ->
+										"alipay".equals(m.get("pay_type"))
+												&& "2024050622001".equals(m.get("transaction_id"))));
 	}
 }

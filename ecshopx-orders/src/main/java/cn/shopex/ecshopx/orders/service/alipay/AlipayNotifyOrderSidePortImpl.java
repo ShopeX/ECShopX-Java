@@ -16,6 +16,7 @@
 
 package cn.shopex.ecshopx.orders.service.alipay;
 
+import cn.shopex.ecshopx.common.exception.BadRequestException;
 import cn.shopex.ecshopx.orders.domain.DistributionDistributorPeek;
 import cn.shopex.ecshopx.orders.domain.Trade;
 import cn.shopex.ecshopx.orders.mapper.DistributionDistributorPeekMapper;
@@ -41,6 +42,31 @@ public class AlipayNotifyOrderSidePortImpl implements AlipayNotifyOrderSidePort 
 		this.tradeMapper = tradeMapper;
 		this.distributionDistributorPeekMapper = distributionDistributorPeekMapper;
 		this.ordersTradePaymentCallbackService = ordersTradePaymentCallbackService;
+	}
+
+	@Override
+	public long requireCompanyIdByTradeId(String outTradeNo) {
+		if (!StringUtils.hasText(outTradeNo)) {
+			throw new BadRequestException("订单不存在或主键无效");
+		}
+		Trade row = tradeMapper.selectById(outTradeNo.trim());
+		if (row == null) {
+			throw new BadRequestException("订单不存在或主键无效");
+		}
+		String raw = row.getCompanyId();
+		if (!StringUtils.hasText(raw)) {
+			throw new BadRequestException("订单企业编号无效");
+		}
+		long companyId;
+		try {
+			companyId = Long.parseLong(raw.trim());
+		} catch (NumberFormatException e) {
+			throw new BadRequestException("订单企业编号无效");
+		}
+		if (companyId <= 0) {
+			throw new BadRequestException("订单企业编号无效");
+		}
+		return companyId;
 	}
 
 	@Override

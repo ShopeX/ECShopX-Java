@@ -25,6 +25,7 @@ import java.math.BigInteger;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,7 +43,8 @@ public class WxShopsSetShopStatusService {
 	}
 
 	@Transactional(rollbackFor = Exception.class)
-	public void setShopStatus(Object wxShopIdRaw, Object statusRaw, Map<String, Object> operatorJwt) {
+	public void setShopStatus(
+			Object wxShopIdRaw, Object statusRaw, Map<String, Object> operatorJwt, long companyId) {
 		List<Long> allowed = whitelist.allowedShopIds(operatorJwt.get("shop_ids"));
 		if (!allowed.isEmpty()) {
 			Long idForList = idForWhitelistContains(wxShopIdRaw);
@@ -59,9 +61,13 @@ public class WxShopsSetShopStatusService {
 		if (row == null) {
 			throw new ResourceException("wx_shop_id=" + wxShopId + "的门店不存在");
 		}
+		if (!Objects.equals(companyId, row.getCompanyId())) {
+			throw new ResourceException("请确认您的门店信息后再提交.");
+		}
 
 		int now = (int) (System.currentTimeMillis() / 1000L);
-		UpdateWrapper<WxShops> uw = new UpdateWrapper<WxShops>().eq("wx_shop_id", wxShopId);
+		UpdateWrapper<WxShops> uw =
+				new UpdateWrapper<WxShops>().eq("wx_shop_id", wxShopId).eq("company_id", companyId);
 		if (bound == null || bound instanceof Boolean || bound instanceof Number) {
 			uw.set("is_open", bound);
 		} else if (bound instanceof CharSequence cs) {

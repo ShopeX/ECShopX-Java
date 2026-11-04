@@ -191,6 +191,8 @@ public class AftersalesReviewService {
 		if (row == null) {
 			throw new ResourceException("售后单数据异常");
 		}
+		AftersalesDistributorScopeGuard.assertAftersalesDistributorAllowed(
+				row.getDistributorId(), DualJwtSupport.claims(request));
 		Integer st = row.getAftersalesStatus();
 		if (st == null || st != 0) {
 			throw new ResourceException("售后" + bnLabel + "已处理，无需审核");

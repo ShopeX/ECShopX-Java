@@ -18,6 +18,7 @@ package cn.shopex.ecshopx.payment.service.admin;
 
 import cn.shopex.ecshopx.common.exception.BadRequestException;
 import cn.shopex.ecshopx.common.hfpay.HfPayPaymentSettingApplyPort;
+import cn.shopex.ecshopx.espier.security.OperatorJwtAuthenticationFilter;
 import cn.shopex.ecshopx.payment.service.settings.DoumenIntlPaymentSettingReader;
 import cn.shopex.ecshopx.payment.support.PaymentConfigJsonSupport;
 import cn.shopex.ecshopx.payment.support.PaymentSettingRedisKeys;
@@ -48,6 +49,7 @@ public class PaymentSettingReadService {
 	private static final String PT_DOUMEN_INTL = "doumen_intl";
 
 	private final PaymentSettingInputResolver paymentSettingInputResolver;
+	private final PaymentSettingDistributorAccessGuard paymentSettingDistributorAccessGuard;
 	private final PointMemberRuleReadService pointMemberRuleReadService;
 	private final HfPayPaymentSettingApplyPort hfPayPaymentSettingApplyPort;
 	private final DoumenIntlPaymentSettingReader doumenIntlPaymentSettingReader;
@@ -57,6 +59,7 @@ public class PaymentSettingReadService {
 
 	public PaymentSettingReadService(
 			PaymentSettingInputResolver paymentSettingInputResolver,
+			PaymentSettingDistributorAccessGuard paymentSettingDistributorAccessGuard,
 			PointMemberRuleReadService pointMemberRuleReadService,
 			HfPayPaymentSettingApplyPort hfPayPaymentSettingApplyPort,
 			DoumenIntlPaymentSettingReader doumenIntlPaymentSettingReader,
@@ -64,6 +67,7 @@ public class PaymentSettingReadService {
 			@Qualifier("sharedStringRedisTemplate") StringRedisTemplate sharedStringRedisTemplate,
 			ObjectMapper objectMapper) {
 		this.paymentSettingInputResolver = paymentSettingInputResolver;
+		this.paymentSettingDistributorAccessGuard = paymentSettingDistributorAccessGuard;
 		this.pointMemberRuleReadService = pointMemberRuleReadService;
 		this.hfPayPaymentSettingApplyPort = hfPayPaymentSettingApplyPort;
 		this.doumenIntlPaymentSettingReader = doumenIntlPaymentSettingReader;
@@ -75,6 +79,15 @@ public class PaymentSettingReadService {
 	public Object getPaymentSetting(
 			HttpServletRequest request, String payType, long distributorId, String countryCodeResolved) {
 		long companyId = paymentSettingInputResolver.requireCompanyId(request);
+		Object rawJwt = request.getAttribute(OperatorJwtAuthenticationFilter.OPERATOR_JWT_USER_DATA);
+		Map<?, ?> jwt = rawJwt instanceof Map<?, ?> m ? m : Map.of();
+		String operatorType = PaymentSettingDistributorAccessGuard.parseJwtOperatorType(jwt);
+		long jwtDistributorId = PaymentSettingDistributorAccessGuard.parseJwtDistributorId(jwt);
+		// ECX-10856: soft-deny unauthorized distributor_id with empty body (same shape as missing config).
+		if (!paymentSettingDistributorAccessGuard.mayRead(
+				companyId, distributorId, operatorType, jwtDistributorId)) {
+			return Collections.emptyList();
+		}
 
 		if (PT_POINT_PAY.equals(payType)) {
 			return pointMemberRuleReadService.getPointRule(companyId, countryCodeResolved);

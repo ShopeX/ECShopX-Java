@@ -71,18 +71,21 @@ public class WxappOrderDeliveryService {
 	private final OrderAssociationEffectiveTypeService orderAssociationEffectiveTypeService;
 	private final AdminNormalOrderDeliveryCoreService adminNormalOrderDeliveryCoreService;
 	private final OrderAssociationAssociationDataAssembler orderAssociationAssociationDataAssembler;
+	private final WxappFrontMerchantSelfDeliveryAccessGuard accessGuard;
 
 	public WxappOrderDeliveryService(
 			OrderAssociationsMapper orderAssociationsMapper,
 			AdminDeliveryLogisticsNameService adminDeliveryLogisticsNameService,
 			OrderAssociationEffectiveTypeService orderAssociationEffectiveTypeService,
 			AdminNormalOrderDeliveryCoreService adminNormalOrderDeliveryCoreService,
-			OrderAssociationAssociationDataAssembler orderAssociationAssociationDataAssembler) {
+			OrderAssociationAssociationDataAssembler orderAssociationAssociationDataAssembler,
+			WxappFrontMerchantSelfDeliveryAccessGuard accessGuard) {
 		this.orderAssociationsMapper = orderAssociationsMapper;
 		this.adminDeliveryLogisticsNameService = adminDeliveryLogisticsNameService;
 		this.orderAssociationEffectiveTypeService = orderAssociationEffectiveTypeService;
 		this.adminNormalOrderDeliveryCoreService = adminNormalOrderDeliveryCoreService;
 		this.orderAssociationAssociationDataAssembler = orderAssociationAssociationDataAssembler;
+		this.accessGuard = accessGuard;
 	}
 
 	public Map<String, Object> delivery(
@@ -106,9 +109,11 @@ public class WxappOrderDeliveryService {
 		if (assoc == null) {
 			throw new ResourceException("此订单不存在！");
 		}
+		long userId = longVal(auth.get("user_id"));
+		accessGuard.assertAuthorizedForOrder(companyId, userId, orderId);
 		adminDeliveryLogisticsNameService.fillLogiName(p);
 		p.put("operator_type", "user");
-		p.put("operator_id", longVal(auth.get("user_id")));
+		p.put("operator_id", userId);
 		p.put("supplier_id", 0);
 
 		String effective = orderAssociationEffectiveTypeService.effectiveOrderType(assoc);

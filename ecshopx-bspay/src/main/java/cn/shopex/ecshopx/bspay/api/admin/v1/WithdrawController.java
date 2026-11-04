@@ -347,6 +347,12 @@ public class WithdrawController {
 		@SuppressWarnings("unchecked")
 		Map<String, Object> jwt = (Map<String, Object>) raw;
 
+		Object companyIdRaw = jwt.get("company_id");
+		if (!(companyIdRaw instanceof Number) || ((Number) companyIdRaw).longValue() <= 0L) {
+			throw new UnauthorizedException("未登录");
+		}
+		long companyId = ((Number) companyIdRaw).longValue();
+
 		String auditor = jwt.get("mobile") == null ? "" : jwt.get("mobile").toString();
 
 		long auditorOperatorId = 0L;
@@ -374,6 +380,7 @@ public class WithdrawController {
 		Map<String, Object> row =
 				withdrawApplyService.auditWithdraw(
 						body.getApplyId(),
+						companyId,
 						actionTrimmed,
 						auditor,
 						auditorOperatorId,
@@ -381,8 +388,11 @@ public class WithdrawController {
 						operatorTypeRaw);
 
 		if ("approve".equals(actionTrimmed) && row != null && !row.isEmpty()) {
-			withdrawJobDispatchPublisher.enqueueWithdrawJob(body.getApplyId());
-			log.info("提现申请审核::approve，已通过异步任务总线入队 apply_id:{}", body.getApplyId());
+			withdrawJobDispatchPublisher.enqueueWithdrawJob(body.getApplyId(), companyId);
+			log.info(
+					"提现申请审核::approve，已通过异步任务总线入队 apply_id:{} company_id:{}",
+					body.getApplyId(),
+					companyId);
 		}
 
 		LinkedHashMap<String, Object> inner = new LinkedHashMap<>();

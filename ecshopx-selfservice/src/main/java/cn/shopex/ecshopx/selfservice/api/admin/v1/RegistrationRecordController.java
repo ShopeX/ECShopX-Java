@@ -199,11 +199,13 @@ public class RegistrationRecordController {
 		if (recordId == null) {
 			return ResponseEntity.ok(ApiResult.ok(Collections.emptyList()));
 		}
+		long companyId = parseCompanyId(jwt);
 		Locale locale = LocaleContextHolder.getLocale();
 		String langTag = RequestLangTag.current(langueProperties);
 		boolean datapassBlocked = resolveDatapassBlocked(httpRequest);
 		Map<String, Object> body =
-				registrationRecordDataInfoService.getDataInfo(recordId, langTag, locale, datapassBlocked);
+				registrationRecordDataInfoService.getDataInfo(
+						companyId, recordId, langTag, locale, datapassBlocked);
 		return ResponseEntity.ok(ApiResult.ok(body));
 	}
 

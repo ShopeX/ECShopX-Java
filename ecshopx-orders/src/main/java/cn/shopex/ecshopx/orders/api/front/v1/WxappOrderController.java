@@ -53,9 +53,7 @@ import cn.shopex.ecshopx.orders.service.front.wxapp.WxappOrderCreateService;
 import cn.shopex.ecshopx.orders.service.front.wxapp.WxappOrderDeliveryService;
 import cn.shopex.ecshopx.orders.service.front.wxapp.WxappOrderFreightFeeService;
 import cn.shopex.ecshopx.orders.service.front.wxapp.WxappOrderJsPayConfigService;
-import cn.shopex.ecshopx.orders.service.admin.AdminCancelDeliveryStaffService;
-import cn.shopex.ecshopx.orders.service.admin.AdminConfirmDeliveryPackagService;
-import cn.shopex.ecshopx.orders.service.admin.AdminOrderUpdateDeliveryService;
+import cn.shopex.ecshopx.orders.service.front.wxapp.WxappFrontSelfDeliveryMutationService;
 import cn.shopex.ecshopx.orders.service.front.wxapp.WxappNormalOrderConfirmReceiptService;
 import cn.shopex.ecshopx.orders.service.front.wxapp.WxappOrderDetailNewService;
 import cn.shopex.ecshopx.orders.service.front.wxapp.WxappOrderDetailService;
@@ -124,23 +122,6 @@ import jakarta.servlet.http.HttpServletRequest;
 @RequestMapping("/api/v1/h5app/wxapp")
 public class WxappOrderController {
 
-	/**
-	 * Wxapp {@code /order/cancel/deliverystaff} passes no storefront operator; service maps blank type to OPL {@code
-	 * operator_type = system} and {@code operator_id = 0}.
-	 */
-	private static final String WXAPP_CANCEL_DELIVERY_STAFF_OPERATOR_TYPE = "";
-
-	private static final long WXAPP_CANCEL_DELIVERY_STAFF_OPERATOR_ID = 0L;
-
-	/**
-	 * Wxapp {@code POST /order/deliverypackag/confirm} has no back-office operator; {@link
-	 * AdminConfirmDeliveryPackagService} maps blank {@code operator_type} to {@code system} and keeps {@code
-	 * operator_id} at {@code 0} for order-process log payloads.
-	 */
-	private static final String WXAPP_CONFIRM_DELIVERY_PACKAG_OPERATOR_TYPE = "";
-
-	private static final long WXAPP_CONFIRM_DELIVERY_PACKAG_OPERATOR_ID = 0L;
-
 	private final OrderEpidemicRegisterFrontDelService orderEpidemicRegisterFrontDelService;
 
 	private final WxappOfflinePaymentUploadVoucherService wxappOfflinePaymentUploadVoucherService;
@@ -155,17 +136,13 @@ public class WxappOrderController {
 
 	private final WxappOrderCancelService wxappOrderCancelService;
 
-	private final AdminCancelDeliveryStaffService adminCancelDeliveryStaffService;
-
-	private final AdminConfirmDeliveryPackagService adminConfirmDeliveryPackagService;
+	private final WxappFrontSelfDeliveryMutationService wxappFrontSelfDeliveryMutationService;
 
 	private final WxappNormalOrderConfirmReceiptService wxappNormalOrderConfirmReceiptService;
 
 	private final WxappOrderDeliveryService wxappOrderDeliveryService;
 
 	private final WxappOrderJsPayConfigService wxappOrderJsPayConfigService;
-
-	private final AdminOrderUpdateDeliveryService adminOrderUpdateDeliveryService;
 
 	private final WxappOrderDetailService wxappOrderDetailService;
 
@@ -201,12 +178,10 @@ public class WxappOrderController {
 			WxappOrderCreateService wxappOrderCreateService,
 			WxappOrderFreightFeeService wxappOrderFreightFeeService,
 			WxappOrderCancelService wxappOrderCancelService,
-			AdminCancelDeliveryStaffService adminCancelDeliveryStaffService,
-			AdminConfirmDeliveryPackagService adminConfirmDeliveryPackagService,
+			WxappFrontSelfDeliveryMutationService wxappFrontSelfDeliveryMutationService,
 			WxappNormalOrderConfirmReceiptService wxappNormalOrderConfirmReceiptService,
 			WxappOrderDeliveryService wxappOrderDeliveryService,
 			WxappOrderJsPayConfigService wxappOrderJsPayConfigService,
-			AdminOrderUpdateDeliveryService adminOrderUpdateDeliveryService,
 			WxappOrderDetailService wxappOrderDetailService,
 			WxappOrderDetailNewService wxappOrderDetailNewService,
 			WxappOrderListService wxappOrderListService,
@@ -227,12 +202,10 @@ public class WxappOrderController {
 		this.wxappOrderCreateService = wxappOrderCreateService;
 		this.wxappOrderFreightFeeService = wxappOrderFreightFeeService;
 		this.wxappOrderCancelService = wxappOrderCancelService;
-		this.adminCancelDeliveryStaffService = adminCancelDeliveryStaffService;
-		this.adminConfirmDeliveryPackagService = adminConfirmDeliveryPackagService;
+		this.wxappFrontSelfDeliveryMutationService = wxappFrontSelfDeliveryMutationService;
 		this.wxappNormalOrderConfirmReceiptService = wxappNormalOrderConfirmReceiptService;
 		this.wxappOrderDeliveryService = wxappOrderDeliveryService;
 		this.wxappOrderJsPayConfigService = wxappOrderJsPayConfigService;
-		this.adminOrderUpdateDeliveryService = adminOrderUpdateDeliveryService;
 		this.wxappOrderDetailService = wxappOrderDetailService;
 		this.wxappOrderDetailNewService = wxappOrderDetailNewService;
 		this.wxappOrderListService = wxappOrderListService;
@@ -828,7 +801,7 @@ public class WxappOrderController {
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	/**
 	 * @apiNote OPL dispatch and merchant vs courier routing are documented on {@link WxappOrderController}; this
-	 *           method only delegates to {@link AdminOrderUpdateDeliveryService}.
+	 *           method authorizes via {@link WxappFrontSelfDeliveryMutationService} then delegates.
 	 */
 	public ResponseEntity<ApiResult<Map<String, Object>>> updateDelivery(
 			HttpServletRequest request,
@@ -858,7 +831,9 @@ public class WxappOrderController {
 		merged.put("orders_delivery_id", pathId);
 		merged.put("company_id", companyId);
 		merged.put("operator_type", "admin");
-		Map<String, Object> data = adminOrderUpdateDeliveryService.updateDelivery(companyId, 0L, pathId, merged);
+		Map<String, Object> data =
+				wxappFrontSelfDeliveryMutationService.updateDelivery(
+						companyId, longVal(auth.get("user_id")), pathId, merged);
 		return ResponseEntity.ok(ApiResult.ok(data));
 	}
 
@@ -907,21 +882,18 @@ public class WxappOrderController {
 			merged.putAll(body);
 		}
 		String orderIdRaw = resolveOrderIdForCancelDeliveryStaff(merged);
-		adminCancelDeliveryStaffService.cancelDeliveryStaff(
-				companyId,
-				WXAPP_CANCEL_DELIVERY_STAFF_OPERATOR_TYPE,
-				WXAPP_CANCEL_DELIVERY_STAFF_OPERATOR_ID,
-				orderIdRaw);
+		wxappFrontSelfDeliveryMutationService.cancelDeliveryStaff(
+				companyId, longVal(auth.get("user_id")), orderIdRaw);
 		Map<String, Object> data = new LinkedHashMap<>();
 		data.put("status", Boolean.TRUE);
 		return ResponseEntity.ok(ApiResult.ok(data));
 	}
 
 	/**
-	 * Confirms self-delivery packaged status for the tenant order. Delegates to {@link
-	 * AdminConfirmDeliveryPackagService#confirmDeliveryPackag(long, String, long, String)} with wxapp-shaped
-	 * operator placeholders; order-process log publication stays inside that service via {@code
-	 * OrderProcessLogPublishPort} (after commit), not from this controller.
+	 * Confirms self-delivery packaged status for the tenant order. Authorizes then delegates to {@link
+	 * WxappFrontSelfDeliveryMutationService#confirmDeliveryPackag(long, long, String)}; order-process log
+	 * publication stays inside the admin service via {@code OrderProcessLogPublishPort} (after commit), not from
+	 * this controller.
 	 */
 	@FrontAuth
 	@PostMapping(
@@ -957,11 +929,8 @@ public class WxappOrderController {
 			merged.putAll(body);
 		}
 		String orderIdRaw = resolveOrderIdForCancelDeliveryStaff(merged);
-		adminConfirmDeliveryPackagService.confirmDeliveryPackag(
-				companyId,
-				WXAPP_CONFIRM_DELIVERY_PACKAG_OPERATOR_TYPE,
-				WXAPP_CONFIRM_DELIVERY_PACKAG_OPERATOR_ID,
-				orderIdRaw);
+		wxappFrontSelfDeliveryMutationService.confirmDeliveryPackag(
+				companyId, longVal(auth.get("user_id")), orderIdRaw);
 		Map<String, Object> data = new LinkedHashMap<>();
 		data.put("status", Boolean.TRUE);
 		return ResponseEntity.ok(ApiResult.ok(data));

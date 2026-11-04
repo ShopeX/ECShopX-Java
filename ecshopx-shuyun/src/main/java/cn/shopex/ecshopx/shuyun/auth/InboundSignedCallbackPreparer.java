@@ -42,6 +42,7 @@ public class InboundSignedCallbackPreparer {
 	private final OpenPlatformConfigService openPlatformConfigService;
 	private final ShuyunOfflineBenefitMapper offlineBenefitMapper;
 	private final CallbackSignatureVerifier signatureVerifier;
+	private final InboundSignedCallbackReplayGuard replayGuard;
 	private final ShuyunOpenPlatformProperties properties;
 	private final ObjectMapper objectMapper;
 
@@ -49,11 +50,13 @@ public class InboundSignedCallbackPreparer {
 			OpenPlatformConfigService openPlatformConfigService,
 			ShuyunOfflineBenefitMapper offlineBenefitMapper,
 			CallbackSignatureVerifier signatureVerifier,
+			InboundSignedCallbackReplayGuard replayGuard,
 			ShuyunOpenPlatformProperties properties,
 			ObjectMapper objectMapper) {
 		this.openPlatformConfigService = openPlatformConfigService;
 		this.offlineBenefitMapper = offlineBenefitMapper;
 		this.signatureVerifier = signatureVerifier;
+		this.replayGuard = replayGuard;
 		this.properties = properties;
 		this.objectMapper = objectMapper;
 	}
@@ -124,8 +127,19 @@ public class InboundSignedCallbackPreparer {
 		}
 
 		String sign = resolveCallbackSign(request);
-		if (!signatureVerifier.verifyHttpCallback(callbackSecret, request, sign)) {
+		boolean includeBody = properties.isCallbackSignIncludeBody();
+		if (!signatureVerifier.verifyHttpCallback(
+				callbackSecret, request, sign, rawBody == null ? "" : rawBody, includeBody)) {
 			return err(invalidSign(mode));
+		}
+
+		String requestTime = resolveCallbackRequestTime(request);
+		if (!replayGuard.assertFreshAndOnce(
+				sign,
+				requestTime,
+				properties.getCallbackReplaySkewSeconds(),
+				properties.getCallbackReplayTtlSeconds())) {
+			return err(replayOrStale(mode));
 		}
 
 		if (mode == InboundSignedPrepareMode.OFFLINE_BENEFIT && !isEligible(config)) {
@@ -164,6 +178,27 @@ public class InboundSignedCallbackPreparer {
 			return fromQuery.trim();
 		}
 		for (String name : List.of("SY-Request-Sign", "Sy-Request-Sign")) {
+			String h = request.getHeader(name);
+			if (StringUtils.hasText(h)) {
+				return h.trim();
+			}
+		}
+		return "";
+	}
+
+	/** Prefer SY-Request-Time header, then callBackTime query/header (aligned with verifier). */
+	public String resolveCallbackRequestTime(HttpServletRequest request) {
+		for (String name : List.of("SY-Request-Time", "Sy-Request-Time")) {
+			String h = request.getHeader(name);
+			if (StringUtils.hasText(h)) {
+				return h.trim();
+			}
+		}
+		String legacy = request.getParameter("callBackTime");
+		if (StringUtils.hasText(legacy)) {
+			return legacy.trim();
+		}
+		for (String name : List.of("callBackTime", "Callbacktime")) {
 			String h = request.getHeader(name);
 			if (StringUtils.hasText(h)) {
 				return h.trim();
@@ -274,6 +309,12 @@ public class InboundSignedCallbackPreparer {
 		return mode == InboundSignedPrepareMode.LOYALTY_MEMBER_GRADE_CHANGE
 				? loyalty("40305", "INVALID_SIGN")
 				: offline(403, 403, "INVALID_SIGN");
+	}
+
+	private static ResponseEntity<Map<String, Object>> replayOrStale(InboundSignedPrepareMode mode) {
+		return mode == InboundSignedPrepareMode.LOYALTY_MEMBER_GRADE_CHANGE
+				? loyalty("40306", "REPLAY_OR_STALE")
+				: offline(403, 403, "REPLAY_OR_STALE");
 	}
 
 	private static ResponseEntity<Map<String, Object>> ambiguousPlatCode(InboundSignedPrepareMode mode) {

@@ -48,7 +48,7 @@ public class PaymentSettingInputResolver {
 		}
 
 		long companyId = this.requireCompanyId(request);
-		long distributorId = parseLongParam(scalar.remove("distributor_id"), 0L);
+		long requestDistributorId = parseLongParam(scalar.remove("distributor_id"), 0L);
 
 		Map<String, MultipartFile> files = new LinkedHashMap<>();
 		if (request instanceof MultipartHttpServletRequest mreq) {
@@ -62,12 +62,11 @@ public class PaymentSettingInputResolver {
 
 		String operatorType = "";
 		long operatorId = 0L;
+		long jwtDistributorId = 0L;
 		Object rawUd = request.getAttribute(OperatorJwtAuthenticationFilter.OPERATOR_JWT_USER_DATA);
 		if (rawUd instanceof Map<?, ?> ud) {
-			Object ot = ud.get("operator_type");
-			if (ot != null) {
-				operatorType = String.valueOf(ot).trim();
-			}
+			operatorType = PaymentSettingDistributorAccessGuard.parseJwtOperatorType(ud);
+			jwtDistributorId = PaymentSettingDistributorAccessGuard.parseJwtDistributorId(ud);
 			Object oid = ud.get("operator_id");
 			if (oid != null) {
 				try {
@@ -77,6 +76,10 @@ public class PaymentSettingInputResolver {
 				}
 			}
 		}
+
+		long distributorId =
+				PaymentSettingDistributorAccessGuard.resolveWriteDistributorId(
+						operatorType, requestDistributorId, jwtDistributorId);
 
 		Object rawPayType = scalar.remove("pay_type");
 		String payType = rawPayType != null ? String.valueOf(rawPayType) : null;

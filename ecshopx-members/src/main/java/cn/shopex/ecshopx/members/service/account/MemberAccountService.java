@@ -1015,12 +1015,9 @@ public class MemberAccountService {
 			redisPhoneForVcode = plainMobile;
 		}
 
-		boolean shouldVerifySms = merged.containsKey("vcode") && merged.get("vcode") != null;
-		if (shouldVerifySms) {
-			String vcode = String.valueOf(merged.get("vcode")).trim();
-			if (!memberRegSettingService.checkSmsVcode(redisPhoneForVcode, companyId, vcode, "forgot_password")) {
-				throw new ResourceException("短信验证码错误");
-			}
+		String vcode = merged.get("vcode") == null ? "" : String.valueOf(merged.get("vcode")).trim();
+		if (!memberRegSettingService.checkSmsVcode(redisPhoneForVcode, companyId, vcode, "forgot_password")) {
+			throw new ResourceException("短信验证码错误");
 		}
 
 		boolean wechatRandomPwd = merged.containsKey("api_from")

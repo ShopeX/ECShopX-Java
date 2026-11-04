@@ -71,7 +71,11 @@ public class ItemsProfitSaveService {
 		List<JsonNode> entries = parseProfitConfEntries(body);
 		List<Long> itemIds = new ArrayList<>(entries.size());
 		for (JsonNode val : entries) {
-			itemIds.add(requireItemId(val));
+			long itemId = requireItemId(val);
+			itemIds.add(itemId);
+			if (itemsRepository.getByItemIdAndCompany(itemId, companyId) == null) {
+				throw new ResourceException("商品不存在");
+			}
 		}
 		itemsProfitRepository.deleteByCompanyAndItemIds(companyId, itemIds);
 
@@ -156,11 +160,14 @@ public class ItemsProfitSaveService {
 		} else {
 			profitFee = popularizeBd.setScale(0, RoundingMode.DOWN).intValue();
 		}
-		itemsRepository.updateProfitFeeByItemId(itemId, itemsTableProfitType, profitFee);
+		itemsRepository.updateProfitFeeByItemId(companyId, itemId, itemsTableProfitType, profitFee);
 	}
 
 	private void applyDefaultProfitBranch(long companyId, long itemId) {
-		Items itemInfo = itemsRepository.findByItemId(itemId);
+		Items itemInfo = itemsRepository.getByItemIdAndCompany(itemId, companyId);
+		if (itemInfo == null) {
+			throw new ResourceException("商品不存在");
+		}
 		Optional<Long> categoryIdOpt = resolveCategoryId(itemInfo);
 		if (categoryIdOpt.isPresent()) {
 			Optional<ItemsCategoryProfit> cat = itemsCategoryProfitRepository.findByCategoryIdOnly(categoryIdOpt.get());
@@ -168,14 +175,14 @@ public class ItemsProfitSaveService {
 				Optional<BigDecimal> popOpt = tryPopularizeFromCategoryConf(cat.get().getProfitConf());
 				if (popOpt.isPresent()) {
 					BigDecimal scale = popOpt.get().divide(new BigDecimal("100"), 4, RoundingMode.HALF_UP);
-					itemsRepository.updateProfitByItemId(itemId, 1, scale.toPlainString());
+					itemsRepository.updateProfitByItemId(companyId, itemId, 1, scale.toPlainString());
 					return;
 				}
 			}
 		}
 		BigDecimal popularizePercent = distributionConfigRedisReadService.getPopularizeSellerPercent(companyId);
 		BigDecimal scale = popularizePercent.divide(new BigDecimal("100"), 4, RoundingMode.HALF_UP);
-		itemsRepository.updateProfitByItemId(itemId, 0, scale.toPlainString());
+		itemsRepository.updateProfitByItemId(companyId, itemId, 0, scale.toPlainString());
 	}
 
 	private static Optional<Long> resolveCategoryId(Items itemInfo) {

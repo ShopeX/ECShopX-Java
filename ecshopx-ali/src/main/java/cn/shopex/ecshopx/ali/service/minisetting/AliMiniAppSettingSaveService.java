@@ -18,7 +18,9 @@ package cn.shopex.ecshopx.ali.service.minisetting;
 
 import cn.shopex.ecshopx.ali.domain.AliMiniAppSetting;
 import cn.shopex.ecshopx.ali.mapper.AliMiniAppSettingMapper;
+import cn.shopex.ecshopx.common.exception.ForbiddenException;
 import cn.shopex.ecshopx.common.exception.ResourceException;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -67,16 +69,15 @@ public class AliMiniAppSettingSaveService {
 			} else {
 				Long reqId = parseNonEmptySettingId(rawSettingId);
 				if (!Objects.equals(reqId, companyData.getSettingId())) {
-					throw new ResourceException("当前账号没有该小程序的配置权限");
+					throw new ForbiddenException("无权操作该小程序配置");
 				}
 				effectiveSettingId = reqId;
 			}
 		} else {
-			if (AliMiniAppSettingIdValidator.isEmptySettingId(rawSettingId)) {
-				effectiveSettingId = null;
-			} else {
-				effectiveSettingId = parseNonEmptySettingId(rawSettingId);
+			if (!AliMiniAppSettingIdValidator.isEmptySettingId(rawSettingId)) {
+				throw new ForbiddenException("无权操作该小程序配置");
 			}
+			effectiveSettingId = null;
 		}
 
 		Long dup = mapper.selectCount(Wrappers.<AliMiniAppSetting>lambdaQuery()
@@ -105,12 +106,32 @@ public class AliMiniAppSettingSaveService {
 		if (existing == null) {
 			throw new ResourceException("未查询到更新数据");
 		}
+		if (existing.getCompanyId() == null || !Objects.equals(existing.getCompanyId(), companyId)) {
+			throw new ForbiddenException("无权操作该小程序配置");
+		}
 		existing.setAuthorizerAppid(authorizerAppid);
 		existing.setMerchantPrivateKey(merchantPrivateKey);
 		existing.setApiSignMethod(apiSignMethod);
 		applyOptionalStrings(existing, params);
 		existing.setUpdated(now);
-		mapper.updateById(existing);
+
+		LambdaUpdateWrapper<AliMiniAppSetting> uw = new LambdaUpdateWrapper<>();
+		uw.eq(AliMiniAppSetting::getSettingId, effectiveSettingId)
+				.eq(AliMiniAppSetting::getCompanyId, companyId)
+				.set(AliMiniAppSetting::getAuthorizerAppid, existing.getAuthorizerAppid())
+				.set(AliMiniAppSetting::getMerchantPrivateKey, existing.getMerchantPrivateKey())
+				.set(AliMiniAppSetting::getApiSignMethod, existing.getApiSignMethod())
+				.set(AliMiniAppSetting::getAlipayCertPath, existing.getAlipayCertPath())
+				.set(AliMiniAppSetting::getAlipayRootCertPath, existing.getAlipayRootCertPath())
+				.set(AliMiniAppSetting::getMerchantCertPath, existing.getMerchantCertPath())
+				.set(AliMiniAppSetting::getAlipayPublicKey, existing.getAlipayPublicKey())
+				.set(AliMiniAppSetting::getNotifyUrl, existing.getNotifyUrl())
+				.set(AliMiniAppSetting::getEncryptKey, existing.getEncryptKey())
+				.set(AliMiniAppSetting::getUpdated, existing.getUpdated());
+		int rows = mapper.update(null, uw);
+		if (rows == 0) {
+			throw new ResourceException("未查询到更新数据");
+		}
 
 		try {
 			Map<String, Object> row = AliMiniAppSettingRowMapper.toSnakeRow(existing);

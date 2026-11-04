@@ -95,61 +95,86 @@ public class AlipayH5SyncReturnService {
 		Map<String, String> rawFlat = NotifyHttpParameterFlatten.flattenObjectMap(objectMap);
 		logAlipayResponseSummary(rawFlat);
 
-		String outTradeNo = rawFlat.get("out_trade_no");
-		if (!StringUtils.hasText(outTradeNo)) {
-			throw new BadRequestException("缺少 out_trade_no");
-		}
-
-		String charsetRaw = rawFlat.get("charset");
-		String charsetName = StringUtils.hasText(charsetRaw) ? charsetRaw.trim() : "gb2312";
-		Charset sourceCharset = resolveSourceCharset(charsetName);
-		Map<String, String> encodedFlat = encodeMapValuesToUtf8(rawFlat, sourceCharset);
-
-		long distributorIdForSetting =
-				alipayNotifyOrderSidePort.resolveDistributorIdForAlipayRedis(companyId, outTradeNo);
-
-		alipayPaymentConfigValidationService.assertAsyncNotifyConfigComplete(companyId, distributorIdForSetting);
-		AlipayNotifySigningMaterial signingMaterial = loadSigningMaterial(companyId, distributorIdForSetting);
-
-		alipayAsyncNotifyVerificationService.verifySignedNotify(encodedFlat, signingMaterial);
-
-		AlipayTradeQueryParsedResponse parsed =
-				alipayOpenapiTradeQueryService.queryTrade(companyId, distributorIdForSetting, outTradeNo);
-
-		String rawTs = parsed.tradeStatus() == null ? "" : parsed.tradeStatus();
-		String normalizedStatus;
-		if ("TRADE_SUCCESS".equals(rawTs) || "TRADE_FINISHED".equals(rawTs)) {
-			normalizedStatus = "SUCCESS";
-		} else {
-			normalizedStatus = rawTs;
-		}
-
-		String passbackRaw = parsed.passbackParams();
-		Map<String, String> returnData = new LinkedHashMap<>();
-		if (StringUtils.hasText(passbackRaw)) {
-			String decoded;
-			try {
-				decoded = URLDecoder.decode(passbackRaw.trim(), StandardCharsets.UTF_8);
-			} catch (IllegalArgumentException e) {
-				throw new BadRequestException("回传参数无法解码");
+			String outTradeNo = rawFlat.get("out_trade_no");
+			if (!StringUtils.hasText(outTradeNo)) {
+				throw new BadRequestException("缺少 out_trade_no");
 			}
-			returnData = parseQueryString(decoded);
-		}
-		boolean depositRecharge =
-				returnData.containsKey("attach") && "depositRecharge".equals(returnData.get("attach"));
 
-		Map<String, Object> options = new LinkedHashMap<>();
-		options.put("pay_type", "alipay");
-		String transactionId = StringUtils.hasText(parsed.tradeNo()) ? parsed.tradeNo() : "";
-		options.put("transaction_id", transactionId);
+			String charsetRaw = rawFlat.get("charset");
+			String charsetName = StringUtils.hasText(charsetRaw) ? charsetRaw.trim() : "gb2312";
+			Charset sourceCharset = resolveSourceCharset(charsetName);
+			Map<String, String> encodedFlat = encodeMapValuesToUtf8(rawFlat, sourceCharset);
 
-		if (depositRecharge) {
-			alipayNotifyDepositSidePort.rechargeCallback(outTradeNo, normalizedStatus, options);
-		} else {
-			alipayNotifyOrderSidePort.applyTradePaymentAfterAlipay(outTradeNo, normalizedStatus, options);
+			long signingCompanyId = companyId;
+			long distributorIdForSetting =
+					alipayNotifyOrderSidePort.resolveDistributorIdForAlipayRedis(companyId, outTradeNo);
+
+			alipayPaymentConfigValidationService.assertAsyncNotifyConfigComplete(
+					signingCompanyId, distributorIdForSetting);
+			AlipayNotifySigningMaterial signingMaterial =
+					loadSigningMaterial(signingCompanyId, distributorIdForSetting);
+
+			alipayAsyncNotifyVerificationService.verifySignedNotify(encodedFlat, signingMaterial);
+
+			AlipayTradeQueryParsedResponse parsed =
+					alipayOpenapiTradeQueryService.queryTrade(
+							signingCompanyId, distributorIdForSetting, outTradeNo);
+
+			String rawTs = parsed.tradeStatus() == null ? "" : parsed.tradeStatus();
+			String normalizedStatus;
+			if ("TRADE_SUCCESS".equals(rawTs) || "TRADE_FINISHED".equals(rawTs)) {
+				normalizedStatus = "SUCCESS";
+			} else {
+				normalizedStatus = rawTs;
+			}
+
+			String passbackRaw = parsed.passbackParams();
+			Map<String, String> returnData = new LinkedHashMap<>();
+			if (StringUtils.hasText(passbackRaw)) {
+				String decoded;
+				try {
+					decoded = URLDecoder.decode(passbackRaw.trim(), StandardCharsets.UTF_8);
+				} catch (IllegalArgumentException e) {
+					throw new BadRequestException("回传参数无法解码");
+				}
+				returnData = parseQueryString(decoded);
+			}
+			boolean depositRecharge =
+					returnData.containsKey("attach") && "depositRecharge".equals(returnData.get("attach"));
+
+			Map<String, Object> options = new LinkedHashMap<>();
+			options.put("pay_type", "alipay");
+			String transactionId = StringUtils.hasText(parsed.tradeNo()) ? parsed.tradeNo() : "";
+			options.put("transaction_id", transactionId);
+
+			if (depositRecharge) {
+				long depositCompanyId =
+						alipayNotifyDepositSidePort.requireCompanyIdByDepositTradeId(outTradeNo);
+				if (depositCompanyId != companyId) {
+					throw new BadRequestException("储值单企业与回调企业不一致");
+				}
+				String passbackCompanyRaw = returnData.get("company_id");
+				if (StringUtils.hasText(passbackCompanyRaw)) {
+					long passbackCompanyId;
+					try {
+						passbackCompanyId = Long.parseLong(passbackCompanyRaw.trim());
+					} catch (NumberFormatException e) {
+						throw new BadRequestException("企业编号格式错误");
+					}
+					if (passbackCompanyId != depositCompanyId) {
+						throw new BadRequestException("储值单企业与回调企业不一致");
+					}
+				}
+				alipayNotifyDepositSidePort.rechargeCallback(outTradeNo, normalizedStatus, options);
+			} else {
+				long tradeCompanyId = alipayNotifyOrderSidePort.requireCompanyIdByTradeId(outTradeNo);
+				if (tradeCompanyId != companyId) {
+					throw new BadRequestException("订单企业与回调企业不一致");
+				}
+				alipayNotifyOrderSidePort.applyTradePaymentAfterAlipay(outTradeNo, normalizedStatus, options);
+			}
+			return normalizedStatus;
 		}
-		return normalizedStatus;
-	}
 
 	private AlipayNotifySigningMaterial loadSigningMaterial(long companyId, long distributorIdForSetting) {
 		String raw = companysRedisTemplate

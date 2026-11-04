@@ -227,9 +227,12 @@ public class TurntableController {
 	@Activated(routeAlias = "promotions.turntable.log.count.get")
 	@GetMapping(value = "/getturntable_count/byid", name = "大转盘统计")
 	public ResponseEntity<ApiResult<Map<String, Object>>> getLogCount(
+			HttpServletRequest request,
 			@RequestParam(value = "activity_id", required = false) String activityId) {
+		Map<String, Object> ud = readOperatorJwtMap(request);
+		long companyId = readCompanyIdFromOperatorJwtMap(ud);
 		long actId = turntableConfigService.parseRequiredActivityId(activityId);
-		Map<String, Object> data = turntableLogCountService.getLogCount(actId);
+		Map<String, Object> data = turntableLogCountService.getLogCount(companyId, actId);
 		return ResponseEntity.ok(ApiResult.ok(data));
 	}
 

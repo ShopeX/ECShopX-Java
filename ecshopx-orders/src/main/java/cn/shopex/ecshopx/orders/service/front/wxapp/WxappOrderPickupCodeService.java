@@ -21,11 +21,14 @@ import cn.shopex.ecshopx.common.exception.ForbiddenException;
 import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.companys.service.operator.sms.CompanySceneSmsSendPort;
 import cn.shopex.ecshopx.companys.service.setting.PickupcodeSettingRedisService;
+import cn.shopex.ecshopx.orders.domain.NormalOrders;
 import cn.shopex.ecshopx.orders.domain.OrderAssociations;
+import cn.shopex.ecshopx.orders.mapper.NormalOrdersMapper;
 import cn.shopex.ecshopx.orders.mapper.OrderAssociationsMapper;
 import cn.shopex.ecshopx.orders.service.admin.AdminEntityOrderDetailTypePolicy;
 import cn.shopex.ecshopx.orders.service.admin.AdminNormalOrderDetailService;
 import cn.shopex.ecshopx.orders.service.admin.OrderAssociationEffectiveTypeService;
+import cn.shopex.ecshopx.orders.service.normal.OrderZitiQrCodeRedisService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import java.time.Duration;
 import java.util.LinkedHashMap;
@@ -44,27 +47,33 @@ public class WxappOrderPickupCodeService {
 	private static final Logger log = LoggerFactory.getLogger(WxappOrderPickupCodeService.class);
 
 	private final OrderAssociationsMapper orderAssociationsMapper;
+	private final NormalOrdersMapper normalOrdersMapper;
 	private final OrderAssociationEffectiveTypeService orderAssociationEffectiveTypeService;
 	private final AdminEntityOrderDetailTypePolicy adminEntityOrderDetailTypePolicy;
 	private final PickupcodeSettingRedisService pickupcodeSettingRedisService;
 	private final AdminNormalOrderDetailService adminNormalOrderDetailService;
 	private final CompanySceneSmsSendPort companySceneSmsSendPort;
+	private final OrderZitiQrCodeRedisService orderZitiQrCodeRedisService;
 	private final StringRedisTemplate companysRedisTemplate;
 
 	public WxappOrderPickupCodeService(
 			OrderAssociationsMapper orderAssociationsMapper,
+			NormalOrdersMapper normalOrdersMapper,
 			OrderAssociationEffectiveTypeService orderAssociationEffectiveTypeService,
 			AdminEntityOrderDetailTypePolicy adminEntityOrderDetailTypePolicy,
 			PickupcodeSettingRedisService pickupcodeSettingRedisService,
 			AdminNormalOrderDetailService adminNormalOrderDetailService,
 			CompanySceneSmsSendPort companySceneSmsSendPort,
+			OrderZitiQrCodeRedisService orderZitiQrCodeRedisService,
 			@Qualifier("companysRedisTemplate") StringRedisTemplate companysRedisTemplate) {
 		this.orderAssociationsMapper = orderAssociationsMapper;
+		this.normalOrdersMapper = normalOrdersMapper;
 		this.orderAssociationEffectiveTypeService = orderAssociationEffectiveTypeService;
 		this.adminEntityOrderDetailTypePolicy = adminEntityOrderDetailTypePolicy;
 		this.pickupcodeSettingRedisService = pickupcodeSettingRedisService;
 		this.adminNormalOrderDetailService = adminNormalOrderDetailService;
 		this.companySceneSmsSendPort = companySceneSmsSendPort;
+		this.orderZitiQrCodeRedisService = orderZitiQrCodeRedisService;
 		this.companysRedisTemplate = companysRedisTemplate;
 	}
 
@@ -152,13 +161,23 @@ public class WxappOrderPickupCodeService {
 			throw new ResourceException("发送过于频繁，请 " + wait + " 秒后再试");
 		}
 
-		int n = 100000 + ThreadLocalRandom.current().nextInt(900000);
-		String vcode = String.valueOf(n);
-		companysRedisTemplate.opsForValue().set(key, vcode, Duration.ofSeconds(1800));
+		NormalOrders normal =
+				normalOrdersMapper.selectOne(
+						new LambdaQueryWrapper<NormalOrders>()
+								.eq(NormalOrders::getCompanyId, companyId)
+								.eq(NormalOrders::getOrderId, orderIdNum)
+								.last("LIMIT 1"));
+		if (normal == null) {
+			throw new ResourceException("订单号为" + t + "的订单不存在");
+		}
+		long zitiBase = normal.getZitiCode() == null ? 0L : normal.getZitiCode().longValue();
+		String twelveDigit = String.valueOf(zitiBase) + randomSixDigitSuffix();
+		orderZitiQrCodeRedisService.saveZitiCodeOrderMapping(twelveDigit, orderIdNum, Duration.ofSeconds(1800));
+		companysRedisTemplate.opsForValue().set(key, twelveDigit, Duration.ofSeconds(1800));
 
 		Map<String, String> vars = new LinkedHashMap<>();
 		vars.put("订单号", t);
-		vars.put("提货码", vcode);
+		vars.put("提货码", twelveDigit);
 		companySceneSmsSendPort.sendSceneTemplatedSms(companyId, phone, "order_pickup", vars);
 
 		log.info("pickup sms sent companyId={} orderId={} mobileTail={}", companyId, orderIdNum, maskTail(phone));
@@ -170,6 +189,13 @@ public class WxappOrderPickupCodeService {
 			return b.booleanValue();
 		}
 		return "true".equalsIgnoreCase(String.valueOf(raw).trim());
+	}
+
+	private static String randomSixDigitSuffix() {
+		ThreadLocalRandom r = ThreadLocalRandom.current();
+		int first = 1 + r.nextInt(9);
+		int rest = r.nextInt(100_000);
+		return first + String.format("%05d", rest);
 	}
 
 	private static String maskTail(String phone) {

@@ -561,15 +561,13 @@ public class WithdrawApplyService {
 	@Transactional(rollbackFor = Exception.class)
 	public Map<String, Object> auditWithdraw(
 			long applyId,
+			long companyId,
 			String action,
 			String auditor,
 			long auditorOperatorId,
 			String remark,
 			String operatorTypeRaw) {
-		WithdrawApply apply = withdrawApplyMapper.selectById(applyId);
-		if (apply == null) {
-			throw new ResourceException("提现申请记录不存在");
-		}
+		WithdrawApply apply = requireWithdrawApplyForCompany(applyId, companyId);
 
 		String ot = operatorTypeRaw == null ? "" : operatorTypeRaw.trim();
 		if (!"admin".equals(ot)) {
@@ -596,6 +594,7 @@ public class WithdrawApplyService {
 
 		LambdaUpdateWrapper<WithdrawApply> uw = new LambdaUpdateWrapper<>();
 		uw.eq(WithdrawApply::getId, applyId)
+				.eq(WithdrawApply::getCompanyId, companyId)
 				.set(WithdrawApply::getAuditTime, auditTimeSec)
 				.set(WithdrawApply::getAuditor, auditor == null ? "" : auditor)
 				.set(WithdrawApply::getAuditorOperatorId, auditorOperatorId)
@@ -617,6 +616,7 @@ public class WithdrawApplyService {
 
 		LinkedHashMap<String, Object> out = new LinkedHashMap<>();
 		out.put("id", apply.getId());
+		out.put("company_id", companyId);
 		out.put("amount", apply.getAmount());
 		out.put("status", newStatus);
 		out.put("audit_time", auditTimeSec);
@@ -625,11 +625,8 @@ public class WithdrawApplyService {
 		return out;
 	}
 
-	public void executeHuifuWithdraw(long applyId) {
-		WithdrawApply apply = withdrawApplyMapper.selectById(applyId);
-		if (apply == null) {
-			throw new ResourceException("提现申请记录不存在");
-		}
+	public void executeHuifuWithdraw(long applyId, long companyId) {
+		WithdrawApply apply = requireWithdrawApplyForCompany(applyId, companyId);
 
 		Integer st = apply.getStatus();
 		if (Objects.equals(st, 4) || Objects.equals(st, 3)) {
@@ -682,6 +679,7 @@ public class WithdrawApplyService {
 					status -> {
 						LambdaUpdateWrapper<WithdrawApply> uw = new LambdaUpdateWrapper<>();
 						uw.eq(WithdrawApply::getId, applyId)
+								.eq(WithdrawApply::getCompanyId, companyId)
 								.set(WithdrawApply::getStatus, 5)
 								.set(WithdrawApply::getRequestTime, failTs)
 								.set(WithdrawApply::getFailureReason, failureReason)
@@ -691,6 +689,20 @@ public class WithdrawApplyService {
 			log.error("bspay::doWithdraw::提现申请处理失败::apply_id:{}", applyId, e);
 			throw new ResourceException(failureReason);
 		}
+	}
+
+	private WithdrawApply requireWithdrawApplyForCompany(long applyId, long companyId) {
+		if (companyId <= 0L) {
+			throw new ForbiddenException("无权操作该提现申请");
+		}
+		WithdrawApply apply = withdrawApplyMapper.selectById(applyId);
+		if (apply == null) {
+			throw new ResourceException("提现申请记录不存在");
+		}
+		if (apply.getCompanyId() == null || !Objects.equals(apply.getCompanyId(), companyId)) {
+			throw new ForbiddenException("无权操作该提现申请");
+		}
+		return apply;
 	}
 
 	private static String labelForStatus(Integer status) {
@@ -761,6 +773,7 @@ public class WithdrawApplyService {
 		}
 		LambdaUpdateWrapper<WithdrawApply> uw = new LambdaUpdateWrapper<>();
 		uw.eq(WithdrawApply::getId, withdrawApply.getId())
+				.eq(WithdrawApply::getCompanyId, withdrawApply.getCompanyId())
 				.set(WithdrawApply::getStatus, newStatus)
 				.set(WithdrawApply::getUpdated, now);
 		if (updateFailureReason) {

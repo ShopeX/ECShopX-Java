@@ -67,6 +67,9 @@ class WxappOrderDeliveryServiceNormalOrderDeliveryTriggerProbeTest {
 	private OrderAssociationAssociationDataAssembler orderAssociationAssociationDataAssembler;
 
 	@Mock
+	private WxappFrontMerchantSelfDeliveryAccessGuard accessGuard;
+
+	@Mock
 	private OrderDeliveryPushMarketingCenterOnNormalOrderDeliveryProcessor orderDeliveryPushMarketingCenterOnNormalOrderDeliveryProcessor;
 
 	@Mock
@@ -89,7 +92,8 @@ class WxappOrderDeliveryServiceNormalOrderDeliveryTriggerProbeTest {
 						adminDeliveryLogisticsNameService,
 						orderAssociationEffectiveTypeService,
 						adminNormalOrderDeliveryCoreService,
-						orderAssociationAssociationDataAssembler);
+						orderAssociationAssociationDataAssembler,
+						accessGuard);
 
 		assocStub = new OrderAssociations();
 		assocStub.setCompanyId(100L);

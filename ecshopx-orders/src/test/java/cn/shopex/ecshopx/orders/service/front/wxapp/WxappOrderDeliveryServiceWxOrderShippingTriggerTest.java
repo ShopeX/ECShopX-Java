@@ -41,6 +41,9 @@ class WxappOrderDeliveryServiceWxOrderShippingTriggerTest {
 	private OrderAssociationAssociationDataAssembler orderAssociationAssociationDataAssembler;
 
 	@Mock
+	private WxappFrontMerchantSelfDeliveryAccessGuard accessGuard;
+
+	@Mock
 	private HttpServletRequest httpServletRequest;
 
 	private WxappOrderDeliveryService service;
@@ -53,7 +56,8 @@ class WxappOrderDeliveryServiceWxOrderShippingTriggerTest {
 						adminDeliveryLogisticsNameService,
 						orderAssociationEffectiveTypeService,
 						adminNormalOrderDeliveryCoreService,
-						orderAssociationAssociationDataAssembler);
+						orderAssociationAssociationDataAssembler,
+						accessGuard);
 	}
 
 	@Test

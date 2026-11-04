@@ -74,6 +74,7 @@ public class UgcWxContentTextCheckService {
 				log.debug("msgCheck-文本审查结果-contentCheck_url 为空");
 				return 0;
 			}
+			baseUrl = UgcWxContentCheckBaseUriGuard.normalizeAndRequire(baseUrl);
 			String url = baseUrl + "/wxa/msg_sec_check?access_token=" + accessToken;
 
 			Map<String, Object> body = new HashMap<>();
@@ -130,6 +131,7 @@ public class UgcWxContentTextCheckService {
 		if (!StringUtils.hasText(appid) || !StringUtils.hasText(secret) || !StringUtils.hasText(baseUrl)) {
 			return "";
 		}
+		baseUrl = UgcWxContentCheckBaseUriGuard.normalizeAndRequire(baseUrl);
 		String tokenUrl = baseUrl + "/cgi-bin/token?grant_type=client_credential&appid=" + appid + "&secret=" + secret;
 		log.debug("msgCheck-文本审查结果请求token: {}", tokenUrl);
 		try {

@@ -29,4 +29,13 @@ class TurntableLuckyDrawLogExportAsyncServiceTest {
 				.contains(TurntableDrawStatus.SUCCESS, TurntableDrawStatus.GRANT_FAILED)
 				.doesNotContain(TurntableDrawStatus.PROCESSING, TurntableDrawStatus.COST_FAILED);
 	}
+
+	@Test
+	void exportActScope_includesCompanyIdAndActId() {
+		LambdaQueryWrapper<TurntableLog> w = new LambdaQueryWrapper<>();
+		TurntableLuckyDrawLogExportAsyncService.applyCompanyActScope(w, 100L, 42L);
+
+		assertThat(w.getSqlSegment()).contains("company_id").contains("act_id");
+		assertThat(w.getParamNameValuePairs().values()).contains(100L, 42L);
+	}
 }

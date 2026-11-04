@@ -68,7 +68,6 @@ public class FormTemplateController {
 	public ResponseEntity<ApiResult<Map<String, Object>>> statisticalAnalysis(
 			HttpServletRequest request,
 			@RequestParam(value = "days", required = false) String daysRaw,
-			@RequestParam(value = "user_id", required = false) String userIdRaw,
 			@RequestParam(value = "timeChoosed", required = false) String timeChoosed,
 			@RequestParam(value = "form_type", required = false, defaultValue = "physical") String formType,
 			@RequestParam(value = "shop_id", required = false) String shopIdRaw,
@@ -82,10 +81,8 @@ public class FormTemplateController {
 			recordDateLte = parseYmdIntOrDefault(timeChoosed, todayYmdInt);
 		}
 		long companyId = resolveCompanyId(request);
-		long userId = parseOptionalLongQuery(userIdRaw);
-		if (userId <= 0L) {
-			userId = parseClaimsUserId(request);
-		}
+		// ECX-10852: never trust query user_id; always bind to authenticated member.
+		long userId = parseClaimsUserId(request);
 		Long shopId = resolveShopIdForQuery(shopIdRaw);
 		if (userId <= 0L) {
 			LinkedHashMap<String, Object> emptyPayload = new LinkedHashMap<>();
@@ -165,17 +162,6 @@ public class FormTemplateController {
 			throw new BadRequestException("timeChoosed 格式不正确");
 		}
 		return v;
-	}
-
-	private static long parseOptionalLongQuery(String raw) {
-		if (raw == null || !StringUtils.hasText(raw.trim())) {
-			return 0L;
-		}
-		try {
-			return Long.parseLong(raw.trim());
-		} catch (NumberFormatException ex) {
-			throw new BadRequestException("user_id 格式不正确");
-		}
 	}
 
 	private static Long resolveShopIdForQuery(String shopIdRaw) {

@@ -23,6 +23,7 @@ import cn.shopex.ecshopx.distribution.domain.DistributorItems;
 import cn.shopex.ecshopx.distribution.repository.DistributorItemsRepository;
 import cn.shopex.ecshopx.distribution.service.DistributorListQueryService;
 import cn.shopex.ecshopx.goods.repository.ItemsMemberPriceCheckRepository;
+import cn.shopex.ecshopx.goods.repository.ItemsRepository;
 import cn.shopex.ecshopx.goods.repository.ItemsStartNumUpdateRepository;
 import cn.shopex.ecshopx.promotions.domain.MemberPrice;
 import cn.shopex.ecshopx.promotions.repository.MemberPriceBulkDeleteRepository;
@@ -52,6 +53,7 @@ public class MemberPriceSaveService {
 	private final ItemsStartNumUpdateRepository itemsStartNumUpdateRepository;
 	private final DistributorListQueryService distributorListQueryService;
 	private final DistributorItemsRepository distributorItemsRepository;
+	private final ItemsRepository itemsRepository;
 
 	public MemberPriceSaveService(
 			ObjectMapper objectMapper,
@@ -60,7 +62,8 @@ public class MemberPriceSaveService {
 			ItemsMemberPriceCheckRepository itemsMemberPriceCheckRepository,
 			ItemsStartNumUpdateRepository itemsStartNumUpdateRepository,
 			DistributorListQueryService distributorListQueryService,
-			DistributorItemsRepository distributorItemsRepository) {
+			DistributorItemsRepository distributorItemsRepository,
+			ItemsRepository itemsRepository) {
 		this.objectMapper = objectMapper;
 		this.memberPriceBulkDeleteRepository = memberPriceBulkDeleteRepository;
 		this.memberPriceInsertRepository = memberPriceInsertRepository;
@@ -68,6 +71,7 @@ public class MemberPriceSaveService {
 		this.itemsStartNumUpdateRepository = itemsStartNumUpdateRepository;
 		this.distributorListQueryService = distributorListQueryService;
 		this.distributorItemsRepository = distributorItemsRepository;
+		this.itemsRepository = itemsRepository;
 	}
 
 	@Transactional(rollbackFor = Exception.class)
@@ -89,6 +93,12 @@ public class MemberPriceSaveService {
 			long parsed = parsePositiveItemIdKey(en.getKey());
 			if (parsed > 0) {
 				itemIds.add(parsed);
+			}
+		}
+
+		for (long itemId : itemIds) {
+			if (itemsRepository.getByItemIdAndCompany(itemId, companyId) == null) {
+				throw new ResourceException("商品不存在");
 			}
 		}
 
@@ -133,7 +143,7 @@ public class MemberPriceSaveService {
 			if (startNumNode != null && startNumNode.isNumber() && startNumNode.doubleValue() > 0) {
 				long sl = startNumNode.longValue();
 				if (sl > 0 && sl <= Integer.MAX_VALUE) {
-					itemsStartNumUpdateRepository.updateStartNumIfItemExists(itemId, (int) sl);
+					itemsStartNumUpdateRepository.updateStartNumIfItemExists(companyId, itemId, (int) sl);
 				}
 			}
 		}

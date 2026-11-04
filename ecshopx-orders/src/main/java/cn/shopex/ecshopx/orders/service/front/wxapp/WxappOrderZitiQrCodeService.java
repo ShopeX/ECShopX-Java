@@ -32,7 +32,6 @@ import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -101,7 +100,7 @@ public class WxappOrderZitiQrCodeService {
 				long zitiBase = order.getZitiCode() == null ? 0L : order.getZitiCode().longValue();
 				String fullCode = String.valueOf(zitiBase) + sixDigits;
 				orderZitiQrCodeRedisService.saveZitiCodeOrderMapping(
-						fullCode, orderIdNum, Duration.ofSeconds(300));
+						fullCode, orderIdNum, Duration.ofSeconds(1800));
 				String content = "ZT_" + fullCode;
 				Map<String, String> images =
 						memberBarcodeGenerateService.generateBarcodeAndQrcodeDataUrlsForPlainContent(content);
@@ -113,7 +112,7 @@ public class WxappOrderZitiQrCodeService {
 			}
 		}
 
-		applyShowSmsPickupCode(companyId, orderIdRaw, result);
+		applyPickupCodeMirror(companyId, orderIdRaw, result);
 
 		Object resultUserId = result.get("user_id");
 		if (looseTypedNotEqual(resultUserId, jwtUserId)) {
@@ -168,13 +167,25 @@ public class WxappOrderZitiQrCodeService {
 		return first + String.format("%05d", rest);
 	}
 
-	private void applyShowSmsPickupCode(long companyId, String orderIdRaw, LinkedHashMap<String, Object> result) {
+	/**
+	 * 商家开启提货码开关时：页面展示字段 {@code pickup_code} 回填与扫码 {@code code} 相同的 12 位长码，
+	 * 并镜像写入 {@code admin-pickupcode}，供后台 {@code /writeoff/{order_id}} 核销；不再生成独立 6 位短码。
+	 */
+	private void applyPickupCodeMirror(long companyId, String orderIdRaw, LinkedHashMap<String, Object> result) {
 		Map<String, Object> setting = pickupcodeSettingRedisService.handle(companyId, null);
 		boolean pickupOn = toPickupStatus(setting.get("pickupcode_status"));
 		if (!pickupOn) {
 			result.put("pickup_code", null);
 			return;
 		}
+
+		Object codeObj = result.get("code");
+		String twelveDigit = codeObj == null ? "" : String.valueOf(codeObj).trim();
+		if (!StringUtils.hasText(twelveDigit)) {
+			result.put("pickup_code", null);
+			return;
+		}
+		result.put("pickup_code", twelveDigit);
 
 		Map<String, Object> bundle;
 		try {
@@ -192,34 +203,18 @@ public class WxappOrderZitiQrCodeService {
 		@SuppressWarnings("unchecked")
 		Map<String, Object> orderInfo = (Map<String, Object>) bundle.get("orderInfo");
 		if (orderInfo == null || orderInfo.isEmpty()) {
-			result.put("pickup_code", null);
 			return;
 		}
 		String phone = orderInfo.get("mobile") == null ? "" : String.valueOf(orderInfo.get("mobile")).trim();
 		if (phone.isEmpty()) {
-			result.put("pickup_code", null);
 			return;
 		}
-
 		long orderIdNumForPickup = parseOrderIdLong(orderInfo.get("order_id"));
-		String key = "admin-pickupcode:" + orderIdNumForPickup + "|" + phone;
-
-		String existing = companysRedisTemplate.opsForValue().get(key);
-		if (StringUtils.hasText(existing)) {
-			result.put("pickup_code", existing);
+		if (orderIdNumForPickup <= 0L) {
 			return;
 		}
-
-		long ttl = companysRedisTemplate.getExpire(key, TimeUnit.SECONDS);
-		if (ttl - 240L > 0L) {
-			long wait = ttl - 240L;
-			throw new ResourceException("发送过于频繁，请 " + wait + " 秒后再试");
-		}
-
-		int n = 100_000 + ThreadLocalRandom.current().nextInt(900_000);
-		String vcode = String.valueOf(n);
-		companysRedisTemplate.opsForValue().set(key, vcode, Duration.ofSeconds(1800));
-		result.put("pickup_code", vcode);
+		String key = "admin-pickupcode:" + orderIdNumForPickup + "|" + phone;
+		companysRedisTemplate.opsForValue().set(key, twelveDigit, Duration.ofSeconds(1800));
 	}
 
 	private static long parseOrderIdLong(Object raw) {

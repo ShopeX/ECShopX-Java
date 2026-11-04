@@ -172,7 +172,7 @@ class AlipayH5SyncReturnServiceOrderProcessLogPublishProbeTest {
 							if (n == 1) {
 								return null;
 							}
-							if (n <= 3) {
+							if (n <= 4) {
 								return notPay;
 							}
 							return success;
@@ -205,7 +205,7 @@ class AlipayH5SyncReturnServiceOrderProcessLogPublishProbeTest {
 						objectMapper);
 
 		HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-		when(request.getAttribute(H5FrontAuthAttributes.H5_COMPANY_ID)).thenReturn(1L);
+		when(request.getAttribute(H5FrontAuthAttributes.H5_COMPANY_ID)).thenReturn(9L);
 		Map<String, String[]> pm = new HashMap<>();
 		pm.put("out_trade_no", new String[] {OUT_TRADE_NO});
 		pm.put("charset", new String[] {"UTF-8"});
@@ -218,7 +218,7 @@ class AlipayH5SyncReturnServiceOrderProcessLogPublishProbeTest {
 
 		AlipayTradeQueryParsedResponse parsed =
 				new AlipayTradeQueryParsedResponse("10000", "TRADE_SUCCESS", "tx-1", "", null);
-		when(alipayOpenapiTradeQueryService.queryTrade(eq(1L), eq(0L), eq(OUT_TRADE_NO)))
+		when(alipayOpenapiTradeQueryService.queryTrade(eq(9L), eq(0L), eq(OUT_TRADE_NO)))
 				.thenReturn(parsed);
 
 		h5.alipayResult(request);

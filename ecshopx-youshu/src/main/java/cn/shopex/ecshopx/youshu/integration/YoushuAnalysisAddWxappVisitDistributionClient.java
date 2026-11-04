@@ -48,7 +48,7 @@ public class YoushuAnalysisAddWxappVisitDistributionClient
 	@Override
 	public void addWxappVisitDistribution(
 			String dataSourceId, JsonNode visitData, YoushuOpenApiCredentials credentials) {
-		String base = normalizeBase(credentials.baseUri());
+		String base = YoushuBaseUriGuard.normalizeAndRequire(credentials.baseUri());
 		String appId = credentials.appId();
 		String appSecret = credentials.appSecret();
 		Map<String, String> sig = YoushuOpenApiSignSupport.buildSignedQueryParams(appId, appSecret);
@@ -87,14 +87,4 @@ public class YoushuAnalysisAddWxappVisitDistributionClient
 		}
 	}
 
-	private static String normalizeBase(String baseUri) {
-		if (baseUri == null) {
-			return "";
-		}
-		String t = baseUri.trim();
-		while (t.endsWith("/")) {
-			t = t.substring(0, t.length() - 1);
-		}
-		return t;
-	}
 }

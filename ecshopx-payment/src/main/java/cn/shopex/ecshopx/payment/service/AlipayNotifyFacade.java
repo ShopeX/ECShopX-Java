@@ -75,9 +75,38 @@ public class AlipayNotifyFacade {
 		}
 		AlipayNotifyPaymentContext ctx = opt.get();
 
+		boolean depositRecharge = ctx.getReturnData().containsKey("attach")
+				&& "depositRecharge".equals(ctx.getReturnData().get("attach"));
+
+		long signingCompanyId;
+		long distributorIdForSetting;
+		if (depositRecharge) {
+			String depositId = ctx.getEncodedParams().get("out_trade_no");
+			long depositCompanyId =
+					alipayNotifyDepositSidePort.requireCompanyIdByDepositTradeId(depositId);
+			if (depositCompanyId != ctx.getCompanyId()) {
+				throw new BadRequestException("储值单企业与回调企业不一致");
+			}
+			signingCompanyId = depositCompanyId;
+			distributorIdForSetting =
+					alipayNotifyOrderSidePort.resolveDistributorIdForAlipayRedis(
+							signingCompanyId, depositId);
+		} else {
+			String orderTradeId = ctx.getEncodedParams().get("out_trade_no");
+			long tradeCompanyId = alipayNotifyOrderSidePort.requireCompanyIdByTradeId(orderTradeId);
+			if (tradeCompanyId != ctx.getCompanyId()) {
+				throw new BadRequestException("订单企业与回调企业不一致");
+			}
+			signingCompanyId = tradeCompanyId;
+			distributorIdForSetting =
+					alipayNotifyOrderSidePort.resolveDistributorIdForAlipayRedis(
+							signingCompanyId, orderTradeId);
+		}
+
 		alipayPaymentConfigValidationService.assertAsyncNotifyConfigComplete(
-				ctx.getCompanyId(), ctx.getDistributorIdForSetting());
-		AlipayNotifySigningMaterial signingMaterial = loadSigningMaterial(ctx);
+				signingCompanyId, distributorIdForSetting);
+		AlipayNotifySigningMaterial signingMaterial =
+				loadSigningMaterial(signingCompanyId, distributorIdForSetting);
 
 		try {
 			alipayAsyncNotifyVerificationService.verifySignedNotify(ctx.getEncodedParams(), signingMaterial);
@@ -97,9 +126,6 @@ public class AlipayNotifyFacade {
 			} else {
 				normalizedStatus = rawTradeStatus;
 			}
-
-			boolean depositRecharge = ctx.getReturnData().containsKey("attach")
-					&& "depositRecharge".equals(ctx.getReturnData().get("attach"));
 
 			Map<String, Object> options = new LinkedHashMap<>();
 			Map<String, String> passback = ctx.getReturnData();
@@ -126,11 +152,11 @@ public class AlipayNotifyFacade {
 		}
 	}
 
-	private AlipayNotifySigningMaterial loadSigningMaterial(AlipayNotifyPaymentContext ctx) {
+	private AlipayNotifySigningMaterial loadSigningMaterial(
+			long companyId, long distributorIdForSetting) {
 		String raw = companysRedisTemplate
 				.opsForValue()
-				.get(PaymentSettingRedisKeys.alipayRedisKey(
-						ctx.getCompanyId(), ctx.getDistributorIdForSetting()));
+				.get(PaymentSettingRedisKeys.alipayRedisKey(companyId, distributorIdForSetting));
 		Map<String, Object> cfg = PaymentConfigJsonSupport.parseObjectMap(objectMapper, raw);
 		String appId = str(cfg.get("app_id"));
 		String aliPk = str(cfg.get("ali_public_key"));

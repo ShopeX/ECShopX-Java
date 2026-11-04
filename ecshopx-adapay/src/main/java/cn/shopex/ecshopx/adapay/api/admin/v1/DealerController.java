@@ -432,8 +432,19 @@ public class DealerController {
 	@Activated(routeAlias = "adapay.dealer.del")
 	@DeleteMapping(value = "/dealer/sub/del/{operatorId}", name = "删除经销商子账号")
 	public ResponseEntity<ApiResult<Map<String, Object>>> delDealerSub(
-			@PathVariable("operatorId") String operatorId) {
-		dealerDelSubService.delDealerSub(operatorId);
+			@PathVariable("operatorId") String operatorId, HttpServletRequest request) {
+		Object raw = request.getAttribute(OperatorJwtAuthenticationFilter.OPERATOR_JWT_USER_DATA);
+		if (!(raw instanceof Map<?, ?> jwtMapRaw) || jwtMapRaw.isEmpty()) {
+			throw new UnauthorizedException("未登录");
+		}
+		@SuppressWarnings("unchecked")
+		Map<String, Object> jwtMap = (Map<String, Object>) jwtMapRaw;
+		Object companyIdRaw = jwtMap.get("company_id");
+		if (!(companyIdRaw instanceof Number) || ((Number) companyIdRaw).longValue() <= 0L) {
+			throw new UnauthorizedException("未登录");
+		}
+		long companyId = ((Number) companyIdRaw).longValue();
+		dealerDelSubService.delDealerSub(companyId, operatorId);
 		return ResponseEntity.ok(ApiResult.ok(Map.of("status", Boolean.TRUE)));
 	}
 

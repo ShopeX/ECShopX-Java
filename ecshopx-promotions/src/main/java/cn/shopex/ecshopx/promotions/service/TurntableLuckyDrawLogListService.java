@@ -46,7 +46,7 @@ public class TurntableLuckyDrawLogListService {
 	public Map<String, Object> getLogStatistics(long companyId, long actId, String pageRaw, String pageSizeRaw) {
 		int page = parsePage(pageRaw);
 		int pageSize = parsePageSizeForLog(pageSizeRaw);
-		long total = nullToZero(turntableLogMapper.countAllByActId(actId));
+		long total = nullToZero(turntableLogMapper.countAllByActId(companyId, actId));
 		if (total == 0L) {
 			LinkedHashMap<String, Object> out = new LinkedHashMap<>();
 			out.put("total_count", total);
@@ -55,6 +55,7 @@ public class TurntableLuckyDrawLogListService {
 		}
 		LambdaQueryWrapper<TurntableLog> pageWrapper =
 				new LambdaQueryWrapper<TurntableLog>()
+						.eq(TurntableLog::getCompanyId, companyId)
 						.eq(TurntableLog::getActId, actId)
 						// 与 countAllByActId / C 端 getLuckyDrawLog 对齐：仅 SUCCESS / GRANT_FAILED
 						.in(TurntableLog::getStatus, (Object[]) TurntableDrawStatus.VISIBLE_IN_DRAW_LOG)

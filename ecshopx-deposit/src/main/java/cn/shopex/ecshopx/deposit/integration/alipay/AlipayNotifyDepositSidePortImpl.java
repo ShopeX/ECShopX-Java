@@ -16,19 +16,51 @@
 
 package cn.shopex.ecshopx.deposit.integration.alipay;
 
+import cn.shopex.ecshopx.common.exception.BadRequestException;
+import cn.shopex.ecshopx.deposit.domain.DepositTrade;
+import cn.shopex.ecshopx.deposit.mapper.DepositTradeMapper;
 import cn.shopex.ecshopx.deposit.service.AdapayDepositTradeRechargeCallbackService;
 import cn.shopex.ecshopx.payment.integration.alipay.AlipayNotifyDepositSidePort;
 import java.util.Map;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 @Service
 public class AlipayNotifyDepositSidePortImpl implements AlipayNotifyDepositSidePort {
 
+	private final DepositTradeMapper depositTradeMapper;
 	private final AdapayDepositTradeRechargeCallbackService adapayDepositTradeRechargeCallbackService;
 
 	public AlipayNotifyDepositSidePortImpl(
+			DepositTradeMapper depositTradeMapper,
 			AdapayDepositTradeRechargeCallbackService adapayDepositTradeRechargeCallbackService) {
+		this.depositTradeMapper = depositTradeMapper;
 		this.adapayDepositTradeRechargeCallbackService = adapayDepositTradeRechargeCallbackService;
+	}
+
+	@Override
+	public long requireCompanyIdByDepositTradeId(String depositTradeId) {
+		if (!StringUtils.hasText(depositTradeId)) {
+			throw new BadRequestException("储值单不存在或主键无效");
+		}
+		DepositTrade row = depositTradeMapper.selectById(depositTradeId.trim());
+		if (row == null) {
+			throw new BadRequestException("储值单不存在或主键无效");
+		}
+		String raw = row.getCompanyId();
+		if (!StringUtils.hasText(raw)) {
+			throw new BadRequestException("储值单企业编号无效");
+		}
+		long companyId;
+		try {
+			companyId = Long.parseLong(raw.trim());
+		} catch (NumberFormatException e) {
+			throw new BadRequestException("储值单企业编号无效");
+		}
+		if (companyId <= 0) {
+			throw new BadRequestException("储值单企业编号无效");
+		}
+		return companyId;
 	}
 
 	@Override

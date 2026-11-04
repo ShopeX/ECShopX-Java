@@ -17,6 +17,7 @@
 package cn.shopex.ecshopx.payment.service.admin;
 
 import cn.shopex.ecshopx.common.exception.BadRequestException;
+import cn.shopex.ecshopx.common.exception.ForbiddenException;
 import cn.shopex.ecshopx.payment.service.dto.PaymentSettingCommand;
 import cn.shopex.ecshopx.payment.service.settings.AdapayPaymentSettingWriter;
 import cn.shopex.ecshopx.payment.service.settings.AlipayPaymentSettingWriter;
@@ -47,6 +48,7 @@ public class PaymentSettingSaveService {
 	private static final String PT_ICBC = "icbcpay";
 	private static final String PT_DOUMEN_INTL = "doumen_intl";
 
+	private final PaymentSettingDistributorAccessGuard paymentSettingDistributorAccessGuard;
 	private final PointMemberRuleSaveService pointMemberRuleSaveService;
 	private final WxpayPaymentSettingWriter wxpayPaymentSettingWriter;
 	private final AlipayPaymentSettingWriter alipayPaymentSettingWriter;
@@ -61,6 +63,7 @@ public class PaymentSettingSaveService {
 	private final DoumenIntlMutualExclusionService doumenIntlMutualExclusionService;
 
 	public PaymentSettingSaveService(
+			PaymentSettingDistributorAccessGuard paymentSettingDistributorAccessGuard,
 			PointMemberRuleSaveService pointMemberRuleSaveService,
 			WxpayPaymentSettingWriter wxpayPaymentSettingWriter,
 			AlipayPaymentSettingWriter alipayPaymentSettingWriter,
@@ -73,6 +76,7 @@ public class PaymentSettingSaveService {
 			IcbcPayPaymentSettingWriter icbcPayPaymentSettingWriter,
 			DoumenIntlPaymentSettingWriter doumenIntlPaymentSettingWriter,
 			DoumenIntlMutualExclusionService doumenIntlMutualExclusionService) {
+		this.paymentSettingDistributorAccessGuard = paymentSettingDistributorAccessGuard;
 		this.pointMemberRuleSaveService = pointMemberRuleSaveService;
 		this.wxpayPaymentSettingWriter = wxpayPaymentSettingWriter;
 		this.alipayPaymentSettingWriter = alipayPaymentSettingWriter;
@@ -93,6 +97,14 @@ public class PaymentSettingSaveService {
 			throw new BadRequestException("暂时不支持");
 		}
 		payType = payType.trim();
+
+		String operatorType = cmd.operatorType() == null ? "" : cmd.operatorType().trim();
+		long jwtDistributorId =
+				"distributor".equals(operatorType) ? cmd.distributorId() : 0L;
+		if (!paymentSettingDistributorAccessGuard.mayRead(
+				cmd.companyId(), cmd.distributorId(), operatorType, jwtDistributorId)) {
+			throw new ForbiddenException("无权限");
+		}
 
 		boolean isOpening =
 				DoumenIntlMutualExclusionService.resolveIsOpening(

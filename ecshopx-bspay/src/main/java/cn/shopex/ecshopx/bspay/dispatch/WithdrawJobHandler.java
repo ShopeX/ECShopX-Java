@@ -37,7 +37,12 @@ public class WithdrawJobHandler implements DispatchHandler {
 		if (!(raw instanceof Number)) {
 			throw new BadRequestException("apply_id required");
 		}
+		Object companyRaw = payload.get("company_id");
+		if (!(companyRaw instanceof Number)) {
+			throw new BadRequestException("company_id required");
+		}
 		long applyId = ((Number) raw).longValue();
-		withdrawApplyService.executeHuifuWithdraw(applyId);
+		long companyId = ((Number) companyRaw).longValue();
+		withdrawApplyService.executeHuifuWithdraw(applyId, companyId);
 	}
 }

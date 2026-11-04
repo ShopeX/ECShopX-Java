@@ -30,11 +30,12 @@ public class TurntableLogCountService {
 		this.turntableLogMapper = turntableLogMapper;
 	}
 
-	public Map<String, Object> getLogCount(long actId) {
-		long total = nullToZero(turntableLogMapper.countAllByActId(actId));
-		long totalUser = nullToZero(turntableLogMapper.countDistinctUserByActId(actId));
-		long totalGet = nullToZero(turntableLogMapper.countNonThanksByActId(actId));
-		long totalGetUser = nullToZero(turntableLogMapper.countDistinctUserNonThanksByActId(actId));
+	public Map<String, Object> getLogCount(long companyId, long actId) {
+		long total = nullToZero(turntableLogMapper.countAllByActId(companyId, actId));
+		long totalUser = nullToZero(turntableLogMapper.countDistinctUserByActId(companyId, actId));
+		long totalGet = nullToZero(turntableLogMapper.countNonThanksByActId(companyId, actId));
+		long totalGetUser =
+				nullToZero(turntableLogMapper.countDistinctUserNonThanksByActId(companyId, actId));
 
 		Map<String, Object> out = new LinkedHashMap<>();
 		out.put("total", Long.valueOf(total));

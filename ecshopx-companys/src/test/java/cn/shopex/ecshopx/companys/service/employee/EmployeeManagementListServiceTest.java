@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import cn.shopex.ecshopx.common.crypto.SensitiveFieldEncryptor;
@@ -21,6 +22,7 @@ import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -88,5 +90,68 @@ class EmployeeManagementListServiceTest {
 		List<Map<String, Object>> distributors =
 				(List<Map<String, Object>>) rows.get(0).get("distributor_ids");
 		assertThat(distributors.get(0).get("shop_code")).isEqualTo("S001");
+	}
+
+	@Test
+	@DisplayName("店铺号限制账号列表到所属店铺")
+	void shopCodeRestrictsAccountListToItsDistributor() {
+		EmployeeManagementListService service =
+				new EmployeeManagementListService(
+						operatorsQueryService,
+						operatorDeliveryStaffRoleDataService,
+						employeeSelfDeliveryStaffMapper,
+						distributionDistributorSelfReadMapper,
+						supplierOperatorReadMapper,
+						sensitiveFieldEncryptor,
+						operatorAccountOutsideLangReadService,
+						new ObjectMapper());
+		EmployeeAccountManagementListQuery query = new EmployeeAccountManagementListQuery();
+		query.setOperatorType("distributor");
+		query.setShopCode("JM001");
+
+		when(distributionDistributorSelfReadMapper.selectShopByCompanyAndShopCode(1001L, "JM001"))
+				.thenReturn(Map.of("distributor_id", 3361L));
+		when(operatorsQueryService.countAccountManagementList(any())).thenReturn(0L);
+
+		service.getListData(
+				Map.of("company_id", 1001L, "operator_id", 2002L, "operator_type", "admin"),
+				query,
+				0,
+				"zh-CN");
+
+		ArgumentCaptor<AccountManagementOperatorsFilter> filter =
+				ArgumentCaptor.forClass(AccountManagementOperatorsFilter.class);
+		verify(operatorsQueryService).countAccountManagementList(filter.capture());
+		assertThat(filter.getValue().getDistributorIds()).containsExactly(3361L);
+	}
+
+	@Test
+	@DisplayName("未知店铺号不返回账号")
+	void unknownShopCodeReturnsNoAccounts() {
+		EmployeeManagementListService service =
+				new EmployeeManagementListService(
+						operatorsQueryService,
+						operatorDeliveryStaffRoleDataService,
+						employeeSelfDeliveryStaffMapper,
+						distributionDistributorSelfReadMapper,
+						supplierOperatorReadMapper,
+						sensitiveFieldEncryptor,
+						operatorAccountOutsideLangReadService,
+						new ObjectMapper());
+		EmployeeAccountManagementListQuery query = new EmployeeAccountManagementListQuery();
+		query.setShopCode("UNKNOWN");
+
+		when(operatorsQueryService.countAccountManagementList(any())).thenReturn(0L);
+
+		service.getListData(
+				Map.of("company_id", 1001L, "operator_id", 2002L, "operator_type", "admin"),
+				query,
+				0,
+				"zh-CN");
+
+		ArgumentCaptor<AccountManagementOperatorsFilter> filter =
+				ArgumentCaptor.forClass(AccountManagementOperatorsFilter.class);
+		verify(operatorsQueryService).countAccountManagementList(filter.capture());
+		assertThat(filter.getValue().getOperatorIds()).containsExactly(-1L);
 	}
 }

@@ -20,5 +20,13 @@ import java.util.Map;
 
 public interface AlipayNotifyDepositSidePort {
 
+	/**
+	 * Resolve the owning company id for a deposit trade used to bind Alipay verify keys.
+	 *
+	 * @throws cn.shopex.ecshopx.common.exception.BadRequestException if the trade is missing or
+	 *     company_id is invalid
+	 */
+	long requireCompanyIdByDepositTradeId(String depositTradeId);
+
 	void rechargeCallback(String depositTradeId, String status, Map<String, Object> options);
 }

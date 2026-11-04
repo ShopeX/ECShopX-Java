@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 @Service
 public class FrontUgcTagListService {
@@ -49,17 +50,7 @@ public class FrontUgcTagListService {
 			w.like(Tag::getTagName, escapeLike(tagName) + "%");
 		}
 
-		String sortParam = sort == null ? "" : sort;
-		if (sortParam.isEmpty() || sortParam.trim().isEmpty()) {
-			w.orderByAsc(Tag::getPOrder).orderByDesc(Tag::getCreated);
-		} else {
-			String[] parts = sortParam.split(" ", -1);
-			String fieldRaw = parts[0];
-			String dirRaw = parts.length > 1 ? parts[1] : null;
-			String dirSql = sqlDirection(dirRaw);
-			String quoted = "`" + quoteBacktickIdentifier(fieldRaw) + "`";
-			w.last("ORDER BY " + quoted + " " + dirSql + ", `p_order` ASC");
-		}
+		applySort(w, sort);
 
 		Long totalCount = tagMapper.selectCount(w);
 		if (totalCount == null || totalCount == 0L) {
@@ -106,28 +97,119 @@ public class FrontUgcTagListService {
 		return s.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_");
 	}
 
-	private static String quoteBacktickIdentifier(String raw) {
-		if (raw == null) {
-			return "";
+	private static void applySort(LambdaQueryWrapper<Tag> wrapper, String sort) {
+		if (sort == null || sort.trim().isEmpty()) {
+			wrapper.orderByAsc(Tag::getPOrder).orderByDesc(Tag::getCreated);
+			return;
 		}
-		return raw.replace("`", "``");
-	}
-
-	private static String sqlDirection(String dirRaw) {
-		if (dirRaw == null) {
-			return "ASC";
+		String trimmed = sort.trim();
+		int sp = trimmed.indexOf(' ');
+		if (sp <= 0 || sp >= trimmed.length() - 1) {
+			wrapper.orderByAsc(Tag::getPOrder).orderByDesc(Tag::getCreated);
+			return;
 		}
-		if (dirRaw.isEmpty()) {
-			return "ASC";
+		String field = trimmed.substring(0, sp).trim();
+		String direction = trimmed.substring(sp + 1).trim();
+		if (!StringUtils.hasText(field) || !StringUtils.hasText(direction)) {
+			wrapper.orderByAsc(Tag::getPOrder).orderByDesc(Tag::getCreated);
+			return;
 		}
-		String d = dirRaw.trim();
-		if (d.equalsIgnoreCase("desc")) {
-			return "DESC";
+		String dirLower = direction.toLowerCase();
+		boolean asc;
+		if ("asc".equals(dirLower)) {
+			asc = true;
+		} else if ("desc".equals(dirLower)) {
+			asc = false;
+		} else {
+			wrapper.orderByAsc(Tag::getPOrder).orderByDesc(Tag::getCreated);
+			return;
 		}
-		if (d.equalsIgnoreCase("asc")) {
-			return "ASC";
+		switch (field) {
+			case "p_order" -> {
+				if (asc) {
+					wrapper.orderByAsc(Tag::getPOrder);
+				} else {
+					wrapper.orderByDesc(Tag::getPOrder);
+				}
+			}
+			case "created" -> {
+				if (asc) {
+					wrapper.orderByAsc(Tag::getCreated);
+				} else {
+					wrapper.orderByDesc(Tag::getCreated);
+				}
+			}
+			case "updated" -> {
+				if (asc) {
+					wrapper.orderByAsc(Tag::getUpdated);
+				} else {
+					wrapper.orderByDesc(Tag::getUpdated);
+				}
+			}
+			case "tag_id" -> {
+				if (asc) {
+					wrapper.orderByAsc(Tag::getTagId);
+				} else {
+					wrapper.orderByDesc(Tag::getTagId);
+				}
+			}
+			case "user_id" -> {
+				if (asc) {
+					wrapper.orderByAsc(Tag::getUserId);
+				} else {
+					wrapper.orderByDesc(Tag::getUserId);
+				}
+			}
+			case "status" -> {
+				if (asc) {
+					wrapper.orderByAsc(Tag::getStatus);
+				} else {
+					wrapper.orderByDesc(Tag::getStatus);
+				}
+			}
+			case "enabled" -> {
+				if (asc) {
+					wrapper.orderByAsc(Tag::getEnabled);
+				} else {
+					wrapper.orderByDesc(Tag::getEnabled);
+				}
+			}
+			case "source" -> {
+				if (asc) {
+					wrapper.orderByAsc(Tag::getSource);
+				} else {
+					wrapper.orderByDesc(Tag::getSource);
+				}
+			}
+			case "operator_id" -> {
+				if (asc) {
+					wrapper.orderByAsc(Tag::getOperatorId);
+				} else {
+					wrapper.orderByDesc(Tag::getOperatorId);
+				}
+			}
+			case "company_id" -> {
+				if (asc) {
+					wrapper.orderByAsc(Tag::getCompanyId);
+				} else {
+					wrapper.orderByDesc(Tag::getCompanyId);
+				}
+			}
+			case "tag_name" -> {
+				if (asc) {
+					wrapper.orderByAsc(Tag::getTagName);
+				} else {
+					wrapper.orderByDesc(Tag::getTagName);
+				}
+			}
+			default -> {
+				wrapper.orderByAsc(Tag::getPOrder).orderByDesc(Tag::getCreated);
+				return;
+			}
 		}
-		return dirRaw;
+		if (!"p_order".equals(field)) {
+			wrapper.orderByAsc(Tag::getPOrder);
+		}
 	}
 
 	private static LinkedHashMap<String, Object> ksortRowMap(Map<String, Object> src) {

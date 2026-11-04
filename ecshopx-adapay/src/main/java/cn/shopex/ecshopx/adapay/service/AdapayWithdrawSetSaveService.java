@@ -20,6 +20,7 @@ import cn.shopex.ecshopx.adapay.domain.AdapayWithdrawSet;
 import cn.shopex.ecshopx.adapay.mapper.AdapayWithdrawSetMapper;
 import cn.shopex.ecshopx.adapay.util.AdapayWithdrawRuleLegacySerializeUtil;
 import cn.shopex.ecshopx.common.adapay.AdapayOperationLogRecordPort;
+import cn.shopex.ecshopx.common.exception.ForbiddenException;
 import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.distribution.service.DistributorRepositoryGetInfoSimpleService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -91,8 +92,22 @@ public class AdapayWithdrawSetSaveService {
 		return out;
 	}
 
-	public void save(long companyId, long jwtDistributorId, long jwtOperatorId, Map<String, Object> input) {
+	public void save(long companyId, Map<String, Object> jwtMap, Map<String, Object> input) {
+		long jwtDistributorId = parsePositiveClaim(jwtMap == null ? null : jwtMap.get("distributor_id"));
+		long jwtOperatorId = parsePositiveClaim(jwtMap == null ? null : jwtMap.get("operator_id"));
 		long requestDistributorId = resolveRequestDistributorId(input, jwtDistributorId);
+		if (requestDistributorId <= 0L) {
+			throw new ResourceException("请选择店铺");
+		}
+		AdapayWithdrawSetDistributorScopeGuard.assertTargetAllowed(requestDistributorId, jwtMap);
+
+		Map<String, Object> dist =
+				distributorRepositoryGetInfoSimpleService.getDistributorInfoForCompanyShop(
+						companyId, requestDistributorId);
+		if (dist == null || dist.isEmpty()) {
+			throw new ForbiddenException("店铺权限不足");
+		}
+
 		boolean isAuto = parseIsAuto(input.get("isAuto"));
 		Map<String, Object> ruleMap = extractRuleMap(input);
 
@@ -162,18 +177,34 @@ public class AdapayWithdrawSetSaveService {
 			adapayWithdrawSetMapper.insert(entity);
 		}
 
-		Map<String, Object> dist =
-				distributorRepositoryGetInfoSimpleService.getDistributorInfoForCompanyShop(companyId, requestDistributorId);
 		String name = "";
-		if (dist != null && !dist.isEmpty()) {
-			Object n = dist.get("name");
-			name = n != null ? n.toString() : "";
-		}
+		Object n = dist.get("name");
+		name = n != null ? n.toString() : "";
 
 		Map<String, Object> logParams = new HashMap<>();
 		logParams.put("company_id", companyId);
 		logParams.put("name", name);
 		adapayOperationLogRecordPort.logRecord(logParams, jwtOperatorId, "withdrawset", "merchant", jwtOperatorId);
+	}
+
+	private static long parsePositiveClaim(Object raw) {
+		if (raw instanceof Number n) {
+			long v = n.longValue();
+			return v > 0L ? v : 0L;
+		}
+		if (raw == null) {
+			return 0L;
+		}
+		String s = String.valueOf(raw).trim();
+		if (!StringUtils.hasText(s)) {
+			return 0L;
+		}
+		try {
+			long v = Long.parseLong(s);
+			return v > 0L ? v : 0L;
+		} catch (NumberFormatException e) {
+			return 0L;
+		}
 	}
 
 	private static long resolveRequestDistributorId(Map<String, Object> input, long jwtDistributorId) {

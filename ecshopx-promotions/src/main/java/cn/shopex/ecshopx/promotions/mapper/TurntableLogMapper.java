@@ -40,34 +40,39 @@ public interface TurntableLogMapper extends BaseMapper<TurntableLog> {
 	@Select(
 			"""
 			SELECT COUNT(1) FROM promotions_turntable_log
-			WHERE act_id = #{actId}
+			WHERE company_id = #{companyId}
+			  AND act_id = #{actId}
 			  AND status IN ('SUCCESS', 'GRANT_FAILED')
 			""")
-	Long countAllByActId(@Param("actId") long actId);
+	Long countAllByActId(@Param("companyId") long companyId, @Param("actId") long actId);
 
 	@Select(
 			"""
 			SELECT COUNT(DISTINCT user_id) FROM promotions_turntable_log
-			WHERE act_id = #{actId}
+			WHERE company_id = #{companyId}
+			  AND act_id = #{actId}
 			  AND status IN ('SUCCESS', 'GRANT_FAILED')
 			""")
-	Long countDistinctUserByActId(@Param("actId") long actId);
+	Long countDistinctUserByActId(@Param("companyId") long companyId, @Param("actId") long actId);
 
 	@Select(
 			"""
 			SELECT COUNT(1) FROM promotions_turntable_log
-			WHERE act_id = #{actId}
+			WHERE company_id = #{companyId}
+			  AND act_id = #{actId}
 			  AND status = 'SUCCESS'
 			  AND prize_type <> 'thanks'
 			""")
-	Long countNonThanksByActId(@Param("actId") long actId);
+	Long countNonThanksByActId(@Param("companyId") long companyId, @Param("actId") long actId);
 
 	@Select(
 			"""
 			SELECT COUNT(DISTINCT user_id) FROM promotions_turntable_log
-			WHERE act_id = #{actId}
+			WHERE company_id = #{companyId}
+			  AND act_id = #{actId}
 			  AND status = 'SUCCESS'
 			  AND prize_type <> 'thanks'
 			""")
-	Long countDistinctUserNonThanksByActId(@Param("actId") long actId);
+	Long countDistinctUserNonThanksByActId(
+			@Param("companyId") long companyId, @Param("actId") long actId);
 }

@@ -67,7 +67,7 @@ public class TurntableLuckyDrawLogExportAsyncService {
 
 	public void runExport(LuckyDrawLogExportJobContext ctx) {
 		LambdaQueryWrapper<TurntableLog> countWrapper = new LambdaQueryWrapper<>();
-		countWrapper.eq(TurntableLog::getActId, ctx.actId());
+		applyCompanyActScope(countWrapper, ctx.companyId(), ctx.actId());
 		applyVisibleDrawLogStatus(countWrapper);
 		long total = turntableLogMapper.selectCount(countWrapper);
 		if (total == 0L) {
@@ -82,7 +82,7 @@ public class TurntableLuckyDrawLogExportAsyncService {
 		titles.put("created", "中奖时间");
 		List<Map<String, String>> allRows = new ArrayList<>();
 		LambdaQueryWrapper<TurntableLog> pageWrapper = new LambdaQueryWrapper<>();
-		pageWrapper.eq(TurntableLog::getActId, ctx.actId());
+		applyCompanyActScope(pageWrapper, ctx.companyId(), ctx.actId());
 		applyVisibleDrawLogStatus(pageWrapper);
 		pageWrapper.orderByAsc(TurntableLog::getId);
 		int pages = (int) Math.ceil(total / (double) BATCH);
@@ -165,5 +165,10 @@ public class TurntableLuckyDrawLogExportAsyncService {
 	/** 与列表同一套展示状态，供单测断言。 */
 	static void applyVisibleDrawLogStatus(LambdaQueryWrapper<TurntableLog> w) {
 		w.in(TurntableLog::getStatus, (Object[]) TurntableDrawStatus.VISIBLE_IN_DRAW_LOG);
+	}
+
+	/** 公司 + 活动作用域，供单测断言。 */
+	static void applyCompanyActScope(LambdaQueryWrapper<TurntableLog> w, long companyId, long actId) {
+		w.eq(TurntableLog::getCompanyId, companyId).eq(TurntableLog::getActId, actId);
 	}
 }

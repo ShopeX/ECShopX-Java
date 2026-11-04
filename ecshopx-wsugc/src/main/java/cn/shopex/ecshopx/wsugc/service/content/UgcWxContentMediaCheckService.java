@@ -70,6 +70,7 @@ public class UgcWxContentMediaCheckService {
 				log.debug("mediaCheck-async-contentCheck_url 为空");
 				return "";
 			}
+			baseUrl = UgcWxContentCheckBaseUriGuard.normalizeAndRequire(baseUrl);
 			String url = baseUrl + "/wxa/media_check_async?access_token=" + accessToken;
 
 			Map<String, Object> body = new HashMap<>();
@@ -121,6 +122,7 @@ public class UgcWxContentMediaCheckService {
 		if (!StringUtils.hasText(appid) || !StringUtils.hasText(secret) || !StringUtils.hasText(baseUrl)) {
 			return "";
 		}
+		baseUrl = UgcWxContentCheckBaseUriGuard.normalizeAndRequire(baseUrl);
 		String tokenUrl = baseUrl + "/cgi-bin/token?grant_type=client_credential&appid=" + appid + "&secret=" + secret;
 		log.debug("mediaCheck-请求 token: {}", tokenUrl);
 		try {

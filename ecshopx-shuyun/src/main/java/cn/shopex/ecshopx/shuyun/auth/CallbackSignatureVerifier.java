@@ -27,12 +27,23 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 /**
- * 入站回调验签。对齐 PHP {@code ShuyunCallbackSignatureVerifier::verifyHttpCallback}。
+ * 入站回调验签。对齐 PHP {@code ShuyunCallbackSignatureVerifier::verifyHttpCallback}；
+ * ECX-10841 起可选将 raw JSON body 纳入签名材料以防 body 篡改。
  */
 @Component
 public class CallbackSignatureVerifier {
 
+	/** Legacy: query/header only (no body). Prefer the overload with {@code rawBody}. */
 	public boolean verifyHttpCallback(String secret, HttpServletRequest request, String sign) {
+		return verifyHttpCallback(secret, request, sign, "", false);
+	}
+
+	/**
+	 * @param rawBody request JSON body; when {@code includeBody} is true appended after sorted params
+	 *     and before the trailing secret
+	 */
+	public boolean verifyHttpCallback(
+			String secret, HttpServletRequest request, String sign, String rawBody, boolean includeBody) {
 		if (!StringUtils.hasText(sign)) {
 			return false;
 		}
@@ -66,6 +77,9 @@ public class CallbackSignatureVerifier {
 		StringBuilder sb = new StringBuilder(secret == null ? "" : secret);
 		for (Map.Entry<String, String> e : params.entrySet()) {
 			sb.append(e.getKey()).append(e.getValue() == null ? "" : e.getValue());
+		}
+		if (includeBody) {
+			sb.append(rawBody == null ? "" : rawBody);
 		}
 		sb.append(secret == null ? "" : secret);
 		String expected = md5Hex(sb.toString());

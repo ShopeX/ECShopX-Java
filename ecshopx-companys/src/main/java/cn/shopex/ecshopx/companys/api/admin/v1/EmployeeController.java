@@ -112,6 +112,7 @@ public class EmployeeController {
 			@RequestParam(value = "payment_method", required = false) String paymentMethod,
 			@RequestParam(value = "staff_type", required = false) String staffType,
 			@RequestParam(value = "distributor_id", required = false) String distributorId,
+			@RequestParam(value = "shop_code", required = false) String shopCode,
 			@RequestParam(value = "is_disable", required = false) String isDisable,
 			@RequestParam(value = "supplier_name", required = false) String supplierName,
 			@RequestParam(value = "operator_type", required = false) String operatorType) {
@@ -127,6 +128,7 @@ public class EmployeeController {
 		query.setPaymentMethod(paymentMethod);
 		query.setStaffType(staffType);
 		query.setDistributorId(distributorId);
+		query.setShopCode(shopCode);
 		query.setIsDisable(isDisable);
 		query.setSupplierName(supplierName);
 		query.setOperatorType(operatorType);

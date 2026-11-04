@@ -566,28 +566,38 @@ public class ItemsRepository {
 		return mapper.selectList(w);
 	}
 
-	/** 仅按 {@code item_id} 更新分润类型与固定金额（分），与类目/默认比例路径无关。 */
-	public void updateProfitFeeByItemId(long itemId, int itemsTableProfitType, int profitFee) {
+	/**
+	 * 按公司与 {@code item_id} 更新分润类型与固定金额（分），与类目/默认比例路径无关。
+	 *
+	 * @return updated row count
+	 */
+	public int updateProfitFeeByItemId(
+			long companyId, long itemId, int itemsTableProfitType, int profitFee) {
 		int now = (int) (System.currentTimeMillis() / 1000L);
 		LambdaUpdateWrapper<Items> u = new LambdaUpdateWrapper<>();
-		u.eq(Items::getItemId, itemId)
+		u.eq(Items::getCompanyId, companyId)
+				.eq(Items::getItemId, itemId)
 				.set(Items::getProfitType, itemsTableProfitType)
 				.set(Items::getProfitFee, profitFee)
 				.set(Items::getUpdated, now);
-		mapper.update(null, u);
+		return mapper.update(null, u);
 	}
 
 	/**
-	 * 仅按 {@code item_id} 设置分润类型，并按 {@code profit_fee = FLOOR(price * scale)} 更新；{@code profitScalePlain} 须为已校验的数值字面量。
+	 * 按公司与 {@code item_id} 设置分润类型，并按 {@code profit_fee = FLOOR(price * scale)} 更新；{@code profitScalePlain}
+	 * 须为已校验的数值字面量。
+	 *
+	 * @return updated row count
 	 */
-	public void updateProfitByItemId(long itemId, int profitType, String profitScalePlain) {
+	public int updateProfitByItemId(long companyId, long itemId, int profitType, String profitScalePlain) {
 		int now = (int) (System.currentTimeMillis() / 1000L);
 		LambdaUpdateWrapper<Items> u = new LambdaUpdateWrapper<>();
-		u.eq(Items::getItemId, itemId)
+		u.eq(Items::getCompanyId, companyId)
+				.eq(Items::getItemId, itemId)
 				.set(Items::getProfitType, profitType)
 				.setSql("profit_fee = FLOOR(price * " + profitScalePlain + ")")
 				.set(Items::getUpdated, now);
-		mapper.update(null, u);
+		return mapper.update(null, u);
 	}
 
 	public void updateTemplatesIdByDefaultItemIdAndCompany(long defaultItemId, long companyId, int templatesId) {
@@ -752,14 +762,15 @@ public class ItemsRepository {
 		mapper.update(null, u);
 	}
 
-	public void updateStoreByItemIds(long companyId, Collection<Long> itemIds, int store) {
+	/** @return updated row count; 0 when {@code itemIds} empty or no matching company rows */
+	public int updateStoreByItemIds(long companyId, Collection<Long> itemIds, int store) {
 		if (itemIds == null || itemIds.isEmpty()) {
-			return;
+			return 0;
 		}
 		int now = (int) (System.currentTimeMillis() / 1000L);
 		LambdaUpdateWrapper<Items> u = new LambdaUpdateWrapper<>();
 		u.eq(Items::getCompanyId, companyId).in(Items::getItemId, itemIds).set(Items::getStore, store).set(Items::getUpdated, now);
-		mapper.update(null, u);
+		return mapper.update(null, u);
 	}
 
 	/**

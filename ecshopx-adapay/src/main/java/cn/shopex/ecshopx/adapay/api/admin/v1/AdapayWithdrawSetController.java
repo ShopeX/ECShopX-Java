@@ -133,19 +133,6 @@ public class AdapayWithdrawSetController {
 			throw new UnauthorizedException("未登录");
 		}
 		long companyId = ((Number) companyIdRaw).longValue();
-		long jwtOperatorId = 0L;
-		Object operatorIdRaw = jwtMap.get("operator_id");
-		if (operatorIdRaw instanceof Number) {
-			jwtOperatorId = ((Number) operatorIdRaw).longValue();
-		}
-		long jwtDistributorId = 0L;
-		Object distRaw = jwtMap.get("distributor_id");
-		if (distRaw instanceof Number) {
-			jwtDistributorId = ((Number) distRaw).longValue();
-		}
-		if (jwtDistributorId <= 0L) {
-			throw new ResourceException("请选择店铺");
-		}
 
 		Map<String, Object> merged = body != null ? new LinkedHashMap<>(body) : new LinkedHashMap<>();
 		mergeParam(merged, "isAuto", isAutoParam);
@@ -153,7 +140,7 @@ public class AdapayWithdrawSetController {
 		mergeParam(merged, "cash_type", cashTypeParam);
 		mergeParam(merged, "distributor_id", distributorIdParam);
 
-		adapayWithdrawSetSaveService.save(companyId, jwtDistributorId, jwtOperatorId, merged);
+		adapayWithdrawSetSaveService.save(companyId, jwtMap, merged);
 		return ResponseEntity.ok(ApiResult.ok(Map.of("status", Boolean.TRUE)));
 	}
 

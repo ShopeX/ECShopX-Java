@@ -30,13 +30,11 @@ public class ItemsStartNumUpdateRepository {
 		this.itemsMapper = itemsMapper;
 	}
 
-	public void updateStartNumIfItemExists(long itemId, int startNum) {
-		Items row = itemsMapper.selectById(itemId);
-		if (row == null) {
-			return;
-		}
+	public void updateStartNumIfItemExists(long companyId, long itemId, int startNum) {
 		LambdaUpdateWrapper<Items> uw = new LambdaUpdateWrapper<>();
-		uw.eq(Items::getItemId, itemId).set(Items::getStartNum, startNum);
+		uw.eq(Items::getCompanyId, companyId)
+				.eq(Items::getItemId, itemId)
+				.set(Items::getStartNum, startNum);
 		itemsMapper.update(null, uw);
 	}
 }

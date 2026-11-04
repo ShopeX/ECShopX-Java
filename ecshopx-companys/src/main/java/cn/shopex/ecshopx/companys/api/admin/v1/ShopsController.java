@@ -346,8 +346,10 @@ public class ShopsController {
 	public ResponseEntity<ApiResult<Map<String, Object>>> setShopStatus(
 			HttpServletRequest request, @FlexibleBody Map<String, Object> body) {
 		Map<String, Object> jwt = readOperatorJwtMap(request);
+		long companyId = readCompanyIdFromOperatorJwtMap(jwt);
 		Map<String, Object> merged = CompanysAdminRequestMerge.mergeInputLikeFlexibleResolver(request, body);
-		wxShopsSetShopStatusService.setShopStatus(merged.get("wx_shop_id"), merged.get("status"), jwt);
+		wxShopsSetShopStatusService.setShopStatus(
+				merged.get("wx_shop_id"), merged.get("status"), jwt, companyId);
 		Map<String, Object> data = new LinkedHashMap<>();
 		data.put("status", true);
 		return ResponseEntity.ok(ApiResult.ok(data));

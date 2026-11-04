@@ -26,6 +26,7 @@ import cn.shopex.ecshopx.companys.service.activation.CompanysActivationService;
 import cn.shopex.ecshopx.espier.security.OperatorJwtAuthenticationFilter;
 import cn.shopex.ecshopx.form.service.FormRoutePermissionService;
 import cn.shopex.ecshopx.form.service.UserTranscriptCreateService;
+import cn.shopex.ecshopx.form.service.UserTranscriptListCompanyScope;
 import cn.shopex.ecshopx.form.service.UserTranscriptListService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -144,7 +145,8 @@ public class UserTranscriptsController {
 		formRoutePermissionService.assertUserTranscriptList(user);
 
 		Map<String, Object> merged = mergeGetInput(request);
-		Map<String, Object> result = userTranscriptListService.list(merged);
+		Map<String, Object> scoped = UserTranscriptListCompanyScope.apply(merged, companyId);
+		Map<String, Object> result = userTranscriptListService.list(scoped);
 		return ResponseEntity.ok(ApiResult.ok(result));
 	}
 

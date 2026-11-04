@@ -80,7 +80,8 @@ public class TrustLoginParamsService {
 				if (configRow.isEmpty()) {
 					out.put("config_info", Collections.emptyList());
 				} else {
-					out.put("config_info", new LinkedHashMap<>(configRow));
+					// ECX-10853: never expose OAuth client_secret (or Apple private material) to FrontNoAuth callers.
+					out.put("config_info", TrustLoginConfigSupport.sanitizeConfigRow(configRow, true));
 				}
 				out.put("redirect_url", qrUrl);
 				return out;

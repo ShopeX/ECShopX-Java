@@ -111,8 +111,15 @@ public class RegistrationRecordDataInfoService {
 	}
 
 	public Map<String, Object> getDataInfo(
-			long recordId, String requestLangTag, Locale locale, boolean datapassBlocked) {
-		RegistrationRecord entity = registrationRecordMapper.selectById(recordId);
+			long companyId,
+			long recordId,
+			String requestLangTag,
+			Locale locale,
+			boolean datapassBlocked) {
+		LambdaQueryWrapper<RegistrationRecord> ownership = new LambdaQueryWrapper<>();
+		ownership.eq(RegistrationRecord::getRecordId, recordId);
+		ownership.eq(RegistrationRecord::getCompanyId, companyId);
+		RegistrationRecord entity = registrationRecordMapper.selectOne(ownership);
 		if (entity == null) {
 			LinkedHashMap<String, Object> missing = new LinkedHashMap<>();
 			missing.put("content", null);
@@ -155,7 +162,12 @@ public class RegistrationRecordDataInfoService {
 		RegistrationActivity activityEntity = null;
 		Long aid = entity.getActivityId();
 		if (aid != null && aid > 0L) {
-			activityEntity = registrationActivityMapper.selectById(aid);
+			RegistrationActivity loaded = registrationActivityMapper.selectById(aid);
+			if (loaded != null
+					&& loaded.getCompanyId() != null
+					&& loaded.getCompanyId().longValue() == companyId) {
+				activityEntity = loaded;
+			}
 		}
 
 		if (activityEntity != null) {

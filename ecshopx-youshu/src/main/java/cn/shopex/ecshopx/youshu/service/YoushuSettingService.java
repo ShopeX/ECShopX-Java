@@ -18,6 +18,7 @@ package cn.shopex.ecshopx.youshu.service;
 
 import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.youshu.domain.YoushuSetting;
+import cn.shopex.ecshopx.youshu.integration.YoushuBaseUriGuard;
 import cn.shopex.ecshopx.youshu.mapper.YoushuSettingMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -76,10 +77,14 @@ public class YoushuSettingService {
 		entity.setMerchantId(trimmedStringOrEmpty(merged.get("merchant_id")));
 		entity.setAppId(trimmedStringOrEmpty(merged.get("app_id")));
 		entity.setAppSecret(trimmedStringOrEmpty(merged.get("app_secret")));
-		entity.setApiUrl(trimmedStringOrEmpty(merged.get("api_url")));
+		String apiUrl = trimmedStringOrEmpty(merged.get("api_url"));
+		YoushuBaseUriGuard.requireOptional(apiUrl);
+		entity.setApiUrl(apiUrl);
 		entity.setSandboxAppId(trimmedStringOrEmpty(merged.get("sandbox_app_id")));
 		entity.setSandboxAppSecret(trimmedStringOrEmpty(merged.get("sandbox_app_secret")));
-		entity.setSandboxApiUrl(trimmedStringOrEmpty(merged.get("sandbox_api_url")));
+		String sandboxApiUrl = trimmedStringOrEmpty(merged.get("sandbox_api_url"));
+		YoushuBaseUriGuard.requireOptional(sandboxApiUrl);
+		entity.setSandboxApiUrl(sandboxApiUrl);
 		entity.setWeappName(trimmedStringOrEmpty(merged.get("weapp_name")));
 		entity.setWeappAppId(trimmedStringOrEmpty(merged.get("weapp_app_id")));
 	}

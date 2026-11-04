@@ -44,6 +44,17 @@ public class ShuyunOpenPlatformProperties {
 	/** 入站回调验签密匙（≠ DB app_secret） */
 	private String callbackIdentitySecret = "";
 
+	/**
+	 * ECX-10841：验签是否纳入 JSON body。默认 true；对接方须按同一规则签名。关闭则回退仅签 query/header。
+	 */
+	private boolean callbackSignIncludeBody = true;
+
+	/** ECX-10841：允许的请求时间戳与本地时钟偏差（秒） */
+	private int callbackReplaySkewSeconds = 300;
+
+	/** ECX-10841：防重放 Redis 键 TTL（秒） */
+	private int callbackReplayTtlSeconds = 600;
+
 	/** Token 回调匹配 auth_value 冷启动写入 */
 	private String authValue = "";
 

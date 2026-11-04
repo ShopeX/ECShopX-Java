@@ -32,6 +32,7 @@ public class EmployeeAccountManagementListQuery {
 	private String paymentMethod;
 	private String staffType;
 	private String distributorId;
+	private String shopCode;
 	private String isDisable;
 	private String supplierName;
 	private String operatorType;

@@ -345,6 +345,22 @@ public class WorkWechatConfigService {
 		String companyKey = "workwechat:config:" + sha1Hex(String.valueOf(companyId));
 		String corpidTrimmed = trimToEmpty(trimmedMap.get("corpid"));
 		String cropidKey = "workwechat:configcropid:" + corpidTrimmed;
+
+		@SuppressWarnings("unchecked")
+		Map<String, Object> agents = (Map<String, Object>) data.get("agents");
+		Object appidObj = agents.get("app") instanceof Map<?, ?> appMap ? appMap.get("appid") : "";
+		String appidTrimmed = trimToEmpty(appidObj);
+		String appidKey = "workwechat:configappid:" + appidTrimmed;
+
+		assertCropidIndexOwnedOrFree(companyId, cropidKey);
+		assertAppidIndexOwnedOrFree(companyId, appidKey, appidTrimmed);
+
+		String previousCorpid = readStoredCorpidForCompany(companyKey);
+		String previousCropidKey =
+				StringUtils.hasText(previousCorpid) && !previousCorpid.equals(corpidTrimmed)
+						? "workwechat:configcropid:" + previousCorpid
+						: null;
+
 		String json;
 		try {
 			json = objectMapper.writeValueAsString(data);
@@ -353,18 +369,77 @@ public class WorkWechatConfigService {
 		}
 		sharedStringRedisTemplate.opsForValue().set(companyKey, json);
 		sharedStringRedisTemplate.opsForValue().set(cropidKey, json);
-
-		@SuppressWarnings("unchecked")
-		Map<String, Object> agents = (Map<String, Object>) data.get("agents");
-		Object appidObj = agents.get("app") instanceof Map<?, ?> appMap ? appMap.get("appid") : "";
-		String appidKey = "workwechat:configappid:" + trimToEmpty(appidObj);
 		sharedStringRedisTemplate.opsForValue().set(appidKey, String.valueOf(companyId));
+
+		if (previousCropidKey != null) {
+			deleteCropidIndexIfOwnedByCompany(companyId, previousCropidKey);
+		}
 
 		if (log.isDebugEnabled()) {
 			log.debug("key:{}读取存入数据:{}", companyKey, sharedStringRedisTemplate.opsForValue().get(companyKey));
 		}
 
 		return attachConfig(data, companyId);
+	}
+
+	private void assertCropidIndexOwnedOrFree(long companyId, String cropidKey) {
+		String raw = sharedStringRedisTemplate.opsForValue().get(cropidKey);
+		if (!StringUtils.hasText(raw)) {
+			return;
+		}
+		Long owner = parseCompanyIdFromConfigJson(raw);
+		if (owner != null && owner.longValue() != companyId) {
+			throw new ResourceException("该企业微信corpid已被其他企业使用");
+		}
+	}
+
+	private void assertAppidIndexOwnedOrFree(long companyId, String appidKey, String appidTrimmed) {
+		if (!StringUtils.hasText(appidTrimmed)) {
+			return;
+		}
+		String raw = sharedStringRedisTemplate.opsForValue().get(appidKey);
+		if (!StringUtils.hasText(raw)) {
+			return;
+		}
+		Long owner = parseCompanyIdLong(raw.trim());
+		if (owner != null && owner.longValue() != companyId) {
+			throw new ResourceException("该企业微信appid已被其他企业使用");
+		}
+	}
+
+	private String readStoredCorpidForCompany(String companyKey) {
+		String raw = sharedStringRedisTemplate.opsForValue().get(companyKey);
+		if (!StringUtils.hasText(raw)) {
+			return "";
+		}
+		try {
+			Map<String, Object> parsed =
+					objectMapper.readValue(raw, new TypeReference<Map<String, Object>>() {});
+			return parsed == null ? "" : trimToEmpty(parsed.get("corpid"));
+		} catch (JsonProcessingException e) {
+			return "";
+		}
+	}
+
+	private void deleteCropidIndexIfOwnedByCompany(long companyId, String cropidKey) {
+		String raw = sharedStringRedisTemplate.opsForValue().get(cropidKey);
+		if (!StringUtils.hasText(raw)) {
+			return;
+		}
+		Long owner = parseCompanyIdFromConfigJson(raw);
+		if (owner != null && owner.longValue() == companyId) {
+			sharedStringRedisTemplate.delete(cropidKey);
+		}
+	}
+
+	private Long parseCompanyIdFromConfigJson(String raw) {
+		try {
+			Map<String, Object> parsed =
+					objectMapper.readValue(raw, new TypeReference<Map<String, Object>>() {});
+			return parsed == null ? null : parseCompanyIdLong(parsed.get("company_id"));
+		} catch (JsonProcessingException e) {
+			return null;
+		}
 	}
 
 	private static Map<String, Object> buildTrimmedMap(Map<String, Object> root) {

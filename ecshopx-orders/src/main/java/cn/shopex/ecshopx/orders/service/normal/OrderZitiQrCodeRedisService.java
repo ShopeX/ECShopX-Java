@@ -64,4 +64,12 @@ public class OrderZitiQrCodeRedisService {
 			return null;
 		}
 	}
+
+	/** 核销成功后删除扫码映射，避免同码重复核销。 */
+	public void deleteZitiCodeOrderMapping(String code) {
+		if (!StringUtils.hasText(code)) {
+			return;
+		}
+		redis.delete(KEY_PREFIX + code);
+	}
 }

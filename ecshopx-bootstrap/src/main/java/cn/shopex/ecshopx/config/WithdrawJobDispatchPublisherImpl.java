@@ -36,9 +36,10 @@ public class WithdrawJobDispatchPublisherImpl implements WithdrawJobDispatchPubl
 	}
 
 	@Override
-	public void enqueueWithdrawJob(long applyId) {
+	public void enqueueWithdrawJob(long applyId, long companyId) {
 		LinkedHashMap<String, Object> payload = new LinkedHashMap<>();
 		payload.put("apply_id", applyId);
+		payload.put("company_id", companyId);
 		dispatchFacade.dispatchJob(
 				BsPayBundleDispatchJobNames.WITHDRAW_JOB,
 				payload,

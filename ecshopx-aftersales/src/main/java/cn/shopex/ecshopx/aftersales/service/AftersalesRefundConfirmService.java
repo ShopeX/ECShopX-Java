@@ -167,7 +167,12 @@ public class AftersalesRefundConfirmService {
 								.eq(Aftersales::getCompanyId, companyId)
 								.eq(Aftersales::getAftersalesBn, aftersalesBn)
 								.last("LIMIT 1"));
-		if (row == null || row.getOrderId() == null) {
+		if (row == null) {
+			return;
+		}
+		AftersalesDistributorScopeGuard.assertAftersalesDistributorAllowed(
+				row.getDistributorId(), DualJwtSupport.claims(request));
+		if (row.getOrderId() == null) {
 			return;
 		}
 		posOrderDocAccessPort.assertWriteAccess(request, companyId, row.getOrderId());

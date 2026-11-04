@@ -21,7 +21,6 @@ import cn.shopex.ecshopx.goods.repository.ItemsRepository;
 import cn.shopex.ecshopx.supplier.domain.SupplierItems;
 import cn.shopex.ecshopx.supplier.repository.SupplierItemsRepository;
 import java.util.List;
-import java.util.Objects;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -66,8 +65,12 @@ public class ItemsBatchUpdateStoreOrchestrator {
 						itemStoreService.saveItemStore(it.getItemId(), row.store(), 0L);
 					}
 				} else {
-					itemsRepository.updateSingleItemStoreIfExists(row.itemId(), row.store());
-					itemStoreService.saveItemStore(row.itemId(), row.store(), 0L);
+					int updated =
+							itemsRepository.updateStoreByItemIds(
+									companyId, List.of(row.itemId()), row.store());
+					if (updated > 0) {
+						itemStoreService.saveItemStore(row.itemId(), row.store(), 0L);
+					}
 				}
 			}
 		}

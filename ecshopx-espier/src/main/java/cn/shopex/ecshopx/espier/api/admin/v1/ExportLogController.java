@@ -120,8 +120,18 @@ public class ExportLogController {
 	@Activated(routeAlias = "espier.export.file.down")
 	@GetMapping(value = "/file/down", name = "文件导出下载")
 	public ResponseEntity<ApiResult<Map<String, Object>>> fileDown(
+			HttpServletRequest request,
 			@RequestParam(value = "log_id", required = false) String logIdRaw) {
-		ExportLogFileDownResult result = exportLogFileDownService.fileDown(logIdRaw);
+		@SuppressWarnings("unchecked")
+		Map<String, Object> user =
+				(Map<String, Object>) request.getAttribute(OperatorJwtAuthenticationFilter.OPERATOR_JWT_USER_DATA);
+		long companyId = EspierAdminJwtControllerSupport.extractCompanyId(request);
+		Long parsedOpId = EspierAdminJwtControllerSupport.parseLongOrNull(user == null ? null : user.get("operator_id"));
+		long operatorId = parsedOpId == null ? 0L : parsedOpId;
+		String operatorType =
+				user == null ? "" : EspierAdminJwtControllerSupport.optionalTrimmedString(user.get("operator_type"));
+		ExportLogFileDownResult result =
+				exportLogFileDownService.fileDown(logIdRaw, companyId, operatorId, operatorType);
 		Map<String, Object> payload = new LinkedHashMap<>();
 		payload.put("csv_data", result.csvData());
 		payload.put("file_name", result.fileName());

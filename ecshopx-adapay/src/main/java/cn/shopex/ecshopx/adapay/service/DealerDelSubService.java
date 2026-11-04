@@ -20,6 +20,7 @@ import cn.shopex.ecshopx.common.exception.BadRequestException;
 import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.companys.service.OperatorsCommandService;
 import cn.shopex.ecshopx.companys.service.OperatorsQueryService;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import org.springframework.stereotype.Service;
 
@@ -36,13 +37,15 @@ public class DealerDelSubService {
 		this.operatorsCommandService = operatorsCommandService;
 	}
 
-	public void delDealerSub(String operatorId) {
+	public void delDealerSub(long companyId, String operatorId) {
 		if (operatorId == null || operatorId.trim().isEmpty()) {
 			throw new BadRequestException("operator_id 不能为空");
 		}
 		String operatorIdRaw = operatorId.trim();
 
-		Map<String, Object> filter = Map.of("operator_id", operatorIdRaw);
+		Map<String, Object> filter = new LinkedHashMap<>();
+		filter.put("operator_id", operatorIdRaw);
+		filter.put("company_id", companyId);
 		Map<String, Object> info = operatorsQueryService.getInfo(filter);
 		if (info == null || info.isEmpty()) {
 			throw new ResourceException("未找到删除账号");
@@ -52,7 +55,7 @@ public class DealerDelSubService {
 		}
 
 		long idForDelete = requireOperatorIdForDelete(info, operatorIdRaw);
-		operatorsCommandService.deleteByOperatorIdOnly(idForDelete);
+		operatorsCommandService.deleteByOperatorIdAndCompanyId(companyId, idForDelete);
 	}
 
 	private static long requireOperatorIdForDelete(Map<String, Object> info, String operatorIdRaw) {

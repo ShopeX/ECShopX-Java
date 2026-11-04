@@ -266,41 +266,6 @@ public class UserInvoiceController {
 		return ResponseEntity.ok(ApiResult.ok(payload));
 	}
 
-	@FrontAuth
-	@PostMapping(
-			value = "/setting",
-			name = "设置开票配置",
-			consumes = {
-				MediaType.APPLICATION_JSON_VALUE,
-				MediaType.MULTIPART_FORM_DATA_VALUE,
-				MediaType.APPLICATION_FORM_URLENCODED_VALUE
-			},
-			produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<ApiResult<Boolean>> setInvoiceSetting(
-			HttpServletRequest request, @FlexibleBody(required = false) Map<String, Object> body) {
-		Object rawAuth = request.getAttribute(WxappMemberAuthAttributes.REQUEST_ATTR);
-		if (rawAuth == null) {
-			rawAuth = request.getAttribute(H5FrontAuthAttributes.H5_AUTH_CLAIMS);
-		}
-		if (!(rawAuth instanceof Map<?, ?> authRaw)) {
-			throw new UnauthorizedException("未登录");
-		}
-		Map<String, Object> auth = new LinkedHashMap<>();
-		for (Map.Entry<?, ?> e : authRaw.entrySet()) {
-			auth.put(String.valueOf(e.getKey()), e.getValue());
-		}
-		Long companyId = parseLongOrNull(auth.get("company_id"));
-		if (companyId == null) {
-			throw new ResourceException("参数错误");
-		}
-		Map<String, Object> merged = new LinkedHashMap<>(FlexibleHttpServletParameterMap.toObjectMap(request));
-		if (body != null) {
-			merged.putAll(body);
-		}
-		orderInvoiceSettingService.setFrontMemberInvoiceSetting(companyId, merged);
-		return ResponseEntity.ok(ApiResult.ok(Boolean.TRUE));
-	}
-
 	@FrontNoAuth
 	@GetMapping(value = "/protocol", name = "发票协议", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ApiResult<Object>> getInvoiceProtocol(HttpServletRequest request) {

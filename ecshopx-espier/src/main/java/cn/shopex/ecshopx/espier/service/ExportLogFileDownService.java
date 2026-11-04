@@ -21,6 +21,7 @@ import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.espier.domain.ExportLog;
 import cn.shopex.ecshopx.espier.mapper.ExportLogMapper;
 import cn.shopex.ecshopx.espier.storage.StorageProperties;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -51,7 +52,8 @@ public class ExportLogFileDownService {
 		this.exportLogDownloadRestTemplate = exportLogDownloadRestTemplate;
 	}
 
-	public ExportLogFileDownResult fileDown(String logIdRaw) {
+	public ExportLogFileDownResult fileDown(
+			String logIdRaw, long companyId, long operatorId, String operatorType) {
 		if (logIdRaw == null || logIdRaw.isBlank()) {
 			throw new BadRequestException("缺少文件资源id");
 		}
@@ -62,7 +64,16 @@ public class ExportLogFileDownService {
 			throw new ResourceException("资源文件不存在");
 		}
 
-		ExportLog row = exportLogMapper.selectById(parsedLogId);
+		String ot = operatorType == null ? "" : operatorType.trim();
+		long supplierId = "supplier".equalsIgnoreCase(ot) ? operatorId : 0L;
+
+		LambdaQueryWrapper<ExportLog> wrapper = new LambdaQueryWrapper<>();
+		wrapper.eq(ExportLog::getLogId, parsedLogId);
+		wrapper.eq(ExportLog::getCompanyId, companyId);
+		wrapper.eq(ExportLog::getOperatorId, operatorId);
+		wrapper.eq(ExportLog::getSupplierId, supplierId);
+
+		ExportLog row = exportLogMapper.selectOne(wrapper);
 		if (row == null) {
 			throw new ResourceException("资源文件不存在");
 		}
