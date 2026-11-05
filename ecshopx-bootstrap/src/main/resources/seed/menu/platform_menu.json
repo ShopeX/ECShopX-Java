@@ -2482,7 +2482,7 @@
   {
     "shopmenu_id": 503,
     "company_id": 0,
-    "name": "商品管理",
+    "name": "平台商品池",
     "url": "/supply/supplygoods/supplier_goods_list",
     "sort": 1,
     "is_menu": true,
@@ -2494,7 +2494,7 @@
     "version": 1,
     "disabled": false,
     "created": 1792035297,
-    "updated": 1792035297,
+    "updated": 1793799289,
     "level": 3,
     "parent_name": "供应商商品",
     "isChildrenMenu": false,
@@ -2502,7 +2502,7 @@
       "all"
     ],
     "name_lang": {
-      "zh-CN": "商品管理",
+      "zh-CN": "平台商品池",
       "en-CN": "Rewards Management",
       "ar-SA": "إدارة المنتجات",
       "zh-TW": "商品管理",

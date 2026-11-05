@@ -190,6 +190,11 @@ public class PostCreateService {
 			if (existing == null) {
 				throw new ResourceException("未查询到更新数据");
 			}
+			// ECX-10907：对齐 PHP WsugcTenantScopeGuard::assertPostIdsBelongToCompany
+			Long existingCompanyId = existing.getCompanyId() == null ? 0L : existing.getCompanyId();
+			if (!existingCompanyId.equals(companyIdForRel)) {
+				throw new ResourceException("无权访问该笔记");
+			}
 			applyPersistToPost(existing, persist);
 			existing.setUpdated(now);
 			postMapper.updateById(existing);

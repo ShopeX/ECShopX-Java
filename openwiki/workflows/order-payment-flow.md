@@ -68,7 +68,10 @@ sources:
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/orderrefund/WxpaySecapiAftersalesRefundRunner.java
   - id: openwiki-source-f1d910dfde8ea50422ca49b0
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/WxpayNotifyFacade.java
-generated: { by: "openwiki/0.7.2", at: "2026-10-23T03:04:20.471Z" }
+generated: { by: "openwiki/0.7.3", at: "2026-11-04T17:09:55.577Z" }
+verified:
+  - by: openwiki/0.7.3
+    at: 2026-11-04T17:09:55.577Z
 ---
 
 # Workflow: Checkout, Payment, Notify, and Trade-Finish Fan-out
@@ -101,13 +104,21 @@ sequenceDiagram
     participant CB as CallbackService
     participant DB as DispatchBus
     participant LN as Listeners
+    participant AO as Admin operator
+    participant DF as ShopadminDeferredOrderService
+    participant RC as Redis snapshot
+    participant DP as OrdersPaymentDoPaymentService
+
+    rect rgb(235, 245, 255)
+    note over CL,LN: wxapp immediate-pay path — order row exists before payment
     CL->>CT: POST /api/v1/h5app/wxapp/payment
     CT->>PS: payment with order_id and pay_type
     PS->>PS: order guards, order bundle, pay_type forcing
-    PS->>PS: insertPendingTrade with trade_state NOTPAY
-    PS->>CH: unified order via OrdersExternalPayParamBuildService
-    CH-->>PS: prepay_id or code_url or mweb_url
-    PS-->>CL: client pay params plus trade_info
+    PS->>DP: doPayment
+    DP->>DP: insertPendingTrade with trade_state NOTPAY
+    DP->>CH: unified order via OrdersExternalPayParamBuildService
+    CH-->>DP: prepay_id or code_url or mweb_url
+    DP-->>CL: client pay params plus trade_info
     CL->>CH: user confirms payment
     CH->>NF: POST /wechatAuth/wxpay/notify XML
     NF->>NF: parse XML, resolve company and apiKey
@@ -122,9 +133,31 @@ sequenceDiagram
     CB->>DB: publish trade row on three planes
     DB->>LN: Jushuitan plane, trade finish plane, WdtErp plane
     LN->>LN: pay-success bridge, SMS, WXA template, statistics, profit
+    end
+
+    rect rgb(255, 245, 235)
+    note over AO,DP: admin shopadmin deferred path — order materialized after the charge
+    AO->>CT: POST /api/v1/order/create
+    CT->>RC: saveWaitPay WAIT_PAY snapshot with auto-cancel TTL
+    CT-->>AO: preassigned order_id, order_status NOTPAY, no DB rows
+    AO->>CT: POST /api/v1/order/payment with auth_code or pay_type
+    CT->>DF: payDeferredOrder, no orders_associations row but cache hit
+    DF->>RC: withLock shopadmin deferred lock order_id
+    DF->>DF: resolve pay type, only pos or wxpaypos or alipaypos
+    DF->>DP: doPayment
+    DP->>DP: insertPendingTrade NOTPAY then charge, pos finalizes locally
+    DP->>CH: micropay or alipay.trade.pay for scan codes
+    CH-->>DP: synchronous confirmation, pay_status true
+    DP->>DB: trade-finish publish on its own commit, order row not yet written
+    DB->>LN: pay-success bridge finds no order row and returns empty
+    DF->>DF: persistPreparedSnapshot then direct markPayedIfNeeded to DONE
+    DF->>DB: supplier split then single normal_order_add publish
+    DF->>RC: delete snapshot
+    DF-->>AO: pay_status true with order_id
+    end
 ```
 
-*The wxapp money path: initiation → channel → verified notify → guarded state CAS → three-plane fan-out. Every step is grounded in the classes named in the sections below.*
+*Two entries into the same money path: the wxapp immediate-pay flow (top — the order row exists before payment, so the async notify drives everything) and the admin 代客下单 deferred flow (bottom — create only caches a Redis snapshot for pos/wxpaypos/alipaypos, and `ShopadminDeferredOrderService` charges and materializes the order in one locked call, so the trade-finish publish fires before any order row exists). Every step is grounded in the classes named in the sections below.*
 
 ## Step 1 — cart → order creation
 
@@ -443,7 +476,10 @@ transaction, `@Transactional(rollbackFor = Exception.class)`):
   `bargain`, `normal_shopguide`, `normal_pointsmall`,
   `normal_employee_purchase`) are considered.
 * Target status: `WAIT_GROUPS_SUCCESS` for `normal_groups`; `DONE` for
-  `shopadmin`-class orders; otherwise `PAYED`. The header update is guarded by
+  `shopadmin`-class orders **unless** the order uses platform item stock
+  (`uses_platform_item_stock != 0`, the 云仓 immediate-purchase case, which
+  stays `PAYED` awaiting shipment — PHP parity, per the code comment);
+  otherwise `PAYED`. The header update is guarded by
   `order_status = 'NOTPAY'` and sets `pay_status = PAYED` — zero affected rows
   means someone else already paid or cancelled, and the method returns
   `Optional.empty()` so **no pay-success event is published** (the bridge is
@@ -713,7 +749,8 @@ runs under the `shopadmin:deferred:lock:{orderId}` Redis lock
    `OrdersTradeFinishNormalOrderPaySuccessApplyService.markPayedIfNeeded` is
    invoked **directly** with the snake_case trade row (the same method the
    pay-success bridge listener calls — shopadmin-class orders jump straight
-   to `DONE`, then the ziti auto-complete marks non-logistics items delivered
+   to `DONE` unless they use platform item stock, then the ziti auto-complete
+   marks non-logistics items delivered
    and closes the order), then `splitAndPublishOnce` runs the supplier split
    (`SupplierOrderSplitOnNormalOrderAddService.split`, which itself skips
    already-split suppliers) and publishes the **single**

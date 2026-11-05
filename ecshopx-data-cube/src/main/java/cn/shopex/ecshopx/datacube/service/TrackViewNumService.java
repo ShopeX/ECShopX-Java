@@ -16,7 +16,12 @@
 
 package cn.shopex.ecshopx.datacube.service;
 
+import cn.shopex.ecshopx.datacube.domain.Monitors;
+import cn.shopex.ecshopx.datacube.domain.Sources;
+import cn.shopex.ecshopx.datacube.mapper.MonitorsMapper;
+import cn.shopex.ecshopx.datacube.mapper.SourcesMapper;
 import cn.shopex.ecshopx.members.service.account.MemberAccountService;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -34,14 +39,20 @@ public class TrackViewNumService {
 	private final MemberAccountService memberAccountService;
 	private final StringRedisTemplate datacubeStringRedisTemplate;
 	private final UvBloomFilterService uvBloomFilterService;
+	private final MonitorsMapper monitorsMapper;
+	private final SourcesMapper sourcesMapper;
 
 	public TrackViewNumService(
 			MemberAccountService memberAccountService,
 			@Qualifier("datacubeStringRedisTemplate") StringRedisTemplate datacubeStringRedisTemplate,
-			UvBloomFilterService uvBloomFilterService) {
+			UvBloomFilterService uvBloomFilterService,
+			MonitorsMapper monitorsMapper,
+			SourcesMapper sourcesMapper) {
 		this.memberAccountService = memberAccountService;
 		this.datacubeStringRedisTemplate = datacubeStringRedisTemplate;
 		this.uvBloomFilterService = uvBloomFilterService;
+		this.monitorsMapper = monitorsMapper;
+		this.sourcesMapper = sourcesMapper;
 	}
 
 	public void addViewNum(long companyId, String monitorId, String sourceId, String openId) {
@@ -49,6 +60,28 @@ public class TrackViewNumService {
 			return;
 		}
 		if (!StringUtils.hasText(monitorId) || !StringUtils.hasText(sourceId)) {
+			return;
+		}
+
+		// ECX-10920：monitor/source 须为本租户已注册实体，
+		// 防未认证端点枚举 ID 无限创建 Redis bloom/hash key（静默丢弃）
+		long monitorIdVal = parsePositiveLongOrNull(monitorId);
+		long sourceIdVal = parsePositiveLongOrNull(sourceId);
+		if (monitorIdVal <= 0 || sourceIdVal <= 0) {
+			return;
+		}
+		if (monitorsMapper.selectCount(
+						new LambdaQueryWrapper<Monitors>()
+								.eq(Monitors::getMonitorId, monitorIdVal)
+								.eq(Monitors::getCompanyId, companyId))
+				<= 0) {
+			return;
+		}
+		if (sourcesMapper.selectCount(
+						new LambdaQueryWrapper<Sources>()
+								.eq(Sources::getSourceId, sourceIdVal)
+								.eq(Sources::getCompanyId, companyId))
+				<= 0) {
 			return;
 		}
 
@@ -67,6 +100,15 @@ public class TrackViewNumService {
 			if (!userInfo.isEmpty()) {
 				datacubeStringRedisTemplate.opsForHash().increment(mvKey, ymd, 1L);
 			}
+		}
+	}
+
+	private static long parsePositiveLongOrNull(String raw) {
+		try {
+			long v = Long.parseLong(raw.trim());
+			return v > 0 ? v : 0L;
+		} catch (NumberFormatException e) {
+			return 0L;
 		}
 	}
 }

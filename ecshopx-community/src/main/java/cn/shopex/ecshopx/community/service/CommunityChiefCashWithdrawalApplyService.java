@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -60,7 +61,7 @@ public class CommunityChiefCashWithdrawalApplyService {
 		this.communityChiefCashWithdrawalFrontQueryService = communityChiefCashWithdrawalFrontQueryService;
 	}
 
-	@Transactional(rollbackFor = Exception.class)
+	@Transactional(rollbackFor = Exception.class, isolation = Isolation.READ_COMMITTED)
 	public Map<String, Object> applyForH5(
 			long companyId,
 			Map<String, Object> claims,
@@ -97,12 +98,13 @@ public class CommunityChiefCashWithdrawalApplyService {
 			throw new ResourceException("佣金单次最多提现800元");
 		}
 
+		// ECX-10895：先锁团长行，再计算可提现余额，避免并发申请透支。
 		CommunityChief chief =
 				communityChiefMapper.selectOne(
 						new LambdaQueryWrapper<CommunityChief>()
 								.eq(CommunityChief::getChiefId, chiefId)
 								.eq(CommunityChief::getCompanyId, companyId)
-								.last("LIMIT 1"));
+								.last("LIMIT 1 FOR UPDATE"));
 		if (chief == null) {
 			throw new ResourceException("不是团长，不可以申请");
 		}

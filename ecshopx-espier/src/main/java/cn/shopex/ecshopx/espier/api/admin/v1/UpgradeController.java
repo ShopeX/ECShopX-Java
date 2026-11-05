@@ -18,6 +18,7 @@ package cn.shopex.ecshopx.espier.api.admin.v1;
 
 import java.util.Map;
 
+import cn.shopex.ecshopx.common.annotation.Activated;
 import cn.shopex.ecshopx.common.annotation.AdminAuth;
 import cn.shopex.ecshopx.common.annotation.DingoResponse;
 import cn.shopex.ecshopx.common.annotation.ShopLog;
@@ -56,6 +57,7 @@ public class UpgradeController {
 	}
 
 	@AdminAuth
+	@Activated(routeAlias = "espier.system.detect_version")
 	@ShopLog
 	@PostMapping(value = "/detect_version", name = "检测版本")
 	public ResponseEntity<ApiResult<Object>> detectVersion() {
@@ -63,6 +65,7 @@ public class UpgradeController {
 	}
 
 	@AdminAuth
+	@Activated(routeAlias = "espier.system.upgrade")
 	@ShopLog
 	@PostMapping(value = "/upgrade", name = "升级")
 	public ResponseEntity<ApiResult<Map<String, Boolean>>> upgrade(HttpServletRequest request) {
@@ -89,6 +92,7 @@ public class UpgradeController {
 	}
 
 	@AdminAuth
+	@Activated(routeAlias = "espier.system.rollback")
 	@ShopLog
 	@PostMapping(value = "/rollback", name = "回滚")
 	public ResponseEntity<ApiResult<Map<String, Boolean>>> rollback() {
@@ -97,6 +101,7 @@ public class UpgradeController {
 	}
 
 	@AdminAuth
+	@Activated(routeAlias = "espier.system.changelog")
 	@ShopLog
 	@PostMapping(value = "/changelog", name = "更新日志")
 	public ResponseEntity<ApiResult<Object>> changelog() {

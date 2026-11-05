@@ -447,7 +447,23 @@ public class PostController {
 			@FlexibleBody(required = false) Map<String, Object> body) {
 		Map<String, Object> merged = mergeDeletePostInput(request, body);
 		Object rawPostId = merged.get("post_id");
-		Map<String, Object> data = postDeleteService.softDeleteByPostId(rawPostId);
+		// ECX-10909：删除笔记必须限定当前租户
+		Object rawJwt = request.getAttribute(OperatorJwtAuthenticationFilter.OPERATOR_JWT_USER_DATA);
+		if (!(rawJwt instanceof Map<?, ?> jwtRaw) || jwtRaw.isEmpty()) {
+			throw new UnauthorizedException("未登录");
+		}
+		long companyId;
+		Object rawCompanyId = jwtRaw.get("company_id");
+		if (rawCompanyId instanceof Number n) {
+			companyId = n.longValue();
+		} else {
+			try {
+				companyId = Long.parseLong(String.valueOf(rawCompanyId).trim());
+			} catch (NumberFormatException e) {
+				companyId = 0L;
+			}
+		}
+		Map<String, Object> data = postDeleteService.softDeleteByPostId(rawPostId, companyId);
 		return ResponseEntity.ok(ApiResult.ok(data));
 	}
 

@@ -21,6 +21,7 @@ import cn.shopex.ecshopx.common.openapi.OpenapiMemberTagV2FailException;
 import cn.shopex.ecshopx.members.domain.MemberTags;
 import cn.shopex.ecshopx.members.mapper.MemberTagsMapper;
 import cn.shopex.ecshopx.members.service.MemberTagsMultiLangWriteService;
+import cn.shopex.ecshopx.members.service.systemtag.MemberSystemTagWriteGuard;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -33,12 +34,15 @@ public class OpenapiThirdApiV2MemberTagDeleteService {
 
 	private final MemberTagsMapper memberTagsMapper;
 	private final MemberTagsMultiLangWriteService memberTagsMultiLangWriteService;
+	private final MemberSystemTagWriteGuard memberSystemTagWriteGuard;
 
 	public OpenapiThirdApiV2MemberTagDeleteService(
 			MemberTagsMapper memberTagsMapper,
-			MemberTagsMultiLangWriteService memberTagsMultiLangWriteService) {
+			MemberTagsMultiLangWriteService memberTagsMultiLangWriteService,
+			MemberSystemTagWriteGuard memberSystemTagWriteGuard) {
 		this.memberTagsMapper = memberTagsMapper;
 		this.memberTagsMultiLangWriteService = memberTagsMultiLangWriteService;
+		this.memberSystemTagWriteGuard = memberSystemTagWriteGuard;
 	}
 
 	@Transactional(rollbackFor = Exception.class)
@@ -60,6 +64,7 @@ public class OpenapiThirdApiV2MemberTagDeleteService {
 		if (existing == null) {
 			throw tagNotFound();
 		}
+		memberSystemTagWriteGuard.rejectWrite(existing);
 
 		Long tagId = existing.getTagId();
 		memberTagsMultiLangWriteService.deleteMultiLangRowsForMembersTags(tagId);

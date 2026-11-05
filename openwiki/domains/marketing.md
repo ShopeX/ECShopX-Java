@@ -12,10 +12,14 @@ sources:
     resource: repo://ecshopx-aliyunsms/src/main/java/cn/shopex/ecshopx/aliyunsms/service/AliyunCompanySceneSmsSendAdapter.java
   - id: openwiki-source-0388cb94d8b3aa21ae7dd1cf
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/EmployeePurchaseNormalOrderPaySuccessDispatchListenerRegistrationConfig.java
+  - id: openwiki-source-480ef2b81b6b4c1d52c9cf13
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/EspierExportFileJobDispatchHandler.java
   - id: openwiki-source-907801503065fc1bdb7f7829
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/FirePromotionsActivityDispatchPublisherImpl.java
   - id: openwiki-source-fa44b5352c6f67c461d311ca
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/FirePromotionsActivityJobRegistrationConfig.java
+  - id: openwiki-source-5ed58be19e5955e2560aa7ae
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/LuckyDrawLogExportFileJobDispatchPublisherImpl.java
   - id: openwiki-source-f735ec49b9c44f12ddfd9380
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MemberCreateSuccessWxaNoticePortAdapter.java
   - id: openwiki-source-d509da31208e1ec0585096a4
@@ -48,6 +52,8 @@ sources:
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/YoushuCouponEditDispatchListenerRegistrationConfig.java
   - id: openwiki-source-217cbf177df2b236074d3354
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/DepositDispatchJobNames.java
+  - id: openwiki-source-4cece1d0dc21f12377ecd9c8
+    resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/EspierDispatchJobNames.java
   - id: openwiki-source-f8090d12f8e2a2d62b8e58b0
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/KaquanDispatchEventNames.java
   - id: openwiki-source-f7687100d882f581d013877d
@@ -146,6 +152,8 @@ sources:
     resource: repo://ecshopx-pointsmall/src/main/java/cn/shopex/ecshopx/pointsmall/service/PointsmallItemStoreRedisWriteService.java
   - id: openwiki-source-5641ac294bc8a12285a781b7
     resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/api/admin/v1/SeckillActivityController.java
+  - id: openwiki-source-85c051e414552eecdb97b71e
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/api/admin/v1/TurntableController.java
   - id: openwiki-source-eee63a7d10372e0144434031
     resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/api/admin/v1/WxaTemplateController.java
   - id: openwiki-source-f7feb94299e3e14865e969f3
@@ -154,6 +162,12 @@ sources:
     resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/cron/ScheduleTriggerPromotionActivityHandler.java
   - id: openwiki-source-6972b63582a06ac4a868925a
     resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/dispatch/CreateMemberSuccessPromotionsDispatchListener.java
+  - id: openwiki-source-df603f2ed74d09e522744a76
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/dispatch/LuckyDrawLogExportFileJobHandler.java
+  - id: openwiki-source-81a48e0aab02a95d64d749e3
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/dispatch/LuckyDrawLogExportFileJobPayloadSupport.java
+  - id: openwiki-source-4d228c56e030dec103a98e4e
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/dispatch/LuckyDrawLogExportFileJobTypeHandler.java
   - id: openwiki-source-66c52b930b0d9f8257c44eab
     resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/dispatch/MemberSigninReminderSendJobHandler.java
   - id: openwiki-source-f319f9a59b760735453704eb
@@ -166,6 +180,8 @@ sources:
     resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/dispatch/RechargeSendSmsNoticeJobHandler.java
   - id: openwiki-source-31c0cba4975f17500ed01c5d
     resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/dispatch/WxopenTemplateSendJobHandler.java
+  - id: openwiki-source-938551220f592a8b8a5593ae
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/domain/turntable/TurntableDrawStatus.java
   - id: openwiki-source-75df11656caf20623aa71c8e
     resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/integration/aftersales/AftersalesSuccessWxaSubscribeSendAdapter.java
   - id: openwiki-source-043e01b99cf95e87d89828b8
@@ -180,6 +196,10 @@ sources:
     resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/schedule/ScheduleFirePromotionActivityConsumer.java
   - id: openwiki-source-85d2a029de21b47f91ec9f00
     resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/event/SeckillActivityEndCommittedEventListener.java
+  - id: openwiki-source-a882b5ab0346ea9c26b469f3
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/export/TurntableLuckyDrawLogExportAsyncService.java
+  - id: openwiki-source-e4c922e72677fd8b23ccc255
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/export/TurntableLuckyDrawLogExportService.java
   - id: openwiki-source-df26736cc03664d777529023
     resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/MarketingActivityCreatePersistenceService.java
   - id: openwiki-source-dcecbe368deb2e47355cab19
@@ -198,6 +218,10 @@ sources:
     resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/SeckillActivityItemStoreWriteService.java
   - id: openwiki-source-ce4daeff0ff6094d35330196
     resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/SeckillActivitySearchItemsService.java
+  - id: openwiki-source-cd5f50ecadc2897fe179aec7
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/TurntableLogCountService.java
+  - id: openwiki-source-aa8dacde9391e8c25e658804
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/TurntableLuckyDrawLogListService.java
   - id: openwiki-source-9c61992f85949d88e97006d2
     resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/wxatemplate/WxaTemplateSceneDefinitions.java
   - id: openwiki-source-57fdb8a4b749d6eb1f573169
@@ -206,8 +230,16 @@ sources:
     resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/WxaTemplateOpenService.java
   - id: openwiki-source-05513e2397d8e5cb461cab9f
     resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/util/SeckillShopIdCsvParser.java
+  - id: openwiki-source-2262dd89c0e1ac3ffeeeca1e
+    resource: repo://ecshopx-promotions/src/test/java/cn/shopex/ecshopx/promotions/service/export/TurntableLuckyDrawLogExportAsyncServiceTest.java
+  - id: openwiki-source-b740e1f970ca53dc433d2aab
+    resource: repo://ecshopx-promotions/src/test/java/cn/shopex/ecshopx/promotions/service/export/TurntableLuckyDrawLogExportServiceDispatchTest.java
   - id: openwiki-source-4859543f3a926b7f5deb24d9
     resource: repo://ecshopx-promotions/src/test/java/cn/shopex/ecshopx/promotions/service/SeckillActivityCreateServiceLimitedTimeSaleShopOverlapTest.java
+  - id: openwiki-source-c0782c0e7ebaa967925ba70e
+    resource: repo://ecshopx-promotions/src/test/java/cn/shopex/ecshopx/promotions/service/TurntableLogCountServiceScopeTest.java
+  - id: openwiki-source-1b51530397617ba646f2d66f
+    resource: repo://ecshopx-promotions/src/test/java/cn/shopex/ecshopx/promotions/service/TurntableLuckyDrawLogListServiceScopeTest.java
   - id: openwiki-source-42786c17f9c0af1b4f962af8
     resource: repo://ecshopx-third-party/src/main/java/cn/shopex/ecshopx/thirdparty/service/dm/DmMessageNotifyWebhookService.java
   - id: openwiki-source-c871343763df1a82a0493867
@@ -216,10 +248,10 @@ sources:
     resource: repo://ecshopx-youshu/src/main/java/cn/shopex/ecshopx/youshu/dispatch/YoushuCouponAddDispatchListener.java
   - id: openwiki-source-85bb1daa315e1ca3fb4a215d
     resource: repo://ecshopx-youshu/src/main/java/cn/shopex/ecshopx/youshu/service/YoushuCouponAddSrDataSyncService.java
-generated: { by: "openwiki/0.7.2", at: "2026-10-25T17:14:04.348Z" }
+generated: { by: "openwiki/0.7.3", at: "2026-11-04T17:09:55.577Z" }
 verified:
-  - by: openwiki/0.7.2
-    at: 2026-10-25T17:14:04.348Z
+  - by: openwiki/0.7.3
+    at: 2026-11-04T17:09:55.577Z
 ---
 
 # Marketing and Loyalty Domains
@@ -269,6 +301,14 @@ Caption: the seckill conflict guard — the type split only gates the purchase-l
 * **Update-only status gate** — a `normal` seckill may only be edited while its computed lifecycle status is `waiting` (`waiting` → `in_the_notice` → `in_sale` → `it_has_ended`, derived from release/start/end times and `disabled`); `limited_time_sale` updates are never status-gated.
 
 After the guard passes, persistence writes the `seckill_activity` row (`distributor_id` stored wrapped as `,id,id,`), multi-language shards and a wholesale `seckill_rel_goods` replacement. The per-item Redis activity store `seckillActivityItemStore:<companyId>:<seckillId>` (hash field `store_<itemId>`) is written **only for `normal`** — a limited-time sale keeps no activity-store counter — and expires at `activity_end_time + 1 day`. `job:143:…SavePromotionItemTag` is published in-transaction (slow queue, ASYNC/REDIS) with the seckill type, item ids and activity prices, and the after-commit pair publishes `SalespersonItemsShelvesJobDispatchPublisher.publish(companyId, seckillId, "seckill" | "limited_time_sale")` plus the Spring `SeckillActivityCommittedEvent` (its after-commit listener is currently a logging placeholder). `PUT /updatestatus` disables the activity and rel rows, deletes the matching `promotions_items_tag` rows and publishes `SeckillActivityEndCommittedEvent`, whose `@TransactionalEventListener(AFTER_COMMIT)` handler calls `MarketingActivityPostCommitJobsService.enqueueSeckillEndSalespersonItemsShelves`.
+
+### Turntable admin surface, log visibility and the CSV export chain
+
+`TurntableController` (`@AdminAuth @ShopLog @DingoResponse`, base `/api/v1/promotions`) is the admin face of the lucky draw: `POST /turntableconfig` and `GET /turntableconfig` (create/update and detail through `TurntableConfigService`, with `country_code` falling back to `RequestLangTag.current`), `GET /getturntableList` (`TurntableActivityListService`), `GET /getturntable_log/byid` (`TurntableLuckyDrawLogListService`), `GET /getturntable_count/byid` (`TurntableLogCountService`), `GET /down_lucky_draw/byid` (下架), `POST /turntable/copy` and `GET /down_lucky_draw/export`. Every route forces `company_id` from the operator JWT and each carries an `@Activated` route alias (`promotions.turntable.*`).
+
+One visibility invariant ties the three log surfaces together: **only `SUCCESS` and `GRANT_FAILED` draw rows are visible** — `TurntableDrawStatus.VISIBLE_IN_DRAW_LOG` deliberately excludes `PROCESSING` and `COST_FAILED` — and the same status filter is applied by the admin log list, the C-side member draw log and the CSV export, so an operator never exports a row a member cannot see. `TurntableLuckyDrawLogListService` additionally scopes every count and page query by `(company_id, act_id)` and skips pagination entirely when the count is zero, and `TurntableLogCountService` runs its four aggregate counts (total / distinct users / non-thanks wins / distinct winners) with the same company+activity pair — both pinned by their `ScopeTest`s against a foreign `act_id`.
+
+The export leg runs through the shared export-file dispatch job. `GET /down_lucky_draw/export` calls `TurntableLuckyDrawLogExportService.exportLog`, which validates the `activity_id`, resolves `supplier_id` from the operator row (0 for non-supplier operators) and enqueues `job:159:EspierBundle\Jobs\ExportFileJob` via `LuckyDrawLogExportFileJobDispatchPublisher` with `type=export_luckdraw_log` and a `filter` of `{activity_id, datapass_block}` (the `x-datapass-block` request header) — ASYNC/REDIS on the **slow** queue in production, SYNC under the `local` profile. On the consume side, bootstrap's `EspierExportFileJobDispatchHandler` fans the job out to per-type `ExportFileJobTypeHandler` delegates keyed by `exportType()` (duplicate or unknown types are a startup failure / warn-and-ack respectively); promotions' `LuckyDrawLogExportFileJobTypeHandler` rebuilds a `LuckyDrawLogExportJobContext` and hands it to `LuckyDrawLogExportFileJobHandler` → `TurntableLuckyDrawLogExportAsyncService.runExport`. The worker pages the visible log rows 100 at a time, batch-resolves member summaries (`user_card_code`, `mobile`) per page through `MemberAccountService.listMemberSummariesByUserIds`, maps prize types to Chinese labels (优惠券 / 券包 / 积分 / 谢谢惠顾), formats `created` as `yyyy-MM-dd HH:mm:ss` Asia/Shanghai, uploads through `ExportCsvFileService.exportCsv` and records the finished file (`export_luckdraw_log`) via `ExportLogCreateService.createFinishLog` — an empty result set or an upload without a URL is a silent no-op (logged at debug), and the export writes no per-member side effects.
 
 `MarketingActivityCrossPromotionGuardService` is the single conflict authority for the whole activity family, not just seckill: `checkActivityValidByMarketing` (marketing create/update), `checkActivityValidByGroup`, `checkActivityValidByBargain`, `checkActivityValidByLimit`, `checkActivityValidByPackage`, the `member_preference` pair (`在相同时段内，同一个商品只能参加一个活动`) and the seckill item-search pair. Every check shares the window convention `overlapStart = max(start_time, now)` — windows that have already ended never conflict — and the `use_bound` axis (0 whole store, 1 items, 2 categories, 3 tags, 4 brands) selects which overlap test applies; the marketing-overlap check additionally mutexes on `source_id` equality or shop-id intersection and throws `相同时间内不能重复<promotion_tag>活动:<marketing_name>`, skipping the row being edited via `marketing_id`. Each entry point also scopes which seckill families it conflicts with: group and bargain writes set `seckill_type=["normal","limited_time_sale"]`, marketing writes the same except `member_preference` (normal only), while **limit and package writes set `seckill_type=["normal"]`** — purchase-limit and package promotions never collide with limited-time sales in either direction. The admin item search `GET /api/v1/promotions/seckillactivity/search/items` (`SeckillActivitySearchItemsService`) runs the same guard per candidate item with the same CSV-parsed shop ids, catches the `ResourceException` and splits rows into `validItems` / `invalidItems`, passing `exclude_seckill_id` — or `marketing_id` when a `marketing_type` filter is present — so items already bound to the edited activity stay selectable.
 
@@ -488,7 +528,7 @@ Callbacks converge on `AdapayDepositTradeRechargeCallbackService.rechargeCallbac
 
 * **wxpay**: `WxpayNotifyFacade` verifies the signature, checks `attach=depositRecharge` in the decoded return data, and routes to `AlipayNotifyDepositSidePort` (impl in the deposit bundle) → the shared callback service. Business-already-handled exceptions are swallowed so the channel gets `SUCCESS`.
 * **adapay**: `AdapayCallbackPaymentHandler.succeeded` normalizes status, and routes `description=depositRecharge` payments to the deposit callback (everything else to the orders trade callback).
-* **alipay**: the alipay notify/H5-sync facades carry the same deposit-side port.
+* **alipay**: `AlipayNotifyFacade` (and the H5 sync-return twin) checks `attach=depositRecharge` in the passback, then uses the same deposit-side port twice: `requireCompanyIdByDepositTradeId(out_trade_no)` loads the trade row and cross-checks the company before signature verification (`储值单不存在或主键无效` / `储值单企业与回调企业不一致`), and `rechargeCallback` delegates to the shared service after the signature verifies (the payment-notify routing and ack rules live on the [Payments Domain](payments.md) page).
 
 The callback is `@Transactional`: it refuses missing rows, ignores non-SUCCESS, throws `更新已处理，不需要更新` when already SUCCESS (the idempotency guard), updates status + `bank_type` + `transaction_id` + `pay_type` + `time_expire`, then `addDepositToRedis` increments `shopDepositTotal`, `userDepositTotal` and the day-recharge counter, and — only when a mobile is present — schedules `RechargeSendSmsNoticeJobDispatchPublisher.publishRechargeSendSmsNotice` via `afterCommit` (or immediately when no transaction synchronization is active). `job:134:DepositBundle\Jobs\RechargeSendSmsNotice` is handled by promotions' `RechargeSendSmsNoticeJobHandler`, which reads the company balance from `shopDepositTotal` and sends the `deposit_recharge` templated SMS; failures are logged, not retried.
 
@@ -562,6 +602,8 @@ The order-side quota consumption is deliberately **after commit** and idempotent
 * **Coupon events are strictly after-commit.** All five bus names (283–287) are published from `TransactionSynchronization.afterCommit`, so listeners never see uncommitted cards. The DM webhook create path reuses `createKaquan` and therefore inherits the same guarantee (pinned by `DmCardTemplateMessageNotifyKaquanAdapterCouponAddDispatchProbeTest`).
 * **Trade-finish coupon consumption never runs for point or deposit pay** — the guard exists both in the listener and the bus service (pinned by `TradeFinishConsumeCardEventSyncDispatchFlowTest`).
 * **Deposit recharge is idempotent per trade row** — the `SUCCESS`-already check throws before any Redis mutation; the callback answers the channel `SUCCESS` even for already-handled trades.
+* **Turntable log visibility is one contract across list, count and export** — `TurntableDrawStatus.VISIBLE_IN_DRAW_LOG` (`SUCCESS`/`GRANT_FAILED` only) is shared by the admin log list, the C-side member log and the CSV export, and every turntable log query is scoped by `(company_id, act_id)`, so a foreign activity id yields zero rows instead of another company's data.
+* **Export jobs fan out by type, not by job name** — the lucky-draw CSV export rides the shared `job:159:EspierBundle\Jobs\ExportFileJob` with `type=export_luckdraw_log`; bootstrap's router hands each message to the `ExportFileJobTypeHandler` registered for that type (duplicate type = startup failure, unknown type = warn-and-ack), and a failed upload is a silent no-op rather than a retry.
 * **Deposit Redis counters are not transactional** — consume/recharge increments apply even if the MySQL transaction rolls back; only the recharge SMS is after-commit deferred.
 * **Point monthly gain limit and aftersales gating** — the send-member-point batch clamps to `gain_limit` per member-month and routes aftersales-open orders to zero-point-but-done; individual `addPoint` failures never abort the batch.
 * **Upgrade-type promotions are event-driven, never scanned** — `scheduleTrigger` skips `member_upgrade`/`member_vip_upgrade` explicitly; they arrive only via `job:5`/`job:187` publishers.
@@ -600,6 +642,8 @@ The order-side quota consumption is deliberately **after commit** and idempotent
 * `EmployeePurchaseItemLimitValidator` tests (inside `EmployeePurchaseCartItemLimitService` test set) — quantity/fee limit rejection and merge semantics; `EmployeePurchaseOrderCancelRestorePortImpl` tests — once-per-tx restore and prepaid watermark.
 * `EmployeePassphraseServiceTest` — the auto-enrollment gates: employee `distributor_id` taken from the enterprise row, missing enterprise and unsupported whitelist are silent no-ops, active relatives are skipped, a missing member throws `会员信息不存在`, relatives are disabled after insert, an existing employee still consumes quota and records the bind without inserting, an already-participating member touches neither the counter nor the bind log; `ActivityPassphraseServiceSupportsTest` — the whitelist predicate itself (enterprise in the activity CSV, non-blank code); `PassphraseParticipateQuotaRedisServiceTest` — the Lua consume semantics and `releaseOneSlot` INCR; `EmployeePurchaseActivityDataServiceSoftFailTest` — quota-full soft-fails into `extraTips` with zeroed fees.
 * `ScheduleRecoverTurntableProcessingHandlerTest`, `ScheduleClearTurntableTimesOverHandler` tests — turntable recovery and Redis-key cleanup behavior (code-side, independent of the missing console job).
+* `TurntableLogCountServiceScopeTest` / `TurntableLuckyDrawLogListServiceScopeTest` — every turntable log query carries `(company_id, act_id)`: a foreign `act_id` returns zero/empty without paging, and the page query keeps the company filter.
+* `TurntableLuckyDrawLogExportAsyncServiceTest` — the export's status filter equals `VISIBLE_IN_DRAW_LOG` (`SUCCESS`/`GRANT_FAILED`, never `PROCESSING`/`COST_FAILED`) and the scope is company+activity; `TurntableLuckyDrawLogExportServiceDispatchTest` — exactly one publisher enqueue with `supplier_id=0` for a non-supplier operator; `LuckyDrawLogExportFileJobDispatchFlowTest` (bootstrap) — `job:159` on the slow queue (SYNC under `local`), payload shape and the router→`runExport` context hand-off.
 
 ## Related pages
 

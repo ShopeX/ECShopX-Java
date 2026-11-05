@@ -19,6 +19,7 @@ package cn.shopex.ecshopx.wsugc.service.topic;
 import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.wsugc.domain.Topic;
 import cn.shopex.ecshopx.wsugc.mapper.TopicMapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -35,9 +36,13 @@ public class TopicSetTopService {
 		this.topicMapper = topicMapper;
 	}
 
-	public Map<String, Object> setTop(List<Long> topicIds) {
+	/** ECX-10872：清置顶与置顶均限定当前租户 {@code companyId}。 */
+	public Map<String, Object> setTop(long companyId, List<Long> topicIds) {
 		LambdaUpdateWrapper<Topic> clear = new LambdaUpdateWrapper<>();
-		clear.eq(Topic::getIsTop, 1).set(Topic::getIsTop, 0).set(Topic::getPOrder, 0);
+		clear.eq(Topic::getCompanyId, companyId)
+				.eq(Topic::getIsTop, 1)
+				.set(Topic::getIsTop, 0)
+				.set(Topic::getPOrder, 0);
 		topicMapper.update(null, clear);
 
 		List<Map<String, Object>> allUpdate = new ArrayList<>();
@@ -47,7 +52,11 @@ public class TopicSetTopService {
 			for (int k = 0; k < n; k++) {
 				long id = topicIds.get(k);
 				int pOrder = (n - k) * -1;
-				Topic row = topicMapper.selectById(id);
+				LambdaQueryWrapper<Topic> scoped = new LambdaQueryWrapper<>();
+				scoped.eq(Topic::getCompanyId, companyId)
+						.eq(Topic::getTopicId, id)
+						.last("LIMIT 1");
+				Topic row = topicMapper.selectOne(scoped);
 				if (row == null) {
 					throw new ResourceException("未查询到更新数据");
 				}

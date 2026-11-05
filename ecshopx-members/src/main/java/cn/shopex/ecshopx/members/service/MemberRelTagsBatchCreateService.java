@@ -18,8 +18,12 @@ package cn.shopex.ecshopx.members.service;
 
 import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.members.domain.MemberRelTags;
+import cn.shopex.ecshopx.members.domain.MemberTags;
 import cn.shopex.ecshopx.members.mapper.MemberRelTagsMapper;
+import cn.shopex.ecshopx.members.mapper.MemberTagsMapper;
 import cn.shopex.ecshopx.members.service.reltag.MemberTagRelationPushCoordinator;
+import cn.shopex.ecshopx.members.service.systemtag.MemberSystemTagCodes;
+import cn.shopex.ecshopx.members.service.systemtag.MemberSystemTagWriteGuard;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -39,20 +43,27 @@ public class MemberRelTagsBatchCreateService {
 	private static final Logger log = LoggerFactory.getLogger(MemberRelTagsBatchCreateService.class);
 
 	private final MemberRelTagsMapper memberRelTagsMapper;
+	private final MemberTagsMapper memberTagsMapper;
 	private final JdbcTemplate jdbcTemplate;
 	private final MemberTagRelationPushCoordinator memberTagRelationPushCoordinator;
+	private final MemberSystemTagWriteGuard memberSystemTagWriteGuard;
 
 	public MemberRelTagsBatchCreateService(
 			MemberRelTagsMapper memberRelTagsMapper,
+			MemberTagsMapper memberTagsMapper,
 			JdbcTemplate jdbcTemplate,
-			MemberTagRelationPushCoordinator memberTagRelationPushCoordinator) {
+			MemberTagRelationPushCoordinator memberTagRelationPushCoordinator,
+			MemberSystemTagWriteGuard memberSystemTagWriteGuard) {
 		this.memberRelTagsMapper = memberRelTagsMapper;
+		this.memberTagsMapper = memberTagsMapper;
 		this.jdbcTemplate = jdbcTemplate;
 		this.memberTagRelationPushCoordinator = memberTagRelationPushCoordinator;
+		this.memberSystemTagWriteGuard = memberSystemTagWriteGuard;
 	}
 
 	@Transactional(rollbackFor = Exception.class)
 	public void createRelTags(List<Long> userIds, List<Long> tagIds, long companyId) {
+		memberSystemTagWriteGuard.rejectTagIds(companyId, tagIds);
 		for (Long userId : userIds) {
 			for (Long tagId : tagIds) {
 				long exists =
@@ -80,14 +91,26 @@ public class MemberRelTagsBatchCreateService {
 
 	@Transactional(rollbackFor = Exception.class)
 	public void createRelTagsByUserId(long userId, List<Long> tagIds, long companyId) {
-		LambdaQueryWrapper<MemberRelTags> w =
-				new LambdaQueryWrapper<MemberRelTags>()
-						.eq(MemberRelTags::getUserId, userId)
-						.eq(MemberRelTags::getCompanyId, companyId);
+		memberSystemTagWriteGuard.rejectTagIds(companyId, tagIds);
+		List<Long> systemTagIds = loadSystemTagIds(companyId);
 		try {
+			LambdaQueryWrapper<MemberRelTags> w =
+					new LambdaQueryWrapper<MemberRelTags>()
+							.eq(MemberRelTags::getUserId, userId)
+							.eq(MemberRelTags::getCompanyId, companyId);
+			if (!systemTagIds.isEmpty()) {
+				w.notIn(MemberRelTags::getTagId, systemTagIds);
+			}
 			long existing = memberRelTagsMapper.selectCount(w);
 			if (existing > 0) {
-				memberRelTagsMapper.delete(w);
+				LambdaQueryWrapper<MemberRelTags> deleteW =
+						new LambdaQueryWrapper<MemberRelTags>()
+								.eq(MemberRelTags::getUserId, userId)
+								.eq(MemberRelTags::getCompanyId, companyId);
+				if (!systemTagIds.isEmpty()) {
+					deleteW.notIn(MemberRelTags::getTagId, systemTagIds);
+				}
+				memberRelTagsMapper.delete(deleteW);
 			}
 			if (tagIds == null || tagIds.isEmpty()) {
 				return;
@@ -111,6 +134,7 @@ public class MemberRelTagsBatchCreateService {
 
 	@Transactional(rollbackFor = Exception.class)
 	public void createRelTagsByTagId(List<Long> userIds, long tagId, long companyId) {
+		memberSystemTagWriteGuard.rejectTagId(companyId, tagId);
 		LambdaQueryWrapper<MemberRelTags> w0 =
 				new LambdaQueryWrapper<MemberRelTags>()
 						.eq(MemberRelTags::getTagId, tagId)
@@ -149,11 +173,15 @@ public class MemberRelTagsBatchCreateService {
 	}
 
 	public void deleteRelTagsByUserIdNoPush(long userId, long companyId) {
-		List<MemberRelTags> relations =
-				memberRelTagsMapper.selectList(
-						new LambdaQueryWrapper<MemberRelTags>()
-								.eq(MemberRelTags::getUserId, userId)
-								.eq(MemberRelTags::getCompanyId, companyId));
+		List<Long> systemTagIds = loadSystemTagIds(companyId);
+		LambdaQueryWrapper<MemberRelTags> w =
+				new LambdaQueryWrapper<MemberRelTags>()
+						.eq(MemberRelTags::getUserId, userId)
+						.eq(MemberRelTags::getCompanyId, companyId);
+		if (!systemTagIds.isEmpty()) {
+			w.notIn(MemberRelTags::getTagId, systemTagIds);
+		}
+		List<MemberRelTags> relations = memberRelTagsMapper.selectList(w);
 		if (relations.isEmpty()) {
 			return;
 		}
@@ -163,14 +191,19 @@ public class MemberRelTagsBatchCreateService {
 					relation.getTagId(),
 					companyId);
 		}
-		memberRelTagsMapper.delete(
+		LambdaQueryWrapper<MemberRelTags> deleteW =
 				new LambdaQueryWrapper<MemberRelTags>()
 						.eq(MemberRelTags::getUserId, userId)
-						.eq(MemberRelTags::getCompanyId, companyId));
+						.eq(MemberRelTags::getCompanyId, companyId);
+		if (!systemTagIds.isEmpty()) {
+			deleteW.notIn(MemberRelTags::getTagId, systemTagIds);
+		}
+		memberRelTagsMapper.delete(deleteW);
 	}
 
 	@Transactional(rollbackFor = Exception.class)
 	public void replaceMemberTagsInboundNoPush(long userId, List<Long> tagIds, long companyId) {
+		memberSystemTagWriteGuard.rejectTagIds(companyId, tagIds);
 		deleteRelTagsByUserIdNoPush(userId, companyId);
 		if (tagIds == null || tagIds.isEmpty()) {
 			return;
@@ -199,6 +232,7 @@ public class MemberRelTagsBatchCreateService {
 		if (userIds == null || userIds.isEmpty() || tagIds == null || tagIds.isEmpty()) {
 			return;
 		}
+		memberSystemTagWriteGuard.rejectTagIds(companyId, tagIds);
 		try {
 			for (Long userId : userIds) {
 				if (userId == null || userId <= 0) {
@@ -226,6 +260,7 @@ public class MemberRelTagsBatchCreateService {
 
 	@Transactional(rollbackFor = Exception.class)
 	public void delRelMemberTag(long companyId, long userId, long tagId) {
+		memberSystemTagWriteGuard.rejectTagId(companyId, tagId);
 		try {
 			jdbcTemplate.update(
 					"UPDATE members_tags SET self_tag_count = self_tag_count - 1 WHERE tag_id = ? AND company_id = ?",
@@ -240,6 +275,18 @@ public class MemberRelTagsBatchCreateService {
 			throw mapDataAccess(e);
 		}
 		scheduleRemovePushAfterCommit(companyId, userId, tagId);
+	}
+
+	private List<Long> loadSystemTagIds(long companyId) {
+		List<MemberTags> rows =
+				memberTagsMapper.selectList(
+						new LambdaQueryWrapper<MemberTags>()
+								.eq(MemberTags::getCompanyId, companyId)
+								.eq(MemberTags::getTagKind, MemberSystemTagCodes.KIND_SYSTEM));
+		return rows.stream()
+				.map(MemberTags::getTagId)
+				.filter(id -> id != null && id > 0L)
+				.toList();
 	}
 
 	private static ResourceException mapDataAccess(DataAccessException e) {

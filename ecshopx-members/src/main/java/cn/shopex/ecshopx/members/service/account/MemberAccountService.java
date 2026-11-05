@@ -1497,6 +1497,51 @@ public class MemberAccountService {
 		return result;
 	}
 
+	/**
+	 * ECX-10918：批量取 userId → 微信用户信息（含 user_id），替代列表内逐行
+	 * {@link #getWechatUserInfo(Map)} 的 N+1 查询。未命中关联或用户的 userId 不出现在返回 Map。
+	 */
+	public Map<Long, Map<String, Object>> getWechatUserInfoByUserIds(Collection<Long> userIds) {
+		if (userIds == null || userIds.isEmpty()) {
+			return Map.of();
+		}
+		List<Long> distinctIds = userIds.stream().filter(Objects::nonNull).distinct().toList();
+		if (distinctIds.isEmpty()) {
+			return Map.of();
+		}
+		List<MembersAssociations> assocs = membersAssociationsMapper.selectList(
+				new LambdaQueryWrapper<MembersAssociations>()
+						.in(MembersAssociations::getUserId, distinctIds)
+						.eq(MembersAssociations::getUserType, "wechat"));
+		if (assocs.isEmpty()) {
+			return Map.of();
+		}
+		Map<String, List<MembersAssociations>> assocsByUnionid = assocs.stream()
+				.filter(a -> a.getUnionid() != null)
+				.collect(Collectors.groupingBy(MembersAssociations::getUnionid));
+		List<WechatUsers> users = wechatUsersMapper.selectList(
+				new LambdaQueryWrapper<WechatUsers>()
+						.in(WechatUsers::getUnionid, assocsByUnionid.keySet()));
+		Map<String, WechatUsers> usersByUnionid = users.stream()
+				.filter(u -> u.getUnionid() != null)
+				.collect(Collectors.toMap(
+						WechatUsers::getUnionid, u -> u, (a, b) -> a));
+		Map<Long, Map<String, Object>> out = new LinkedHashMap<>();
+		for (MembersAssociations assoc : assocs) {
+			if (assoc.getUserId() == null || assoc.getUnionid() == null) {
+				continue;
+			}
+			WechatUsers u = usersByUnionid.get(assoc.getUnionid());
+			if (u == null) {
+				continue;
+			}
+			Map<String, Object> info = wechatUserToMap(u);
+			info.put("user_id", assoc.getUserId());
+			out.putIfAbsent(assoc.getUserId(), info);
+		}
+		return out;
+	}
+
 	public void updateWechatUnionId(
 			long companyId,
 			String authorizerAppid,

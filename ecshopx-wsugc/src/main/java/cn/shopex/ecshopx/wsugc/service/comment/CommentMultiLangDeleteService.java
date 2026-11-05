@@ -23,7 +23,6 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 import cn.shopex.ecshopx.common.marketing.support.OutsideMultiLangTableSupport;
 
 @Service
@@ -55,11 +54,12 @@ public class CommentMultiLangDeleteService {
 	}
 
 	@Transactional(rollbackFor = Exception.class)
-	public void deleteMultiLangForComments(List<Long> commentIds) {
+	public void deleteMultiLangForComments(long companyId, List<Long> commentIds) {
 		if (commentIds == null || commentIds.isEmpty()) {
 			return;
 		}
 		MapSqlParameterSource base = new MapSqlParameterSource();
+		base.addValue("company_id", companyId);
 		base.addValue("table_name", TABLE_NAME);
 		base.addValue("module_name", MODULE_NAME);
 		base.addValue("ids", commentIds);
@@ -68,7 +68,8 @@ public class CommentMultiLangDeleteService {
 			String sql =
 					"DELETE FROM "
 							+ outsideTable
-							+ " WHERE table_name = :table_name AND module_name = :module_name AND data_id IN (:ids)";
+							+ " WHERE company_id = :company_id AND table_name = :table_name"
+							+ " AND module_name = :module_name AND data_id IN (:ids)";
 			try {
 				namedParameterJdbcTemplate.update(sql, base);
 			} catch (DataAccessException ignored) {

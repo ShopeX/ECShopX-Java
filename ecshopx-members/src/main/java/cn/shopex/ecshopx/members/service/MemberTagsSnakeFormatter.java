@@ -17,6 +17,7 @@
 package cn.shopex.ecshopx.members.service;
 
 import cn.shopex.ecshopx.members.domain.MemberTags;
+import cn.shopex.ecshopx.members.service.systemtag.MemberSystemTagCodes;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.springframework.stereotype.Component;
@@ -47,6 +48,14 @@ public class MemberTagsSnakeFormatter {
 		m.put("updated", up != null && up <= Integer.MAX_VALUE ? up.intValue() : up);
 		m.put("source", tag.getSource());
 		m.put("wechat_tag_id", tag.getWechatTagId());
+		String kind = tag.getTagKind();
+		m.put(
+				"type",
+				MemberSystemTagCodes.isSystemKind(kind)
+						? MemberSystemTagCodes.KIND_SYSTEM
+						: MemberSystemTagCodes.KIND_MANUAL);
+		m.put("code", tag.getTagCode());
+		m.put("rule_version", tag.getRuleVersion() == null ? 1 : tag.getRuleVersion());
 		return m;
 	}
 }

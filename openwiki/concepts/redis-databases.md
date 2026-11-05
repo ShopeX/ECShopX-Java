@@ -1,7 +1,7 @@
 ---
 type: "Reference"
-title: "Redis: Logical Database Isolation and Templates"
-description: "How ECShopX-Java splits one Redis instance into logical databases via hand-built LettuceConnectionFactory beans in MultiRedisConfig, which @Qualifier template lands in which DB, and the settings-store, counter, snapshot, and lock patterns that live there."
+title: "Redis Database Layout"
+description: "How ECShopX-Java splits one Redis instance into logical databases via hand-built LettuceConnectionFactory beans in MultiRedisConfig, which @Qualifier template holds sessions, carts, captcha/SMS codes, pickup QR codes, goods-arrival subscriptions, operator fast-buy state, tenant settings, counters, snapshots and locks, and the per-environment DB-index selectors."
 tags: [redis, lettuce, configuration, infrastructure]
 sources:
   - id: openwiki-source-ea70eb6c045047448e446296
@@ -26,6 +26,12 @@ sources:
     resource: repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/deposit/service/DepositTradeConsumeServiceTest.java
   - id: openwiki-source-3fe260ad41b93a3fc9fce4f7
     resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/activation/CompanysActivationService.java
+  - id: openwiki-source-fb11e56e003a1604d7d9ab7a
+    resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/operatorcart/OperatorShopFastBuyRedisService.java
+  - id: openwiki-source-f50731f28feb2d6ae59fa996
+    resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/OperatorsImageVcodeService.java
+  - id: openwiki-source-3eed8e8306b019e3b83601a2
+    resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/OperatorSmsVerifyService.java
   - id: openwiki-source-be232f29466e2a213e673a73
     resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/setting/LanguageSettingRedisService.java
   - id: openwiki-source-8430dd3e5be4135957d18f6c
@@ -56,14 +62,34 @@ sources:
     resource: repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/service/OrderValidityPlatformSettingReadService.java
   - id: openwiki-source-fde2d214766049b8bb873842
     resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/H5JwtBlacklistService.java
+  - id: openwiki-source-ce05afe5361cff08cf36de3d
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/cart/wxapp/WxappH5CartAddService.java
   - id: openwiki-source-da9868c55d367a2c42f74fe1
     resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/ItemsProfitSaveService.java
+  - id: openwiki-source-6d42ce597e8782d354259630
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/operatorcart/OperatorCartFastBuyFacadeImpl.java
   - id: openwiki-source-778e65e2605539903dcbcc1f
     resource: repo://ecshopx-hfpay/src/main/java/cn/shopex/ecshopx/hfpay/service/payment/HfPayOrderApplyIdGenerator.java
+  - id: openwiki-source-03a7f358ce9fb661e2ca984b
+    resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/GoodsArrivalSubscribeMatchService.java
+  - id: openwiki-source-6ced3d2bfe3c421ea3098928
+    resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/sms/MemberSmsVerificationCodeDeliveryService.java
   - id: openwiki-source-97f325e6c13a487b3e7ef6f4
     resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/WechatFansSyncService.java
+  - id: openwiki-source-3bb58f0ac86d69010cf539ec
+    resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/wxapp/GoodsArrivalNoticeSubscribeRedisKeys.java
+  - id: openwiki-source-2da9676c04bb79e8e655eb5e
+    resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/wxapp/WxappGoodsArrivalNoticeSubscribeService.java
+  - id: openwiki-source-17b245d631a11d28bb719a0f
+    resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/wxapp/WxappMemberAuthService.java
   - id: openwiki-source-ac4f22cc6b429722429f379f
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/excard/NormalOrderNumericIdService.java
+  - id: openwiki-source-b3b65aa78bfaaf0abf962989
+    resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/front/wxapp/WxappOrderZitiQrCodeService.java
+  - id: openwiki-source-b17ade54e408f53028535aed
+    resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/OrderPickupSmsRedisVerifyService.java
+  - id: openwiki-source-005d18601a77c662727c23a8
+    resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/OrderZitiQrCodeRedisService.java
   - id: openwiki-source-5a2ec1c085dae82424db4467
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/shopadmin/NormalOrderAdminPaymentService.java
   - id: openwiki-source-7243b2e27f3844d47ea37bac
@@ -80,17 +106,17 @@ sources:
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/settings/WxpayPaymentSettingWriter.java
   - id: openwiki-source-8d94eb289e06a9eb2bcb9a68
     resource: repo://ecshopx-third-party/src/main/java/cn/shopex/ecshopx/thirdparty/service/prism/ShopexPrismSmsSignClient.java
-generated: { by: "openwiki/0.7.2", at: "2026-10-23T03:04:20.471Z" }
+generated: { by: "openwiki/0.7.3", at: "2026-11-04T17:09:55.577Z" }
 verified:
-  - by: openwiki/0.7.2
-    at: 2026-10-23T03:04:20.471Z
+  - by: openwiki/0.7.3
+    at: 2026-11-04T17:09:55.577Z
 ---
 
-# Redis: Logical Database Isolation and Templates
+# Redis Database Layout
 
 Redis in ECShopX-Java is **one instance, many logical databases**. Both Docker stacks run a single `redis:7-alpine` container, and the application carves it into logical DBs (`SELECT n`) by building its **own** `LettuceConnectionFactory` beans in `ecshopx-bootstrap`'s `MultiRedisConfig` instead of letting Spring Boot's Redis auto-configuration provide one. The class Javadoc states the reason plainly: custom factories mean Docker/idle `Connection reset` must be handled *here* — TCP keepalive plus `validateConnection` before use — rather than by Boot defaults.
 
-There is no Spring Cache abstraction (`@EnableCaching`/`RedisCacheManager` appear nowhere), no Redisson, and no spring-session. Every Redis touch in the codebase is an explicit `StringRedisTemplate` call inside a service class, selected by `@Qualifier`. MySQL remains the system of record for business data (see [Persistence: MySQL, MyBatis-Plus](persistence-mybatis.md)); Redis holds settings, counters, throttles, locks, deferred-order snapshots, and the dispatch-bus queues.
+There is no Spring Cache abstraction (`@EnableCaching`/`RedisCacheManager` appear nowhere), no Redisson, and no spring-session. Every Redis touch in the codebase is an explicit `StringRedisTemplate` call inside a service class, selected by `@Qualifier`. MySQL remains the system of record for business data (see [Persistence: MySQL, MyBatis-Plus](persistence-mybatis.md)); Redis holds sessions, fast-buy cart state, captcha/SMS verification codes, pickup QR-code mappings, goods-arrival subscription UI state, tenant settings, counters, throttles, locks, deferred-order snapshots, and the dispatch-bus queues.
 
 ```mermaid
 flowchart TD
@@ -123,14 +149,14 @@ Because user-defined `@Bean` methods are registered before auto-configuration co
 
 | Qualifier bean | Connection factory | DB selector | Default | Representative consumers |
 |---|---|---|---|---|
-| `companysRedisTemplate` (**`@Primary`**) | `companysRedisConnectionFactory` | `ecshopx.redis.companys.database` | 0 | Company/shop settings, payment-channel settings, `LanguageSettingRedisService`, ERP/Jushuitan settings, ID generators — the default for *unqualified* `StringRedisTemplate` injection |
+| `companysRedisTemplate` (**`@Primary`**) | `companysRedisConnectionFactory` | `ecshopx.redis.companys.database` | 0 | Company/shop settings, payment-channel settings, `LanguageSettingRedisService`, ERP/Jushuitan settings, operator captcha/SMS codes (`admin-<type>:<token>`, `operator-sms:verify:*`, `admin-forget:*`), admin pickup codes (`admin-pickupcode:*`), operator fast-buy cart (`shop_fastbuy:*`), ID generators — the default for *unqualified* `StringRedisTemplate` injection |
 | `redisTemplate` (`RedisTemplate<Object, Object>`) | `companysRedisConnectionFactory` | same as above | 0 | Declared but has no injection sites; all business code uses `StringRedisTemplate` |
-| `sharedStringRedisTemplate` | `springDataRedisConnectionFactory` | `spring.data.redis.database` | 0 | Deposit counters, trade-no sequences, wxapp session keys, H5 carts, UGC, shopadmin deferred-order snapshots (`shopadmin:deferred:*`) |
+| `sharedStringRedisTemplate` | `springDataRedisConnectionFactory` | `spring.data.redis.database` | 0 | Wxapp sessions (`session3rd:*`), member fast-buy cart (`fastbuy:*`) and plus-buy cart keys, pickup QR-code mapping (`orderziticode:*`), goods-arrival subscribe hashes (`arrivalNoticeSub:*`), deposit counters, trade-no sequences, UGC, shopadmin deferred-order snapshots (`shopadmin:deferred:*`) |
 | `dispatchBusStringRedisTemplate` | `springDataRedisConnectionFactory` | `spring.data.redis.database` | 0 | Dispatch-bus queues (`dispatch:*`) |
 | `prismRedisTemplate` | `prismRedisConnectionFactory` | `ecshopx.redis.prism.database` | 2 | H5/operator JWT blacklists, Prism gateway OAuth tokens, activation black-token cache, SaaS-cert bind/licensing state |
 | `datacubeStringRedisTemplate` | `datacubeRedisConnectionFactory` | `ecshopx.redis.datacube.database` | 0 | `datecube_tracklog:*` PV/UV/register hashes |
 | `depositStringRedisTemplate` | `depositRedisConnectionFactory` | `ecshopx.redis.deposit.database` (accepts dedicated `ecshopx.redis.deposit.host|port|password`) | 1 | Dashboard `real_deposit` reader — the only injected consumer |
-| `membersStringRedisTemplate` | `membersRedisConnectionFactory` | `ecshopx.redis.members.database` (falls back to `spring.data.redis.database`; accepts dedicated host/port/password) | 0 | Member SMS vcode, fans-sync throttle, member-card allocation |
+| `membersStringRedisTemplate` | `membersRedisConnectionFactory` | `ecshopx.redis.members.database` (falls back to `spring.data.redis.database`; accepts dedicated host/port/password) | 0 | Member SMS vcode (`member-<type>:company<cid>:<mobile>`) + send throttle (`yzmsend:*`), fans-sync throttle, member-card allocation |
 | `espierStringRedisTemplate` | `espierRedisConnectionFactory` | `ecshopx.redis.espier.database` (fallback + overrides as above) | 0 | `subdistrict` hash, `address` tree cache |
 | `wechatStringRedisTemplate` | `wechatRedisConnectionFactory` | `ecshopx.redis.wechat.database` (fallback + overrides as above) | 0 | WeChat menu tree, `timescardcode:` rights codes |
 
@@ -164,6 +190,34 @@ ecshopx.redis.deposit.database=1
 
 (`ecshopx.redis.members.database` and `ecshopx.redis.espier.database` are not listed in the file; their `@Value` patterns fall back to `spring.data.redis.database`.) There is **no tracked `application-local.properties` to lean on**: that path is listed in `.gitignore` (line 7), so it is absent from fresh checkouts and exists only where a developer created it — when such a file exists and the `local` profile is activated, its selectors apply, but nothing in the repo guarantees it (the readme's statement that the project "already includes" it is drift). The indexes are therefore per-environment **overrides**: Docker and self-hosted runs pass them through the `APP_ARGS` CLI-argument block (both compose stacks already override `spring.data.redis.host|port|password` this way and set no database selector, so the tracked defaults — shared 0, deposit 1, prism 2 — are what Docker actually runs with; adding `--ecshopx.redis.deposit.database=0` to the same block is the fix for the deposit split below), and IDE/local runs use environment variables (`ECSHOPX_REDIS_DEPOSIT_DATABASE`, `SPRING_DATA_REDIS_DATABASE`) or `--key=value` program arguments on top of the tracked defaults. See [Configuration](../operations/configuration.md) for the full override mechanics.
 
+## Front-end session and verification state
+
+Short-lived interactive state — the kind the legacy PHP stack kept in specific Redis DBs — is spread across three logical DBs, and none of it is reconstructible from MySQL:
+
+* **Wxapp sessions (shared DB).** `WxappMemberAuthService.resolveSession` reads `session3rd:<token>` (JSON with `open_id`/`union_id`/`session_key`) through `sharedStringRedisTemplate`; a miss *or* corrupt JSON throws `UnauthorizedException`, so flushing the shared DB logs every mini-program user out.
+* **Member SMS codes (members DB).** `MemberSmsVerificationCodeDeliveryService` writes `member-<type>:company<companyId>:<mobile>` (TTL 300 s) through `membersStringRedisTemplate` and rate-limits sends with a `yzmsend:<companyId>:<yyyyMMdd>:<type>:<mobile>` counter (TTL 24 h, cap `common.sms-send-limit`, default 5). The merchant-wxapp-login variant intentionally bypasses the members template and uses the shared DB instead (see `MerchantWxappLoginSmsVcodeAdapterConfig` above) to stay in the same logical DB as the legacy members store.
+* **Operator captcha and SMS codes (companys DB).** `OperatorsImageVcodeService` issues 4-character image captchas under `admin-<type>:<token>` (TTL 300 s, case-insensitive one-shot verify that deletes the key). `OperatorSmsVerifyService` stores `operator-sms:verify:<type>:<mobile>` (TTL 180 s) and forget-password codes under `admin-forget:<mobile>` (TTL 300 s). All are written and consumed through `companysRedisTemplate` — the `@Primary` default, which matters because these services qualify explicitly anyway.
+
+## Carts and fast-buy state
+
+Ordinary cart rows live in MySQL (`CartMapper`); Redis holds the *fast-buy* variants and promotion scratch state:
+
+* **Member fast-buy cart (shared DB).** `WxappH5CartAddService.setFastBuyCart` writes the single-item fast-buy snapshot to `fastbuy:<sha1(companyId + userId)>` as JSON with a 600 s TTL, forcing `cart_id = 0` and `is_checked = true`. Plus-buy ("加价购") cart selections use `PlusBuyCartRedisKeys`-derived keys on the same shared template (`WxappH5CartPlusBuyResetService` deletes them on reset; `WxappH5DistributorCartPromotionService` reads checked state).
+* **Operator (shopadmin) fast-buy cart (companys DB).** `OperatorShopFastBuyRedisService` stores the cashier's pending fast-buy item at `shop_fastbuy:<sha1(companyId:operatorId:distributorId)>` as JSON (TTL 600 s) through `companysRedisTemplate`. Every `set` forces `cart_id: 0` into the payload, and `get` degrades a missing *or* corrupt blob to an empty map. The consumer, `OperatorCartFastBuyFacadeImpl`, accumulates `num` only when the stored item matches the new one; `clear` simply rewrites an empty map under the same 600 s TTL rather than deleting the key.
+
+## Pickup codes: two keys, two DBs, one flow
+
+The self-pickup ("自提") verification flow deliberately spans **two logical databases**:
+
+* **QR-code → order mapping (shared DB).** `OrderZitiQrCodeRedisService` writes `orderziticode:<code>` → `orderId` with the caller's TTL (1800 s from both wxapp services) through `sharedStringRedisTemplate`. This is the key scanned by admin write-off (`AdminOrderQrWriteoffService`) and community-chief write-off (`CommunityChiefQrWriteoffService`) via `resolveOrderIdOrThrow`, which throws "核销码已过期" on a miss; `resolveOrderIdNullable` treats a non-numeric blob as a miss too. After successful verification the mapping is deleted so the same code cannot be redeemed twice.
+* **Phone-scoped pickup SMS code (companys DB).** `WxappOrderZitiQrCodeService.applyPickupCodeMirror` (when the `pickupcode_status` setting is on) and `WxappOrderPickupCodeService` write `admin-pickupcode:<orderId>|<phone>` → the 12-digit code (TTL 1800 s) through `companysRedisTemplate`. `OrderPickupSmsRedisVerifyService.verifyAndConsumePickupCode` — called by both `AdminOrderWriteoffService` and the third-party `OpenapiThirdApiV2OrderWriteoffService` — reads that key (accepting a loose numeric comparison, so leading zeros don't fail), then deletes it and cross-DB deletes the `orderziticode:` mapping via the injected `OrderZitiQrCodeRedisService`. A submitted code that matches no `admin-pickupcode` entry is also accepted when it *is* an `orderziticode:` code mapping to the same order.
+
+So the verify path reads the companys DB first and falls back to the shared DB — if an operator repoints only one of the two selectors, pickup verification silently degrades to the surviving half.
+
+## Goods-arrival subscriptions: Redis mirrors MySQL
+
+`WxappGoodsArrivalNoticeSubscribeService` keeps two stores in lockstep: the durable `subscribe_notice` MySQL rows (`sub_status` `NO` → `SUCCESS`, via `SubscribeNoticeMapper`) and a Redis hash that answers the mini-program's "已订阅" UI flag without hitting MySQL. Keys come from `GoodsArrivalNoticeSubscribeRedisKeys.hashKey`: `arrivalNoticeSub:<companyId>:<itemId>[:<distributorId>]` for source `wechat`, and `arrivalNoticeSub:<source>:<companyId>:<itemId>[:<distributorId>]` otherwise. Hash fields are `userId`, values a JSON blob `{open_id, wxa_appid}`. Subscribing toggles *both* stores (existing row → delete row and hash field; new → insert row and put hash field), and `GoodsArrivalSubscribeMatchService.markSuccess` deletes the hash fields for matched rows after the arrival notification is sent, so the detail page stops showing "已订阅到货通知". All Redis access goes through `sharedStringRedisTemplate`.
+
 ## Redis as the settings store
 
 A large family of `*RedisReadService` / `*SettingRedisService` / `*SettingRedisWriter` classes treat the companys DB as a **PHP-parity settings store**: JSON blobs under keys shaped `prefix + sha1(companyId)` (occasionally a plain `{companyId}` suffix), read with defaults-merge semantics so a missing or corrupt value degrades to defaults instead of failing the request.
@@ -177,9 +231,11 @@ A large family of `*RedisReadService` / `*SettingRedisService` / `*SettingRedisW
 | Payment-channel settings | `wxPaymentSetting:<sha1(companyId)>` (+ `alipay…`, `bspay…`, `hfPaymentSetting:…`, `adaPaySetting:…`, `chinaumsPaymentSetting:…`, `icbc…`, `paypal…`, `offline_paySetting:…:<lang>`, `doumenIntlPaymentSetting:…`) — see `PaymentSettingRedisKeys` | JSON value | Writers like `WxpayPaymentSettingWriter` do read-modify-write to preserve uploaded PEM certs; readers such as `DepositWxpayRechargeUnifyService.loadAndValidateWxpayConfig` fail the payment with "不支持支付服务" when required credentials are missing |
 | ERP / logistics / integration settings | `JushuitanSetting:<sha1>`, `WdtErpSetting:<sha1>`, `SFBSPConfigSetting:*`, `kdniaoKuaidiSetting:` / `kuaidi100KuaidiSetting:` / `kuaidiTypeOpenConfig:` | JSON value | `OrdersErpSettingRedisReadService` returns `is_open=false` on miss or parse failure |
 
+The distribution-config row above is also the write side of a cross-bundle read: `DistributionConfigSetService.setConfig` validates the request, `opsForValue().set`s the JSON under `distribution:config:<sha1(companyId)>`, then calls `DistributionPopularizeProfitApplyPort.applyPopularizeSellerScaleForDefaultItems` to push the new scale onto default-profit items. On the goods side, `ItemsProfitSaveService` never touches Redis directly — in `applyDefaultProfitBranch` (the `profit_type = 0` path) it first tries the item's *category-level* `items_category_profit.profit_conf` **MySQL row**; only when that yields no usable `popularize_profit` does it call `distributionConfigRedisReadService.getPopularizeSellerPercent(companyId)` and write the resulting scale (`percent ÷ 100`, 4-decimal HALF_UP) into the items table via `updateProfitByItemId`. So the goods bundle consumes the Redis settings store read-only, through the distribution bundle's reader, as a fallback behind a MySQL lookup.
+
 Two operational consequences follow:
 
-* **These settings have no MySQL write path in the Java code.** No mapper persists them (the legacy dump's `companys_setting`-style tables are not mapped by any Bundle); the write paths are the Redis writers above, so Redis *is* the system of record for them. That is survivable only because both compose stacks run `redis-server --appendonly yes --tcp-keepalive 60` with a persistent `redis-data` volume and a `redis-cli PING` healthcheck. Treat `FLUSHDB`/`FLUSHALL` on the companys DB as data loss for tenant configuration, not cache invalidation.
+* **These settings have no MySQL write path in the Java code.** No mapper persists them (the legacy dump's `companys_setting`-style tables are not mapped by any Bundle); the write paths are the Redis writers above, so Redis *is* the system of record for them. That is survivable only because both compose stacks (`docker-compose.dev.yml` and `docker-lite/docker-compose.yml`) run `redis-server --requirepass redispassword --appendonly yes --tcp-keepalive 60` with a persistent `redis-data` volume mounted at `/data` and a `redis-cli -a … PING` healthcheck. Treat `FLUSHDB`/`FLUSHALL` on the companys DB as data loss for tenant configuration, not cache invalidation.
 * **Failure is silent.** Every reader above swallows parse errors and returns defaults, so a corrupted JSON blob manifests as "the merchant's settings mysteriously reverted", not as an error log. `LanguageSettingRedisService` is the exception that logs a warning on Redis read failure.
 
 Prism-DB state follows the same shape but for gateway credentials rather than tenant settings: `H5JwtBlacklistService` / `OperatorJwtBlacklistService` keep `h5_jwt_invalidate:<sha256(jwt)>` / `operator_jwt_invalidate:<sha256(jwt)>` keys, `CompanysActivationService` keeps a 7-day `black_token_<operatorId>_<operatorType>` cache, and `ShopexPrismSmsSignClient` stores `prism:<sha1(uid_companyId_AccessToken|RefreshToken|ForeverToken)>` session/forever tokens for the ShopEx Prism SMS gateway.
@@ -233,12 +289,13 @@ Conversely, repointing an *existing* area is a pure properties change: because e
 
 * `MultiRedisConfigLettuceFactoryTest` (bootstrap) — the only test of the wiring itself: asserts `validateConnection`, `autoReconnect` and socket `keepAlive` on a factory built by `standaloneFactory`.
 * `DispatchBusConfigTest` / `RedisDispatchDriverTest` / `RedisDispatchListenerTest` / `RedisDelayedDispatchMoverTest` (bootstrap + dispatch) — boot the dispatch graph with a **mocked** `dispatchBusStringRedisTemplate` bean and pin queue/delay/dead-list semantics.
-* `DepositTradeConsumeServiceTest`, `AdapayDepositTradeRechargeCallbackServiceSmsDispatchTest`, `OrdersTradePaymentCallbackService*Test`, `LanguageSettingRedisServiceTest`, `ShopexAdminBindServiceTest`, `ShopadminNormalOrderCreateOrchestratorNormalOrderAddDispatchPublishProbeTest`, `NormalOrderAdminCreateUserOrderServiceNormalOrderAddDispatchPublishProbeTest` — all mock `StringRedisTemplate`/`HashOperations`/`ShopadminDeferredOrderCache` and verify the counter increments, hash writes, defaults-merge, or deferred-snapshot-save behaviour described above; none run against a real Redis.
+* `DepositTradeConsumeServiceTest`, `AdapayDepositTradeRechargeCallbackServiceSmsDispatchTest`, `OrdersTradePaymentCallbackService*Test`, `LanguageSettingRedisServiceTest`, `ShopexAdminBindServiceTest`, `OrderPickupSmsRedisVerifyServiceTest`, `WxappOrderZitiQrCodeServiceTest`, `WxappOrderPickupCodeServiceTest`, `OperatorShopFastBuyRedisServiceTest`, `ShopadminNormalOrderCreateOrchestratorNormalOrderAddDispatchPublishProbeTest`, `NormalOrderAdminCreateUserOrderServiceNormalOrderAddDispatchPublishProbeTest` — all mock `StringRedisTemplate`/`HashOperations`/`ShopadminDeferredOrderCache` and verify the counter increments, hash writes, defaults-merge, pickup-code consume-and-delete, or deferred-snapshot-save behaviour described above; none run against a real Redis.
 
 ## Related pages
 
 * [Dispatch Bus](dispatch-bus.md) — queue names, delayed ZSET, retry/failure semantics on `dispatchBusStringRedisTemplate`.
 * [Persistence: MySQL, MyBatis-Plus](persistence-mybatis.md) — the MySQL side of the split, and where Redis-backed caches complement mappers.
-* [Orders Domain](../domains/orders.md) — the state machine that consumes the `shopadmin:deferred:` snapshot and lock.
+* [Members Domain](../domains/members.md) — wxapp session resolution, member SMS codes, and the goods-arrival subscribe flow.
+* [Orders Domain](../domains/orders.md) — the state machine that consumes the `shopadmin:deferred:` snapshot and lock, and the pickup write-off flow.
 * [Architecture Overview](../architecture/overview.md) — where this layering sits in the runtime stack.
 * [Configuration](../operations/configuration.md) — the full property catalogue and environment overrides.

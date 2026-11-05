@@ -92,6 +92,14 @@ public class SeckillActivity {
     @MpField(value = "seckill_type", columnType = "string", comment = "秒杀类型 normal正常的秒杀活动， limited_time_sale限时特惠", defaultValue = "normal")
     private String seckillType = "normal";
 
+    /** 会员人群标签 ID JSON 数组 */
+    @MpField(value = "member_tag_ids", columnType = "text", nullable = true, comment = "会员人群标签ID JSON数组")
+    private String memberTagIds;
+
+    /** include 适用 / exclude 不适用 */
+    @MpField(value = "member_tag_mode", columnType = "string", length = 16, nullable = true, comment = "include适用 exclude不适用")
+    private String memberTagMode;
+
     /**
      * 秒杀活动商品类型。可选：normal 实体类；services 服务类
      */

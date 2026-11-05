@@ -39,6 +39,7 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
 import java.security.MessageDigest;
+import java.security.SecureRandom;
 import java.security.interfaces.ECPrivateKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.time.Duration;
@@ -92,17 +93,15 @@ public class SocialTrustLoginService {
 	}
 
 	public String resolveH5Host(String h5HostFromRequest) {
-		if (StringUtils.hasText(h5HostFromRequest)) {
-			return trimTrailingSlash(h5HostFromRequest.trim());
+		String allowed = allowedConfiguredH5Host();
+		if (!StringUtils.hasText(allowed)) {
+			return "";
 		}
-		String configured = commonH5BaseUrl == null ? "" : commonH5BaseUrl.trim();
-		if (StringUtils.hasText(configured)) {
-			return trimTrailingSlash(configured);
+		String requested = trimTrailingSlash(h5HostFromRequest == null ? "" : h5HostFromRequest.trim());
+		if (StringUtils.hasText(requested) && allowed.equalsIgnoreCase(requested)) {
+			return allowed;
 		}
-		if (StringUtils.hasText(appUrl)) {
-			return trimTrailingSlash(appUrl.trim());
-		}
-		return "";
+		return allowed;
 	}
 
 	public String buildRedirectUri(String h5Host, String trustloginTag) {
@@ -122,9 +121,13 @@ public class SocialTrustLoginService {
 
 	public String buildAppleH5LandingUrl(String h5Host, String code, Map<String, String> extra) {
 		String host = trimTrailingSlash(h5Host);
-		if (!host.matches("(?i)^https?://.*")) {
+		String allowed = allowedConfiguredH5Host();
+		if (!StringUtils.hasText(allowed)
+				|| !StringUtils.hasText(host)
+				|| !allowed.equalsIgnoreCase(host)) {
 			throw new ResourceException("缺少 H5 域名配置");
 		}
+		host = allowed;
 		Map<String, String> query = new LinkedHashMap<>();
 		query.put("trustlogin_tag", "apple");
 		if (extra != null) {
@@ -157,9 +160,10 @@ public class SocialTrustLoginService {
 			case "apple" -> {
 				query.put("scope", "name email");
 				query.put("response_mode", "form_post");
-				if (StringUtils.hasText(h5Host)) {
-					String state = encodeAppleOAuthState(h5Host);
-					rememberAppleOAuthH5Host(state, h5Host);
+				String boundHost = resolveH5Host(h5Host);
+				if (StringUtils.hasText(boundHost)) {
+					String state = encodeAppleOAuthState(boundHost);
+					rememberAppleOAuthH5Host(state, boundHost);
 					query.put("state", state);
 				}
 				return appendQuery("https://appleid.apple.com/auth/authorize", query);
@@ -183,19 +187,19 @@ public class SocialTrustLoginService {
 		}
 	}
 
+	/**
+	 * Resolve the Apple callback landing host. Query {@code h5_host} and unsigned state payloads are
+	 * ignored; only a one-time Redis binding created at authorize time is trusted, and it must match
+	 * {@code common.h5-base-url}.
+	 */
 	public String resolveAppleCallbackH5Host(String queryH5Host, String state) {
-		for (String candidate :
-				new String[] {
-					queryH5Host,
-					recallAppleOAuthH5Host(state),
-					decodeAppleOAuthStateHost(state),
-					System.getenv("H5_BASE_URL") == null ? "" : System.getenv("H5_BASE_URL"),
-					System.getenv("COMMON_H5_BASE_URL") == null ? "" : System.getenv("COMMON_H5_BASE_URL")
-				}) {
-			String host = trimTrailingSlash(candidate == null ? "" : candidate.trim());
-			if (StringUtils.hasText(host) && host.matches("(?i)^https?://.*")) {
-				return host;
-			}
+		String allowed = allowedConfiguredH5Host();
+		if (!StringUtils.hasText(allowed)) {
+			return "";
+		}
+		String recalled = recallAppleOAuthH5Host(state);
+		if (StringUtils.hasText(recalled) && allowed.equalsIgnoreCase(recalled)) {
+			return allowed;
 		}
 		return "";
 	}
@@ -390,14 +394,18 @@ public class SocialTrustLoginService {
 
 	public void rememberAppleOAuthH5Host(String state, String h5Host) {
 		String s = state == null ? "" : state.trim();
+		String allowed = allowedConfiguredH5Host();
 		String host = trimTrailingSlash(h5Host == null ? "" : h5Host.trim());
-		if (!StringUtils.hasText(s) || !StringUtils.hasText(host)) {
+		if (!StringUtils.hasText(s)
+				|| !StringUtils.hasText(allowed)
+				|| !StringUtils.hasText(host)
+				|| !allowed.equalsIgnoreCase(host)) {
 			return;
 		}
 		try {
 			sharedStringRedisTemplate
 					.opsForValue()
-					.set(APPLE_STATE_REDIS_PREFIX + md5Hex(s), host, Duration.ofSeconds(600));
+					.set(APPLE_STATE_REDIS_PREFIX + md5Hex(s), allowed, Duration.ofSeconds(600));
 		} catch (DataAccessException e) {
 			// best effort
 		}
@@ -409,31 +417,23 @@ public class SocialTrustLoginService {
 			return "";
 		}
 		try {
-			String v = sharedStringRedisTemplate.opsForValue().get(APPLE_STATE_REDIS_PREFIX + md5Hex(s));
+			String key = APPLE_STATE_REDIS_PREFIX + md5Hex(s);
+			String v = sharedStringRedisTemplate.opsForValue().getAndDelete(key);
 			return v == null ? "" : trimTrailingSlash(v.trim());
 		} catch (DataAccessException e) {
 			return "";
 		}
 	}
 
+	/** Opaque Apple OAuth {@code state}; host is bound only in Redis, never embedded. */
 	public String encodeAppleOAuthState(String h5Host) {
-		try {
-			String json =
-					objectMapper.writeValueAsString(Map.of("h5_host", trimTrailingSlash(h5Host.trim())));
-			return base64UrlEncode(json.getBytes(StandardCharsets.UTF_8));
-		} catch (Exception e) {
-			throw new ResourceException("缺少 H5 域名配置");
-		}
+		byte[] nonce = new byte[32];
+		new SecureRandom().nextBytes(nonce);
+		return base64UrlEncode(nonce);
 	}
 
-	private String decodeAppleOAuthStateHost(String state) {
-		try {
-			byte[] raw = base64UrlDecode(state);
-			JsonNode node = objectMapper.readTree(raw);
-			return textOrEmpty(node, "h5_host");
-		} catch (Exception e) {
-			return "";
-		}
+	private String allowedConfiguredH5Host() {
+		return trimTrailingSlash(commonH5BaseUrl == null ? "" : commonH5BaseUrl.trim());
 	}
 
 	public static String normalizeOAuthCode(String code) {
@@ -630,14 +630,5 @@ public class SocialTrustLoginService {
 
 	private static String base64UrlEncode(byte[] data) {
 		return Base64.getUrlEncoder().withoutPadding().encodeToString(data);
-	}
-
-	private static byte[] base64UrlDecode(String state) {
-		String normalized = state.replace('-', '+').replace('_', '/');
-		int padding = normalized.length() % 4;
-		if (padding > 0) {
-			normalized += "====".substring(padding);
-		}
-		return Base64.getDecoder().decode(normalized);
 	}
 }

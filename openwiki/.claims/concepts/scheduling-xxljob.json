@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:764d00abff0fce4684db0b78bbfb9fd413907d62d290cbf04a2047a65b88b671",
+  "pageVersion": "sha256:30df4adf379cc45c40a0bb342bd3eda8ed1e168bc6765e0aba56f98c14fdb9cd",
   "claims": [
     {
       "id": "claim_58d9f660a1904f38b19211fbd3a0b98a",
@@ -11,11 +11,11 @@
           "version": "repo-lines-v1:sha256:19517e5247999b66dce7b2aab1d1ec2dae541c83a03007083db02279275433a3:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVkMDZiMzkzYzFhMGFiMzIwZDU1ZTE3Mzk1MjM0NjQyMTFlZmIyYjZiMzA3MzMwMzAzNzg5MTg5NTc1ZDYxYWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM1ZjhhMWJjNTk0MDJkZWExY2RjNWU0OWViZDI1MTQxMmE3YzA0YjIzMTc1MTZhZjRkZTFkY2U0MGExNWY5ZmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdmOWZkMDdmNDU5MmQ4Zjc2NjRjNzMwNTIxM2I2ZjhmY2Y1NjY2Njc1ZDg5NDA0ODYyMDhmZWMyODBhODgxNzkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImYzMjQ5OTM3Zjc3NjZjNmRmZTg4ZThlMGEzNTFmOWE0NGU5YjI0MGJiNjY1N2UyMTk1MzQ4OTdmMmY5Mzc1MzMifQ"
         },
         {
-          "resource": "repo://docker-lite/docker-compose.yml#L72-L95",
+          "resource": "repo://docker-lite/docker-compose.yml#L74-L97",
           "version": "repo-lines-v1:sha256:61cd167dd121b7d6dd03add6266a0fd45fd41b9c121220f287626a322c2490c8:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVkMDZiMzkzYzFhMGFiMzIwZDU1ZTE3Mzk1MjM0NjQyMTFlZmIyYjZiMzA3MzMwMzAzNzg5MTg5NTc1ZDYxYWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc0ZmY5MzA1ZWI5N2RkYWQ1MjVhMmFlZTllMTg1YTg4ZWNlMzBkMjI2OTMyYWE5NjM0MTY5NDQ4OWY3NTU3MjkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZjMTU5OTU4Yjc0NTdlN2UyNTc1YTRlZTkzMTM2MTQ2NTUxNzZhMjk2YmQzM2I3ODJlODdlYzg4MGExMzU0ODAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMyNTM5NTcxODRiZDBkYzA0OGNhMTUzMThjZDFkODkxZDUwOWYyODEyZjljZmZlZGJjNWY4ZWVjNjUyYWE2NzMifQ"
         },
         {
-          "resource": "repo://ecshopx-bootstrap/pom.xml#L232-L236",
+          "resource": "repo://ecshopx-bootstrap/pom.xml#L236-L240",
           "version": "repo-lines-v1:sha256:c40412f9dc946cca5b46e888c2d2b4385ca953996c008eaf2e8b81fccae2d4e5:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjA0NzFjNTFlZTVjOWEwZTAxMDc5ZGE5MGJkYjcxZWNiNzZmNmQ0OGI2NjQ4YTUwYWZhNjM3N2Y1MjJhNTRiZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDYwYmFiMDRmMjE5NjU2NmM0ZTRkNDJmNjA2MzcyYzIzNzc4OWM4N2Y2NDdlMzA0NzE5MzY3NzA3YTg4NDQwOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNzY1ZWViMTE1OWI4Y2YxZGZlOGEyZmE5OGQ0M2E5NzMzOTM3ZGQ0ZTYzZjE4ZWU3N2RhOGFjOGFiYjAzZmM4YSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZmI2NmExNGYwOTQwMmI5ZmM5ZDZkNDIzZTMyMTRlOGQxMGUzNjRiYzI3NzI3M2ZjN2ZlYmY2ODRhNmZmZmUyYyJ9"
         },
         {
@@ -107,7 +107,7 @@
           "version": "repo-lines-v1:sha256:d8f26d826d22338699a08c7f2257bd527187469dfb8b3b68bed62dcd6143ab70:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEzZjRkOTY2MWU5ZDJjM2UxYTI4OWU1ODMyMjk5YmVhMTRjZGI2NGJmODg2NjFkZjcxN2IxMmZhMDJkMDExZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiN2Y2YmE0MjU1ZDAxYzZkMmMwMTI1ZmQ3YTFhYjE2YTcxZmY3YTBiOThkYWZiNTQxYzNiMzA4YjIxN2Q4MmM2MiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZGEwNTc1MzJjYzE5ZWRmMmFhOThmNzY4ZDQ2NDM5YzlmZmZiOGIwMTUwZjRjNDA0MDcxMzZmNWE0OTI3YmNiOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTcyMjYxMTAzZjViODA1MzUxNWIwNmMwYzQ1YzllYTBmZDQzMTc0MThhYmQ4YjZhMGVlYjQzYWI3ZDc3NzNkMyJ9"
         },
         {
-          "resource": "repo://docker-lite/docker-compose.yml#L32-L35",
+          "resource": "repo://docker-lite/docker-compose.yml#L33-L36",
           "version": "repo-lines-v1:sha256:971bb576d845d58f20a938f1dd75e04c6d78d06d842f3a160a7b050e9b7858e0:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEzZjRkOTY2MWU5ZDJjM2UxYTI4OWU1ODMyMjk5YmVhMTRjZGI2NGJmODg2NjFkZjcxN2IxMmZhMDJkMDExZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzYzNWVjZDdiNmQ5ZmZiZDZlOWYzOTcxOGEyOGRmNzJiODIyYmUwOWE2Njg2YmY0ZGE4NDEzNzBkMjA4NTIzMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZGEwNTc1MzJjYzE5ZWRmMmFhOThmNzY4ZDQ2NDM5YzlmZmZiOGIwMTUwZjRjNDA0MDcxMzZmNWE0OTI3YmNiOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjYxMjIzMzM3ZDFkZmU5Yzg4N2Y1NmNhZjAwNzNlMGJhMTcyNTY0NGVjM2ZhMDc3MmNmYzZiNjUzMTZkZGM1ZCJ9"
         }
       ]
@@ -299,7 +299,7 @@
           "version": "repo-lines-v1:sha256:0a41701c5b2a5882ff2cc41419746661711375b6d9a94f99e449a60089328f2b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE1OTdkZWQ5NjA1N2NjMzhhNDcxZDJiZjA3ZjcyMjJjNmYzZmIyY2U2ZTkxNjJjZmE1NGQ2YzM1ODkxMWViMDciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjljODExNGUyOTMxYTRlNmEyM2QxMGY4MWQ5OTlkOGQ1ODM1MjdkNjBjYzQ2NmM0NmI5MzhkOTMyYmQ3NmUyYzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIyY2E0ZWEwYzRmYzFlYjNiZWViOTU1YTRiOWM0NDk5OTg5OGNmMDFiNWE4NDM4ZjdmMzcyNmRjZWQ1Mjc2NWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY0NGJkY2VlYmFjZjc5MWQwNGVlZTQwOThjMDYyMmI1NGZkZWJlZDc0MDkxOWYzOTEyZDkyZjE3NTE1N2NhY2IifQ"
         },
         {
-          "resource": "repo://docker-lite/docker-compose.yml#L127-L141",
+          "resource": "repo://docker-lite/docker-compose.yml#L130-L144",
           "version": "repo-lines-v1:sha256:0a41701c5b2a5882ff2cc41419746661711375b6d9a94f99e449a60089328f2b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE1OTdkZWQ5NjA1N2NjMzhhNDcxZDJiZjA3ZjcyMjJjNmYzZmIyY2U2ZTkxNjJjZmE1NGQ2YzM1ODkxMWViMDciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjljODExNGUyOTMxYTRlNmEyM2QxMGY4MWQ5OTlkOGQ1ODM1MjdkNjBjYzQ2NmM0NmI5MzhkOTMyYmQ3NmUyYzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIyY2E0ZWEwYzRmYzFlYjNiZWViOTU1YTRiOWM0NDk5OTg5OGNmMDFiNWE4NDM4ZjdmMzcyNmRjZWQ1Mjc2NWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjViYmM5N2NhYjVjYjQ1NDYxODk2MzM1ODUxYmQ1Njg0Y2IwNGExZjRhNTUzYTc2Nzk1ODU5NWQ0ZDNmZDY4ZDMifQ"
         },
         {
@@ -321,16 +321,24 @@
       "statement": "The admin URL differs per environment: the repo default in application.properties is http://127.0.0.1:9080/xxl-job-admin for self-hosted runs, while both compose stacks override it via APP_ARGS to http://xxl-job-admin:8080/xxl-job-admin on the shared bridge network with the admin's host port published as 8080 (overridable via XXL_HOST_PORT, exposed as --xxl-port by dev-setup.sh and docker-lite/deploy.sh); in both stacks the ecshopx-app service depends_on xxl-job-admin with condition service_healthy (TCP check on 8080, 90 s start period).",
       "evidence": [
         {
-          "resource": "repo://dev-setup.sh#L360-L387",
-          "version": "repo-lines-v1:sha256:a483667c02b194858be5e267c6e43ea81d3cbd3173ac56c33ddea14e673929ba:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjljZTIyYWZhNjE1YzA5OGY3YWVkYjdiMzQzOGIzYTAzYWE0NWE0MmQxOTllY2U0N2FhZTZiNDI0N2Q5ZDFhYjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBiZDA0YzBmYTUwNDFlYWM3NGExNzVjYTQ3N2ZjZjViNTU2ZjJhYmE4ZTExNjNjMzYxMDg0NGViZTRiYjBiMmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQwMGE4MDk2OGRlNWIzY2RiYTg2Y2ZiM2M1ZGNmYTlhMzY5NTM5MWNiN2RkYzhiM2ExMWI4MWI1MDk4MDU1ZGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk5NjljNTBhNjJhZWY3NjE2MDBlMWFlMmEyYjgwMmRkZTE3YWQ2NjFhOGE1M2YxOWVmODhkMGIzNGExODI3MjAifQ"
+          "resource": "repo://dev-setup.sh#L360-L390",
+          "version": "repo-lines-v1:sha256:7df9f2def60ed10ac5edfd98616fd02cc4cf696183cbfd37991e5cf328e8bd43:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjliNDMzZWM5MjQ3NjIxYjJiM2YyODBkZGNlYjVlZGM2NWFhMWZmMzYzMmZlOGQ3NWY2NDJkNmVjOTBkYzBmNTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZlNTIyZTE5MTIxNzMyMTVlZjE0YmIxZDUyNzczOWYyZDdkMzBmMGE3ODA3ZTUxNjdlZjJkM2Y2ZTEzYjc3NjUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU3MjU5ODgxNjEzOTg4ODVmZDMwN2U4NWRhZDdmZmEwNGE2MjhlNWIyNzEyY2YzMzkwN2U4NDBiYWE2YTZiNmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI4OGY1YzY0NmEwMTZhOWMwYzU3MWQzYzQ5ODk2NzU1N2E1YjJhOTlkMmZjOTBhN2MwYTM2ZDBkZjg2ZjViZTUifQ"
         },
         {
           "resource": "repo://docker-compose.dev.yml#L71-L147",
-          "version": "repo-lines-v1:sha256:2a3131c8947ab46cb00cd5fcb5943359f16062677f8f22ba744082565ed32c42:eyJzZWxlY3RlZExpbmVDb3VudCI6NzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVkMDZiMzkzYzFhMGFiMzIwZDU1ZTE3Mzk1MjM0NjQyMTFlZmIyYjZiMzA3MzMwMzAzNzg5MTg5NTc1ZDYxYWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM1ZjhhMWJjNTk0MDJkZWExY2RjNWU0OWViZDI1MTQxMmE3YzA0YjIzMTc1MTZhZjRkZTFkY2U0MGExNWY5ZmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdmOWZkMDdmNDU5MmQ4Zjc2NjRjNzMwNTIxM2I2ZjhmY2Y1NjY2Njc1ZDg5NDA0ODYyMDhmZWMyODBhODgxNzkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkxYTVjNGJhNTI0MjYyZWJhYWQzZTk2ODAwODI4ZmVjZDVkYzc4YWM1MGEwMWQ4MTIzNGI2N2RjZjU1MzA3ODUifQ"
+          "version": "repo-lines-v1:sha256:82ca2e61cf8670f5c1e3f2c8c33f3e083867b76c367980cfe010191eb72ffded:eyJzZWxlY3RlZExpbmVDb3VudCI6NzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVkMDZiMzkzYzFhMGFiMzIwZDU1ZTE3Mzk1MjM0NjQyMTFlZmIyYjZiMzA3MzMwMzAzNzg5MTg5NTc1ZDYxYWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM1ZjhhMWJjNTk0MDJkZWExY2RjNWU0OWViZDI1MTQxMmE3YzA0YjIzMTc1MTZhZjRkZTFkY2U0MGExNWY5ZmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdmOWZkMDdmNDU5MmQ4Zjc2NjRjNzMwNTIxM2I2ZjhmY2Y1NjY2Njc1ZDg5NDA0ODYyMDhmZWMyODBhODgxNzkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkxYTVjNGJhNTI0MjYyZWJhYWQzZTk2ODAwODI4ZmVjZDVkYzc4YWM1MGEwMWQ4MTIzNGI2N2RjZjU1MzA3ODUifQ"
+        },
+        {
+          "resource": "repo://docker-lite/deploy.sh#L166-L168",
+          "version": "repo-lines-v1:sha256:0829925bc39bc782d0416e45f4fa7a9f0adf81afacd7650e0ff27046b6754a7e:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZWFmOTgyOGE5YzBjOTEwZjM5MGE5ZWViMTliMDViYjkwODMyNDVmYzkzYTIwNjk5NzNiNmY5MGE3NmIzZmU1NiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiODM5NWJjMTU3YzdlMmU2MTg1NTc5MTE3YTc0Y2NlMmZlYjM3ZmUwYTYyZGUxMzhmYzc4YzljNjNkMzgwN2RhZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNGUyOGUxZmU3N2EzMTcxNDU0M2ZmMGExMTNmMjZiZTdlMzlhZjVjNTcxNzQ2NzI3YmRiNGZiOGFlNmU4ZTYzNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiY2UyZDVhZWU3Njg3NzU2MjdmMjgwYWU4YmFhNWY1NzVjNjAwYjcxYjE0YjVlY2JjNmVkZDg2NTU2Njk0YTQzNCJ9"
+        },
+        {
+          "resource": "repo://docker-lite/deploy.sh#L488-L492",
+          "version": "repo-lines-v1:sha256:132ffd2def7d113452532fe46ba7c9538e633f2d52635211b43a8a6a43b55ae3:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTE2MzQ1NmY1ODJkNjJlYWRmZmVlNjNlYWFkNTIxYTI4MDgwMzZhYjZiYzgzNTI2MGM2YTJhMDljNGVhZDA1OCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiODFhMDUyZTAxOTU4Y2EwYWU3OTg0ZjY2MmVhNmUxOWQ1OTdiMDM1ZDgxNWMwYzUzZTVkYjUwMjM3NGIxYTUzYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjA4MzI3MWU4YTMxYzAxZTZkMzQ5YWE1ZWFjZTU0NTNkZWE2ZDhiN2MzNGUzYmJhYTIwYjIzMGFiZDQ0YTAxNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNGEwZDY0NmRkNWY4MGQ2N2EyNzNmMDk4YjlkNThkNDY1ODJjZDk4Y2ZiYmMwYTYyZWQzMTczN2E0Nzg0OGY4NCJ9"
         },
         {
           "resource": "repo://docker-lite/docker-compose.yml#L72-L146",
-          "version": "repo-lines-v1:sha256:594abe68c28bf33c66a250182b299c8600e9f026e7143325c318dac3eeedfcdc:eyJzZWxlY3RlZExpbmVDb3VudCI6NzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVkMDZiMzkzYzFhMGFiMzIwZDU1ZTE3Mzk1MjM0NjQyMTFlZmIyYjZiMzA3MzMwMzAzNzg5MTg5NTc1ZDYxYWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc0ZmY5MzA1ZWI5N2RkYWQ1MjVhMmFlZTllMTg1YTg4ZWNlMzBkMjI2OTMyYWE5NjM0MTY5NDQ4OWY3NTU3MjkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZjMTU5OTU4Yjc0NTdlN2UyNTc1YTRlZTkzMTM2MTQ2NTUxNzZhMjk2YmQzM2I3ODJlODdlYzg4MGExMzU0ODAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkxYTVjNGJhNTI0MjYyZWJhYWQzZTk2ODAwODI4ZmVjZDVkYzc4YWM1MGEwMWQ4MTIzNGI2N2RjZjU1MzA3ODUifQ"
+          "version": "repo-lines-v1:sha256:63ab207671d050db0c9602bd4cb9831f3b55ced06eddc366f6ffd142b6d34cdd:eyJzZWxlY3RlZExpbmVDb3VudCI6NzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc0ZmY5MzA1ZWI5N2RkYWQ1MjVhMmFlZTllMTg1YTg4ZWNlMzBkMjI2OTMyYWE5NjM0MTY5NDQ4OWY3NTU3MjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZkYmIzZmExZTZkZDRjMzhjMDU2ZGQyMmY1ZTUzNDE0Y2VkMDVhYWFlOWUyNDkyNWJlYjc4ZjY5YjdmZjAzNTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjMwZGQxZDFmZTY1NzE4YzVkNzZlY2FkOTlmY2E5ODA2MmI0Zjk2NWM4MDQyOWE2NjQ1ODdkYjMxZjdmMmU5ZmQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFlZDQ0NmMwOTljYTcxNGZkZTYwOTQ3YzhlMTE1ZmM5ZWM0M2RkZDk3N2U5NzFmMWZjMjExMDFhZDE1NGY2MjIifQ"
         },
         {
           "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L5-L5",
@@ -357,7 +365,7 @@
       "statement": "A cron-owning bundle needs com.xuxueli:xxl-job-core 2.5.0 on its compile classpath: most cron-owning bundles declare it directly in their POM (orders, payment, aftersales, adapay, aliyunsms, community, companys, data-cube, espier, hfpay, kaquan, point, popularize, selfservice, system-link, theme, plus bootstrap), while promotions and youshu currently get it transitively through peer dependencies.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-bootstrap/pom.xml#L232-L236",
+          "resource": "repo://ecshopx-bootstrap/pom.xml#L236-L240",
           "version": "repo-lines-v1:sha256:c40412f9dc946cca5b46e888c2d2b4385ca953996c008eaf2e8b81fccae2d4e5:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjA0NzFjNTFlZTVjOWEwZTAxMDc5ZGE5MGJkYjcxZWNiNzZmNmQ0OGI2NjQ4YTUwYWZhNjM3N2Y1MjJhNTRiZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDYwYmFiMDRmMjE5NjU2NmM0ZTRkNDJmNjA2MzcyYzIzNzc4OWM4N2Y2NDdlMzA0NzE5MzY3NzA3YTg4NDQwOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNzY1ZWViMTE1OWI4Y2YxZGZlOGEyZmE5OGQ0M2E5NzMzOTM3ZGQ0ZTYzZjE4ZWU3N2RhOGFjOGFiYjAzZmM4YSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZmI2NmExNGYwOTQwMmI5ZmM5ZDZkNDIzZTMyMTRlOGQxMGUzNjRiYzI3NzI3M2ZjN2ZlYmY2ODRhNmZmZmUyYyJ9"
         },
         {
@@ -397,10 +405,56 @@
           "version": "repo-lines-v1:sha256:55a20e771f062997ca85292c76a55be4dd09ac893dbc953489ac315a910d8187:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhjZmFjYzllYjZkZWIyZWExNDdjNGYzYTNkYjU2OGJkOGE2OTM0ZjNmN2Y1NGZiM2U0NDAzOTUyZmY0MTk2ODQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ2NzdkYTZmNmExZTFhMmU0ZWY1YWIzZjU5Mjc5MzExN2U4ZjE5MWVlNmRkMWRmOTY0NWM5ZWNhYzdjZTEwODQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
         }
       ]
+    },
+    {
+      "id": "claim_5b8d65b03bdb4488bbda1650db783aa9",
+      "statement": "Withdraw (bspay) is a plain dispatch-bus consumer, not an @XxlJob cron handler: WithdrawJobHandler implements DispatchHandler, validates that payload apply_id and company_id are Numbers (throwing BadRequestException otherwise), and calls WithdrawApplyService.executeHuifuWithdraw(applyId, companyId); bootstrap's WithdrawJobRegistrationConfig registers it under BsPayBundleDispatchJobNames.WITHDRAW_JOB.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/WithdrawJobRegistrationConfig.java",
+          "version": "repo-file-v1:sha256:5f07840203d851653997f23c6b1f548a365b8bd422725dac0caae266e8ce9c55"
+        },
+        {
+          "resource": "repo://ecshopx-bspay/src/main/java/cn/shopex/ecshopx/bspay/dispatch/WithdrawJobHandler.java",
+          "version": "repo-file-v1:sha256:a2546d503066d293bbfab843b815197fe20a9f0f6dc33f354b6cd639d768c65e"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/BsPayBundleDispatchJobNames.java#L21-L21",
+          "version": "repo-lines-v1:sha256:d3b07231821125dc0133a0548b8756d22b0a264bab060590165eae1f572e2c09:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZDNiMDcyMzE4MjExMjVkYzAxMzNhMDU0OGI4NzU2ZDIyYjBhMjY0YmFiMDYwNTkwMTY1ZWFlMWY1NzJlMmMwOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZDNiMDcyMzE4MjExMjVkYzAxMzNhMDU0OGI4NzU2ZDIyYjBhMjY0YmFiMDYwNTkwMTY1ZWFlMWY1NzJlMmMwOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjU4ZDU4NDgzYmU2MjBiODRmYjU2OWVmY2VjYzZiN2RiNjI2NDEyMjY2ODgyNjllMWVmZWJjNmJmM2VlYjIzZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMWRkODhlZTE4Y2MxODk5YTIyMmIxOTZlNjE5OWY3ODc4MGMxNDkzMjNlYmJiMWM2NTRhOWE3ZDRhZWJlNTBlYSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_45c0635f657748c98a997fc9490fd7c4",
+      "statement": "Export-file jobs use a fan-out-by-type pattern: PosStoreAccountExportFileJobTypeHandler implements ExportFileJobTypeHandler (which adds exportType()), builds CSV rows/headers, exports via ExportCsvFileService and records a finish log via ExportLogCreateService; bootstrap's EspierExportFileJobDispatchHandler collects every ExportFileJobTypeHandler bean into a type-to-handler map (rejecting duplicate export types at startup) and routes each incoming export job by payload[\"type\"], so one dispatch job name serves many export implementations.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/EspierExportFileJobDispatchHandler.java",
+          "version": "repo-file-v1:sha256:efb5924b5aeb8af5d86d79dff6e910c44eb38aae1d50bb7863d24d6c8ec165bf"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/dispatch/PosStoreAccountExportFileJobTypeHandler.java",
+          "version": "repo-file-v1:sha256:264ccd28b23cd66e083771c5df1e8e9507c4c9454d2014e96a8af0ebb12ad9fe"
+        }
+      ]
+    },
+    {
+      "id": "claim_f3154ffa56a84491852db4a19797144e",
+      "statement": "MerchantAuditSuccessNoticeJobHandler (promotions) is a fire-and-forget DispatchHandler: it sends a scene-templated SMS via CompanySceneSmsSendPort.sendSceneTemplatedSms but catches RuntimeException and only logs a warning with the mobile masked to its last four digits instead of rethrowing, so a notification failure never marks the bus job failed; bootstrap's MerchantAuditSuccessNoticeJobRegistrationConfig registers it under MerchantDispatchJobNames.MERCHANT_AUDIT_SUCCESS_NOTICE.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MerchantAuditSuccessNoticeJobRegistrationConfig.java",
+          "version": "repo-file-v1:sha256:95e6f99ffb0effdef31a75aa214c43ba197d4d4e9e720eeaadadb1021236ccd2"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/dispatch/MerchantAuditSuccessNoticeJobHandler.java",
+          "version": "repo-file-v1:sha256:92791e6660bf1ae2dcc773d28b58684bb4da9719c378e03de64e66b3f5329d81"
+        }
+      ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.7.2",
-    "at": "2026-10-21T12:26:22.580Z"
+    "by": "openwiki/0.7.3",
+    "at": "2026-11-04T17:09:55.577Z"
   }
 }

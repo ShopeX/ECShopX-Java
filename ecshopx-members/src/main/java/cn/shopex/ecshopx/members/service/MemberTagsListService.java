@@ -25,6 +25,9 @@ import cn.shopex.ecshopx.members.mapper.MemberRelTagsMapper;
 import cn.shopex.ecshopx.members.mapper.MemberTagGroupMapper;
 import cn.shopex.ecshopx.members.mapper.MemberTagGroupRelMapper;
 import cn.shopex.ecshopx.members.mapper.MemberTagsMapper;
+import cn.shopex.ecshopx.members.service.systemtag.MemberSystemTagCodes;
+import cn.shopex.ecshopx.members.service.systemtag.MemberSystemTagQueryScope;
+import cn.shopex.ecshopx.members.service.systemtag.MemberTagGroupWithSystemHelper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import java.util.ArrayList;
@@ -67,9 +70,7 @@ public class MemberTagsListService {
 
 	public Object getTagsInfo(long companyId, long distributorId, long tagId, String requestLangTag) {
 		LambdaQueryWrapper<MemberTags> w = new LambdaQueryWrapper<>();
-		w.eq(MemberTags::getTagId, tagId)
-				.eq(MemberTags::getCompanyId, companyId)
-				.eq(MemberTags::getDistributorId, distributorId);
+		MemberSystemTagQueryScope.applyDetailScope(w, companyId, distributorId, tagId);
 		MemberTags entity = memberTagsMapper.selectOne(w);
 		if (entity == null) {
 			return Collections.emptyList();
@@ -99,11 +100,13 @@ public class MemberTagsListService {
 	public Map<String, Object> getTagsList(
 			long companyId, long distributorId, MemberTagsListParams params, String requestLangTag) {
 		LambdaQueryWrapper<MemberTags> w = new LambdaQueryWrapper<>();
-		w.eq(MemberTags::getCompanyId, companyId).eq(MemberTags::getDistributorId, distributorId);
+		MemberSystemTagQueryScope.applyListScope(w, companyId, distributorId, params.tagKind());
 
 		if (params.tagName() != null) {
 			String escaped = escapeLike(params.tagName());
-			w.and(q -> q.like(MemberTags::getTagName, "%" + escaped + "%"));
+			w.and(q -> q.like(MemberTags::getTagName, "%" + escaped + "%")
+					.or()
+					.like(MemberTags::getTagCode, "%" + escaped + "%"));
 		}
 
 		if (params.categoryId() != null) {
@@ -184,7 +187,18 @@ public class MemberTagsListService {
 
 	public Map<String, Object> getTagGroupList(
 			long companyId, int page, int pageSize, String groupNameRaw, String requestLangTag) {
+		return getTagGroupList(companyId, page, pageSize, groupNameRaw, requestLangTag, false);
+	}
+
+	public Map<String, Object> getTagGroupList(
+			long companyId,
+			int page,
+			int pageSize,
+			String groupNameRaw,
+			String requestLangTag,
+			boolean withSystem) {
 		final long distributorScope = 0L;
+		boolean prependSystem = MemberTagGroupWithSystemHelper.shouldPrepend(withSystem, page);
 
 		LambdaQueryWrapper<MemberTagGroup> baseWrapper = new LambdaQueryWrapper<>();
 		baseWrapper
@@ -238,10 +252,7 @@ public class MemberTagsListService {
 			}
 
 			if (groupIdSet.isEmpty()) {
-				Map<String, Object> empty = new LinkedHashMap<>();
-				empty.put("total_count", 0);
-				empty.put("list", List.of());
-				return empty;
+				return finishTagGroupList(companyId, requestLangTag, 0, List.of(), prependSystem);
 			}
 			baseWrapper.in(MemberTagGroup::getGroupId, groupIdSet);
 		}
@@ -254,10 +265,7 @@ public class MemberTagsListService {
 		List<MemberTagGroup> groups = pageObj.getRecords();
 
 		if (groups.isEmpty()) {
-			Map<String, Object> data = new LinkedHashMap<>();
-			data.put("total_count", totalCount);
-			data.put("list", List.of());
-			return data;
+			return finishTagGroupList(companyId, requestLangTag, totalCount, List.of(), prependSystem);
 		}
 
 		List<Long> groupIds =
@@ -327,10 +335,41 @@ public class MemberTagsListService {
 			memberTagsListLangReadService.applyListLang(companyId, requestLangTag, flatList);
 		}
 
+		return finishTagGroupList(companyId, requestLangTag, totalCount, listRows, prependSystem);
+	}
+
+	private Map<String, Object> finishTagGroupList(
+			long companyId,
+			String requestLangTag,
+			int totalCount,
+			List<Map<String, Object>> listRows,
+			boolean prependSystem) {
+		List<Map<String, Object>> out = new ArrayList<>(listRows == null ? List.of() : listRows);
+		if (prependSystem) {
+			List<Map<String, Object>> systemTagRows = loadSystemTagRows(companyId, requestLangTag);
+			out.add(0, MemberTagGroupWithSystemHelper.buildVirtualSystemGroup(companyId, systemTagRows));
+		}
 		Map<String, Object> data = new LinkedHashMap<>();
 		data.put("total_count", totalCount);
-		data.put("list", listRows);
+		data.put("list", out);
 		return data;
+	}
+
+	private List<Map<String, Object>> loadSystemTagRows(long companyId, String requestLangTag) {
+		LambdaQueryWrapper<MemberTags> w = new LambdaQueryWrapper<>();
+		MemberSystemTagQueryScope.applyListScope(w, companyId, 0L, MemberSystemTagCodes.KIND_SYSTEM);
+		w.orderByAsc(MemberTags::getTagCode).orderByAsc(MemberTags::getTagId);
+		List<MemberTags> entities = memberTagsMapper.selectList(w);
+		List<Map<String, Object>> rows = new ArrayList<>();
+		for (MemberTags ent : entities) {
+			if (ent != null) {
+				rows.add(memberTagsSnakeFormatter.toSnakeTagRow(ent));
+			}
+		}
+		if (!rows.isEmpty()) {
+			memberTagsListLangReadService.applyListLang(companyId, requestLangTag, rows);
+		}
+		return rows;
 	}
 
 	private static boolean isBlankQueryToken(String raw) {

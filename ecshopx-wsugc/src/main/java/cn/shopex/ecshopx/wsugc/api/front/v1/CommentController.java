@@ -262,7 +262,8 @@ public class CommentController {
 		}
 
 		long commentId = parseLongFlexible(merged.get("comment_id"), 0L);
-		Map<String, Object> data = frontUgcCommentDeleteService.deleteByMember(userId, commentId);
+		Map<String, Object> data =
+				frontUgcCommentDeleteService.deleteByMember(userId, companyId, commentId);
 		return ResponseEntity.ok(ApiResult.ok(data));
 	}
 

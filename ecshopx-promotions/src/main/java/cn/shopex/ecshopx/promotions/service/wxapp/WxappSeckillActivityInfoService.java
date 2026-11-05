@@ -26,6 +26,7 @@ import cn.shopex.ecshopx.promotions.mapper.SeckillRelGoodsMapper;
 import cn.shopex.ecshopx.promotions.service.SeckillActivityCreateService;
 import cn.shopex.ecshopx.promotions.service.multilang.SeckillActivityOutsideMultiLangReadService;
 import cn.shopex.ecshopx.promotions.service.support.SeckillActivityPayloadSupport;
+import cn.shopex.ecshopx.promotions.service.systemtag.MemberCrowdMatcher;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import java.util.ArrayList;
@@ -45,6 +46,7 @@ public class WxappSeckillActivityInfoService {
 	private final SeckillActivityOutsideMultiLangReadService seckillActivityOutsideMultiLangReadService;
 	private final MarketingActivityCatalogAccess marketingActivityCatalogAccess;
 	private final CompanyDefaultCurrencyService companyDefaultCurrencyService;
+	private final MemberCrowdMatcher memberCrowdMatcher;
 
 	public WxappSeckillActivityInfoService(
 			SeckillActivityMapper seckillActivityMapper,
@@ -52,13 +54,15 @@ public class WxappSeckillActivityInfoService {
 			SeckillActivityCreateService seckillActivityCreateService,
 			SeckillActivityOutsideMultiLangReadService seckillActivityOutsideMultiLangReadService,
 			MarketingActivityCatalogAccess marketingActivityCatalogAccess,
-			CompanyDefaultCurrencyService companyDefaultCurrencyService) {
+			CompanyDefaultCurrencyService companyDefaultCurrencyService,
+			MemberCrowdMatcher memberCrowdMatcher) {
 		this.seckillActivityMapper = seckillActivityMapper;
 		this.seckillRelGoodsMapper = seckillRelGoodsMapper;
 		this.seckillActivityCreateService = seckillActivityCreateService;
 		this.seckillActivityOutsideMultiLangReadService = seckillActivityOutsideMultiLangReadService;
 		this.marketingActivityCatalogAccess = marketingActivityCatalogAccess;
 		this.companyDefaultCurrencyService = companyDefaultCurrencyService;
+		this.memberCrowdMatcher = memberCrowdMatcher;
 	}
 
 	public Map<String, Object> getSeckillInfo(
@@ -79,6 +83,16 @@ public class WxappSeckillActivityInfoService {
 							new LambdaQueryWrapper<SeckillActivity>()
 									.eq(SeckillActivity::getCompanyId, companyId)
 									.eq(SeckillActivity::getSeckillId, seckillIdParsed));
+		}
+
+		if (activity != null
+				&& !memberCrowdMatcher.matchesLimitedTimeSale(
+						companyId,
+						userId,
+						activity.getSeckillType(),
+						activity.getMemberTagIds(),
+						activity.getMemberTagMode())) {
+			activity = null;
 		}
 
 		if (activity != null) {

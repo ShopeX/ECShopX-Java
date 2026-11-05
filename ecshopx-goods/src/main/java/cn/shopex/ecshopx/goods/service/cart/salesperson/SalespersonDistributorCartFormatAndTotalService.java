@@ -64,12 +64,13 @@ public class SalespersonDistributorCartFormatAndTotalService {
 			row.put("company_id", companyId);
 		}
 
-		goodsItemsListPromotionEnrichmentService.enrich(validRows);
+		goodsItemsListPromotionEnrichmentService.enrich(validRows, userId);
 
 		for (Map<String, Object> row : validRows) {
 			long itemId = toLong(row.get("item_id"));
 			long distForAct = resolveDistributorIdForActivity(row, distributorId);
-			Map<String, Object> act = wxappGoodsItemsDetailPromotionActivityService.getCurrentActivityByItemId(companyId, itemId, distForAct);
+			Map<String, Object> act = wxappGoodsItemsDetailPromotionActivityService.getCurrentActivityByItemId(
+					companyId, itemId, distForAct, userId);
 			if (act != null && !act.isEmpty()) {
 				mergeActivityOntoRow(row, act);
 			}

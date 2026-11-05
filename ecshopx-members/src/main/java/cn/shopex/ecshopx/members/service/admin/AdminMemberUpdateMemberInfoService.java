@@ -23,6 +23,8 @@ import cn.shopex.ecshopx.members.mapper.MembersInfoMapper;
 import cn.shopex.ecshopx.members.mapper.MembersMapper;
 import cn.shopex.ecshopx.members.security.LegacyFixedMobileEncrypt;
 import cn.shopex.ecshopx.members.service.account.MemberAccountService;
+import cn.shopex.ecshopx.members.service.systemtag.MemberSystemTagCodes;
+import cn.shopex.ecshopx.members.service.systemtag.NewCustomerTagReconcileService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import java.util.Map;
@@ -35,10 +37,15 @@ public class AdminMemberUpdateMemberInfoService {
 
 	private final MembersInfoMapper membersInfoMapper;
 
+	private final NewCustomerTagReconcileService newCustomerTagReconcileService;
+
 	public AdminMemberUpdateMemberInfoService(
-			MembersMapper membersMapper, MembersInfoMapper membersInfoMapper) {
+			MembersMapper membersMapper,
+			MembersInfoMapper membersInfoMapper,
+			NewCustomerTagReconcileService newCustomerTagReconcileService) {
 		this.membersMapper = membersMapper;
 		this.membersInfoMapper = membersInfoMapper;
+		this.newCustomerTagReconcileService = newCustomerTagReconcileService;
 	}
 
 	public Map<String, Object> updateMemberInfo(long companyId, long userId, Map<String, Object> payload) {
@@ -56,8 +63,11 @@ public class AdminMemberUpdateMemberInfoService {
 		if (needMainUpdate) {
 			LambdaUpdateWrapper<Members> uw = new LambdaUpdateWrapper<>();
 			uw.eq(Members::getCompanyId, companyId).eq(Members::getUserId, userId);
-			if (payload.containsKey("disabled")) {
-				uw.set(Members::getDisabled, normalizeDisabledFlag(payload.get("disabled")));
+			boolean disabledTouched = payload.containsKey("disabled");
+			boolean disabled = false;
+			if (disabledTouched) {
+				disabled = normalizeDisabledFlag(payload.get("disabled"));
+				uw.set(Members::getDisabled, disabled);
 			}
 			if (payload.containsKey("remarks")) {
 				Object rv = payload.get("remarks");
@@ -74,6 +84,12 @@ public class AdminMemberUpdateMemberInfoService {
 									.eq(Members::getCompanyId, companyId)
 									.eq(Members::getUserId, userId)
 									.last("LIMIT 1"));
+			if (disabledTouched) {
+				newCustomerTagReconcileService.reconcile(
+						companyId,
+						userId,
+						disabled ? MemberSystemTagCodes.SOURCE_DISABLE : MemberSystemTagCodes.SOURCE_ENABLE);
+			}
 		}
 
 		if (payload.containsKey("name")) {

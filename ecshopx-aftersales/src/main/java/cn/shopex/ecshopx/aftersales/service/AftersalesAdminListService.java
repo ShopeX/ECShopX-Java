@@ -462,6 +462,7 @@ public class AftersalesAdminListService {
 
 		putDistributorFilterFromRequest(filter, request, q.getDistributorId(), q.getDistributorIds());
 
+		// ECX-10883：未授权标量不得 remove，须收束到 JWT 门店集合。
 		if (!jwtDist.isEmpty()) {
 			Object cur = filter.get("distributor_id");
 			if (cur instanceof Collection<?> c && !c.isEmpty()) {
@@ -475,7 +476,7 @@ public class AftersalesAdminListService {
 			} else if (cur != null && StringUtils.hasText(String.valueOf(cur))) {
 				long one = longVal(cur);
 				if (!jwtDist.contains(one)) {
-					filter.remove("distributor_id");
+					filter.put("distributor_id", new ArrayList<>(jwtDist));
 				}
 			} else {
 				filter.put("distributor_id", jwtDist);

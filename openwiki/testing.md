@@ -1,8 +1,8 @@
 ---
 type: testing-conventions
 title: Testing Conventions and Verification
-description: How ECShopX-Java verifies changes — per-Bundle plain JUnit 5 unit tests with mocked persistence, the DispatchFlow / PublishProbe / BusProbe / Delegation / WebSlice naming taxonomy that pins dispatch publishing and AFTER_COMMIT timing, the narrowest mvnw commands per change type, and the suite's coverage boundaries.
-tags: [testing, junit, mockito, dispatch, probes, webslice, mockmvc, maven, verification]
+description: How ECShopX-Java verifies changes — per-Bundle plain JUnit 5 unit tests with mocked persistence, the DispatchFlow / PublishProbe / BusProbe / Delegation / WebSlice / ScopeTest / TableContractTest naming taxonomy that pins dispatch publishing, AFTER_COMMIT timing, distributor/company scoping, and entity table metadata, the narrowest mvnw commands per change type, and the suite's coverage boundaries.
+tags: [testing, junit, mockito, dispatch, probes, webslice, scopetest, tablecontract, mockmvc, maven, verification]
 sources:
   - id: openwiki-source-8037e2358a2c4f9b2c722a11
     resource: repo://AGENTS.md
@@ -12,8 +12,12 @@ sources:
     resource: repo://ecshopx-aftersales/src/test/java/cn/shopex/ecshopx/aftersales/api/admin/v1/AftersalesControllerAdminSendbackDelegationTest.java
   - id: openwiki-source-8b4af10a586a7a6764ad750c
     resource: repo://ecshopx-aftersales/src/test/java/cn/shopex/ecshopx/aftersales/service/AftersalesAdminApplyOrderProcessLogDispatchPublishProbeTest.java
-  - id: openwiki-source-918051b766694cbaff63578f
-    resource: repo://ecshopx-aftersales/src/test/java/cn/shopex/ecshopx/aftersales/service/AftersalesApplyCheckApplyServiceRefundFeePrecisionTest.java
+  - id: openwiki-source-e5032d95a293c21edead6615
+    resource: repo://ecshopx-aftersales/src/test/java/cn/shopex/ecshopx/aftersales/service/AftersalesApplyCheckApplyServiceFreightTest.java
+  - id: openwiki-source-7dd053095170d5ad4fe73bfc
+    resource: repo://ecshopx-aftersales/src/test/java/cn/shopex/ecshopx/aftersales/service/AftersalesApplyCheckApplyServiceTopLevelRefundTest.java
+  - id: openwiki-source-f43b322f8b50f1451fda66cc
+    resource: repo://ecshopx-aftersales/src/test/java/cn/shopex/ecshopx/aftersales/service/AftersalesTestMessageSource.java
   - id: openwiki-source-84aeb105875424c9aac7edf8
     resource: repo://ecshopx-bootstrap/pom.xml
   - id: openwiki-source-2230f13a1d97b7d74b15e215
@@ -36,12 +40,18 @@ sources:
     resource: repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/dispatch/redis/RedisDispatchDriverTest.java
   - id: openwiki-source-609b6f5d2dab35545395d32b
     resource: repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/EcshopxApplicationTests.java
+  - id: openwiki-source-cd6cc8d5555c16228030dee3
+    resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/mybatis/metadata/MpMetadataAnnotationHandler.java
   - id: openwiki-source-e7124ff1339f931e45499060
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/web/FlexibleBodyMethodArgumentResolver.java
   - id: openwiki-source-378f7f5ecd49886ff9c96c31
     resource: repo://ecshopx-common/src/test/java/cn/shopex/ecshopx/common/config/LanguePropertiesTest.java
+  - id: openwiki-source-8ac2f8d4b8342e0e9c44b7a3
+    resource: repo://ecshopx-companys/src/test/java/cn/shopex/ecshopx/companys/domain/PosStoreAccountTableContractTest.java
   - id: openwiki-source-b46999eafd87f9221c90e9f4
     resource: repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/integration/OrderProcessLogPublishPortImpl.java
+  - id: openwiki-source-4c1a598ea111a3cf1912ad1e
+    resource: repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/service/ItemsProfitSaveServiceScopeTest.java
   - id: openwiki-source-fdde77b5e0fe122a5896b993
     resource: repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/service/order/normal/OrderCreateFormatDataPortImplShopIdAlignPhpTest.java
   - id: openwiki-source-0d8d2be20738e721172f6849
@@ -70,6 +80,8 @@ sources:
     resource: repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/orders/service/normal/shopadmin/ShopadminNormalOrderCreateOrchestratorNormalOrderAddDispatchPublishProbeTest.java
   - id: openwiki-source-3a6fbaacfa877f3c9f32d190
     resource: repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/orders/service/offline/OfflinePaymentDoCheckTradeFinishCanceledRefundOplPublishProbeTest.java
+  - id: openwiki-source-8fbfa48e32b202f4fe7a2b1e
+    resource: repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/orders/service/orderexport/OrderExportFilterAssemblerDistributorScopeTest.java
   - id: openwiki-source-dcecbe368deb2e47355cab19
     resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/MarketingActivityCrossPromotionGuardService.java
   - id: openwiki-source-7e61a49a5e4cea474b0d2c66
@@ -82,7 +94,10 @@ sources:
     resource: repo://pom.xml
   - id: openwiki-source-f1b1aacc63642e5304668821
     resource: repo://readme.md
-generated: { by: "openwiki/0.7.2", at: "2026-10-23T03:04:20.471Z" }
+verified:
+  - by: openwiki/0.7.3
+    at: 2026-11-04T17:09:55.577Z
+generated: { by: "openwiki/0.7.3", at: "2026-11-04T17:09:55.577Z" }
 ---
 
 # Testing Conventions and Verification
@@ -113,6 +128,8 @@ Suffixes are load-bearing: the suffix tells you which layer a test pins and whic
 | `*AfterCommitTest` | `ecshopx-bootstrap/src/test/.../config/` | The AFTER_COMMIT wrapper itself: zero facade interactions inside the transaction, exactly one publish with the exact options after commit, immediate publish with no active transaction. |
 | `*EventAsyncConsumeTest` | `ecshopx-orders/src/test/.../orders/integration/` (~50 classes) | Consume-side envelope: hand-construct a `DispatchMessage` carrying the real listener name and queue, register the real listener on an `InMemoryDispatchRegistry`, and drive `DispatchConsumerRuntime.consume(msg, 1)` to prove the listener's underlying service (`OrderProcessLogBusService.persistEntitiesMap`, …) runs once with the payload. |
 | `*DispatchConsumerRuntimeTest` | Consuming bundles (`ecshopx-youshu`, `ecshopx-hfpay`, `ecshopx-reservation`) | Same consume-side shape as above, named after the runtime: the listener is registered with its production `ListenerDispatchOptions` and the runtime is proven to reach the real downstream service. |
+| `*ScopeTest` | Service packages across many bundles (`ecshopx-goods`, `ecshopx-orders`, `ecshopx-promotions`, `ecshopx-aftersales`, `ecshopx-members`, `ecshopx-comments`, …) | Distributor/company scoping: the real service runs with mocked repositories/ports and the test pins that cross-tenant input is rejected or narrowed (a foreign `item_id` aborts the whole write with `never()` verifications on every write path; a distributor account's export filter is forced to the activated/JWT `distributor_id` while an admin account gets no forced scope). |
+| `*TableContractTest` | Bundle `domain` packages (currently `ecshopx-companys`: `PosStoreAccountTableContractTest`) | Entity-to-schema metadata contract: reflects on the entity's `@MpTable` annotation (ecshopx-common's MyBatis-Plus metadata extension carrying index definitions) and asserts the table name plus exact unique-index name/columns — e.g. `pos_store_account` must expose exactly `uk_employee_no(employee_no)` — and, when the local Flyway `db/migration` directory is present, that the incremental SQL keeps the same index. |
 | `*EnqueueTest`, `*ChainTest`, `*ProbeTest` (bare) | Various bundles | Local variants of the publish probe for non-dispatch side effects (SMS enqueues, reservation notice chains, orchestrator fan-out). |
 
 The split is deliberate and documented in the probe classes' own Javadoc: `AftersalesAdminApplyOrderProcessLogBusProbeTest` says it "only asserts the port call and payload produced on the admin `apply` chain", while bus delivery of that event is pinned in `ecshopx-orders` (port implementation + `*EventAsyncConsumeTest`) and in bootstrap flow tests. When you change a payload field, expect to touch **one `*PublishProbeTest` or `*BusProbeTest`** (producer side) **and one `*EventAsyncConsumeTest` or `*DispatchConsumerRuntimeTest`** (consumer side).
@@ -138,6 +155,17 @@ Because these tests live in `ecshopx-bootstrap`'s test tree, they can see both t
 ### How AFTER_COMMIT timing is pinned: the fake transaction manager
 
 Publish probes cannot use a real database transaction, so they install a hand-rolled `PlatformTransactionManager` whose `getTransaction` calls `TransactionSynchronizationManager.initSynchronization()` and whose `commit` iterates the registered synchronizations and calls each `afterCommit()` before clearing (see `syncFiringTxManager()` in `OfflinePaymentDoCheckTradeFinishCanceledRefundOplPublishProbeTest`, or the Mockito-stubbed `newCommitFiresAfterSynchronizationsTxManager()` in `AftersalesAdminApplyOrderProcessLogDispatchPublishProbeTest`). The service under test is then driven through a `TransactionTemplate` over that manager, and the test asserts `publishEvent` / `dispatchJob` fired **only** after commit — e.g. `ItemAddEventDispatchPublisherImplAfterCommitTest` proves zero facade interactions inside `tt.execute` and exactly one publish with the exact options tuple afterwards, plus the no-transaction fallback (immediate publish). An `@AfterEach` clears `TransactionSynchronizationManager` so state never leaks between tests.
+
+### Scope probes: `*ScopeTest`
+
+`*ScopeTest` classes pin tenant scoping rules that are easy to regress silently, using the same plain-Mockito harness as publish probes but with no dispatch involved. Two shapes dominate:
+
+* **Write-side rejection.** `ItemsProfitSaveServiceScopeTest` stubs `itemsRepository.getByItemIdAndCompany(42L, 100L)` to return `null` (item owned by another company) and asserts the save throws `ResourceException("商品不存在")` — then `verify(..., never())` on **every** write path (`deleteByCompanyAndItemIds`, `insertRow`, `updateProfitFeeByItemId`, `updateProfitByItemId`) proves a rejected entry aborts the entire batch with zero partial writes. The positive case verifies the update is issued with the company id in scope (`updateProfitFeeByItemId(eq(100L), ...)`).
+* **Read-side filter forcing.** `OrderExportFilterAssemblerDistributorScopeTest` drives the real assembler with a `MockHttpServletRequest` carrying the activated `DISTRIBUTOR_ID` request attribute (or the JWT `distributor_ids` attribute) and asserts the resulting export filter forces `distributor_id` to the scoped shop — including that an attacker-supplied `distributor_id` request parameter is overridden — while an `admin` account's filter gains no distributor key at all.
+
+### Table contract tests
+
+`PosStoreAccountTableContractTest` is the first of a family that reflects over entity metadata instead of mocking behavior: it asserts `PosStoreAccount`'s `@MpTable` annotation names the table `pos_store_account` and declares exactly one unique index `uk_employee_no` on `employee_no`. A second test walks the Flyway `db/migration` directory (resolved relative to the module so the test works both from the module and the reactor root) and — only when local incremental `pos_store_account` scripts exist — asserts they keep the same `uk_employee_no` index; it returns early when the directory or scripts are absent, because local incremental scripts are not committed by default and the annotation-level contract is the load-bearing assertion. The pattern exists because entities carry their index definitions in `@MpTable`/`@MpIndex` (ecshopx-common's `common/mybatis/metadata` annotations, adapted onto MyBatis-Plus's `@TableName` by `MpMetadataAnnotationHandler`), so the annotation *is* the schema contract a test can pin without a database.
 
 ### Controller slices: `*DelegationTest` and `*WebSliceTest`
 
@@ -199,8 +227,9 @@ The three families are complementary probes of one publish → route → consume
 * **`@SpringJUnitConfig` + hand-written `@Configuration` + H2.** Where a service genuinely needs Spring transaction proxies (`@Transactional` semantics, after-commit synchronizations via a real transaction manager), the members/goods/third-party families write a test configuration that `@Import`s the real service, declares every mapper/publisher/port as a Mockito `mock()` bean, and backs `@EnableTransactionManagement` with an H2 `EmbeddedDatabaseBuilder` + `DataSourceTransactionManager`. `MemberAccountServiceDispatchIntegrationTestConfiguration` is the reference; the H2 database holds no tables — it exists purely so the transaction manager is real.
 * **Inline in-memory dispatch stacks.** `MemberAccountServiceCreateMemberLocalAutoRegisterShopexCrmDispatchFlowTestConfiguration` (`@TestConfiguration`) assembles `InMemoryDispatchRegistry` (with the real listener registered), `DispatchCore.asyncReady` whose REDIS driver appends to a shared `List<DispatchMessage>`, a `DispatchFanOutPlanner`, a `DispatchFacade`, and a `@Primary` publisher bean — letting a `@SpringJUnitConfig` service test assert real captured envelopes without bootstrap's ~200 registration configs (and without duplicate-listener registration errors).
 * **`@TestPropertySource(properties = "ecshopx.h5.encrypt-sensitive-data=false")`.** `MemberAccountService` reads this flag to decide whether to encrypt mobile numbers; publish probes set it to `false` so the captured payload contains the plain fixture mobile and can be asserted field-by-field.
+* **`AftersalesTestMessageSource.FALLBACK` — the shared MessageSource test double.** Aftersales validation tests (`AftersalesApplyCheckApplyServiceFreightTest`, `...TopLevelRefundTest`, the bus probes) construct services with this package-private holder's `FALLBACK` constant — an empty `StaticMessageSource` — so message codes fall through to the exception's default text. A test that needs a real translation instead builds its own `StaticMessageSource`, adds the code under a locale, and pins the thread locale with `LocaleContextHolder.setLocale(...)` (reset in `@AfterEach`) — e.g. `pointFreightNotPaid_usesEnglishMessage` resolves `aftersales.apply.freight_point_not_paid` to its English copy.
 * **`ApplicationContextRunner` for `@ConfigurationProperties` validation.** `LanguePropertiesTest` boots a minimal context with `withPropertyValues(...)` to assert bean-creation failure when the default language is not in the supported list — the one place Spring's test context runner is used.
-* **`@DisplayName` in Chinese for domain semantics.** Service tests like `AftersalesApplyCheckApplyServiceRefundFeePrecisionTest` describe the business rule under test in Chinese ("售后申请退款金额校验：分单位整数比较" — refund-fee validation compares fen-unit integers), which also documents the floating-point-noise rule the assertions pin. Test names otherwise encode the chain under test: `<Service><Method><Scenario>PublishProbeTest`.
+* **`@DisplayName` in Chinese for domain semantics.** Service tests like `AftersalesApplyCheckApplyServiceFreightTest` ("售后申请运费校验：对齐 PHP" — freight validation aligned with PHP) describe the business rule under test in Chinese. Test names otherwise encode the chain under test: `<Service><Method><Scenario>PublishProbeTest`.
 
 ## Running tests: the narrowest command that proves the change
 
@@ -228,6 +257,9 @@ Map that to the taxonomy:
 | Shopadmin deferred create (no publish at create) | `./mvnw -pl ecshopx-orders test -Dtest=ShopadminNormalOrderCreateOrchestratorNormalOrderAddDispatchPublishProbeTest,NormalOrderAdminCreateUserOrderServiceNormalOrderAddDispatchPublishProbeTest` |
 | Order-persist field alignment with PHP `_formatOrderData` | `./mvnw -pl ecshopx-orders test -Dtest=OrderCreatePersistencePortImplShopIdAlignPhpTest` (and `-pl ecshopx-goods ...OrderCreateFormatDataPortImplShopIdAlignPhpTest` for the format side) |
 | Seckill shop-overlap relaxation / guard wiring | `./mvnw -pl ecshopx-promotions test -Dtest=SeckillActivityCreateServiceLimitedTimeSaleShopOverlapTest` |
+| Distributor/company scoping of a service | `./mvnw -pl ecshopx-<bundle> test -Dtest=<Service>ScopeTest` (e.g. `ItemsProfitSaveServiceScopeTest`, `OrderExportFilterAssemblerDistributorScopeTest`) |
+| Entity table/unique-index metadata | `./mvnw -pl ecshopx-<bundle> test -Dtest=<Entity>TableContractTest` (e.g. `PosStoreAccountTableContractTest`) |
+| Aftersales apply-check rules (freight, top-level refund) | `./mvnw -pl ecshopx-aftersales test -Dtest=AftersalesApplyCheckApplyService*Test` |
 | Consume-side envelope / listener wiring | `./mvnw -pl ecshopx-<bundle> test -Dtest=<Event>EventAsyncConsumeTest` (orders) or `...DispatchConsumerRuntimeTest` |
 | Dispatch bus internals | `./mvnw -pl ecshopx-bootstrap test -Dtest=DispatchBus*Test` |
 | Whole Bundle | `./mvnw -pl ecshopx-<bundle> test` |
@@ -242,11 +274,11 @@ Production code also documents its own re-verification commands: `WxappOrderCont
 
 ## What the suite does and does not cover
 
-**Covered well:** dispatch publish tuples and AFTER_COMMIT timing; fan-out planning (per-listener queue/delay, parent-delay precedence — `DispatchFanOutPlannerTest`); consume envelopes and listener wiring; controller→service delegation and the HTTP envelope; pure business rules (fen-precision refund validation, limits, codecs, CSV export flattening); MyBatis-Plus wrapper construction (via mocked mappers + `TableInfoHelper`); the bus drivers' behaviors against mocked Redis/Rabbit templates (`RedisDispatchDriverTest`, `RedisDelayedDispatchMoverTest`, `RabbitDispatchDriverTest`, …).
+**Covered well:** dispatch publish tuples and AFTER_COMMIT timing; fan-out planning (per-listener queue/delay, parent-delay precedence — `DispatchFanOutPlannerTest`); consume envelopes and listener wiring; controller→service delegation and the HTTP envelope; tenant scoping of writes and export filters (`*ScopeTest`); pure business rules (aftersales freight/refund validation, limits, codecs, CSV export flattening); entity table/unique-index metadata (`*TableContractTest`); MyBatis-Plus wrapper construction (via mocked mappers + `TableInfoHelper`); the bus drivers' behaviors against mocked Redis/Rabbit templates (`RedisDispatchDriverTest`, `RedisDelayedDispatchMoverTest`, `RabbitDispatchDriverTest`, …).
 
 **Not covered by the automated suite — verify by other means:**
 
-* **No real database anywhere.** Mapper XML, SQL correctness, index behavior, and Flyway migrations are never executed by tests. Schema changes rely on the migration workflow (see [Workflow: Schema Migration](workflows/schema-migration.md)) and a manual/docker run — there is no test that replays `V*.sql` against MySQL.
+* **No real database anywhere.** Mapper XML, SQL correctness, index behavior, and Flyway migrations are never executed by tests. `*TableContractTest` classes pin the entity-side annotation contract and any present local SQL text, but schema changes rely on the migration workflow (see [Workflow: Schema Migration](workflows/schema-migration.md)) and a manual/docker run — there is no test that replays `V*.sql` against MySQL.
 * **No real Redis, no AMQP broker.** Queue draining, the delayed-ZSET mover loop, and the 1-second pollers are only exercised with mocked `ListOperations`/`ZSetOperations`. The at-most-once consumption semantics documented on the dispatch page are consequences of code shape, not guarded by an integration test.
 * **No end-to-end HTTP + DB + dispatch run.** `EcshopxApplicationTests.contextLoads` boots the context (needing the configured MySQL/Flyway environment) but asserts nothing beyond startup; there is no request→database→queue→handler round-trip test.
 * **Failure paths that need real infrastructure** — payment gateway callbacks, XXL-JOB triggers, WeChat APIs — are pinned only at the unit seam (mocked clients/ports), not against sandboxes.
@@ -269,12 +301,16 @@ Practical consequences: a green `./mvnw -pl <module> test` proves your units and
 | `NormalOrderAdminCreateUserOrderServiceNormalOrderAddDispatchPublishProbeTest` | The same negative probe one layer up: admin `POST /api/v1/order/create` (`createUserOrder`) drives the real orchestrator and verifies only `saveWaitPay` on the prebuilt state and the `order_id` in the response — neither the orchestrator's nor the service's object graph holds a dispatch publisher, so nothing can publish at create |
 | `OrderCreatePersistencePortImplShopIdAlignPhpTest` | PHP-parity alignment test: Javadoc cites `OrderService::_formatOrderData`; `ArgumentCaptor` over `NormalOrders`/`NormalOrdersItems`/`OrderAssociations` inserts proves `shop_id` comes from orderData (0 when shop-check is off), not `distributor_id`; also pins preassigned order-id reuse and default-currency fee fields |
 | `SeckillActivityCreateServiceLimitedTimeSaleShopOverlapTest` | Guard-relaxation test: `assertDoesNotThrow` around a same-shop overlapping `limited_time_sale` create/update plus `verify(guard).checkActivityValidBySecKill` — the shop mutex stays relaxed, the item-overlap guard stays wired |
+| `ItemsProfitSaveServiceScopeTest` | Write-side scope probe: a foreign `item_id` makes the whole save throw with `never()` on every repository write; the owned-item update carries the company id in scope |
+| `OrderExportFilterAssemblerDistributorScopeTest` | Read-side scope probe: distributor accounts get `distributor_id` forced from the activated shop or JWT `distributor_ids` (request parameters cannot override); admin accounts get no forced scope |
+| `PosStoreAccountTableContractTest` | Table contract: `@MpTable` on `PosStoreAccount` pins table `pos_store_account` and unique index `uk_employee_no(employee_no)`; local Flyway scripts, when present, must keep the same index |
 | `AftersalesAdminApplyOrderProcessLogBusProbeTest` | Port-call probe: service chain reaches `OrderProcessLogPublishPort.publish` with the expected payload; bus delivery deferred to orders/bootstrap tests |
 | `AlipayNotifyOrderProcessLogEventAsyncConsumeTest` | Consume-side envelope: hand-built message with real listener name on queue `slow`, runtime drives `OrderProcessLogBusService.persistEntitiesMap` once |
 | `AftersalesControllerAdminSendbackDelegationTest` | Controller delegates exclusively to one service; `verifyNoMoreInteractions` over all injected services |
 | `OperatorsGetCredentialsWebSliceTest`, `ShopsSetWxShopsSettingWebSliceTest` | MVC slices: token gate, merged input, Dingo JSON envelope, `InOrder` downstream calls |
 | `MemberAccountServiceCreateMemberLocalAutoRegisterDispatchTest` | `@SpringJUnitConfig` + H2-backed transaction manager + mocked beans: after-commit publish payload of `EVENT_CREATE_MEMBER_SUCCESS`, and negative assertions that the salesperson job is *not* enqueued |
-| `AftersalesApplyCheckApplyServiceRefundFeePrecisionTest` | Pure unit shape: mocked read ports, AssertJ, fen-unit refund-fee precision rule |
+| `AftersalesApplyCheckApplyServiceFreightTest` | Pure unit shape with mocked read ports and AssertJ: freight validation skips ONLY_REFUND, validates point freight against `freight_fee` (not `freight_point`), and resolves its error messages through a `StaticMessageSource` double (`AftersalesTestMessageSource.FALLBACK` / `LocaleContextHolder`) |
+| `AftersalesApplyCheckApplyServiceTopLevelRefundTest` | Top-level refund fee/point is ignored by apply-check (recomputed per line at the handle layer): raw values above the order line total still pass |
 | `LanguePropertiesTest` | `ApplicationContextRunner` proving `@ConfigurationProperties` validation fails on an unsupported default language |
 
 ## Related pages

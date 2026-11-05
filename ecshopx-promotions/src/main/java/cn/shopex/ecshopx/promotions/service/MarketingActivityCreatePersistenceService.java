@@ -25,6 +25,7 @@ import cn.shopex.ecshopx.promotions.mapper.MarketingActivityCategoryMapper;
 import cn.shopex.ecshopx.promotions.mapper.MarketingActivityMapper;
 import cn.shopex.ecshopx.promotions.service.multilang.MarketingActivityMultiLangWriteService;
 import cn.shopex.ecshopx.promotions.support.PromotionTagTruncate;
+import cn.shopex.ecshopx.members.service.systemtag.MemberAudienceTagValidator;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -59,6 +60,7 @@ public class MarketingActivityCreatePersistenceService {
 	private final SalespersonItemsShelvesJobDispatchPublisher salespersonItemsShelvesJobDispatchPublisher;
 	private final SavePromotionItemTagJobDispatchPublisher savePromotionItemTagJobDispatchPublisher;
 	private final ObjectMapper objectMapper;
+	private final MemberAudienceTagValidator memberAudienceTagValidator;
 
 	public MarketingActivityCreatePersistenceService(
 			MarketingActivityMapper marketingActivityMapper,
@@ -68,7 +70,8 @@ public class MarketingActivityCreatePersistenceService {
 			ApplicationEventPublisher applicationEventPublisher,
 			SalespersonItemsShelvesJobDispatchPublisher salespersonItemsShelvesJobDispatchPublisher,
 			SavePromotionItemTagJobDispatchPublisher savePromotionItemTagJobDispatchPublisher,
-			ObjectMapper objectMapper) {
+			ObjectMapper objectMapper,
+			MemberAudienceTagValidator memberAudienceTagValidator) {
 		this.marketingActivityMapper = marketingActivityMapper;
 		this.marketingActivityCategoryMapper = marketingActivityCategoryMapper;
 		this.marketingActivityMultiLangWriteService = marketingActivityMultiLangWriteService;
@@ -77,6 +80,7 @@ public class MarketingActivityCreatePersistenceService {
 		this.salespersonItemsShelvesJobDispatchPublisher = salespersonItemsShelvesJobDispatchPublisher;
 		this.savePromotionItemTagJobDispatchPublisher = savePromotionItemTagJobDispatchPublisher;
 		this.objectMapper = objectMapper;
+		this.memberAudienceTagValidator = memberAudienceTagValidator;
 	}
 
 	@Transactional(rollbackFor = Exception.class)
@@ -291,6 +295,7 @@ public class MarketingActivityCreatePersistenceService {
 		if (p.get("valid_grade") != null) {
 			e.setValidGrade(objectMapper.writeValueAsString(p.get("valid_grade")));
 		}
+		applyMemberCrowdFields(e, p);
 		if (StringUtils.hasText(stringify(p.get("condition_type")))) {
 			e.setConditionType(stringify(p.get("condition_type")));
 		}
@@ -364,6 +369,8 @@ public class MarketingActivityCreatePersistenceService {
 		m.put("tag_ids", decodeJsonArrayPreferParams(params.get("tag_ids"), e.getTagIds()));
 		m.put("brand_ids", decodeJsonArrayPreferParams(params.get("brand_ids"), e.getBrandIds()));
 		m.put("valid_grade", decodeValidGradeForResponse(params.get("valid_grade"), e.getValidGrade()));
+		m.put("member_tag_ids", decodeJsonArrayPreferParams(params.get("member_tag_ids"), e.getMemberTagIds()));
+		m.put("member_tag_mode", e.getMemberTagMode());
 		m.put("ad_pic", e.getAdPic());
 		m.put("item_type", e.getItemType());
 		m.put("in_proportion", e.getInProportion());
@@ -515,6 +522,35 @@ public class MarketingActivityCreatePersistenceService {
 		} catch (JsonProcessingException ex) {
 			return null;
 		}
+	}
+
+	private void applyMemberCrowdFields(MarketingActivity e, Map<String, Object> p) throws JsonProcessingException {
+		String type = e.getMarketingType() == null ? "" : e.getMarketingType();
+		if (!"full_minus".equals(type) && !"full_discount".equals(type) && !"full_gift".equals(type)) {
+			return;
+		}
+		List<Long> ids = normalizeLongIds(p.get("member_tag_ids"), "member_tag_ids");
+		if (ids.isEmpty()) {
+			e.setMemberTagIds("[]");
+			e.setMemberTagMode(null);
+			return;
+		}
+		long companyId = 0L;
+		if (p.get("company_id") != null) {
+			companyId = readLong(p.get("company_id"));
+		}
+		long distributorId = 0L;
+		Object did = p.get("distributor_id");
+		if (did != null && StringUtils.hasText(String.valueOf(did))) {
+			try {
+				distributorId = readLong(did);
+			} catch (RuntimeException ignored) {
+			}
+		}
+		memberAudienceTagValidator.assertUsable(companyId, distributorId, ids);
+		e.setMemberTagIds(objectMapper.writeValueAsString(ids));
+		String mode = stringify(p.get("member_tag_mode"));
+		e.setMemberTagMode(StringUtils.hasText(mode) ? mode.trim() : "include");
 	}
 
 	private List<Long> normalizeLongIds(Object raw, String fieldKey) {

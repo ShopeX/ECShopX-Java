@@ -8,11 +8,14 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import cn.shopex.ecshopx.common.exception.ResourceException;
+import cn.shopex.ecshopx.common.exception.TooManyRequestsException;
 import cn.shopex.ecshopx.employeepurchase.domain.Activities;
 import cn.shopex.ecshopx.employeepurchase.mapper.ActivitiesMapper;
 import cn.shopex.ecshopx.employeepurchase.service.EmployeePurchaseActivityDataService;
@@ -43,6 +46,9 @@ class PassphraseBehaviorReportServiceTest {
 	@Mock
 	private PassphraseVerifiedRedisService passphraseVerifiedRedisService;
 
+	@Mock
+	private PassphraseBehaviorRateLimitService passphraseBehaviorRateLimitService;
+
 	private PassphraseBehaviorReportService service;
 
 	@BeforeEach
@@ -53,7 +59,28 @@ class PassphraseBehaviorReportServiceTest {
 						employeePurchaseActivityDataService,
 						activityPassphraseService,
 						activityEnterpriseBehaviorLogService,
-						passphraseVerifiedRedisService);
+						passphraseVerifiedRedisService,
+						passphraseBehaviorRateLimitService);
+	}
+
+	@Test
+	@DisplayName("ECX-10917: 限流抛出时不写任何流水")
+	void rateLimited_reportsNothing() {
+		doThrow(new TooManyRequestsException("操作过于频繁，请稍后再试"))
+				.when(passphraseBehaviorRateLimitService)
+				.assertAllowed(eq(1L), eq(150L), eq(101L), isNull(), eq("visitor-a"), any());
+
+		Map<String, Object> input = baseInput("passphrase_verify", "abc12345");
+		input.put("visitor_key", "visitor-a");
+
+		assertThrows(
+				TooManyRequestsException.class,
+				() -> service.report(input));
+
+		verify(activityEnterpriseBehaviorLogService, never())
+				.recordPassphraseVerify(anyLong(), anyLong(), anyLong(), any(), any(), anyBoolean());
+		verify(activityEnterpriseBehaviorLogService, never())
+				.recordScan(anyLong(), anyLong(), anyLong(), any(), any());
 	}
 
 	@Test

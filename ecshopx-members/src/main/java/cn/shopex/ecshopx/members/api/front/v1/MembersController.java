@@ -433,14 +433,9 @@ public class MembersController {
 			}
 		}
 
-		Long filterUserId;
-		if (request.getParameterMap().containsKey("promoter_user_id")
-				&& promoterUserIdIsTruthyForAddressList(promoterUserIdParam)
-				&& promoterLooselyEqualsAuth(promoterUserIdParam, authUserId)) {
-			filterUserId = parseBuyUserIdForAddressListNullable(request, buyUserIdParam);
-		} else {
-			filterUserId = Long.valueOf(authUserId);
-		}
+		Long filterUserId =
+				resolveFilterUserIdForAddressList(
+						request, promoterUserIdParam, buyUserIdParam, authUserId);
 
 		int page = parseAddressListPageParam(request);
 		int pageSize = parseAddressListPageSizeParam(request);
@@ -490,15 +485,7 @@ public class MembersController {
 		long companyId = resolveCompanyId(request, claims);
 		long authUserId = resolveUserId(claims);
 
-		long effectiveUserId = authUserId;
-		if (b.containsKey("promoter_user_id")
-				&& promoterLooselyEqualsAuth(b.get("promoter_user_id"), authUserId)
-				&& buyUserIdIsTruthy(b.get("buy_user_id"))) {
-			long buyId = parsePositiveLongOrZero(b.get("buy_user_id"));
-			if (buyId > 0L) {
-				effectiveUserId = buyId;
-			}
-		}
+		long effectiveUserId = resolveEffectiveUserIdForCreate(b, authUserId);
 
 		String postalCodeOrNull = trimToNull(b.get("postalCode"));
 		String thirdDataOrNull = b.containsKey("third_data") ? trimToNull(b.get("third_data")) : null;
@@ -2917,6 +2904,23 @@ public class MembersController {
 		return true;
 	}
 
+	/**
+	 * ECX-10913：创建地址的 acting user 解析。对齐 PHP
+	 * MembersOwnerScopeGuard::assertActingUserBoundToAuth；Java 无导购代客体系，
+	 * {@code buy_user_id} 仅允许等于登录用户（自购），指向他人一律拒绝。
+	 */
+	static long resolveEffectiveUserIdForCreate(Map<String, Object> b, long authUserId) {
+		if (b.containsKey("promoter_user_id")
+				&& promoterLooselyEqualsAuth(b.get("promoter_user_id"), authUserId)
+				&& buyUserIdIsTruthy(b.get("buy_user_id"))) {
+			long buyId = parsePositiveLongOrZero(b.get("buy_user_id"));
+			if (buyId > 0L && buyId != authUserId) {
+				throw new ResourceException("无权访问该数据");
+			}
+		}
+		return authUserId;
+	}
+
 	private static String nullToEmptyQuery(String raw) {
 		return raw == null ? "" : raw;
 	}
@@ -2964,23 +2968,26 @@ public class MembersController {
 		return buyUserIdIsTruthy(promoterUserIdParam);
 	}
 
-	private static Long parseBuyUserIdForAddressListNullable(
-			HttpServletRequest request, String buyUserIdParam) {
-		if (!request.getParameterMap().containsKey("buy_user_id")) {
-			return null;
+	/**
+	 * ECX-10923：地址列表的 filter user 解析。对齐 PHP
+	 * MembersOwnerScopeGuard::assertActingUserBoundToAuth；buy_user_id 仅允许
+	 * 等于登录用户（自购），指向他人一律拒绝；不再回退 null（孤儿地址旁路）。
+	 */
+	static Long resolveFilterUserIdForAddressList(
+			HttpServletRequest request,
+			String promoterUserIdParam,
+			String buyUserIdParam,
+			long authUserId) {
+		if (request.getParameterMap().containsKey("promoter_user_id")
+				&& promoterUserIdIsTruthyForAddressList(promoterUserIdParam)
+				&& promoterLooselyEqualsAuth(promoterUserIdParam, authUserId)
+				&& buyUserIdIsTruthy(buyUserIdParam)) {
+			long buyId = parsePositiveLongOrZero(buyUserIdParam);
+			if (buyId > 0L && buyId != authUserId) {
+				throw new ResourceException("无权访问该数据");
+			}
 		}
-		if (buyUserIdParam == null) {
-			return null;
-		}
-		String t = buyUserIdParam.trim();
-		if (t.isEmpty()) {
-			return null;
-		}
-		try {
-			return Long.parseLong(t);
-		} catch (NumberFormatException e) {
-			return null;
-		}
+		return Long.valueOf(authUserId);
 	}
 
 	private static Long resolveAddressIdFilterOrNull(String addressIdParam) {

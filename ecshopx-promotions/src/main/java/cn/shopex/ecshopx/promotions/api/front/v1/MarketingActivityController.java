@@ -141,6 +141,7 @@ public class MarketingActivityController {
 			@RequestParam(name = "page", required = false, defaultValue = "1") String pageRaw,
 			@RequestParam(name = "pageSize", required = false, defaultValue = "20") String pageSizeRaw) {
 		long companyId = parseCompanyIdFromRequest(request);
+		long userId = parseAuthUserIdFromClaims(readH5AuthClaimsMap(request));
 		Long marketingId = parseOptionalLong(marketingIdRaw);
 		if (marketingId == null || marketingId <= 0L) {
 			Locale locale = RequestMessageLocale.messageLocale(
@@ -151,7 +152,8 @@ public class MarketingActivityController {
 		int page = parsePositivePagingInt(pageRaw, 1);
 		int pageSize = parsePositivePagingInt(pageSizeRaw, 20);
 		Map<String, Object> data =
-				marketingActivityItemListService.getActivityItemList(companyId, marketingId, page, pageSize, true);
+				marketingActivityItemListService.getActivityItemList(
+						companyId, marketingId, page, pageSize, true, userId);
 		CurrencyExchangeRate curRow = companyDefaultCurrencyService.getCur(companyId);
 		data.put("cur", companyDefaultCurrencyService.toCurResponseMap(curRow));
 		return ResponseEntity.ok(ApiResult.ok(data));

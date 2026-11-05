@@ -93,13 +93,14 @@ public class RegistrationActivityDataInfoService {
 		}
 
 		RegistrationActivity entity = registrationActivityMapper.selectById(id);
-		if (entity == null) {
+		// ECX-10916：对齐 PHP getInfoById(id, companyId) 的租户联查，跨租户视同不存在
+		Long ownerCid = entity == null ? null : entity.getCompanyId();
+		if (entity == null || ownerCid == null || !ownerCid.equals(jwtCompanyId)) {
 			return Collections.emptyList();
 		}
 
 		Map<String, Object> result = toDetailMap(entity);
 
-		Long ownerCid = entity.getCompanyId();
 		if (ownerCid != null) {
 			registrationActivityOutsideMultiLangReadService.applyDetailOutsideLangOverrides(
 					ownerCid, id, result, requestLangTag);

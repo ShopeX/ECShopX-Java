@@ -391,9 +391,9 @@ public class TopicController {
 		}
 		Map<String, Object> merged = mergeInputLikeFlexibleResolver(request, body);
 		List<Long> topicIds = parseTopicIdListForSetTop(merged);
-		Map<String, Object> data = topicSetTopService.setTop(topicIds);
-
 		long companyId = readLong(ud, "company_id", 1L);
+		Map<String, Object> data = topicSetTopService.setTop(companyId, topicIds);
+
 		long operatorId = readLong(ud, "operator_id", 0L);
 		Map<String, Object> logCtx = new LinkedHashMap<>();
 		logCtx.put("company_id", companyId);

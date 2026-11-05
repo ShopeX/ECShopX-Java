@@ -56,6 +56,7 @@ public class TopicVerifyService {
 		}
 		Object rawTopicId = input.get("topic_id");
 		List<Long> topicIds = normalizeTopicIds(rawTopicId);
+		long companyId = readLong(operatorJwtOrEmpty != null ? operatorJwtOrEmpty.get("company_id") : null, 1L);
 
 		String manual =
 				input.containsKey("refuse_reason") && input.get("refuse_reason") != null
@@ -64,11 +65,15 @@ public class TopicVerifyService {
 
 		long nowSec = System.currentTimeMillis() / 1000L;
 		LambdaUpdateWrapper<Topic> uw = new LambdaUpdateWrapper<>();
-		uw.in(Topic::getTopicId, topicIds)
+		uw.eq(Topic::getCompanyId, companyId)
+				.in(Topic::getTopicId, topicIds)
 				.set(Topic::getStatus, status)
 				.set(Topic::getManualRefuseReason, manual)
 				.set(Topic::getManualVerifyTime, nowSec);
-		topicMapper.update(null, uw);
+		int updated = topicMapper.update(null, uw);
+		if (updated < topicIds.size()) {
+			throw new ResourceException("未查询到更新数据");
+		}
 
 		Object topicIdEcho;
 		if (rawTopicId instanceof Collection<?>
@@ -218,6 +223,24 @@ public class TopicVerifyService {
 			return Long.parseLong(s);
 		} catch (NumberFormatException e) {
 			throw new BadRequestException("topic_id 格式无效");
+		}
+	}
+
+	private static long readLong(Object raw, long defaultValue) {
+		if (raw == null) {
+			return defaultValue;
+		}
+		if (raw instanceof Number n) {
+			return n.longValue();
+		}
+		String s = raw.toString().trim();
+		if (!StringUtils.hasText(s)) {
+			return defaultValue;
+		}
+		try {
+			return Long.parseLong(s);
+		} catch (NumberFormatException e) {
+			return defaultValue;
 		}
 	}
 }

@@ -27,6 +27,8 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import cn.shopex.ecshopx.aftersales.service.bind.AftersalesOrderBindUserService;
 import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.members.service.account.MemberAccountService;
+import cn.shopex.ecshopx.members.service.systemtag.MemberSystemTagCodes;
+import cn.shopex.ecshopx.members.service.systemtag.NewCustomerTagReconcileService;
 import cn.shopex.ecshopx.orders.domain.NormalOrders;
 import cn.shopex.ecshopx.orders.domain.NormalOrdersItems;
 import cn.shopex.ecshopx.orders.domain.OrderAssociations;
@@ -51,19 +53,23 @@ public class WxappOrderBindUserOrderService {
 
 	private final TradeMapper tradeMapper;
 
+	private final NewCustomerTagReconcileService newCustomerTagReconcileService;
+
 	public WxappOrderBindUserOrderService(
 			AftersalesOrderBindUserService aftersalesOrderBindUserService,
 			MemberAccountService memberAccountService,
 			NormalOrdersItemsMapper normalOrdersItemsMapper,
 			NormalOrdersMapper normalOrdersMapper,
 			OrderAssociationsMapper orderAssociationsMapper,
-			TradeMapper tradeMapper) {
+			TradeMapper tradeMapper,
+			NewCustomerTagReconcileService newCustomerTagReconcileService) {
 		this.aftersalesOrderBindUserService = aftersalesOrderBindUserService;
 		this.memberAccountService = memberAccountService;
 		this.normalOrdersItemsMapper = normalOrdersItemsMapper;
 		this.normalOrdersMapper = normalOrdersMapper;
 		this.orderAssociationsMapper = orderAssociationsMapper;
 		this.tradeMapper = tradeMapper;
+		this.newCustomerTagReconcileService = newCustomerTagReconcileService;
 	}
 
 	@Transactional(rollbackFor = Exception.class)
@@ -158,6 +164,8 @@ public class WxappOrderBindUserOrderService {
 		}
 
 		aftersalesOrderBindUserService.bindUserAftersales(companyId, orderIdLong, boundUserId, mobile);
+		newCustomerTagReconcileService.reconcile(
+				companyId, boundUserId, MemberSystemTagCodes.SOURCE_BIND);
 	}
 
 	private static long longMemberUserId(Map<String, Object> member) {

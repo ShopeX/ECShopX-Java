@@ -104,10 +104,11 @@ public class WxappH5CartAddSupport {
 		ResolvedSku resolved = resolveSkuForCart(companyId, itemId, shopId, shopType, baseItem);
 		assertSellable(resolved);
 		assertMedicineMaxIfNeeded(companyId, itemId, num, baseItem);
-		Map<String, Object> activity =
-				wxappGoodsItemsDetailPromotionActivityService.getCurrentActivityByItemId(companyId, itemId, shopId);
-		assertStockWithActivity(resolved, num, activity, itemId);
 		long userId = longVal(params.get("user_id"));
+		Map<String, Object> activity =
+				wxappGoodsItemsDetailPromotionActivityService.getCurrentActivityByItemId(
+						companyId, itemId, shopId, userId);
+		assertStockWithActivity(resolved, num, activity, itemId);
 		if (userId > 0L && !"shop_offline".equals(shopType)) {
 			wxappH5DistributorCartPromotionService.assertLimitedBuyOnAdd(
 					companyId, userId, itemId, shopId, num, activity);
@@ -145,7 +146,7 @@ public class WxappH5CartAddSupport {
 		}
 		applyActivityFields(out, activity);
 		List<Map<String, Object>> oneRow = List.of(out);
-		goodsItemsListPromotionEnrichmentService.enrich(oneRow);
+		goodsItemsListPromotionEnrichmentService.enrich(oneRow, userId);
 		return out;
 	}
 
@@ -253,13 +254,15 @@ public class WxappH5CartAddSupport {
 			return cartInfo;
 		}
 		long lineShopId = longVal(cartInfo.get("shop_id"));
+		long userId = longVal(cartInfo.get("user_id"));
 		int num = intVal(cartInfo.get("num"));
 		String cartMarketingType = stringVal(cartInfo.get("marketing_type"));
 		long cartMarketingId = longVal(cartInfo.get("marketing_id"));
 		boolean cartClaimsPromotion = StringUtils.hasText(cartMarketingType) || cartMarketingId > 0L;
 
 		Map<String, Object> live =
-				wxappGoodsItemsDetailPromotionActivityService.getCurrentActivityByItemId(companyId, itemId, lineShopId);
+				wxappGoodsItemsDetailPromotionActivityService.getCurrentActivityByItemId(
+						companyId, itemId, lineShopId, userId);
 
 		if (!cartClaimsPromotion) {
 			if (live != null && !live.isEmpty()) {

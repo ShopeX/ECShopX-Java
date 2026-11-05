@@ -3,9 +3,6 @@ type: domain-reference
 title: Aftersales Domain (ecshopx-aftersales)
 description: The after-sales Bundle — apply (port-based header/trade resolution and per-unit split), review, refund-check, sendback, close and partial-cancel flows over the aftersales/aftersales_detail/aftersales_refund tables, the scheduled refund pipeline that fans out to per-channel refund executors, WXA member notify surfaces, and every dispatch event the domain publishes.
 tags: [aftersales, refund, dispatch-bus, xxl-job, jushuitan, wdterp, saas-erp, orders, payment-channels, wxa-notify]
-verified:
-  - by: openwiki/0.7.2
-    at: 2026-10-25T17:14:04.348Z
 sources:
   - id: openwiki-source-41069dab37af76e82ffcde5c
     resource: repo://ecshopx-adapay/src/main/java/cn/shopex/ecshopx/adapay/service/refund/AdapayAftersalesRefundPayExecutor.java
@@ -29,18 +26,30 @@ sources:
     resource: repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/domain/AftersalesDetail.java
   - id: openwiki-source-a5d88ba3bd2f1a506ce926af
     resource: repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/domain/AftersalesRefund.java
+  - id: openwiki-source-1f152402b631811e83fd7530
+    resource: repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/integration/AftersalesApplyAsyncPortImpl.java
   - id: openwiki-source-109f52a4511006bc896754a3
     resource: repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/integration/AftersalesAutoRefuseWxaTemplatePortImpl.java
+  - id: openwiki-source-c468812f5ebcfefdc20facd4
+    resource: repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/integration/AftersalesRefundAsyncPortImpl.java
   - id: openwiki-source-e89bacafddf78ee058cfc086
     resource: repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/integration/DefaultAftersalesRefundJobSideEffects.java
   - id: openwiki-source-edf962ce7aeeebdc71523002
     resource: repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/jushuitan/JushuitanTradeAftersalesBusPayloadBuilder.java
+  - id: openwiki-source-96707bf4849a8cc3a1994014
+    resource: repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/port/AftersalesApplyAsyncPort.java
+  - id: openwiki-source-1b49107fc9cfdb499cba6515
+    resource: repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/port/AftersalesRefundAsyncPort.java
   - id: openwiki-source-29e1532e158f91dc0fe74d9d
     resource: repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/service/AftersalesApplyCheckApplyService.java
   - id: openwiki-source-c066f2746b91cc63158d9dc7
     resource: repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/service/AftersalesApplyShopApplyByNumHandleService.java
   - id: openwiki-source-effbaf51614fb310498349f5
     resource: repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/service/AftersalesApplyShopApplyByNumService.java
+  - id: openwiki-source-297b3cda29ffbb9dfa62582d
+    resource: repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/service/AftersalesDistributorScopeGuard.java
+  - id: openwiki-source-e3ef9e434fef572806710742
+    resource: repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/service/AftersalesMerchantSendbackConfirmService.java
   - id: openwiki-source-50c63dc11e2080e4e2f09dd0
     resource: repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/service/AftersalesOfflineRefundSaveService.java
   - id: openwiki-source-55f33a58c15e54b7abff139a
@@ -61,6 +70,8 @@ sources:
     resource: repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/service/AftersalesShopPartialCancelCreateService.java
   - id: openwiki-source-d690ea9b5092cc0cd8b0b651
     resource: repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/wdterp/WdtErpTradeAfterSaleBusPayloadBuilder.java
+  - id: openwiki-source-8bb0891f24bcb5a2907fbd69
+    resource: repo://ecshopx-aftersales/src/test/java/cn/shopex/ecshopx/aftersales/integration/AftersalesApplyAsyncPortImplOrderRefundCompletePublishTest.java
   - id: openwiki-source-e5032d95a293c21edead6615
     resource: repo://ecshopx-aftersales/src/test/java/cn/shopex/ecshopx/aftersales/service/AftersalesApplyCheckApplyServiceFreightTest.java
   - id: openwiki-source-27207657fe4512cbb01e861b
@@ -69,6 +80,10 @@ sources:
     resource: repo://ecshopx-aftersales/src/test/java/cn/shopex/ecshopx/aftersales/service/AftersalesApplyCheckApplyServiceTopLevelRefundTest.java
   - id: openwiki-source-b92ea78062f9c60526598628
     resource: repo://ecshopx-aftersales/src/test/java/cn/shopex/ecshopx/aftersales/service/AftersalesApplyShopApplyByNumServiceSplitTest.java
+  - id: openwiki-source-f77cb10f98b7f331a53764f3
+    resource: repo://ecshopx-aftersales/src/test/java/cn/shopex/ecshopx/aftersales/service/AftersalesDistributorScopeGuardTest.java
+  - id: openwiki-source-c509612a72c10854e84061a8
+    resource: repo://ecshopx-aftersales/src/test/java/cn/shopex/ecshopx/aftersales/service/AftersalesRefundConfirmServiceScopeTest.java
   - id: openwiki-source-b96f9e557a2a9ed83a784d28
     resource: repo://ecshopx-aftersales/src/test/java/cn/shopex/ecshopx/aftersales/service/AftersalesRefuseWxaNotifyServiceTest.java
   - id: openwiki-source-27c91fd6e6f88641bcdd967b
@@ -119,7 +134,10 @@ sources:
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/orderrefund/StandardOnlinePayAftersalesRefundExecutor.java
   - id: openwiki-source-98c73d78d3aa799fe0ab640f
     resource: repo://ecshopx-system-link/src/main/java/cn/shopex/ecshopx/systemlink/service/jushuitan/JushuitanTradeAftersalesNotificationProcessor.java
-generated: { by: "openwiki/0.7.2", at: "2026-10-25T17:14:04.348Z" }
+generated: { by: "openwiki/0.7.3", at: "2026-11-04T17:09:55.577Z" }
+verified:
+  - by: openwiki/0.7.3
+    at: 2026-11-04T17:09:55.577Z
 ---
 
 # Aftersales Domain (ecshopx-aftersales)
@@ -145,7 +163,7 @@ The Bundle follows the standard layering ([Bundle Layering](../architecture/bund
 | 0 | waiting for merchant | apply |
 | 1 | merchant accepted, awaiting consumer sendback | review approve (return-goods) |
 | 2 | sendback in transit, awaiting merchant receipt | sendback, or review approve with `return_type=offline` |
-| 8 | merchant confirmed receipt, awaiting refund audit | **external only** — Jushuitan inbound; no Java write path exists |
+| 8 | merchant confirmed receipt, awaiting refund audit | `AftersalesMerchantSendbackConfirmService.sendBackConfirm` (the only internal writer; currently has no caller outside its own test) or external Jushuitan inbound |
 | 3 | rejected | review/refundCheck/auto-refuse |
 | 4 | finished | refundCheck approve, RefundJob finish, offline refund |
 | 7 | withdrawn | close |
@@ -155,9 +173,43 @@ The entity comment also lists 5 (退款驳回 refund rejected) and 6 (退款完�
 
 `AftersalesDetail` mirrors both columns per line and adds its own string-typed `auto_refuse_time` (set as a string by review) and `refunded_num`. `AftersalesRefund` has a string status column: `READY` (created, awaiting audit) → `AUDIT_SUCCESS` (audit approved, awaiting execution) → `SUCCESS`/`PROCESSING` (refunded) / `REFUSE` / `CANCEL` / `REFUNDCLOSE` / `CHANGE` (channel exception), plus `refund_type` 0=aftersales, 1=order-cancel, 2=refuse-receipt.
 
-### One honest caveat: progress 8
+```mermaid
+stateDiagram-v2
+    [*] --> S0 : apply
+    S0 : status 0 / progress 0 待审核 pending review
+    S1a : status 1 / progress 9 退款处理中 refund processing
+    S1b : status 1 / progress 1 待回寄 awaiting sendback
+    S1c : status 1 / progress 2 回寄在途 sendback in transit
+    S1d : status 1 / progress 8 已收货待退款审核 receipt confirmed
+    S2 : status 2 / progress 4 已处理 finished
+    S3 : status 3 / progress 3 已驳回 rejected
+    S4 : status 4 / progress 7 已撤销 closed
 
-`AftersalesRefundConfirmService.confirmRefund` reads `progress != 8` to refuse approving a Jushuitan-linked `REFUND_GOODS` with "卖家暂未收货" (seller has not received the goods). Grepping the whole repository for any write of progress 8 finds **nothing** — no Java producer sets it. The value exists for externally-completed receiving (the Jushuitan `aftersale` inbound surface) and is documented in the entity comment, so treat "8" as a contract for inbound integrations, not an internally reachable state.
+    S0 --> S1a : review approve ONLY_REFUND or auto-approve
+    S0 --> S1b : review approve return or exchange
+    S0 --> S1c : review approve with return_type offline
+    S0 --> S3 : review reject
+    S0 --> S4 : consumer or cron close
+    S1b --> S1c : admin or wxapp sendback
+    S1b --> S3 : refuse-aftersales cron auto-refuse
+    S1c --> S1d : sendBackConfirm service or Jushuitan inbound
+    S1a --> S2 : refundCheck approve
+    S1b --> S2 : refundCheck approve
+    S1c --> S2 : refundCheck approve
+    S1d --> S2 : refundCheck approve
+    S1a --> S3 : refundCheck reject
+    S1b --> S3 : refundCheck reject
+    S1c --> S3 : refundCheck reject
+    S1d --> S3 : refundCheck reject
+    S1a --> S2 : RefundJob finish or offline refund
+    S3 --> S2 : offline refund (mark finished)
+```
+
+Caption: the `aftersales_status` + `progress` dual state machine. Transitions are labeled with the owning service flow; status 1 keeps its fine-grained step in `progress` (9 / 1 / 2 / 8). Progress 5 and 6 exist in the entity comment but no Java path reads or writes them.
+
+### Progress 8: exactly one internal writer, currently un-wired
+
+`AftersalesRefundConfirmService.confirmRefund` reads `progress != 8` to refuse approving a Jushuitan-linked `REFUND_GOODS` with "卖家暂未收货" (seller has not received the goods). The single internal write path is `AftersalesMerchantSendbackConfirmService.sendBackConfirm` (details in [Merchant sendback confirm](#merchant-sendback-confirm-progress-8-aftersalesmerchantsendbackconfirmservice)); no Java caller invokes it, so in the running system progress 8 is reached only through externally-completed receiving (the Jushuitan `aftersale` inbound surface).
 
 ## Entrypoints
 
@@ -169,14 +221,14 @@ The entity comment also lists 5 (退款驳回 refund rejected) and 6 (退款完�
 | `GET /aftersales/logExport` | `AftersalesAdminLogExportService` | async export |
 | `GET /aftersales/{aftersales_bn}` | `AftersalesAdminDetailService` | detail |
 | `POST /aftersales/review` | `AftersalesReviewService` | approve/reject (batch-capable) |
-| `POST /aftersales/refundCheck` | `AftersalesRefundConfirmService` | refund audit after goods received |
+| `POST /aftersales/refundCheck` | `AftersalesRefundConfirmService` | refund audit after goods received (batch-capable, scope-guarded) |
 | `GET /aftersales/financial/export` | `AftersalesFinancialExportService` | financial report |
 | `GET /aftersales/remind/detail`, `POST /aftersales/remind` | `AftersalesRemindService` | reminder copy |
 | `PUT /aftersales/remark` | `AftersalesService.updateRemark` | merchant remark (≤150 chars) |
 | `POST /aftersales/apply` | `AftersalesApplyService` | admin-created aftersales |
 | `POST /aftersales/sendback` | `AftersalesSendbackService` | admin records return logistics (3-field whitelist) |
 
-`RefundController` (same bundle) serves `GET /refund`, `GET /refund/detail/{refund_bn}`, `GET /refund/logExport`, `GET /refund/offline/bank` and `POST /refund/offline` (bank-transfer recording via `AftersalesOfflineRefundSaveService`).
+Both mutation endpoints merge query-string and body into one `LinkedHashMap` and keep all dispatch publishing in the services — the controller Javadoc explicitly forbids touching the dispatch bus here. `review` and `refundCheck` share the route alias `aftersales.review`. The sibling `RefundController` (same bundle) serves `GET /refund`, `GET /refund/detail/{refund_bn}`, `GET /refund/logExport`, `GET /refund/offline/bank` and `POST /refund/offline` (bank-transfer recording via `AftersalesOfflineRefundSaveService`).
 
 ### Front wxapp (`/api/v1/h5app`)
 
@@ -236,31 +288,55 @@ Batch-capable (comma-separated `aftersales_bn`). The row must be in `aftersales_
 
 * **Reject** — refund → `REFUSE`; aftersales → status 3 / progress 3 with `refuse_reason`; restores quantity (`addLeftAftersalesNum`, or `partialCancelRestore` for partial-cancel aftersales); publishes WDT + `TradeAftersales` bus events; registers `afterCommit` Jushuitan publish + `JushuitanTradeAftersalesSyncSpringEvent`.
 * **Approve `ONLY_REFUND`** — validates requested fee/point/freight ≤ caps; refund → `AUDIT_SUCCESS` + channel (`offline` when the trade paid `offline_pay`, else `original`); aftersales → status 1 / progress 9; brokerage rollback per detail line; `partialCancelRestore` when flagged; `afterCommit`: `OrderRefundComplete` (`job:19`), Jushuitan + WDT publish, `InvoiceRed` (`job:20`).
-* **Approve return-goods** — aftersales → status 1 / progress 1 (progress 2 when `return_type=offline`); stamps `auto_refuse_time` on every detail row as `now + auto_refuse_time_days` (platform setting, stored as a **string**); schedules `AftersalesSuccessSendMsg` (`job:21`, wxa subscribe message "请填写回寄物流"); optionally resolves and stores the return address (`aftersales_address` JSON) from `aftersales_address_id`.
+* **Approve return-goods** — aftersales → status 1 / progress 1 (progress 2 when `return_type=offline`); stamps `auto_refuse_time` on every detail row as `now + auto_refuse_time_days` (platform setting, stored as a **string**); schedules `AftersalesSuccessSendMsg` (`job:21`, wxa subscribe message "请填写回寄物流") through `AftersalesRefundAsyncPort.scheduleAftersalesSuccessSendMsg`; optionally resolves and stores the return address (`aftersales_address` JSON) from `aftersales_address_id`.
 
-<!-- openwiki: broken internal link [#wxa-member-notify-aftersalesrefund-scene] heading anchor "wxa-member-notify-aftersalesrefund-scene" does not exist in /openwiki/domains/aftersales.md. Fix the href or restore the target, then delete this comment. -->
-The SaaS-ERP arm runs inside the transaction: approve publishes `ThirdPartyTradeAftersalesSaasErpDispatchPublisher` (with `aftersales_action=update`), reject publishes `ThirdPartyTradeAftersalesCancelSaasErpDispatchPublisher` (`aftersales_action=cancel`) — the controller Javadoc explicitly pins this responsibility split. After the transaction returns, both paths call `AftersalesRefuseWxaNotifyService.sendByStatus` with the new status (see [WXA member notify](#wxa-member-notify-aftersalesrefund-scene)).
+The SaaS-ERP arm runs inside the transaction: approve publishes `ThirdPartyTradeAftersalesSaasErpDispatchPublisher` (with `aftersales_action=update`), reject publishes `ThirdPartyTradeAftersalesCancelSaasErpDispatchPublisher` (`aftersales_action=cancel`) — the controller Javadoc explicitly pins this responsibility split. After the transaction returns, both paths call `AftersalesRefuseWxaNotifyService.sendByStatus` with the new status (see [WXA member notify](#wxa-member-notify-aftersalesrefuse-scene)).
 
 ### RefundCheck (`AftersalesRefundConfirmService.refundCheck`, `POST /aftersales/refundCheck`)
 
-Batch-capable. The service normalizes the reject note (`refunds_memo` or `refund_memo`) and fills missing `refund_fee`/`refund_point` from the DB row before auditing. `confirmRefund` requires `aftersales_status = 1` (status 2/3 → "已处理"), refund exists and is not already `SUCCESS`, requested fee/point ≤ caps. For `REFUND_GOODS` approve when Jushuitan is open: progress must be 8, else "卖家暂未收货，请先到聚水潭进行处理". Transaction: approve → refund `AUDIT_SUCCESS` + channel + optional fee/point/freight overrides, aftersales status 2 / progress 4, brokerage rollback; reject → refund `REFUSE`, status 3 / progress 3, `addLeftAftersalesNum`. Same in-tx SaaS-ERP update/cancel arms, same `afterCommit` (approve: `OrderRefundComplete` + Jushuitan + Jushuitan sync Spring event + WDT + `InvoiceRed`; reject: Jushuitan + sync event only). `RefundCheckOrderRefundCompletePostCommitProbeTest` — a Mockito fixture with a hand-rolled `PlatformTransactionManager` that fires `afterCommit` — pins the approve path (exactly one `OrderRefundComplete` + one Jushuitan publish + WDT bus + `InvoiceRed`, in that order, and never the cancel-SaaS-ERP publish) and the reject path (never `OrderRefundComplete`/`InvoiceRed`/WDT; one Jushuitan publish + one Jushuitan sync event + the cancel-SaaS-ERP publish). It also pins the order-process-log payloads: reject logs `operator_type "user"` (operator_id from `user_id` param, 0 when absent), approve logs `operator_type "admin"` with operator_id preferring the aftersales row's `user_id` over the request's `operator_id`. Inside the transaction both paths also call `AftersalesRefuseWxaNotifyService.sendByStatus` with the freshly updated status.
+Batch-capable (the batch branch forces `operator_type` to `"pos"` or `"admin"` per row). Before auditing, every bn passes `AftersalesDistributorScopeGuard.assertAftersalesDistributorAllowed` against the operator JWT's distributor scope plus `PosOrderDocAccessPort.assertWriteAccess`; the service then normalizes the reject note (`refunds_memo` or `refund_memo`) and fills missing `refund_fee`/`refund_point` from the DB row. `confirmRefund` requires `aftersales_status = 1` (status 2/3 → "已处理"), refund exists and is not already `SUCCESS`, requested fee/point ≤ caps. For `REFUND_GOODS` approve when Jushuitan is open: progress must be 8, else "卖家暂未收货，请先到聚水潭进行处理".
+
+Transaction: approve → refund `AUDIT_SUCCESS` + channel + optional fee/point/freight overrides, aftersales status 2 / progress 4, brokerage rollback per detail line, process log; reject → refund `REFUSE`, status 3 / progress 3 with `refuse_reason` = the normalized memo, `addLeftAftersalesNum`, process log. Both arms publish the in-tx SaaS-ERP update/cancel pair and call `AftersalesRefuseWxaNotifyService.sendByStatus` with the freshly updated status, still inside the transaction.
+
+<!-- openwiki: broken internal link [#aftersalesrefundasyncport-abstraction] heading anchor "aftersalesrefundasyncport-abstraction" does not exist in /openwiki/domains/aftersales.md. Fix the href or restore the target, then delete this comment. -->
+The job dispatchers are **not** injected directly: all deferred jobs go through the `AftersalesRefundAsyncPort` interface (`port/`, impl `AftersalesRefundAsyncPortImpl` in `integration/` — see [below](#aftersalesrefundasyncport-abstraction)). The `afterCommit` callback reloads the persisted row, then — approve: `scheduleOrderRefundComplete` → Jushuitan bus payload → `JushuitanTradeAftersalesSyncSpringEvent` → WDT bus payload → `scheduleInvoiceRed` (the reloaded row map, **not** the request); reject: Jushuitan bus payload + the sync Spring event only (no OrderRefundComplete, no WDT, no InvoiceRed). Unlike `AftersalesReviewService`'s approve-only guard, refundCheck's `registerPostCommitCallbacks` does **not** check `isSynchronizationActive()` before registering — with no active synchronization the whole `afterCommit` arm silently never fires, a behavioral asymmetry that matters when calling this service outside a transactional boundary.
+
+`RefundCheckOrderRefundCompletePostCommitProbeTest` — a Mockito fixture with a hand-rolled `PlatformTransactionManager` that fires `afterCommit` — pins this with a mocked `AftersalesRefundAsyncPort`: the approve path (in order: SaaS-ERP update publish → exactly one `scheduleOrderRefundComplete` → one Jushuitan publish → one Jushuitan sync event → one WDT publish → one `scheduleInvoiceRed`, and never the cancel-SaaS-ERP publish) and the reject path (never `scheduleOrderRefundComplete`/`scheduleInvoiceRed`/WDT; one Jushuitan publish + one Jushuitan sync event + the cancel-SaaS-ERP publish). It also pins the order-process-log payloads: reject logs `operator_type "user"` (operator_id from `user_id` param, 0 when absent), approve logs `operator_type "admin"` with operator_id preferring the aftersales row's `user_id` over the request's `operator_id`, with `refunds_memo`/`refund_memo` normalization.
 
 ### Sendback (admin `POST /aftersales/sendback`, wxapp `POST /wxapp/aftersales/sendback`)
 
-Both surfaces reject `ONLY_REFUND` ("不需要回寄货品") and require `progress == 1` ("您已提交回寄信息，请勿重复提交"). Transaction sets progress 2 on header + details and stores `sendback_data` JSON (`corp_code`, `logi_no`, receiver address/mobile). `afterCommit` publishes **`TradeAftersalesLogi` first** (the full reloaded admin/member aggregate), then Jushuitan bus payload + `JushuitanTradeAftersalesSyncSpringEvent` + `WdtErpTradeAfterSaleSyncSpringEvent` + WDT bus payload, then the wait-confirm notice (`job:24`). The wxapp variant scopes every query by `user_id` and supports batches.
+Both surfaces reject `ONLY_REFUND` ("不需要回寄货品") and require `progress == 1` ("您已提交回寄信息，请勿重复提交"). Transaction sets progress 2 on header + details and stores `sendback_data` JSON (`corp_code`, `logi_no`, receiver address/mobile). `afterCommit` publishes **`TradeAftersalesLogi` first** (the full reloaded admin/member aggregate), then Jushuitan bus payload + `JushuitanTradeAftersalesSyncSpringEvent` + `WdtErpTradeAfterSaleSyncSpringEvent` + WDT bus payload, then the wait-confirm notice (`job:24`) via `AftersalesRefundAsyncPort.scheduleSendAfterSaleWaitConfirmNotice`. The wxapp variant scopes every query by `user_id` and supports batches.
+
+### Merchant sendback confirm (progress 8, `AftersalesMerchantSendbackConfirmService`)
+
+`sendBackConfirm(companyId, aftersalesBn)` — aligned with PHP `AftersalesService::sendBackConfirm`/`confirmReceipt` — is the only internal progress-8 writer. In one transaction it sets header + detail progress to 8 and, for `REFUND_GOODS` only, registers an `afterCommit` DigiOS store-adjustment publish via `AftersalesRefundAsyncPort.scheduleDigiOsStoreAdjustmentOnAftersalesReturn`. No controller, job handler, or listener currently calls it, so in production the Jushuitan `REFUND_GOODS` progress-8 gate is still satisfied only through the external inbound path — the service is a wired-but-unused integration point.
 
 ### Close (consumer `POST /wxapp/aftersales/close` and the `done-aftersales` cron share one transaction body)
 
-`AftersalesService.executeCloseAftersalesTransaction` guards: status 4 (already withdrawn), 3 (rejected — use close only for pending), and 1/2/5 (accepted — contact merchant) cannot close. Transaction sets status 4 / progress 7 on header + details, refund → `CANCEL`, restores `left_aftersales_num`, writes a process log. `afterCommit`: `TradeAftersalesCancelSpringEvent` (Spring), `tradeAftersalesCancelDispatchPublisher` (bus, injected with the `@Qualifier("tradeAftersalesCancelAsyncFanOut")` async bean), `ThirdPartyTradeAftersalesCancelSaasErpDispatchPublisher`, Jushuitan + sync event, and the cancel-notice job (`job:26`).
+`AftersalesService.executeCloseAftersalesTransaction` guards: status 4 (already withdrawn), 3 (rejected — use close only for pending), and 1/2/5 (accepted — contact merchant) cannot close. Transaction sets status 4 / progress 7 on header + details, refund → `CANCEL`, restores `left_aftersales_num`, writes a process log. `afterCommit`: `TradeAftersalesCancelSpringEvent` (Spring), `tradeAftersalesCancelDispatchPublisher` (bus, injected with the `@Qualifier("tradeAftersalesCancelAsyncFanOut")` async bean), `ThirdPartyTradeAftersalesCancelSaasErpDispatchPublisher`, Jushuitan + sync event, and the cancel-notice job (`job:26`) via `AftersalesCancelNoticeJobPort` (impl delegates to `AftersalesRefundAsyncPort.scheduleSendAftersaleCancelNotice`).
 
 ## WXA member notify (aftersalesRefuse scene)
 
-<!-- openwiki: broken internal link [../workflows/member-notify-fanout.md] file "../workflows/member-notify-fanout.md" does not exist. Fix the href or restore the target, then delete this comment. -->
-`AftersalesRefuseWxaNotifyService.sendByStatus(status, aftersalesLike)` maps the aftersales status/type pair to a scene key — status 1 + `REFUND_GOODS` → `WAIT_BUYER_RETURN_GOODS` (fixed remark `商家已同意售后申请，请进行退货回寄处理`), status 1 + `ONLY_REFUND` and status 2 → `REFUND_SUCCESS` (remark `商家已同意退款`), status 3 + `REFUND_GOODS` → `SELLER_REFUSE_BUYER` (remark = `refuse_reason`), status 3 + `ONLY_REFUND` → `REFUND_CLOSED` (remark = refuse reason) — and other statuses are skipped. It resolves the mini-program recipient (appid/openid) via `OrderTradeMiniProgramRecipientLookupPort`, formats the fen refund amount (`refund_amount`, falling back to `refund_fee`) into a two-decimal yuan string, and sends payload `{scenes_name: "aftersalesRefuse", appid, openid, data: {order_id, refund_fee, remarks}}` through the common `AftersalesRefuseWxaSubscribeSendPort` (impl in ecshopx-promotions, which delegates to the WXA subscribe-message send service) with `forceFire=true`; every failure is swallowed at debug level so notify problems never break the review/refund-check transaction. The auto-refuse cron goes through `AftersalesAutoRefuseWxaTemplatePortImpl` (impl of the common `AftersalesAutoRefuseWxaTemplatePort`), which fills `refuse_reason` with `未收到商品自动驳回` when missing and calls `sendSellerRefuseBuyer` → `sendByStatus(3, …)`, i.e. always `SELLER_REFUSE_BUYER`. Pinned by `AftersalesRefuseWxaNotifyServiceTest` (fee formatting `1500 → "15.00"`, skip for unknown status). The send mechanics and recipient resolution are shared with the other member-notify fan-outs described in [Member Notify Fan-out](../workflows/member-notify-fanout.md).
+`AftersalesRefuseWxaNotifyService.sendByStatus(status, aftersalesLike)` maps the aftersales status/type pair to a scene key — status 1 + `REFUND_GOODS` → `WAIT_BUYER_RETURN_GOODS` (fixed remark `商家已同意售后申请，请进行退货回寄处理`), status 1 + `ONLY_REFUND` and status 2 → `REFUND_SUCCESS` (remark `商家已同意退款`), status 3 + `REFUND_GOODS` → `SELLER_REFUSE_BUYER` (remark = `refuse_reason`), status 3 + `ONLY_REFUND` → `REFUND_CLOSED` (remark = refuse reason) — and other statuses are skipped. It resolves the mini-program recipient (appid/openid) via `OrderTradeMiniProgramRecipientLookupPort`, formats the fen refund amount (`refund_amount`, falling back to `refund_fee`) into a two-decimal yuan string, and sends payload `{scenes_name: "aftersalesRefuse", appid, openid, data: {order_id, refund_fee, remarks}}` through the common `AftersalesRefuseWxaSubscribeSendPort` (impl in ecshopx-promotions, which delegates to the WXA subscribe-message send service) with `forceFire=true`; every failure is swallowed at debug level so notify problems never break the review/refund-check transaction. The auto-refuse cron goes through `AftersalesAutoRefuseWxaTemplatePortImpl` (impl of the common `AftersalesAutoRefuseWxaTemplatePort`), which fills `refuse_reason` with `未收到商品自动驳回` when missing and calls `sendSellerRefuseBuyer` → `sendByStatus(3, …)`, i.e. always `SELLER_REFUSE_BUYER`. Pinned by `AftersalesRefuseWxaNotifyServiceTest` (fee formatting `1500 → "15.00"`, skip for unknown status). The send mechanics and recipient resolution are shared with the other member-notify fan-outs.
 
 ## Partial cancel with auto-approve
 
 `AdminNormalOrderPartialCancelService` (in ecshopx-orders, `@Transactional`) computes undelivered quantities per supplier and calls `AftersalesShopPartialCancelCreateService.createForShopPartialCancel` — a `REQUIRES_NEW` transaction in this bundle that creates a single `ONLY_REFUND` aftersales flagged `is_partial_cancel=true` (floor-based fee/point split, refund status `READY`), bumps the same Redis counters, and registers `afterCommit` `TradeRefund` + WDT publishes. Back in orders, the caller accumulates `cancel_item_num`, may flip the order to `WAIT_BUYER_CONFIRM`, and — when the platform `auto_aftersales` setting is on — calls `autoApproveOnlyRefund` in this bundle: another transaction that sets refund `AUDIT_SUCCESS`, aftersales status 1 / progress 9, and registers `afterCommit` `OrderRefundComplete` + `InvoiceRed` + Jushuitan.
+
+## The `AftersalesRefundAsyncPort` abstraction
+
+Deferred job scheduling used to be wired straight into each service as concrete `*JobDispatchPublisher` fields; those are now funneled through one bundle-local interface, `port/AftersalesRefundAsyncPort`, with a single `@Component` impl (`integration/AftersalesRefundAsyncPortImpl`) that wraps the six dispatch publishers. Every review/refund-check/sendback/close/auto-approve `afterCommit` block calls the port instead of a publisher directly, which is what lets the probe tests mock one seam and assert "was job X scheduled" without standing up the dispatch bus.
+
+| port method | wraps | called from |
+| --- | --- | --- |
+| `scheduleOrderRefundComplete(companyId, orderId)` | `OrderRefundCompleteJobDispatchPublisher` (`job:19`) | refundCheck approve, review approve ONLY_REFUND, partial-cancel auto-approve |
+| `scheduleInvoiceRed(aftersalesResultRow)` | `InvoiceRedJobDispatchPublisher` (`job:20`) | refundCheck approve, review approve ONLY_REFUND, partial-cancel auto-approve |
+| `scheduleAftersalesSuccessSendMsg(payload)` | `AftersalesSuccessSendMsgJobDispatchPublisher` (`job:21`) | review approve return-goods |
+| `scheduleSendAfterSaleWaitConfirmNotice(companyId, aftersalesBn)` | wait-confirm notice (`job:24`) | admin + wxapp sendback post-commit |
+| `scheduleSendAftersaleCancelNotice(companyId, aftersalesBn)` | cancel notice (`job:26`) | close post-commit (via `AftersalesCancelNoticeJobPort` impl) |
+| `scheduleDigiOsStoreAdjustmentOnAftersalesReturn(companyId, aftersalesBn)` | `DigiOsAftersalesReturnAdjustmentDispatchPublisher` | `AftersalesMerchantSendbackConfirmService.sendBackConfirm` for `REFUND_GOODS` (currently un-wired — see progress 8 above) |
+
+`scheduleAftersalesSuccessSendMsg` and `scheduleInvoiceRed` null-check their payloads and coerce id fields defensively (logging a skip), so a malformed post-commit snapshot degrades to a warn rather than a failed transaction synchronization. The apply pipeline has its own sibling port, `port/AftersalesApplyAsyncPort` (`dispatchPostCommitSideEffects`), which owns the apply-time `OrderRefundComplete` scheduling for `ONLY_REFUND`/store-return types — the last ordered step of `performPostCommitOrdered`.
 
 ## The refund pipeline: from audit to money
 
@@ -439,12 +515,14 @@ Caption: the four aftersales tables. `orders_normal_orders.left_aftersales_num` 
 * `AftersalesApplyCheckApplyServiceFreightTest` — freight guards: `ONLY_REFUND` never enters freight validation; point freight validated against `freight_fee` (not `freight_point`) and rejected when it exceeds the remaining paid point freight; localized messages.
 * `AftersalesApplyCheckApplyServiceQuantityTest` — PHP-parity quantity rules: front `ONLY_REFUND` counts unshipped quantity (`num − cancelled − delivered − applied-ONLY_REFUND`), return/exchange counts delivered minus applied return/exchange (capped at line num), the admin flag lets fully-delivered `ONLY_REFUND` share the delivered quota, ziti-unverified and unpaid orders are rejected.
 * `AftersalesApplyCheckApplyServiceTopLevelRefundTest` — top-level `refund_fee`/`refund_point` above the line amounts still pass; the handle layer recomputes per unit.
-* `RefundCheckOrderRefundCompletePostCommitProbeTest` — refundCheck approve schedules `OrderRefundComplete` exactly once after commit with the full post-commit publish order (SaaS-ERP update in-tx → OrderRefundComplete → Jushuitan → sync event → WDT → InvoiceRed); reject never schedules it and publishes Jushuitan + cancel-SaaS-ERP only; also pins the reject/approve order-process-log payloads (operator types and ids, `refund_memo`/`refunds_memo` normalization).
+* `RefundCheckOrderRefundCompletePostCommitProbeTest` — refundCheck approve schedules `OrderRefundComplete` exactly once after commit (via a mocked `AftersalesRefundAsyncPort`) with the full post-commit publish order (SaaS-ERP update in-tx → `scheduleOrderRefundComplete` → Jushuitan → sync event → WDT → `scheduleInvoiceRed`); reject never schedules it/InvoiceRed/WDT and publishes Jushuitan + sync event + cancel-SaaS-ERP only; also pins the reject/approve order-process-log payloads (operator types and ids, `refund_memo`/`refunds_memo` normalization).
 * `AftersalesRefuseWxaNotifyServiceTest` — scene mapping and fee formatting for the `aftersalesRefuse` WXA subscribe message.
 * `AftersalesRefundServiceScheduleRefundTest` — schedule query shape (`AUDIT_SUCCESS` + epoch floor) and same-order delay ramp.
 * `AftersalesRefundJobServiceTest` + `DefaultAftersalesRefundJobSideEffects*Test` — job branch decisions (offline skip, no-aftersalesBn path, channel hint, finish writes).
 * `AftersalesShopPartialCancelAutoApproveOnlyRefundPostCommitJobsProbeTest`, `...CreateServiceTradeRefundDispatchProbeTest`, `...WdtErpAfterSalePublishProbeTest` — partial-cancel post-commit fan-out.
 * `AftersalesServiceCloseAftersales*ProbeTest`, `...ScheduleAutoRefuseTest`, `...ScheduleDoneAftersalesTest` — close/auto-refuse/done semantics.
+* `AftersalesDistributorScopeGuardTest` + `AftersalesRefundConfirmServiceScopeTest` — the operator-JWT distributor scope guard on write paths (admin bypasses, empty allow-list passes, mismatch → `ForbiddenException 店铺权限不足`).
+* `AftersalesApplyAsyncPortImplOrderRefundCompletePublishTest` — the apply-side port publishes `OrderRefundComplete` only for `ONLY_REFUND` or goods-returned commands.
 * Cron handler tests under `cron/` use the `test-cron` profile with `CronTestMockConfig` (Noop dispatch publishers and ports — including a Noop `AftersalesAutoRefuseWxaTemplatePort` overriding the real WXA sender), keeping XXL-Job entrypoints testable without Redis.
 
 ## Related pages
@@ -456,5 +534,4 @@ Caption: the four aftersales tables. `orders_normal_orders.left_aftersales_num` 
 * [Orders Domain](orders.md) — the other half of every refund: `doRefund`, order status updates, `NormalOrderRefundCompleteJobBusinessService`, `left_aftersales_num`.
 * [Payments Domain](payments.md) — the channel executors (`AftersalesRefundPayChannelExecutor` beans) live in the payment modules.
 * [Third-Party Integrations](../integrations/third-party.md) — Jushuitan, WDT ERP and SaaS-ERP consumer surfaces fed by the events above.
-<!-- openwiki: broken internal link [../workflows/member-notify-fanout.md] file "../workflows/member-notify-fanout.md" does not exist. Fix the href or restore the target, then delete this comment. -->
-* [Member Notify Fan-out](../workflows/member-notify-fanout.md) — the WXA subscribe-message send mechanics shared by the aftersales notify services.
+* [Order Payment Flow](../workflows/order-payment-flow.md) — where aftersales refund completes the order lifecycle (`OrderRefundComplete`, auto confirm-receipt, coupon restore).

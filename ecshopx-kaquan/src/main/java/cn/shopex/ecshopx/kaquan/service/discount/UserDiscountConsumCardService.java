@@ -314,9 +314,11 @@ public class UserDiscountConsumCardService {
 		if (one == null) {
 			return Map.of("status", false);
 		}
+		// ECX-10899：只更新仍为未使用(1)或状态 4 的券，避免并发核销双次成功。
 		LambdaUpdateWrapper<UserDiscount> uw = new LambdaUpdateWrapper<UserDiscount>()
 				.eq(UserDiscount::getId, one.getId())
-				.eq(UserDiscount::getCompanyId, companyId);
+				.eq(UserDiscount::getCompanyId, companyId)
+				.in(UserDiscount::getStatus, List.of(1, 4));
 
 		if (postdata.containsKey("consume_source")) {
 			uw.set(UserDiscount::getConsumeSource, nullToNull(stringVal(postdata.get("consume_source"))));
@@ -352,7 +354,11 @@ public class UserDiscountConsumCardService {
 			uw.set(UserDiscount::getOriginalFee, nullToNull(stringVal(postdata.get("original_fee"))));
 		}
 
-		userDiscountMapper.update(null, uw);
+		// ECX-10899：更新未命中时不得记成功。
+		int updated = userDiscountMapper.update(null, uw);
+		if (updated <= 0) {
+			return Map.of("status", false);
+		}
 		return Map.of("status", true);
 	}
 

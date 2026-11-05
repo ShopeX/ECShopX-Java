@@ -331,7 +331,7 @@ public class FormTemplateCreateService {
 	}
 
 	@Transactional(rollbackFor = Exception.class)
-	public Object deleteData(String pathId) {
+	public Object deleteData(String pathId, long companyId) {
 		if (isEarlyExitFormTemplatePathId(pathId)) {
 			return Collections.emptyList();
 		}
@@ -345,10 +345,12 @@ public class FormTemplateCreateService {
 			throw new ResourceException("数据不存在");
 		}
 		int ts = (int) (System.currentTimeMillis() / 1000L);
+		// ECX-10901：废弃必须限定当前公司，外租户模板不得改状态。
 		var wrapper = new LambdaUpdateWrapper<FormTemplate>()
 				.set(FormTemplate::getStatus, 2)
 				.set(FormTemplate::getUpdated, ts)
-				.eq(FormTemplate::getId, rowId);
+				.eq(FormTemplate::getId, rowId)
+				.eq(FormTemplate::getCompanyId, companyId);
 		int affected = formTemplateMapper.update(null, wrapper);
 		if (affected == 0) {
 			throw new ResourceException("数据不存在");
@@ -359,7 +361,7 @@ public class FormTemplateCreateService {
 	}
 
 	@Transactional(rollbackFor = Exception.class)
-	public Object restoreData(String pathId) {
+	public Object restoreData(String pathId, long companyId) {
 		if (isEarlyExitFormTemplatePathId(pathId)) {
 			return Collections.emptyList();
 		}
@@ -373,10 +375,12 @@ public class FormTemplateCreateService {
 			throw new ResourceException("数据不存在");
 		}
 		int ts = (int) (System.currentTimeMillis() / 1000L);
+		// ECX-10904：恢复必须限定当前公司，外租户模板不得改状态。
 		var wrapper = new LambdaUpdateWrapper<FormTemplate>()
 				.set(FormTemplate::getStatus, 1)
 				.set(FormTemplate::getUpdated, ts)
-				.eq(FormTemplate::getId, rowId);
+				.eq(FormTemplate::getId, rowId)
+				.eq(FormTemplate::getCompanyId, companyId);
 		int affected = formTemplateMapper.update(null, wrapper);
 		if (affected == 0) {
 			throw new ResourceException("数据不存在");

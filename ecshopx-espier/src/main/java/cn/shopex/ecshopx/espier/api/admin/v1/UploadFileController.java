@@ -184,9 +184,11 @@ public class UploadFileController {
 	@Activated(routeAlias = "espier.upload.error.export")
 	@GetMapping(value = "/upload_error_file_export/{id}", name = "上传文件执行后错误信息")
 	public ResponseEntity<Map<String, Object>> exportUploadErrorFile(
+			HttpServletRequest request,
 			@PathVariable("id") String id,
 			@RequestParam(value = "file_type", required = false) String fileType) {
-		Map<String, String> payload = uploadFileService.exportUploadErrorFile(id, fileType);
+		long companyId = EspierAdminJwtControllerSupport.extractCompanyId(request);
+		Map<String, String> payload = uploadFileService.exportUploadErrorFile(companyId, id, fileType);
 		return ResponseEntity.ok()
 				.contentType(MediaType.APPLICATION_JSON)
 				.body(Map.of("data", payload));

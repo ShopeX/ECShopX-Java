@@ -1,11 +1,8 @@
 ---
 type: architecture-convention
 title: HTTP Request Lifecycle, Auth, and Response Conventions
-description: What happens to an HTTP request in the single ecshopx-bootstrap Spring application — Undertow's PHP-compatibility settings and the StorageAwareHttpFirewall, the annotation-driven auth/middleware interceptor chain (FrontAuth/FrontNoAuth/AdminAuth/FrontMerchantAuth/QywxSalespersonAuth/Activated/DataPass/ShopLog), FlexibleBody binding of JSON/form/multipart plus the merged-params controller idiom, locale resolution, and the ApiResult / @DingoResponse error-envelope conventions picked by GlobalExceptionHandler.
-tags: [architecture, request-lifecycle, undertow, http-firewall, interceptors, auth, jwt, flexiblebody, locale, apiresult, dingo-response, error-handling]
-verified:
-  - by: openwiki/0.7.2
-    at: 2026-10-21T12:26:22.580Z
+description: What happens to an HTTP request in the single ecshopx-bootstrap Spring application — Undertow's PHP-compatibility settings and the StorageAwareHttpFirewall, the annotation-driven auth/middleware interceptor chain (FrontAuth/FrontNoAuth/AdminAuth/FrontMerchantAuth/QywxSalespersonAuth/Activated/DataPass/ShopLog), the POS dual-JWT chain (PosJwtAuthenticationFilter, PosJwtIssuer, DualJwtSupport), FlexibleBody binding of JSON/form/multipart plus the merged-params controller idiom, locale resolution, and the ApiResult / @DingoResponse error-envelope conventions picked by GlobalExceptionHandler.
+tags: [architecture, request-lifecycle, undertow, http-firewall, interceptors, auth, jwt, pos-auth, dual-jwt, flexiblebody, locale, apiresult, dingo-response, error-handling]
 sources:
   - id: openwiki-source-84aeb105875424c9aac7edf8
     resource: repo://ecshopx-bootstrap/pom.xml
@@ -29,8 +26,14 @@ sources:
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/annotation/OperationLog.java
   - id: openwiki-source-7166d5fa4542e949048c5056
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/aspectj/OperationLogAspect.java
+  - id: openwiki-source-064af8f6d82116460315d01c
+    resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/auth/DualJwtSupport.java
+  - id: openwiki-source-18166d6db75da9333bacd41b
+    resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/auth/H5JwtBlacklistPort.java
   - id: openwiki-source-5a81a9170be98d0125671cc1
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/auth/OperatorJwtRequestAttributes.java
+  - id: openwiki-source-ed7b288eb2787a6530e341f5
+    resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/auth/PosJwtRequestAttributes.java
   - id: openwiki-source-2305102efbd26dc34144f946
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/config/CommonWebLocaleAutoConfiguration.java
   - id: openwiki-source-eb0be55db75eca832d3c9492
@@ -59,12 +62,20 @@ sources:
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/web/locale/RequestMessageLocale.java
   - id: openwiki-source-81b81ba0fd38ecc3f4a2b036
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/web/WxappMemberAuthAttributes.java
+  - id: openwiki-source-15019a68c41f802e71925535
+    resource: repo://ecshopx-common/src/test/java/cn/shopex/ecshopx/common/auth/DualJwtSupportTest.java
+  - id: openwiki-source-e8ae20ad9a0b9aab932192bb
+    resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/api/pos/v1/PosAuthController.java
   - id: openwiki-source-407e259d6448c8084d7844f0
     resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/activation/ActivatedMiddlewareService.java
   - id: openwiki-source-3fe260ad41b93a3fc9fce4f7
     resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/activation/CompanysActivationService.java
   - id: openwiki-source-71fa09bfe6f954033da11ac4
     resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/datapass/ShopOperatorDatapassApplyService.java
+  - id: openwiki-source-80ae9d88e25e6269f15157ab
+    resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/posauth/PosAuthService.java
+  - id: openwiki-source-48f750a8142d8a7487ac4de7
+    resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/posauth/PosJwtSessionValidator.java
   - id: openwiki-source-3b61905c32147bcd7759c9bf
     resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/EspierSecurityConfig.java
   - id: openwiki-source-fde2d214766049b8bb873842
@@ -75,6 +86,14 @@ sources:
     resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/OperatorJwtBlacklistService.java
   - id: openwiki-source-d229dab5a02385013d416e5e
     resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/OperatorJwtCompactCodec.java
+  - id: openwiki-source-a1f68480771cd92413f00be5
+    resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/PosJwtAuthenticationFilter.java
+  - id: openwiki-source-043701b554e6049237c22c70
+    resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/PosJwtBlacklistService.java
+  - id: openwiki-source-da7950ab19f4690ae361bd4b
+    resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/PosJwtIssuer.java
+  - id: openwiki-source-a7b2be30f60d866cf32e516a
+    resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/PosJwtPathWhitelist.java
   - id: openwiki-source-a8e8115b1b9151476c94a813
     resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/WxappMemberSessionAuthenticationFilter.java
   - id: openwiki-source-b56e4ca177932e823056dbc7
@@ -117,12 +136,15 @@ sources:
     resource: repo://ecshopx-salesperson/src/main/java/cn/shopex/ecshopx/salesperson/web/QywxSalespersonAuthInterceptor.java
   - id: openwiki-source-37308fb144b4036f8384abe8
     resource: repo://ecshopx-salesperson/src/main/java/cn/shopex/ecshopx/salesperson/web/ShopSalespersonFrontRequestMerge.java
-generated: { by: "openwiki/0.7.2", at: "2026-10-21T12:26:22.580Z" }
+generated: { by: "openwiki/0.7.3", at: "2026-11-04T17:09:55.577Z" }
+verified:
+  - by: openwiki/0.7.3
+    at: 2026-11-04T17:09:55.577Z
 ---
 
 # HTTP Request Lifecycle, Auth, and Response Conventions
 
-Every HTTP request enters one Spring application (`ecshopx-bootstrap` on Undertow, port 18080) and passes through a deliberately layered pipeline: servlet-container settings tuned for legacy PHP URL compatibility, a Spring Security firewall that carves out an exception for `/storage/**`, two thin security filter chains, a locale filter, the operator-JWT servlet filter, and only then the DispatcherServlet and the annotation-driven interceptor chain registered by `MiddlewareWebMvcConfigurer` (espier) plus its merchant/salesperson siblings. After the handler is chosen, `@FlexibleBody` binds JSON / form / multipart bodies, controllers merge query parameters with the body map, and both success (`ApiResult`) and failure (`@DingoResponse` legacy envelopes via `GlobalExceptionHandler`) responses follow conventions inherited from the PHP system.
+Every HTTP request enters one Spring application (`ecshopx-bootstrap` on Undertow, port 18080) and passes through a deliberately layered pipeline: servlet-container settings tuned for legacy PHP URL compatibility, a Spring Security firewall that carves out an exception for `/storage/**`, two thin security filter chains, a locale filter, the POS- and operator-JWT servlet filters, and only then the DispatcherServlet and the annotation-driven interceptor chain registered by `MiddlewareWebMvcConfigurer` (espier) plus its merchant/salesperson siblings. After the handler is chosen, `@FlexibleBody` binds JSON / form / multipart bodies, controllers merge query parameters with the body map, and both success (`ApiResult`) and failure (`@DingoResponse` legacy envelopes via `GlobalExceptionHandler`) responses follow conventions inherited from the PHP system.
 
 This page documents each stage, the annotation-to-interceptor matrix, and the response/error conventions a **new endpoint must choose between**. For where controllers live per Bundle, see [Bundle Anatomy and Layering Conventions](bundle-layering.md); for the runtime topology, see [System Overview and Runtime Topology](overview.md).
 
@@ -135,6 +157,7 @@ sequenceDiagram
     participant FW as StorageAwareHttpFirewall
     participant SEC as Security chains
     participant LOC as CountryCodeLocaleFilter
+    participant POSF as PosJwtAuthenticationFilter
     participant OPF as OperatorJwtAuthenticationFilter
     participant NOAUTH as FrontNoAuthInterceptor
     participant AUTH as FrontAuthInterceptor
@@ -147,7 +170,9 @@ sequenceDiagram
     FW->>SEC: firewalled request reaches chain matching
     SEC->>LOC: permitAll chain lets the request through
     LOC->>LOC: country_code or Accept-Language sets the thread locale
-    LOC->>OPF: request continues down the servlet filter chain
+    LOC->>POSF: request continues down the servlet filter chain
+    POSF->>POSF: engages only when the Bearer token is a POS token
+    POSF->>OPF: operator or front token passes through untouched
     OPF->>OPF: front h5app path is skipped by the operator JWT filter
     OPF->>NOAUTH: DispatcherServlet maps the handler then interceptors run
     NOAUTH->>NOAUTH: optional JWT check then anonymous company_id resolution
@@ -174,7 +199,7 @@ sequenceDiagram
     end
 ```
 
-The request path for a front-end (H5 / Mini Program) endpoint: firewall → security chains → locale filter → operator-JWT filter (skipped for front paths) → interceptor chain → `FlexibleBody` binding → controller → `GlobalExceptionHandler` on error.
+The request path for a front-end (H5 / Mini Program) endpoint: firewall → security chains → locale filter → POS-JWT filter (skips non-POS tokens) → operator-JWT filter (skipped for front paths and POS sessions) → interceptor chain → `FlexibleBody` binding → controller → `GlobalExceptionHandler` on error.
 
 ## Stage 1 — Undertow and the servlet-container edge
 
@@ -209,18 +234,28 @@ The firewall runs inside the Spring Security `FilterChainProxy` before any chain
 Because handler-level auth is annotation-driven, `OperatorJwtAuthenticationFilter` (`ecshopx-espier`, a plain `@Component OncePerRequestFilter` auto-registered as a servlet filter for all URLs) provides a **safety net for admin API paths that forgot an annotation**: it requires a valid operator Bearer JWT for every request that maps to a controller method and is not on its allowlist. Its `shouldNotFilter` skips:
 
 * Paths with no handler mapping (unmapped paths fall through to the DispatcherServlet's normal 404/405 instead of a spurious 401 — the filter consults `RequestMappingHandlerMapping` directly).
-* The anonymous admin endpoints (login, oauth/shuyun login, getLevel, token refresh, resetpassword, image/SMS codes, basic, credential, authorizeurl, logout) — the code comments note this list must stay in sync with `MiddlewareWebMvcConfigurer`'s `AdminAuthInterceptor` excludes.
-* All callback/notify paths (`/api/v1/alipay/notify`, chinaums, doumen-intl, adapay, bspay, `/wechatAuth/**`, workwechat notify paths, saascert matrix callbacks).
+* **POS territory**: every `/api/v1/pos/**` path, plus any request that already carries `PosJwtRequestAttributes.POS_JWT_USER_DATA` (set by the POS filter below) — operator JWT never authenticates a POS session.
+* The anonymous admin endpoints (login, oauth/shuyun login, getLevel, token refresh, resetpassword, image/SMS codes, basic, credential, authorizeurl, logout, wechat/workwechat operator binding) — the code comments note this list must stay in sync with `MiddlewareWebMvcConfigurer`'s `AdminAuthInterceptor` excludes.
+* All callback/notify paths (`/api/v1/alipay/notify`, chinaums, doumen-intl, adapay, bspay, `/wechatAuth/**`, workwechat notify paths, saascert matrix callbacks), the install-agreement endpoint, the meiqia / datacube public reads.
 * `/api/openapi/**` (sign-based auth) and the front surfaces `/api/v1/h5app/**` and `/api/v1/wxapp/**` (independent auth).
 
-On success it mirrors `AdminAuthInterceptor`'s work — verify HS256, check `exp`, consult the operator JWT blacklist (Redis prism DB, key `operator_jwt_invalidate:<sha256(jwt)>`), enrich shop-app member tokens, run `CompanysActivationService.checkUserAuth`, attach operator id and selected distributor — and stores the claims map under the `OperatorJwtRequestAttributes.OPERATOR_JWT_USER_DATA` request attribute (`cn.shopex.ecshopx.espier.security.OperatorJwtAuthenticationFilter.OPERATOR_JWT_USER_DATA`), the same key controllers and downstream interceptors read. Errors are Dingo-style `{"data":{"message":…,"status_code":401}}` (401) or `ApiResult.fail(403, …)` (403).
+On success it mirrors `AdminAuthInterceptor`'s work — verify the compact token with `OperatorJwtCompactCodec`, check `exp`, consult the operator JWT blacklist (Redis prism DB, key `operator_jwt_invalidate:<sha256(jwt)>`), enrich shop-app member tokens, run `CompanysActivationService.checkUserAuth`, attach operator id and selected distributor — and stores the claims map under the `OperatorJwtRequestAttributes.OPERATOR_JWT_USER_DATA` request attribute (`cn.shopex.ecshopx.espier.security.OperatorJwtAuthenticationFilter.OPERATOR_JWT_USER_DATA`), the same key controllers and downstream interceptors read. Errors are Dingo-style `{"data":{"message":…,"status_code":401}}` (401) or `ApiResult.fail(403, …)` (403).
+
+### The POS auth chain: a second JWT lifecycle beside the operator JWT
+
+POS (收银台) terminals authenticate against the **same admin controllers** but with their own token type, issued and validated independently of the operator JWT:
+
+* **Issuance** — `PosAuthController` (`ecshopx-companys`, `/api/v1/pos/auth`, `@DingoResponse(unauthorized = true, unauthorizedPassMessage = true)`) exposes `login` / `logout` / `me`. `PosAuthService.login` verifies the employee number and password against `PosStoreAccount` (password decrypted with `SensitiveFieldEncryptor`), rejects `disabled` / `resigned` accounts and closed/deleted shops, then `PosJwtIssuer` (espier, behind the `PosJwtIssuerPort` interface in `ecshopx-common`) mints a compact HS512 token with `token_kind=pos`, `iss=$POS_JWT_ISSUER` (default `ecshopx-pos`), `sub=id`, a random `jti`, and TTL from `JWT_TTL` (default 120 minutes). Logout calls `PosJwtIssuerPort.invalidate`, which blacklists the token until its `exp`.
+* **Blacklist** — `PosJwtBlacklistService` implements `PosJwtBlacklistPort` with Redis keys `pos_jwt_invalidate:<sha256(jwt)>` in the prism DB — a separate key prefix from the operator blacklist so the two lifecycles never collide.
+* **Authentication** — `PosJwtAuthenticationFilter` (espier, `@Component @Order(HIGHEST_PRECEDENCE + 40) OncePerRequestFilter`, i.e. it runs **before** the operator filter) engages only when the Bearer token *looks like* a POS token (`token_kind=pos` or the POS issuer); operator or front tokens pass through untouched. For POS tokens it enforces, in order: the `PosJwtPathWhitelist` (a deny-by-default table of POS-reachable method+path pairs — checkout, carts, order/aftersales reads, goods/member reads, write-off — with `/api/v1/store/pos-accounts/**` explicitly denied as admin-only), the POS blacklist, signature + `exp`, the POS kind/issuer check again, and `PosJwtSessionValidatorPort.assertSessionStillValid` (`PosJwtSessionValidator` in companys: the token dies immediately when the `PosStoreAccount` row's status, `distributor_id`, or `role` no longer matches the token snapshot). Success stores the claims under `PosJwtRequestAttributes.POS_JWT_USER_DATA`; every failure is a Dingo-style 401 (`{"data":{"message":…,"status_code":401}}`). `POST /api/v1/pos/auth/login` itself is anonymous.
+* **Downstream dual-JWT handling** — the operator filter and `AdminAuthInterceptor` both skip any request that already carries `POS_JWT_USER_DATA`, so a POS token satisfies `@AdminAuth` without the operator session-token checks. Shared code that needs the actor reads claims through `DualJwtSupport` (`ecshopx-common`): POS claims win when both attributes are present, `requireCompanyId` reads `company_id`, and `requireActingOperatorId` returns `pos_store_account_id` (fallback `id`) for POS sessions vs `operator_id` for operator sessions — throwing `UnauthorizedException("未登录")` when neither is usable.
 
 ### Locale resolution
 
 `CommonWebLocaleAutoConfiguration` (`ecshopx-common`, servlet web apps only) registers `CountryCodeLocaleFilter` on `/*` at order `Ordered.LOWEST_PRECEDENCE - 50` — deliberately late so Undertow has already parsed the query string (the filter also touches `getParameterMap()` first and falls back to parsing `country_code` out of the raw query string). The filter:
 
 1. Takes `country_code` (query parameter) if present, else the first tag of `Accept-Language`.
-2. Normalizes it through `LangueProperties.resolveToSupportedTag` — the supported list comes from `langue.list` (`application.properties` pins six tags: `zh-CN, en-CN, ar-SA, zh-TW, ja-JP, ru-RU`; the code default is the first four) with `langue.default-lang=zh-CN`; unknown/blank tags fall back to the default. Startup fails if `langue.default-lang` is blank or not in `langue.list`.
+2. Normalizes it through `LangueProperties.resolveToSupportedTag` — the supported list comes from `langue.list` (`application.properties` pins six tags: `zh-CN, en-CN, ar-SA, zh-TW, ja-JP, ru-RU`, which is also the code default) with `langue.default-lang=zh-CN`; unknown/blank tags fall back to the default. Startup fails if `langue.default-lang` is blank or not in `langue.list`.
 3. Converts the tag to a `MessageSource` locale via `RequestMessageLocale.toMessageLocale` (note the deliberate `en-CN → en-US` mapping, because the English message bundle is `messages_en_US`), sets `LocaleContextHolder` for the request thread, and resets it after the chain.
 
 Downstream code reads the tag back with `RequestLangTag.current(langueProperties)` or resolves per-company effective languages via `LanguageTagSupport` / `CompanyLanguageResolver` (company-enabled language clamping). `CountryCodeLocaleFilterTest` pins the param-wins, invalid-falls-back, and Accept-Language-fallback behaviors.
@@ -251,7 +286,7 @@ Every interceptor starts its `preHandle` with the same two guards: skip unless t
 |---|---|---|---|
 | `@FrontAuth` | `FrontAuthInterceptor` (order 20) | **Strict** H5 member JWT required; verifies HS256 signature, issuer, time claims (with leeway), required claims (`iss, iat, exp, nbf, sub, jti`), a positive `company_id` claim, and the H5 JWT blacklist (Redis prism DB, `h5_jwt_invalidate:<sha256>`, grace period configurable). Rejects with HTTP 401 `{"data":{"message":"Unable to authenticate user.","code":401001,"status_code":401}}`; a truthy `disabled` claim rejects with HTTP 403 and code `403001`. Enriches claims via `H5JwtUserLoginInfoEnrichService` (rehydrates WeChat/member fields like PHP `EspierLocalUserProvider::getUserLoginInfo`). | `h5AuthClaims` (`H5FrontAuthAttributes.H5_AUTH_CLAIMS`), `h5CompanyId` |
 | `@FrontNoAuth` | `FrontNoAuthInterceptor` (order 15) | **Optional** JWT / anonymous tenant resolution (see below). Also *suppresses* `@FrontAuth` when both would apply — a method-level `@FrontNoAuth` makes `FrontAuthInterceptor` skip the method even if the class carries `@FrontAuth`. | `h5CompanyId`, `h5AuthClaims` (JWT claims or anonymous claims) |
-| `@AdminAuth` | `AdminAuthInterceptor` (order 10) | Operator (admin console) JWT required — Bearer token, `OperatorJwtCompactCodec` HS256 verify (own HMAC check with a jjwt fallback for legacy tokens), `exp` check, shop-app member token enrichment, `CompanysActivationService.checkUserAuth` (validates the encrypted session token inside the `id` claim unless `operator_type` is `shopadmin`/`user`). Rejects 401 Dingo-style (`data.message` + `data.status_code`, no `code` key); a `ResourceException` from `checkUserAuth` rejects 403 as `ApiResult.fail(403, msg)`. Attaches the selected distributor for `operator_type=distributor`. | `OPERATOR_JWT_USER_DATA` claims map |
+| `@AdminAuth` | `AdminAuthInterceptor` (order 10) | Operator (admin console) JWT required — **skips outright when the request already carries `POS_JWT_USER_DATA`** (POS sessions were fully vetted by `PosJwtAuthenticationFilter`). Otherwise: Bearer token, `OperatorJwtCompactCodec` compact verify (own HMAC check with a jjwt fallback for legacy tokens), `exp` check, shop-app member token enrichment, `CompanysActivationService.checkUserAuth` (validates the encrypted session token inside the `id` claim unless `operator_type` is `shopadmin`/`user` or `source` is `user`). Rejects 401 Dingo-style (`data.message` + `data.status_code`, no `code` key); a `ResourceException` from `checkUserAuth` rejects 403 as `ApiResult.fail(403, msg)`. Attaches the selected distributor for `operator_type=distributor`. | `OPERATOR_JWT_USER_DATA` claims map |
 | `@FrontMerchantAuth` | `FrontMerchantAuthInterceptor` (order 25, merchant Bundle) | Merchant-settlement (商户入驻) Mini Program JWT under **separate** properties `ecshopx.merchant.wxapp.jwt.*` (issuer `ecshopx`, secret from `JWT_SECRET`, 60-minute TTL). Verifies HS256, issuer, time claims with leeway, positive `company_id`/`account_id` claims, and that a `MerchantSettlementApply` row exists for `account_id` in the same company. Rejects with the same `401001` Dingo envelope as `@FrontAuth`. | `MerchantWxappAuthAttributes` record (`companyId`, `accountId`) |
 | `@QywxSalespersonAuth` | `QywxSalespersonAuthInterceptor` (order 21, salesperson Bundle) | Work-WeChat salesperson Mini Program session auth: reads the `x-wxapp-session` header, loads `frontSession3rd:<session>` from the wechat Redis template via `WxappSalespersonSessionAuthService`, and re-validates the salesperson/shop/role rows. Rejects with Dingo-style envelopes carrying business codes `400001` (bad request), `401001` (unauthorized), `403001` (forbidden) at the matching HTTP status. | `QywxSalespersonAuthAttributes.REQUEST_ATTR` auth map |
 | `@Activated(routeAlias = "…")` | `ActivatedInterceptor` (order 100) → `ActivatedMiddlewareService` | Menu permission + company activation + distributor scope. Checks the route alias against the operator's role menus (`ShopMenuService.collectApisFromMenus`, menu version by operator type: distributor 3, dealer 5, merchant 6, supplier 7, others 1); `admin` operators skip unless `common.check-superadmin-permission=true`; a fixed whitelist and delivery-staff paths bypass. Verifies the company exists and is not disabled, and computes the distributor scope. Failures throw `ResourceException` (→ 422 or Dingo envelope downstream). | `cn.shopex.ecshopx.activated.distributor_id` and `…distributorIds` (see `ActivatedRequestAttributes`) |
@@ -339,6 +374,7 @@ The PHP system (Dingo API + Laravel HttpException) returned errors as a **nested
     badRequest = DingoResponse.BadRequestStyle.DINGO_400,  // BadRequestException style
     unauthorized = true,                            // UnauthorizedException → legacy 401 shapes
     unauthorizedHttpOk = false,                     // true → HTTP 200, error in data.status_code
+    unauthorizedPassMessage = false,                // true → 401 envelope passes the exception message through (still code 401001)
     notFound = false)                               // NoResourceFoundException → legacy 404
 ```
 
@@ -346,7 +382,7 @@ Three envelope families are produced:
 
 * **`dingoStyleError(message, statusCode[, businessCode])`** — **HTTP 200** with body `{"data":{"message":…,"code":<businessCode>,"status_code":…}}` (the `code` key appears only when a business code is present). Matches PHP Dingo's default of reporting errors in the body with an OK status.
 * **`dingoStyleErrorHttp(message, statusCode)`** — HTTP status *equals* `status_code` (PHP `HttpException` behavior). Used for `ConflictException` (409), `TooManyRequestsException` (429), and `ForbiddenException` (403) when the annotation is present.
-* **Fixed 401/404 shapes** — `UnauthorizedException` under `unauthorized = true` maps to: message `"该账号已被禁用."` → `code 401002`; the H5 blacklist message `"The token has been blacklisted"` → 401 without a business code; anything else → `"Unable to authenticate user."` with `code 401001`. With `unauthorizedHttpOk = true` the response is HTTP 200 with `data.status_code = 403` (the login endpoint sets this). `notFound = true` maps `NoResourceFoundException` to `dingoStyleError("404 Not Found", 404)`.
+* **Fixed 401/404 shapes** — `UnauthorizedException` under `unauthorized = true` maps to (checked in this order): `unauthorizedHttpOk = true` → HTTP 200 `dingoStyleError(msg, 403)` (the operator login endpoint sets this); message `"该账号已被禁用."` → `code 401002`; the H5 blacklist message `"The token has been blacklisted"` (`H5JwtBlacklistPort.TOKEN_BLACKLISTED_MESSAGE`) → 401 without a business code; `unauthorizedPassMessage = true` → 401 passing the exception message through with `code 401001` (used by the POS auth endpoints so i18n login errors survive); otherwise the fixed `"Unable to authenticate user."` with `code 401001`. `notFound = true` maps `NoResourceFoundException` to `dingoStyleError("404 Not Found", 404)`.
 
 ### How `GlobalExceptionHandler` picks an envelope
 
@@ -374,7 +410,7 @@ Several Bundles register `@RestControllerAdvice(basePackages = "…")` beans at 
 
 ### Envelopes written before the handler runs
 
-Auth failures never reach `GlobalExceptionHandler` — the interceptors/filters write JSON directly (see the matrix above for the exact shapes): `FrontAuthInterceptor` (401 `401001` / 403 `403001` Dingo), `FrontNoAuthInterceptor` (Dingo when `unauthorized = true`, else `ApiResult.fail(401, …)`), `AdminAuthInterceptor` and `OperatorJwtAuthenticationFilter` (Dingo 401 without a `code` key, `ApiResult.fail(403, …)`), `FrontMerchantAuthInterceptor` (Dingo `401001`), `QywxSalespersonAuthInterceptor` (Dingo `400001`/`401001`/`403001`), `WxappMemberSessionAuthenticationFilter` (Dingo shape but **HTTP 200**), and `EspierAgreementRateLimitInterceptor` (HTTP 429).
+Auth failures never reach `GlobalExceptionHandler` — the interceptors/filters write JSON directly (see the matrix above for the exact shapes): `FrontAuthInterceptor` (401 `401001` / 403 `403001` Dingo), `FrontNoAuthInterceptor` (Dingo when `unauthorized = true`, else `ApiResult.fail(401, …)`), `AdminAuthInterceptor`, `OperatorJwtAuthenticationFilter`, and `PosJwtAuthenticationFilter` (Dingo 401 without a `code` key; the operator-side two also use `ApiResult.fail(403, …)`), `FrontMerchantAuthInterceptor` (Dingo `401001`), `QywxSalespersonAuthInterceptor` (Dingo `400001`/`401001`/`403001`), `WxappMemberSessionAuthenticationFilter` (Dingo shape but **HTTP 200**), and `EspierAgreementRateLimitInterceptor` (HTTP 429).
 
 ### Choosing a style for a new endpoint
 
@@ -390,8 +426,9 @@ Auth failures never reach `GlobalExceptionHandler` — the interceptors/filters 
 | `server.undertow.max-http-post-size` | `64MB` | Undertow POST cap |
 | `spring.mvc.servlet.pathmatch.use-trailing-slash-match` | `true` | MVC path matching |
 | `spring.servlet.multipart.max-file-size` / `max-request-size` | `50MB` / `55MB` | Spring multipart |
-| `JWT_SECRET` (→ `ecshopx.h5.jwt.secret-base64`, `ecshopx.merchant.wxapp.jwt.secret-base64`, operator JWT key) | must be set (Base64 of a 32-byte key) | All three JWT verifiers; startup fails if blank |
-| `JWT_TTL` / `JWT_REFRESH_TTL` | 120 / 20160 minutes | H5 JWT TTL / refresh window |
+| `JWT_SECRET` (→ `ecshopx.h5.jwt.secret-base64`, `ecshopx.merchant.wxapp.jwt.secret-base64`, operator/POS JWT key) | must be set (Base64 of a 32-byte key) | All four JWT verifiers/issuers; startup fails if blank |
+| `JWT_TTL` / `JWT_REFRESH_TTL` | 120 / 20160 minutes | H5 JWT TTL / refresh window; `JWT_TTL` is also the POS JWT TTL |
+| `POS_JWT_ISSUER` | `ecshopx-pos` | `PosJwtIssuer` `iss` claim and `PosJwtAuthenticationFilter` token-kind detection |
 | `ecshopx.h5.jwt.blacklist-grace-period-seconds` | 0 | H5 blacklist grace |
 | `ecshopx.merchant.wxapp.jwt.ttl-minutes` | 60 | Merchant JWT TTL |
 | `common.system-is-saas` / `common.system-companys-id` / `common.system-main-companys-id` | `false` / `1` / empty | `FrontNoAuthInterceptor` fixed-company resolution |
@@ -408,3 +445,4 @@ See [Operations — Configuration](../operations/configuration.md) for the opera
 * `LanguePropertiesTest` (common) — supported-tag resolution and the startup validation of `default-lang` against `list`.
 * Web-slice tests under `ecshopx-bootstrap/src/test` and Bundle test trees build standalone `MockMvc` with `setCustomArgumentResolvers(new FlexibleBodyMethodArgumentResolver(objectMapper, null))` and inject the operator JWT map via `requestAttr(OperatorJwtRequestAttributes.OPERATOR_JWT_USER_DATA, …)` — the pattern for testing a controller without booting the interceptor chain: `ShopexBindControllerWebSliceTest`, `ShopsSetWxShopsSettingWebSliceTest`, `OperatorsGetCredentialsWebSliceTest`, `AftersalesReviewEndpointMappingTest`, and `LoginControllerWxappNewLoginWebTest` (espier, asserting the merged-params hand-off to `FrontWxappNewLoginService`).
 * `ReservationFrontV1ReservationControllerCreateReservationFinishPublishWebMvcTest` (reservation) — the `/api/v1/wxapp/**` session-secured surface.
+* POS chain: `PosAuthServiceTest` (companys) — employee-number login, account/shop status rejection, claim shape; `PosJwtSessionValidatorTest` (companys) — a changed `status` / `distributor_id` / `role` invalidates an otherwise-valid POS token; `PosJwtIssuerTest` and `PosJwtPathWhitelistTest` (espier) — `token_kind=pos` issuance/invalidate round-trip and the deny-by-default path table; `DualJwtSupportTest` (common) — POS claims win over operator claims and the acting-id mapping (`pos_store_account_id` vs `operator_id`).

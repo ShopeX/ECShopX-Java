@@ -294,7 +294,7 @@ public class FormSettingCreateService {
 	}
 
 	@Transactional(rollbackFor = Exception.class)
-	public Object deleteData(String pathId) {
+	public Object deleteData(String pathId, long companyId) {
 		if (isEarlyExitRestorePathId(pathId)) {
 			return Collections.emptyList();
 		}
@@ -308,7 +308,10 @@ public class FormSettingCreateService {
 			throw new ResourceException("数据不存在");
 		}
 		LambdaUpdateWrapper<FormSetting> wrapper = new LambdaUpdateWrapper<>();
-		wrapper.set(FormSetting::getStatus, 2).eq(FormSetting::getId, rowId);
+		wrapper
+				.set(FormSetting::getStatus, 2)
+				.eq(FormSetting::getId, rowId)
+				.eq(FormSetting::getCompanyId, companyId);
 		int affected = formSettingMapper.update(null, wrapper);
 		if (affected == 0) {
 			throw new ResourceException("数据不存在");

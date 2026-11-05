@@ -27,6 +27,7 @@ import cn.shopex.ecshopx.promotions.mapper.MarketingActivityItemsMapper;
 import cn.shopex.ecshopx.promotions.mapper.MarketingActivityMapper;
 import cn.shopex.ecshopx.promotions.mapper.MarketingGiftItemsMapper;
 import cn.shopex.ecshopx.promotions.service.sku.SkuMarketingActivityRuleFormatterRegistry;
+import cn.shopex.ecshopx.promotions.service.systemtag.MemberCrowdMatcher;
 import cn.shopex.ecshopx.superadmin.service.ShopMenuService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -86,6 +87,7 @@ public class SkuValidMarketingActivityService {
 	private final StringRedisTemplate stringRedisTemplate;
 	private final ObjectMapper objectMapper;
 	private final SkuMarketingActivityRuleFormatterRegistry skuMarketingActivityRuleFormatterRegistry;
+	private final MemberCrowdMatcher memberCrowdMatcher;
 
 	public SkuValidMarketingActivityService(
 			MarketingActivityMapper marketingActivityMapper,
@@ -98,7 +100,8 @@ public class SkuValidMarketingActivityService {
 			ShopMenuService shopMenuService,
 			StringRedisTemplate stringRedisTemplate,
 			ObjectMapper objectMapper,
-			SkuMarketingActivityRuleFormatterRegistry skuMarketingActivityRuleFormatterRegistry) {
+			SkuMarketingActivityRuleFormatterRegistry skuMarketingActivityRuleFormatterRegistry,
+			MemberCrowdMatcher memberCrowdMatcher) {
 		this.marketingActivityMapper = marketingActivityMapper;
 		this.marketingActivityItemsMapper = marketingActivityItemsMapper;
 		this.marketingGiftItemsMapper = marketingGiftItemsMapper;
@@ -110,6 +113,7 @@ public class SkuValidMarketingActivityService {
 		this.stringRedisTemplate = stringRedisTemplate;
 		this.objectMapper = objectMapper;
 		this.skuMarketingActivityRuleFormatterRegistry = skuMarketingActivityRuleFormatterRegistry;
+		this.memberCrowdMatcher = memberCrowdMatcher;
 	}
 
 	public List<Map<String, Object>> getValidMarketingActivityForCartItems(
@@ -205,6 +209,10 @@ public class SkuValidMarketingActivityService {
 					&& !gradeListContains(validGradeDecoded, userGrade)) {
 				continue;
 			}
+			if (!memberCrowdMatcher.matchesFullCrowdActivity(
+					companyId, userId, value.getMarketingType(), value.getMemberTagIds(), value.getMemberTagMode())) {
+				continue;
+			}
 			Map<String, Object> row = buildActivityRow(value, now, userId, relItemArr.get(mid), validGradeDecoded, memberGradeIndex);
 			Map<Object, List<Map<String, Object>>> relG = relGiftGoodsByMid.getOrDefault(mid, Map.of());
 			Map<Object, List<Map<String, Object>>> relI = relGiftItemsByMid.getOrDefault(mid, Map.of());
@@ -279,6 +287,10 @@ public class SkuValidMarketingActivityService {
 					&& !validGradeDecoded.isEmpty()
 					&& userGrade != null
 					&& !gradeListContains(validGradeDecoded, userGrade)) {
+				continue;
+			}
+			if (!memberCrowdMatcher.matchesFullCrowdActivity(
+					companyId, userId, value.getMarketingType(), value.getMemberTagIds(), value.getMemberTagMode())) {
 				continue;
 			}
 			Map<String, Object> row = buildActivityRow(value, now, userId, relItemArr.get(mid), validGradeDecoded, memberGradeIndex);

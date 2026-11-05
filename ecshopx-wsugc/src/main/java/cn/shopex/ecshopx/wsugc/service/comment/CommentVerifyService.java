@@ -22,6 +22,7 @@ import cn.shopex.ecshopx.wsugc.domain.Comment;
 import cn.shopex.ecshopx.wsugc.domain.Message;
 import cn.shopex.ecshopx.wsugc.mapper.CommentMapper;
 import cn.shopex.ecshopx.wsugc.mapper.MessageMapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -56,6 +57,11 @@ public class CommentVerifyService {
 			Map<String, Object> input,
 			Map<String, Object> operatorJwtOrEmpty,
 			boolean localProfile) {
+		long companyId = readLong(operatorJwtOrEmpty.get("company_id"), 0L);
+		if (companyId <= 0L) {
+			throw new BadRequestException("无相关企业信息！");
+		}
+
 		long operatorId = 0L;
 		if (readLong(operatorJwtOrEmpty.get("operator_id"), 0L) != 0L) {
 			operatorId = readLong(operatorJwtOrEmpty.get("operator_id"), 0L);
@@ -86,6 +92,7 @@ public class CommentVerifyService {
 		int now = (int) (System.currentTimeMillis() / 1000);
 		UpdateWrapper<Comment> uw = new UpdateWrapper<>();
 		uw.in("comment_id", commentIds)
+				.eq("company_id", companyId)
 				.set("status", status)
 				.set("manual_refuse_reason", manual)
 				.set("updated", now);
@@ -94,9 +101,9 @@ public class CommentVerifyService {
 		if (status == 4) {
 			for (Object idVal : commentIds) {
 				Long commentId = commentIdForSelect(idVal);
-				Comment c = commentId != null ? commentMapper.selectById(commentId) : null;
+				Comment c = commentId != null ? selectOwnedComment(commentId, companyId) : null;
 				if (c == null) {
-					log.debug("verifyComment selectById miss comment_id={}", idVal);
+					log.debug("verifyComment owned select miss comment_id={}", idVal);
 					continue;
 				}
 				try {
@@ -132,6 +139,12 @@ public class CommentVerifyService {
 		res.put("manual_refuse_reason", manual);
 		res.put("message", "审核成功");
 		return res;
+	}
+
+	private Comment selectOwnedComment(long commentId, long companyId) {
+		LambdaQueryWrapper<Comment> q = new LambdaQueryWrapper<>();
+		q.eq(Comment::getCommentId, commentId).eq(Comment::getCompanyId, companyId).last("LIMIT 1");
+		return commentMapper.selectOne(q);
 	}
 
 	private String getNickName(long userId, long companyId) {

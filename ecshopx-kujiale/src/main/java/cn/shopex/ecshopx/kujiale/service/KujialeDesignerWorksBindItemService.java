@@ -45,7 +45,7 @@ public class KujialeDesignerWorksBindItemService {
 		this.kujialeDesignerWorksItemRelMapper = kujialeDesignerWorksItemRelMapper;
 	}
 
-	public Map<String, Object> bind(KujialeDesignerWorksBindItemRequest request) {
+	public Map<String, Object> bind(KujialeDesignerWorksBindItemRequest request, long companyId) {
 		Map<String, List<String>> fieldErrors = new LinkedHashMap<>();
 		JsonNode itemNode = request.getItemId();
 		if (itemNode == null || itemNode.isNull() || itemNode.isMissingNode()) {
@@ -81,6 +81,12 @@ public class KujialeDesignerWorksBindItemService {
 		for (Long itemId : itemIds) {
 			Items item = itemsRepository.findByItemId(itemId);
 			if (item == null) {
+				errors.add("商品不存在: " + itemId);
+				continue;
+			}
+			// ECX-10893：外租户商品不得插入关联，与查无商品使用同一条错误。
+			long ownerCompanyId = item.getCompanyId() == null ? 0L : item.getCompanyId();
+			if (ownerCompanyId != companyId) {
 				errors.add("商品不存在: " + itemId);
 				continue;
 			}

@@ -42,21 +42,24 @@ public class AdminMemberRelTagsUserIdsQueryService {
 		if ("0".equals(t)) {
 			return Collections.emptyList();
 		}
-		final long tagId;
-		try {
-			tagId = Long.parseLong(t);
-		} catch (NumberFormatException e) {
+		List<Long> tagIds = new java.util.ArrayList<>();
+		for (String part : t.split(",")) {
+			String x = part == null ? "" : part.trim();
+			if (!StringUtils.hasText(x) || "0".equals(x)) {
+				continue;
+			}
+			try {
+				long tagId = Long.parseLong(x);
+				if (tagId > 0L) {
+					tagIds.add(tagId);
+				}
+			} catch (NumberFormatException ignored) {
+			}
+		}
+		if (tagIds.isEmpty()) {
 			return Collections.emptyList();
 		}
-		List<MemberRelTags> rows =
-				memberRelTagsMapper.selectList(
-						new LambdaQueryWrapper<MemberRelTags>()
-								.eq(MemberRelTags::getCompanyId, companyId)
-								.eq(MemberRelTags::getTagId, tagId)
-								.select(MemberRelTags::getUserId)
-								.orderByAsc(MemberRelTags::getUserId)
-								.last("LIMIT 100 OFFSET 0"));
-		return rows.stream().map(MemberRelTags::getUserId).collect(Collectors.toList());
+		return listUserIdsByTagIds(companyId, tagIds);
 	}
 
 	public List<Long> listUserIdsByTagIds(long companyId, List<Long> tagIds) {

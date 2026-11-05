@@ -16,9 +16,11 @@
 
 package cn.shopex.ecshopx.promotions.service;
 
+import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.common.goods.MarketingActivityCatalogAccess;
 import cn.shopex.ecshopx.promotions.domain.MarketingActivity;
 import cn.shopex.ecshopx.promotions.domain.MarketingActivityItems;
+import cn.shopex.ecshopx.promotions.service.systemtag.MemberCrowdMatcher;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,25 +42,43 @@ public class MarketingActivityItemListService {
 	private final MarketingActivityItemListActivityQuerySupport activityQuerySupport;
 	private final MarketingActivityItemListRelItemsQuerySupport relItemsQuerySupport;
 	private final ObjectMapper objectMapper;
+	private final MemberCrowdMatcher memberCrowdMatcher;
 
 	public MarketingActivityItemListService(
 			MarketingActivityCatalogAccess marketingActivityCatalogAccess,
 			MarketingActivityItemListActivityQuerySupport activityQuerySupport,
 			MarketingActivityItemListRelItemsQuerySupport relItemsQuerySupport,
-			ObjectMapper objectMapper) {
+			ObjectMapper objectMapper,
+			MemberCrowdMatcher memberCrowdMatcher) {
 		this.marketingActivityCatalogAccess = marketingActivityCatalogAccess;
 		this.activityQuerySupport = activityQuerySupport;
 		this.relItemsQuerySupport = relItemsQuerySupport;
 		this.objectMapper = objectMapper;
+		this.memberCrowdMatcher = memberCrowdMatcher;
 	}
 
 	public Map<String, Object> getActivityItemList(long companyId, Long marketingId, int page, int pageSize) {
-		return getActivityItemList(companyId, marketingId, page, pageSize, false);
+		return getActivityItemList(companyId, marketingId, page, pageSize, false, 0L);
 	}
 
 	public Map<String, Object> getActivityItemList(
 			long companyId, Long marketingId, int page, int pageSize, boolean onlyIsShowRelRows) {
+		return getActivityItemList(companyId, marketingId, page, pageSize, onlyIsShowRelRows, 0L);
+	}
+
+	public Map<String, Object> getActivityItemList(
+			long companyId, Long marketingId, int page, int pageSize, boolean onlyIsShowRelRows, long userId) {
 		Optional<MarketingActivity> activityRow = activityQuerySupport.loadActivityRow(companyId, marketingId);
+		if (onlyIsShowRelRows) {
+			MarketingActivity act = activityRow.orElse(null);
+			if (act == null) {
+				throw new ResourceException("活动已失效");
+			}
+			if (!memberCrowdMatcher.matchesFullCrowdActivity(
+					companyId, userId, act.getMarketingType(), act.getMemberTagIds(), act.getMemberTagMode())) {
+				throw new ResourceException("您不在该活动适用人群内");
+			}
+		}
 		Map<String, Object> activityInfoMap =
 				activityRow.map(activityQuerySupport::buildActivityPayloadForItemList).orElseGet(Collections::emptyMap);
 		Integer useBound = activityRow.map(MarketingActivity::getUseBound).orElse(null);

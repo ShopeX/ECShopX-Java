@@ -27,6 +27,8 @@ import cn.shopex.ecshopx.members.mapper.MembersMapper;
 import cn.shopex.ecshopx.members.security.LegacyFixedMobileEncrypt;
 import cn.shopex.ecshopx.members.integration.point.MemberImportPointPort;
 import cn.shopex.ecshopx.members.service.MemberRelTagsBatchCreateService;
+import cn.shopex.ecshopx.members.service.systemtag.MemberSystemTagCodes;
+import cn.shopex.ecshopx.members.service.systemtag.NewCustomerTagReconcileService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import java.util.ArrayList;
@@ -46,18 +48,21 @@ public class MemberUpdateImportRowOrchestrator {
 	private final MemberTagsMapper memberTagsMapper;
 	private final MemberRelTagsBatchCreateService memberRelTagsBatchCreateService;
 	private final MemberImportPointPort memberImportPointPort;
+	private final NewCustomerTagReconcileService newCustomerTagReconcileService;
 
 	public MemberUpdateImportRowOrchestrator(
 			MembersMapper membersMapper,
 			MembersInfoMapper membersInfoMapper,
 			MemberTagsMapper memberTagsMapper,
 			MemberRelTagsBatchCreateService memberRelTagsBatchCreateService,
-			MemberImportPointPort memberImportPointPort) {
+			MemberImportPointPort memberImportPointPort,
+			NewCustomerTagReconcileService newCustomerTagReconcileService) {
 		this.membersMapper = membersMapper;
 		this.membersInfoMapper = membersInfoMapper;
 		this.memberTagsMapper = memberTagsMapper;
 		this.memberRelTagsBatchCreateService = memberRelTagsBatchCreateService;
 		this.memberImportPointPort = memberImportPointPort;
+		this.newCustomerTagReconcileService = newCustomerTagReconcileService;
 	}
 
 	@Transactional(rollbackFor = Exception.class)
@@ -118,6 +123,7 @@ public class MemberUpdateImportRowOrchestrator {
 		LambdaUpdateWrapper<Members> uw = new LambdaUpdateWrapper<>();
 		uw.eq(Members::getCompanyId, companyId).eq(Members::getUserId, userId);
 		boolean touchedMember = false;
+		Integer disabledFlag = null;
 		if (StringUtils.hasText(str(row.get("grade_name")))) {
 			long gid = resolveGradeId(companyId, str(row.get("grade_name")).trim());
 			uw.set(Members::getGradeId, gid);
@@ -127,6 +133,7 @@ public class MemberUpdateImportRowOrchestrator {
 			int d = parseDisabled(str(row.get("disabled")).trim());
 			if (d != 2) {
 				uw.set(Members::getDisabled, d == 1);
+				disabledFlag = d;
 				touchedMember = true;
 			}
 		}
@@ -142,6 +149,14 @@ public class MemberUpdateImportRowOrchestrator {
 			memberRelTagsBatchCreateService.createRelTagsByUserId(userId, tagIds, companyId);
 		}
 		applyPointAdjustmentIfPresent(userId, companyId, row.get("point"));
+		if (disabledFlag != null) {
+			newCustomerTagReconcileService.reconcile(
+					companyId,
+					userId,
+					disabledFlag == 1
+							? MemberSystemTagCodes.SOURCE_DISABLE
+							: MemberSystemTagCodes.SOURCE_ENABLE);
+		}
 	}
 
 	private void applyPointAdjustmentIfPresent(long userId, long companyId, Object pointObj) {

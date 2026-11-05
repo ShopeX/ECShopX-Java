@@ -33,6 +33,9 @@ public final class MembersDispatchEventNames {
 	public static final String LISTENER_MEMBERS_CREATE_MEMBER_SUCCESS_NOTICE =
 			"listener:members.create_member_success_notice";
 
+	public static final String LISTENER_MEMBERS_CREATE_MEMBER_SUCCESS_NEW_CUSTOMER =
+			"listener:members.create_member_success_new_customer";
+
 	/**
 	 * Queued listener for register-point rewards from Redis register-point configuration; uses the
 	 * {@code default} queue.

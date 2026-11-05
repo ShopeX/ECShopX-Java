@@ -1,22 +1,22 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:43e9c42a52c482afcbfba25e120854125849a92a7e49ad60714e21ca9f06f50e",
+  "pageVersion": "sha256:939785017614d6622cc47056d67ccb55002a03658315f636ba85e6e02c46dbb8",
   "claims": [
     {
       "id": "claim_2ff2e0400aa34a0da54b075e69d8f8fe",
       "statement": "WeChat Pay async notifications arrive at POST /wechatAuth/wxpay/notify (WxpayNotifyController under the /wechatAuth/wxpay mapping); WxpayNotifyFacade verifies the MD5 signature with the company's API key, then routes by the attach payload — attach=depositRecharge goes to the deposit-side port (rechargeCallback), everything else to the order-side port (applyTradePaymentAfterAlipay).",
       "evidence": [
         {
-          "resource": "repo://ecshopx-deposit/src/main/java/cn/shopex/ecshopx/deposit/integration/alipay/AlipayNotifyDepositSidePortImpl.java#L24-L38",
-          "version": "repo-lines-v1:sha256:7d6ac2a6d511d7b34713a72e3a9f8a26349167b0bfa1b6eeece27f39a86497fa:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJiMzM2YzQyYjJmNTIwN2I3NzVlNTBhOGRhY2UyZDZkMTViMjZmNjFlOGNkYTJjYTRkNDNmY2U0YWU0ODQ0ZjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE2YzUwZDg1NDM4OTUwMDE3ZjVmNDY1ZmFhZWVhMTNiNGI2ZGIxOTU0ZmQzM2ZhODVkNmVlMzJkZGIyZDMxNTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+          "resource": "repo://ecshopx-deposit/src/main/java/cn/shopex/ecshopx/deposit/integration/alipay/AlipayNotifyDepositSidePortImpl.java#L62-L68",
+          "version": "repo-lines-v1:sha256:c47353a6b5c98ae34bf720b081dbe171f8c2feb943d705160e22d9f22ba5b19c:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjRlZmM0OTQxOGQyNmRjZjEyOWIyMmE2YWEyMTEwOGNlZWMzNzY3N2EzMmQwOGU5ZDVmZWUzNWRkYTY2YmI5ZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiN2VjZmM5YmUxNjI1ZDYxMGI2NjdmMDMwNzRmOGE2MWFjZmIyOGM4NWIwMzdhZDlkY2Q1YTRmMjQ2MmQ5MWNlZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMjExNGIxMTIxMzY5NzY0NGZkODYzNTQ3NDNkY2VlY2I2Mzk2MmQ4MjFhNWNiODkyMzg5NjE4Y2Y2NDgxMzIzMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjIsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDAzOTk0NWY3MTNjZWNjYzJhMmJlOTgxYWI1YzVlZWEzN2Y5NWY5NzY5ZTU3NWNkOGVkOWE5ZmNiYWZkZjA2YSJ9"
         },
         {
-          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/alipay/AlipayNotifyOrderSidePortImpl.java#L46-L83",
-          "version": "repo-lines-v1:sha256:e38d929f0e01bf53c8c283d41a797e61f42343c033068c81e258a87886ec62fd:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwOGNjMTVkMDc1NGI2ZjIxZjcxZTBiMDNiOWRkNzg2YmM5ODgwMDNiMmI1NzU2NGM2MDUwYTgwMjI1MTdjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU5Yzk5YmEyYjRlYmJjOGYyM2U4MDk3OTg4YzVjYzM3Zjk1OWQxYzk3NjBjMWIwZjk5NzAwNWYyYjhkYTViNjEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/alipay/AlipayNotifyOrderSidePortImpl.java#L96-L108",
+          "version": "repo-lines-v1:sha256:99ae876a5d962f8558011568d98bec66d9c7b31af6e30696aa4fcf2cc15f0e80:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1YjI3MTdlMWI5ODBlNDI1OTdiMGI0NzNjNzdhMzU0ZWUzMjI5ZmNhZGQ1MDUzYTE5YjI2NTA2MTk0NGVhNmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVjYjI5MTM3OTM4NTM2NzBmZjVkMTg2ODhmM2YxNjIxODE5MDBjNTczMjE1Mzc5ZTY4ZDVmMDM4Y2UzNjFiOWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
         },
         {
           "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/integration/alipay/AlipayNotifyOrderSidePort.java",
-          "version": "repo-file-v1:sha256:f76f9fdadde1d742216b4ac578b0c3d60d4a293b92516a8441914e9cfc5cf549"
+          "version": "repo-file-v1:sha256:0c1127ade15e10f469ad68d3564dc084c47d592ac8ce668e3a17d68308075617"
         },
         {
           "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/WxpayNotifyFacade.java#L55-L114",
@@ -43,7 +43,7 @@
       "statement": "WxpayNotifyPaymentContextLoader resolves the paying company before verification can occur: it tries WxpayNotifyCompanyIdPort.resolveCompanyIdByAuthorizerAppId (a wechat-authorization peek implemented in orders), then falls back to Redis appId-to-companyId maps (wechatPayment:companyId:, wechatAppPayment: for trade_type=APP, wechatServicerPayment:); the distributor-level setting key is resolved through AlipayNotifyOrderSidePort.resolveDistributorIdForAlipayRedis, which gates on distribution_distributor_peek.payment_subject=1 and returns 0 otherwise, so the setting key becomes (distributorId?) + wxPaymentSetting: + sha1(companyId).",
       "evidence": [
         {
-          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/alipay/AlipayNotifyOrderSidePortImpl.java#L47-L77",
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/alipay/AlipayNotifyOrderSidePortImpl.java#L73-L103",
           "version": "repo-lines-v1:sha256:a18a9b1ba009f19491da5da83641da8e8d8df5d8680fd7c9335894725957dd27:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA2ZjMyMWZjYmRkNzMzODQ5YTc2M2QxMWJlNjZhMjczMGE4NDdkMDJhOTQ5MjI4OTBiMjA2YmRlNTQ0YmVlNDEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU2ODczODY4ZGE1Y2FlZDIxYzlmZGY2OTg2MmIwZGE1NDA2OWVjZGYxODgyYzIxNjUzNTZjNzRmNWE3ZDFkMDMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM5MjE0YTEyZjM5MTM1YmIxMDdiOGQ1NjY3ZDQxYjg5MmM1ZmU0MGRiMjI3ZDcyYTI3YjkzNDE4NGNjNGYxZjgifQ"
         },
         {
@@ -73,7 +73,7 @@
           "version": "repo-lines-v1:sha256:4401bb98efb98695334146bb1edc40d6bb3103baeb0b972b0f226053d2229ca6:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUzZDBjMmQ1Mjk5ODI0N2NmNjc2YzUyNDNhZjcyYTZjZWNlNDNmOWQ5NTE3YzdhNTE2OGUzMzYwMzFmZTFkNTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA4Yjc3Zjc4MDk2NmQwZWYzMzA3Nzg4MjlmZDhmY2YwYWFiNDM2OWRkNTNmOTJhMGE5M2I0ZTQzNGU3ZGI5ZDAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI3MDk4MjcxOGVhY2UxZjY4MGY2ODUwMjUzMzNkMjIxZDZhODEyOGQ2NDU2M2YxMTFjOTg4YjgwMWE2OTAwZjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ1YTIzOTI2Nzg3ZmU2MmFhNTQ1YmU5NmY1OGZiN2Y2MjllMmQ3N2U2NmRmOWEyMDE4MGNjNzc2NzJiOTIxZjIifQ"
         },
         {
-          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/OperatorJwtAuthenticationFilter.java#L153-L203",
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/OperatorJwtAuthenticationFilter.java#L161-L211",
           "version": "repo-lines-v1:sha256:eacdba9adf001168d05661f1a66b546eee9b1a61c5b239339ff34a01f87d07b0:eyJzZWxlY3RlZExpbmVDb3VudCI6NTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEyZWRiYjI2NWRjMjMzYjUwMjZhNjhhMjMxZTlmNDRkZGU2MjQxOWYyZjIzNzQyZmFkZmU2YjA5OTFjNGYzZTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBkZDA0NTFiYzk5ZDYyMjllODk3Y2Q4MGExMGJkNmFhNzE2YmEzYmU1NTdiYTM5NzdjYjk2MGNmNzYwZWZkZTIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZmMTBkYTczNWEwMmY3Mjk0NjRhNTBlNjhjNGRjZDY5MTA0ZWQ2OTQ1ZTViYmVhMGNkYTYyZjVmN2E2MmZmYmQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI4NGEwZWI4ZDM3MzY2MDIxOTQyYjcyZjVmNTE1YWQzYWM4Mzc1NDAzYjdlMGVkYTI1NTNiYjcwMzRkNDZjNzEifQ"
         },
         {
@@ -117,12 +117,12 @@
       "statement": "The chinaums and doumen-intl notify facades ack broadly: ChinaumsNotifyFacade maps TRADE_SUCCESS to SUCCESS, acks TRADE_REFUND without processing (refunds arrive via the refund executor), and returns plain-text SUCCESS/FAILED; DoumenIntlNotifyFacade resolves the trade via findTrade before signature verification (the secret lives in the company's doumen setting), acks 00000000 for PENDING/RETRY_PENDING and unknown statuses, swallows ResourceException on apply (applyQuietly), and short-circuits when the trade is already SUCCESS/PAYERROR.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/AlipayNotifyFacade.java#L101-L126",
-          "version": "repo-lines-v1:sha256:e050e5c4e885caa089ff0bf984e8463bcded19d0fcfe9ba314410a7172a2dbfa:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM1MGE1ZWNkYTE5ZTRlMzJlNGJlNmQzMWUwYjY0Y2JhMmNiNzE2ZWU4ZjRkMmQ1YjdmMzhhMTgyYmI5YzA3ZDkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY4YmUxZDkzMTE1MGEwODU1YjlhMTE1Yzc4MThiYmY1NGY3ODkzYTNkNzZhZGIyYzcxMDNlMGE1NzVjNDQwZjEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdhY2QwYWU4NzdkOGY4NjJhODIwZTc4MzQ2ZTI2N2ExN2EyMTM1YjZmMmYwM2QxZTA5ZGQwZDE2MTc4OWUwYzkifQ"
+          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/ChinaumsNotifyFacade.java#L45-L69",
+          "version": "repo-lines-v1:sha256:48bb65e5d903f47c69eb2fe0c71fdc711446935b333fb13bd87f73434e8a98ea:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZmNDE1ZDRkODUwZTJkYzExOTZkYjI2ZWNkYTEzMmFhMDk0YzllYjRlZTg2OTFiMmFkMzJiZjczZjJlMWQ5NWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEyMmY0NTZiNDhmOTFkYzUwYmFiMTI5ZjhhZWVhZGUwMDI0NGYzOTJmMjU5MDc1NGZjNzFlMjQ1M2E3NTljNTIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhiN2M3MWFkNTRhODZiMDkyZGVmNDM0MzQzNDI1N2Q2ZjljY2Y5NTc3Yzg5NGZjM2Y1MGJmMGJmODYyM2RjODUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUwNGZjZjk1MGYzZGQ0ZTU2OGY1NmUyOTU2OTZjZWY2Yjk4OTE5MWYxM2ZjOWI4ZGE1ZTQ1N2YxNjU2YWFiYTkifQ"
         },
         {
-          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/ChinaumsNotifyFacade.java#L49-L75",
-          "version": "repo-lines-v1:sha256:a16e86b3ad0c0ba97aff8862b8231c21dab819796bb49c288ff78b5dce1b505d:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIzYmIwNDc5YWZhYmVjMjAzYWM4ZTdhOTdkYzlhNmRjZDMxMDUxYWJmZDEzNjU3ZjI1OTE0MjQzZTkwNWY1MWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAyMGE2N2NlNDIyMmFlNzlhNzVlZDQ3MGIwN2I1MmI4NThjMmYzZjJmMDg0ZDYxN2ZhOWRlODFlMzE0NzBjOWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJjMmE0ZWExM2UwODZlYWZhZjU1YWRiMGJjMjNhYjdjYWJjOWMyZDM2NDZkNWFiMGVmMmU2OTZlNjVmM2NhODYifQ"
+          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/DoumenIntlNotifyFacade.java#L149-L156",
+          "version": "repo-lines-v1:sha256:185a8db60b629f12088d9fe000fb4b59d5bda84e019ad9bde70343be0908990c:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiM2E3ZTE4ZDMwMDcyNjA4NjU2ZTA4NzZiNjhhMTc4NWY3ZGI5YmVhODYxZDUyMjUwYjA2NDQxZGFlOTY4ZmFlNyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNTE3YzI3ZTQ3MWMxMjgxZGQ1M2ZjNzY2ZDBhZWE3ZTY4ZDllZTkzZjA3MTIyYmRhZTc2YTAzNDFjZmVhNTA3MyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYzFkZGM3MmM2OGM3YzkyYjZiNTZkNjQ3YmZiZTE4MTdhMTY0YTRhZDIyMzFlYWMxY2I1MjAwYjJlMmRiODE4NCJ9"
         },
         {
           "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/DoumenIntlNotifyFacade.java#L57-L143",
@@ -135,8 +135,8 @@
       "statement": "BsPayCallbackOrchestratorService whitelists callback event types: pay.wx_lite/pay.wx_pub/pay.wx_qr/pay.alipay_wap/pay.alipay_qr route as PAYMENT to BsPayOrdersTradePaymentCallbackService.handlePaymentNotify, and withdraw.bspay routes as WITHDRAW to WithdrawApplyService.handleWithdrawNotify, which maps trans_status S to status 4, F to 5 (with failure reason), P to 3, skips already-SUCCESS replays, and keys the apply row by req_seq_id.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-bspay/src/main/java/cn/shopex/ecshopx/bspay/service/WithdrawApplyService.java#L721-L775",
-          "version": "repo-lines-v1:sha256:37131685f3931485abe1befb8d4e58819304d02a5777e4316c5d6e2de6b0422b:eyJzZWxlY3RlZExpbmVDb3VudCI6NTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA4YWU2OTUyM2Y0ZWM1YmNhZjRkODRkZTRhZDI1ZjAwZjQ3NTAyMjczMGIyOThiMDhiMTkwMTAyMTM5ZmJlYTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY2MmRjODkxYjhkMTBjMjQ4YTJjZWE5ZmU1ZTAyYjNkYTViOGYwMTI3NzQyMTk2ZDVkOWM4MmZlMTEwMWI5YmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+          "resource": "repo://ecshopx-bspay/src/main/java/cn/shopex/ecshopx/bspay/service/WithdrawApplyService.java#L733-L789",
+          "version": "repo-lines-v1:sha256:1ba2ac963ce7b194c68ab34ab6de18d7a9aaa16abaac0c7aeaede3002c2e46c0:eyJzZWxlY3RlZExpbmVDb3VudCI6NTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA4YWU2OTUyM2Y0ZWM1YmNhZjRkODRkZTRhZDI1ZjAwZjQ3NTAyMjczMGIyOThiMDhiMTkwMTAyMTM5ZmJlYTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY2MmRjODkxYjhkMTBjMjQ4YTJjZWE5ZmU1ZTAyYjNkYTViOGYwMTI3NzQyMTk2ZDVkOWM4MmZlMTEwMWI5YmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
         },
         {
           "resource": "repo://ecshopx-bspay/src/main/java/cn/shopex/ecshopx/bspay/service/callback/BsPayCallbackOrchestratorService.java#L39-L106",
@@ -185,12 +185,12 @@
       "statement": "The admin payment-setting API is PaymentController at /api/v1/trade/payment (POST/GET /setting with route aliases trade.payment.setting.set/get, GET /open-status, /list, /hfpayversionstatus, /rsakey); PaymentSettingSaveService fans out to per-channel writers for wxpay, alipay, paypal, hfpay, adapay, offline_pay, chinaumspay, bspay, icbcpay and doumen_intl, while pay_type=point_pay is diverted to PointMemberRuleSaveService.savePointPayFirstOnly.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/api/admin/v1/PaymentController.java#L55-L145",
-          "version": "repo-lines-v1:sha256:38ac50267e7cc6d24dbb8646ec1a40879fd0ab8ce99e87ce42105d8516ef9180:eyJzZWxlY3RlZExpbmVDb3VudCI6OTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ0MjAwNjQyMGY4MGZkOWFkNTYyNDc0YzdkOGU2NmZmMGVlZTUyZThmZjZmMDU1MGI3YTU4OWE2YjA1NzgxYzciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRiZDg1YmRlYjllNDZkNDAzOTJmNjVmNjQ1NTU5YTMyYzNlYTA1ZmRlZGJlNDgyYjFmOTUzMjE5NTNjMmMyOTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/api/admin/v1/PaymentController.java#L73-L146",
+          "version": "repo-lines-v1:sha256:5bb77b6f7675d37cab105d89cad66ca596392a688e47334386356643e2e2b1a0:eyJzZWxlY3RlZExpbmVDb3VudCI6NzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYyOGExNmExZTU4N2VmOGY2NDlmNjU4NDk5YWVkM2YxMzdiODIwN2NlYjFhNWM3ZjY0MDZlNTMyNjE2NWJiY2UiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ1Yzc0NTMyZjQ1MGRiYzg4ODhhZDhlZjkwYTdlZTUzMWM4ZGUwMTUyNTIzNzRjYzk0Yzc5Zjk0ODYyMGM1NGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
         },
         {
-          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/admin/PaymentSettingSaveService.java#L90-L136",
-          "version": "repo-lines-v1:sha256:5ef6e8a2ccfe1324e0f2f8108f08740d0228d63b74db81fb1a7af940a74314da:eyJzZWxlY3RlZExpbmVDb3VudCI6NDcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY2ODE0NGQzNDg5YWY2ZDBmYzQ4MWQ5ZDU1MjMxNDUyMWUxYjE3NWI0MDU1YWQxZTE3NzQyMGE4NGM3YjkxYzQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQxNGQ3YmU2NDc1ZTljNjI5MTEyNDE0MGNiMWMwMTVlYjAyMjZhZmIxNDMyODNmMzA2YzJhNWY0YzI4ZDg0NDkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhmMzU4OGY0YjFmOTcyY2M1NGUxZDBjMzBlZGY5NmVhY2ZjZDRhNDZjYWVhNmEwNjViNmY3OTUwNzczYmJjOTgifQ"
+          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/admin/PaymentSettingSaveService.java#L102-L154",
+          "version": "repo-lines-v1:sha256:d4d293c119e27c718aa1ca08b4ccb96df8b4447d55255b396578e51484a0a414:eyJzZWxlY3RlZExpbmVDb3VudCI6NTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI4NjY4N2NjYzQ3NDIxYzIzN2M0Y2Q3ZTliNGIzNTdiNDk3YjViNWUxYzdmZGZhMmMxNjgxM2M0ZDBiM2I5MDkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYxNWQyMzdiYWZmMzBkMzU0NDczZGQ0NzczYTlhNjc2NmE2ZjNlMzJiYjczOGYzZmU0ZGFmOGRmMDFiZmRkZWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU1NTg3MTZkNmU4ZmUzMmRjMGY4YmVmMzY0YTFmMmM3MTNkYTZiZWZmNjMxOTIyZjU3MDYxODU0NzFjNThiYTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY4ZjBhOGQ2ODJkZTE4NWMyOGM3ZDFmYTVlZmU1MDNmMzliOTY3MjY2NjU4MWFmYzEwYjBiN2NjMDg4YzU5MzYifQ"
         }
       ]
     },
@@ -221,7 +221,7 @@
           "version": "repo-lines-v1:sha256:9760aec87c2958f92c96da88f3f16252b9b408400e10d2ce9408e7aa773ae33f:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJiMzM2YzQyYjJmNTIwN2I3NzVlNTBhOGRhY2UyZDZkMTViMjZmNjFlOGNkYTJjYTRkNDNmY2U0YWU0ODQ0ZjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM2MzYzNjE1M2Y2ZTRhZjE3MjJjYjcyZjg2Zjc0MGEwNjljNzE0NDFhZTRiNGI1ODllNDc3OGZjZTUwOGE2NmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
         },
         {
-          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/admin/PaymentSettingSaveService.java#L97-L133",
+          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/admin/PaymentSettingSaveService.java#L109-L145",
           "version": "repo-lines-v1:sha256:f8a9191ea62897dcec6c5e522b1095d7e3f8c9fe530ec26f03d8ce4abbe43ebd:eyJzZWxlY3RlZExpbmVDb3VudCI6MzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYyYWM5YzMzNTQ4NDY4YmRmNmUzY2Y3ZjFhN2VjNTY3MWU0ZDJmMDk4OGI2NjZkZDNlNDM5NjEyMDQ3NDJhZDEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY1OTBlNzRiMjBmY2Y2MWVmN2EwYWY1ODdiZDM2OTBjYjU0ZjE2ZTA5OWI5YTI0ZTJlNjMxY2JmODcyMmJjMjQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU5OGY5YTExYmE4ZTI1NDQzODcwNTlmOTEyYmRkZDA2MjQwZGI4NGQ0ZDVhMmYyNTY4NTAxZTMyNjJjODI5NDcifQ"
         }
       ]
@@ -539,10 +539,70 @@
           "version": "repo-lines-v1:sha256:906c16515b1534aeb25afcfbedf1dac289cb07e2fff074b869dba4730052cfd7:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjUyNzUzYTFkNWRkZmFmZTVmZTY4MGZhN2Y4MDQwYzU4ODVmMjZmYmNiYzUxYTQ3OWU3NmZmYzI1N2JhZjk3NyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjM5NGI5N2MxNTdmM2FmMDQ5ZWE2MWQwZjY3ZTYzYmI3NDE1ZTY5NWJkMGUxOTc3OWQ1NDQ2ZjZhMTUxNmY2NyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSJ9"
         }
       ]
+    },
+    {
+      "id": "claim_7d5fc526dfa349f18167e5e68aaeac6a",
+      "statement": "AlipayNotifyFacade (POST /api/v1/alipay/notify) resolves the owning company BEFORE signature verification: it picks deposit-vs-order from the attach=depositRecharge marker, then asks the owning side to prove the company via AlipayNotifyDepositSidePort.requireCompanyIdByDepositTradeId (deposit Trade row) or AlipayNotifyOrderSidePort.requireCompanyIdByTradeId (orders Trade row), and throws 储值单企业与回调企业不一致 / 订单企业与回调企业不一致 when the row's company differs from the notify context company.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-deposit/src/main/java/cn/shopex/ecshopx/deposit/integration/alipay/AlipayNotifyDepositSidePortImpl.java#L36-L58",
+          "version": "repo-lines-v1:sha256:b8646156ad69c1f8a11b93af1eac4a468c391af2922ba3078f7f54df433adee9:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRkMzk4NjA3OTkyZTQ5NTgxYzkwMDkzMzViNGM4NTYwYTEwNzcxODhkOGMzMWQyMzJjOGUyNGRhZWM5MjRlNzQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZjODc4OGIxNDBhYzQwYTQ2ODRlODlhMWZlYjEzZmQzM2EwN2RlNzE5OTc1ZmVkZTdiZDMwYmI4ZTY0MjM2Y2EiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIyMGJiMWQwNzYxZDMxZjhhYzczZmE5ZGU0ODlkNWQ1YWMyZTQ5Nzc5Y2RjMTlhZTFjOGY1ZGU0NDZhZWNjN2YiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIxMTRiMTEyMTM2OTc2NDRmZDg2MzU0NzQzZGNlZWNiNjM5NjJkODIxYTVjYjg5MjM4OTYxOGNmNjQ4MTMyMzIifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/alipay/AlipayNotifyOrderSidePortImpl.java#L39-L60",
+          "version": "repo-lines-v1:sha256:35db85f81ce0b290b2b0084bca33eef81a161e0eb556affe4070857cd177cd4b:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ2ZjNlYjRkYzExZjA4YTQ1YmJhYmI4OGJkZDljNWRiODI2NDY2ZWZjYmYyNzJjODUzMmI3Y2UyYzU4MDYxMjQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUyNWZkMjhhN2Q0NWQwNDU4MGJjYzU0ZWQxM2ExYmI4M2MxYjI5YzQ2ODQ1YTM5N2UzNTY4NGI5MGExYWM3MGEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRjNTAxYzgyM2E2ZjA4NjliZTlmNTEwMzQzZDQwZDlkNmRiODdmMTI3NmYzYTNkZTZiNGVhODNhMzlhOTNhZGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRhODVhYWFhYWEwNTgzOGFlMzgwM2JjYTk2OTFkNzdhZmVkMGVhNzJmM2UzMTIwYjc5NTdmOThjZjQzZGM1YmIifQ"
+        },
+        {
+          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/AlipayNotifyFacade.java#L88-L100",
+          "version": "repo-lines-v1:sha256:da30a9c2eb9b0f7dd2a58133b4470e9cffb141ca62e7b9a677743b3b60a89cb7:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZhNzdlNjNlZmQyYmQ2ODg5ZmVmNWM2MTY1ODlhMzIyODk1OGNmNWFiZTZiOTFlOWViMzc3YjJkNTgyNjUwNzgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM4MTQwMTRlNmY0ZGRhNDY5YzFiZWFhM2U4ODBkZTA1ZjQwOTJhZGIzMWFiOThjYzU0NzlkMjgzNGI1YjU1NTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAwZWUxMmI2MjFmOTBhMGM2Y2ZmNGQ2MGNkMWU2MjI3ZmM3ZTY3MDdiNjVkMGE1NWE4NmEyODM0ZDdkNjZmNjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjgyMjcyNTFlNzIzYTJjNzg1ZTA4MGFiNGVmOTJjODZjODQ2ZWJmNTFiOGI5ZjFjZmNkOGQ3OTlmMjQ3Mjc3YzUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_c72fdf9e29dd44868eb28e5f95e33217",
+      "statement": "AlipayNotifyFacade normalizes TRADE_SUCCESS/TRADE_FINISHED to SUCCESS, routes depositRecharge to AlipayNotifyDepositSidePort.rechargeCallback and everything else to AlipayNotifyOrderSidePort.applyTradePaymentAfterAlipay, and answers any exception inside the apply with an empty HTTP 200 (ResponseEntity.ok().build()) so a business replay never triggers a gateway retry.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/api/admin/v1/PaymentNotifyController.java",
+          "version": "repo-file-v1:sha256:79068b81ad0291c9cba7c664b6cbe1d81502bca7c5c70f20aeb4e39607313d52"
+        },
+        {
+          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/AlipayNotifyFacade.java#L124-L146",
+          "version": "repo-lines-v1:sha256:ac7cf25bd20b3e21c4f609526e66087ec3656ce2861f8b56884dd87043f4d0fa:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU2Zjk3YzFkYWZiZDA1NTc1NDEzOWVlZWRkZGIxYjI5NDU1M2M4ZjJjZTcyMDM4NDgwMWE2NWQ4M2EzYzlmYzQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdhZmM4YWUyYmUzNTJhMDk3NDJmNWZkNjUzN2JhYTQyMmUyMjQ0ZjExNzdiZWNlMDgzNzc1NDAyYzMyNjNkYjkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIzNTRiMWVkN2M4YzAzOTRkNmZhZDIyZGNiZDJkZTk5ZGM4OTQ4YjM1ZjljNWIyZTNkNjBlZWVjMGU2OTU0YzgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQyNDMzY2IxNjJhYTkwMWY2N2ExZDAyNTg2OGFkZmZmNjk0ZDc5Y2MyN2Y0ODY2M2EwOGQ2MDc4OGI1ZmIyN2YifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_58717f48d120417eb99e643c01712265",
+      "statement": "AlipayH5SyncReturnService.alipayResult (GET /api/v1/h5app/wxapp/trade/payment/alipay/result, front @FrontNoAuth) is a signed sync return, not a server notify: after verifySignedNotify it queries the gateway via AlipayOpenapiTradeQueryService.queryTrade and routes on the queried trade_status (not the return params), decoding passback_params for attach/company_id and cross-checking a passback company_id against the deposit row in the deposit branch.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/api/front/v1/PaymentController.java",
+          "version": "repo-file-v1:sha256:09d7b8d4f686c2ceba41f40620221bc22069fe36281648ca983a923d26105fbb"
+        },
+        {
+          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/AlipayH5SyncReturnService.java#L108-L190",
+          "version": "repo-lines-v1:sha256:058ee8a0ec790fc2c37bb6cb7de37f550254c37759581228e2ef09df7413399e:eyJzZWxlY3RlZExpbmVDb3VudCI6ODMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZhZjAxOWQ5ZmM2MGZjMDVmMTE2MzA5MzhiNjYxMGJmMTRiYWVhOTc5ZmQ1M2UzMjEyNzY5ZDc4NTZhYjlmYTkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVhNWFhOWEwMDVlZDlkN2JjMWE4YTQxMmUzMDQ5MjhmNmM3NDc2ZDJjMGEyZDk3NzE0MjYxM2E0OGI5MWQ2NzciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg5MmZiYjUzNGM2NjZkYjVhZjRkMTk2ZjYwNTMwOTI3ZTU4MmViM2QwZmVhYTZhNzYwZDY2NTM5OGQ1MzgxNzEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhiMzQ4OWNiOTg2OThhNzk1MjRjOGExYThhYTAyZmM2NTMxYzgzNGM3NTliMmY4ZjRmZTA1ZmI3NDQzNGEyYjAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_a9340e20ebcb45488132c77ad52fd49b",
+      "statement": "PaymentSettingDistributorAccessGuard gates admin payment-setting read/write before any per-channel writer runs: a distributor operator is forced to their JWT distributor_id (a mismatched or missing id yields 无权限 / ForbiddenException), an HQ operator keeps the request distributor id, and any non-zero target distributor must belong to the company via DistributorGetInfoSimpleByDistributorIdPort; only then does DoumenIntlMutualExclusionService.validateBeforeSave and the channel writer run.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/admin/PaymentSettingDistributorAccessGuard.java#L44-L72",
+          "version": "repo-lines-v1:sha256:b4a69adc7e5c09b2a52e3d0eeeb4dde6093c36c0e1d46d16e2ee67d18189f51f:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ0NjhhNTdkMDQ0NGViMjI5Zjc1M2VjODFiOGNmZjY3MjUwMTQzMjc0ZGViMTkxMmQ1MThhYjczODI0ZWYwYjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhhYjdlMGZkNmYzNDY2N2U5NTA4ZTUyZWFkMDRhM2M0Y2JjNGY5ZjYzNjcxM2UyY2RmZGM2ZDZkNjdiMzM4OTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjgwNTk2NDc5YzhlMTI2ODcwYmJiNWFiMGU1ZTUzZTAxYzU5MTJlYzMzYWUyMjdlNDRlYzYwODY5N2IyMDVlZjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjllOTQ5OTQyZjIxZjk1YWRlY2JiMWU4NzA3M2E4OWY0YWVjY2NjZmNmYzhhOGFmZTkwYjRlNDQ0NDJmZmYwZWYifQ"
+        },
+        {
+          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/admin/PaymentSettingSaveService.java#L108-L120",
+          "version": "repo-lines-v1:sha256:02a9803127af997fb964432c7e5cb69f6d7fdfaa47b26b31881f4114aaaea5de:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjExMGNiZTNlYjI5NGYwZDYzNjc4NjMyYWU0YjkxN2NlYTIxZjE3NzNlNGE4NTUwMDU4NGUwZWFmMDg4M2U4ZjkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY3MzU1ZDIxMWZhNTg3OTAyZTcwZDk0MWNlNTQzNWQ0NGY3N2YxODQxNDZhNTdlMDJhYzBhY2IyZmI2ZjM0ZDIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQyMjM5ZDRhNzNmZTk4Y2JiZDZhNzUwMjFkZjRlZjFjZmM5YzAwYTcxN2UwM2I1YTBlNzdmNmQzM2I1YWEzODQifQ"
+        }
+      ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.7.2",
-    "at": "2026-10-21T12:26:22.580Z"
+    "by": "openwiki/0.7.3",
+    "at": "2026-11-04T17:09:55.577Z"
   }
 }

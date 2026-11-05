@@ -34,18 +34,21 @@ public class PassphraseBehaviorReportService {
 	private final ActivityPassphraseService activityPassphraseService;
 	private final ActivityEnterpriseBehaviorLogService activityEnterpriseBehaviorLogService;
 	private final PassphraseVerifiedRedisService passphraseVerifiedRedisService;
+	private final PassphraseBehaviorRateLimitService passphraseBehaviorRateLimitService;
 
 	public PassphraseBehaviorReportService(
 			ActivitiesMapper activitiesMapper,
 			EmployeePurchaseActivityDataService employeePurchaseActivityDataService,
 			ActivityPassphraseService activityPassphraseService,
 			ActivityEnterpriseBehaviorLogService activityEnterpriseBehaviorLogService,
-			PassphraseVerifiedRedisService passphraseVerifiedRedisService) {
+			PassphraseVerifiedRedisService passphraseVerifiedRedisService,
+			PassphraseBehaviorRateLimitService passphraseBehaviorRateLimitService) {
 		this.activitiesMapper = activitiesMapper;
 		this.employeePurchaseActivityDataService = employeePurchaseActivityDataService;
 		this.activityPassphraseService = activityPassphraseService;
 		this.activityEnterpriseBehaviorLogService = activityEnterpriseBehaviorLogService;
 		this.passphraseVerifiedRedisService = passphraseVerifiedRedisService;
+		this.passphraseBehaviorRateLimitService = passphraseBehaviorRateLimitService;
 	}
 
 	public Map<String, Object> report(Map<String, Object> input) {
@@ -63,6 +66,11 @@ public class PassphraseBehaviorReportService {
 		long enterpriseId = longVal(input.get("enterprise_id"), 0L);
 		Long userId = nullableUserId(input.get("user_id"));
 		String visitorKey = stringVal(input.get("visitor_key"));
+		String clientIp = stringVal(input.get("client_ip"));
+
+		// ECX-10917：未认证上报限流，防刷库（超限 429，零流水写入）
+		passphraseBehaviorRateLimitService.assertAllowed(
+				companyId, activityId, enterpriseId, userId, visitorKey, clientIp);
 
 		Activities activity = loadActivityOrThrow(companyId, activityId);
 		employeePurchaseActivityDataService.assertActivityExistsAndEnterpriseParticipates(

@@ -3,9 +3,6 @@ type: domain-reference
 title: Payments and Channels
 description: The payment stack — ecshopx-payment settings/notify facades plus the channel bundles hfpay, adapay, bspay, and chinaums-pay — covering the notify endpoints and signature verification, the order-side vs deposit-side port inversion, channel refund executors, merchant withdrawals, and the XXL-Job retry loops.
 tags: [payments, hfpay, adapay, bspay, chinaums, wxpay, alipay, doumen-intl, notify, refund, withdraw, dispatch-bus, xxl-job, redis]
-verified:
-  - by: openwiki/0.7.2
-    at: 2026-10-21T12:26:22.580Z
 sources:
   - id: openwiki-source-f0779693ebca8a2fc42508b5
     resource: repo://ecshopx-adapay/src/main/java/cn/shopex/ecshopx/adapay/api/admin/v1/CallBackController.java
@@ -105,6 +102,8 @@ sources:
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/api/admin/v1/PaymentNotifyController.java
   - id: openwiki-source-96262528212b8b2804c67f8f
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/api/admin/v1/PaypalNotifyController.java
+  - id: openwiki-source-1ccbca38ff13b6c8b4a6239c
+    resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/api/front/v1/PaymentController.java
   - id: openwiki-source-4c7a3bc700c378ccd65c4327
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/api/open/WxpayNotifyController.java
   - id: openwiki-source-0bfae3187b4a720c922e07fc
@@ -125,10 +124,14 @@ sources:
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/admin/DoumenIntlMutualExclusionService.java
   - id: openwiki-source-f4f2fc3f040de90a6b782487
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/admin/HfpayVersionStatusService.java
+  - id: openwiki-source-4477d3022af654a0036c3021
+    resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/admin/PaymentSettingDistributorAccessGuard.java
   - id: openwiki-source-e8869ad80079db04fe535a80
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/admin/PaymentSettingSaveService.java
   - id: openwiki-source-64fa255fa9b2b100903e0ba4
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/AlipayAsyncNotifyVerificationService.java
+  - id: openwiki-source-aaad8326cee5c8f000796994
+    resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/AlipayH5SyncReturnService.java
   - id: openwiki-source-fc41d8fb1ed3fb46beacafec
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/AlipayNotifyFacade.java
   - id: openwiki-source-a119bdf135fa6b12d8b0f6a3
@@ -163,7 +166,10 @@ sources:
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/support/DoumenIntlStatusMapper.java
   - id: openwiki-source-c95fb5887e03d45919d723b1
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/support/PaymentSettingRedisKeys.java
-generated: { by: "openwiki/0.7.2", at: "2026-10-21T12:26:22.580Z" }
+generated: { by: "openwiki/0.7.3", at: "2026-11-04T17:09:55.577Z" }
+verified:
+  - by: openwiki/0.7.3
+    at: 2026-11-04T17:09:55.577Z
 ---
 
 # Payments and Channels
@@ -218,12 +224,20 @@ The facade resolves the trade's company and distributor before verifying: `Wxpay
 
 Routing is one field: the `attach` payload's `depositRecharge` marker sends the callback to `AlipayNotifyDepositSidePort.rechargeCallback` (deposit's impl delegates to `AdapayDepositTradeRechargeCallbackService`); anything else goes to `AlipayNotifyOrderSidePort.applyTradePaymentAfterAlipay`, which is a thin wrapper over orders' `OrdersTradePaymentCallbackService.applyTradePaymentNotify`. **Idempotency is preserved by acking anyway**: the facade catches `BadRequestException`/`ResourceException` from the port call (the "更新已处理，不需要更新" already-processed exception among them), logs at debug, and still returns XML `SUCCESS` — a replayed notify never tells the gateway to keep retrying. Only an unexpected exception (signature failure, missing config) produces the `FAIL` body.
 
+## The alipay facade and the H5 sync-return: company binding before verification
+
+`AlipayNotifyFacade.handle` (`POST /api/v1/alipay/notify`) and `AlipayH5SyncReturnService.alipayResult` (`GET /api/v1/h5app/wxapp/trade/payment/alipay/result`, the front `@FrontNoAuth` controller) share the same discipline: **resolve the owning company and distributor from the trade row before any signature check**, because the RSA verify keys live in the per-company (and possibly per-distributor) Redis setting.
+
+The async facade loads the params, decides deposit-vs-order from the `attach` marker, then asks the owning side to prove the company: deposit → `AlipayNotifyDepositSidePort.requireCompanyIdByDepositTradeId` (reads the `DepositTrade` row, rejects a missing/blank/invalid `company_id`); order → `AlipayNotifyOrderSidePort.requireCompanyIdByTradeId` (same shape over the `Trade` row). In both branches the facade **rejects a cross-company callback** (`储值单企业与回调企业不一致` / `订单企业与回调企业不一致`) when the row's company differs from the notify context company, then resolves `distributorIdForSetting` via `resolveDistributorIdForAlipayRedis` and only then loads the `alipayPaymentSetting` key and calls `AlipayAsyncNotifyVerificationService.verifySignedNotify`. `TRADE_SUCCESS`/`TRADE_FINISHED` normalize to `SUCCESS`. Any exception inside the apply is logged and answered with an **empty 200** (`ResponseEntity.ok().build()`), so a business replay never triggers a gateway retry.
+
+The H5 sync-return is stricter because it is a *signed front-channel return, not a server notify*: after the same verify it **queries the gateway for ground truth** via `AlipayOpenapiTradeQueryService.queryTrade` and routes on the queried `trade_status` (not the return params), decoding `passback_params` to recover the `attach`/`company_id` context. The deposit branch additionally cross-checks a passback `company_id` against the deposit row. On a `SUCCESS` for a non-deposit trade it invokes only `AlipayNotifyOrderSidePort`; the Jushuitan dispatch-bus publish stays in the orders-layer callback shared with the async notify, and the trade-finish fan-out can reach the WXA template path (which may dispatch `job:114` under wxpay/deposit pay types).
+
 ## The port inversion: who owns what
 
 The payment bundle defines the port interfaces; the state owner implements them. This keeps `ecshopx-payment` free of Maven dependencies on orders/deposit while every notify funnel ends in the same place:
 
-* **`AlipayNotifyOrderSidePort`** (`payment/integration/alipay/`) — `resolveDistributorIdForAlipayRedis` + `applyTradePaymentAfterAlipay`; implemented by orders' `AlipayNotifyOrderSidePortImpl`. Despite the alipay name it is the shared entry used by both the alipay and wxpay facades.
-* **`AlipayNotifyDepositSidePort`** — `rechargeCallback`; implemented by deposit's `AlipayNotifyDepositSidePortImpl`, delegating to `AdapayDepositTradeRechargeCallbackService`.
+* **`AlipayNotifyOrderSidePort`** (`payment/integration/alipay/`) — `requireCompanyIdByTradeId` + `resolveDistributorIdForAlipayRedis` + `applyTradePaymentAfterAlipay`; implemented by orders' `AlipayNotifyOrderSidePortImpl`. Despite the alipay name it is the shared entry used by both the alipay and wxpay facades.
+* **`AlipayNotifyDepositSidePort`** — `requireCompanyIdByDepositTradeId` + `rechargeCallback`; implemented by deposit's `AlipayNotifyDepositSidePortImpl`, delegating to `AdapayDepositTradeRechargeCallbackService`.
 * **`ChinaumsNotifyOrderSidePort`** — `applyTradePaymentAfterChinaums`; implemented by orders' `ChinaumsNotifyOrderSidePortImpl`. `ChinaumsNotifyFacade` maps `TRADE_SUCCESS`→`SUCCESS`, and **acks `TRADE_REFUND` without processing** (refund state arrives through the refund executors instead).
 * **`DoumenIntlNotifyOrderSidePort`** — `findTrade` (a `TradeBrief` without state mutation) + `applyTradePayment`; implemented by orders' `DoumenIntlNotifyOrderSidePortImpl`. `DoumenIntlNotifyFacade` uses `findTrade` to resolve the company **before** signature verification (the secret lives in the company's doumen setting), swallows `ResourceException` on apply (`applyQuietly` — same already-handled semantics as wxpay), and acks `00000000` for pending statuses and unhandled statuses alike.
 * **`WxpayNotifyCompanyIdPort`** — appId→companyId resolution; implemented by orders' `WxpayNotifyCompanyIdPortImpl` as a peek over the `wechat_authorization` company mapping.
@@ -238,6 +252,8 @@ Bspay and adapay bypass these ports — their callback orchestrators call their 
 ## Channel settings: the admin API and the Redis layout
 
 `PaymentController` (`/api/v1/trade/payment`) is the admin surface: `POST /setting` (route alias `trade.payment.setting.set`), `GET /setting`, `GET /open-status`, `GET /list`, `GET /hfpayversionstatus`, `GET /rsakey` (RSA keypair generation). `PaymentSettingSaveService.setPaymentSetting` fans out to per-channel writers (wxpay, alipay, paypal, hfpay, adapay, offline_pay, chinaumspay, bspay, icbcpay, doumen_intl) after one cross-cutting check; `point_pay` is diverted entirely to `PointMemberRuleSaveService.savePointPayFirstOnly`.
+
+The cross-cutting check is `PaymentSettingDistributorAccessGuard` (ECX-10856/10863), which gates settings read/write by company ownership and store-operator JWT scope: a `distributor` operator is forced to their JWT `distributor_id` (a request for any other distributor id, or a missing/invalid one, is `无权限`), while an HQ operator keeps the request distributor id; any non-zero target distributor must belong to the company, proven via `DistributorGetInfoSimpleByDistributorIdPort`. Only after the guard passes does `DoumenIntlMutualExclusionService.validateBeforeSave` run, then the per-channel writer.
 
 All channel credentials live in Redis, never in the orders tables. The key grammar (`PaymentSettingRedisKeys`, on the **companys** Redis unless noted):
 
@@ -347,6 +363,7 @@ Every handler follows the same envelope: run the service method, log cost, and o
 ## Invariants and failure semantics
 
 * **Verify before write.** All six live notify facades check the signature before touching the trade; a failed check fails the ack so the gateway retries.
+* **Bind the company before you verify.** Alipay (async and H5 sync-return) and doumen resolve the owning company/distributor from the trade or deposit row *before* signature verification, because the verify key lives in that row's Redis setting; alipay rejects a cross-company callback outright (`储值单企业与回调企业不一致`).
 * **Ack on business replay.** wxpay and doumen-intl swallow the already-processed exception and ack SUCCESS; chinaums/doumen return plain SUCCESS/`00000000`; bspay withdraw skips on SUCCESS status. The gateway should never retry a trade that is merely already handled — only a genuinely broken one.
 * **NOTPAY is the CAS.** Every orders-side callback (`applyTradePaymentNotify`, adapay, bspay) re-reads the trade and refuses to move a non-NOTPAY row; `trade_no` is assigned from the Redis daily sequence exactly once.
 * **Withdrawals persist before dispatch.** The hfpay T1 flow inserts the cash record first and publishes event 268 after — the listener re-reads the row by id, so a lost event loses a submission but never corrupts a record. The same order holds for the popularize path (trade insert, then event 270).
@@ -378,6 +395,7 @@ Every handler follows the same envelope: run the service method, log cost, and o
 * `WechatPayServiceTest` + `ScheduleQueryMerchantPaymentHandlerTest` — batch-transfer status mapping (FINISHED/CLOSED, success_num), scene fan-out.
 * `ScheduleRetryAdaPayPaymentConfirmHandlerTest`, `ScheduleRetryBsPayConfirmHandlerTest`, `AdaPaymentServiceTest`, `BsPayServiceTest` — retry cron envelope and port delegation.
 * `AlipayNotifyFacadeDepositSmsDispatchTest`, `FrontPaymentSettingReadServiceDepositListTest` — deposit routing and front-end setting shape.
+* `AlipayH5SyncReturnServiceTest` (payment) plus the orders-side probes `AlipayH5SyncReturnServiceOrderProcessLogPublishProbeTest` and `AlipayH5SyncReturnServiceTradePayFinishStatisticsPublishTest` — the sync-return verify/query/route flow and its trade-finish fan-out.
 * hfpay: `HfpayCashRecordServiceTest` (qry008 polling, Redis lock, status transitions), `HfpayCashRecordWithdrawServiceDistributorWithdrawPublishProbeTest` (event-268 publish envelope), `HfpayAftersalesRefundPayExecutorHfpayRefundSuccessDispatchPublishProbeTest`, `HfpayCompanyDayStatisticsServiceTest`/`HfpayDistributorStatisticsDayServiceTest`, plus the dispatch listener tests under `hfpay/dispatch`.
 * bootstrap: `HfpayDistributorWithdrawEventSyncBusDispatchFlowTest`, `HfpayPopularizeWithdrawEventSyncBusDispatchFlowTest`, `HfpayProfitSharingEventSyncBusDispatchFlowTest`, `WithdrawJobDispatchFlowTest` — end-to-end registry + publisher + listener assembly (the pattern every cross-bundle event should copy).
 * adapay: `AdapayAutoCloseAftersalesPaymentConfirmationServiceTest`, `AdaPayPaymentConfirmRetryPortAdapterTest`, `OpenAccountServiceTest`; bspay: `BspayAutoCloseAftersalesPaymentConfirmationServiceTest`, `BspayPaymentConfirmRetryPortAdapterTest`.

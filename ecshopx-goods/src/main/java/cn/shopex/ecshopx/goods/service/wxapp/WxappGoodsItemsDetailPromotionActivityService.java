@@ -35,6 +35,7 @@ import cn.shopex.ecshopx.promotions.mapper.SeckillRelGoodsMapper;
 import cn.shopex.ecshopx.promotions.service.PromotionGroupsActivityAdminRowAssembler;
 import cn.shopex.ecshopx.promotions.service.PromotionGroupsTeamItemsListService;
 import cn.shopex.ecshopx.promotions.service.SeckillActivityCreateService;
+import cn.shopex.ecshopx.promotions.service.systemtag.MemberCrowdMatcher;
 import cn.shopex.ecshopx.promotions.service.wxapp.WxappSeckillActivityItemStoreReadService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -71,6 +72,7 @@ public class WxappGoodsItemsDetailPromotionActivityService {
 	private final SeckillActivityCreateService seckillActivityCreateService;
 	private final PromotionGroupsActivityAdminRowAssembler promotionGroupsActivityAdminRowAssembler;
 	private final ObjectMapper objectMapper;
+	private final MemberCrowdMatcher memberCrowdMatcher;
 
 	public WxappGoodsItemsDetailPromotionActivityService(ItemsRepository itemsRepository, SeckillRelGoodsMapper seckillRelGoodsMapper,
 			SeckillActivityMapper seckillActivityMapper, WxappSeckillActivityItemStoreReadService wxappSeckillActivityItemStoreReadService,
@@ -81,7 +83,8 @@ public class WxappGoodsItemsDetailPromotionActivityService {
 			LimitPromotionsMapper limitPromotionsMapper, ItemsRelTagsRepository itemsRelTagsRepository,
 			SeckillActivityCreateService seckillActivityCreateService,
 			PromotionGroupsActivityAdminRowAssembler promotionGroupsActivityAdminRowAssembler,
-			ObjectMapper objectMapper) {
+			ObjectMapper objectMapper,
+			MemberCrowdMatcher memberCrowdMatcher) {
 		this.itemsRepository = itemsRepository;
 		this.seckillRelGoodsMapper = seckillRelGoodsMapper;
 		this.seckillActivityMapper = seckillActivityMapper;
@@ -95,9 +98,14 @@ public class WxappGoodsItemsDetailPromotionActivityService {
 		this.seckillActivityCreateService = seckillActivityCreateService;
 		this.promotionGroupsActivityAdminRowAssembler = promotionGroupsActivityAdminRowAssembler;
 		this.objectMapper = objectMapper;
+		this.memberCrowdMatcher = memberCrowdMatcher;
 	}
 
 	public Map<String, Object> getCurrentActivityByItemId(long companyId, long itemId, long distributorId) {
+		return getCurrentActivityByItemId(companyId, itemId, distributorId, 0L);
+	}
+
+	public Map<String, Object> getCurrentActivityByItemId(long companyId, long itemId, long distributorId, long userId) {
 		int now = (int) (System.currentTimeMillis() / 1000L);
 		Items p1 = itemsRepository.getByItemIdAndCompany(itemId, companyId);
 		if (p1 == null) {
@@ -105,7 +113,7 @@ public class WxappGoodsItemsDetailPromotionActivityService {
 		}
 		List<Long> candidateItemIds = resolveCandidateItemIds(p1, companyId, itemId);
 
-		Map<String, Object> seckillData = trySeckillBranch(companyId, p1, candidateItemIds, distributorId, now);
+		Map<String, Object> seckillData = trySeckillBranch(companyId, p1, candidateItemIds, distributorId, now, userId);
 		if (seckillData != null) {
 			return seckillData;
 		}
@@ -150,7 +158,7 @@ public class WxappGoodsItemsDetailPromotionActivityService {
 		return !"true".equalsIgnoreCase(s) && !"1".equals(s);
 	}
 
-	private Map<String, Object> trySeckillBranch(long companyId, Items p1, List<Long> candidateItemIds, long distributorId, int now) {
+	private Map<String, Object> trySeckillBranch(long companyId, Items p1, List<Long> candidateItemIds, long distributorId, int now, long userId) {
 		LambdaQueryWrapper<SeckillRelGoods> w = new LambdaQueryWrapper<>();
 		w.eq(SeckillRelGoods::getCompanyId, companyId)
 				.in(SeckillRelGoods::getItemId, candidateItemIds)
@@ -193,6 +201,10 @@ public class WxappGoodsItemsDetailPromotionActivityService {
 		}
 		SeckillActivity act = lastSeckillId > 0 ? seckillActivityMapper.selectById(lastSeckillId) : null;
 		if (act == null) {
+			return null;
+		}
+		if (!memberCrowdMatcher.matchesLimitedTimeSale(
+				companyId, userId, act.getSeckillType(), act.getMemberTagIds(), act.getMemberTagMode())) {
 			return null;
 		}
 		Map<String, Object> info = seckillActivityCreateService.buildGoodsDetailSeckillActivityInfo(act);

@@ -36,6 +36,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
@@ -83,7 +84,7 @@ public class UserDiscountReceiveCardService {
 		this.wxaTemplateMsgCouponNotifyService = wxaTemplateMsgCouponNotifyService;
 	}
 
-	@Transactional(rollbackFor = Exception.class)
+	@Transactional(rollbackFor = Exception.class, isolation = Isolation.READ_COMMITTED)
 	public Map<String, Object> receiveCard(
 			long companyId,
 			long userId,
@@ -94,7 +95,7 @@ public class UserDiscountReceiveCardService {
 		return receiveCard(companyId, userId, mobile, cardId, salespersonId, salespersonCode, SOURCE_FROM_MALL_LOCAL);
 	}
 
-	@Transactional(rollbackFor = Exception.class)
+	@Transactional(rollbackFor = Exception.class, isolation = Isolation.READ_COMMITTED)
 	public Map<String, Object> receiveCard(
 			long companyId,
 			long userId,
@@ -106,7 +107,7 @@ public class UserDiscountReceiveCardService {
 		return receiveCard(companyId, userId, mobile, cardId, salespersonId, salespersonCode, sourceFrom, null);
 	}
 
-	@Transactional(rollbackFor = Exception.class)
+	@Transactional(rollbackFor = Exception.class, isolation = Isolation.READ_COMMITTED)
 	public Map<String, Object> receiveCard(
 			long companyId,
 			long userId,
@@ -262,12 +263,13 @@ public class UserDiscountReceiveCardService {
 	}
 
 	private DiscountCards loadCardOrThrow(long companyId, long cardId) {
+		// ECX-10897：先锁卡券行，再计算库存和人均，避免并发领取超发。
 		DiscountCards c =
 				discountCardsMapper.selectOne(
 						new LambdaQueryWrapper<DiscountCards>()
 								.eq(DiscountCards::getCompanyId, companyId)
 								.eq(DiscountCards::getCardId, cardId)
-								.last("LIMIT 1"));
+								.last("LIMIT 1 FOR UPDATE"));
 		if (c == null) {
 			throw new ResourceException(KaquanDiscountCardMessages.COUPON_INVALID);
 		}

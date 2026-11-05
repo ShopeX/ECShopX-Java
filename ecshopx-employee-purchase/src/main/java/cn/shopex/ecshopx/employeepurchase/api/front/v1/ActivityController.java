@@ -109,8 +109,18 @@ public class ActivityController {
 				merged.putIfAbsent("company_id", companyAttr);
 			}
 		}
+		// ECX-10917：未登录且无 visitor_key 时以 IP 作为限流主体
+		merged.putIfAbsent("client_ip", clientIp(request));
 		Map<String, Object> data = passphraseBehaviorReportService.report(merged);
 		return ResponseEntity.ok(ApiResult.ok(data));
+	}
+
+	private static String clientIp(HttpServletRequest request) {
+		String xff = request.getHeader("X-Forwarded-For");
+		if (StringUtils.hasText(xff)) {
+			return xff.split(",")[0].trim();
+		}
+		return request.getRemoteAddr() != null ? request.getRemoteAddr() : "";
 	}
 
 	@GetMapping("/wxapp/employeepurchase/is_open")

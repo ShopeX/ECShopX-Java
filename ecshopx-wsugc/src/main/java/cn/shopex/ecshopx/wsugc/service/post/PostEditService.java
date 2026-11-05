@@ -104,13 +104,17 @@ public class PostEditService {
 		if (existing == null) {
 			throw new ResourceException("未查询到更新数据");
 		}
+		long companyIdForRel = readLong(operatorJwtOrEmpty.get("company_id"), 1L);
+		// ECX-10919：对齐 PHP WsugcTenantScopeGuard::assertPostIdsBelongToCompany
+		Long existingCompanyId = existing.getCompanyId() == null ? 0L : existing.getCompanyId();
+		if (!existingCompanyId.equals(companyIdForRel)) {
+			throw new ResourceException("无权访问该笔记");
+		}
 
 		int now = (int) (System.currentTimeMillis() / 1000);
 		applyPersistToPostForEdit(existing, persist);
 		existing.setUpdated(now);
 		postMapper.updateById(existing);
-
-		long companyIdForRel = readLong(operatorJwtOrEmpty.get("company_id"), 1L);
 
 		if (persist.containsKey("topics") && StringUtils.hasText((String) persist.get("topics"))) {
 			String topicsStr = (String) persist.get("topics");

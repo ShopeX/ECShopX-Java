@@ -128,7 +128,8 @@ class SeckillActivityCreateServiceShelvesDispatchAfterCommitTest {
 						applicationEventPublisher,
 						new ObjectMapper(),
 						tagPublisher,
-						shelvesPublisher);
+						shelvesPublisher,
+						mock(cn.shopex.ecshopx.members.service.systemtag.MemberAudienceTagValidator.class));
 
 		PlatformTransactionManager txMgr = mock(PlatformTransactionManager.class);
 		when(txMgr.getTransaction(any()))

@@ -100,7 +100,8 @@ public class SalespersonItemsDetailServiceImpl implements SalespersonItemsDetail
 
 		long workingItemId = effectiveItemId;
 		Map<String, Object> promotionActivityData =
-				wxappGoodsItemsDetailPromotionActivityService.getCurrentActivityByItemId(companyId, workingItemId, distributorId);
+				wxappGoodsItemsDetailPromotionActivityService.getCurrentActivityByItemId(
+						companyId, workingItemId, distributorId, userId);
 		List<Long> limitItemIds = deriveLimitItemIds(promotionActivityData);
 		if (!limitItemIds.isEmpty() && !limitItemIds.contains(workingItemId)) {
 			workingItemId = limitItemIds.get(0);
@@ -136,7 +137,7 @@ public class SalespersonItemsDetailServiceImpl implements SalespersonItemsDetail
 
 		List<Map<String, Object>> wrap = new ArrayList<>();
 		wrap.add(result);
-		goodsItemsListPromotionEnrichmentService.enrich(wrap);
+		goodsItemsListPromotionEnrichmentService.enrich(wrap, userId);
 		result = wrap.get(0);
 
 		applyPromotionActivityName(result, companyId);

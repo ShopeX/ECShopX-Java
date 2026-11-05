@@ -38,6 +38,9 @@ public final class OrdersDispatchEventNames {
 	public static final String LISTENER_YOUSHU_ORDERS_NORMAL_ORDER_PAY_SUCCESS =
 			"listener:youshu.orders_normal_order_pay_success";
 
+	public static final String LISTENER_MEMBERS_NORMAL_ORDER_PAY_SUCCESS_NEW_CUSTOMER =
+			"listener:members.normal_order_pay_success_new_customer";
+
 	public static final String LISTENER_WSUGC_BUNDLE_ORDERS_NORMAL_ORDER_PAY_SUCCESS =
 			"listener:WsugcBundle\\Listeners\\Order";
 
@@ -55,6 +58,9 @@ public final class OrdersDispatchEventNames {
 			"listener:orders.trade_finish_normal_order_pay_success_bridge";
 
 	public static final String LISTENER_YOUSHU_ORDERS_NORMAL_ORDER_CANCEL = "listener:youshu.orders_normal_order_cancel";
+
+	public static final String LISTENER_MEMBERS_NORMAL_ORDER_CANCEL_NEW_CUSTOMER =
+			"listener:members.normal_order_cancel_new_customer";
 
 	public static final String EVENT_WX_ORDER_SHIPPING = "event:orders:wx_order_shipping";
 

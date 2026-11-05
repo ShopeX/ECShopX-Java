@@ -98,6 +98,14 @@ public class MarketingActivity {
     @MpField(value = "valid_grade", columnType = "text", nullable = true, comment = "会员级别集合")
     private String validGrade;
 
+    /** 会员人群标签 ID JSON 数组 */
+    @MpField(value = "member_tag_ids", columnType = "text", nullable = true, comment = "会员人群标签ID JSON数组")
+    private String memberTagIds;
+
+    /** include 适用 / exclude 不适用 */
+    @MpField(value = "member_tag_mode", columnType = "string", length = 16, nullable = true, comment = "include适用 exclude不适用")
+    private String memberTagMode;
+
     /** 营销条件标准  quantity:按总件数, totalfee:按总金额 */
     @MpField(value = "condition_type", columnType = "text", comment = "营销条件标准  quantity:按总件数, totalfee:按总金额", defaultValue = "totalfee")
     private String conditionType = "totalfee";

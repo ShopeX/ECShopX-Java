@@ -29,6 +29,7 @@ import cn.shopex.ecshopx.members.integration.admin.AdminMemberGetInfoPointPayloa
 import cn.shopex.ecshopx.members.mapper.MemberRelTagsMapper;
 import cn.shopex.ecshopx.members.mapper.MemberTagsMapper;
 import cn.shopex.ecshopx.members.service.account.MemberAccountService;
+import cn.shopex.ecshopx.members.service.systemtag.MemberDetailTagFieldsAssembler;
 import cn.shopex.ecshopx.thirdparty.service.marketingcenter.MarketingCenterOpenApiSignedFormClient;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -59,6 +60,7 @@ public class AdminMemberGetMemberInfoService {
 	private final AdminMemberGetInfoDepositTotalPort adminMemberGetInfoDepositTotalPort;
 	private final AdminMemberGetInfoPointPayloadPort adminMemberGetInfoPointPayloadPort;
 	private final LangueProperties langueProperties;
+	private final MemberDetailTagFieldsAssembler memberDetailTagFieldsAssembler;
 
 	public AdminMemberGetMemberInfoService(
 			MemberAccountService memberAccountService,
@@ -70,7 +72,8 @@ public class AdminMemberGetMemberInfoService {
 			AdminMemberGetInfoDistributorDisplayNamePort adminMemberGetInfoDistributorDisplayNamePort,
 			AdminMemberGetInfoDepositTotalPort adminMemberGetInfoDepositTotalPort,
 			AdminMemberGetInfoPointPayloadPort adminMemberGetInfoPointPayloadPort,
-			LangueProperties langueProperties) {
+			LangueProperties langueProperties,
+			MemberDetailTagFieldsAssembler memberDetailTagFieldsAssembler) {
 		this.memberAccountService = memberAccountService;
 		this.memberRelTagsMapper = memberRelTagsMapper;
 		this.memberTagsMapper = memberTagsMapper;
@@ -81,6 +84,7 @@ public class AdminMemberGetMemberInfoService {
 		this.adminMemberGetInfoDepositTotalPort = adminMemberGetInfoDepositTotalPort;
 		this.adminMemberGetInfoPointPayloadPort = adminMemberGetInfoPointPayloadPort;
 		this.langueProperties = langueProperties;
+		this.memberDetailTagFieldsAssembler = memberDetailTagFieldsAssembler;
 	}
 
 	public Object getMemberInfo(long companyId, Map<String, Object> mergedParams, HttpServletRequest request) {
@@ -376,48 +380,26 @@ public class AdminMemberGetMemberInfoService {
 		List<MemberRelTags> relRows =
 				memberRelTagsMapper.selectList(
 						new LambdaQueryWrapper<MemberRelTags>().eq(MemberRelTags::getUserId, uid));
+		LinkedHashMap<Long, MemberRelTags> relByTagId = new LinkedHashMap<>();
 		LinkedHashSet<Long> orderedTagIds = new LinkedHashSet<>();
 		for (MemberRelTags rel : relRows) {
 			if (rel.getTagId() != null) {
 				orderedTagIds.add(rel.getTagId());
+				relByTagId.putIfAbsent(rel.getTagId(), rel);
 			}
 		}
-		if (orderedTagIds.isEmpty()) {
-			result.put("tagList", Collections.emptyList());
-			return;
+		List<MemberTags> tagEntities = List.of();
+		if (!orderedTagIds.isEmpty()) {
+			tagEntities =
+					memberTagsMapper.selectList(
+							new LambdaQueryWrapper<MemberTags>()
+									.eq(MemberTags::getCompanyId, companyId)
+									.in(MemberTags::getTagId, orderedTagIds)
+									.orderByDesc(MemberTags::getCreated));
 		}
-		List<MemberTags> tagEntities =
-				memberTagsMapper.selectList(
-						new LambdaQueryWrapper<MemberTags>()
-								.eq(MemberTags::getCompanyId, companyId)
-								.in(MemberTags::getTagId, orderedTagIds)
-								.orderByDesc(MemberTags::getCreated));
-		List<Map<String, Object>> tagList = new ArrayList<>();
-		for (MemberTags t : tagEntities) {
-			if (t.getTagId() != null) {
-				tagList.add(tagRowToApiMap(t));
-			}
-		}
-		result.put("tagList", tagList);
-	}
-
-	private static LinkedHashMap<String, Object> tagRowToApiMap(MemberTags t) {
-		LinkedHashMap<String, Object> m = new LinkedHashMap<>();
-		m.put("tag_id", t.getTagId());
-		m.put("company_id", t.getCompanyId());
-		m.put("tag_name", t.getTagName());
-		m.put("description", t.getDescription());
-		m.put("tag_icon", t.getTagIcon());
-		m.put("saleman_id", t.getSalemanId());
-		m.put("tag_status", t.getTagStatus());
-		m.put("category_id", t.getCategoryId());
-		m.put("self_tag_count", t.getSelfTagCount());
-		m.put("tag_color", t.getTagColor());
-		m.put("font_color", t.getFontColor());
-		m.put("distributor_id", t.getDistributorId());
-		m.put("created", t.getCreated());
-		m.put("updated", t.getUpdated());
-		return m;
+		result.putAll(
+				memberDetailTagFieldsAssembler.assemble(
+						tagEntities, relByTagId, System.currentTimeMillis() / 1000L));
 	}
 
 	private static long extractUserId(Object userIdObj) {

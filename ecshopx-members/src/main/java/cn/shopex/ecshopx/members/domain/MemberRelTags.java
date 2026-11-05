@@ -39,4 +39,16 @@ public class MemberRelTags {
 
 	@MpField(value = "user_id", columnType = "bigint", comment = "用户id")
 	private Long userId;
+
+	@MpField(value = "source", columnType = "string", length = 32, comment = "关系来源", defaultValue = "manual")
+	private String source = "manual";
+
+	@MpField(value = "rule_version", columnType = "integer", comment = "规则版本", defaultValue = "1")
+	private Integer ruleVersion = 1;
+
+	@MpField(value = "effective_at", columnType = "bigint", comment = "生效时间", defaultValue = "0")
+	private Long effectiveAt = 0L;
+
+	@MpField(value = "updated_at", columnType = "bigint", comment = "更新时间", defaultValue = "0")
+	private Long updatedAt = 0L;
 }

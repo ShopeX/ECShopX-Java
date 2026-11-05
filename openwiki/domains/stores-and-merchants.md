@@ -1,11 +1,15 @@
 ---
 type: domain-reference
 title: Stores, Distributors, Merchants, and Salespersons
-description: The store-side and B2B2C Bundles — companies/shops/operators and product models (ecshopx-companys), distributors as physical stores with create/update after-commit fan-out (ecshopx-distribution), promoter QR codes and first-level brokerage (ecshopx-popularize), merchant onboarding with FrontMerchantAuth JWT (ecshopx-merchant), WeCom salesperson tasks and commissions (ecshopx-salesperson), plus ecshopx-selfservice, ecshopx-reservation, ecshopx-community group-buy chief write-off, and the supplier_order split out of normal orders (ecshopx-supplier).
-tags: [distributors, stores, companies, merchants, salesperson, popularize, community, supplier, dispatch-bus, payment-subject, distributor-items, onboarding, settlement]
+description: The store-side and B2B2C Bundles — companies/shops/operators and product models (ecshopx-companys), the POS store account subsystem with import/export and a DigiOS create hook, distributors as physical stores with create/update after-commit fan-out and DigiOS sync listeners (ecshopx-distribution), promoter QR codes and first-level brokerage (ecshopx-popularize), merchant onboarding with FrontMerchantAuth JWT (ecshopx-merchant), WeCom salesperson tasks and commissions (ecshopx-salesperson), plus ecshopx-selfservice, ecshopx-reservation, ecshopx-community group-buy chief write-off, and the supplier_order split out of normal orders (ecshopx-supplier).
+tags: [distributors, stores, companies, merchants, salesperson, popularize, community, supplier, dispatch-bus, payment-subject, distributor-items, onboarding, settlement, pos-store-account, digios]
 sources:
   - id: openwiki-source-4460b2ae6ffdfa7f6511ddc1
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/CreateDistributorJobDispatchPublisherImpl.java
+  - id: openwiki-source-1adeed0e9d51f13c65d98eb6
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/DigiOsDistributorCreateDispatchListenerRegistrationConfig.java
+  - id: openwiki-source-977cd9522d33d425335c4bc9
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/DigiOsDistributorUpdateDispatchListenerRegistrationConfig.java
   - id: openwiki-source-5d5b8a9a439f1fe1b537f7b7
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/DistributionAddEventDispatchPublisherImpl.java
   - id: openwiki-source-7ae0d3bc6703e766bf0c96e4
@@ -14,8 +18,14 @@ sources:
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/DistributorCreateEventDispatchListenerRegistrationConfig.java
   - id: openwiki-source-0cd6e12e061b481f3af8b1a9
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/DistributorCreateEventDispatchPublisherImpl.java
+  - id: openwiki-source-480ef2b81b6b4c1d52c9cf13
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/EspierExportFileJobDispatchHandler.java
   - id: openwiki-source-d48a5c9efd004f70cd62e80b
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/HfpayDistributionAddEnterapplyDispatchListenerRegistrationConfig.java
+  - id: openwiki-source-f3b71eb9d6873d40cbc6bb31
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/PosStoreAccountCreateEventDispatchPublisherImpl.java
+  - id: openwiki-source-6d77f0b8aa3c2cb5cd92e0cf
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/PosStoreAccountExportDispatchPublisherImpl.java
   - id: openwiki-source-26ae01f007910ee5bdaa08d6
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ShuyunOpenPlatformDistributorCreateDispatchListenerRegistrationConfig.java
   - id: openwiki-source-6ef3227b25a21e819e4fc01a
@@ -28,20 +38,58 @@ sources:
     resource: repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/dispatch/DistributorCreateEventSyncBusDispatchFlowTest.java
   - id: openwiki-source-8c9ccbc017d82a99f7343031
     resource: repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/dispatch/DistributorUpdateEventSyncBusDispatchFlowTest.java
+  - id: openwiki-source-c0c2361e788fa42a7b16fbd2
+    resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/CompanysDispatchEventNames.java
+  - id: openwiki-source-ff3f271173ecc685e342fc54
+    resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/DistributionDispatchEventNames.java
   - id: openwiki-source-05ab276ed18a53768f89eadd
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/DistributionDispatchJobNames.java
+  - id: openwiki-source-4cece1d0dc21f12377ecd9c8
+    resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/EspierDispatchJobNames.java
   - id: openwiki-source-f7687100d882f581d013877d
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/MerchantDispatchJobNames.java
   - id: openwiki-source-8042ebe9fde9d02083a2cbd9
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/SalespersonDispatchJobNames.java
+  - id: openwiki-source-e4c74586aedc9141bacf93b9
+    resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/port/digios/PosStoreAccountDigiOsCreatePort.java
+  - id: openwiki-source-9bceb1316bcda54f295cedd8
+    resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/port/digios/PosStoreAccountDigiOsCreatePortNoOp.java
   - id: openwiki-source-2393966349c071caeee8dce3
     resource: repo://ecshopx-community/src/main/java/cn/shopex/ecshopx/community/package-info.java
   - id: openwiki-source-be10fe503b04d52d483b5158
     resource: repo://ecshopx-community/src/main/java/cn/shopex/ecshopx/community/service/chief/CommunityChiefQrWriteoffService.java
+  - id: openwiki-source-9d44d60aa3db9b37155e8c0a
+    resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/api/admin/v1/PosStoreAccountController.java
+  - id: openwiki-source-82792828c2a574492be2e644
+    resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/domain/PosStoreAccount.java
   - id: openwiki-source-86bf8cc5e41d85dd55ca5179
     resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/package-info.java
+  - id: openwiki-source-0ced4eb2aefb8260715e3891
+    resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/espier/PosStoreAccountEspierImportRowSink.java
   - id: openwiki-source-c6d26c34e8d6b81c0e515e09
     resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/merchant/CompanysMerchantMainOperatorProvisioner.java
+  - id: openwiki-source-4fbd0011a9965297c75e16bc
+    resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/posaccount/PosStoreAccountExportService.java
+  - id: openwiki-source-ebc91c9c020dd1a99e042eaf
+    resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/posaccount/PosStoreAccountImportService.java
+  - id: openwiki-source-c93a16c79c2c26a1e8ad9294
+    resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/posaccount/PosStoreAccountPasswordGenerator.java
+  - id: openwiki-source-e5b262761a01b14dbdecee27
+    resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/posaccount/PosStoreAccountPasswordService.java
+  - id: openwiki-source-c648c2a32ec3b8c2d6266da6
+    resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/posaccount/PosStoreAccountQueryService.java
+  - id: openwiki-source-4d2e3df995091c6cac425262
+    resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/posaccount/PosStoreAccountScope.java
+  - id: openwiki-source-7c170152328dcd04be3f765d
+    resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/posaccount/PosStoreAccountStatusService.java
+  - id: openwiki-source-26499232cc5422538ecc24fc
+    resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/posaccount/PosStoreAccountWriteService.java
+  - id: openwiki-source-5f03676cc4237886d836c758
+    resource: repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/dispatch/DistributorCreateDigiOsSyncDispatchListener.java
+  - id: openwiki-source-5db0356764f92b4d36d49de8
+    resource: repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/port/PosStoreAccountDigiOsCreatePortImpl.java
+  - id: openwiki-source-667d6bbe173e5c7c06ad3e26
+    resource: repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/service/DigiOsDistributorSyncDispatchService.java
   - id: openwiki-source-70ea0fc2572e5eb9bc37ed15
     resource: repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/DispatchOptions.java
   - id: openwiki-source-260f163fd9cabc7c65a6abc5
@@ -52,12 +100,16 @@ sources:
     resource: repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/package-info.java
   - id: openwiki-source-172b2a52ae139f0209f376ad
     resource: repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/service/DistributorCreateOrchestrator.java
+  - id: openwiki-source-dba0633f76a3c4a3a2b6eb5f
+    resource: repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/service/DistributorCreateParamNormalizer.java
   - id: openwiki-source-d8034efe092c20e18d05b0ff
     resource: repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/service/DistributorCreateService.java
   - id: openwiki-source-bfa064df2a75a39b4d51d402
     resource: repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/service/DistributorPaymentSubjectService.java
   - id: openwiki-source-7cee526b2344c23fd2c07034
     resource: repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/service/DistributorUpdateOrchestrator.java
+  - id: openwiki-source-005cd2478c5bdca6ba8ecc85
+    resource: repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/service/DistributorUpdateParamNormalizer.java
   - id: openwiki-source-ef78e2d739ca7f975c8382ae
     resource: repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/service/DistributorUpdateService.java
   - id: openwiki-source-3972cfab29a2ffbd956e5d12
@@ -66,6 +118,12 @@ sources:
     resource: repo://ecshopx-distribution/src/test/java/cn/shopex/ecshopx/distribution/service/DistributorCreateOrchestratorDistributionAddDispatchPublishProbeTest.java
   - id: openwiki-source-4a7d8173b45e0b7bd344640b
     resource: repo://ecshopx-distribution/src/test/java/cn/shopex/ecshopx/distribution/service/DistributorUpdateOrchestratorDistributionEditDispatchPublishProbeTest.java
+  - id: openwiki-source-20bea0951bab22debabf05ca
+    resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/dispatch/PosStoreAccountExportFileJobTypeHandler.java
+  - id: openwiki-source-dec800e8f40f4157f34897b2
+    resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/upload/EspierUploadHandlerBeans.java
+  - id: openwiki-source-2ebfe908466d4b6d1e59c80c
+    resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/upload/EspierUploadHeaderCatalog.java
   - id: openwiki-source-c47b0102b62dec8fc0d98f93
     resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/DistributorGoodsSyncService.java
   - id: openwiki-source-7e78af38c8a63b7842f49ac8
@@ -114,7 +172,10 @@ sources:
     resource: repo://ecshopx-supplier/src/main/java/cn/shopex/ecshopx/supplier/package-info.java
   - id: openwiki-source-3619796531667b6781e35a09
     resource: repo://ecshopx-theme/src/main/java/cn/shopex/ecshopx/theme/dispatch/CreateDistributorJobHandler.java
-generated: { by: "openwiki/0.7.2", at: "2026-10-21T12:26:22.580Z" }
+generated: { by: "openwiki/0.7.3", at: "2026-11-04T17:09:55.577Z" }
+verified:
+  - by: openwiki/0.7.3
+    at: 2026-11-04T17:09:55.577Z
 ---
 
 # Stores, Distributors, Merchants, and Salespersons
@@ -207,6 +268,7 @@ sequenceDiagram
     participant JOB as CreateDistributorJob job:63
     participant OME as SystemLink ShopCreateSendOme
     participant SY as Shuyun shop sync
+    participant DGY as DigiOS store sync
     participant MC as marketing center
     participant YS as youshu
     participant HF as HfPay enterapply
@@ -218,6 +280,7 @@ sequenceDiagram
     SVC->>BUS: DistributorCreateEvent event:263 SYNC in transaction
     BUS->>OME: ShopCreateSendOme runs inline before commit
     BUS->>SY: Shuyun shop sync enqueued
+    BUS->>DGY: DigiOS profile plus warehouse sync enqueued
     SVC-->>ORCH: inserted API row snapshot
     ORCH->>ORCH: pickup location rels and aftersales address
     Note over ORCH: afterCommit
@@ -232,20 +295,33 @@ sequenceDiagram
 Caption: the store create pipeline — one SYNC in-transaction event for OME/Shuyun, then after commit the theme template job runs first and the dual CSV DistributionAdd publishes fan out to marketing center, youshu, and HfPay.
 
 1. **Pre-persistence validations** (`DistributorCreateOrchestrator.create`, `@Transactional`): duplicate name (`店铺名称已存在`) and `shop_code`; `HfpayLedgerConfigReadService.assertOpenAndRateAllowedIfNeeded` when split payment is requested; `LocalDeliveryShopCreateClient.applyCreateShopIfDada` registers the store with Dada; WDT (`assertShopExistsIfWdtNo`) and Jushuitan (`assertEnabledIfJstIdPositive`) bindings are checked against the ERP.
-2. **Insert + in-tx event** (`DistributorCreateService.performInsertAndEvents`): mobile format (or the WeCom synthetic `d-d-d` mobile), the six uniqueness guards, `distributor_self` singleton, and `needDefault = sourceFrom != 2 && !existsDefaultDistributor(companyId)` — the first non-wxapp store becomes the default. The row is inserted, multi-language shards are written, and `DistributorCreateEvent` (`event:263:DistributionBundle\Events\DistributorCreateEvent`) is published **inside the transaction in SYNC mode** (`DispatchOptions.eventDefaults()` is `DispatchMode.SYNC`) so the OME listener runs inline before commit. Its registered listeners: `listener:SystemLinkBundle\Listeners\ShopCreateSendOme` (SYNC) and `listener:shuyun.open_platform.shop_sync_on_distributor_create` (async default queue).
-3. **Side tables.** Pickup-location relations from `pickup_location`, and the offline aftersales address — whose product-model slug comes from `companys.menu_type` via `CompanyMenuTypeProductModel.toSlug` (null-safe default `platform`).
+2. **Insert + in-tx event** (`DistributorCreateService.performInsertAndEvents`): mobile format (or the WeCom synthetic `d-d-d` mobile), the six uniqueness guards, `distributor_self` singleton, and `needDefault = sourceFrom != 2 && !existsDefaultDistributor(companyId)` — the first non-wxapp store becomes the default. The row is inserted, multi-language shards are written, and `DistributorCreateEvent` (`event:263:DistributionBundle\Events\DistributorCreateEvent`) is published **inside the transaction in SYNC mode** (`DispatchOptions.eventDefaults()` is `DispatchMode.SYNC`) so the OME listener runs inline before commit. Its registered listeners: `listener:SystemLinkBundle\Listeners\ShopCreateSendOme` (SYNC), `listener:shuyun.open_platform.shop_sync_on_distributor_create` (async default queue), and `listener:digios.distributor_sync_on_distributor_create` (async default queue, store-profile PUT + warehouse creation — see the DigiOS section after the update flow).
+3. **Side tables.** Pickup-location relations from `pickup_location`, and the offline aftersales address — whose product-model slug comes from `companys.menu_type` via `CompanyMenuTypeProductModel.toSlug` (null-safe default `platform`). (The merged params reach this point only after the create-plane normalizer described below has run.)
 4. **afterCommit ordering.** `TransactionSynchronizationManager.registerSynchronization` enqueues `job:63` (theme templates, **slow queue**, ASYNC REDIS) *before* calling `distributionAddEventDispatchPublisher.publish(rowSnapshot)`. The publisher (`DistributionAddEventDispatchPublisherImpl` in bootstrap) publishes the **same payload twice** — `event:281` and `event:289` — both ASYNC REDIS. This is the deliberate CSV-plane split: `event:281` carries the third-party marketing-center push + youshu listeners, `event:289` carries the HfPay `HfEnterapplyInit` listener. The ordering (job before events) and the dual publish are pinned by `DistributorCreateOrchestratorDistributionAddDispatchPublishProbeTest` and `DistributionAddEventDispatchPublisherImplDualPublishFacadeProbeTest`.
 
 ## The update flow
 
 `DistributorUpdateOrchestrator.update` mirrors the create shape: optional HfPay ledger assert when `is_open` goes true, datapass-blocked column refill (`mobile`/`contact` re-read from the DB row), name/shop_code duplicate check, Dada update, WDT/JST checks, and the same-merchant constraint on `offline_aftersales_distributor_id` (`售后门店只能选择同一商户下的其他门店`).
 
-`DistributorUpdateService.performUpdateAndEvents` then: re-defaults (`is_default=1` forced when no default exists), validates mobile, and — notably — when `is_audit_goods` flips from `true` to a falsy value it bulk-approves every shop-scoped item via `ItemsAuditByDistributorJdbcRepository.updateAuditStatusApprovedByDistributorId` (disabling item audit must not leave previously-submitted items stuck). Only whitelisted `COLUMN_KEYS` (≈55 column names) are applied; everything else in the merged params is ignored.
+`DistributorUpdateService.performUpdateAndEvents` then: re-defaults (`is_default=1` forced when no default exists), validates mobile, enforces the update-side WDT/Jushuitan uniqueness guards (`旺店通门店已绑定其他店铺` / `聚水潭店铺已绑定其他店铺`, excluding the store itself), and — notably — when `is_audit_goods` flips from `true` to a falsy value it bulk-approves every shop-scoped item via `ItemsAuditByDistributorJdbcRepository.updateAuditStatusApprovedByDistributorId` (disabling item audit must not leave previously-submitted items stuck). Only whitelisted `COLUMN_KEYS` (61 column names) are applied via per-column setters (typed coercion, plus `updated` and recomputed `first_letter` on name changes); everything else in the merged params is ignored.
+
+### The param normalizers ahead of create/update
+
+Between the request gate and the validator sits a normalizer on each plane — `DistributorCreateParamNormalizer` and `DistributorUpdateParamNormalizer` — mutating the merged map before persistence:
+
+* **Operator-scoping**: `merchant` operators are pinned to their own `merchant_id` with `distribution_type="1"` (franchise); `distributor` operators have `is_audit_goods` and `auto_sync_goods` stripped so a store admin cannot change its own audit/sync policy. On create, a merchant operator without a distribution type is reset to `merchant_id=0`.
+* **Ledger rate scaling**: when `is_open` is truthy, `rate` is converted from a percent to basis points (×100, HALF_UP) and must land in 0–3000 (`平台服务费率超出允许范围`) — the stored `rate` column is therefore basis points.
+* **Offline aftersales**: `offline_aftersales` cascades to `offline_aftersales_self`; the aftersales store id list is joined to a CSV string. On **create** every id is DB-validated to belong to the same merchant (`售后店铺须与当前商户一致`); on **update** the presence of the path store in the list derives `offline_aftersales_self`.
+* **Misc**: 2-element `hour` lists become the `"a - b"` display string; `regions` lists back-fill `province`/`city`/`area` (a 2-element list clears `area`); `"false"` `is_dada` becomes the empty string (legacy tri-state); tri-bool string flags (`is_ziti`, `is_delivery`, …) coerce to booleans; on update `distributor_self=1` forces `is_valid="true"`, `review_result` folds into `is_valid` + `review_status`, and `open_divided` normalizes to 0/1.
 
 afterCommit publishes **DistributionEdit first, DistributorUpdate second**:
 
 * `event:282` + `event:290` (`DistributionEditEvent`, dual CSV publish, ASYNC REDIS) → listeners: third-party marketing-center push + youshu (282), HfPay `HfEnterapplyInit@edit` (290).
-* `event:264` (`DistributorUpdateEvent`) → published **SYNC** (`DispatchOptions.eventDefaults()`) → listeners: `listener:SystemLinkBundle\Listeners\ShopUpdateSendOme` (SYNC) and `listener:shuyun.open_platform.shop_sync_on_distributor_update` (async).
+* `event:264` (`DistributorUpdateEvent`) → published **SYNC** (`DispatchOptions.eventDefaults()`) → listeners: `listener:SystemLinkBundle\Listeners\ShopUpdateSendOme` (SYNC), `listener:shuyun.open_platform.shop_sync_on_distributor_update` (async), and `listener:digios.distributor_sync_on_distributor_update` (async default queue) — see DigiOS below.
+
+### DigiOS store-profile sync on distributor create/update
+
+Two bootstrap registration configs attach DigiOS listeners to the same store-lifecycle events: `DigiOsDistributorCreateDispatchListenerRegistrationConfig` (event:263 → `listener:digios.distributor_sync_on_distributor_create`) and `DigiOsDistributorUpdateDispatchListenerRegistrationConfig` (event:264 → `listener:digios.distributor_sync_on_distributor_update`), both ASYNC on the default queue. The listeners (`DistributorCreateDigiOsSyncDispatchListener` / `DistributorUpdateDigiOsSyncDispatchListener` in `ecshopx-digios`) extract `company_id` + `distributor_id` from the payload `entities` and delegate to `DigiOsDistributorSyncDispatchService`, which **skips silently unless the company's DigiOS config is enabled**, reloads the persisted distributor row, and calls `DigiOsDistributorSyncService.syncOnCreate` (store-profile PUT + warehouse creation) / `syncOnUpdate` (store-profile POST). The gateway, token, and payload mapping live in [Third-Party Integrations](../integrations/third-party.md); the key contract here is that the distribution bundle needed no change — DigiOS is purely a registered listener.
 
 Pinned by `DistributorUpdateOrchestratorDistributionEditDispatchPublishProbeTest`, `DistributionEditEventDispatchPublisherImplDualPublishFacadeProbeTest`, and `DistributorUpdateEventSyncBusDispatchFlowTest`.
 
@@ -254,6 +330,56 @@ Pinned by `DistributorUpdateOrchestratorDistributionEditDispatchPublishProbeTest
 `PUT /distributor/{id}/payment-subject` parses `payment_subject` through a **sealed interface** `PaymentSubjectParse` with three outcomes: `Valid(0|1)`, `Invalid` (returns Dingo-style `payment_subject参数错误，只能为0（平台）或1（店铺）` with status 422), and `SqlBug` — the case where a legacy PHP/MySQL write would have failed with `SQLSTATE[HY000]: General error: 1366 Incorrect integer value: '' for column 'payment_subject'`, which the Java port deliberately reproduces (HTTP 200 with Dingo `message`/`status_code` 500 in the body, matching the old client contract).
 
 The service behind it, `DistributorPaymentSubjectService.setPaymentSubject`, refuses to switch while the store has unfinished refunds (`有未完成的退款单，不允许切换收款主体`), and switching **to** shop-subject (`1`) requires at least one open payment channel (WeChat Pay or Alipay) *and* complete per-shop channel configuration for each open channel; switching to platform (`0`) instead validates the platform (distributor 0) channel config. The `PaymentSubjectDistributorIdPortImpl` in this bundle exposes the current subject to the payment and orders bundles through a common port.
+
+## POS store accounts (ecshopx-companys)
+
+`pos_store_account` rows are the per-store **POS terminal accounts** — the login identities of the physical shop's staff (店长 store_manager / 主管 supervisor / 店员 clerk), distinct from both the back-office `operators` and the WeCom `shop_salesperson`. The table carries a **globally unique** `employee_no` (`uk_employee_no`, case-insensitive under `utf8mb4_unicode_ci`), a reversible `password_cipher`, and `status` in `enabled` / `disabled` / `resigned`. Indexes are `(company_id, distributor_id, status)` and `(company_id, role)`.
+
+### Admin surface and the operator-shape scope
+
+`PosStoreAccountController` (`/api/v1/store/pos-accounts`, `@AdminAuth` operator JWT, route alias `store.pos_account` for both `@DataPass` and `@Activated`) exposes list/detail, create, update, reset-password, single + batch status change, role change, shop transfer (`/{id}/shop`), and export. Reads reuse the standard activation middleware: the operator's JWT `distributor_ids` drive `PosStoreAccountScope` — non-`admin` operators see and may touch only accounts of their own stores (`无访问权限`), and list responses include per-status counts.
+
+Field rules live in `PosStoreAccountRules`: `employee_no` is required, ≤30 chars, alphanumerics only (it doubles as the DigiOS `acc`); `name` is Chinese/letters/digits ≤30; email and mobile optional but format-checked; role must be one of the three slugs. The write service additionally supports **optimistic concurrency** — a stale `updated` in the update body is rejected with `数据已变更，请刷新后重试` — and the store must exist within the company (`请选择调入门店`).
+
+### Status lifecycle: resign is one-way
+
+`PosStoreAccountStatusService.change` / `batch` map actions `enable` / `disable` / `resign` onto statuses; the batch variant returns `{success, skipped, failed}` (no-op targets are skipped, per-id failures collected). The one hard invariant: **`resigned` is terminal** — a resigned account can never transition back (`离职账号不可恢复`), and role change, shop transfer, and password reset all refuse resigned accounts.
+
+### Passwords: generated, encrypted, exportable
+
+There is no operator-chosen password. `PosStoreAccountPasswordGenerator` builds an 8-char password guaranteed to contain ≥1 letter and ≥1 digit (`SecureRandom` + Fisher–Yates shuffle); `PosStoreAccountPasswordService` encrypts it with the common `SensitiveFieldEncryptor` and stores only the cipher. The plaintext surfaces exactly twice: in the create response and in the reset-password response (`POST /{id}/reset-password`). The CSV export **decrypts** passwords into the file — which is why export is gated to super-admins only (`仅超级管理员可导出账号`).
+
+### Create: DigiOS pre-sync, insert, after-commit event
+
+<!-- openwiki: mermaid parse failed and this diagram was converted to a text fence so it does not break rendering. Fix the diagram source and restore the mermaid fence. Parser error: Parse error on line 13: ...adRequest on failure W->>DB: insert Expecting '()', 'SOLID_OPEN_ARROW', 'DOTTED_OPEN_ARROW', 'SOLID_ARROW', 'SOLID_ARROW_TOP', 'SOLID_ARROW_BOTTOM', 'STICK_ARROW_TOP', 'STICK_ARROW_BOTTOM', 'SOLID_ARROW_TOP_DOTTED', 'SOLID_ARROW_BOTTOM_DOTTED', 'STICK_ARROW_TOP_DOTTED', 'STICK_ARROW_BOTTOM_DOTTED', 'SOLID_ARROW_TOP_REVERSE', 'SOLID_ARROW_BOTTOM_REVERSE', 'STICK_ARROW_TOP -->
+```text
+sequenceDiagram
+    participant OP as operator
+    participant C as PosStoreAccountController
+    participant W as PosStoreAccountWriteService
+    participant DG as PosStoreAccountDigiOsCreatePort
+    participant DB as pos_store_account
+    participant BUS as Dispatch bus
+
+    OP->>C: POST /api/v1/store/pos-accounts
+    C->>W: create(jwt, body)
+    W->>W: scope + rules + employee_no uniqueness
+    W->>DG: ensureSyncedOnCreate(companyId, employeeNo, ...)
+    DG-->>W: no-op when DigiOS disabled; BadRequest on failure
+    W->>DB: insert row with encrypted generated password
+    Note over W,BUS: afterCommit
+    W->>BUS: event:companys:pos_store_account_create (SYNC)
+    C-->>OP: public row + plaintext password
+```
+
+`PosStoreAccountWriteService.create` runs the common-port hook **`PosStoreAccountDigiOsCreatePort.ensureSyncedOnCreate` before the local insert**: when the company's DigiOS integration is enabled, the `@Primary` implementation in `ecshopx-digios` upserts the account over the gateway (`account.upsert`, mobile mandatory) and any failure aborts the local create with `DigiOS同步失败：…`; when disabled (or running without the digios bundle) the `PosStoreAccountDigiOsCreatePortNoOp` default makes it a pass-through. The import path applies the same gate to both inserts and updates. After a successful insert, `event:companys:pos_store_account_create` (`{id, company_id, employee_no}`) is published **after commit** — immediately when no transaction synchronization is active — through `PosStoreAccountCreateEventDispatchPublisherImpl` in bootstrap. (`CompanysDispatchEventNames` reserves `listener:digios.account_sync_on_pos_store_account_create` for this event.)
+
+### Import via espier, export via dispatch job
+
+* **Import.** The espier upload plane registers file type `pos_store_account` (`EspierUploadHandlerBeans`, Chinese headers 姓名/员工号/邮箱/手机号/角色/门店/状态 mapped by `EspierUploadHeaderCatalog`) and routes each row to `PosStoreAccountEspierImportRowSink` → `PosStoreAccountImportService.acceptRow`. Import rows are stricter than the form: name/email/mobile required, Chinese role/status labels mapped to slugs, the shop resolved by `shop_code`. An account with an existing `employee_no` is **updated** (name/email/mobile/role/shop/status), otherwise inserted with a generated password; an in-memory `acceptedKeys` set rejects duplicate employee numbers within one file, and rows removed on failure so a retry can re-attempt them. Scope checks are rebuilt from the importing operator's `operator_type` + `distributor_ids`.
+* **Export.** `POST /export` enqueues **`job:10 EspierBundle\Jobs\ExportFileJob`** (ASYNC REDIS, **slow queue**) with `type=pos_store_account` via `PosStoreAccountExportDispatchPublisherImpl`. The generic `EspierExportFileJobDispatchHandler` in bootstrap routes by `type` to `PosStoreAccountExportFileJobTypeHandler` in `ecshopx-espier`, which rebuilds the scoped query, decrypts passwords, writes the CSV (门店编码/门店 joined per row), and records the export-log entry the admin downloads from.
+
+`PosStoreAccountQueryService.mapOrderInfoByIds` is the cross-bundle read: order list/detail code batches in POS handler info (`id`, `employee_no`, `name`, `mobile`, `role`, `distributor_id`, `status` — never the password) as the order-side `pos_store_account_info` object.
 
 ## Merchants: apply → audit → account
 
@@ -320,6 +446,7 @@ erDiagram
     companys ||--o{ distribution_distributor : "menu_type scopes the product model"
     distribution_distributor ||--o{ distribution_distributor_items : "per-shop SKU copies"
     distribution_distributor ||--o{ shops_rel_salesperson : "store_type distributor"
+    distribution_distributor ||--o{ pos_store_account : "POS staff accounts per store"
     shop_salesperson ||--o{ shops_rel_salesperson : "guide to store binding"
     distribution_distributor ||--o{ pickup_location_rel_distributor : "pickup relations"
     merchant ||--o{ distribution_distributor : "merchant_id"
@@ -372,6 +499,15 @@ erDiagram
         string work_userid
         string salesperson_type
         string is_valid
+    }
+    pos_store_account {
+        bigint id PK
+        bigint company_id
+        string employee_no UK
+        string role
+        bigint distributor_id
+        string status
+        string password_cipher
     }
     shops_rel_salesperson {
         bigint id PK
@@ -427,6 +563,9 @@ Caption: the store-side tables — the distributor as the join point between com
 * **Money is fen** (`brokerage_fee`, supplier order sums, `rate` in basis points); the payment-subject legacy 1366 error must be preserved byte-for-byte.
 * **Singletons and defaults.** One `distributor_self` per company; at most the first non-wxapp store is auto-default; update re-defaults when none exists.
 * **Audit-disable cascade.** `is_audit_goods` true→false must auto-approve pending shop items, or they become invisible to buyers.
+* **Resign is one-way.** A `resigned` POS store account can never return to enabled/disabled, and resigned accounts reject role change, shop transfer, and password reset; `employee_no` is globally unique (case-insensitive), so reusing a resigned employee number means importing onto the same row.
+* **DigiOS gates creation, never silently diverges.** When a company's DigiOS config is enabled, POS account create/import fails closed on `account.upsert` errors (the local row is not written); when disabled the port is a no-op. Distributor profile sync is instead listener-driven off event:263/264 and skips silently when disabled.
+* **POS plaintext passwords are transient.** They exist only in the create/reset responses and the super-admin-only CSV export; at rest they are `SensitiveFieldEncryptor` ciphertext.
 * **Idempotent brokerage and supplier split.** Both are guarded by existence checks on (company, order[, supplier]) so listener retries cannot double-count.
 * **Salesperson identity comes from the DB, not the session.** Redis supplies the session, the DB row is authoritative for `salesperson_id` and distributor binding; a type mismatch between the two is a hard reject.
 * **Chief write-off ownership.** Only the chief who opened the group can write off, and only before completion/cancel-pending states — the delegation to `orderZitiWriteoffForChief` keeps order-state transitions in one place.
@@ -434,11 +573,14 @@ Caption: the store-side tables — the distributor as the join point between com
 ## Extension points
 
 * **React to store lifecycle** — register a listener in a bootstrap `*RegistrationConfig` against `event:263`/`264`/`281`/`289`/`282`/`290`; distribution services need no change ([Cross-Bundle Communication](../architecture/cross-bundle-communication.md)).
-* **New store-side setting** — extend the `Distributor` entity and add the column to `DistributorUpdateService.COLUMN_KEYS`; gate/normalizer/validator layers stay untouched.
+* **New store-side setting** — extend the `Distributor` entity, add the column to `DistributorUpdateService.COLUMN_KEYS` with its setter case, and mirror any coercion in the two param normalizers; gate/validator layers stay untouched.
 * **New per-shop goods behavior** — extend `distributor_items` consumers; the sync itself stays in the goods bundle (`DistributorGoodsSyncService`, `job:62`).
 * **New merchant onboarding step** — add to `MerchantWxappSettlementApplySaveService` and the `MerchantSettlementApplyProgressService` resolver; the JWT plane (issuer + filter + interceptor) needs no change.
 * **New guide task type** — task types are data-driven in the task tables; job:45/46/138 planes are unchanged.
 * **New local-delivery courier** — the Dada/Shansong clients behind `LocalDeliveryShopCreateClient` are the pattern.
+* **React to POS account creation** — register a listener against `event:companys:pos_store_account_create`; to block creation on an external precondition instead, provide another `PosStoreAccountDigiOsCreatePort` (the digios `@Primary` bean is the template).
+* **New POS account field** — extend `pos_store_account`, `PosStoreAccountRules`, and `toPublicRow`/`toOrderInfoRow`; the scope and status machinery needs no change.
+* **New bulk-import type** — implement `EspierImportRowSink` and register the header catalog entry, the pattern used by `pos_store_account`; exports plug into `job:10` as a new `ExportFileJobTypeHandler` keyed by `type`.
 
 ## Focused tests
 
@@ -453,6 +595,7 @@ The dispatch-flow tests are the executable spec for the ordering claims above:
 * `NormalOrderAddEventAsyncFanOutSupplierAndYoushuDispatchFlowTest`, `NormalOrderAddOrderAddPushMarketingCenterDispatchFlowTest`, `OrdersSupplierOrderSplitOnNormalOrderAddDispatchListenerDispatchConsumerRuntimeTest` — supplier split listener plane and fan-out order.
 * `TradeFinishCountBrokerage*DispatchFlowTests`, `TradeFinishCountBrokerageUpgradePromoterGradeEnqueueTest` — idempotent first-level brokerage and grade-upgrade enqueue.
 * `DistributorGoodsSyncServiceAddDistributorItemsDispatchTest`, `ItemsUpdateOrchestratorDistributorSyncTest` — the goods→store catalog contract (in [Goods Domain](goods.md)).
+* `PosStoreAccountWriteServiceTest`, `PosStoreAccountImportServiceTest`, `PosStoreAccountStatusServiceTest`, `PosStoreAccountPasswordServiceTest`, `PosStoreAccountPasswordGeneratorTest`, `PosStoreAccountRulesTest`, `PosStoreAccountQueryServiceTest`, `PosStoreAccountExportServiceTest` (ecshopx-companys) — the POS account scope, rules, resign-one-way lifecycle, password generation/encryption, DigiOS fail-closed gate, and CSV row shape; `PosStoreAccountDigiOsCreatePortImplTest` (ecshopx-digios) pins the gateway upsert/error mapping.
 
 ## Related pages
 
@@ -463,3 +606,4 @@ The dispatch-flow tests are the executable spec for the ordering claims above:
 * [Cross-Bundle Communication](../architecture/cross-bundle-communication.md) — the publisher-in-common / listener-in-bootstrap split all these flows follow.
 * [Request Lifecycle](../architecture/request-lifecycle.md) — the operator-JWT vs wxapp-session vs FrontMerchantAuth planes.
 * [Redis Databases](../concepts/redis-databases.md) — the wechat/shared Redis split behind `frontSession3rd:` sessions and ziti QR codes.
+* [Third-Party Integrations](../integrations/third-party.md) — the receiving side of the DigiOS flows referenced here (distributor profile/warehouse sync on event:263/264, `account.upsert` for POS accounts and staff operators), alongside OME, Shuyun, WDT, and Jushuitan.

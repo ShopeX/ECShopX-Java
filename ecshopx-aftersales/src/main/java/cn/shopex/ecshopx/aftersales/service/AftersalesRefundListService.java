@@ -25,6 +25,7 @@ import cn.shopex.ecshopx.aftersales.mapper.AftersalesRefundMapper;
 import cn.shopex.ecshopx.common.auth.OperatorJwtRequestAttributes;
 import cn.shopex.ecshopx.common.distribution.DistributorGetInfoSimpleByDistributorIdPort;
 import cn.shopex.ecshopx.common.exception.BadRequestException;
+import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.common.exception.UnauthorizedException;
 import cn.shopex.ecshopx.common.util.DateExpressionParser;
 import cn.shopex.ecshopx.common.util.ValuePresence;
@@ -101,6 +102,14 @@ public class AftersalesRefundListService {
 		AftersalesRefund row = aftersalesRefundMapper.selectOne(w);
 		if (row == null) {
 			return List.of();
+		}
+		// ECX-10922：对齐 PHP AftersalesDistributorGate::assertOwnStoreAftersales
+		List<Long> jwtDist = extractOperatorDistributorIds(jwt.get("distributor_ids"));
+		if (!jwtDist.isEmpty()) {
+			Long rowDist = row.getDistributorId() == null ? 0L : row.getDistributorId();
+			if (!jwtDist.contains(rowDist)) {
+				throw new ResourceException("无权操作该售后单");
+			}
 		}
 
 		LinkedHashMap<String, Object> data = new LinkedHashMap<>(refundToMap(row));
@@ -182,16 +191,17 @@ public class AftersalesRefundListService {
 			filter.put("supplier_id", (int) operatorId);
 		}
 
+		// ECX-10879：JWT 有门店范围时，未授权 / 无交集不得 remove，须收束到 JWT 集合。
 		List<Long> jwtDist = extractOperatorDistributorIds(jwt.get("distributor_ids"));
 		if (!jwtDist.isEmpty()) {
 			Object cur = filter.get("distributor_id");
 			if (cur instanceof Long one && one != 0L && !jwtDist.contains(one)) {
-				filter.remove("distributor_id");
+				filter.put("distributor_id", new ArrayList<>(jwtDist));
 			} else if (cur instanceof List<?> list && !list.isEmpty()) {
 				List<Long> inter =
 						list.stream().map(AftersalesRefundListService::longVal).filter(jwtDist::contains).distinct().toList();
 				if (inter.isEmpty()) {
-					filter.remove("distributor_id");
+					filter.put("distributor_id", new ArrayList<>(jwtDist));
 				} else {
 					filter.put("distributor_id", new ArrayList<>(inter));
 				}
@@ -329,13 +339,14 @@ public class AftersalesRefundListService {
 		List<Long> jwtDist = extractOperatorDistributorIds(jwt.get("distributor_ids"));
 		if (!jwtDist.isEmpty()) {
 			Object cur = filter.get("distributor_id");
+			// ECX-10886：未授权标量或无交集不得 remove，须收束到 JWT 门店集合。
 			if (cur instanceof Long one && one != 0L && !jwtDist.contains(one)) {
-				filter.remove("distributor_id");
+				filter.put("distributor_id", new ArrayList<>(jwtDist));
 			} else if (cur instanceof List<?> list && !list.isEmpty()) {
 				List<Long> inter =
 						list.stream().map(AftersalesRefundListService::longVal).filter(jwtDist::contains).distinct().toList();
 				if (inter.isEmpty()) {
-					filter.remove("distributor_id");
+					filter.put("distributor_id", new ArrayList<>(jwtDist));
 				} else {
 					filter.put("distributor_id", new ArrayList<>(inter));
 				}

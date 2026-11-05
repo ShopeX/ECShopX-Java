@@ -1,7 +1,7 @@
 ---
 type: domain-reference
 title: WeChat Ecosystem (ecshopx-wechat, ecshopx-work-wechat)
-description: The WeChat integration bundles — ecshopx-wechat covers the Open Platform callback at /wechatAuth/callback (subscribe/fans/tag + wx-shops audit events into the dispatch bus), the dual-mode authorizer token service, mini-program publish/audit orchestration with wxa-template fallbacks, the wxjava HTTP clients (qrcode, url link, jscode2session, live broadcast), official-account fans/tag services, and the legacy /wechatAuth/wxapp qrcode route; ecshopx-work-wechat covers WeCom callbacks, notice textcard/miniprogram messages, and the DIS work-wechat H5 base URIs.
+description: The WeChat integration bundles — ecshopx-wechat covers the Open Platform callback at /wechatAuth/callback (subscribe/fans/tag + wx-shops audit events into the dispatch bus), the dual-mode authorizer token service, mini-program publish/audit orchestration with wxa-template fallbacks, the wxjava HTTP clients (qrcode, url link, jscode2session, live broadcast), official-account fans/tag services, and the legacy /wechatAuth/wxapp qrcode route; ecshopx-work-wechat covers WeCom callbacks, notice textcard/miniprogram messages, and the DIS work-wechat H5 base URIs. It also covers the wxa subscribe-message send seams — common port interfaces with promotions adapters in front of the scene-based sender, and the wechat-owned card-used port with bootstrap/NoOp implementations.
 tags: [wechat, wxapp, wxa, open-platform, work-wechat, wecom, fans, tags, mini-program, publish, audit, callback, dispatch-bus, redis, qrcode, mendian, live-broadcast, subscribe-template]
 sources:
   - id: openwiki-source-536a5d1091caa531200ea6b9
@@ -12,6 +12,8 @@ sources:
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/WechatSubscribeDispatchListenerRegistrationConfig.java
   - id: openwiki-source-6c5ce9b5e2c478b6781ddf5a
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/WechatSubscribeDispatchPublisherImpl.java
+  - id: openwiki-source-97f6048efcb35c3e06cbd55d
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/WxaCardUsedTemplateSendPortImpl.java
   - id: openwiki-source-87371769809d483e2fc7b080
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/WxaOrderShippingPortImpl.java
   - id: openwiki-source-690f50b14290d5c6b9b23120
@@ -26,6 +28,8 @@ sources:
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/WechatDispatchEventNames.java
   - id: openwiki-source-6165e300ed4b6ad72633a031
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/WorkWechatDispatchJobNames.java
+  - id: openwiki-source-68059efe335afc54036243dd
+    resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/port/orders/OrderDeliverySuccessWxaSubscribeSendPort.java
   - id: openwiki-source-6cfae0d4e74e74c679cecdd3
     resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/dispatch/WxShopsAddDispatchListener.java
   - id: openwiki-source-dce9dda082efe3b46638eeb3
@@ -34,8 +38,16 @@ sources:
     resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/OperatorJwtAuthenticationFilter.java
   - id: openwiki-source-9fd2763672419f520cbe0285
     resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/dispatch/WechatSubscribeDispatchListener.java
+  - id: openwiki-source-189b7866f8db73ca77451821
+    resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/integration/notify/OrderDeliverySuccessNotifyWechatService.java
   - id: openwiki-source-4c7a3bc700c378ccd65c4327
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/api/open/WxpayNotifyController.java
+  - id: openwiki-source-043e01b99cf95e87d89828b8
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/integration/members/GoodsArrivalWxaSubscribeSendAdapter.java
+  - id: openwiki-source-d8a865a739ce78d31e4cb0fa
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/integration/orders/OrderDeliverySuccessWxaSubscribeSendAdapter.java
+  - id: openwiki-source-57fdb8a4b749d6eb1f573169
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/WxaTemplateMsgActivityRemindSendService.java
   - id: openwiki-source-fe2368327dd2ee33074df7b3
     resource: repo://ecshopx-third-party/src/main/java/cn/shopex/ecshopx/thirdparty/service/workwechat/WorkWechatAccessTokenHttpService.java
   - id: openwiki-source-863889c8d41f0479d334cf0f
@@ -72,6 +84,8 @@ sources:
     resource: repo://ecshopx-wechat/src/main/java/cn/shopex/ecshopx/wechat/service/wxa/WxaUploadWxaService.java
   - id: openwiki-source-e93a86076b3be831ed762065
     resource: repo://ecshopx-wechat/src/main/java/cn/shopex/ecshopx/wechat/service/wxa/WxaWeappPublishOrchestrationService.java
+  - id: openwiki-source-c871343763df1a82a0493867
+    resource: repo://ecshopx-wechat/src/main/java/cn/shopex/ecshopx/wechat/service/WxaCardUsedTemplateSendNoOp.java
   - id: openwiki-source-d575a9bfd5764815c0b422fc
     resource: repo://ecshopx-wechat/src/main/java/cn/shopex/ecshopx/wechat/service/WxappLegacyQrcodePngService.java
   - id: openwiki-source-5f14ee2332fb78ffbf092786
@@ -104,7 +118,12 @@ sources:
     resource: repo://ecshopx-work-wechat/src/main/java/cn/shopex/ecshopx/workwechat/service/WorkWechatMessageTemplateService.java
   - id: openwiki-source-b02f6b5b5f92f5685b89fe76
     resource: repo://ecshopx-work-wechat/src/main/java/cn/shopex/ecshopx/workwechat/service/WorkWechatWaitingDeliveryNoticeService.java
-generated: { by: "openwiki/0.7.2", at: "2026-10-21T12:26:22.580Z" }
+  - id: openwiki-source-d5751e76baf64b52dce278e6
+    resource: repo://ecshopx-work-wechat/src/test/java/cn/shopex/ecshopx/workwechat/service/WorkWechatConfigServiceCorpIdScopeTest.java
+generated: { by: "openwiki/0.7.3", at: "2026-11-04T17:09:55.577Z" }
+verified:
+  - by: openwiki/0.7.3
+    at: 2026-11-04T17:09:55.577Z
 ---
 
 # WeChat Ecosystem (ecshopx-wechat, ecshopx-work-wechat)
@@ -287,7 +306,7 @@ All three share the same shape: load config by corpid, build `WXBizMsgCrypt(toke
 
 ### Config in Redis (three lookup keys)
 
-`WorkWechatConfigService` stores each tenant's WeCom config as JSON under three keys, all written together by `saveWorkWechatConfig`: `workwechat:config:<sha1(companyId)>` (company-keyed), `workwechat:configcropid:<corpid>` (corpid-keyed, how callbacks resolve a company from the URL), and `workwechat:configappid:<appid>` (appid → companyId). The JSON carries `corpid`, `show` (whether work-wechat login is offered; `assertShowAllowsOrdinaryLogin` gates the ordinary login route), `company_id`, and `agents.{app,customer,report,dianwu}` (each with token/aes_key/secret/agent_id/appid as applicable). Reads are lenient for display (`getViewConfig` returns an empty default structure) but strict for callbacks (`loadParsedWorkWechatConfigByCorpid` throws on missing). On every read, `complementDianwuH5IfPresent` injects the 店务/dianwu agent's `h5_url` (`baseUri + ?company_id=<id>`) and `h5_host` from `WorkWechatModuleProperties.getDisWorkwechatH5BaseUri` — the `ecshopx.work-wechat.dis-workwechat-h5-base-uri` property (env `DIS_WORKWECHAT_H5_BASEURI`), with `dis-workwechat-h5-auth-uri` (`DIS_WORKWECHAT_H5_AUTHURI`) as its OAuth-callback counterpart. These URIs are what distribution/salesperson H5 pages link back to, so they are the operational surface for the DIS work-wechat H5 deployment.
+`WorkWechatConfigService` stores each tenant's WeCom config as JSON under three keys, all written together by `saveWorkWechatConfig`: `workwechat:config:<sha1(companyId)>` (company-keyed), `workwechat:configcropid:<corpid>` (corpid-keyed, how callbacks resolve a company from the URL), and `workwechat:configappid:<appid>` (appid → companyId). The JSON carries `corpid`, `show` (whether work-wechat login is offered; `assertShowAllowsOrdinaryLogin` gates the ordinary login route), `company_id`, and `agents.{app,customer,report,dianwu}` (each with token/aes_key/secret/agent_id/appid as applicable). The corpid and appid lookup keys are **corp-id/appid scoped, not silently overwritten**: before writing, the save checks the existing `configcropid` value's `company_id` and the `configappid` value and rejects with `ResourceException` (`该企业微信corpid已被其他企业使用` / `该企业微信appid已被其他企业使用`) when either index is owned by a different company; a re-save by the same company overwrites, and changing the corpid deletes the previous `configcropid` key only when it belongs to this company. Reads are lenient for display (`getViewConfig` returns an empty default structure) but strict for callbacks (`loadParsedWorkWechatConfigByCorpid` throws `您还没有配置企业微信信息！` on a missing corpid key). `WorkWechatConfigServiceCorpIdScopeTest` pins the four isolation cases (foreign corpid reject without writing any index, foreign appid reject, same-company re-save overwrite, corpid change deleting only the self-owned old key). On every read, `complementDianwuH5IfPresent` injects the 店务/dianwu agent's `h5_url` (`baseUri + ?company_id=<id>`) and `h5_host` from `WorkWechatModuleProperties.getDisWorkwechatH5BaseUri` — the `ecshopx.work-wechat.dis-workwechat-h5-base-uri` property (env `DIS_WORKWECHAT_H5_BASEURI`), with `dis-workwechat-h5-auth-uri` (`DIS_WORKWECHAT_H5_AUTHURI`) as its OAuth-callback counterpart. These URIs are what distribution/salesperson H5 pages link back to, so they are the operational surface for the DIS work-wechat H5 deployment.
 
 ### Notice senders (dispatch jobs → WeCom messages)
 
@@ -308,6 +327,23 @@ Each sender (using `WorkWechatWaitingDeliveryNoticeService` as the reference sha
 `salespersonTaskNotice` / `completeTaskNotice` / `waitingDeliveryNotice` are the three tenant-configurable template ids accepted by `WorkWechatMessageTemplateService.saveTemplate` (whitelist; title present → full save, otherwise disabled-flag partial update).
 
 The HTTP send itself is port-gated in `ecshopx-third-party`: `WorkWechatCorpMessageSendHttpService` (`@ConditionalOnProperty ecshopx.thirdparty.work-wechat.corp-app.http-enabled=true`) posts `message/send` through `WxCpServiceImpl` with the caller-supplied token; the default `WorkWechatCorpMessageSendNoOp` swallows sends. The same gate covers `WorkWechatAccessTokenHttpService` (fetches corp access_token from the Redis config's corpid + app secret via WxCp) vs its NoOp — meaning a fresh deployment sends nothing to WeCom until `ecshopx.thirdparty.work-wechat.corp-app.http-enabled` is flipped on. `SalespersonTaskWorkWechatNoticeService` (salesperson) builds the `miniprogram_notice` variant: task name/progress/customer/completion-time content items plus the 导购 mini-program appid read directly from the Redis config (`agents.app.appid`).
+
+## Wxa subscribe-message send seams (common port → promotions adapter → scene sender)
+
+The actual WeChat subscribe-message send (`wxa subscribeMessage/send`) is implemented exactly once, in promotions: `WxaTemplateMsgActivityRemindSendService.send(payload, forceFire)`. It validates the `{scenes_name, company_id, appid, openid, data}` payload, resolves the tenant's `wechat_weapp` row by company + authorizer appid to get the `template_name`, then loads the matching enabled `wxa_notice_template` row (disabled or missing template_id → silent skip, always returning `true`). When `forceFire=false` and the template's `send_time_desc` sets a positive delay, it defers the send by publishing through `WxopenTemplateSendDispatchPublisher`; otherwise it builds the subscribe `data` from the template's keyword rows (falling back to the static `WxaTemplateSceneDefinitions` when the stored content is not in modern `keyword` form, truncating `thing*` keywords at 20 code points), resolves the mini-program page per scene (`pages/index` default), and posts through `WxJavaMaRuntime.ma(authorizerAppid)` — failures are logged, never thrown.
+
+Because promotions owns the sender but must not be a compile-time dependency of orders/aftersales/members, each consumer reaches it through a one-method port in `ecshopx-common` and a delegating adapter in promotions — the same dependency-inversion pattern as [Cross-Bundle Communication](../architecture/cross-bundle-communication.md):
+
+| consumer bundle (trigger) | common port | promotions adapter |
+| --- | --- | --- |
+| orders (delivery success) | `common/port/orders/OrderDeliverySuccessWxaSubscribeSendPort` | `OrderDeliverySuccessWxaSubscribeSendAdapter` |
+| orders (payment success) | `common/port/orders/TradeFinishPaymentSuccWxaSubscribeSendPort` | `TradeFinishPaymentSuccWxaSubscribeSendAdapter` |
+| aftersales (refuse / success) | `common/port/aftersales/Aftersales{Refuse,Success}WxaSubscribeSendPort` | `Aftersales{Refuse,Success}WxaSubscribeSendAdapter` |
+| members (goods arrival) | `common/port/members/GoodsArrivalWxaSubscribeSendPort` | `GoodsArrivalWxaSubscribeSendAdapter` |
+
+Each adapter is a thin `@Service` that forwards `send(payload, forceFire)` to `WxaTemplateMsgActivityRemindSendService`. The reference caller is orders' `OrderDeliverySuccessNotifyWechatService` (orders-local `OrderDeliverySuccessNotifyPort` impl, `@ConditionalOnProperty ecshopx.orders.delivery-success-notify.enabled`, `matchIfMissing=true`, with an orders NoOp counterpart): it resolves the buyer's wxa appid/openid via `OrderTradeMiniProgramRecipientLookupPort`, builds the `orderDeliverySucc` payload (`order_id`, `delivery_corp` — falling back from `logi_name` to the corp name/code, `delivery_code`, `item_name` — from the order row title when absent), sends with `forceFire=true`, and swallows any `RuntimeException` into a debug log so delivery confirmation never fails on notify errors.
+
+The card/coupon scenes use a deliberately different seam: the port interface `WxaCardUsedTemplateSendPort` lives **in ecshopx-wechat itself** (consumed by wechat's `WxaTemplateMsgCouponNotifyService` / `WxaTemplateMsgRegistrationNotifyService`), because the real implementation needs wechat, promotions *and* members beans — a cycle risk anywhere else. The real send is bootstrap's `WxaCardUsedTemplateSendPortImpl` (`@Primary`, `@ConditionalOnProperty ecshopx.wechat.wxa-card-template-send.enabled=true`, `matchIfMissing=true`): it whitelists the scenes `userGetCardSucc` / `registrationResultNotice` (silently skipping anything else, e.g. `cardUsedSucc`), resolves the wxa appid from the company's `yykweishop` `wechat_weapp` row and the member openid via `common.wechat.WxaMemberOpenIdLookupPort`, and forwards to the same promotions scene sender with `forceFire=true`. The fallback `WxaCardUsedTemplateSendNoOp` in wechat activates only under `...enabled=false` and discards the send.
 
 ### WeCom auth surfaces
 
@@ -333,6 +369,7 @@ All keys are documented in `ecshopx-bootstrap/src/main/resources/application.pro
 | `ecshopx.work-wechat.dis-workwechat-h5-base-uri` | `${DIS_WORKWECHAT_H5_BASEURI:}` | DIS work-wechat H5 base URI, injected into dianwu agent `h5_url`/`h5_host` on config reads |
 | `ecshopx.work-wechat.dis-workwechat-h5-auth-uri` | `${DIS_WORKWECHAT_H5_AUTHURI:}` | H5 OAuth callback base URI |
 | `ecshopx.thirdparty.work-wechat.corp-app.http-enabled` | unset → NoOp | master switch for real WeCom message/send and access_token HTTP; default NoOp sends nothing |
+| `ecshopx.wechat.wxa-card-template-send.enabled` | `true` | selects the bootstrap real card/coupon subscribe-message send (`matchIfMissing`); `false` activates the wechat-side `WxaCardUsedTemplateSendNoOp` discard |
 
 Redis layout ([Redis Databases](../concepts/redis-databases.md)): work-wechat config and the wxa template domain keys live on the shared template; the wechat-named logical DB (`ecshopx.redis.wechat.database`) backs the wechat `StringRedisTemplate` (menu tree, timescard codes). Legacy QR `share_id` scenes use `<companyId>_<shareId>` with a 2,592,000-second (30-day) TTL on the shared template.
 

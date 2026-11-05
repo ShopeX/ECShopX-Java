@@ -123,7 +123,8 @@ public class WxappGoodsItemsDetailOrchestratorService {
 			throw new ResourceException("商品不存在或下架");
 		}
 		Map<String, Object> promotionActivityData =
-				wxappGoodsItemsDetailPromotionActivityService.getCurrentActivityByItemId(companyId, effectiveItemId, distributorId);
+				wxappGoodsItemsDetailPromotionActivityService.getCurrentActivityByItemId(
+						companyId, effectiveItemId, distributorId, userId);
 		List<Long> limitItemIds = deriveLimitItemIds(promotionActivityData);
 		if (!limitItemIds.isEmpty() && !limitItemIds.contains(effectiveItemId)) {
 			effectiveItemId = limitItemIds.get(0);

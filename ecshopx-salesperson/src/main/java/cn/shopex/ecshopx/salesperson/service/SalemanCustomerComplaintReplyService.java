@@ -17,8 +17,11 @@
 package cn.shopex.ecshopx.salesperson.service;
 
 import cn.shopex.ecshopx.common.exception.ResourceException;
+import cn.shopex.ecshopx.common.exception.UnauthorizedException;
 import cn.shopex.ecshopx.salesperson.domain.SalemanCustomerComplaint;
 import cn.shopex.ecshopx.salesperson.mapper.SalemanCustomerComplaintMapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -46,15 +49,20 @@ public class SalemanCustomerComplaintReplyService {
 	@Transactional(rollbackFor = Exception.class)
 	public Map<String, Object> replySalemanCustomerComplaints(int complaintId, String replyContentTrimmed,
 			Map<String, Object> operatorJwtUserData) {
+		int companyId = requireCompanyId(operatorJwtUserData);
 		int now = (int) Instant.now().getEpochSecond();
 
 		int replyOperatorId = parseOperatorIdLoose(operatorJwtUserData.get("operator_id"));
 		String replyOperatorName = stringField(operatorJwtUserData.get("username"));
 		String replyOperatorMobile = stringField(operatorJwtUserData.get("mobile"));
 
-		SalemanCustomerComplaint existing = salemanCustomerComplaintMapper.selectById(complaintId);
+		SalemanCustomerComplaint existing = selectOwned(complaintId, companyId);
+		if (existing == null) {
+			throw new ResourceException("未查询到更新数据");
+		}
+
 		List<Map<String, Object>> history = new ArrayList<>();
-		if (existing != null && StringUtils.hasText(existing.getReplyContent())) {
+		if (StringUtils.hasText(existing.getReplyContent())) {
 			try {
 				List<Map<String, Object>> parsed = objectMapper.readValue(existing.getReplyContent(),
 						new TypeReference<List<Map<String, Object>>>() {
@@ -83,28 +91,59 @@ public class SalemanCustomerComplaintReplyService {
 			throw new ResourceException("客诉历史回复格式异常");
 		}
 
-		SalemanCustomerComplaint row = salemanCustomerComplaintMapper.selectById(complaintId);
-		if (row == null) {
-			throw new ResourceException("未查询到更新数据");
-		}
-		row.setReplyContent(newReplyContentJson);
-		row.setReplyStatus(true);
-		row.setReplyTime(now);
-		row.setUpdated(now);
-		row.setReplyOperatorId(replyOperatorId);
-		row.setReplyOperatorName(replyOperatorName);
-		row.setReplyOperatorMobile(replyOperatorMobile);
+		existing.setReplyContent(newReplyContentJson);
+		existing.setReplyStatus(true);
+		existing.setReplyTime(now);
+		existing.setUpdated(now);
+		existing.setReplyOperatorId(replyOperatorId);
+		existing.setReplyOperatorName(replyOperatorName);
+		existing.setReplyOperatorMobile(replyOperatorMobile);
 
-		int affected = salemanCustomerComplaintMapper.updateById(row);
+		LambdaUpdateWrapper<SalemanCustomerComplaint> writeScope = new LambdaUpdateWrapper<>();
+		writeScope.eq(SalemanCustomerComplaint::getId, complaintId)
+				.eq(SalemanCustomerComplaint::getCompanyId, companyId);
+		int affected = salemanCustomerComplaintMapper.update(existing, writeScope);
 		if (affected == 0) {
 			throw new ResourceException("未查询到更新数据");
 		}
 
-		SalemanCustomerComplaint refreshed = salemanCustomerComplaintMapper.selectById(complaintId);
+		SalemanCustomerComplaint refreshed = selectOwned(complaintId, companyId);
 		if (refreshed == null) {
 			throw new ResourceException("未查询到更新数据");
 		}
 		return SalemanCustomerComplaintSwgRowConverter.toRow(refreshed);
+	}
+
+	private SalemanCustomerComplaint selectOwned(int complaintId, int companyId) {
+		LambdaQueryWrapper<SalemanCustomerComplaint> q = new LambdaQueryWrapper<>();
+		q.eq(SalemanCustomerComplaint::getId, complaintId)
+				.eq(SalemanCustomerComplaint::getCompanyId, companyId)
+				.last("LIMIT 1");
+		return salemanCustomerComplaintMapper.selectOne(q);
+	}
+
+	private static int requireCompanyId(Map<String, Object> operatorJwtUserData) {
+		if (operatorJwtUserData == null) {
+			throw new UnauthorizedException("未登录");
+		}
+		Object cid = operatorJwtUserData.get("company_id");
+		if (cid == null) {
+			throw new UnauthorizedException("未登录");
+		}
+		long companyId;
+		if (cid instanceof Number n) {
+			companyId = n.longValue();
+		} else {
+			try {
+				companyId = Long.parseLong(cid.toString().trim());
+			} catch (NumberFormatException e) {
+				throw new UnauthorizedException("未登录");
+			}
+		}
+		if (companyId <= 0L || companyId > Integer.MAX_VALUE) {
+			throw new UnauthorizedException("未登录");
+		}
+		return (int) companyId;
 	}
 
 	private static String stringField(Object o) {

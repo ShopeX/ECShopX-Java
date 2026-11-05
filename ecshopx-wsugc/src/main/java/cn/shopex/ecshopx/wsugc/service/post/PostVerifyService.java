@@ -17,12 +17,14 @@
 package cn.shopex.ecshopx.wsugc.service.post;
 
 import cn.shopex.ecshopx.common.exception.BadRequestException;
+import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.members.service.account.MemberAccountService;
 import cn.shopex.ecshopx.wsugc.domain.Message;
 import cn.shopex.ecshopx.wsugc.domain.Post;
 import cn.shopex.ecshopx.wsugc.mapper.MessageMapper;
 import cn.shopex.ecshopx.wsugc.mapper.PostMapper;
 import cn.shopex.ecshopx.wsugc.service.point.UgcPostPointService;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -88,6 +90,20 @@ public class PostVerifyService {
 				: "";
 
 		int now = (int) (System.currentTimeMillis() / 1000);
+		// ECX-10921：对齐 PHP WsugcTenantScopeGuard::assertPostIdsBelongToCompany
+		long companyId = readLong(operatorJwtOrEmpty.get("company_id"), 1L);
+		List<Post> rows =
+				postMapper.selectList(
+						new LambdaQueryWrapper<Post>().in(Post::getPostId, postIds));
+		if (rows.size() != postIds.stream().distinct().count()) {
+			throw new ResourceException("无权访问该笔记");
+		}
+		for (Post row : rows) {
+			Long rowCompanyId = row.getCompanyId() == null ? 0L : row.getCompanyId();
+			if (!rowCompanyId.equals(companyId)) {
+				throw new ResourceException("无权访问该笔记");
+			}
+		}
 		LambdaUpdateWrapper<Post> uw = new LambdaUpdateWrapper<>();
 		uw.in(Post::getPostId, postIds)
 				.set(Post::getStatus, status)

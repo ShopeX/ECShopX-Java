@@ -33,6 +33,8 @@ import cn.shopex.ecshopx.members.security.LegacyFixedMobileEncrypt;
 import cn.shopex.ecshopx.members.service.MemberRelTagsBatchCreateService;
 import cn.shopex.ecshopx.members.service.account.MemberAccountService;
 import cn.shopex.ecshopx.members.service.admin.MemberUserCardCodeAllocateService;
+import cn.shopex.ecshopx.members.service.systemtag.MemberSystemTagCodes;
+import cn.shopex.ecshopx.members.service.systemtag.NewCustomerTagReconcileService;
 import cn.shopex.ecshopx.workwechat.domain.WorkWechatRel;
 import cn.shopex.ecshopx.workwechat.domain.WorkWechatRelLogs;
 import cn.shopex.ecshopx.workwechat.mapper.WorkWechatRelLogsMapper;
@@ -86,6 +88,7 @@ public class OpenapiThirdApiV2MemberCreateService {
 	private final OpenapiShopSalespersonByMobilePort openapiShopSalespersonByMobilePort;
 	private final OpenapiSalespersonCompleteNewUserPort openapiSalespersonCompleteNewUserPort;
 	private final OpenapiSalespersonMemberNumIncreasePort openapiSalespersonMemberNumIncreasePort;
+	private final NewCustomerTagReconcileService newCustomerTagReconcileService;
 
 	public OpenapiThirdApiV2MemberCreateService(
 			MembersMapper membersMapper,
@@ -99,7 +102,8 @@ public class OpenapiThirdApiV2MemberCreateService {
 			WorkWechatRelLogsMapper workWechatRelLogsMapper,
 			OpenapiShopSalespersonByMobilePort openapiShopSalespersonByMobilePort,
 			OpenapiSalespersonCompleteNewUserPort openapiSalespersonCompleteNewUserPort,
-			OpenapiSalespersonMemberNumIncreasePort openapiSalespersonMemberNumIncreasePort) {
+			OpenapiSalespersonMemberNumIncreasePort openapiSalespersonMemberNumIncreasePort,
+			NewCustomerTagReconcileService newCustomerTagReconcileService) {
 		this.membersMapper = membersMapper;
 		this.membersInfoMapper = membersInfoMapper;
 		this.memberTagsMapper = memberTagsMapper;
@@ -112,6 +116,7 @@ public class OpenapiThirdApiV2MemberCreateService {
 		this.openapiShopSalespersonByMobilePort = openapiShopSalespersonByMobilePort;
 		this.openapiSalespersonCompleteNewUserPort = openapiSalespersonCompleteNewUserPort;
 		this.openapiSalespersonMemberNumIncreasePort = openapiSalespersonMemberNumIncreasePort;
+		this.newCustomerTagReconcileService = newCustomerTagReconcileService;
 	}
 
 	@Transactional(rollbackFor = Exception.class)
@@ -164,6 +169,8 @@ public class OpenapiThirdApiV2MemberCreateService {
 		if (reloaded == null) {
 			throw v2Fail(OpenapiErrorCode.MEMBER_ERROR, "会员错误");
 		}
+		newCustomerTagReconcileService.reconcile(
+				companyId, userId, MemberSystemTagCodes.SOURCE_REGISTER);
 		return reloaded;
 	}
 

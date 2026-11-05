@@ -40,7 +40,10 @@ public class WorkWechatVerifyDomainFileService {
 		w.eq(WorkWechatVerifyDomainFile::getName, name);
 		WorkWechatVerifyDomainFile existing = workWechatVerifyDomainFileMapper.selectOne(w);
 		if (existing != null) {
-			existing.setCompanyId(companyId);
+			long ownerCompanyId = existing.getCompanyId() == null ? 0L : existing.getCompanyId();
+			if (ownerCompanyId != companyId) {
+				throw new ResourceException("验证文件名已被占用");
+			}
 			existing.setOperatorId(operatorId);
 			existing.setName(name);
 			existing.setContents(contents);

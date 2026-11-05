@@ -21,5 +21,7 @@ public enum InboundSignedPrepareMode {
 	/** msg/code/success 字符串码 */
 	LOYALTY_MEMBER_GRADE_CHANGE,
 	/** code 数值 + message/msg */
-	OFFLINE_BENEFIT
+	OFFLINE_BENEFIT,
+	/** Token 推送：HTTP 403 + {@code {code,msg,data}}（对齐 PHP） */
+	TOKEN
 }

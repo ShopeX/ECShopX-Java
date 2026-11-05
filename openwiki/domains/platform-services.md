@@ -3,9 +3,6 @@ type: domain-reference
 title: Platform Services and Supporting Bundles (espier, super-admin, theme, data-cube, shopmenu-border, tdkset, comments, wsugc, im, form, one-code, tb-items, kujiale, shopex-ai)
 description: The long tail of shared and supporting Bundles — espier as the platform capability core (pluggable file storage drivers behind ecshopx.storage.driver, Excel import chunking onto the dispatch bus, address trees, upgrade agreements, and the JWT/auth MVC interceptor stack that every admin and H5 request passes through), plus one short map of super-admin, theme, data-cube, shopmenu-border, tdkset, comments, wsugc, im, form, one-code, tb-items, kujiale and shopex-ai.
 tags: [espier, storage, upload, import, oss, qiniu, aws, cos, middleware, interceptor, jwt, super-admin, shopmenu, theme, data-cube, tdkset, comments, wsugc, ugc, im, form, one-code, kujiale, shopex-ai, xxl-job, dispatch-bus, redis]
-verified:
-  - by: openwiki/0.7.2
-    at: 2026-10-21T12:26:22.580Z
 sources:
   - id: openwiki-source-3eb56b4adf3ab6e2953a5319
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/EspierUploadFileJobDispatchPublisherImpl.java
@@ -33,6 +30,8 @@ sources:
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/EspierDispatchJobNames.java
   - id: openwiki-source-ac4a1680f6278512845f1f6a
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/espier/upload/EspierImportRowSink.java
+  - id: openwiki-source-0ced4eb2aefb8260715e3891
+    resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/espier/PosStoreAccountEspierImportRowSink.java
   - id: openwiki-source-73028b1c849bf5bd4e87803c
     resource: repo://ecshopx-data-cube/pom.xml
   - id: openwiki-source-a21a234d49d44d9efb0c39df
@@ -85,6 +84,8 @@ sources:
     resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/upgrade/UpgradeAgreementQueryService.java
   - id: openwiki-source-7da047f33552d2891fe092c8
     resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/upgrade/UpgradeExecuteService.java
+  - id: openwiki-source-75673450a542b03912f5a473
+    resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/upload/AbstractEspierTableUploadHandler.java
   - id: openwiki-source-3f650761ca8f1188ccdc644c
     resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/upload/EspierImportRowSinkMapConfiguration.java
   - id: openwiki-source-7b0bd523aa9c245e226d7fc7
@@ -93,6 +94,12 @@ sources:
     resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/upload/EspierUploadFileStorageWriter.java
   - id: openwiki-source-dec800e8f40f4157f34897b2
     resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/upload/EspierUploadHandlerBeans.java
+  - id: openwiki-source-2ebfe908466d4b6d1e59c80c
+    resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/upload/EspierUploadHeaderCatalog.java
+  - id: openwiki-source-36070c4cf25cf5811debca4c
+    resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/upload/headerinfo/PosStoreAccountHeaderInfo.java
+  - id: openwiki-source-999bd8316ceca1771ad51622
+    resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/upload/UploadHeaderTitle.java
   - id: openwiki-source-566f578afb0e676dddd43ab2
     resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/UploadeFileRepository.java
   - id: openwiki-source-d63e355cdb3ef22ac3a13558
@@ -111,6 +118,8 @@ sources:
     resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/storage/StorageProperties.java
   - id: openwiki-source-b56e4ca177932e823056dbc7
     resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/storage/StorageWebMvcConfigurer.java
+  - id: openwiki-source-3a53a8d04d89fd101ce8712a
+    resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/support/EspierUploadMessages.java
   - id: openwiki-source-94af9a02b28a5d428a590c4e
     resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/web/interceptor/ActivatedInterceptor.java
   - id: openwiki-source-b5679dcbfa12176984c7af97
@@ -193,7 +202,10 @@ sources:
     resource: repo://ecshopx-wsugc/src/main/java/cn/shopex/ecshopx/wsugc/service/post/UgcPostLikeRedisService.java
   - id: openwiki-source-ea37f872d8ead96576e1943d
     resource: repo://ecshopx-wsugc/src/main/java/cn/shopex/ecshopx/wsugc/service/WsugcNormalOrderPaySuccessApplyService.java
-generated: { by: "openwiki/0.7.2", at: "2026-10-21T12:26:22.580Z" }
+generated: { by: "openwiki/0.7.3", at: "2026-11-04T17:09:55.577Z" }
+verified:
+  - by: openwiki/0.7.3
+    at: 2026-11-04T17:09:55.577Z
 ---
 
 # Platform Services and Supporting Bundles
@@ -248,20 +260,21 @@ For the local driver specifically, `StorageWebMvcConfigurer` is `@ConditionalOnP
 
 **Credential issuance (`getUploadToken(fileType, companyId, group, filename)`)** — returns `{driver, token}` where the token shape is driver-specific: for `local` just `{domain, key}`; for `oss` an OSS Web-Post policy (`OssStorageDriver.fillOssWebPostToken`); for `aws` a 3600-second presigned PUT URL; for `qiniu` the Qiniu upload-token fields; for `cosv5` the COS upload credential. The controller layer (`api/admin/v1/UploadImagesController`, `api/front/v1/UploadFileController#image_upload_token`) hands this to the front end so the browser posts the file straight to the object store.
 
-**Server-side writes** — `upload(...)`, `uploadeImage(...)`, `uploadImportLocalRelativePath(...)` all write bytes through the selected driver and return a `{driver, token{domain,key}}` envelope. They differ in validation semantics, and the differences are deliberate PHP parity:
+**Server-side writes** — `upload(...)` (multipart and raw-bytes overloads), `uploadeImage(...)` and `uploadImportLocalRelativePath(...)` all write bytes through the selected driver. `upload` and `uploadeImage` return a `{driver, token{domain,key}}` envelope; `uploadImportLocalRelativePath` returns the bare relative key (see below). The multipart variants differ in validation semantics, and the differences are deliberate PHP parity:
 
-* `assertUploadMultipart` (used by `upload`) hard-rejects the `file` disk with a `ResourceException("请上传正确格式或标准大小文件")`, then requires a well-formed `Content-Type`, an `image/*` primary type with ≤ 2 MB for the `image` disk, and a `video/*` primary type with ≤ 50 MB for the `videos` disk, throwing `BadRequestException` otherwise.
-* `assertEspierUploadeImageMultipart` (used by `uploadeImage` and `uploadImportLocalRelativePath`) allows `image/jpeg|jpg|png|gif` ≤ 2 MB and `video/mp4` ≤ 50 MB, rejects `fileType=file` outright, and throws `ResourceException` or `BadRequestException` depending on the caller's `EspierUploadeImageViolationKind`.
+* `assertUploadMultipart` (used by `upload`) hard-rejects the `file` disk with a `ResourceException("请上传正确格式或标准大小文件")`, then requires a well-formed `Content-Type`, an `image/*` primary type for the `image` disk, and a `video/*` primary type for the `videos` disk — all size-checked against the single `EspierUploadMessages.MAX_UPLOAD_BYTES` cap (50 MiB, aligned with the Spring multipart limit), throwing `BadRequestException` otherwise. Only the *primary* MIME type is inspected on this path: the subtype is unrestricted, so any `image/*` or `video/*` content type passes.
+* `assertEspierUploadeImageMultipart` (used by `uploadeImage` and `uploadImportLocalRelativePath`) is stricter on subtype but equally loose on size: it allows `image/jpeg|jpg|png|gif` and `video/mp4` against the same 50 MiB cap, rejects `fileType=file` outright, and throws `ResourceException` or `BadRequestException` depending on the caller's `EspierUploadeImageViolationKind` (`THROW_RESOURCE` for `uploadeImage`, `THROW_BAD_REQUEST` for the local path).
 * The object-key derivation also differs: `uploadeImage` builds the key from the client filename plus (at most once) the `Content-Type` subtype; `upload` appends the parsed file extension for non-local drivers but *always* appends the literal `.png` under the `local` driver regardless of the actual bytes.
 * `assertCosNonBlankFilenameHasExtensionIfNeeded` enforces that under the `cosv5` driver a supplied filename must contain a non-empty extension — a COS-specific rule applied on both the token and direct paths.
-* `uploadImportLocalRelativePath` is local-only (it throws unless `driverName == "local"`) and returns the bare relative key, used by import flows that need to store the path in a DB row rather than a token envelope.
+* `uploadImportLocalRelativePath` is local-only — it throws `BadRequestException("本地上传仅支持本地存储配置")` unless `StorageFactory.getDriverName()` is `local`, so under the shipped OSS/Qiniu/AWS/COS production drivers this path is dead — and it returns the bare relative key without the token envelope. Its only caller is `FrontWxappEspierUploadImageService.uploadeLocalImage` (behind `@FrontNoAuth POST /api/v1/h5app/wxapp/espier/uploadlocal`), i.e. the flow that needs a plain relative path string rather than a `{driver, token}` wrapper.
 
 ### Excel import: the chunked dispatch pipeline
 
 Espier owns the generic "upload an Excel, import rows into some domain bundle" machinery. `POST /api/v1/espier/upload_file` (`UploadFileController`, `@AdminAuth @ShopLog @Activated(routeAlias = "espier.upload")`) is the single entry point; the target domain is selected by the `file_type` request parameter. The supporting capabilities come from two extension points:
 
 * **`EspierUploadFileHandler`** (in espier) — `supportedFileType()`, `check(MultipartFile)`, optional `trySyncProcess(...)` for fully synchronous imports, and `handleAfterInsertInRequestThread(...)` as the post-persist hook. `EspierUploadFileHandlerRegistry` collects all handler beans and fails startup on a duplicate `file_type`.
-* **`EspierImportRowSink`** (in `ecshopx-common`, `common/espier/upload/EspierImportRowSink.java`) — the row-level hook implemented in the *domain* bundles: `DistributorInfoEspierImportRowSink` (distribution), `EmployeePurchase*EspierImportRowSink` (employee-purchase), `LimitSaleItemEspierImportRowSink` (promotions), `AdapayTradedataEspierImportRowSink` (adapay), `SelformRegistrationRecordEspierImportRowSink` (selfservice), `PointsmallNormalGoodsStoreEspierImportRowSink` (pointsmall), `UploadTbItemsEspierImportRowSink` (goods, `upload_tb_items`), etc. `EspierImportRowSinkMapConfiguration` builds the `espierImportRowSinkByType` map, again failing on duplicates. `EspierUploadHandlerBeans` declares the ~25 `member_info`, `member_update`, `member_consume`, `supplier_goods`, `normal_goods`, `normal_orders`, `distributor_info`, `upload_tb_items`, `employee_purchase_*`, … handlers as delegating table handlers that each bind one header catalog entry (`EspierUploadHeaderCatalog`) to one sink. `upload_tb_items` additionally enforces `xlsx` only.
+* **`EspierImportRowSink`** (in `ecshopx-common`, `common/espier/upload/EspierImportRowSink.java`) — the row-level hook implemented in the *domain* bundles: `DistributorInfoEspierImportRowSink` (distribution), `EmployeePurchase*EspierImportRowSink` (employee-purchase), `LimitSaleItemEspierImportRowSink` (promotions), `AdapayTradedataEspierImportRowSink` (adapay), `SelformRegistrationRecordEspierImportRowSink` (selfservice), `PointsmallNormalGoodsStoreEspierImportRowSink` (pointsmall), `PosStoreAccountEspierImportRowSink` (companys POS store-account import), `UploadTbItemsEspierImportRowSink` (goods, `upload_tb_items`), etc. `EspierImportRowSinkMapConfiguration` builds the `espierImportRowSinkByType` map, again failing on duplicates.
+* **`EspierUploadHandlerBeans` + `EspierUploadHeaderCatalog`** — the wiring layer that binds handler SPI to sink SPI. The `@Configuration` declares 23 built-in import types as anonymous `AbstractEspierTableUploadHandler` subclasses via one `delegating(...)` helper: `member_info`, `member_update`, `member_consume`, `supplier_goods`, `normal_goods`, `normal_epidemic_goods`, `normal_goods_store`, `normal_goods_profit`, `normal_goods_tag`, `selform_registration_record` (note the selform spelling), `normal_orders`, `normal_orders_cancel`, `normal_pointsmall_goods`, `normal_pointsmall_goods_store`, `whitelist_create`, `update_distribution_item`, `limit_sale_item`, `adapay_tradedata`, `community_chief`, `employee_purchase_employees`, `employee_purchase_activity_items_sort`, `upload_distributor_white`, `distributor_info`, `pos_store_account`, and `upload_tb_items`. Each handler carries one `EspierUploadHeaderCatalog` entry — a `UploadHeaderTitle(all, isNeed, headerInfo)` triple mapping ordered Chinese display labels to row field keys (`姓名 → name`), separating the required column subset, and attaching a `headerinfo/*HeaderInfo` class whose per-column `UploadHeaderColumnInfo(maxLength, remark, required)` rows drive template download and per-cell validation (`PosStoreAccountHeaderInfo` is a representative example: 姓名/员工号/邮箱/手机号/角色/门店/状态, all required). At runtime the handler's `handleRow` simply looks up `sinks.get(fileType)` (throwing `IllegalStateException` if a domain bundle forgot its sink) and forwards the parsed row; `upload_tb_items` is the only handler with an extra file check, rejecting anything but `xlsx`. `EspierUploadHeaderCatalog.forFileType` also covers catalog-only types with no registered handler bean (`discount_goods`, `marketing_goods`, `purchase_goods`, and the dynamic `employee_purchase_activity_items`), which are used by template-download/export code paths instead.
 
 The end-to-end flow (two dispatch-bus jobs, both on the `slow` Redis queue, names in `EspierDispatchJobNames`):
 
@@ -325,7 +338,7 @@ Two XXL-JOB handlers keep the file store clean (both follow the [alert-and-rethr
 | order | interceptor | trigger annotation | what it does |
 |---|---|---|---|
 | 5 | `EspierAgreementRateLimitInterceptor` | path-scoped `/api/v1/espier/system/agreement` | IP-keyed Redis counter (`espier:agreement:throttle:<ip>`, `companysRedisTemplate`), 1-minute window, 429 over 30 hits |
-| 10 | `AdminAuthInterceptor` | `@AdminAuth` (method or class) | verifies the operator Bearer JWT with `OperatorJwtCompactCodec` against the `JWT_SECRET`-derived HMAC key, checks `exp`, enriches shop-app member tokens, runs `CompanysActivationService.checkUserAuth` (403 on failure), attaches the selected distributor for `operator_type=distributor`, and stores the claims under `OperatorJwtAuthenticationFilter.OPERATOR_JWT_USER_DATA` — the attribute every controller reads. Excludes the operator login/oauth/sms-code/captcha/credential/third-saascert endpoints |
+| 10 | `AdminAuthInterceptor` | `@AdminAuth` (method or class) | short-circuits when `PosJwtRequestAttributes.POS_JWT_USER_DATA` is already set (POS requests are authenticated by `PosJwtAuthenticationFilter` upstream); otherwise verifies the operator Bearer JWT with `OperatorJwtCompactCodec` against the `JWT_SECRET`-derived HMAC key, checks `exp`, enriches shop-app member tokens, runs `CompanysActivationService.checkUserAuth` (403 on failure) and `attachOperatorIdFromSessionClaims`, attaches the selected distributor for `operator_type=distributor` (defaulting `distributor_id` to 0), and stores the claims under `OperatorJwtAuthenticationFilter.OPERATOR_JWT_USER_DATA` — the attribute every controller reads. Excludes the operator login/oauth/sms-code/captcha/credential/third-saascert endpoints |
 | 15 | `FrontNoAuthInterceptor` | `@FrontNoAuth` | H5 optional auth: verifies an H5 Bearer JWT if present, otherwise resolves an anonymous `company_id` from the request (domain/appid lookup, Ali mini-app port, SaaS main-company config) and builds anonymous claims |
 | 20 | `FrontAuthInterceptor` | `@FrontAuth` (unless method has `@FrontNoAuth`) | strict H5 auth: verifies the H5 JWT, rejects disabled accounts with 403, stores claims + `company_id` in the `H5FrontAuthAttributes` request attributes |
 | 100 | `ActivatedInterceptor` | `@Activated(routeAlias = ...)` | delegates to `CompanysActivationService`/`ActivatedMiddlewareService` for menu-permission (`routeAlias`), company activation and shop permission checks |
@@ -333,6 +346,10 @@ Two XXL-JOB handlers keep the file store clean (both follow the [alert-and-rethr
 | 300 | `ShopLogInterceptor` | `@ShopLog` | `afterCompletion` write of an operator log row for every non-GET request, with company/operator/merchant ids, resolved mapping name, URI, `X-Forwarded-For`-aware IP |
 
 `ShopLoginAuditFilter` (`espier.web.ShopLoginAuditFilter`, a `OncePerRequestFilter`) complements the chain for exactly one path — `POST /api/v1/operator/login`: it wraps the response, and on a 200 whose body contains `data.token`, writes an `operator_name=login` operator-log entry with the request URI, remote IP and the serialized response. `EspierMultipartMaxUploadSizeExceptionAdvice` rounds out the web layer by translating multipart size-limit exceptions.
+
+### Member-facing image upload quota
+
+`FrontWxappEspierUploadImageService` (front `UploadFileController` under `/api/v1/h5app/wxapp/espier`, `@FrontAuth`) is the H5/mini-program image upload path. Both `uploadImage` (`POST /upload`) and `getPicUploadToken` (`GET /image_upload_token`) enforce a per-user daily quota before doing any storage work: the counter lives on the **members** Redis template (`membersStringRedisTemplate`) under `uploadImageNum:<companyId>:<userId>`, is compared against `USER_UPLOAD_IMAGE_NUM` (default 10) and then incremented with an 86400-second TTL — note the counter is incremented *before* the file is validated, so a rejected upload still consumes one attempt. `uploadImage` then accepts only jpg/jpeg/png extensions (derived from the original filename, not the content type) within `EspierUploadMessages.MAX_UPLOAD_BYTES` (50 MiB), writes the bytes to the `image` disk under an Asia/Shanghai `yyyy/MM/dd` path with a `md5(yyyyMMddHHmmss)+md5(content).<ext>` object key (prefixed with `<companyId>/` only when the H5 claims carry a truthy `company_id`), and returns the public `url`. `getPicUploadToken` normalizes the requested `filetype` against file/image/videos, applies the COS filename-extension rule, and delegates to `FileStorageService.getUploadToken`. A third entry, `uploadeLocalImage` (`POST /uploadlocal`, `@FrontNoAuth`), bypasses the quota and routes to the local-only `FileStorageService.uploadImportLocalRelativePath` described above.
 
 The practical rule for a new admin endpoint is therefore: annotate the controller `@AdminAuth @ShopLog` (class level) and each route `@Activated(routeAlias = "<unique alias>")`, register that alias in the seeded shop menu data, and read the operator context from `request.getAttribute(OperatorJwtAuthenticationFilter.OPERATOR_JWT_USER_DATA)`. H5 endpoints instead use `@FrontNoAuth`/`@FrontAuth` plus the `H5FrontAuthAttributes` keys.
 
@@ -363,7 +380,7 @@ Package-info: "shop menu domain module" (店铺菜单域模块). It is the write
 
 Package-info: "decoration, templates and page configuration domain" (装修、模板与页面配置域). The largest of the supporting bundles; nine admin controllers and seven front controllers over five sub-areas:
 
-* **wxapp page templates** — `PagesTemplateController` (`/api/v1/pagestemplate`: `lists`, `add`, `edit`, `detail`, `widget/items`, `copy`, `del/{id}`, `modifyStatus`, `sync`) with the `PagesTemplate*Service` family (add/copy/edit/delete/list/detail/decorator content/modify-status/set/save/sync). The decorator services (`PagesTemplateDecoratorContentService`, `...FilterService`, `...HandlerService`, `...MemberTagsFilterService`, `PagesTemplateWidgetItemsService`) resolve the widget JSON into concrete goods/items payloads for the front end.
+* **wxapp page templates** — `PagesTemplateController` (`/api/v1/pagestemplate`: `lists`, `add`, `edit`, `detail`, `widget/items`, `copy`, `del/{id}`, `modifyStatus`, `sync`) with the `PagesTemplate*Service` family (add/copy/edit/delete/list/detail/decorator content/modify-status/set/save/sync). The decorator services (`PagesTemplateDecoratorContentService`, `...FilterService`, `...HandlerService`, `...MemberTagsFilterService`, `PagesTemplateWidgetItemsService`) resolve the widget JSON into concrete goods/items payloads for the front end. Every route is `@Activated(routeAlias = "pagestemplate.*")` and re-reads `company_id` from the `OPERATOR_JWT_USER_DATA` request attribute set by the espier middleware, throwing `UnauthorizedException` when it is absent; `lists` additionally defaults `distributor_id` from the JWT claims, rewrites the default `index` page to `distributor_index` for distributor-scoped queries, accepts an optional `regionauth_id` filter, and localizes responses from the `country-code` request header (default `zh-CN`).
 * **PC templates** — `PcTemplateController` (`/api/v1/pctemplate`) with content/header-footer save and read services, plus `PcLoginPageSetting*` and `ThemePcTemplateContentLangReadService` for multi-language PC content.
 * **Template sets / tab bar** — `PagesTemplateSetController` + `PagesTemplateSetSaveService`, `PagesTemplateSetOutsideTabBar{Read,Write}Service`.
 * **Web menus** — `WebMenuController` (`/api/v1/web-menus`) and `WebMenuItemController` (`/api/v1/web-menus/{menuId}/items`), the PC site's own navigation (distinct from super-admin's operator menus), plus `WebMenuFrontController` on the front side.
@@ -427,7 +444,7 @@ Package-info: "instant messaging domain module" (即时通讯域模块). Four co
 
 ## ecshopx-form — forms and transcripts (成绩单)
 
-Package-info: "forms and transcripts domain module" (表单与成绩单域模块). Two admin controllers under `/api/v1`: `TranscriptsController` (`POST /transcript`, `GET/PATCH/DELETE /transcript/{transcript_id}`) over `Transcripts` + `TranscriptProperties` (the form schema as key/value rows), and `UserTranscriptsController` (`POST/GET /usertranscript`) over the submitted `UserTranscripts`. `FormRoutePermissionService` is the route-alias gate; `Transcript{Create,Get,Update,Delete}Service` and `UserTranscript{Create,List}Service` are the workers. This is the survey/form backend that `selfform_registration_record` imports feed through the espier row sink in `ecshopx-selfservice`.
+Package-info: "forms and transcripts domain module" (表单与成绩单域模块). Two admin controllers under `/api/v1`: `TranscriptsController` (`POST /transcript`, `GET/PATCH/DELETE /transcript/{transcript_id}`) over `Transcripts` + `TranscriptProperties` (the form schema as key/value rows), and `UserTranscriptsController` (`POST/GET /usertranscript`) over the submitted `UserTranscripts`. `FormRoutePermissionService` is the route-alias gate; `Transcript{Create,Get,Update,Delete}Service` and `UserTranscript{Create,List}Service` are the workers. This is the survey/form backend that the `selform_registration_record` import type feeds through the espier row sink in `ecshopx-selfservice` (`SelformRegistrationRecordEspierImportRowSink`).
 
 ## ecshopx-one-code — one item, one code (一物一码)
 
@@ -449,5 +466,5 @@ Package-info: "Shopex AI domain module" (Shopex AI 域模块). The smallest func
 
 * **Auth pattern.** Every admin controller in this set is `@AdminAuth @ShopLog` with per-route `@Activated(routeAlias = ...)`, and every H5 controller is `@FrontNoAuth` or `@FrontAuth` — all enforced by the espier middleware stack. Bundles that need an extra gate beyond `@Activated` add their own `*ShopRoutePermissionService` (data-cube, one-code, tdkset, comments, form) that consults `OperatorRoleMenuAliasService` + super-admin's `ShopMenuService`.
 * **Cross-bundle wiring stays acyclic.** The port interfaces live in `ecshopx-common` (`EspierDispatchJobNames`, `DatacubeDispatchJobNames`, `EspierImportRowSink`) or in the consuming bundle (`KujialeDesignerWorksByItemIdPort` in goods), with the `DispatchFacade`-backed or mapper-backed impls in the owning bundle or in `ecshopx-bootstrap/config` — see [Cross-bundle communication](../architecture/cross-bundle-communication.md).
-* **Redis template discipline.** Datacube counters use `datacubeStringRedisTemplate`, the bloom filter and all UGC/IM blobs use `sharedStringRedisTemplate`, the agreement throttle uses `companysRedisTemplate`, the address tree cache uses `espierStringRedisTemplate`, and the front upload-image day quota uses `membersStringRedisTemplate` (`FrontWxappEspierUploadImageService`, key `uploadImageNum:<companyId>:<userId>`, cap `USER_UPLOAD_IMAGE_NUM`, default 10) — the qualifier matters because `companysRedisTemplate` is `@Primary`.
+* **Redis template discipline.** Datacube counters use `datacubeStringRedisTemplate`, the bloom filter and all UGC/IM blobs use `sharedStringRedisTemplate`, the agreement throttle uses `companysRedisTemplate`, the address tree cache uses `espierStringRedisTemplate`, and the front upload-image day quota uses `membersStringRedisTemplate` (see *Member-facing image upload quota* above) — the qualifier matters because `companysRedisTemplate` is `@Primary`.
 * **Cron handlers** in espier, theme and data-cube all follow the shared alert-and-rethrow template; the queue-feeding split (handler enqueues, bus does the work) is the norm for the statistics family, as detailed on the [XXL-JOB](../concepts/scheduling-xxljob.md) page.

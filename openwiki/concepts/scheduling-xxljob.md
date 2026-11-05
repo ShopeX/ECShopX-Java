@@ -3,14 +3,25 @@ type: "Concept"
 title: "Scheduled Jobs: XXL-JOB Executor and Cron Handlers"
 description: "How ECShopX-Java runs scheduled work: one XxlJobSpringExecutor bean (appname ecshopx-executor, port 19999) auto-registers against a separately deployed XXL-JOB 2.5.0 admin whose xxl_job schema is seeded from docker/tables_xxl_job.sql; each Bundle contributes cron/Schedule*Handler classes with @XxlJob short names that delegate to services, log cost, publish CronAlertEvent on failure and rethrow — and many of them simply publish a dispatch-bus job."
 tags: [scheduling, xxl-job, cron, executor, cron-alert-event, dispatch-bus, operations]
-verified:
-  - by: openwiki/0.7.2
-    at: 2026-10-21T12:26:22.580Z
 sources:
+  - id: openwiki-src-bspay-withdraw-handler
+    resource: repo://ecshopx-bspay/src/main/java/cn/shopex/ecshopx/bspay/dispatch/WithdrawJobHandler.java
+  - id: openwiki-src-espier-posstore-export
+    resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/dispatch/PosStoreAccountExportFileJobTypeHandler.java
+  - id: openwiki-src-promotions-merchant-notice
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/dispatch/MerchantAuditSuccessNoticeJobHandler.java
+  - id: openwiki-src-withdraw-reg
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/WithdrawJobRegistrationConfig.java
+  - id: openwiki-src-merchant-notice-reg
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MerchantAuditSuccessNoticeJobRegistrationConfig.java
+  - id: openwiki-src-espier-export-dispatch
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/EspierExportFileJobDispatchHandler.java
   - id: openwiki-source-7d78e4d7cb28579f5500ea6c
     resource: repo://dev-setup.sh
   - id: openwiki-source-0c106052b3286e779bed85e7
     resource: repo://docker-compose.dev.yml
+  - id: openwiki-source-57bb1d8f1a1c2bee703ee3c1
+    resource: repo://docker-lite/deploy.sh
   - id: openwiki-source-f11d31f9677b30a46da182df
     resource: repo://docker-lite/docker-compose.yml
   - id: openwiki-source-fd7c1ddf7046ece173eeb0ed
@@ -41,6 +52,8 @@ sources:
     resource: repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/config/ConsumptionOrderJobDispatchPublisherImplTest.java
   - id: openwiki-source-e006ea843bbf4bea72d155e9
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/cron/event/CronAlertEvent.java
+  - id: openwiki-source-a83d6cc5a617f803669492e1
+    resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/BsPayBundleDispatchJobNames.java
   - id: openwiki-source-939036a1555ba7020578ed84
     resource: repo://ecshopx-data-cube/src/main/java/cn/shopex/ecshopx/datacube/cron/ScheduleDailyStatisticsHandler.java
   - id: openwiki-source-2e497b6cef2850b658815ddb
@@ -87,7 +100,10 @@ sources:
     resource: repo://ecshopx-youshu/src/main/java/cn/shopex/ecshopx/youshu/cron/ScheduleAddOrderSumHandler.java
   - id: openwiki-source-f1b1aacc63642e5304668821
     resource: repo://readme.md
-generated: { by: "openwiki/0.7.2", at: "2026-10-21T12:26:22.580Z" }
+generated: { by: "openwiki/0.7.3", at: "2026-11-04T17:09:55.577Z" }
+verified:
+  - by: openwiki/0.7.3
+    at: 2026-11-04T17:09:55.577Z
 ---
 
 # Scheduled Jobs: XXL-JOB Executor and Cron Handlers
@@ -229,6 +245,14 @@ A cron handler is the *time-driven entry point*; the [dispatch bus](dispatch-bus
 **Direct workers.** The handler's service does the batch inline, synchronously, inside the trigger call. `cancel-orders` → `NormalOrderCronService.scheduleCancelOrders()` is the reference: it counts expired `NOTPAY` orders (`auto_cancel_time` within 60 s, excluding `offline_pay` and `point`), then pages through them 20 at a time (`PAGE_SIZE = 20`), batch-updating the main and association orders to `CANCEL` and, per order, running the restore fan-out — invoice cancellation, supplier-order cancellation, marketing join-count decrement (Redis), points and upoints return, order process logs via the `OrderProcessLogPublishPort`, a marketing dispatch event published after-commit when a transaction is active, employee-purchase restore, per-item inventory and purchase-limit restores, limited-time-sale quota restores, and coupon/directed-promotion restore — returning the cancelled count that ends up in the handler's INFO log. `cancel-offlinepay-orders` is the same shape specialised for offline-transfer orders (it also sets `offline_payment.check_status = 9`, guarded per order so one failure does not abort the batch).
 
 The split is a load-shaping decision: one cron tick should be cheap and bounded (queue-feeders) or fully self-contained idempotent batch work (direct workers), never a long unbounded transaction.
+
+### Representative bus-consumed jobs
+
+The handlers above are the *trigger* side. The work they fan out to is consumed by plain `DispatchHandler` beans registered in bootstrap — not by `@XxlJob` — which is why a single cron tick can stay cheap while the real batch runs asynchronously. Representative handlers per Bundle:
+
+* **Withdraw dispatch** — `ecshopx-bspay/.../dispatch/WithdrawJobHandler` implements `DispatchHandler` directly. It validates `apply_id` and `company_id` from the payload (throwing `BadRequestException` when either is missing or not a `Number`) and calls `WithdrawApplyService.executeHuifuWithdraw(applyId, companyId)`. Bootstrap registers it in `WithdrawJobRegistrationConfig` under `BsPayBundleDispatchJobNames.WITHDRAW_JOB`.
+* **Export-file jobs** — `ecshopx-espier/.../dispatch/PosStoreAccountExportFileJobTypeHandler` implements the narrower `ExportFileJobTypeHandler` (which adds `exportType()`). It builds the CSV rows and headers, exports via `ExportCsvFileService`, then writes a finish log through `ExportLogCreateService`. Bootstrap's `EspierExportFileJobDispatchHandler` collects every `ExportFileJobTypeHandler` bean into a `type → handler` map (rejecting duplicate export types at startup) and routes each incoming export job by its `payload["type"]` — so one dispatch job name fans out to many export implementations.
+* **Notice jobs** — `ecshopx-promotions/.../dispatch/MerchantAuditSuccessNoticeJobHandler` implements `DispatchHandler` and is deliberately fire-and-forget: it sends a scene-templated SMS via `CompanySceneSmsSendPort.sendSceneTemplatedSms(...)` but **catches `RuntimeException` and only logs a warning** (with the mobile number masked to its last four digits) instead of rethrowing. Bootstrap registers it in `MerchantAuditSuccessNoticeJobRegistrationConfig` under `MerchantDispatchJobNames.MERCHANT_AUDIT_SUCCESS_NOTICE`. This is the opposite failure posture from a cron handler: a notification failure must not mark the bus job failed.
 
 ### The `test-cron` profile
 

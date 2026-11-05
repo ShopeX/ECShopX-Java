@@ -211,7 +211,8 @@ class SeckillActivityCreateServiceLimitedTimeSaleShopOverlapTest {
 				mock(ApplicationEventPublisher.class),
 				new ObjectMapper(),
 				tagPublisher,
-				mock(SalespersonItemsShelvesJobDispatchPublisher.class));
+				mock(SalespersonItemsShelvesJobDispatchPublisher.class),
+				mock(cn.shopex.ecshopx.members.service.systemtag.MemberAudienceTagValidator.class));
 	}
 
 	private static void initSync() {

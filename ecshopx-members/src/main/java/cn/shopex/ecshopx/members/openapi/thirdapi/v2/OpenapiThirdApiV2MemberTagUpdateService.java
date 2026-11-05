@@ -21,6 +21,7 @@ import cn.shopex.ecshopx.common.openapi.OpenapiMemberTagV2FailException;
 import cn.shopex.ecshopx.members.domain.MemberTags;
 import cn.shopex.ecshopx.members.mapper.MemberTagsMapper;
 import cn.shopex.ecshopx.members.service.MemberTagsMultiLangWriteService;
+import cn.shopex.ecshopx.members.service.systemtag.MemberSystemTagWriteGuard;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import java.time.Instant;
@@ -40,12 +41,15 @@ public class OpenapiThirdApiV2MemberTagUpdateService {
 
 	private final MemberTagsMapper memberTagsMapper;
 	private final MemberTagsMultiLangWriteService memberTagsMultiLangWriteService;
+	private final MemberSystemTagWriteGuard memberSystemTagWriteGuard;
 
 	public OpenapiThirdApiV2MemberTagUpdateService(
 			MemberTagsMapper memberTagsMapper,
-			MemberTagsMultiLangWriteService memberTagsMultiLangWriteService) {
+			MemberTagsMultiLangWriteService memberTagsMultiLangWriteService,
+			MemberSystemTagWriteGuard memberSystemTagWriteGuard) {
 		this.memberTagsMapper = memberTagsMapper;
 		this.memberTagsMultiLangWriteService = memberTagsMultiLangWriteService;
+		this.memberSystemTagWriteGuard = memberSystemTagWriteGuard;
 	}
 
 	@Transactional(rollbackFor = Exception.class)
@@ -91,6 +95,7 @@ public class OpenapiThirdApiV2MemberTagUpdateService {
 		if (existing == null) {
 			throw tagNotFound();
 		}
+		memberSystemTagWriteGuard.rejectWrite(existing);
 
 		MemberTags duplicate = memberTagsMapper.selectOne(
 				new LambdaQueryWrapper<MemberTags>()

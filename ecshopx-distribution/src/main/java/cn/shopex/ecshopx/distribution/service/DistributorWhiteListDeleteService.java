@@ -38,7 +38,11 @@ public class DistributorWhiteListDeleteService {
 
 	@Transactional(rollbackFor = Exception.class)
 	public void deleteWhiteList(
-			boolean deleteByWhiteListId, Object idRaw, String operatorType, Long jwtDistributorId) {
+			long companyId,
+			boolean deleteByWhiteListId,
+			Object idRaw,
+			String operatorType,
+			Long jwtDistributorId) {
 		if (deleteByWhiteListId) {
 			long scopedDistributorId = 0L;
 			String ot = operatorType == null ? "" : operatorType;
@@ -49,14 +53,21 @@ public class DistributorWhiteListDeleteService {
 			if (whiteIds.isEmpty()) {
 				return;
 			}
+			// ECX-10885：按主键取行和按手机号删除都必须限定当前租户；未命中则不删除。
 			List<DistributorWhiteList> rows =
-					mapper.selectList(Wrappers.<DistributorWhiteList>lambdaQuery().in(DistributorWhiteList::getId, whiteIds));
+					mapper.selectList(
+							Wrappers.<DistributorWhiteList>lambdaQuery()
+									.eq(DistributorWhiteList::getCompanyId, companyId)
+									.in(DistributorWhiteList::getId, whiteIds));
 			for (DistributorWhiteList row : rows) {
 				String mobile = row.getMobile();
 				if (mobile == null || !StringUtils.hasText(mobile)) {
 					continue;
 				}
-				var w = Wrappers.<DistributorWhiteList>lambdaQuery().eq(DistributorWhiteList::getMobile, mobile);
+				var w =
+						Wrappers.<DistributorWhiteList>lambdaQuery()
+								.eq(DistributorWhiteList::getCompanyId, companyId)
+								.eq(DistributorWhiteList::getMobile, mobile);
 				if (scopedDistributorId > 0L) {
 					w = w.eq(DistributorWhiteList::getDistributorId, scopedDistributorId);
 				}
@@ -67,14 +78,12 @@ public class DistributorWhiteListDeleteService {
 			if (distributorIds.isEmpty()) {
 				return;
 			}
+			var byDistributor =
+					Wrappers.<DistributorWhiteList>lambdaQuery().eq(DistributorWhiteList::getCompanyId, companyId);
 			if (distributorIds.size() == 1) {
-				mapper.delete(
-						Wrappers.<DistributorWhiteList>lambdaQuery()
-								.eq(DistributorWhiteList::getDistributorId, distributorIds.get(0)));
+				mapper.delete(byDistributor.eq(DistributorWhiteList::getDistributorId, distributorIds.get(0)));
 			} else {
-				mapper.delete(
-						Wrappers.<DistributorWhiteList>lambdaQuery()
-								.in(DistributorWhiteList::getDistributorId, distributorIds));
+				mapper.delete(byDistributor.in(DistributorWhiteList::getDistributorId, distributorIds));
 			}
 		}
 	}

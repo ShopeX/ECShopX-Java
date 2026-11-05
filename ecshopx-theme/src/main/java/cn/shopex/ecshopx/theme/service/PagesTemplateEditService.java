@@ -18,6 +18,7 @@ package cn.shopex.ecshopx.theme.service;
 
 import cn.shopex.ecshopx.common.exception.BadRequestException;
 import cn.shopex.ecshopx.common.exception.ResourceException;
+import cn.shopex.ecshopx.members.service.systemtag.MemberAudienceTagValidator;
 import cn.shopex.ecshopx.theme.domain.PagesTemplate;
 import cn.shopex.ecshopx.theme.mapper.PagesTemplateMapper;
 import cn.shopex.ecshopx.wechat.domain.WeappSetting;
@@ -55,16 +56,19 @@ public class PagesTemplateEditService {
 	private final ObjectMapper objectMapper;
 
 	private final WeappSettingOutsideLangParamsWriter weappSettingOutsideLangParamsWriter;
+	private final MemberAudienceTagValidator memberAudienceTagValidator;
 
 	public PagesTemplateEditService(
 			PagesTemplateMapper pagesTemplateMapper,
 			WeappSettingMapper weappSettingMapper,
 			ObjectMapper objectMapper,
-			WeappSettingOutsideLangParamsWriter weappSettingOutsideLangParamsWriter) {
+			WeappSettingOutsideLangParamsWriter weappSettingOutsideLangParamsWriter,
+			MemberAudienceTagValidator memberAudienceTagValidator) {
 		this.pagesTemplateMapper = pagesTemplateMapper;
 		this.weappSettingMapper = weappSettingMapper;
 		this.objectMapper = objectMapper;
 		this.weappSettingOutsideLangParamsWriter = weappSettingOutsideLangParamsWriter;
+		this.memberAudienceTagValidator = memberAudienceTagValidator;
 	}
 
 	public Map<String, Object> handleEdit(long companyId, JsonNode body) {
@@ -116,6 +120,7 @@ public class PagesTemplateEditService {
 	private void editBranch(long companyId, Long pagesTemplateId, JsonNode body) {
 		String templateName = resolveTemplateName(body);
 		JsonNode templateContentRoot = parseTemplateContentRoot(body);
+		assertMeberTagsUsable(companyId, pagesTemplateId, templateContentRoot);
 		Integer elementEditStatus = parseElementEditStatus(body);
 		boolean weappSyncNeeded = isWeappSyncNeeded(templateContentRoot);
 		if (weappSyncNeeded) {
@@ -437,5 +442,73 @@ public class PagesTemplateEditService {
 
 	private static boolean weappPagesTemplateMatches(Integer existingPid, Integer expectedPid) {
 		return Objects.equals(existingPid, expectedPid);
+	}
+
+	private void assertMeberTagsUsable(long companyId, Long pagesTemplateId, JsonNode templateContentRoot) {
+		Set<Long> tagIds = new HashSet<>();
+		collectMeberTagIds(templateContentRoot, tagIds);
+		if (tagIds.isEmpty()) {
+			return;
+		}
+		long distributorId = 0L;
+		if (pagesTemplateId != null) {
+			PagesTemplate row = pagesTemplateMapper.selectById(pagesTemplateId);
+			if (row != null && row.getDistributorId() != null) {
+				distributorId = row.getDistributorId().longValue();
+			}
+		}
+		memberAudienceTagValidator.assertUsable(companyId, distributorId, tagIds);
+	}
+
+	private static void collectMeberTagIds(JsonNode node, Set<Long> out) {
+		if (node == null || node.isNull() || node.isMissingNode()) {
+			return;
+		}
+		if (node.isArray()) {
+			for (JsonNode child : node) {
+				collectMeberTagIds(child, out);
+			}
+			return;
+		}
+		if (!node.isObject()) {
+			return;
+		}
+		if (node.has("meber_tags")) {
+			JsonNode tags = node.get("meber_tags");
+			if (tags != null && tags.isArray()) {
+				for (JsonNode item : tags) {
+					Long id = parseTagIdNode(item);
+					if (id != null && id > 0L) {
+						out.add(id);
+					}
+				}
+			}
+		}
+		node.fields().forEachRemaining(e -> collectMeberTagIds(e.getValue(), out));
+	}
+
+	private static Long parseTagIdNode(JsonNode item) {
+		if (item == null || item.isNull()) {
+			return null;
+		}
+		if (item.isIntegralNumber()) {
+			return item.longValue();
+		}
+		if (item.isTextual()) {
+			try {
+				return Long.parseLong(item.asText().trim());
+			} catch (NumberFormatException e) {
+				return null;
+			}
+		}
+		if (item.isObject()) {
+			if (item.has("tag_id")) {
+				return parseTagIdNode(item.get("tag_id"));
+			}
+			if (item.has("id")) {
+				return parseTagIdNode(item.get("id"));
+			}
+		}
+		return null;
 	}
 }

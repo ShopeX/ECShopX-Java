@@ -178,14 +178,23 @@ public class WxappOfflinePaymentUploadVoucherService {
 		return toResponseRow(entity);
 	}
 
-	public Object getOfflineVoucher(long companyId, String orderIdRaw) {
-		if (companyId <= 0L) {
+	/** ECX-10877：仅订单买家可读线下凭证。 */
+	public Object getOfflineVoucher(long companyId, long userId, String orderIdRaw) {
+		if (companyId <= 0L || userId <= 0L) {
 			throw new UnauthorizedException("未登录");
 		}
 		final long parsedOrderId;
 		try {
 			parsedOrderId = Long.parseLong(orderIdRaw.trim());
 		} catch (NumberFormatException e) {
+			return Collections.emptyList();
+		}
+		NormalOrders order = normalOrdersMapper.selectOne(
+				new LambdaQueryWrapper<NormalOrders>()
+						.eq(NormalOrders::getCompanyId, companyId)
+						.eq(NormalOrders::getOrderId, parsedOrderId)
+						.last("LIMIT 1"));
+		if (order == null || !Objects.equals(order.getUserId(), userId)) {
 			return Collections.emptyList();
 		}
 		OfflinePayment row = offlinePaymentMapper.selectOne(

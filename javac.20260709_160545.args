@@ -1,0 +1,7 @@
+-d
+/tmp/pointcheck
+-sourcepath
+/Library/WebServer/Documents/work/git/xecshop/platform/ecshopx-java/ecshopx-point/src/main/java
+-cp
+/dev/null
+/Library/WebServer/Documents/work/git/xecshop/platform/ecshopx-java/ecshopx-point/src/main/java/cn/shopex/ecshopx/point/domain/PointActivity.java

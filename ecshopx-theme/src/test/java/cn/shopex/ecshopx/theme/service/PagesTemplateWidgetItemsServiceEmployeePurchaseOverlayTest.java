@@ -95,7 +95,7 @@ class PagesTemplateWidgetItemsServiceEmployeePurchaseOverlayTest {
 		service.getWidgetItems(141L, "zh-CN", h5Query("166"), 1185L);
 
 		InOrder order = inOrder(goodsItemsListPromotionEnrichmentService, overlayService);
-		order.verify(goodsItemsListPromotionEnrichmentService).enrich(list);
+		order.verify(goodsItemsListPromotionEnrichmentService).enrich(list, 1185L);
 		order.verify(overlayService).overlayActivityPrice(list, 141L, 166L);
 	}
 

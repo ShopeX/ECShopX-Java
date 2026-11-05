@@ -22,6 +22,7 @@ import cn.shopex.ecshopx.members.service.account.MemberAccountService;
 import cn.shopex.ecshopx.orders.port.WxappCartGoodsPromotionApplyRulesPort;
 import cn.shopex.ecshopx.promotions.domain.MarketingActivity;
 import cn.shopex.ecshopx.promotions.mapper.MarketingActivityMapper;
+import cn.shopex.ecshopx.promotions.service.systemtag.MemberCrowdMatcher;
 import cn.shopex.ecshopx.superadmin.service.ShopMenuService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -47,6 +48,7 @@ public class WxappCartGoodsPromotionApplyRulesPortImpl implements WxappCartGoods
 	private final StringRedisTemplate stringRedisTemplate;
 	private final ObjectMapper objectMapper;
 	private final MessageSource messageSource;
+	private final MemberCrowdMatcher memberCrowdMatcher;
 
 	public WxappCartGoodsPromotionApplyRulesPortImpl(
 			MarketingActivityMapper marketingActivityMapper,
@@ -55,7 +57,8 @@ public class WxappCartGoodsPromotionApplyRulesPortImpl implements WxappCartGoods
 			ShopMenuService shopMenuService,
 			StringRedisTemplate stringRedisTemplate,
 			ObjectMapper objectMapper,
-			MessageSource messageSource) {
+			MessageSource messageSource,
+			MemberCrowdMatcher memberCrowdMatcher) {
 		this.marketingActivityMapper = marketingActivityMapper;
 		this.marketingActivityCatalogAccess = marketingActivityCatalogAccess;
 		this.memberAccountService = memberAccountService;
@@ -63,6 +66,7 @@ public class WxappCartGoodsPromotionApplyRulesPortImpl implements WxappCartGoods
 		this.stringRedisTemplate = stringRedisTemplate;
 		this.objectMapper = objectMapper;
 		this.messageSource = messageSource;
+		this.memberCrowdMatcher = memberCrowdMatcher;
 	}
 
 	@Override
@@ -142,6 +146,18 @@ public class WxappCartGoodsPromotionApplyRulesPortImpl implements WxappCartGoods
 								"您的会员等级不能参加该活动",
 								locale));
 			}
+		}
+		if (!memberCrowdMatcher.matchesFullCrowdActivity(
+				companyId,
+				userId,
+				activity.getMarketingType(),
+				activity.getMemberTagIds(),
+				activity.getMemberTagMode())) {
+			throw new ResourceException(
+					msg(
+							"promotions.marketing.cart_apply.member_crowd_not_match",
+							"您不在该活动适用人群内",
+							locale));
 		}
 		int limit = activity.getJoinLimit() == null ? 0 : activity.getJoinLimit();
 		if (limit > 0) {

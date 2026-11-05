@@ -73,4 +73,8 @@ public class CreatePickupLocationRequest {
 
 	@JsonProperty("distributor_id")
 	private Long distributorId;
+
+	/** Admin 统一请求体携带；自提点主表暂不落库，仅避免 Jackson 反序列化失败。 */
+	@JsonProperty("country_code")
+	private String countryCode;
 }

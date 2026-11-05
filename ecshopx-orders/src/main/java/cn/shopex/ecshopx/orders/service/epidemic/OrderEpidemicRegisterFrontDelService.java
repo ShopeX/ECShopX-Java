@@ -19,6 +19,8 @@ package cn.shopex.ecshopx.orders.service.epidemic;
 import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.orders.domain.OrderEpidemicRegister;
 import cn.shopex.ecshopx.orders.mapper.OrderEpidemicRegisterMapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,7 +34,7 @@ public class OrderEpidemicRegisterFrontDelService {
 	}
 
 	@Transactional(rollbackFor = Exception.class)
-	public void delEpidemicRegister(String id) {
+	public void delEpidemicRegister(String id, long companyId, long userId) {
 		String raw = id == null ? "" : id.trim();
 		if (raw.isEmpty()) {
 			throw new ResourceException("未查询到更新数据");
@@ -43,14 +45,26 @@ public class OrderEpidemicRegisterFrontDelService {
 		} catch (NumberFormatException e) {
 			throw new ResourceException("未查询到更新数据");
 		}
-		OrderEpidemicRegister existing = orderEpidemicRegisterMapper.selectById(pk);
+		if (companyId <= 0L || userId <= 0L || companyId > Integer.MAX_VALUE) {
+			throw new ResourceException("未查询到更新数据");
+		}
+		int companyIdInt = (int) companyId;
+		LambdaQueryWrapper<OrderEpidemicRegister> scope = new LambdaQueryWrapper<>();
+		scope.eq(OrderEpidemicRegister::getId, pk)
+				.eq(OrderEpidemicRegister::getCompanyId, companyIdInt)
+				.eq(OrderEpidemicRegister::getUserId, userId)
+				.last("LIMIT 1");
+		OrderEpidemicRegister existing = orderEpidemicRegisterMapper.selectOne(scope);
 		if (existing == null) {
 			throw new ResourceException("未查询到更新数据");
 		}
-		OrderEpidemicRegister patch = new OrderEpidemicRegister();
-		patch.setId(pk);
-		patch.setIsUse(0);
-		int rows = orderEpidemicRegisterMapper.updateById(patch);
+		LambdaUpdateWrapper<OrderEpidemicRegister> writeScope = new LambdaUpdateWrapper<>();
+		writeScope
+				.eq(OrderEpidemicRegister::getId, pk)
+				.eq(OrderEpidemicRegister::getCompanyId, companyIdInt)
+				.eq(OrderEpidemicRegister::getUserId, userId)
+				.set(OrderEpidemicRegister::getIsUse, 0);
+		int rows = orderEpidemicRegisterMapper.update(null, writeScope);
 		if (rows == 0) {
 			throw new ResourceException("未查询到更新数据");
 		}

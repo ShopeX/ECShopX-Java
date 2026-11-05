@@ -281,7 +281,7 @@ public class WxappH5CartListService {
 			if (isCheckout) {
 				throw new ResourceException("购物车选中商品为空");
 			}
-			wxappH5CartListTotalAndPromotionAggregator.apply(companyId, out);
+			wxappH5CartListTotalAndPromotionAggregator.apply(companyId, userId, out);
 			return out;
 		}
 		assembleCartLinesIntoOut(
@@ -751,7 +751,7 @@ public class WxappH5CartListService {
 			out.put("is_check_store", Boolean.TRUE);
 		} else {
 			out.put("valid_cart", groupValidByShop(validLines));
-			wxappH5CartListTotalAndPromotionAggregator.apply(companyId, out);
+			wxappH5CartListTotalAndPromotionAggregator.apply(companyId, userId, out);
 		}
 	}
 

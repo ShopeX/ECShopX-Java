@@ -17,7 +17,9 @@
 package cn.shopex.ecshopx.wsugc.service.comment;
 
 import cn.shopex.ecshopx.common.exception.ResourceException;
+import cn.shopex.ecshopx.wsugc.domain.Comment;
 import cn.shopex.ecshopx.wsugc.mapper.CommentMapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -38,14 +40,14 @@ public class CommentDeleteService {
 		this.commentMapper = commentMapper;
 	}
 
-	public Map<String, Object> deleteComments(Map<String, Object> input) {
+	public Map<String, Object> deleteComments(Map<String, Object> input, long companyId) {
 		Object raw = input.get("comment_id");
 		if (raw == null) {
 			throw new ResourceException("comment_id参数不能为空");
 		}
 
 		List<Object> displayIds = new ArrayList<>();
-		LinkedHashSet<Long> idsToDelete = new LinkedHashSet<>();
+		LinkedHashSet<Long> idsRequested = new LinkedHashSet<>();
 
 		if (raw instanceof Collection<?> col) {
 			if (col.isEmpty()) {
@@ -53,16 +55,30 @@ public class CommentDeleteService {
 			}
 			for (Object el : col) {
 				displayIds.add(toDisplayToken(el));
-				tryAddParseableLong(idsToDelete, el);
+				tryAddParseableLong(idsRequested, el);
 			}
 		} else {
 			displayIds.add(toDisplayToken(raw));
-			tryAddParseableLong(idsToDelete, raw);
+			tryAddParseableLong(idsRequested, raw);
 		}
 
-		if (!idsToDelete.isEmpty()) {
-			commentMultiLangDeleteService.deleteMultiLangForComments(new ArrayList<>(idsToDelete));
-			commentMapper.deleteBatchIds(idsToDelete);
+		if (!idsRequested.isEmpty()) {
+			LambdaQueryWrapper<Comment> scope = new LambdaQueryWrapper<>();
+			scope.in(Comment::getCommentId, idsRequested).eq(Comment::getCompanyId, companyId);
+			List<Comment> owned = commentMapper.selectList(scope);
+			LinkedHashSet<Long> idsToDelete = new LinkedHashSet<>();
+			if (owned != null) {
+				for (Comment row : owned) {
+					if (row != null && row.getCommentId() != null) {
+						idsToDelete.add(row.getCommentId());
+					}
+				}
+			}
+			if (!idsToDelete.isEmpty()) {
+				List<Long> scopedIds = new ArrayList<>(idsToDelete);
+				commentMultiLangDeleteService.deleteMultiLangForComments(companyId, scopedIds);
+				commentMapper.deleteBatchIds(scopedIds);
+			}
 		}
 
 		LinkedHashMap<String, Object> out = new LinkedHashMap<>();

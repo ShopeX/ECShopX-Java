@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:f3713996f1ce9288180f58dac538252ec1cd3d7a2a0723584660190901598bdd",
+  "pageVersion": "sha256:006069e11b8fd129f2f2c0920224798e9df3b8aba90a85a0ab32c72cd595fbbd",
   "claims": [
     {
       "id": "claim_09e7ff1c6b064857b6a05d2f3f39120d",
@@ -312,7 +312,7 @@
     },
     {
       "id": "claim_09ac4a9bceb943f89401cc639db3766d",
-      "statement": "All deposit recharge callbacks converge on AdapayDepositTradeRechargeCallbackService.rechargeCallback: the wxpay notify facade routes attach=depositRecharge trades through AlipayNotifyDepositSidePort (implemented in the deposit bundle), and the adapay payment callback handler routes description=depositRecharge payments the same way (everything else goes to the orders trade callback); the callback is @Transactional and idempotent per trade row — it refuses missing rows, ignores non-SUCCESS, throws 更新已处理，不需要更新 when already SUCCESS, updates status/bank_type/transaction_id/pay_type, then increments shopDepositTotal, userDepositTotal and dayRechargeTotal<date> in Redis, and only when a mobile is present schedules the job:134 RechargeSendSmsNotice dispatch afterCommit (immediately when no synchronization is active).",
+      "statement": "All deposit recharge callbacks converge on AdapayDepositTradeRechargeCallbackService.rechargeCallback: the wxpay notify facade routes attach=depositRecharge trades through AlipayNotifyDepositSidePort (implemented in the deposit bundle), the alipay notify facade uses the same port both to pre-check the trade's company before signature verification and to run the callback, and the adapay payment callback handler routes description=depositRecharge payments the same way (everything else goes to the orders trade callback); the callback is @Transactional and idempotent per trade row — it refuses missing rows, ignores non-SUCCESS, throws 更新已处理，不需要更新 when already SUCCESS, updates status/bank_type/transaction_id/pay_type, then increments shopDepositTotal, userDepositTotal and dayRechargeTotal<date> in Redis, and only when a mobile is present schedules the job:134 RechargeSendSmsNotice dispatch afterCommit (immediately when no synchronization is active).",
       "evidence": [
         {
           "resource": "repo://ecshopx-adapay/src/main/java/cn/shopex/ecshopx/adapay/service/callback/handler/AdapayCallbackPaymentHandler.java#L39-L62",
@@ -320,7 +320,11 @@
         },
         {
           "resource": "repo://ecshopx-deposit/src/main/java/cn/shopex/ecshopx/deposit/integration/alipay/AlipayNotifyDepositSidePortImpl.java#L24-L38",
-          "version": "repo-lines-v1:sha256:7d6ac2a6d511d7b34713a72e3a9f8a26349167b0bfa1b6eeece27f39a86497fa:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJiMzM2YzQyYjJmNTIwN2I3NzVlNTBhOGRhY2UyZDZkMTViMjZmNjFlOGNkYTJjYTRkNDNmY2U0YWU0ODQ0ZjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE2YzUwZDg1NDM4OTUwMDE3ZjVmNDY1ZmFhZWVhMTNiNGI2ZGIxOTU0ZmQzM2ZhODVkNmVlMzJkZGIyZDMxNTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+          "version": "repo-lines-v1:sha256:24a3ca4642f02bd233baa6220d2c57344020d317eee3cc3dcb598726a9bca325:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNkZTUxYzcxZDM0NDY3MjVjMWZkMzE1Y2I3YmFlZTM2YzhiMzViMDZlNTcyYjU4Y2Y5MGFlNjE1NjlhNzgxNWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJmNTQ3YzY5NTM3NWYzYTU0ZWZkNjNiOTVlOGZhZGI4NWEyZmUzMWJhYmQ2MjU2NTljNmJiNTM0ZDhmMGIyMjEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI3YTA5ZWIwODMyZjhlYmUxZjhiZDgwZWMwNDUyMWU5MDI1ZGY5MzlkY2EzN2RhMzcyMzI4Yzc5OWM4MjIyMDQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU2ODczODY4ZGE1Y2FlZDIxYzlmZGY2OTg2MmIwZGE1NDA2OWVjZGYxODgyYzIxNjUzNTZjNzRmNWE3ZDFkMDMifQ"
+        },
+        {
+          "resource": "repo://ecshopx-deposit/src/main/java/cn/shopex/ecshopx/deposit/integration/alipay/AlipayNotifyDepositSidePortImpl.java#L60-L69",
+          "version": "repo-lines-v1:sha256:d0c614cdf8baf953bc7de1b5efaec5110e8ca32ce6f0a88452dc47332068feac:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJkMzQ1ZjRiMzFhNzRiNWQ5YWUzZGE0MzMwNDI2ZTI0OTJjZDIzOWUxZjVkZGY4ZWRiYzU4NmY0ZDU4ODVjODQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI4ZDFlNWU4NDFmNDNkY2I3NDIzZjlkYjdiOTc4ZjcwZWNjM2VkMjE2ZTI2ZTRhYWNjY2U1Nzc3MGY0ZjIzZDYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
         },
         {
           "resource": "repo://ecshopx-deposit/src/main/java/cn/shopex/ecshopx/deposit/service/AdapayDepositTradeRechargeCallbackService.java#L54-L122",
@@ -823,10 +827,102 @@
           "version": "repo-lines-v1:sha256:0cbcfb4d9932d0b06e67c844ef613b19305f792d51c7d9b8efdf3439b3e5f988:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlkOTZkNTljNGVjMDg2Y2M0N2I3YzZjYWUyZjkwZDdkMzhkOWUwNjg2ZWFjODE4MDNiMDU1MmVmMDhhNGIyN2YiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdhMzk5ZjI4ZDgzY2UxNjdmYjg1MTMyZjcxY2NmYzc1YzQ4NDhiNDY0MDZlOTQ3YjAwMjE0MTk4N2NjMWZjZmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIzOGI5NGY2MDU0MDY5ZGE0NTc4NDMzOGZlYTE2MzM0MWJjMTVjMmQ5ZWRjYTNiZjEzZmZjMzdiZDUzMzUwZjYifQ"
         }
       ]
+    },
+    {
+      "id": "claim_8e55715beaff4f9caec999cb5c96521c",
+      "statement": "TurntableController (base /api/v1/promotions, @AdminAuth @ShopLog, per-route @Activated aliases) is the admin face of the turntable lucky draw: POST/GET /turntableconfig, GET /getturntableList, GET /getturntable_log/byid, GET /getturntable_count/byid, GET /down_lucky_draw/byid, POST /turntable/copy and GET /down_lucky_draw/export, with company_id forced from the operator JWT and a country_code-to-RequestLangTag fallback on config and detail reads.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/api/admin/v1/TurntableController.java#L186-L280",
+          "version": "repo-lines-v1:sha256:50b128b56095a4fd830d82e4d98bbacbd33048e5cbd7cf22db30ac097e5f46f2:eyJzZWxlY3RlZExpbmVDb3VudCI6OTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU3YjY2NTg3ZDZmMWNjOThkNGFlNWQyZmM0NzViZDI4NWEzYzQ5ZTc1NTJmNTQ1YTg2OTg0OTJjNGU4ZDUyZmEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE3MzAzMzJlMWRmZmM4MDNhN2Q0Zjc3ODk0MmE0MWM4Njg2ODgxMTk5NGQ5NDg2Mjc1NmY0MGNjZjZjOGJjZTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/api/admin/v1/TurntableController.java#L49-L60",
+          "version": "repo-lines-v1:sha256:30837cd33843c5e3a15ac0f8cd77eb181c9e1a09397b606091592433551774a0:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNjZGNkNjZiYTQ0OWI5ZDY0YmMxZGJiMzc2MjgxZjJhM2Y0NWE0ZTE1OGM2MDZiOTJiZmJkMjA0YjFlOGZkOTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU1NGMxMDIzZTMxMGM4ZjE5YWUxOGM1MjYxYTYzNGRlNzk0ZGI4Y2Q1Njc1N2Y2OGQwZDMzZjZhMWY2YzQ3M2EiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFjOWFjMTFmYjYyN2UyMDM3MjQ1MGEyY2YwYTQ1ZDlkMWIwZDU5ZGE5NjlkM2M5ODI0NTkxMTY0ZDI1ZDg5ZjQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_9a104e70c0584b5d8dfcb1679b75be21",
+      "statement": "Turntable draw-log visibility is one shared contract: TurntableDrawStatus.VISIBLE_IN_DRAW_LOG exposes only SUCCESS and GRANT_FAILED rows (never PROCESSING or COST_FAILED) and is applied identically by the admin log list, the C-side member draw log and the CSV export; every turntable log count and page query is scoped by (company_id, act_id), and the list service skips pagination entirely when the count is zero — pinned by TurntableLogCountServiceScopeTest and TurntableLuckyDrawLogListServiceScopeTest, which prove a foreign act_id returns zero/empty rows instead of another company's data.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/domain/turntable/TurntableDrawStatus.java#L27-L33",
+          "version": "repo-lines-v1:sha256:b125c66077ff465ff8ca34628b581e965829b5877069a166ec42ce66c37297c5:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZWY0ZjJjODVkNGJhNjAwYzhjZDdkZTYwMjAzYzhkMDUyMmY2MGVhNWFjZTQ4ZmJiNWNmMDc3MmU5YTQwNTAzOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTVmZjNhYTc5MzNjOGIzNzM1NTRhNzRjYTk1NGJkNWVlYTMwZmJmNDYzMDk4MzFiMzhjMzRmNzE0OTRjMGQzMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjIsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDdjNjIxODdiMjI2NWE3MjNjYzMyMzU0NmI4NmQwMWY5NjNjYmZhODdiYzAzNTg3MmRhNDk3OWYxODEzMGI2ZSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/TurntableLogCountService.java#L30-L43",
+          "version": "repo-lines-v1:sha256:8e73b6b4faa379e432601f433ebdb500818bee317153dfef5d630d965b6b84dc:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1YTAwNjhlOWNkODAwZjU5MDdjZWYyMzUxNDMzYzc0MTIwMDkzOWUyMWYzMzQ5YjY4MDhhZDk3YzMyYWYyZjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNhNmU4ZDZjMDJhOTdjMjJlOGJjMmMyNjE0Nzg3MmM4YjdkMzUyNmFiMTUwOWU3YjNjMWVhN2I2NTc3ZDVhYjEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcxNDhlNjdhMmY3N2JmNTIxNDcwOTk4YjBhOTdiYWY4MDliYTRkMmQ4Y2Q2M2Q0M2M5YTg1ZDk2YzI0YWFiYzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkwZTU1ZmUyYmMwM2FiNzU2ZDllMDc3YjQ3ZjIxYWEzZmRiM2ZkOTRkZmE4ZTJmNjRlZWQ1MjYwM2E0MTdiNzgifQ"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/TurntableLuckyDrawLogListService.java#L48-L66",
+          "version": "repo-lines-v1:sha256:714029ca3ee251fad832c19c4e2b6ae7a2cf49ef1266c0b5f6a0abeeb844b760:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJkOTM1YTlmMzE3M2Q5ZTQ1ODc4MzVkYjQzMDk4ZjY4Y2YzMGZkZTBhMmM5YWU5YTJhODJjYmE1ODJkYzc4YTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBmYWU2NzllZDQyMmQ2NmQwZjA2NzI1NmYxYjQ5OGY0M2RmMWRmODRjM2RhYTExNzYxMDdhYTdiMGNiNjAyZDAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxYTA1NGM0ODg4OWIwY2M1NWVmN2ZjMTRkNGY2MDQxMDE5OGVkN2I0NmYzMTE4Yzc4NDU5MWEyMmNhYmE4MjEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/test/java/cn/shopex/ecshopx/promotions/service/TurntableLogCountServiceScopeTest.java#L42-L58",
+          "version": "repo-lines-v1:sha256:ffb1a10f1c6904122f17f0ef2a4e6710b43b6e62ca6ea91c6c7cf0c1760a978b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRlNjhmNzkyMzNkZjc4MWE2MDlhMTg4OWYyODhjN2Q1NzQ5ZWNlOTBlMmRmYzVkNThjY2QzYzNjNjg4YWYxZjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/test/java/cn/shopex/ecshopx/promotions/service/TurntableLuckyDrawLogListServiceScopeTest.java#L65-L85",
+          "version": "repo-lines-v1:sha256:cbcc40cde8acd493a8e44da1bd4ec74c935e925bd8bcf77a3dfb9358f74148d4:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc2YjZiZmJhMjk1MGQ3ZjM1ODE0ZmJlYmE0NjgwZjc4M2Y4NTRkZjAwYWQ5NjY5NzU4MzVmN2MzNjQzMzhhNGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImMwOTM0M2M1YjMwMGFlMjliMTcyMDgyNDQyNzBmMTFiOWUxOGI5MGU0Yzk4MDFkZDAwYmQxNTg5ZGY4ZTU1NTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_3c07152214794c658861eaea78cc4cfc",
+      "statement": "The turntable log export rides the shared export-file dispatch job: TurntableLuckyDrawLogExportService.exportLog validates the activity id, resolves supplier_id from the operator row (0 for non-supplier operators) and enqueues job:159:EspierBundle\\Jobs\\ExportFileJob via LuckyDrawLogExportFileJobDispatchPublisher with type=export_luckdraw_log and a filter of {activity_id, datapass_block} — ASYNC/REDIS on the slow queue in production and SYNC under the local profile; on consume, bootstrap's EspierExportFileJobDispatchHandler fans the job out to the ExportFileJobTypeHandler registered for that type (duplicate type is a startup failure, unknown or missing type is a warn-and-ack), and promotions' LuckyDrawLogExportFileJobTypeHandler rebuilds a LuckyDrawLogExportJobContext and hands it to LuckyDrawLogExportFileJobHandler.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/EspierExportFileJobDispatchHandler.java#L22-L60",
+          "version": "repo-lines-v1:sha256:e20a6e01ecd4cc4084ab08abbf353f3ef1028dad56fdee62f36998e5aa10a69f:eyJzZWxlY3RlZExpbmVDb3VudCI6MzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFjZjEwNDk1ZGY2MzI0Yzc0YzhiOGEyMzliNTg2YzUyYWUyYzRmMzc5ZjJjMTIxNTIzNjVlY2ZjYTZlYzA1NmYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJjM2Q0MTUyOTNlZDgwODFlMjU2MGQxYTRjMGNlMWEyM2VmZTU1OTU1YWRhMzdkMzBiYjE1OTg4OTE1YzQwMGMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJjMDM2NGIwNWFlM2Y3NWZlZDUzYWYyZDI4YjE3NDU0YjRhZTdhMGMxOTdmNTE3ZjdmY2M4MDIwZDM4YzExZTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQwMzk5NDVmNzEzY2VjY2MyYTJiZTk4MWFiNWM1ZWVhMzdmOTVmOTc2OWU1NzVjZDhlZDlhOWZjYmFmZGYwNmEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/LuckyDrawLogExportFileJobDispatchPublisherImpl.java#L44-L80",
+          "version": "repo-lines-v1:sha256:815c355aa5839410be1be24c6cdb0526b32382cdb2be27c6bfc73e4e813d4974:eyJzZWxlY3RlZExpbmVDb3VudCI6MzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQxMTdlM2M0MzliNTViMGZjM2NjODdkYzY3YjcyMTAzNGRhNTBhY2NlYTI2MWZmMjJjNWM2ZWE0OTc2Yjk0MzgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM2NGI3OGUxMzFlMmYxZGI0YTJiZGU5YmNiMjBmMDEzZmFhNDQwYjBkZWEyMGZiYzZmYzQwZWIwN2FlMDgwOGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjllNzRhYTdhYmRlNjg4MjM4MDEzZTRhN2IyZjEzNzc1MGQ1NWY5YzQwZDE2ZmZmNjMzNmM4OTFjNmUzYWEyMjYifQ"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/EspierDispatchJobNames.java#L60-L60",
+          "version": "repo-lines-v1:sha256:4ca70f131f451847990a04b97cca336a84359409d0a0d4e7a618d4600a7205d3:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNGNhNzBmMTMxZjQ1MTg0Nzk5MGEwNGI5N2NjYTMzNmE4NDM1OTQwOWQwYTBkNGU3YTYxOGQ0NjAwYTcyMDVkMyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNGNhNzBmMTMxZjQ1MTg0Nzk5MGEwNGI5N2NjYTMzNmE4NDM1OTQwOWQwYTBkNGU3YTYxOGQ0NjAwYTcyMDVkMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDNjNDU0ZGZiNjg3Nzc3NGZiMmUzYTllOGY3OWFjZTQxYTY2NDVlOGViNzhiNzVjMGM4ZTk3NWEyYjZmOWQyZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiY2Q3Njg3NWM2ZWU4ZTE0NDExNWNjMGJiMzZjM2VlNmJhZjA1YTI4M2U5OThkOGFkZDYzMjU4NjBiODM3ZGY1MCJ9"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/dispatch/LuckyDrawLogExportFileJobHandler.java#L22-L33",
+          "version": "repo-lines-v1:sha256:f44affa4da80a7f137f48d0c0a9e1b3272862bca5918f73f0c4bd563ddca0398:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE4MmE4MjZiZmMzYzc1NDI3NDc2Zjk1N2ExMzU4Y2M4OTkzNzg4MmFhNmM0OTAwNjJlOGNiMTc5Y2I2N2UxZGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU5NDQ1YWM5ZDI5MGJmYzU2N2I2OGU0Mjg1NzI3YWIxMzEwMWI2N2FkZTQ5YzU5YmJhZmJjYjhmZWY0ZTY2ZmQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQwMzk5NDVmNzEzY2VjY2MyYTJiZTk4MWFiNWM1ZWVhMzdmOTVmOTc2OWU1NzVjZDhlZDlhOWZjYmFmZGYwNmEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/dispatch/LuckyDrawLogExportFileJobPayloadSupport.java#L27-L45",
+          "version": "repo-lines-v1:sha256:94145fa7776cd7dfc6722939caa665004ec75e82149d6ee221ae59ba3eb06762:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjliM2RhNWRkNjFhZTk1ZGE5NDc2ZDllYjk5NmYyM2IzOWM5MTcwOTZiZWY5YjJlZDcwY2Y5NGUwZDhlNzQzNjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4ODRlMTQyM2E3Y2VhNmEwMThhMDM2YjE2NGM0MjE0YzU1OTQ5ZjViNjE5M2U0ZGY4ZTRkMDE3YTVjM2FiYTciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdjNWQwMzFlNDM3NWU4MjQ3ZGM0YWZjZjBiM2QzZDYwNjQ2MTMzNGNmZWMwZjlmNmRjNTJkNjMwOTBlN2JmZjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRjMTllNjM1YWU1MDFmN2IzZjdmOGI0YjE5YzAyZGM2NWFlODc5YTQxOWE2NTA3NGQzYTgwZTdjODljYjI4YjAifQ"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/dispatch/LuckyDrawLogExportFileJobTypeHandler.java#L21-L44",
+          "version": "repo-lines-v1:sha256:6367fc079590248e10a68d8a31f6eb54792e37ce524d92903dbff28db1c26655:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNkZTUxYzcxZDM0NDY3MjVjMWZkMzE1Y2I3YmFlZTM2YzhiMzViMDZlNTcyYjU4Y2Y5MGFlNjE1NjlhNzgxNWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUxNGNjNjhlYTc4NDk1MDczODQ0YWFiN2RkMzc3YTQxZDFkMTNhMjliOTQ3OTY1ZjJhZWZkZDg3MjhkMmQ0Y2YiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/export/TurntableLuckyDrawLogExportService.java#L40-L62",
+          "version": "repo-lines-v1:sha256:bf6f85efc4d5c0d16c5de99b5c2c34568244f135db732617836a6440c0f09506:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBkNTEzMTk1OTAyNTAwZWU1OGFkMDcxMGM0YWNkNDU4YWU2NzY3NWZkOTJiNDAxMmI1NTk5OGYzOGM4ZTFlYzQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_fb254680d6734e47a1d057fa5d82078b",
+      "statement": "TurntableLuckyDrawLogExportAsyncService.runExport produces the operator-visible CSV: it counts and pages the (company_id, act_id)-scoped VISIBLE_IN_DRAW_LOG rows 100 at a time, batch-resolves member summaries (user_card_code, mobile) per page through MemberAccountService.listMemberSummariesByUserIds, maps prize types to Chinese labels (优惠券/券包/积分/谢谢惠顾), formats created as yyyy-MM-dd HH:mm:ss Asia/Shanghai, uploads via ExportCsvFileService.exportCsv and records the finished export_luckdraw_log file via ExportLogCreateService.createFinishLog — an empty result set or an upload without a URL is a silent no-op, and the export writes no per-member side effects; the ScopeTest and dispatch tests pin the status filter, the company+activity scope and the single publisher enqueue.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/export/TurntableLuckyDrawLogExportAsyncService.java#L68-L155",
+          "version": "repo-lines-v1:sha256:ff6435e555f120dea706c5f6a5b070f1dc3059e74dcc935f8b53ca28be45d5ec:eyJzZWxlY3RlZExpbmVDb3VudCI6ODgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc3Y2YwNzQ0YTI0YmQzYzYwZTQ3MzE2NTgwYmM2MGI1NTI1ODNmODAzNGE5MmNjZGJmNWM5NjdlZGFjYjFmODQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE5YThhNzFiNThiNzllYzQ4MTc5OGJjM2RkMzA5ZjJhMmEyODg4M2RhMDY5Zjk4MTg4ZGUxZjhjYmQ2MWY4ZGYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA0NTIwY2ZiOTVjZTYyZDZjNmJjMWYzNDM1NzFmMmMyMGU1MjViYmYxNzIwNjA1Zjg3ZGQ3YTRiMDM5ZDJiZGIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE0Nzg2OGJiYWM1MDVmNDg2ZDllMzI3NjA3NjA1ZDZhNGI2MGRlNGFkZGJhYTk4MjUxMzNiNjA2NzIzN2RlZDQifQ"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/test/java/cn/shopex/ecshopx/promotions/service/export/TurntableLuckyDrawLogExportAsyncServiceTest.java#L24-L40",
+          "version": "repo-lines-v1:sha256:8e9e0eb3b88bd5cf724972d676858c62a215b59b1fbb3f0203cb8931de4cc046:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBlNzMzYTUzZWIxMjMxMTRjY2Q0OTI2Mjc2NDBhZDEzNzUzNjQ4ZGUyOGMyM2VmMmZhOTdmOTkzMmMyZDZhNTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYxMzE0MDYyNjQ5M2Y1ZGYwNzU5ODhhMDNjN2I4Y2IxODUxMmQ5OTg4MjhiM2ViOTQ4MjE0OTk2YWJhYjdlZWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/test/java/cn/shopex/ecshopx/promotions/service/export/TurntableLuckyDrawLogExportServiceDispatchTest.java#L29-L46",
+          "version": "repo-lines-v1:sha256:7e8229c5ba56970f24ca47cde411e8cfc799619eea40919cc4647be6685d6129:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMxMjE5NGRjMDM5YzA5MmYyYWNiMTMyNGM4MDFmNzQxZTMxNzFhNzIzNjU0ZmFlMWIzZGI4ZTQ0MDMzYmNiMTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdiZGE0YmI4YzZmMzlhYWFkZWI5OGJhNzgzMDQxZTBmOGY1NzVhNjY2M2JhMDRmZjg3YzY4MTI1OWQzYmQwY2YiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.7.2",
-    "at": "2026-10-25T17:14:04.348Z"
+    "by": "openwiki/0.7.3",
+    "at": "2026-11-04T17:09:55.577Z"
   }
 }

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:a871015efcd63e48bab486a14a001ee92daa647f3d90c6f09e98958635f18af3",
+  "pageVersion": "sha256:03317486baba60a390df9ed6558d7565f38b806d530f9c46974ee3da30e81b97",
   "claims": [
     {
       "id": "claim_ff2c038ec9504e308a0b383bcde7b674",
@@ -43,22 +43,22 @@
           "version": "repo-lines-v1:sha256:7147d8954b158391f44b148471b8b935e644a4e75688802a092a6a091c2d6417:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTY3ZGYzNDY1Y2ZjODY5MGY4Y2Q3MWZmZWIzZjNlOTRiMmNkMTFlY2Y5ZjUwNGRkODgzY2I1ZTgwZTk0MDZjOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMThhZjM5MzMxYjJlYWRiYmZmZTFjZDY4ZTdkNzJmNTNiMjdmM2I5YjE5MDNkM2Q5YmQ1YWI4ZTNjNmRhNTg0NyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTkxMGJmYTE0NzFlZjZkZDVjYjNmOGZjZDM2MmZkZDg5NDMxODdmOTM3NTk1ZGU2MmI5MGViNGE1MTRlYzU0MSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNGIzNjUzMTdlZWQwYWIyMjRmMDc5OGY4MGViYTYxNDliYjRiYmI1NTE4NGZhN2ZmODk5NDEwYWFiZjU2OTc4NSJ9"
         },
         {
-          "resource": "repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/service/AftersalesRefundConfirmService.java#L265-L273",
+          "resource": "repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/service/AftersalesRefundConfirmService.java#L298-L306",
           "version": "repo-lines-v1:sha256:b37ae386662f51766a0a2de5a42429baa1362dcb7ccc9acc71d4364fe3538cf7:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDM2NzEwZTIyNmMwMTU1YzZhOGNjZjA2ODU1ZjA1ZWJjNWM2MWZlMzIzOWFkYjZmMzU0ZjQ4NzUyZWU2MGU2YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjRlZmM0OTQxOGQyNmRjZjEyOWIyMmE2YWEyMTEwOGNlZWMzNzY3N2EzMmQwOGU5ZDVmZWUzNWRkYTY2YmI5ZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYmYwNDUwMzk0Yzk5MGNjMTViMGY5ZGExZWIxZjg1NGFlNTA4ODE5MTVjMjc3ZDE5YTQzOWJhY2QzZDg3OWU0NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDZlODJkOTdmMzBmNTc1NzQ5NGU2OTU3Zjc5YjIwMjc5MjZhYTU4NDZkMzg5YWUzOTg0NTdmZjYwMDdkNDA5YyJ9"
         }
       ]
     },
     {
       "id": "claim_639abe1607034d01ad88f3c387ae1a15",
-      "statement": "Admin REST surface: AftersalesController at /api/v1 exposes GET /aftersales (list, pageSize capped 50), GET /aftersales/logExport, GET /aftersales/{aftersales_bn}, POST /aftersales/review, POST /aftersales/refundCheck, GET /aftersales/financial/export, GET+POST /aftersales/remind, PUT /aftersales/remark, POST /aftersales/apply, POST /aftersales/sendback; the sibling RefundController serves GET /refund, GET /refund/detail/{refund_bn}, GET /refund/logExport, GET /refund/offline/bank and POST /refund/offline.",
+      "statement": "Admin REST surface: AftersalesController (@AdminAuth, /api/v1) exposes GET /aftersales (list, page/pageSize required, pageSize capped at 50, ~20 filters), GET /aftersales/logExport, GET /aftersales/{aftersales_bn}, POST /aftersales/review (batch-capable), POST /aftersales/refundCheck, GET /aftersales/financial/export, GET /aftersales/remind/detail, POST /aftersales/remind, PUT /aftersales/remark, POST /aftersales/apply, POST /aftersales/sendback (3-field whitelist). review and refundCheck share route alias aftersales.review, merge query+body into a LinkedHashMap, and keep all dispatch-bus publishing inside the services (controller Javadoc forbids direct bus/publisher calls). The sibling RefundController serves GET /refund, GET /refund/detail/{refund_bn}, GET /refund/logExport, GET /refund/offline/bank and POST /refund/offline (bank-transfer recording via AftersalesOfflineRefundSaveService).",
       "evidence": [
         {
-          "resource": "repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/api/admin/v1/AftersalesController.java#L69-L436",
-          "version": "repo-lines-v1:sha256:713c5ef56458ff3a9b2ff453caa439e25288bd357291ad4b17a1f69acebc4d3b:eyJzZWxlY3RlZExpbmVDb3VudCI6MzY4LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIxODMwODUyZmNjMmEzNmRjYzVkZTgxNWM0YTJlOGI2OTQwYWRkOTdmMWQ2ODExMmVhYTI4YTUwNDhkOGE2ZjRlIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI1YzNiMTk4YjI1ZjNiNTMyMGY3ZmUzZjJiOTEyMTc1ZDkwYzM2YWU2NDgxZmM1MjhiMjUzZjRjZjFmODNjOTdlIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI0OGIxN2MwYTY2YzY4OGJhNDgyYWI2MGY5YzczZTE2OWFjODNiY2JjNTliYTZmYjM5ZGFhNDg3NDBiY2Q2YjNjIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIyNTI2MWNiZjNhNjE3OWVjZmYwZGE4ZmVhNjUwMDY2ZWFjNjcxM2IxZjUyYTM0YTAxMmEzMDljNTYwNDVjNTM2In0"
+          "resource": "repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/api/admin/v1/AftersalesController.java",
+          "version": "repo-file-v1:sha256:ec7926eff5d47461fd18a674d58b0291c44180930bf6fb3449c6066fe36b7693"
         },
         {
-          "resource": "repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/api/admin/v1/RefundController.java#L57-L157",
-          "version": "repo-lines-v1:sha256:17fc057f942e100530ab0f20b09696b7820ba156803178ad2b0a80c1fb60d04a:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAxLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIxODMwODUyZmNjMmEzNmRjYzVkZTgxNWM0YTJlOGI2OTQwYWRkOTdmMWQ2ODExMmVhYTI4YTUwNDhkOGE2ZjRlIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI5ZGM3OWRmNzM1ZDhmOWVhYzdhYTE0NzVmZjhhMWYzNmY2YzNjYWQ1OTMwNjM5ZmJjYjdiOGYzNmYyZDQzMjc3IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI0ODRkYzQ3ODZmN2Q3YjlhMmVjOTlkYzkxYTI1NDE5YmQ3YmNmM2NjYmFkMzllOTRiYjczMDVjYTk3ZGI4NjdmIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI0OWIwNGM1M2UxM2IzYzIyMDJhODI4YjAzZWQzMTZjYmJhODQzNzE3ZWM3M2RiN2FlNWM2NGM3ODljMmZhODc1In0"
+          "resource": "repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/api/admin/v1/RefundController.java",
+          "version": "repo-file-v1:sha256:a7c6189a65d41ded6dfe9c56c29d70fde20624251b57f3f64d2191118491e25b"
         }
       ]
     },
@@ -125,22 +125,30 @@
       "statement": "Review (AftersalesReviewService.aftersalesReview, requires aftersales_status = 0): reject sets refund REFUSE, aftersales status 3/progress 3 with refuse_reason, restores left_aftersales_num (or partialCancelRestore for partial-cancel rows) and publishes WDT + TradeAftersales; approve ONLY_REFUND sets refund AUDIT_SUCCESS with channel offline when the trade paid offline_pay else original, aftersales status 1/progress 9, brokerage rollback per detail, and afterCommit OrderRefundComplete + Jushuitan + WDT + InvoiceRed; approve return-goods sets status 1/progress 1 (2 when return_type=offline), stamps string-typed auto_refuse_time = now + auto_refuse_time_days platform setting, and schedules AftersalesSuccessSendMsg.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/service/AftersalesReviewService.java#L247-L388",
+          "resource": "repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/service/AftersalesReviewService.java#L249-L390",
           "version": "repo-lines-v1:sha256:2fddffa707e1c28d3081e9bfedb54fc4a1ef977c44fbde67800566aee2ed2a02:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQyLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJkNjBkOTIyNDc4ODk5M2Q5M2M1MmRhZmE1NWQ2YWEyYWMzYmI2MzNiMjVlYmQ4N2JhYzQ4MjM2MzYyMDgwNGYyIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI3NTcwZGUyZWU0YWNkNTkwYjNiOWMzNDJhNDA2N2IxMWFiYjYyY2Q5YzUxOTZmMDUyZWU3NmNhOGY5YzRlNWI4IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiIyOTViNTk3OTQzNTU5ZGIyMTJhYWJhNDYwOTZlMDQxMzdmZDg3MGRmZjk1NmUwMmE1NTQzODFiYTExMjg4ODZhIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJmOTgwYWVjM2Q3NDkzYzY1OGZiY2JiYTIzYWNjODY3OWVhZmFjMjQwZTFhM2ZiZTEzMmQ5YjEwOGYzZjJjZGEzIn0"
         }
       ]
     },
     {
       "id": "claim_b61a6a5f15fe4b47b65d2400a727bf6b",
-      "statement": "refundCheck (AftersalesRefundConfirmService.refundCheck, requires aftersales_status = 1) is batch-capable: approve sets refund AUDIT_SUCCESS and aftersales status 2/progress 4 with afterCommit OrderRefundComplete + Jushuitan + Jushuitan sync Spring event + WDT + InvoiceRed, reject sets refund REFUSE and status 3/progress 3 (reject afterCommit publishes only Jushuitan + the sync event). RefundCheckOrderRefundCompletePostCommitProbeTest — a Mockito fixture with a hand-rolled PlatformTransactionManager that fires afterCommit — pins the approve-path scheduling of OrderRefundComplete (and its absence on reject, along with absent InvoiceRed/WDT), the in-tx SaaS-ERP update/cancel publish split, and the order-process-log payloads: reject uses operator_type \"user\" (operator_id from user_id param, 0 when absent), approve uses operator_type \"admin\" preferring the aftersales row's user_id, with refunds_memo/refund_memo normalization.",
+      "statement": "refundCheck (AftersalesRefundConfirmService.refundCheck/confirmRefund) is batch-capable (the batch branch forces operator_type to pos/admin per row) and, before auditing, passes every bn through AftersalesDistributorScopeGuard.assertAftersalesDistributorAllowed plus PosOrderDocAccessPort.assertWriteAccess; it normalizes the reject note (refunds_memo preferred, else refund_memo) and fills missing refund_fee/refund_point from the DB row. confirmRefund requires aftersales_status = 1 (status 2/3 → 已处理), refund exists and is not already SUCCESS, requested fee/point ≤ caps; for REFUND_GOODS approve with Jushuitan open, progress must be 8. In one transaction: approve sets refund AUDIT_SUCCESS + channel + fee/point/freight overrides and aftersales status 2/progress 4 with brokerage rollback and process log; reject sets refund REFUSE and status 3/progress 3 with refuse_reason = normalized memo and addLeftAftersalesNum. Both arms publish the in-tx SaaS-ERP update/cancel pair and call AftersalesRefuseWxaNotifyService.sendByStatus inside the transaction. Deferred jobs go through the AftersalesRefundAsyncPort interface, not direct publishers: the afterCommit callback reloads the persisted row, then approve runs scheduleOrderRefundComplete → Jushuitan bus payload → JushuitanTradeAftersalesSyncSpringEvent → WDT bus payload → scheduleInvoiceRed (reloaded row map), reject runs Jushuitan bus payload + the sync Spring event only (no OrderRefundComplete, no WDT, no InvoiceRed). Unlike AftersalesReviewService, registerPostCommitCallbacks does not check isSynchronizationActive() before registering, so with no active synchronization the whole afterCommit arm never fires. RefundCheckOrderRefundCompletePostCommitProbeTest (Mockito fixture with a hand-rolled PlatformTransactionManager that fires afterCommit) pins all of this with a mocked AftersalesRefundAsyncPort, including the exact approve ordering, the reject absences, and the order-process-log payloads (reject operator_type user with operator_id from user_id param 0 when absent; approve operator_type admin preferring the aftersales row's user_id; refunds_memo/refund_memo normalization).",
       "evidence": [
         {
-          "resource": "repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/service/AftersalesRefundConfirmService.java#L126-L483",
-          "version": "repo-lines-v1:sha256:f4aac39e8ba1cc589ee97dc61fe5a66cecc8ec4976080ae4d488712c2547a37b:eyJzZWxlY3RlZExpbmVDb3VudCI6MzU4LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI0YzU3MTk3NGYxY2U3M2RjNTM3NDk2ZmE0ZThiYjRhYmE3MDRmYTU1NDFhNGM4YjIwMWVjMTc4N2M1NGM4NWFkIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI2N2NkYTgyZGE2MDYyMzhlMDVlNjIzOTk1NjljNWVlMDM5OTM0MTk2NDhhZTVkNDNhMmJmOGNkNjM0N2Y4MjYzIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI4ZjdjN2UxMTg0NDgzNDMzMDcwNzMyYzZlYjg0YWFhNGFlMTdhZjQwYzVkZjRiYzI2YTZkZGUzNDk2NjJlMjllIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIzYTI3NjdlMzZiZTgyNGI2ZDExMjJkNjM1ZmQyOWYyM2M5ODBjY2QyOWJlYTlhYmY5N2FhOWI4ZmY4ZTkyMTRkIn0"
+          "resource": "repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/port/AftersalesRefundAsyncPort.java",
+          "version": "repo-file-v1:sha256:2f0d3d5e6263aa0f3c1bdb4642c4fef3b34607a1d2f611ef1ada3daefcc8b2a9"
+        },
+        {
+          "resource": "repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/service/AftersalesDistributorScopeGuard.java",
+          "version": "repo-file-v1:sha256:2a50e6a7da68fef432b307677f80fbddfb8b2797fa058ef00fe2f35138de8114"
+        },
+        {
+          "resource": "repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/service/AftersalesRefundConfirmService.java",
+          "version": "repo-file-v1:sha256:88b43a313964104bf09e5166afc6fe55e645a2e70f45aab12382d00ebb2bf087"
         },
         {
           "resource": "repo://ecshopx-aftersales/src/test/java/cn/shopex/ecshopx/aftersales/service/RefundCheckOrderRefundCompletePostCommitProbeTest.java",
-          "version": "repo-file-v1:sha256:84d9b5813bde1ee7cdc945f04025e653163f6f4db9286e4a687a87c8f9b0e2a5"
+          "version": "repo-file-v1:sha256:2e9134083b9dd0b9489144e727ef160930539d879f6d9c56d36dbca3a72980f2"
         }
       ]
     },
@@ -455,7 +463,7 @@
       "statement": "AftersalesRefuseWxaNotifyService.sendByStatus maps the aftersales status/type pair to a WXA scene key — status 1 + REFUND_GOODS → WAIT_BUYER_RETURN_GOODS (fixed remark 商家已同意售后申请，请进行退货回寄处理), status 1 + ONLY_REFUND and status 2 → REFUND_SUCCESS (商家已同意退款), status 3 + REFUND_GOODS → SELLER_REFUSE_BUYER, status 3 + ONLY_REFUND → REFUND_CLOSED (remarks = refuse reason), other statuses skipped — then resolves the mini-program recipient via OrderTradeMiniProgramRecipientLookupPort, formats the fen refund amount (refund_amount falling back to refund_fee) to a two-decimal yuan string, and sends {scenes_name: \"aftersalesRefuse\", appid, openid, data:{order_id, refund_fee, remarks}} through the common AftersalesRefuseWxaSubscribeSendPort (impl in ecshopx-promotions) with forceFire=true, swallowing all failures at debug level; review and refundCheck call it after their decision, pinned by AftersalesRefuseWxaNotifyServiceTest.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/service/AftersalesRefundConfirmService.java#L418-L420",
+          "resource": "repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/service/AftersalesRefundConfirmService.java#L451-L453",
           "version": "repo-lines-v1:sha256:b7413e2ac000313957d8e04016b1883a59804a20000193ecd049ea7a95d76f99:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiM2ViMDlmZDUxODVlOGZlZDFlNzNjNmFmN2NmMGJhYzNkY2Q3ZmJjNzk5ZGE1OTliMDQ0NmYwMzVmZWI4ZjgzYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMWQxNDA5NGJjZjhlNmFlYmYyOGE0OThlMzdiMjBkY2VlNzIwNmNiYjI5ZGQzZWQ0NzNhY2NmMzk5NDE2YmU0ZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiN2VhYzA2NGNkMGY0Y2I5ZjhmNTAxNjVjNTA1MjFmNmRkMTA3Y2I0ZWQxNjU4OWUzNTdhZTQ3YTQyMDJiNWY4ZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZGFkOGVmZGI2ZjhhYjdhN2Y0NjUyNTYwNGYwZTk2YjNkZmFiOTNiYjg3OWE0OTFjYzQ3YTQxYjVlYmRkZmEyYSJ9"
         },
         {
@@ -463,7 +471,7 @@
           "version": "repo-lines-v1:sha256:b68bbf14fbd8bd8761fcf31adde04e4ac9734a8211ca74dd33b3ea30f9b0bee3:eyJzZWxlY3RlZExpbmVDb3VudCI6MTA4LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIwOTMwYmQwYTcyYjRlMTE0NjBkMGU1NWNjZDYzYmYyMmMyYjkzZDZhOGQ4ZjgwOTMwY2M5NzMzZDcxYjhkYmI4IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI2N2NkYTgyZGE2MDYyMzhlMDVlNjIzOTk1NjljNWVlMDM5OTM0MTk2NDhhZTVkNDNhMmJmOGNkNjM0N2Y4MjYzIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI3MmMwYWVjNGExZjY4ZjJlYmU3ZWQ3YjEzZjZhYTRjYjdiNzI4MzhlM2UzOGY1MGI4MDFkMGMwZDY3OTg0MTNkIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIzN2U1ZTYzYTE5NzVhMTY1NDhlMmQzZjAwMzg0NmVmYTlhZjI1ZjIzOTBlM2M5YzIyOGM3NDk4Njk4YzFkY2M3In0"
         },
         {
-          "resource": "repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/service/AftersalesReviewService.java#L207-L209",
+          "resource": "repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/service/AftersalesReviewService.java#L209-L211",
           "version": "repo-lines-v1:sha256:3d50f36194e786eb1a29f59aac72b7e89518e141ceb00b7f701d35eeffd34c21:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiM2ViMDlmZDUxODVlOGZlZDFlNzNjNmFmN2NmMGJhYzNkY2Q3ZmJjNzk5ZGE1OTliMDQ0NmYwMzVmZWI4ZjgzYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiM2ZlM2IxODUwYTNhM2QyMDM1NzUyNzVjMmUyYTU3ZGU0MjExM2ZmMWY5M2FkZjk4NDhjZmYyYWQ3YWVkNTE2MiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzYxNWU1N2I5NWJjMGEwMjQyOWE5ODBkMGQ1YjJkMjNmZjc1YjY5YWZlY2Q2MTU1NGRkNjBjYTY4NTkyYjUyOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODJjZmRlZGYxMzVhNWQxZDJkYjBmMTUzNDlhM2MzNjM1OTIxMWFlOTIwZjBlZDUxZWVjM2E3YzM5YzllM2YzZSJ9"
         },
         {
@@ -489,10 +497,74 @@
           "version": "repo-lines-v1:sha256:1a30b68f2e4212324afa1469c316861e18c683fa929d6311e0ddab68e7be798b:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzRjZDIxNjYwYTA0OTI5MzBiZmJkYzg3ZGZiMTMwY2M5YWM0YzZmZDkyYThkYmRjODYzYmQ2ZmVkMDRkNzhiNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjQxYjUwOTViNWNhMDcyN2M0Zjg2N2U5MjljYWY0MDkyZmNkNGUyY2NmODQ4YWRjMDUxOWM2ZTZjNDU2N2ZlNyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNGEyNTkzYjk3NTdmMWYxYjRjNDJlNDFhZWM5ZmUwNmYwODlmMDVkZmQ0NDE3MjJlZmIyMmQzMTgzNGE2YTRhOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOTk4YTA2NjllODY4NDJkNWNjMmNkYjQ0MDNlNWQzNDkyZTAxYTNlMTRmNjY1NjE5NmRjMjlkMDRlYTc3ZGY3ZCJ9"
         }
       ]
+    },
+    {
+      "id": "claim_e604781587f94638b60c6151e1d5b4d5",
+      "statement": "Progress 8 (merchant confirmed receipt, awaiting refund audit) has exactly one internal Java writer: AftersalesMerchantSendbackConfirmService.sendBackConfirm(companyId, aftersalesBn), which in one transaction sets header AND detail progress to 8 and, for REFUND_GOODS only, registers an afterCommit DigiOS store-adjustment publish via AftersalesRefundAsyncPort.scheduleDigiOsStoreAdjustmentOnAftersalesReturn. No controller, job handler, or listener currently calls sendBackConfirm, so in the running system progress 8 is reached only through the external Jushuitan aftersale inbound surface — the service is a wired-but-unused integration point.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/service/AftersalesMerchantSendbackConfirmService.java",
+          "version": "repo-file-v1:sha256:d279692d1e607fa16d7a2eab33615eaefd20c27a104554882f298a2e33bcee68"
+        },
+        {
+          "resource": "repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/service/AftersalesRefundConfirmService.java",
+          "version": "repo-file-v1:sha256:88b43a313964104bf09e5166afc6fe55e645a2e70f45aab12382d00ebb2bf087"
+        }
+      ]
+    },
+    {
+      "id": "claim_cf209574e534430f83fa0ad7ac07a2f2",
+      "statement": "AftersalesRefundAsyncPort (port/, single @Component impl AftersalesRefundAsyncPortImpl in integration/) is the bundle-local seam that wraps the six deferred-job dispatch publishers so services never inject them directly and probe tests mock one interface: scheduleOrderRefundComplete→OrderRefundCompleteJobDispatchPublisher (job:19), scheduleInvoiceRed→InvoiceRedJobDispatchPublisher (job:20), scheduleAftersalesSuccessSendMsg→AftersalesSuccessSendMsgJobDispatchPublisher (job:21), scheduleSendAfterSaleWaitConfirmNotice→wait-confirm notice (job:24), scheduleSendAftersaleCancelNotice→cancel notice (job:26), scheduleDigiOsStoreAdjustmentOnAftersalesReturn→DigiOsAftersalesReturnAdjustmentDispatchPublisher. It is called from refundCheck, review, sendback, close (via AftersalesCancelNoticeJobPort), and partial-cancel auto-approve post-commit blocks; scheduleAftersalesSuccessSendMsg/scheduleInvoiceRed null-check and defensively coerce payloads, logging a skip rather than failing the transaction synchronization.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/integration/AftersalesRefundAsyncPortImpl.java",
+          "version": "repo-file-v1:sha256:8fddfe704d183807b39d9e369cdecaf178e9fd63c20f4432e0794cfd6d9aa8a7"
+        },
+        {
+          "resource": "repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/port/AftersalesRefundAsyncPort.java",
+          "version": "repo-file-v1:sha256:2f0d3d5e6263aa0f3c1bdb4642c4fef3b34607a1d2f611ef1ada3daefcc8b2a9"
+        }
+      ]
+    },
+    {
+      "id": "claim_314c7806c8074ae09e4c24bff09efd42",
+      "statement": "AftersalesDistributorScopeGuard.assertAftersalesDistributorAllowed guards aftersales write paths (review, refundCheck, and others) against the operator JWT shop scope: an admin operator_type bypasses the check, an empty allowed-distributor set passes, otherwise the aftersales row's distributor_id must be in the union of the JWT's distributor_id and distributor_ids (which accepts numeric, string, or map entries with distributor_id/shop_id); a mismatch throws ForbiddenException 店铺权限不足. Pinned by AftersalesDistributorScopeGuardTest and AftersalesRefundConfirmServiceScopeTest.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/service/AftersalesDistributorScopeGuard.java",
+          "version": "repo-file-v1:sha256:2a50e6a7da68fef432b307677f80fbddfb8b2797fa058ef00fe2f35138de8114"
+        },
+        {
+          "resource": "repo://ecshopx-aftersales/src/test/java/cn/shopex/ecshopx/aftersales/service/AftersalesDistributorScopeGuardTest.java",
+          "version": "repo-file-v1:sha256:e975e847fd6630ec56d785becdf4b649fbcf77744f8073d602cc769b5c18a8cc"
+        },
+        {
+          "resource": "repo://ecshopx-aftersales/src/test/java/cn/shopex/ecshopx/aftersales/service/AftersalesRefundConfirmServiceScopeTest.java",
+          "version": "repo-file-v1:sha256:1586f9176f2f62397986c4e5ab0b1632e33c5ce8851200587f77c1d0d6dce2ea"
+        }
+      ]
+    },
+    {
+      "id": "claim_52ff1b8ef2f843dca70fa1a52d7b9170",
+      "statement": "The apply pipeline's post-commit side effects end with AftersalesApplyAsyncPort.dispatchPostCommitSideEffects(cmd) (port/, impl AftersalesApplyAsyncPortImpl), which publishes OrderRefundCompleteJobDispatchPublisher only when aftersales_type is ONLY_REFUND or goodsReturned is true — the apply-time OrderRefundComplete scheduling. Pinned by AftersalesApplyAsyncPortImplOrderRefundCompletePublishTest.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/integration/AftersalesApplyAsyncPortImpl.java",
+          "version": "repo-file-v1:sha256:fd8a1233bb8cf2b1dd6fe6d83e96a3d8d8f73aa3da9f683a5fbc9ea5ca89e8f1"
+        },
+        {
+          "resource": "repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/port/AftersalesApplyAsyncPort.java",
+          "version": "repo-file-v1:sha256:a6186e0f44022e20d6d6b068e83ed09f86639ebb35d6d7ee88ebdfc50851507b"
+        },
+        {
+          "resource": "repo://ecshopx-aftersales/src/test/java/cn/shopex/ecshopx/aftersales/integration/AftersalesApplyAsyncPortImplOrderRefundCompletePublishTest.java",
+          "version": "repo-file-v1:sha256:30be551b3204b59d290161f2900814bab6252905b42178482554cc8ed8e555ca"
+        }
+      ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.7.2",
-    "at": "2026-10-25T17:14:04.348Z"
+    "by": "openwiki/0.7.3",
+    "at": "2026-11-04T17:09:55.577Z"
   }
 }

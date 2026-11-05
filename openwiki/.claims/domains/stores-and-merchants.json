@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:4f370d2d484978a606126eb398600b5849a0b58b335f4575ad5f2f75d6cc487a",
+  "pageVersion": "sha256:e65d72c6a2758a128750483b69821e6d6f7962916bfa329ddfdb277053a4744d",
   "claims": [
     {
       "id": "claim_939c9eac23bd4d77a826ca9431a5ae9f",
@@ -73,7 +73,7 @@
       "statement": "The first non-wxapp-sourced store becomes the company default automatically: needDefault = sourceFrom != 2 && !existsDefaultDistributor(companyId); source 1 is admin, 2 wxapp self-registered, 3 openapi.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/service/DistributorCreateService.java#L147-L148",
+          "resource": "repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/service/DistributorCreateService.java#L148-L149",
           "version": "repo-lines-v1:sha256:13f2e0b463378026bfa6e5fc75e0958299776eac3f81cc6c31f5fed9d9a14033:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNmQwNzQ2YzRiODYwZjUzNDRlOWQ4Zjk5MTlhODMyOGM4NjBmOTViYjE3ZjQxYmE4MGUwNzYwZjJmNDQwMmNlMyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTEyMzk4MWI1ODJiZjFhYWZkN2U2YjQ2OWUxZTI5NGU2MWI4MzFjYTVlNTU1ZTc2MDJhZTgxODRmZThiNjlkMiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTE0ZDAyZjRjZDIyOGJmMzUyZDYxYWUyMThiNTk2Y2U1YWI0NzUwYmU5MDUyNmJiMDkxZWM2NmRlZGMzZDIxMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZWNiMGNlZmIyYTViNzUzMGZiMmI5M2Q4NGQ5OTNlMzNmMDcyY2M2ZDllN2JiYTU2M2U0YmViYWYwYTc0NmQ3NyJ9"
         },
         {
@@ -143,7 +143,7 @@
           "version": "repo-lines-v1:sha256:8ef3ab63a87208a3c235a269583cda5ed47c244ed9b0afd04569709eff45c4eb:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjRiNDhhYjJiZjE2YTllOGIwZTcxYTU0ODE3Mzg4ZjBkMTFkZTI5ZDY4ZjAxMjgyZWFiMDc5ZjI4ZDEzN2RjMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDg5M2Y0MGUzNzgxZWI4OTZjODJkMDQ2YTA4MDY3YTExZTM1Y2RmMmYxZGZhZjI2ZmVhOTBiOGRiNjY3NjQxMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYWYyYTIwYzhiZWVkMWExYTkxYWQ3OTIzZGUxYWFlNDAwZWRkODJmOWI3MmMxYTMwZmU1YmMwN2RhZjhjY2I2NiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZGM5MGQzMmJkMzk2ZTVjZDcyYjZlNTRhYzFiZWZlNzY4YjYzZDBkMTc3ODU3MmM0YzczYjg5MDFjZmJkOGM1YiJ9"
         },
         {
-          "resource": "repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/service/DistributorCreateService.java#L154-L160",
+          "resource": "repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/service/DistributorCreateService.java#L155-L161",
           "version": "repo-lines-v1:sha256:fad7c2a83ecb7c325fc848ec7363a9e5e7287e4c7d25a5ecd0c7055419a92307:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDBiODI4Y2RjMmRmZDMyY2Q5ZDI4Njk0OWU5MmIzNTI5NGZhOGNjOWRjYzk2YTM4MGQzMDFkNjE2MmI5ZGQ4YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDRmZTBmNjk0OTYzMmEzODQ5MzcwOWQ3MWJmZTYwY2I0NDg0MjM4ZTI4YWExYTM0M2NhYTAxM2Y2NmU5MjkzNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZmM4YmMxMGFkZjQyMWM3ZjJmZWY5OWVjNzQ3M2E1MzM5ODAwYzkxODI4Njc1ZGY5MGI2NzNlZjE4MzMzMzQyOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOTJmMzk2ZDYzYWIwNjA3OTEyNmRjNDhiOTcwOGMxNjRiY2FhYjExYTkyNjZiMDBkM2VlMmRjNmU2NjNmZjFiMCJ9"
         }
       ]
@@ -164,15 +164,15 @@
     },
     {
       "id": "claim_594b76daa744498b8bad49275637fdc8",
-      "statement": "DistributorUpdateService.performUpdateAndEvents applies only a whitelisted COLUMN_KEYS set (~55 column names), forces is_default=1 when no default exists, and when is_audit_goods flips from true to falsy it bulk-approves all shop-scoped items via ItemsAuditByDistributorJdbcRepository.updateAuditStatusApprovedByDistributorId — disabling item audit must not leave submitted items stuck.",
+      "statement": "DistributorUpdateService.performUpdateAndEvents applies only a whitelisted COLUMN_KEYS set (61 column names) via per-column setters, forces is_default=1 when no default exists, enforces the update-side WDT/Jushuitan uniqueness guards, and when is_audit_goods flips from true to falsy it bulk-approves all shop-scoped items via ItemsAuditByDistributorJdbcRepository.updateAuditStatusApprovedByDistributorId — disabling item audit must not leave submitted items stuck.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/service/DistributorUpdateService.java#L112-L145",
-          "version": "repo-lines-v1:sha256:38259a1eb2bdb8fe726790a8d562e5003b74e785cd8ce049a11bcb0c0e519e74:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ3NTQ2NjQ4OGVkNWJiMTllYTU5ZGQ2NGVhMTNkNThlZTg2ZTIyY2Q4M2VlYmJkNDM3ZDUzYWUxMmUwODEyZWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ3N2RkMmVhOTQwN2UyNDlmODY4ODdiMzA1NzhiNWRjY2YwMDI2NmViYmJlODYzNTNjN2E1MGE2YjgxN2IwZTIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjViOWY1NmVhYmM1ZGQ3Y2ZhMzkzOTY4YTM0ODc3ODkwNWMwMTQ1NmNkZWI4YmVjZDBiNTY3ZjUzZDFiYjgyYjQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFlOGEzNzY0Mjc0MzJkOWQyOWI5MGE2YWFhMDNhZWUxMDEyNjQ4NzJhMzY0OWFhNzNhZmE3Yjg4MDJjNjY3MzUifQ"
+          "resource": "repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/service/DistributorUpdateService.java#L35-L90",
+          "version": "repo-lines-v1:sha256:c6fdb1c52a543094567c3b97bea50d80da4aae780d49b38eb7ea9a9e10c646c5:eyJzZWxlY3RlZExpbmVDb3VudCI6NTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIyYjBjMmY3MGExZGRlNzU0ZjBjODIzMDNmNmIxMzkzNTE3MzliOGI4M2JiNzEwMTIzNDZjNDY0ZWYwYWM1ZDYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM1M2VhZGNhMDBjZmU1ZWY2OGU0ZWUzYTYwOWY5N2RkYjIzNjA1MDQ5YzBiNTE1NDAxNmEyYzZhZjk5NzBlNmUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVkYzViZTY2NDJkOGYwN2I1MmVjYTJmNDAzMTJkY2MyMDA1YzNmOTcxNDQ5MWVlMjFjNTMzMWI4Zjk4YmUzZTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI5NzE4NmFlMzc3NGUzZmIwNjhlMGNlZWE5NDdiODAxNTM0NDRmNjQ1YzgxN2VjNWM2NzIxZmRiZDUyNmVjZDkifQ"
         },
         {
-          "resource": "repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/service/DistributorUpdateService.java#L35-L90",
-          "version": "repo-lines-v1:sha256:643910a6e5d20bca57bb41dc9706fba46c0d1c643d483e4f6ca3e67565dab437:eyJzZWxlY3RlZExpbmVDb3VudCI6NTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIyYjBjMmY3MGExZGRlNzU0ZjBjODIzMDNmNmIxMzkzNTE3MzliOGI4M2JiNzEwMTIzNDZjNDY0ZWYwYWM1ZDYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM2MDBhODk1ZWQxOGIyNzgzMmQ2YTc5ZmMyMTI0NWEwY2M5MzUwYzIyYzRiNTQ5OTgxM2UwYjM4ODYzYmQ1OTgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVkYzViZTY2NDJkOGYwN2I1MmVjYTJmNDAzMTJkY2MyMDA1YzNmOTcxNDQ5MWVlMjFjNTMzMWI4Zjk4YmUzZTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJmMDk1ZWRiZTE0ZWMxMDU1NDZjZDFkYmFmOWYxNjRlYWU3NDRkOTM5MjdkNzRiOWQ5ZDRiMjdjYzE5NGRkYTkifQ"
+          "resource": "repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/service/DistributorUpdateService.java#L92-L153",
+          "version": "repo-lines-v1:sha256:2e1923fbcc50796c03ecd008d6d2ed53153d84e9e7ed24548b943df5d14c60a4:eyJzZWxlY3RlZExpbmVDb3VudCI6NjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQzYTYwNTFiMmYxMDAwOGNmY2NlODAxNjMwNWFhZjY1NTg0ZDYxNWJiNTc5NjAzZTM4ZGVmNjY4NzQ5MWJhZjEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY2NzU2MGM5MzBhNTk4MjBiODE1MTZlY2IwZTE5ODcxZjMwZDVlZGUyNTU5N2E0ZWVkYmZmYzgzOTk4NThmZDEifQ"
         }
       ]
     },
@@ -181,15 +181,15 @@
       "statement": "PUT /distributor/{id}/payment-subject parses payment_subject through a sealed interface PaymentSubjectParse with three outcomes: Valid(0|1), Invalid (Dingo 422 payment_subject参数错误，只能为0（平台）或1（店铺）), and SqlBug — a missing/null/empty-string value deliberately reproduces the legacy MySQL 1366 'Incorrect integer value' error as HTTP 200 with Dingo message/status_code 500, matching the old client contract.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/api/admin/v1/DistributorController.java#L582-L583",
+          "resource": "repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/api/admin/v1/DistributorController.java#L581-L582",
           "version": "repo-lines-v1:sha256:03a430672b7975e03374644884e5226de685a6a2ab6224845089f13bb1fada6c:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZDk2YWI2MWUyYzBhNmQ1NTllY2NmN2Y4ZWJhZWJlZWU2NjA0YjcyM2JjYzcwZWIyNzlmNDg1NzIwNzFkNjkzMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYWU1MzkyYjgyN2Q5ZWY4M2QwM2U4NDYzMzViMzkwNTlhZjkwMTdmZGVkN2IwNzA5NmIyZjk5MDI5NDFkZjJhOCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiM2UxNjg2NmI3M2Q2N2UyYTdkYjc0MWUwZTUxN2VhZWRhNDRkZWVhZGQ5NjgwOWIyZGM2OTQ3Yjc4NWU3MTUwOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNjFkZWUxN2RjNjJkMmJmMjA2NzY4MGU4YjMxNzFmMjY3ZGQxODM5NGFjYTM5ODgzYmM3YjljZDBhYTM0ODgzMiJ9"
         },
         {
-          "resource": "repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/api/admin/v1/DistributorController.java#L618-L632",
+          "resource": "repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/api/admin/v1/DistributorController.java#L617-L631",
           "version": "repo-lines-v1:sha256:b0f9df7abc70154cdebf35960ca6dc94476fff66ec2f5bd14077415e8e7a7217:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVjZjcyNDVmOTdkMmY0N2FiZWFiOGMzN2JmMWY5ZjgzYjU2MWUxNzBkNDk1OGE0NTgwMGY5MWE5ODg2ZDEzZjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU3YjQzMWVhM2ZlMDcyOTYzMTJmMzc0Y2RhMWM2ZWFhMWI0ZThlY2YzOWQ3ZDI4YzkxOGVkNzIyMzYwMTAyNWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNmZWFmNzliODRmYzljM2I5Y2IxZjUzYjBmNDVmNDEzYWM2MWNiYmY3MTEwNDdjODVkMTdiODI1MTRjODMzZjQifQ"
         },
         {
-          "resource": "repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/api/admin/v1/DistributorController.java#L663-L713",
+          "resource": "repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/api/admin/v1/DistributorController.java#L662-L712",
           "version": "repo-lines-v1:sha256:08cfc1891daadec29c8d53860d7054281299f38fc6bda4332bc3c36884381857:eyJzZWxlY3RlZExpbmVDb3VudCI6NTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVkYWVkZmM5OTU3ODhjYmUyOGQ1N2U4ZTJkZTljZWU3ODMyY2M5ZWZiOTYyZmI2ZDA4NzNhNWI1ZGRmM2MzOWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNlNWVmMTIwMTAxMTRkZjZmZGU1NmY5Nzg3ODJlYjQwY2NjNjJkN2U1ZDU1MGMwNzc1MDQ1MTg0ZDIwZTA3NDYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVjM2YwYzUxZTc4MzQxZDU4NzQ2NGIxZTA3MGY0YzJlZGMyMTM5YTY1ZTZmOTc0NGU2OGFiN2M2NGMwZDRmM2IiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFmNGQyMzNkYTAzMWZiYTUxOGU2NjE4NjQ0Zjk5NTAzYWY4YTFmNmYyZWE4NDJlMDY2ODM1YmFlZjM2OWQ2YzgifQ"
         }
       ]
@@ -425,7 +425,7 @@
           "version": "repo-lines-v1:sha256:1669637668cf9b6ccfed2ba2d159280fd3b22b5c2b06e07f8c923907795ac447:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMTY2OTYzNzY2OGNmOWI2Y2NmZWQyYmEyZDE1OTI4MGZkM2IyMmI1YzJiMDZlMDdmOGM5MjM5MDc3OTVhYzQ0NyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMTY2OTYzNzY2OGNmOWI2Y2NmZWQyYmEyZDE1OTI4MGZkM2IyMmI1YzJiMDZlMDdmOGM5MjM5MDc3OTVhYzQ0NyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzliY2MzMjI1YzI4OTZhNDhkYjE4ZWUzYzBjMjg1YmU1NGIxNTY2OWI1YjBiYmMxY2YxMDNjM2JlNjEwMGE5MiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZjhkZTU5MjZlOTc4MzY3NThkNjQ2NDYxOGI4YzFkNTNmZjMzNmM5MjVlYTk3OGNiNzRlNTc3NjJjMzJlYmRhMiJ9"
         },
         {
-          "resource": "repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/service/DistributorUpdateService.java#L114-L116",
+          "resource": "repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/service/DistributorUpdateService.java#L115-L117",
           "version": "repo-lines-v1:sha256:6ccf8cc73f9a32e18c587a78e329d76d1a688b0f44e48117e3b6e72c6d353e54:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiN2MwMGQ5ZTgwOTU2MGNkY2E2NjZjY2I4MzY4MTBkZWRkYTEwNTAyYWNkZDk3NDg1OWFjYTY4NzhkNmYyYTY5OCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjRlZmM0OTQxOGQyNmRjZjEyOWIyMmE2YWEyMTEwOGNlZWMzNzY3N2EzMmQwOGU5ZDVmZWUzNWRkYTY2YmI5ZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzdiMjRhZWIyN2E3MmIxYjZjODhjNjljODMyZDhiYWQwMmU2MDkwZjA2N2VjMmVmZjgzMDYxODE3NDc2MmI1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYmVkYTYyMzcwNmJkMGUzYjE3ZjM2YjU1ZWYxNDQ5NzZlODkyOGE0M2ZkNDRmOTE5ODVmYmVjZmMzZDQ3YWE0MSJ9"
         }
       ]
@@ -451,10 +451,202 @@
           "version": "repo-file-v1:sha256:2dc32dc57723566e2f534d150ebb7aa997d84d0cd73bb60893247c2b5c9567aa"
         }
       ]
+    },
+    {
+      "id": "claim_3586b12645d545059c876a27509d1495",
+      "statement": "pos_store_account rows are per-store POS terminal staff accounts with globally unique case-insensitive employee_no (uk_employee_no), reversible password_cipher, role in store_manager/supervisor/clerk, and status enabled/disabled/resigned; resigned is terminal — status cannot transition back and role change, shop transfer, and password reset all refuse resigned accounts.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/domain/PosStoreAccount.java",
+          "version": "repo-file-v1:sha256:d982a0497a22a59924ed87b7a06b700a03f270a980970f445515b89493ad0c19"
+        },
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/posaccount/PosStoreAccountStatusService.java",
+          "version": "repo-file-v1:sha256:a59ce577235d442027e0b21d7619daf961e046deec953cc4bfa3ebb37c5bf3be"
+        },
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/posaccount/PosStoreAccountWriteService.java",
+          "version": "repo-file-v1:sha256:26d0e7bdfd1962b75fec044ff86c19d1f2de4d4416fed4fa0d9bdb6d3b89b928"
+        }
+      ]
+    },
+    {
+      "id": "claim_92fdd6f936ed4fb194e0bfa48419e79e",
+      "statement": "POS store account access is scoped by the operator JWT: non-admin operators can read and mutate only accounts whose distributor_id is in their JWT distributor_ids (PosStoreAccountScope), and PosStoreAccountController (/api/v1/store/pos-accounts) is @AdminAuth-guarded with route alias store.pos_account for DataPass/Activated.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/api/admin/v1/PosStoreAccountController.java",
+          "version": "repo-file-v1:sha256:19c65264e78df68b80276be260c1fb4e6a7cc188316c9756df5a1127cff577aa"
+        },
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/posaccount/PosStoreAccountScope.java",
+          "version": "repo-file-v1:sha256:830e4789d6d46be6246b2257f6905901c8a58c1df19eab40959b7d341fd270b8"
+        }
+      ]
+    },
+    {
+      "id": "claim_f8f2e8969286478ca347f26e39456dbd",
+      "statement": "POS account passwords are never operator-chosen: PosStoreAccountPasswordGenerator builds an 8-char password guaranteed to contain a letter and a digit (SecureRandom + shuffle), PosStoreAccountPasswordService stores only the SensitiveFieldEncryptor ciphertext, and plaintext surfaces only in the create/reset-password responses and the super-admin-only CSV export, which decrypts passwords.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/posaccount/PosStoreAccountExportService.java",
+          "version": "repo-file-v1:sha256:82715b541a27ea733c8ee17c6db0232a4e82566f470b92388f31c2c8cd6eaead"
+        },
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/posaccount/PosStoreAccountPasswordGenerator.java",
+          "version": "repo-file-v1:sha256:704945e7fd0c6cdaaf83972f47620209e67002cabc4d2dd351ae9fd837830cc9"
+        },
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/posaccount/PosStoreAccountPasswordService.java",
+          "version": "repo-file-v1:sha256:c22cccf2fb0cbfbbb19c4241c7d647d2ef8b936c7bb69a4d134ae4b72a63269a"
+        }
+      ]
+    },
+    {
+      "id": "claim_7965d52b547747e39d1e4282eafa1566",
+      "statement": "POS account create and import call PosStoreAccountDigiOsCreatePort.ensureSyncedOnCreate before the local write: when the company's DigiOS config is enabled, the @Primary impl in ecshopx-digios upserts via the account.upsert gateway method (mobile mandatory) and any failure aborts the local create/import with BadRequest; when disabled the PosStoreAccountDigiOsCreatePortNoOp default makes the hook a pass-through.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/port/digios/PosStoreAccountDigiOsCreatePort.java",
+          "version": "repo-file-v1:sha256:75a93a6ef55981f32d4f08eec71a9c455414caf9ffd168b2267e1f53ca5c1b63"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/port/digios/PosStoreAccountDigiOsCreatePortNoOp.java",
+          "version": "repo-file-v1:sha256:eae4e02b2d21da39ee41d8e9ea19d25087be20056d0491b636a374bcccbff3cb"
+        },
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/posaccount/PosStoreAccountImportService.java#L63-L122",
+          "version": "repo-lines-v1:sha256:b2dce823c44816c938b25accdb917d49068b01f888eedac29996d818c7381200:eyJzZWxlY3RlZExpbmVDb3VudCI6NjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY1Njc4NTVjZmY1NWZhYWMxY2EwNWI3YTMzZGMwY2JkYWM3YmI2ZDMwMGY2MzczZmQ4NjY1ZjI3YmZjMWRjMWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM0MTE2OWJhYzI4MWQwNzJlMzYxNjE1MGZiODBiZWM1NmU3NGE3NTM0NGU2MDc2MDUxMTRmYTllZTc5ZmUzZjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhjZDI5ZGVlYTVjZDI4Y2Q0MTJiMGI0OGYwNDYxODM0NmY1MzZjY2ZiOWU5MWExMDNmNGIyMDhiMDQ0Y2UyZWMifQ"
+        },
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/posaccount/PosStoreAccountWriteService.java#L61-L97",
+          "version": "repo-lines-v1:sha256:32cfeec1b5f727a0c759af11bf9dd416629c793d406a3aeaa3d90afc345885bc:eyJzZWxlY3RlZExpbmVDb3VudCI6MzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM0NmFjMDU3ZTIwYzMxYzQyNjdkNWJiZGI5YTM1YzQ0M2MxYzkwZGU4OThhYzNjZGIxNWIyZDRmZjc2MjE4ZTkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA0YWIzOGVjMWZhMDI3ZjE2MWM1ZTEzNTgxNmRmMDg4ZTU1OTBiZjk3NGJiMzNlZWIwYjgwODdiMGQ3YWEwYTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI2ZGVkYWQ1YmY3NTAwMjIxZDMxNzUxODBlNjFmZmNlMTdhZDZjNzI3ODE3MjRmOTk0OTI2NWI4M2E2YTg2MjcifQ"
+        },
+        {
+          "resource": "repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/port/PosStoreAccountDigiOsCreatePortImpl.java",
+          "version": "repo-file-v1:sha256:fcc68db3a70ddced8c9bb5c1ff4b62f98777b2c9cb3c342f8d502ef216265bc2"
+        }
+      ]
+    },
+    {
+      "id": "claim_ac2f4d1d72af496690190e115ee78a79",
+      "statement": "A successful POS account insert publishes event:companys:pos_store_account_create with {id, company_id, employee_no} after commit (immediately when no transaction synchronization is active) through PosStoreAccountCreateEventDispatchPublisherImpl in bootstrap.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/PosStoreAccountCreateEventDispatchPublisherImpl.java",
+          "version": "repo-file-v1:sha256:685833fd7ad8ffc6d97064d3320ebeee73eb875668b7da896bf11769f3eb1d83"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/CompanysDispatchEventNames.java#L29-L33",
+          "version": "repo-lines-v1:sha256:f8311ad1c8b51caf05e073f9039912d575ce7d58fc9197e6ca4352fe3b9d4297:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOTU2MzkxYWY3YmM3N2IyMTgzNDljYWM3ZmIwNjQzYWZhZjVlNTg1OWU3YjU3NzE3ZDc0MWIyZmJlNmRlNjEwNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYWFhNjlkMGFhNGIzYzQ4ZGJmYTcwMWJlZTU0YjZhNjk2NzMyODhmOWY2ZjJiZjJlZGYzYzc0MGY3ZmY4NmIxNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzNmMmY0ZTEwOWE3MDcyMzdhMDBmYzcwNTkzODhiNGRhNmUyMGQ4MzQxMzQ1N2Q5YjdlNjkwYjJkYmUzMGQ5YSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTk2MzU1MmRlMTc1MWNlMDQxNmYxZDMxYTg3NWM2ODE0MmRhMTgzN2E3OTlhMjNmZTJkOWQ5Njc1YzdmOTI5OCJ9"
+        },
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/posaccount/PosStoreAccountWriteService.java#L98-L115",
+          "version": "repo-lines-v1:sha256:b9cbc407227a1131f7759752c02b099c44e9e0d98cec39b26f4fab32ee04d241:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJhNmFkMzk5OWFlZjZjMjA4NThhOGY3Nzg1MjZhMGVhMDdjZWFjY2IzZTRiMDIzOTE1MWM4MzI5OGUwYWM4YmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjgyMmU1YmI0MGZjYmU1NjE0OTUzMzc3NDYwMDQ4YmU2ZGE2ODljZTY4ODYyOTlmYzFmZGNkN2MyMmFmNTU1ZGQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_234104606040409b9eac0bccb1f45e4f",
+      "statement": "POS account import enters through the espier upload plane: file type pos_store_account (Chinese headers mapped by EspierUploadHeaderCatalog) routes rows via PosStoreAccountEspierImportRowSink to PosStoreAccountImportService.acceptRow, which resolves the shop by shop_code, upserts on existing employee_no (update) or inserts with a generated password, and rejects duplicate employee numbers within one file via an in-memory acceptedKeys set.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/espier/PosStoreAccountEspierImportRowSink.java",
+          "version": "repo-file-v1:sha256:9ccc5c95f82f7464c6e4ec130a33e86abf25dc78b5e926b6439f2ad891c5cf1d"
+        },
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/posaccount/PosStoreAccountImportService.java",
+          "version": "repo-file-v1:sha256:1954f97a7d587e1fc75efc70def429f55190e99805ce6339c32a2e036aa59ede"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/upload/EspierUploadHandlerBeans.java#L183-L189",
+          "version": "repo-lines-v1:sha256:9e7ecc38e58fea605c10ebfbf70acf0c4218c4acd977c2b07ea0e224b4df2fcb:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjgzNjhhYTBmOWIxYjg1ZTFmNzQyYTMzOGRjNWFkYTFiYTZjZWY0YTYzNGRlMTEwNTIxNjMyYjJlYmJiNzhmNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNGE2Y2FlOTEzZThlMzU2MzJlOWJkNWE4ZmJjOTgxNTNkYTJmMjAyYTVhZTc1YjdkYWZlZjc2YmQ3OWFhY2FiZiJ9"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/upload/EspierUploadHeaderCatalog.java#L711-L720",
+          "version": "repo-lines-v1:sha256:d6f7de1512d22acd2517e4e3a794fe68fcc1832f7312d387c7b6d56bd1822330:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY0ZTNjMGE2MTMxMjAwZDkwZDU4ODA0MTIzNzYzZGZmMjQxZmVkNDdjZTAzMWE2NjU4NTgxN2FhYzAzZDUwYzYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE1OTA5MzFhYWI0MTQxNDU4YmZiNzY1MjQ1MjVlNmIxOTY4NGNjZTVlN2M0OWIxNzRmM2M1YjYwYWFiMmVhY2MiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNmZTYyZjQ0ZDUwZjY1MWMyNTU4YTM4M2EzYWJlODI0MWJmMzRhMjhmYjlhNjE0OGQzNGQ4NWUxZDZmN2IxOTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRhNjAyZDJiMTZkOTJlOGYzNDE0OTE2ZWY5MDk1NDUzNzViNzRjZTY0ZjkzYTQwMTdkMmYwN2UyMjE0ZTM2MGYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_585c613d94f64bdcbc79f85895fc364b",
+      "statement": "POS account export is admin-only and asynchronous: POST /export enqueues job:10 EspierBundle\\Jobs\\ExportFileJob (ASYNC REDIS, slow queue) with type=pos_store_account; the bootstrap EspierExportFileJobDispatchHandler routes by type to PosStoreAccountExportFileJobTypeHandler in ecshopx-espier, which rebuilds the scoped query, decrypts passwords, writes the CSV, and records the export-log entry.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/EspierExportFileJobDispatchHandler.java",
+          "version": "repo-file-v1:sha256:efb5924b5aeb8af5d86d79dff6e910c44eb38aae1d50bb7863d24d6c8ec165bf"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/PosStoreAccountExportDispatchPublisherImpl.java",
+          "version": "repo-file-v1:sha256:e8c0b9339a7d904ece1c33f61dd09010ac93b19f90911d6f5c68e15e29b8b5f5"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/EspierDispatchJobNames.java#L21-L21",
+          "version": "repo-lines-v1:sha256:977b91de20554a9a4723eed53df084f453f2cfe208ea47f55242410469629655:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOTc3YjkxZGUyMDU1NGE5YTQ3MjNlZWQ1M2RmMDg0ZjQ1M2YyY2ZlMjA4ZWE0N2Y1NTI0MjQxMDQ2OTYyOTY1NSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTc3YjkxZGUyMDU1NGE5YTQ3MjNlZWQ1M2RmMDg0ZjQ1M2YyY2ZlMjA4ZWE0N2Y1NTI0MjQxMDQ2OTYyOTY1NSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOWViOTBjZjJkZDRhZTE3YmQyZTE0ZGM2MDI4NWU0MzY2MzBkODdiZDljZTk4OTFhZGU4NWE5ZTNmZWVkMTdjMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMTdiMzIyYmEyOWZiMDEzNjcyNDc0Zjg1YzllNTU1OTZjZjUyN2QyYWUwNWE2YTYxNGFiZTg1ZmU0MWNkMTI5YiJ9"
+        },
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/posaccount/PosStoreAccountExportService.java",
+          "version": "repo-file-v1:sha256:82715b541a27ea733c8ee17c6db0232a4e82566f470b92388f31c2c8cd6eaead"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/dispatch/PosStoreAccountExportFileJobTypeHandler.java",
+          "version": "repo-file-v1:sha256:264ccd28b23cd66e083771c5df1e8e9507c4c9454d2014e96a8af0ebb12ad9fe"
+        }
+      ]
+    },
+    {
+      "id": "claim_6959a9afde8f4eaaa925a7feaf90b2f7",
+      "statement": "DigiOS store-profile sync attaches to the distributor lifecycle purely as registered listeners: DigiOsDistributorCreate/UpdateDispatchListenerRegistrationConfig bind listener:digios.distributor_sync_on_distributor_create/update to event:263/264 (async default queue); the listeners extract company_id and distributor_id and DigiOsDistributorSyncDispatchService skips silently unless the company's DigiOS config is enabled, then reloads the row and pushes the store profile (create also provisions the warehouse).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/DigiOsDistributorCreateDispatchListenerRegistrationConfig.java",
+          "version": "repo-file-v1:sha256:e24b9faf905f96538321b1626318e0152830aa66dcc9cbf490592ce54c6cfd51"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/DigiOsDistributorUpdateDispatchListenerRegistrationConfig.java",
+          "version": "repo-file-v1:sha256:a383cdb78b65112dcb8a75e1569f6624f24ec8d234f7c7a7afb3830e45054647"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/DistributionDispatchEventNames.java#L67-L74",
+          "version": "repo-lines-v1:sha256:f44ee3702e1040c294c1bfbcae20e7cc92b48e6de7f896a408dfc6d8c586b95b:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiODI1NmM1M2JkZThhMzExYmMwZGY3MzZhOGY1MTY0YjgxODRkMmE0MmMxNGU5NjU3MGJiMzkyYTU2NWI3ODQ1ZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTg1NDc2ZjYzYmY0YjljNmUwYWFkNWFlNDY5MGExYjU5NzczMzY4MDFiMWM4MzU4ZDdmZGFkYWU5NGRhMTZkOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzFjYzU3ZDNmY2M4NzZiYTJlMDA0MDY1ODcyN2E4ZWY0NDFhZjU0YjY2ODEyODE4ZGIwZWMwMTQyOGFhMmFjNyJ9"
+        },
+        {
+          "resource": "repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/dispatch/DistributorCreateDigiOsSyncDispatchListener.java",
+          "version": "repo-file-v1:sha256:b20ca07acfc6dfe0fee3eabed4e81721d342d3edd3d43c3b5e29d382e94e9dce"
+        },
+        {
+          "resource": "repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/service/DigiOsDistributorSyncDispatchService.java",
+          "version": "repo-file-v1:sha256:11a9b1d3f0e1e3aef28204178708368bc80236cce987119900ea6ceb57d66f6b"
+        }
+      ]
+    },
+    {
+      "id": "claim_b8f4ee730aed42a9addce5a9bfaf06e3",
+      "statement": "DistributorCreateParamNormalizer and DistributorUpdateParamNormalizer mutate the merged params between gate and validator: merchant operators are pinned to their merchant_id with distribution_type=1, distributor operators have is_audit_goods/auto_sync_goods stripped, a truthy is_open scales rate from percent to basis points (0–3000), offline_aftersales cascades to _self, regions lists back-fill province/city/area, and on create every aftersales distributor id is DB-validated to belong to the same merchant.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/service/DistributorCreateParamNormalizer.java",
+          "version": "repo-file-v1:sha256:e0f9e00e28fcd6868704af5f1a4ad51bc3a46f3363dff8d69f37a7210bb436fa"
+        },
+        {
+          "resource": "repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/service/DistributorUpdateParamNormalizer.java",
+          "version": "repo-file-v1:sha256:2773842e61a693f90a4edbb1f05ce3b472d4d89d8ebdb73af43c8bcdfd5d397c"
+        }
+      ]
+    },
+    {
+      "id": "claim_bcb12d36ac6d45429b4b0dd287086a95",
+      "statement": "PosStoreAccountQueryService.mapOrderInfoByIds is the cross-bundle read surface: order list/detail code batch-loads POS handler info (id, employee_no, name, mobile, role, distributor_id, status — never the password) as the order-side pos_store_account_info object.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/posaccount/PosStoreAccountQueryService.java#L116-L155",
+          "version": "repo-lines-v1:sha256:03a0d01fbc1d663e09ead0387377d05bde4e3fbba83773ee0ac0a6b0e426c9bb:eyJzZWxlY3RlZExpbmVDb3VudCI6NDAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU2ODA2ZjE1NWM1YWMxYWUyNzIyY2EwNmYyYWM5Y2FkY2I4ODFiOTEyM2NiNjI0YTNjMTA0NzViNDQ0OWRjMmUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE0ZDcyZjdkYjY4YWNiM2Q1Mzg0ZDYwOGIxMmE1YTU0YWU2MWJkODE5M2Q4NGMyYmY1ZjgxZDBjMzhkMTY2MWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMzOWU3YzAwYWE0YjlmNWU5ZGVmZmQzMDZjYWNhZTA3MDI1NGIzODhmMDAyYTlmNjhiMGM2OTE1ZDc5YjVhMGMifQ"
+        }
+      ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.7.2",
-    "at": "2026-10-21T12:26:22.580Z"
+    "by": "openwiki/0.7.3",
+    "at": "2026-11-04T17:09:55.577Z"
   }
 }

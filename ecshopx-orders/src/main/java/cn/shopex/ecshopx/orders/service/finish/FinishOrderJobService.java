@@ -16,19 +16,29 @@
 
 package cn.shopex.ecshopx.orders.service.finish;
 
+import cn.shopex.ecshopx.members.service.systemtag.SleepingUserTagReconcileService;
 import java.util.Map;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class FinishOrderJobService {
 
 	private final FinishOrderBatchService finishOrderBatchService;
+	private final SleepingUserTagReconcileService sleepingUserTagReconcileService;
 
 	public int execute(Map<String, Object> jobData) {
 		Objects.requireNonNull(jobData, "jobData");
-		return finishOrderBatchService.runEquivalentToFinishOrderJobHandle();
+		int finished = finishOrderBatchService.runEquivalentToFinishOrderJobHandle();
+		try {
+			sleepingUserTagReconcileService.executeDaily();
+		} catch (RuntimeException e) {
+			log.error("[finish-orders] sleeping-user tag reconcile failed after batch", e);
+		}
+		return finished;
 	}
 }

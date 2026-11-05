@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:7ef4364b58d2d4aa9029b05aa42362d35b95b9e94b63452dfaa71ad54bced602",
+  "pageVersion": "sha256:a295022b5ad843835af8b30dc461a0ea29e5c4625e655d213db162511962fab3",
   "claims": [
     {
       "id": "claim_ae96d6b59b654529b0df4341da13897d",
       "statement": "The /wechatAuth/* external path space is unauthenticated by design (OperatorJwtAuthenticationFilter explicitly skips it) and is split across three api/open controllers: /wechatAuth/wxpay/notify is owned by ecshopx-payment's WxpayNotifyController, /wechatAuth/callback/{authorizerAppId} by ecshopx-wechat's WechatOpenPlatformMessageCallbackController, and the legacy PHP-parity GET /wechatAuth/wxapp/qrcode.png by ecshopx-wechat's WxappLegacyQrcodeController.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/OperatorJwtAuthenticationFilter.java#L199-L202",
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/OperatorJwtAuthenticationFilter.java#L207-L210",
           "version": "repo-lines-v1:sha256:b7eff7ac4ce9bd16b77822303cb63ba161dbe9f46e39d676dcc255f7f48f44f3:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNzdiMDk3MWEzZmQ3ZWRhOWFlNmM3OWNmMzAwMWUwNTQxNzQ3YmE4NjAyNDYzMmQ5ODNiODJiMjAzMTczYTVhYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjRlZmM0OTQxOGQyNmRjZjEyOWIyMmE2YWEyMTEwOGNlZWMzNzY3N2EzMmQwOGU5ZDVmZWUzNWRkYTY2YmI5ZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNTdjOGQwZWYxODczYjc1NDNlMzI3MGRlZDNmYTE0OGM4NTg4ZmIzY2NjNzIxZWNhYTUyZTM2NDMxN2RhMzNhMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiY2FkYzZlMWRhMGM3MDZmOTk3MzIwMGNhMmE0YzA4ZjQ3NjRkMDdiNjk4ZGZjNDdjYjRkNWNlN2FlZGM5ZjIwNyJ9"
         },
         {
@@ -276,15 +276,19 @@
     },
     {
       "id": "claim_f752da34068c4e59b922df249042e14a",
-      "statement": "WorkWechatConfigService stores each tenant's WeCom config as JSON under three shared-Redis keys written together by saveWorkWechatConfig — workwechat:config:<sha1(companyId)> (company-keyed), workwechat:configcropid:<corpid> (how callbacks resolve a company from the URL) and workwechat:configappid:<appid> — carrying corpid, show, company_id and agents.{app,customer,report,dianwu} sections; reads are lenient for admin display but loadParsedWorkWechatConfigByCorpid throws 您还没有配置企业微信信息！ when the corpid key is missing.",
+      "statement": "WorkWechatConfigService stores each tenant's WeCom config as JSON under three shared-Redis keys written together by saveWorkWechatConfig — workwechat:config:<sha1(companyId)> (company-keyed), workwechat:configcropid:<corpid> (how callbacks resolve a company from the URL) and workwechat:configappid:<appid> (appid → companyId) — carrying corpid, show, company_id and agents.{app,customer,report,dianwu} sections; the save is corp-id scoped: it rejects with ResourceException when the corpid or appid index is owned by a different company, overwrites on same-company re-save, and deletes the previous corpid index only when owned by the same company (pinned by WorkWechatConfigServiceCorpIdScopeTest); reads are lenient for admin display but loadParsedWorkWechatConfigByCorpid throws 您还没有配置企业微信信息！ when the corpid key is missing.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-work-wechat/src/main/java/cn/shopex/ecshopx/workwechat/service/WorkWechatConfigService.java#L211-L232",
-          "version": "repo-lines-v1:sha256:93c29cf67d86081ea3bcfd4f08eeb9f0b7fce6942fcabc370c337767899ba269:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVkOWQ4Y2EyYmNhNmJiZDE2YjU5Y2JmNTJiNDM1ZDNlNzY3NjA3MTk4NjQ1Njc0YTdjN2ZiOGMyZTA1NjA2YTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY3YWJlM2M0ZjU5OWMzOGM2OWQ2ZmQyY2MzMWE2ZDVlZjE4YTZhYzg2OTVkMTY3MTAzMzBkNjlkMzMzMzFjNDgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImYyZDJkZjI0MzAyYzE4NWI1MDQzYWEwNjRkNjkwN2U3YWE3OGNmOTg3ZGU4OWQ5ODZhNWJkMmViMGE3ZTQwYjMifQ"
+          "resource": "repo://ecshopx-work-wechat/src/main/java/cn/shopex/ecshopx/workwechat/service/WorkWechatConfigService.java#L216-L244",
+          "version": "repo-lines-v1:sha256:5dd9e4488c84d430ec0f7d02a3f2f3e15e0b7da7c82e49f946b023b72080f24b:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ5NjFiZGZiMGY4ZDIzNGZjZGJmNGE5OGViNDc2NjZkNWVkNzViMzYxMDhhYzI3M2IwMWFhNWQ3ODlkMmY0MWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ4YTRkM2Q3M2EyZjBhN2QxZTIzMWUyMzYzYTYxZTRmMmYzY2I5ZDc0NmJhMGIyMDU1NWE0MTJmMDMzNDM4MDIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjgxNjE4OTUxN2EwOTQ5NTc3MjI0MzYwMzVmYWQ1M2NjMmFkNzYzYjMyZTZiMzg4OWZiOGI3YmZmY2RiN2I3ZmMifQ"
         },
         {
-          "resource": "repo://ecshopx-work-wechat/src/main/java/cn/shopex/ecshopx/workwechat/service/WorkWechatConfigService.java#L341-L368",
-          "version": "repo-lines-v1:sha256:b87284f9a8b07da10698cb6d527e93e850448f4bc5dc9b17b55ca26409b9b468:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQzNzAwMTcwNGEwMGM1ZmUxZjJlYTBlNTZlNzM1OWUyYzg4NjM2MmMxODA4YmVlNWFiNTZjYWFiNWQ0YTIzNDIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ1YjVkZmM1Y2M3ZTc3NmQ4YTZmM2M5NGZhMTQwZTc1ODg1N2NlYmI1MDY4YWQ2NThmNDMxNDFhNGM3MTA2ZjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZmNGE5ZTg5N2MyNjc2NjExNTExMjJkZDg4MGM0ZDA0OGMzMWMyNTFlOTQyMGE3M2E5NDE0Nzc3MDZkOTc4Y2QifQ"
+          "resource": "repo://ecshopx-work-wechat/src/main/java/cn/shopex/ecshopx/workwechat/service/WorkWechatConfigService.java#L341-L407",
+          "version": "repo-lines-v1:sha256:d8e8da1dd58a3fa37aa4ae66a6c3e1e793bea631d58f41a6ff98cb00d0a21d13:eyJzZWxlY3RlZExpbmVDb3VudCI6NjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQzNzAwMTcwNGEwMGM1ZmUxZjJlYTBlNTZlNzM1OWUyYzg4NjM2MmMxODA4YmVlNWFiNTZjYWFiNWQ0YTIzNDIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ1YjVkZmM1Y2M3ZTc3NmQ4YTZmM2M5NGZhMTQwZTc1ODg1N2NlYmI1MDY4YWQ2NThmNDMxNDFhNGM3MTA2ZjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRiZWNlMzZjYzJiNDk5NmIzYWRmYWNjMjdlYTRjNmVjYTAwYmY3MzI0NDhhYjFlNzU5MjhiZDI2MmJjNmJhN2UifQ"
+        },
+        {
+          "resource": "repo://ecshopx-work-wechat/src/test/java/cn/shopex/ecshopx/workwechat/service/WorkWechatConfigServiceCorpIdScopeTest.java#L62-L122",
+          "version": "repo-lines-v1:sha256:0898adabe4b6433a6adec46636c896fd054f5215c6ee105ced4dc3458f7f2db7:eyJzZWxlY3RlZExpbmVDb3VudCI6NjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjczYmFlZDU5NjM3NTI0OGQzY2E4MmYwNDZiZGJiNGQzZTljZGIzOTgyODE3MGEyMmFhNGRlYzA3NTJkMTczYzciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4NWQ2OTZmZGVjNzM0NDFhMzc4ZWU2ZWM0NjkxNThmN2FiZjJiYmU4Zjg0YzIxMWU3OTRiZGYxMmM0OTRkNTgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ3ZjM2YjY5OTE5ZWE0MjI3YmM0NDk2Mzk2N2UzMjY1NDE4ZDYyZTE4NjUwNjNhMDk0NGRkZmI4ZDRiZGYzNzQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjEzNWNlNGNiM2IyMWFlYzcwNTFlODA2NzhmYzZhNTQ2NDdmN2E1OTYwMDQzMDUwZDJhZmY2MjQ2NWEyM2ZmMTQifQ"
         }
       ]
     },
@@ -293,7 +297,7 @@
       "statement": "The DIS work-wechat H5 base URIs (ecshopx.work-wechat.dis-workwechat-h5-base-uri / dis-workwechat-h5-auth-uri, overridable via DIS_WORKWECHAT_H5_BASEURI / DIS_WORKWECHAT_H5_AUTHURI env) are injected at read time by complementDianwuH5IfPresent: when the config JSON contains an agents.dianwu section, h5_url (baseUri + ?company_id=<id>) and h5_host (host:port of the base URI) are added — these are the URLs distribution/salesperson H5 pages link back to.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L270-L272",
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L274-L276",
           "version": "repo-lines-v1:sha256:dbbb09920c3f82417dd3cf0bd789b3ee411c9f177e0b34892c2f83093d740a01:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMWMzM2M0MjZlZTM5YTBjMDA0OTI3NjQyOTMyODJiYzhhNGVlODE1YzEzMzMyMjYwODcyZGQzZWFhMzBjMDcxNyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZDhlMzcyMWU2YWRjM2ZjYmUxMDNiNWQ4OTMwY2I4NzEzNGRlYjEzY2QwMjZmNmU2ZWQ1MmMzMGMxZGYzOWM5NCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTI0ODYzOWNiMzhhNGI2ODJhZDgyZTBhYjQxYTIxN2UxYTVhOTY1ZDk4YjVhNWQ3ZDM5ODgxYzQwYmIwMzBiZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZWI1NmUzZjA0OGY5ZTBiZGIwZDlhYjZiNGI0MmE5ODA4YWJhODcxMWU2NWMyOTdiZGM2MmVmNmFhNzBhOGVlNSJ9"
         },
         {
@@ -411,10 +415,66 @@
           "version": "repo-lines-v1:sha256:a9061ed62442cb6a78dc15c9e13e5e39e0fbefe798847fa4216e1d6ba8466337:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhhZjFlOTEzNThjOTJjMjg2ZTM0YmEzZGMxYjA5MzU3NmIzMGFhZTk3Yjc0NTg2MTlmZjlkYmUzZjQ3ZTViMDYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhhZjFlOTEzNThjOTJjMjg2ZTM0YmEzZGMxYjA5MzU3NmIzMGFhZTk3Yjc0NTg2MTlmZjlkYmUzZjQ3ZTViMDYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVkYTFiNGU3YzAwYWI3YTU4MjdhYWE5ODk3MzMwY2FkNmFjYWZiZjlkYzZhYTU1OGUxOGUzMDlhOGEwNWQ3OTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMzY2UxNjhiNDU2YWZjYWEyZTA3OGVlNjI2NDgyM2M0YWE3YzAxNDJhNTc3MWVmODY3OTFjYzgwMWUyZTg4MjMifQ"
         }
       ]
+    },
+    {
+      "id": "claim_096d7499b4294f1289196227fdb1d09a",
+      "statement": "Promotions' WxaTemplateMsgActivityRemindSendService is the single WeChat subscribe-message (wxa subscribeMessage/send) sender: it validates the {scenes_name, company_id, appid, openid, data} payload, resolves the wechat_weapp row's template_name by company+authorizer appid, requires a matching enabled wxa_notice_template row (missing/disabled → silent skip returning true), defers via WxopenTemplateSendDispatchPublisher when forceFire=false and send_time_desc sets a positive delay, builds keyword data from the template content with static WxaTemplateSceneDefinitions fallback (thing* keywords truncated at 20 code points), and posts through WxJavaMaRuntime.ma(authorizerAppid) with failures logged, never thrown.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/WxaTemplateMsgActivityRemindSendService.java#L323-L355",
+          "version": "repo-lines-v1:sha256:b4866a3d1b3f4242d62bfcac5733a3204a945f7c04060fbe03e4a7328d43ddce:eyJzZWxlY3RlZExpbmVDb3VudCI6MzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNiYzY1ZGNiZjgxMzQyM2UxODg3ZGI0MDlkY2FkM2IwNTNjYjU4N2NkMTIxZjdhZWQ3NGFmZDY5MDk4ZWMyOGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc5NzhmYjNkNzJjMGQxODExZGYxYzQ0N2E4MmYyZGU3ZTZjOWE2YWRiY2I0MjhiYmYwODcwM2Q5ODVjMDM3OWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIwMzljYTExYTI1MGMzZGM4MWM2OTZjY2MxNTgzMjkzY2NiZTg0Njg4NWRmYjdmOWQyNjg2ZmIxY2M0ZTJiNTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjViODRmN2I3YTE5MThmNWFhMDJiMGJhNWM3MDJmMGYxMjNjMTRkYmU3OGJhNjgxMGI1ZGJkZjRjNTA5YTNkYjMifQ"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/WxaTemplateMsgActivityRemindSendService.java#L69-L147",
+          "version": "repo-lines-v1:sha256:858f6dbb78523f379045f7f7a5544215233b0696c3ce95949fd6fc7f170f268d:eyJzZWxlY3RlZExpbmVDb3VudCI6NzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlhODVmOTBiNjhhZWM1MjU4YTUxNmU0MTljODViMjY3YWE5YzhlYTZkNTM4YzZjYjIyYTY2Mzk2YzA0NmQ1MDkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyN2ZmNjgzODVlNzgyYzJlOWYwZGViNDdhOGE0ODVlMWY2MGQzYjFkYTAwMWU2MjRmNDM2ZWU0MDgyNWI3ZGYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI5YmVkN2FhOTM1MDRjZTFlMmZjYTI4NjcwMDM0OWRlYjg2ZGIyMGJhNzAzZDc5YzQzZjc1NzMwYjQzZTVjYzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIyZjJmZjVmZWVjNjBmNTg3YzhmYWU0ZTg3ZjgwOWE2NjFjZmZlZDZiNDdhYWU1ZjZkNmEyNjUzYWE4OTUyZWYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d927b672e8874e859dabc734722f8fc4",
+      "statement": "The wxa subscribe-send port family keeps promotions off consumer POMs: one-method send(payload, forceFire) ports live in ecshopx-common (OrderDeliverySuccessWxaSubscribeSendPort and TradeFinishPaymentSuccWxaSubscribeSendPort under common/port/orders, AftersalesRefuseWxaSubscribeSendPort/AftersalesSuccessWxaSubscribeSendPort under common/port/aftersales, GoodsArrivalWxaSubscribeSendPort under common/port/members) and each has a thin delegating @Service adapter in ecshopx-promotions integration/ that forwards to WxaTemplateMsgActivityRemindSendService.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/port/orders/OrderDeliverySuccessWxaSubscribeSendPort.java",
+          "version": "repo-file-v1:sha256:186828768a4453c09b6c19268417d0444db9d6f6447a27109ff1649d8b18f5eb"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/integration/members/GoodsArrivalWxaSubscribeSendAdapter.java",
+          "version": "repo-file-v1:sha256:f4f2d8ab92a4e7e29d95853aa6ff73a2186bacf7790999ed52316caa5106c52c"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/integration/orders/OrderDeliverySuccessWxaSubscribeSendAdapter.java",
+          "version": "repo-file-v1:sha256:1a6f94f9d59a06176c5d6f550ad908efe7c58f443798b86fac3712f56faee6fe"
+        }
+      ]
+    },
+    {
+      "id": "claim_05528a67e2cb46dca7d9c9c980152bda",
+      "statement": "Orders' OrderDeliverySuccessNotifyWechatService (orders-local OrderDeliverySuccessNotifyPort impl gated by ecshopx.orders.delivery-success-notify.enabled, matchIfMissing=true, with a NoOp counterpart) resolves the buyer's wxa appid/openid via OrderTradeMiniProgramRecipientLookupPort, builds the orderDeliverySucc payload (order_id, delivery_corp falling back from logi_name to corp name/code, delivery_code, item_name from the order title when absent), sends through the common port with forceFire=true, and swallows RuntimeException into a debug log so delivery confirmation never fails on notify errors.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/integration/notify/OrderDeliverySuccessNotifyWechatService.java#L40-L106",
+          "version": "repo-lines-v1:sha256:7f87c65f65d43bca5445d044024ab6ee13f8f0c6109efe6a6295a6fee2cc1615:eyJzZWxlY3RlZExpbmVDb3VudCI6NjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI0OTY2ZTVmNzA4MjBjZTMzODUzODI5OWRlZTU2NjgyMjgxOTBkMmRlM2RhOWNhOTMwNGYxODFhY2EyYjRmMTkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OWNhOTA4YjU5NjBiNzViZDI3NDE1MWQwZGEwOTdiMzNmNzEyOTlmZGNhMmViZjIzNmQzYTVhYmM2YmE4ZTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRhYzJiYmZmYTgxNGMwMzYxZWQ0Y2I5MzQ3ZDRmNTFkNWFiOWM0YzllY2RjZjZiMThjODFlMzU2Y2IzYjZhMzUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRlM2ZiNDM3Yzk4YmE5NGY3NWFkNDNlMTRlNDBhZTVmZTE3NGJmY2I5OTk1NzFiNDM1NTUxMTUyZmRlMzcyOTAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_fa84d85814094c74aa99f95b481e63f8",
+      "statement": "The card/coupon subscribe-message seam inverts the usual placement: the WxaCardUsedTemplateSendPort interface lives in ecshopx-wechat (consumed by wechat's coupon/registration notify services), the real send is bootstrap's WxaCardUsedTemplateSendPortImpl (@Primary, @ConditionalOnProperty ecshopx.wechat.wxa-card-template-send.enabled=true matchIfMissing=true) which whitelists userGetCardSucc/registrationResultNotice scenes, resolves the wxa appid from the company's yykweishop weapp row and the member openid via WxaMemberOpenIdLookupPort, then delegates to promotions' scene sender with forceFire=true; the fallback WxaCardUsedTemplateSendNoOp in wechat activates only under enabled=false and discards the send.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/WxaCardUsedTemplateSendPortImpl.java#L32-L100",
+          "version": "repo-lines-v1:sha256:f26d00b036d3a8ba0aa152e907e4853d9b080c8e887443a2614b1dfe0ad6c9af:eyJzZWxlY3RlZExpbmVDb3VudCI6NjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ3ZWVhMGEyZDM5NDE2ZWQyMjRiMDUyZDM0YjMxNTAwMTZlZjFiYzBmYjhmNTM4Y2EyYWI3NjM0M2ZiMmI3YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE3NDQyMTkwYjEzODEzNGJlOTUxZmQxMDE3ZjI5YzYzM2Q3Y2RhZDc0M2FkOWY2ZTI1NTNjMTMzNzQ1NmRiOTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImYxYzBiOGM3ZjNmZGFmZjAzZGIzMGVjOTMzNTU1NjdlNjdkN2EwYTZiM2FmYjkxZTQ2N2Q1MDBkNGE3NDNmY2QifQ"
+        },
+        {
+          "resource": "repo://ecshopx-wechat/src/main/java/cn/shopex/ecshopx/wechat/service/WxaCardUsedTemplateSendNoOp.java",
+          "version": "repo-file-v1:sha256:b5aecba1452b1ed34b8217de82de2e1168c3ffefd9e76acc458bf36b536ce3d4"
+        }
+      ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.7.2",
-    "at": "2026-10-21T12:26:22.580Z"
+    "by": "openwiki/0.7.3",
+    "at": "2026-11-04T17:09:55.577Z"
   }
 }

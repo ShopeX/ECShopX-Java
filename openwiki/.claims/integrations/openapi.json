@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:b2af04ff157233356f12100e97e25aa2c888a9ef236be85b0a38cc8ac70988e2",
+  "pageVersion": "sha256:b23d96a5002278327c107502982b6ed8bf7a7f16e940a867fc2e0b328ca53934",
   "claims": [
     {
       "id": "claim_e141deba2f1e4ba0894ebb2a18613af2",
@@ -53,7 +53,7 @@
       "statement": "OpenapiWebMvcConfigurer registers OpenapiAuthInterceptor on both the public and internal path patterns, and the interceptor decides per request which case applies (internal → pass, non-openapi → pass, public → verify). The operator-JWT filter also carves this surface out: OperatorJwtAuthenticationFilter short-circuits every path starting with /api/openapi because it uses sign auth instead.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/OperatorJwtAuthenticationFilter.java#L195-L196",
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/OperatorJwtAuthenticationFilter.java#L203-L204",
           "version": "repo-lines-v1:sha256:3243c48ae9a10ff8d5e7820459dc11bdbb877d54743877abcf4c8fc7662308d6:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMmZhYTBhZWNkOTIyNzYxYWNiZjVkOTFmYmY1MjRhYWNhYTU0OTVkZTU4MzRmZjBhMWY0OGM1YzFkNjQ2MjdjNyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDM3ODMyMTRlNjRjYTc1ZDQ3NDM5OTJjODQ1MWUyZmI0MmJjOGUzYmM5ZjJkODM2MDI0NjY0M2U0N2E0NDZmOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjM1ZDUyNGU4YjFhNmJjNzdkODI0ZGE0ZTAwOTA4MmI3ODgyM2M2ZmQyMDc4NzE4ODU3YmRkNjQ1NTQxZTcwZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiN2QyODUwZTI3N2JhYmJjZGVhMGU0ODczNDUyMzkxMmEyMzlmYzJkNmMxYTU5ZjgzZTJmYWM2MGYxNzQ1NzhmZiJ9"
         },
         {
@@ -91,7 +91,7 @@
       "statement": "openapi.debug=1 is a dev-only bypass: the interceptor skips both the timestamp window and the signature check entirely and stamps the auth context with the fixed company id from openapi.system-company-id (default ${common.system-companys-id:1}, i.e. 1), making every public OpenAPI call execute as the system company with no credentials. The default in application.properties is 0.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L318-L321",
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L322-L325",
           "version": "repo-lines-v1:sha256:05e09b1abdb91b08a6950595825bb3417254252d737d64802fe3550bac2de941:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZGJkYjYwZGMwM2Q3M2IwNDliYjhmOWM2MzIwMGM3YzY4OWNiNWMwYTM1NTkyYWMxYzI5YjVkOWY5ODczZjE5YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNmJmNzU3Y2Q1MWEyMDMwYjc0YjE3MWU1MzE1NGY1NWU2MTM1NjYwMTMxMzQwNjkxOTlhNTVjMjMwODhhZjNjZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTU0OTk5NWViMTkwNmI2MDNhOTU1YmQwZjllMDE3NWNmY2VmYWEzZTQ2ZTVkZTNkYjRmNTM5MzVlYWQwODkyNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTMzMzQ4ZTgwOGY3NDA3YTg0M2YyNjU2ZWIwMzFiMzVjYzMzOGY2NzVhYzhiNGRiZTAwZjVlYjE5MzIwYWFhMyJ9"
         },
         {
@@ -144,15 +144,15 @@
     },
     {
       "id": "claim_1cfe03278bdb44f19aaf22c36dcc90d8",
-      "statement": "OpenapiHandlerForwardRegistry is the authoritative routing table: 145 hard-coded register() calls in its constructor (44 v1.0 routes, 101 v2.0 routes; 80 POST, 45 GET, 9 DELETE, 8 PATCH, 3 PUT) filling a LinkedHashMap. The key is normalizeVersion(version) + \" \" + verb.toUpperCase() + \" \" + method.trim(), and the value is always /api/openapi/internal/v{n}/{method}. Version is part of the key, so the same method name can exist in both versions with different handlers (e.g. ecx.order.list and ecx.member.create are registered for both 1.0 and 2.0).",
+      "statement": "OpenapiHandlerForwardRegistry is the authoritative routing table: 146 hard-coded register() calls in its constructor (45 v1.0 routes, 101 v2.0 routes; 81 POST, 45 GET, 9 DELETE, 8 PATCH, 3 PUT) filling a LinkedHashMap. The key is normalizeVersion(version) + \" \" + verb.toUpperCase() + \" \" + method.trim(), and the value is always /api/openapi/internal/v{n}/{method}. Version is part of the key, so the same method name can exist in both versions with different handlers (e.g. ecx.order.list and ecx.member.create are registered for both 1.0 and 2.0). The 146th entry (relative to the earlier 145-route table) is the v1.0 POST ecx.digios.product.stock_push route forwarding to /api/openapi/internal/v1/ecx.digios.product.stock_push.",
       "evidence": [
         {
           "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/thirdapi/OpenapiHandlerForwardRegistry.java",
-          "version": "repo-file-v1:sha256:8e377a45d305a7888a9bbabe2b542d0dfaa0c95ee37ff600dd91196af8843611"
+          "version": "repo-file-v1:sha256:4c41e32d8da935495400ddc92c3b6f2a549db5053251ccb7a40ee7fa99afed55"
         },
         {
           "resource": "repo://ecshopx-openapi/src/test/java/cn/shopex/ecshopx/openapi/thirdapi/OpenapiHandlerForwardRegistryTest.java",
-          "version": "repo-file-v1:sha256:f7413bf61b6bcd4d04b22f4838d2d054574c8db8de60d96c4e9b2ec1b3ff3058"
+          "version": "repo-file-v1:sha256:ebb60651e840d9c5f760c45054e2162f5c93250dda671891fd6f43b1c710ce2c"
         }
       ]
     },
@@ -213,7 +213,7 @@
           "version": "repo-file-v1:sha256:4ec7580d9032ec413dedde57c683a942df93d9917639e8ea1b36947063c56714"
         },
         {
-          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/thirdapi/OpenapiHandlerForwardRegistry.java#L251-L251",
+          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/thirdapi/OpenapiHandlerForwardRegistry.java#L256-L256",
           "version": "repo-lines-v1:sha256:ddbf5949f37d62d5165bacd2c1b7ba4e3b80e42c04721fb64c507ac5eddbdf86:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZGRiZjU5NDlmMzdkNjJkNTE2NWJhY2QyYzFiN2JhNGUzYjgwZTQyYzA0NzIxZmI2NGM1MDdhYzVlZGRiZGY4NiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZGRiZjU5NDlmMzdkNjJkNTE2NWJhY2QyYzFiN2JhNGUzYjgwZTQyYzA0NzIxZmI2NGM1MDdhYzVlZGRiZGY4NiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzZkYjBlMjM4MTFkNmI0YjQzNDdlZmJjMzAxZGY4YTc4ZDhiMWU3Mjg4OGFmODI4Mjk2ZGI2ZjUxNjAyNTc2NiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiN2RjMmNkNzY3ZDUxNjZiMzg5YWIzNzU1Mzg2YTBkOTIwN2VjNjI5YzI5ZTBkMDdkODgxZjcwNWJlMDNmYTIwZCJ9"
         },
         {
@@ -287,7 +287,7 @@
       "statement": "DeveloperInfoService materializes an openapi_developer row on first read: passport_uid comes from the company identity (or epochSeconds + companyId as fallback), eid from the company (or md5(passport_uid)), app_key = md5(passport_uid).substring(8, 24), and app_secret = md5(eid + common.openapi-rand-salt) — the salt (default \"ecshopx\") is fixed per environment and is only baked into newly generated secrets, so changing it never rewrites existing rows but silently desynchronizes environments that regenerate. The companys-bundle OpenapiDeveloperBootstrapService performs the same derivation for outbound credentials, with an app_key-collision fallback of md5(passport_uid + \"_\" + companyId).substring(8, 24) instead of failing.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L301-L301",
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L305-L305",
           "version": "repo-lines-v1:sha256:621b6e8a9750a9f39aa4cb7d6ec7d9ba621394b61b45ddd837386de3f78e7c97:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjIxYjZlOGE5NzUwYTlmMzlhYTRjYjdkNmVjN2Q5YmE2MjEzOTRiNjFiNDVkZGQ4MzczODZkZTNmNzhlN2M5NyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjIxYjZlOGE5NzUwYTlmMzlhYTRjYjdkNmVjN2Q5YmE2MjEzOTRiNjFiNDVkZGQ4MzczODZkZTNmNzhlN2M5NyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjU3NjIzNjQ2YmMxMmQwMmQ5M2YzNzIyYzk0MTI3MGUzOTMxOWE4MzBmYmVmNjYxZGM2YjI5ZTdlNTk4MzJkZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYzYyZDNlYTQzOGQ2ZDgwOTRlZTI0MDRiZWNhNDBlNjBiZTgzYTY2ODFiODU4MDYxNzg0MjE4MmI3ODBmMjU3MiJ9"
         },
         {
@@ -329,7 +329,7 @@
       "statement": "Openapi.debug, openapi.system-company-id, openapi.common-token (declared but read by no code), common.openapi-rand-salt, and common.external-baseuri are the module's operative configuration; ecshopx-openapi/src/main/resources/application-openapi.yml is an empty placeholder for an optional spring.config.import profile.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L318-L321",
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L322-L325",
           "version": "repo-lines-v1:sha256:05e09b1abdb91b08a6950595825bb3417254252d737d64802fe3550bac2de941:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZGJkYjYwZGMwM2Q3M2IwNDliYjhmOWM2MzIwMGM3YzY4OWNiNWMwYTM1NTkyYWMxYzI5YjVkOWY5ODczZjE5YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNmJmNzU3Y2Q1MWEyMDMwYjc0YjE3MWU1MzE1NGY1NWU2MTM1NjYwMTMxMzQwNjkxOTlhNTVjMjMwODhhZjNjZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTU0OTk5NWViMTkwNmI2MDNhOTU1YmQwZjllMDE3NWNmY2VmYWEzZTQ2ZTVkZTNkYjRmNTM5MzVlYWQwODkyNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTMzMzQ4ZTgwOGY3NDA3YTg0M2YyNjU2ZWIwMzFiMzVjYzMzOGY2NzVhYzhiNGRiZTAwZjVlYjE5MzIwYWFhMyJ9"
         },
         {
@@ -337,10 +337,60 @@
           "version": "repo-file-v1:sha256:7d6a49ce58bf69df590350186a8844e81b870070f1810f10cfe33c3bec4c4337"
         }
       ]
+    },
+    {
+      "id": "claim_9a09276b5f4e4243b298f4e2749218ac",
+      "statement": "The DigiOS inbound stock push endpoint ecx.digios.product.stock_push is wired through the standard four-layer openapi template: the registry forwards 1.0/POST to /api/openapi/internal/v1/ecx.digios.product.stock_push, DigiOsStockController (bean openapiV1DigiOsStock, PHP twin OpenapiBundle/Http/ThirdApi/V1/Action/DigiOsStock) resolves sku_list from the decoded body when present else the form param (missing/blank fails with \"sku_list 必填且格式正确\"), and delegates to OpenapiDigiOsProductStockPushPort whose implementation in ecshopx-digios delegates to DigiOsStockPushService. It is the only forward-registry route whose provider port lives in the ecshopx-digios Bundle.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/openapi/OpenapiDigiOsProductStockPushPort.java",
+          "version": "repo-file-v1:sha256:5d5ced5851e493448cc72c7bbfb8471a593285f1822afac983253d50a2373f4f"
+        },
+        {
+          "resource": "repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/openapi/OpenapiDigiOsProductStockPushPortImpl.java",
+          "version": "repo-file-v1:sha256:3e1e8a2d0bfc014cc5208076d862d58d76b47bf56d7c121aafdfb51c51539d14"
+        },
+        {
+          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/thirdapi/OpenapiHandlerForwardRegistry.java#L34-L38",
+          "version": "repo-lines-v1:sha256:60b030d93bf04e3a5a6f4e4fa89a4b9f725dbceab4c36cb28fedb2096e0b7aed:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYWM0MjFmN2M0MDFjYmU4NjBkMzliZGNlNjIzOWE3ZjA3N2RhYTcxYmM3NmUwMWE2Njg3ZDI0OGVjYTllOWFlMiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMGQzZGI1NjRjOGUxZDIyOTY3NTU0OWRlMjY0Y2MwOTliMzdmNWRkMjMxMmUyMTFkMTYwZmYzNDZhYjg0MGZmZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMWNhNzI0MTg4ZTI2ZTMxY2Q4MjY0N2M2NmQ0OTE0ZjU0ZTJkYTg3YjBjMzczZGRjZGI2OGE2YmQzMTk0OWZkMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzk5N2RiYTBlMmQ5Zjc4MzU4NWE4ZGI1OWYxYzcyOWE1Yzg4YjNjZDEwNGQwZDgzMmE0MDkwMTdkMjA3YWEzOCJ9"
+        },
+        {
+          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/thirdapi/v1/DigiOsStockController.java",
+          "version": "repo-file-v1:sha256:34c1eac2fff9b3880749114dab985f1c49b859b1a3b49f9ae6f17970a59dafdf"
+        }
+      ]
+    },
+    {
+      "id": "claim_86a831e94cad4621bd0df7deaec9e728",
+      "statement": "DigiOsStockPushService reports partial per-row failure in the response payload rather than the envelope code: structural problems (empty/malformed sku_list, stock not a strict integer in 0-999999999, missing shop_code, batch over ecshopx.digios.stock-push-max-rows default 200) throw ResourceException so the whole request renders as E0001, while per-row misses (unknown sku_id -> not_find_sku, unresolvable shop_code or failed NormalGoodsStoreImportRowService.applyRow -> update_error) still return a success/E0000 envelope with data {not_find_sku, not_update_sku, update_error}, and every call is journaled via DigiOsApiLogService.writeInbound into the digios api log.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/config/DigiOsProperties.java#L57-L57",
+          "version": "repo-lines-v1:sha256:fb3a26cbe570934812aab41867743272ae4123cfd7a295b03da130c36a19fab7:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZmIzYTI2Y2JlNTcwOTM0ODEyYWFiNDE4Njc3NDMyNzJhZTQxMjNjZmQ3YTI5NWIwM2RhMTMwYzM2YTE5ZmFiNyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZmIzYTI2Y2JlNTcwOTM0ODEyYWFiNDE4Njc3NDMyNzJhZTQxMjNjZmQ3YTI5NWIwM2RhMTMwYzM2YTE5ZmFiNyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOGJhM2NlNTcxY2ZmMzlmYTIwOGZkODBjZjI3ZjgyNDU5NDI3ZmJhYWViNTQ1NTE0MzdlZjM3NTgyYWE3NWFmMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMjk5MmQ0Y2RiNTgzYzI3OWY4Y2U2Y2YyNjdlMWY5OTM5ZGI3NmYxOGFkZjYzNzM4YmZkZDU3OTIwNWUzNTYzYSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/service/DigiOsStockPushMapper.java",
+          "version": "repo-file-v1:sha256:dfe356b86e25556e766209a88f36ba564b4cc46b28c02835d4210f33480881ba"
+        },
+        {
+          "resource": "repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/service/DigiOsStockPushService.java",
+          "version": "repo-file-v1:sha256:349ed4906b4efdb9549189c42fb7043ac71e0d0b26e07e7f126dd1fd375751bf"
+        }
+      ]
+    },
+    {
+      "id": "claim_6d9eb54ef8db41249e4965a5c41de098",
+      "statement": "OpenapiHandlerForwardRegistryTest pins two canary registrations: isImplemented(\"1.0\", \"POST\", \"ecx.digios.product.stock_push\") and isImplemented(\"2.0\", \"POST\", \"ecx.order.writeoff\") together with the writeoff forward path /api/openapi/internal/v2/ecx.order.writeoff.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-openapi/src/test/java/cn/shopex/ecshopx/openapi/thirdapi/OpenapiHandlerForwardRegistryTest.java",
+          "version": "repo-file-v1:sha256:ebb60651e840d9c5f760c45054e2162f5c93250dda671891fd6f43b1c710ce2c"
+        }
+      ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.7.2",
-    "at": "2026-10-21T12:26:22.580Z"
+    "by": "openwiki/0.7.3",
+    "at": "2026-11-04T17:09:55.577Z"
   }
 }

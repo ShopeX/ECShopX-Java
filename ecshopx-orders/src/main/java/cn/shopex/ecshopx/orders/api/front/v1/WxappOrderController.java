@@ -320,8 +320,25 @@ public class WxappOrderController {
 
 	@FrontAuth
 	@PostMapping(value = "/epidemic/info/del/{id}", name = "删除疫情登记", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<ApiResult<Map<String, Object>>> delEpidemicRegister(@PathVariable("id") String id) {
-		orderEpidemicRegisterFrontDelService.delEpidemicRegister(id);
+	public ResponseEntity<ApiResult<Map<String, Object>>> delEpidemicRegister(
+			HttpServletRequest request, @PathVariable("id") String id) {
+		Object rawAuth = request.getAttribute(WxappMemberAuthAttributes.REQUEST_ATTR);
+		if (rawAuth == null) {
+			rawAuth = request.getAttribute(H5FrontAuthAttributes.H5_AUTH_CLAIMS);
+		}
+		if (!(rawAuth instanceof Map<?, ?> authRaw)) {
+			throw new UnauthorizedException("未登录");
+		}
+		Map<String, Object> auth = new LinkedHashMap<>();
+		for (Map.Entry<?, ?> e : authRaw.entrySet()) {
+			auth.put(String.valueOf(e.getKey()), e.getValue());
+		}
+		long companyId = longVal(auth.get("company_id"));
+		long userId = longVal(auth.get("user_id"));
+		if (companyId <= 0L || userId <= 0L) {
+			throw new UnauthorizedException("未登录");
+		}
+		orderEpidemicRegisterFrontDelService.delEpidemicRegister(id, companyId, userId);
 		Map<String, Object> data = new LinkedHashMap<>();
 		data.put("status", Boolean.TRUE);
 		return ResponseEntity.ok(ApiResult.ok(data));
@@ -1017,10 +1034,12 @@ public class WxappOrderController {
 			throw new ResourceException("订单号缺少！");
 		}
 		long companyId = longVal(auth.get("company_id"));
-		if (companyId <= 0L) {
+		long userId = longVal(auth.get("user_id"));
+		if (companyId <= 0L || userId <= 0L) {
 			throw new UnauthorizedException("未登录");
 		}
-		Object data = wxappOfflinePaymentUploadVoucherService.getOfflineVoucher(companyId, orderIdParam);
+		Object data =
+				wxappOfflinePaymentUploadVoucherService.getOfflineVoucher(companyId, userId, orderIdParam);
 		return ResponseEntity.ok(ApiResult.ok(data));
 	}
 

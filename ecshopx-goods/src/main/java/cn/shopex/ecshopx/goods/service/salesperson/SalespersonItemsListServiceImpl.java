@@ -172,7 +172,7 @@ public class SalespersonItemsListServiceImpl implements SalespersonItemsListServ
 
 		if (!list.isEmpty()) {
 			wxappGoodsItemsListMemberPriceApplyService.applyForRows(companyId, userId, list, acceptLang);
-			goodsItemsListPromotionEnrichmentService.enrich(list);
+			goodsItemsListPromotionEnrichmentService.enrich(list, userId);
 		}
 
 		if (!list.isEmpty()) {

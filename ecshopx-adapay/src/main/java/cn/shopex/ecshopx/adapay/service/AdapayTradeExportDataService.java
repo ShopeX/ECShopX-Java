@@ -109,6 +109,8 @@ public class AdapayTradeExportDataService {
 		if (distributorName != null
 				&& StringUtils.hasText(distributorName.trim())
 				&& !"0".equals(distributorName.trim())) {
+			// ECX-10906：店铺端不得用 distributor_name 覆盖 JWT 本店过滤
+			AdapayTradeDistributorNameScopeGuard.assertAllowed(jwtMap);
 			List<Long> ids = distributorListQueryService.listDistributorIdsByCompanyAndNameContains(
 					companyId, distributorName.trim());
 			if (ids.isEmpty()) {

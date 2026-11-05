@@ -41,12 +41,13 @@ public class GoodsKeywordsWriteService {
 			if (existing == null) {
 				throw new ResourceException("记录不存在");
 			}
+			long ownerCompanyId = existing.getCompanyId() == null ? 0L : existing.getCompanyId();
+			if (ownerCompanyId != companyId) {
+				throw new ResourceException("记录不存在");
+			}
 			Keywords entity = keywordsMapper.selectById(id);
 			if (entity == null) {
 				throw new ResourceException("未查询到更新数据");
-			}
-			if (companyId != 0L) {
-				entity.setCompanyId(companyId);
 			}
 			if (distributorId != 0L) {
 				entity.setDistributorId(distributorId);

@@ -41,6 +41,7 @@ public class OpenapiAuthInterceptor implements HandlerInterceptor {
 
 	private final OpenapiDeveloperLookupPort developerLookupPort;
 	private final OpenapiRequestParamCollector paramCollector;
+	private final OpenapiSignedRequestReplayGuard replayGuard;
 	private final ObjectMapper objectMapper;
 
 	@Value("${openapi.debug:0}")
@@ -52,9 +53,11 @@ public class OpenapiAuthInterceptor implements HandlerInterceptor {
 	public OpenapiAuthInterceptor(
 			OpenapiDeveloperLookupPort developerLookupPort,
 			OpenapiRequestParamCollector paramCollector,
+			OpenapiSignedRequestReplayGuard replayGuard,
 			ObjectMapper objectMapper) {
 		this.developerLookupPort = developerLookupPort;
 		this.paramCollector = paramCollector;
+		this.replayGuard = replayGuard;
 		this.objectMapper = objectMapper;
 	}
 
@@ -106,6 +109,11 @@ public class OpenapiAuthInterceptor implements HandlerInterceptor {
 			Map<String, Object> signParams = OpenapiRequestParamCollector.paramsForSign(params);
 			if (!OpenapiSignSupport.signMatches(signParams, credentials.appSecret(), sign)) {
 				throw authException("sign 不合法", OpenapiErrorCode.SIGN_ERROR);
+			}
+
+			if (!replayGuard.assertOnce(
+					appKey, sign, timestamp, (int) TIMESTAMP_TOLERANCE_SECONDS)) {
+				throw authException("请求已失效或重复", OpenapiErrorCode.VALIDATION_TIMESTAMP_ERROR);
 			}
 
 			OpenapiAuthAttributes.setAuth(request, credentials.companyId());

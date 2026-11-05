@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:76dd52cc2fe0ecec408d6470fcf7c964245b53216b94186e850a23e0c3447839",
+  "pageVersion": "sha256:57fe753bf530abbd905c33f42e5c5de6fea1e058152e86a37804128f4f51ed2e",
   "claims": [
     {
       "id": "claim_6a17d8777ae74ac19c9786dddedd59bd",
@@ -22,11 +22,11 @@
     },
     {
       "id": "claim_e210a3df488748d5aad15fc0e0d40956",
-      "statement": "docker/app-entrypoint.sh renders the nginx config at boot by running envsubst over docker/app-nginx.conf with the ADMIN_HOST, H5_HOST and PC_HOST placeholders, writing the result to /usr/local/openresty/nginx/conf/nginx.conf; the runtime base image installs gettext-base for exactly this.",
+      "statement": "docker/app-entrypoint.sh renders the nginx config at boot by running envsubst over $NGINX_TEMPLATE (default /app/nginx.conf.template, baked from docker/app-nginx.conf) with the ADMIN_HOST, H5_HOST and PC_HOST placeholders, writing the result to $NGINX_CONF (default /usr/local/openresty/nginx/conf/nginx.conf); the runtime base image installs gettext-base for exactly this.",
       "evidence": [
         {
-          "resource": "repo://docker/Dockerfile.runtime#L19-L26",
-          "version": "repo-lines-v1:sha256:0761006fe4f304f0e04ebdbf4707cdb1280c369e5d02713c6abaa8dcca4fb899:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNWQxMmM2MWFiNGFiNjg2MjhkODc3MTJmZDczM2QyNGNjNDkzYmFlMGFmZGY3MjY0MWUzMTJjZmZkNGY3NGI2OCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTY1MzJiNDRiY2Y5NTljZTlmMDRiMDZjN2VkNTA2OGJhODJhN2ViZmVhYTkyZWVmMmI3NzFjYzIxNzg1ZDNiZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTZkMmMwZmQ1YTBhYWUwOTkyNzljMGI5NWE1ZGY5YjI3ZWM0MzgzN2Y3NDE4MDc3OWZjNmJkNWViN2QzZTkxMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOTY5MDc4NjVhNDA0NWIyM2EwZjRjOWY5NWY3OGUxZGQ0ZTBiMmNmZTZhNjRhZTNkODJjY2QyZmJkNzFlODkwZiJ9"
+          "resource": "repo://docker/Dockerfile.runtime#L40-L41",
+          "version": "repo-lines-v1:sha256:30c99f6586f231e76326561ea87fbf1c2da62dbafa7e281be919b56dd04de21b:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOTFjMzMwODdhNDc2MDg3MjIxZWI3N2NmNjY0YWU2MzYwZmZmMWRjMGVhMGE0MGMyZWU4YTA5YTJmNzUyMmJiOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTVmODExNTNkZDg2ZDE0YzQ3ODFhOTI3OTRiNGE5MmE3MjkwNWI4YWNkMWUzYmVmMWMyZGFiNzQ5NzM3Mjk2ZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiN2ZlODI5NTk2NGFlZjIwZjU0MWQxZThhNWZlYzllMGY0ZDViOWVjNzg3MjkzZDAwYmQ4NDQ4Yzg2MDNmODRkZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTMwMDRmY2E1YzVhMTkzNmE4NGZiOTVkZTcyNzliMTMwNTFkMzVhYTY5YzU0ZjgxNTlhYTg2N2YyZjlhNWI5NCJ9"
         },
         {
           "resource": "repo://docker/app-entrypoint.sh#L10-L13",
@@ -65,7 +65,7 @@
           "version": "repo-lines-v1:sha256:fe9d132aa6bf7815ee097366a6eafa038d85fd53d2daecbc58b2ae9b5614bbae:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMjJlMzAyNjc0YTMxOWJhMWNlM2MwNTllOTBlODA0M2I0OWRiYjRhYmU0ZTI0ZjllOTJmNzU3MWU5NTYzNTc0OSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDdjMDZjNTYxZDVjMzI3MzQzNjg1MjY4YTQ2YjMzOTFmMzk5OGVlZTg5MGQyYmU1MWYwZDIxY2M0YTUzYWU2ZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjgzZjQ4N2MzMmU5N2U5MThkM2NlMmZkNmNhYTM5OWExM2ZlN2JlZjc4ZDg3ZDkxOTRiODA4NDE4YTFkNTg3NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTM0YmZhYzZjZTQ1ZTQzNjA0ZGNlYjY2MDhmZjJhOGEyMDEyMmRhMDQyNWMzNTJkYTBmZjc3ZmU1ZjY1NmFkOCJ9"
         },
         {
-          "resource": "repo://docker-lite/docker-compose.yml#L142-L145",
+          "resource": "repo://docker-lite/docker-compose.yml#L145-L148",
           "version": "repo-lines-v1:sha256:4420869d08297c2b7d03803e3086b3f373d589314f3fa696ed5c414ff0c9e892:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEzZjRkOTY2MWU5ZDJjM2UxYTI4OWU1ODMyMjk5YmVhMTRjZGI2NGJmODg2NjFkZjcxN2IxMmZhMDJkMDExZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTBlNmQwMjA4OGVmNmFhMjY0YmY4NGY3MzliZjYyYjRmYjkzMzYwYTA2MTFiMTQxY2RjZWU0NGM1ZjM2ZjVhZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOGVmNDlkZTg4YjhkNGQ4ZTRmNWE0Mzk2MGE3YTM1NTU4MjVkYjhhN2Y3YjNhMTcwY2EyYjdiYmRmZWIwNzM2NyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOTE0YzMxN2VlNzJhNTJhNDFjMTg0OTNjZDY5YTE0MjNmNGRjMmM5ZWEyY2ZhYjFkYmMyZmM3NzdjNjZlNjUwNyJ9"
         }
       ]
@@ -99,7 +99,7 @@
           "version": "repo-lines-v1:sha256:7fc83b0a2cf7f6a1b3fdec20f27d3616ee33aaab70d90a2bc7a87e178179641b:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIyNzQ2MzM0ZmRiZDY1MTMyMzlmMTMyNmRiOGI2MTI3NTdiNWIzMmMwODA4YjUwODFhOTkzN2Y2NTMzYjhkYjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjljODExNGUyOTMxYTRlNmEyM2QxMGY4MWQ5OTlkOGQ1ODM1MjdkNjBjYzQ2NmM0NmI5MzhkOTMyYmQ3NmUyYzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY1Njg5Y2VjYTVhNDlmYTU2ZjVhZDQwZGRjODllYmY3MDM0ZDA0MjRkZDNkNTcyNDcxZTZmY2U2ZjMyNjdhZjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY0NGJkY2VlYmFjZjc5MWQwNGVlZTQwOThjMDYyMmI1NGZkZWJlZDc0MDkxOWYzOTEyZDkyZjE3NTE1N2NhY2IifQ"
         },
         {
-          "resource": "repo://docker-lite/docker-compose.yml#L114-L141",
+          "resource": "repo://docker-lite/docker-compose.yml#L117-L144",
           "version": "repo-lines-v1:sha256:05a6e941358fc6ae9af06003a6897369622627544709d8fd1fc8cb0b61e59e34:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIyNzQ2MzM0ZmRiZDY1MTMyMzlmMTMyNmRiOGI2MTI3NTdiNWIzMmMwODA4YjUwODFhOTkzN2Y2NTMzYjhkYjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjljODExNGUyOTMxYTRlNmEyM2QxMGY4MWQ5OTlkOGQ1ODM1MjdkNjBjYzQ2NmM0NmI5MzhkOTMyYmQ3NmUyYzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY1Njg5Y2VjYTVhNDlmYTU2ZjVhZDQwZGRjODllYmY3MDM0ZDA0MjRkZDNkNTcyNDcxZTZmY2U2ZjMyNjdhZjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjViYmM5N2NhYjVjYjQ1NDYxODk2MzM1ODUxYmQ1Njg0Y2IwNGExZjRhNTUzYTc2Nzk1ODU5NWQ0ZDNmZDY4ZDMifQ"
         },
         {
@@ -121,16 +121,16 @@
           "version": "repo-lines-v1:sha256:113b2077ae37c726aa4ff1de836a77b75383adf1c67a5350fa092668fe90a875:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZhNzNmY2NkYzk5ZWE4MzU5NjdjN2RlZTdlZmJlZDFmM2NhODcyNjBkOTI5MzE4NTBmZGQ2NmRhOGNiMTJmMWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM1ZjhhMWJjNTk0MDJkZWExY2RjNWU0OWViZDI1MTQxMmE3YzA0YjIzMTc1MTZhZjRkZTFkY2U0MGExNWY5ZmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE2YmNkNjAwNTAyYjkzNzc2YWEwZTBmZjJlMzcxZmMyNTFhY2IyNDM1YjliZjM1YjQ4MDM0NTEzN2FlMDZiNDQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjEwMTYwZWY5MWZlMDU2NWUwZmNkMzFkODA4NDI2NTkzOGQ1ZTdhNzgzMjY1N2Q1NTg0MTUyMDY0Mzk2ZTllZjgifQ"
         },
         {
-          "resource": "repo://docker-compose.dev.yml#L71-L113",
-          "version": "repo-lines-v1:sha256:3418d1ef2a6aba68c8c3fc0b7c90c8b5f96d817568de7a097daf206be404ac36:eyJzZWxlY3RlZExpbmVDb3VudCI6NDMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVkMDZiMzkzYzFhMGFiMzIwZDU1ZTE3Mzk1MjM0NjQyMTFlZmIyYjZiMzA3MzMwMzAzNzg5MTg5NTc1ZDYxYWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYyZTYxNmRkNDBkZGIyNjg1NjM5OGY2Yzk1NThiODIyNjJkMjhjMzk0YzkwNTQwMGU2OWQ5OTMxODYzOGVlZTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdmOWZkMDdmNDU5MmQ4Zjc2NjRjNzMwNTIxM2I2ZjhmY2Y1NjY2Njc1ZDg5NDA0ODYyMDhmZWMyODBhODgxNzkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkwZTc2YjVjZDNkYjMwZTVhY2FmYWUxYWRhMjY1YmFjYTliNTVlN2RmZjA1YTdkYmUyNDcwNWY4ZjhlMWM1YjMifQ"
+          "resource": "repo://docker-compose.dev.yml#L96-L113",
+          "version": "repo-lines-v1:sha256:9a140f68406022c1bcff7874af7ed34df5aa4712fdfe321594a4d7f975a5e2f5:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIwOWM2ZWQ4MzY2NzFmMzM0ODllYjVhNTU0YWY5NGU0NTNkMzJkMmJmMTViNzYxMDJmYTZmMDM0MmM5ODQ1N2MiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYyZTYxNmRkNDBkZGIyNjg1NjM5OGY2Yzk1NThiODIyNjJkMjhjMzk0YzkwNTQwMGU2OWQ5OTMxODYzOGVlZTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE2ZTE4YWFkMDhmNTk2M2NkNThhYmExYWFiMDQyMzE5ZGUwMmZmM2NiYzVjZjA0NWUxZGQ4ZGQwMTZmYjkzYTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkwZTc2YjVjZDNkYjMwZTVhY2FmYWUxYWRhMjY1YmFjYTliNTVlN2RmZjA1YTdkYmUyNDcwNWY4ZjhlMWM1YjMifQ"
         },
         {
           "resource": "repo://docker-lite/docker-compose.yml#L19-L47",
-          "version": "repo-lines-v1:sha256:229d099e0f2fed316efc271493948df388d49aa7f0befc30f1dbe704230fa236:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZhNzNmY2NkYzk5ZWE4MzU5NjdjN2RlZTdlZmJlZDFmM2NhODcyNjBkOTI5MzE4NTBmZGQ2NmRhOGNiMTJmMWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc0ZmY5MzA1ZWI5N2RkYWQ1MjVhMmFlZTllMTg1YTg4ZWNlMzBkMjI2OTMyYWE5NjM0MTY5NDQ4OWY3NTU3MjkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE5NTMzMmYxNzkxNWZiNjczYjNkNDU4ZDg5NTQ2NWYzNWQyNzA4MjY5ZWI2MzhiOThjNDQwNzZiMzE5YjM2MWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNhY2M3NTU2MWNlNTZmNjk1OTBjZjVlYTA1ZjU5ZDdiMzEyMjZiNjk4MDdlMmVhOGU2MTA0ZDIyODI5NmNmNjUifQ"
+          "version": "repo-lines-v1:sha256:233019398a6b826cd7183cdc37ab3d37057fa04d9d76a3d5502675ccb5e1ee56:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZhNzNmY2NkYzk5ZWE4MzU5NjdjN2RlZTdlZmJlZDFmM2NhODcyNjBkOTI5MzE4NTBmZGQ2NmRhOGNiMTJmMWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxMDFhMDM4NzM5MzY2ZGYwNmM0ZDUyNTRmMjVhMzJhM2QxYjliZjliMTA5NDMxNGI5MjQxNTlhMjYzNmNkOTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE5NTMzMmYxNzkxNWZiNjczYjNkNDU4ZDg5NTQ2NWYzNWQyNzA4MjY5ZWI2MzhiOThjNDQwNzZiMzE5YjM2MWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ2ZGIwYjU1MmU5NTBkMmFhYTNjMGNlNWUxZWM3NjgwNTU2MjViZDU0MDA0NDY5NmUzZGY3MzI1ZTcwYmM2MjYifQ"
         },
         {
           "resource": "repo://docker-lite/docker-compose.yml#L72-L109",
-          "version": "repo-lines-v1:sha256:8aca84f806f7b97b96c63668f7b3ee5b332022eb5f634c6cc019646c5ca47636:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVkMDZiMzkzYzFhMGFiMzIwZDU1ZTE3Mzk1MjM0NjQyMTFlZmIyYjZiMzA3MzMwMzAzNzg5MTg5NTc1ZDYxYWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYyZTYxNmRkNDBkZGIyNjg1NjM5OGY2Yzk1NThiODIyNjJkMjhjMzk0YzkwNTQwMGU2OWQ5OTMxODYzOGVlZTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZjMTU5OTU4Yjc0NTdlN2UyNTc1YTRlZTkzMTM2MTQ2NTUxNzZhMjk2YmQzM2I3ODJlODdlYzg4MGExMzU0ODAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkwZTc2YjVjZDNkYjMwZTVhY2FmYWUxYWRhMjY1YmFjYTliNTVlN2RmZjA1YTdkYmUyNDcwNWY4ZjhlMWM1YjMifQ"
+          "version": "repo-lines-v1:sha256:106940e094ce2025123e3b8b24fb8206e42305752149ef944725a6eed8d7066d:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc0ZmY5MzA1ZWI5N2RkYWQ1MjVhMmFlZTllMTg1YTg4ZWNlMzBkMjI2OTMyYWE5NjM0MTY5NDQ4OWY3NTU3MjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI5MjA0MjU1M2E4ZmU1N2M4ZjRmOTJjNGEwNTNiNzc3Nzg5YjU0YjE3NzE3YmNiZDY0ODRkNjhlMDdlZDZiN2YiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjMwZGQxZDFmZTY1NzE4YzVkNzZlY2FkOTlmY2E5ODA2MmI0Zjk2NWM4MDQyOWE2NjQ1ODdkYjMxZjdmMmU5ZmQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMzMzAxNDAxNTEyZWE0Yjc5NzBlZjhlNWFmZTEwYTRkMTVlY2M2MGVjOTc3OGYxYTMzZDViMDM4YTU2MWNiZjAifQ"
         }
       ]
     },
@@ -147,7 +147,7 @@
           "version": "repo-lines-v1:sha256:77f0679ebed3768a749bee4bb0f5c9217920defde94bb9aba07a0aca41d59e04:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNWNlMGNmOTcyYjkwOTM5ZmY3Y2YzMjQ2Yjk0NDJiNzU5Y2MzNDNiODJiZThmMmM3YmZlNDdkNTE1ZWI3ZjhiOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjJlNjAxM2QzYjY4ZWQ3NmVlYjAzNGE0MzIwYjljMzY4YzgyYWRhNTQwN2MyYWY0NTk5ZWFhMDE2YmY1YTEwMiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzExZjAzMmVkOGRmOGNkNmMxMDBhYmI4OTEwYTZhMWM0ZjFkODkwMzhjMTRiNDIyNDRhNGJmNzdlZGNjZjczMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTZiY2Q2MDA1MDJiOTM3NzZhYTBlMGZmMmUzNzFmYzI1MWFjYjI0MzViOWJmMzViNDgwMzQ1MTM3YWUwNmI0NCJ9"
         },
         {
-          "resource": "repo://docker-lite/docker-compose.yml#L110-L141",
+          "resource": "repo://docker-lite/docker-compose.yml#L113-L144",
           "version": "repo-lines-v1:sha256:797669294625bd2fbd43a223513690e8a20096c571e61833599a58f15567cd06:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJjMTZlZDIzOWEzNjUxYjUwNzljMGU0ZTdmMDc4NDRlYTMyOWM4NzYyOGJmOWZjYzQ2MzY3NzMzZjVlMWU5M2UiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjljODExNGUyOTMxYTRlNmEyM2QxMGY4MWQ5OTlkOGQ1ODM1MjdkNjBjYzQ2NmM0NmI5MzhkOTMyYmQ3NmUyYzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjMzMzAxNDAxNTEyZWE0Yjc5NzBlZjhlNWFmZTEwYTRkMTVlY2M2MGVjOTc3OGYxYTMzZDViMDM4YTU2MWNiZjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjViYmM5N2NhYjVjYjQ1NDYxODk2MzM1ODUxYmQ1Njg0Y2IwNGExZjRhNTUzYTc2Nzk1ODU5NWQ0ZDNmZDY4ZDMifQ"
         },
         {
@@ -162,19 +162,19 @@
     },
     {
       "id": "claim_ec734d5ee4014ee2a113f249600a2a75",
-      "statement": "The dev stack builds ecshopx-app:latest from docker/Dockerfile.app (Maven builder stage + runtime base, pull:false), while the lite stack runs the prebuilt APP_IMAGE and gets the application entirely from bind mounts — ./app/app.jar:/app/app.jar:ro plus ../../:/data/httpd — and overrides the entrypoint to /bin/sh /data/httpd/ECShopX-Java/docker/app-entrypoint.sh with NGINX_TEMPLATE pointing into the same host mount, so even the entrypoint and nginx template come from the tarball rather than the image.",
+      "statement": "The dev stack builds ecshopx-app:latest from docker/Dockerfile.app (Maven builder stage + runtime base, pull:false), while the lite stack runs the prebuilt ${APP_IMAGE:-ecshopx-java:17-node22-openresty} image and gets the application entirely from bind mounts — ./app/app.jar:/app/app.jar:ro plus ../../:/data/httpd — and overrides the entrypoint to /bin/sh /data/httpd/ECShopX-Java/docker/app-entrypoint.sh with APP_JAR=/app/app.jar and NGINX_TEMPLATE pointing into the same host mount, so even the entrypoint and nginx template come from the tarball rather than the image.",
       "evidence": [
         {
           "resource": "repo://docker-compose.dev.yml#L96-L104",
-          "version": "repo-lines-v1:sha256:bbc4ff1227ec1e82f2d3490eceff4e2696b8ea8541a1c570319aeb6a4ec3adfa:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMjA5YzZlZDgzNjY3MWYzMzQ4OWViNWE1NTRhZjk0ZTQ1M2QzMmQyYmYxNWI3NjEwMmZhNmYwMzQyYzk4NDU3YyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYjI1YTAwMTQ5ZjhlYzgxZGMwZTFjZGFiZjc3YmFjOGZiYTE3NTk0MmJkZWEwNDBiM2JjZjk4NTEwNjBlNTQyZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTZlMThhYWQwOGY1OTYzY2Q1OGFiYTFhYWIwNDIzMTlkZTAyZmYzY2JjNWNmMDQ1ZTFkZDhkZDAxNmZiOTNhNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjQ4YzUzMzEyMDYzYjkzNDU4NjhmMzM4NWFjMGU3NjkzYmE0ODIxOTQwOWEzNDNhMDYxMGRjZmRlZWRkMzIwYiJ9"
+          "version": "repo-lines-v1:sha256:4e1b3b30ceba81d797e10fd682b54e2e1eadb50739562d49198377d0b56de6fc:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMjA5YzZlZDgzNjY3MWYzMzQ4OWViNWE1NTRhZjk0ZTQ1M2QzMmQyYmYxNWI3NjEwMmZhNmYwMzQyYzk4NDU3YyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYjI1YTAwMTQ5ZjhlYzgxZGMwZTFjZGFiZjc3YmFjOGZiYTE3NTk0MmJkZWEwNDBiM2JjZjk4NTEwNjBlNTQyZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTZlMThhYWQwOGY1OTYzY2Q1OGFiYTFhYWIwNDIzMTlkZTAyZmYzY2JjNWNmMDQ1ZTFkZDhkZDAxNmZiOTNhNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjQ4YzUzMzEyMDYzYjkzNDU4NjhmMzM4NWFjMGU3NjkzYmE0ODIxOTQwOWEzNDNhMDYxMGRjZmRlZWRkMzIwYiJ9"
         },
         {
-          "resource": "repo://docker-lite/docker-compose.yml#L142-L145",
+          "resource": "repo://docker-lite/docker-compose.yml#L145-L148",
           "version": "repo-lines-v1:sha256:4420869d08297c2b7d03803e3086b3f373d589314f3fa696ed5c414ff0c9e892:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEzZjRkOTY2MWU5ZDJjM2UxYTI4OWU1ODMyMjk5YmVhMTRjZGI2NGJmODg2NjFkZjcxN2IxMmZhMDJkMDExZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTBlNmQwMjA4OGVmNmFhMjY0YmY4NGY3MzliZjYyYjRmYjkzMzYwYTA2MTFiMTQxY2RjZWU0NGM1ZjM2ZjVhZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOGVmNDlkZTg4YjhkNGQ4ZTRmNWE0Mzk2MGE3YTM1NTU4MjVkYjhhN2Y3YjNhMTcwY2EyYjdiYmRmZWIwNzM2NyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOTE0YzMxN2VlNzJhNTJhNDFjMTg0OTNjZDY5YTE0MjNmNGRjMmM5ZWEyY2ZhYjFkYmMyZmM3NzdjNjZlNjUwNyJ9"
         },
         {
-          "resource": "repo://docker-lite/docker-compose.yml#L97-L118",
-          "version": "repo-lines-v1:sha256:a335fd9a621eded50f66024cede87be6fdd598397dde83f936b10e41db66b81e:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIwOWM2ZWQ4MzY2NzFmMzM0ODllYjVhNTU0YWY5NGU0NTNkMzJkMmJmMTViNzYxMDJmYTZmMDM0MmM5ODQ1N2MiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVlZTdkNDcxNmE4NWM2ODQ4ZTNmZmQwZTY0ZWY1ODFjNGZjNWMzNzQ5YjU4NzU5NWI4OWMyZWUwMmVhNzM3MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImEzYmE5YWJlNDU2YmU3YjI5MjFlY2UyYmI1MDhiNWNkNDkxMmY0NjU5ZjBiMWU3MDE1YzI5ZTBkMWMwYTA3ZDYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk4YzA4Y2EzNDFiODc1YjJiN2M5MzM5YWM5OTE1MDNjNjI1YmNjM2I5NDJmM2MyMGUwZTA2NDAwYjg0ZGFlZDYifQ"
+          "resource": "repo://docker-lite/docker-compose.yml#L99-L121",
+          "version": "repo-lines-v1:sha256:f56f420309b3be6e86b16634eb275fa319bff77764459779537fe5eaff368102:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIwOWM2ZWQ4MzY2NzFmMzM0ODllYjVhNTU0YWY5NGU0NTNkMzJkMmJmMTViNzYxMDJmYTZmMDM0MmM5ODQ1N2MiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVlZTdkNDcxNmE4NWM2ODQ4ZTNmZmQwZTY0ZWY1ODFjNGZjNWMzNzQ5YjU4NzU5NWI4OWMyZWUwMmVhNzM3MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImEzYmE5YWJlNDU2YmU3YjI5MjFlY2UyYmI1MDhiNWNkNDkxMmY0NjU5ZjBiMWU3MDE1YzI5ZTBkMWMwYTA3ZDYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk4YzA4Y2EzNDFiODc1YjJiN2M5MzM5YWM5OTE1MDNjNjI1YmNjM2I5NDJmM2MyMGUwZTA2NDAwYjg0ZGFlZDYifQ"
         },
         {
           "resource": "repo://docker/Dockerfile.app#L12-L34",
@@ -209,23 +209,23 @@
       "statement": "dev-setup.sh orchestrates the full path: check Docker/Compose, resolve b2c/bbc mode and persist PRODUCT_MODEL to .env, configure public URLs/hosts, collect secrets, import the CDN image bundle (verifying both RUNTIME_BASE_IMAGE and MAVEN_BUILD_IMAGE landed), clone the three sibling frontend repos from gitee (admin and mobile required, PC optional), build each frontend inside the Node 20 runtime image via docker run with /data/httpd mounted, then docker compose -f docker-compose.dev.yml up -d --build, apply the admin password and companys.menu_type, and poll http://127.0.0.1:18080/ until Java answers because Flyway migrates during Spring Boot startup.",
       "evidence": [
         {
-          "resource": "repo://dev-setup.sh#L227-L265",
+          "resource": "repo://dev-setup.sh#L229-L267",
           "version": "repo-lines-v1:sha256:05e2cd81b50de8bacc5319a32b375755888b717cb36cac41f2bf80749c3d017b:eyJzZWxlY3RlZExpbmVDb3VudCI6MzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgwNTc1NjUyNTIxMjFmNzVlYzk5Y2IyOGIxNjg0ZGI4M2I1M2Q2ZTMzMGJlYzY0MzU3OGIyMjA0ODEyMzljN2UiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkxY2E1MDdlNWUwMTU2Mjk1MjFjNzcyYzc1ZDNjZThjNmVmMmI2YTlkMDFkNGUwZTA1ZDAzNDlkYTBlMDUwYjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkyZDE1MWUzOThiZDBhNTlmN2U1ODc3OTNmMmZhYWY1NzMzZjFlNGZhMGIwNDc3ZjQ4MDA0NDYwY2Y5MTU1ODgifQ"
         },
         {
-          "resource": "repo://dev-setup.sh#L497-L533",
+          "resource": "repo://dev-setup.sh#L499-L535",
           "version": "repo-lines-v1:sha256:6246ab50b52bc6d029ff9b3b4d6d090d90dd0ea48280983b73e4bf50a774d9dd:eyJzZWxlY3RlZExpbmVDb3VudCI6MzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMwZTE5N2E4OWRkYWFhY2RkYWM0OTZlYzdiMmMzZDQ2M2QwNGNhNDlhNzkzYzk4MmQzODU1ZmZiZjRiMjYyNmYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ4ZTAzMDhkMWUyMjRkZWQwYTJhYTNiZTZiOWZiYjhmZGNlNDg4MzJlY2RkZDg2ZGJkM2U0OWRkYjUzNjI1ODgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQzYTgwMDYxZTI1MGJmZmIxODc5NDcxZjNkNjc4MmIzNWZlNzE2NTY5MTNjMGJiMmE1YjA4Y2QwODRkNWNjNmYifQ"
         },
         {
-          "resource": "repo://dev-setup.sh#L536-L559",
+          "resource": "repo://dev-setup.sh#L538-L561",
           "version": "repo-lines-v1:sha256:bb41c8ad816b76afe49378c42306416aa9d6cf0017e16fe7617d0fd8179791ef:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZmZjAyMDEzYzE3YjEwYTk5ZjE5YjkyMTAxNjkxYzkwM2Y5ZDFkNDY3MTUwOWVkNDc1NTdkNWU1ZDI5MDIzZjUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFhNmViZWI4NDBlMmM0NjdhNTFlN2ZhODcyYTUwZmYzZGFiYWY2Yjg3OWUxOTAxZTRkZWI1ZDkyNjA5YTA1ZDIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI4NzJkZGIwMGQ2MTNjNGUxNDU5N2E3ZDdiMjJkYmFhYzg1N2JmMmE5ODE5ZTIxZTliMTI2YzQ0YzcxZTE0YTMifQ"
         },
         {
-          "resource": "repo://dev-setup.sh#L608-L704",
+          "resource": "repo://dev-setup.sh#L610-L706",
           "version": "repo-lines-v1:sha256:bafcc307fe16cf6d7daa857c5494d8ccc480ea27bf0bd12f50aebeb9348f2738:eyJzZWxlY3RlZExpbmVDb3VudCI6OTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ3Y2M5M2YyZDAyY2ViOTNiMGViYjA2NzFmMjRjMDk1MDhmOGZkMzdjOWMwZGEyNmE0NzljZDE1OTk5Y2NkNTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjMyNDUwNzhhYWU3ODY3NzZlMDI0ZWNmMzZmZTFhYWQ5ZjZhZjM3NTkwZWVmMWM3MWExNWFmN2FlNDQyMWE5NmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA0NjUzOWM2OGNkZmUxYjlmMjM3ZDdiYzA2OGRjMjYwZTlmMTZhNzc1MmRhYmE5ZjAyZTliNjIyZmQyNjA3ODAifQ"
         },
         {
-          "resource": "repo://dev-setup.sh#L750-L788",
+          "resource": "repo://dev-setup.sh#L753-L791",
           "version": "repo-lines-v1:sha256:eae105e2162eb5fedf2677ce7d3117a2bb56e3d4769deb07a6ea3b63c728e950:eyJzZWxlY3RlZExpbmVDb3VudCI6MzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNiZjJiNmMxYWFhYTI0OGUzODdjMWJjY2FjYWM5NTU5NGY5ZTU0NDBlNWFjYTdhYmUwM2YyOGY5YzQ2YjM0NTkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZkOGNiNDA1Y2E4NmNkNzc0NGE1Nzc3YjA1NWQyZWM4YjRmY2M2ZjIxYjc2NTgxNjU4NmMwYWRhMDYxMjdkNGUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVlNzIxOGRkOWFkMDU2ZGVjNWMwODBkNGU3NTVkMWEwOWMwNWVlZDY5NzY4NWViNWU4MDc0NzVkNzFmZDFkNzgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
         }
       ]
@@ -235,7 +235,7 @@
       "statement": "dev-setup.sh builds the Nuxt PC frontend before compose up because the ecshopx-app entrypoint refuses to start without /data/httpd/ECShopX-Java_Web/.output/server/index.mjs, and the build uses two named volumes (ecshopx-web-node-modules, ecshopx-web-pnpm-store) with NUXT_API_BASE and NUXT_API_BASE_INTERNAL pinned to http://127.0.0.1:18080/api/v1/h5app.",
       "evidence": [
         {
-          "resource": "repo://dev-setup.sh#L666-L704",
+          "resource": "repo://dev-setup.sh#L668-L706",
           "version": "repo-lines-v1:sha256:9adfee8606fd05d1901f44045d63dd7f14bf2b971665e1022ea0e09d3ad736a2:eyJzZWxlY3RlZExpbmVDb3VudCI6MzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwNDQwODk4OTY1NzNlZDkwZTQ0MTQ5MzZiZGMwOWQ4MzhiMTY4NmRjODI3N2Q2MGU1NDgxMzZiNDI3MGE0Y2IiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFhZGE2ZTlkN2FmYzczZDhiYWFjZWNiNWM2ZmRkODk5YmYwYmY5MDlhYjljMjQzZGY1NzVlZWM0OTBiZDIyN2QiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA0NjUzOWM2OGNkZmUxYjlmMjM3ZDdiYzA2OGRjMjYwZTlmMTZhNzc1MmRhYmE5ZjAyZTliNjIyZmQyNjA3ODAifQ"
         },
         {
@@ -246,7 +246,7 @@
     },
     {
       "id": "claim_55b3e623fa2b4597804a22b470b6037c",
-      "statement": "docker-lite/pack.sh is the release pipeline: it builds the bootstrap jar (host ./mvnw -pl ecshopx-bootstrap -am package -DskipTests when available, else the Dockerfile.app builder stage with docker build --target builder and docker cp), stages it as both docker-lite/app/ecshopx-bootstrap.jar and app.jar, writes pinned build-time .env values, builds admin dist-b2c/dist-bbc, mobile dist-b2c/dist-bbc, and the PC .output under Node 20.19 with pnpm 10.13.0, then writes ecshopx-java-<version>.tar.gz over the four project roots — excluding /node_modules/ (rooted, so ECShopX-Java_Web/.output/server/node_modules is kept), .git, target/, .env and prior tarballs, and failing if the jar, docker-lite/docker-compose.yml or .output/server/node_modules are missing.",
+      "statement": "docker-lite/pack.sh is the release pipeline: it builds the bootstrap jar (host ./mvnw -B -pl ecshopx-bootstrap -am package -DskipTests when available, else the Dockerfile.app builder stage with docker build --target builder and docker cp), stages it as both docker-lite/app/ecshopx-bootstrap.jar and app.jar, writes pinned build-time .env values, builds admin dist-b2c/dist-bbc, mobile dist-b2c/dist-bbc, and the PC .output under Node 22.23 (RELEASE_NODE) with pnpm 10.13.0, then writes ecshopx-java-<version>.tar.gz over the four project roots — excluding /node_modules/ (rooted, so ECShopX-Java_Web/.output/server/node_modules is kept), .git, target/, .env and prior tarballs, and failing if the jar, docker-lite/docker-compose.yml or .output/server/node_modules are missing.",
       "evidence": [
         {
           "resource": "repo://docker-lite/lib/package.sh#L7-L97",
@@ -262,7 +262,7 @@
         },
         {
           "resource": "repo://docker-lite/pack.sh#L71-L137",
-          "version": "repo-lines-v1:sha256:121e5a635b64a6fa45385bfd8525e3100b83d8bdb3c28dfec9a5da5dad2099d3:eyJzZWxlY3RlZExpbmVDb3VudCI6NjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMwNzRiODZkNjJhZTlhZDQwMjU5Y2Q0ZDRlMDJiMWE2YTIxNzRkYmFlMzE5ZWFhZDc1ZDBiYzU3N2ZmNGEzZGEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJjZjBlZTlhMjJhNzMwMmIwZTJmZmFiYTIzODljOWU2ZDUyOTkwOTJhZTk5ZDk4MzAzNTIzYjRhYzgzNmM3MWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk0MDhjNjYzNzg2YzA4Y2M3MWVmYjJmZGYyZTkwYzRiYzE1MDAwMGNjNWVmOGJkZTg4M2QwODY5MGIxOTc1MTEifQ"
+          "version": "repo-lines-v1:sha256:b2d99e14cde963fb122cc150a76de028b10c1ff59f6f9c0b2c2c3a809cc2b6f1:eyJzZWxlY3RlZExpbmVDb3VudCI6NjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMwNzRiODZkNjJhZTlhZDQwMjU5Y2Q0ZDRlMDJiMWE2YTIxNzRkYmFlMzE5ZWFhZDc1ZDBiYzU3N2ZmNGEzZGEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJjZjBlZTlhMjJhNzMwMmIwZTJmZmFiYTIzODljOWU2ZDUyOTkwOTJhZTk5ZDk4MzAzNTIzYjRhYzgzNmM3MWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk0MDhjNjYzNzg2YzA4Y2M3MWVmYjJmZGYyZTkwYzRiYzE1MDAwMGNjNWVmOGJkZTg4M2QwODY5MGIxOTc1MTEifQ"
         }
       ]
     },
@@ -272,19 +272,19 @@
       "evidence": [
         {
           "resource": "repo://docker-lite/deploy.sh#L1-L16",
-          "version": "repo-lines-v1:sha256:f8142c0d6afa35257b5a9f736db4072e72ea8ead4dd590bac0a2a313c591c11a:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFkOTVmYzA0YTgwYzk1MmY0OWNlNDE4ODYyN2M1M2IwZmJlOGM0NDA0MWI5NTJkNTkyYWNkMWRlOTk4NjE0NjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc4MTg1YTdjOTQ1MTNiMmZlOTNiZGM3YjdhOGQwNmRmNDc0ZmFjODA5ZWQ3YzE3MDYxYTBlOTNmZTYwMGE4ZWYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI2YzFmZGM4MzQ0NTA2YWUyNjk4ZmE2ZDYzYjE4Y2Q3ZGEzODQ0YmU0ZjI2MTNmNzVhZTZlYWYwMTk3MzMwNTIifQ"
+          "version": "repo-lines-v1:sha256:f8142c0d6afa35257b5a9f736db4072e72ea8ead4dd590bac0a2a313c591c11a:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFkOTVmYzA0YTgwYzk1MmY0OWNlNDE4ODYyN2M1M2IwZmJlOGM0NDA0MWI5NTJkNTkyYWNkMWRlOTk4NjE0NjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc4MTg1YTdjOTQ1MTNiMmZlOTNiZGM3YjdhOGQwNmRmNDc0ZmFjODA5ZWQ3YzE3MDYxYTBlOTNmZTYwMGE4ZWYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhiNzFiNzkwMDJlYjAyYTZhZWYwZjc2Yjg2YjQyOTk3MDY1ZTE0ZTM3ZTQ3YTkxMWYxNDI1ZDc1YjUzYmRhYjIifQ"
         },
         {
           "resource": "repo://docker-lite/deploy.sh#L185-L197",
-          "version": "repo-lines-v1:sha256:271d7b6ae497be7dc750784f63eac39772ef67b3c2cb6593f7dac70056ad8ba8:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU2NzVlYmY2OWE1OTIyNzEyZDEzYjNiMmUxMjZhZDIxYjhjMGY4YTY2NTI4MzI1OGFiOTdlYmYyMjMzYmU5ZjEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhjYjlhOTkxNDk3ODc0MzE3MTQzNDBmZmU0MDQ4MTYyMzk4ZWVhOWRmZjVkNjU5MjYxYmY4MmNkODNmMjFjZDIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ5NmMwZTI1ZmYwMjM1MWQ4YmRjMThjNzJjZDdlZjZhMDg1MTY4OWM5M2ZiNDhlNzMxYzVkNTgxODQ2MjAwMDMifQ"
+          "version": "repo-lines-v1:sha256:1e78c8b1e398c6048492ac49d01aa57879f90f69e7af4fe6ecf7e77cfe4d3b1c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ0ZjZmYzY2ZWMzNGYxZDNmODk1ODkxYzVhMTUzYzc2MDJiZjQ1Y2NhNDA2ODAzZDA5OTQyNjY2YjljMDc0MDYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ1OWZkNGQ1MmU1OWE5ZmIwMTIzM2VkOTE1ZmIyOWNhOWMyNDgyMWJmNDk5N2E1Y2M2MWViZDRlZmE4ZGVmZDYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImExZDQxOWMyNDgyZjQwY2QxNTFhNWJhMzJhZjk0MjY2YTIxOGRmYjQwNGQ0ODBhNTExYjA2NDE1NTBhMjNkNzQifQ"
         },
         {
-          "resource": "repo://docker-lite/deploy.sh#L400-L450",
-          "version": "repo-lines-v1:sha256:e0ea214558ecfc7366abc68e01bb401d97394394c8b9c4515bb69dfda95dae60:eyJzZWxlY3RlZExpbmVDb3VudCI6NTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEzNTQ2OTVlNzg1ZjEyNDg4ZjlkOWUzZTA3M2FjMmY4NWZiYTU2MGU3MzU0ODFlMjliMWFlODM3NmJjOTkwOTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI2MTQzYjg5ZWViZjBjOTkxZWQ2NzM5MzVmNWVkMjRmZDI3YmYxNTY5ZDRmNmRhMWMwYWU3NDExNGY2ZDUxNWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM1OGFmYjM0ZDljYmY3ZjA4MzIwYjUyYTE0NTlkOTdlYWZjZmY1NzU5OWYwOTE2MGJmMGVmNWNhMmJiZDVmZmUifQ"
+          "resource": "repo://docker-lite/deploy.sh#L398-L428",
+          "version": "repo-lines-v1:sha256:8c4da8b0e77145f5f4ab6b379c3316da87cc9ac8435b3fe29937696dcab4d23f:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM1ZmM5MGZmOGE0NDE0YzU0NDFkMGY2NzdjNWNiZmRhMzhiNDc0ZTUxYmZkNTU5YTU1NTlkZTBmODc3MDU1MjQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE1YWYxM2YzYThmNTE0NmIyYTkwZWExOTdmNmJiOTg2ZmUyNjZlNTRmNTE4ODA2ZGU2NzBkZjQwY2IxZmZkNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjczYzJkZTdkY2FmZGViZDdhYjM3NWI5YjE2NGE2MTg4OTdjN2U4MGEzMTExZDZkZmE2N2MwNDNjMmQ4MTM2ODciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZkMjIyOGM3MDkxYWUyNDU0MGZkMjczMWEwZmUzZGE1MDM2Nzg4OTgwZTVhZDg0NzQ0ZTU5YTJhMTFhNmQ4OTQifQ"
         },
         {
           "resource": "repo://docker-lite/deploy.sh#L517-L565",
-          "version": "repo-lines-v1:sha256:0fc82d1477082b694e3a502e255c9f68bdfca2ffd4d836a816622496a61cb702:eyJzZWxlY3RlZExpbmVDb3VudCI6NDksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNiZjJiNmMxYWFhYTI0OGUzODdjMWJjY2FjYWM5NTU5NGY5ZTU0NDBlNWFjYTdhYmUwM2YyOGY5YzQ2YjM0NTkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU1MmU2NTQ5OGQwNzgwYTllYjRhYjg4ODE1YzgwMmM4YWU5NjBjNzVhMTQwYjk3MDdmODc3YzU2OGFmNzQ4OGYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjYyNzQ0ODcyMmFhMzYwNTMxNGY2NWU5ZGUwY2M0ZGZkNTI5NGE0YTY2MDgxMzNkYjdiOGFiM2JmNWZiMzU3MDcifQ"
+          "version": "repo-lines-v1:sha256:d899570fb62f654f618f9ec590ea7139275cd05cff42665343e4eed3b984ed3c:eyJzZWxlY3RlZExpbmVDb3VudCI6NDksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNmYjk1OGY1MDUzNjAxNDEzYmQwOTRjODIxZDg2MmVkMTBhMGMyY2QxOTA0ZDY4Nzg2YTY1YjY4NWY4ZDcxZWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFmNjkxMmM0MWQ5OTliMjdjYmE1YWE1MGVhNzExYTZiMGI5MWFiNjlmNzc5MmFlOWJlYmI4NTVhNjk0MjI5MWMifQ"
         },
         {
           "resource": "repo://docker-lite/lib/artifacts.sh#L19-L58",
@@ -312,15 +312,15 @@
     },
     {
       "id": "claim_11b7b1f70f284a6f95ce6e48f9bae9f3",
-      "statement": "docker/install-secrets.sh is a shared library sourced by dev-setup.sh and docker-lite/deploy.sh (not executable alone) providing: install_ensure_jwt_secret (resolution order JWT_SECRET env → compose .env → application.properties, generating openssl rand -base64 32 and persisting only to the compose .env, never to the tracked properties file), install_prompt_admin_password (min 6 chars, tty or env), install_hash_bcrypt (Node run inside the running app container or a local runtime image using docker/tools/bcrypt-hash.js, producing a Spring-Security-compatible $2*$ hash), install_apply_admin_password (UPDATE operators SET password for login_name='admin' AND operator_type='admin'), and install_persist_product_model/install_apply_company_menu_type (b2c→standard/menu_type 4, bbc→platform/menu_type 3).",
+      "statement": "docker/install-secrets.sh is a shared library sourced by dev-setup.sh and docker-lite/deploy.sh (not executable alone) providing: install_ensure_jwt_secret (resolution order JWT_SECRET env → compose .env → application.properties, generating openssl rand -base64 32 and persisting only to the compose .env, never to the tracked properties file), install_prompt_admin_password (min 6 chars, tty or env), install_hash_bcrypt (Node run inside the running app container — INSTALL_APP_CONTAINER, ecshopx-app or ecshopx-dev-app — or a throwaway docker run on a local runtime image using docker/tools/bcrypt-hash.js, producing a Spring-Security-compatible $2*$ hash), install_apply_admin_password (UPDATE operators SET password for login_name='admin' AND operator_type='admin'), and install_persist_product_model/install_apply_company_menu_type (b2c→standard/menu_type 4, bbc→platform/menu_type 3).",
       "evidence": [
         {
           "resource": "repo://docker/install-secrets.sh#L1-L81",
           "version": "repo-lines-v1:sha256:a1818d5f27c7fff8b30322274bb1f266bfc5fb29881f68b2e266d2142e5860bf:eyJzZWxlY3RlZExpbmVDb3VudCI6ODEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFkOTVmYzA0YTgwYzk1MmY0OWNlNDE4ODYyN2M1M2IwZmJlOGM0NDA0MWI5NTJkNTkyYWNkMWRlOTk4NjE0NjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM1ZTE4ZjY0NmQ3MmNmY2I1ZDcyYjJiNGQzNzFlY2FiNWEzYzM0YzJiOWI1OGY0MWRjZTM3MzY5NzZiODdmOGQifQ"
         },
         {
-          "resource": "repo://docker/install-secrets.sh#L137-L231",
-          "version": "repo-lines-v1:sha256:145fa22b2a29e69706eba26ce8c62b553d2ef2f2d1fb56b4106e0abfa110a069:eyJzZWxlY3RlZExpbmVDb3VudCI6OTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEzZTFkNjJjYTM0NjhlNGZiYjNhY2MxOGMzZWU1N2Q3MmQzZjJmODdmMjVjYjc4MzhjZmViOTMwNTRkMDU2NWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNhNTU0MjkyYWIxMGJkYzNiNGYwMDc5ZjY3YjU2MDJkNDllZWM3MmFjMjdiZjgxZmFiZGExNGVjYTUyNTFkZDEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjUxYmI3ZDk4MTNkZjA5YjRlZmQyOTk3NGRjYWNjMGJmZjVmZmIwNzY0NTljYzdlYjgxZWQ0NjQwMDJhOWIzZDgifQ"
+          "resource": "repo://docker/install-secrets.sh#L137-L230",
+          "version": "repo-lines-v1:sha256:19d81b53ec64428add461aa8370b0efae55752cd4af66d0b64e0b4682efd654d:eyJzZWxlY3RlZExpbmVDb3VudCI6OTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEzZTFkNjJjYTM0NjhlNGZiYjNhY2MxOGMzZWU1N2Q3MmQzZjJmODdmMjVjYjc4MzhjZmViOTMwNTRkMDU2NWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk4YTU2NDZmZmNmMTYxYTFhNjM3NTM0Y2RlMzM1Y2M5ZDA5MTQ2MTk0ZjA1OWFlMTRlMDk2ZDViN2IwMGY5M2MiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNhNTU0MjkyYWIxMGJkYzNiNGYwMDc5ZjY3YjU2MDJkNDllZWM3MmFjMjdiZjgxZmFiZGExNGVjYTUyNTFkZDEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNjNmFmNTc1MGZhYWNmODNiZjEwY2VhMmQ5NDE4OWE0OTQ4YWQzODA5NGRhZjE4NGMwZGVkODFmNjQyMjg0YjMifQ"
         },
         {
           "resource": "repo://docker/install-secrets.sh#L249-L328",
@@ -334,11 +334,11 @@
     },
     {
       "id": "claim_7bd18a0a636a4a1f828aefa7b419e729",
-      "statement": "All runtime Docker images are distributed as one gzip'd docker-save bundle downloaded from DOCKER_IMAGES_BUNDLE_URL (default https://shopex-onex-yundian-image.yuanyuanke.cn/ecx-java-docker-image-base/ecx-java-docker-images.zip) and imported with gunzip -c … | docker load — never a registry pull; docker-lite/images.env lists the expected tags (ecshopx-java:17-node20-openresty, maven:3.9-eclipse-temurin-17, mysql:8.0, redis:7-alpine, xuxueli/xxl-job-admin:2.5.0) and pack.sh --with-images prefetches the bundle into docker-lite/images/.",
+      "statement": "All runtime Docker images are distributed as one gzip'd docker-save bundle downloaded from DOCKER_IMAGES_BUNDLE_URL (default https://shopex-onex-yundian-image.yuanyuanke.cn/ecx-java-docker-image-base/ecx-java-docker-images.zip) and imported with gunzip -c … | docker load — never a registry pull; docker-lite/images.env lists the expected tags (ecshopx-java:17-node22-openresty, maven:3.9-eclipse-temurin-17, mysql:8.0, redis:7-alpine, xuxueli/xxl-job-admin:2.5.0) and pack.sh --with-images prefetches the bundle into docker-lite/images/.",
       "evidence": [
         {
           "resource": "repo://docker-lite/images.env#L1-L10",
-          "version": "repo-lines-v1:sha256:c8a79819a401bfd2c8e76e807306f1f64911d1d6a77821ff0ad6cde4ea600eee:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxNmZiYmM2ZTRkNDM4OGY3OTUyZjhjZjU0ZTA3MWZjN2UzYzc0ZTU3N2QzZWZhYjA0Njk4ODFlOTI1NjVkMDQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcwNmIzNzhhNTkzYjRkYzA4ZDJiM2FkYTJkNGU4ZGM1NDkwM2I3YjI4ZGQ5Y2FlZTllYjQ1NmQyYjU1MWE0NDkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRhMWY4MjI5MDBmMzlmZDJkNzQ3NjI3NmRiOGM3YTJmNzVhZGE4ZjA5N2Y3NTU2YzFlODMzZmIyZDJmZTMyYTIifQ"
+          "version": "repo-lines-v1:sha256:e4ff72099eb51615e9e08cb9e57fe42a9805f18fa871e3172ee3e8b5c9be7de1:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxNmZiYmM2ZTRkNDM4OGY3OTUyZjhjZjU0ZTA3MWZjN2UzYzc0ZTU3N2QzZWZhYjA0Njk4ODFlOTI1NjVkMDQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcwNmIzNzhhNTkzYjRkYzA4ZDJiM2FkYTJkNGU4ZGM1NDkwM2I3YjI4ZGQ5Y2FlZTllYjQ1NmQyYjU1MWE0NDkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRhMWY4MjI5MDBmMzlmZDJkNzQ3NjI3NmRiOGM3YTJmNzVhZGE4ZjA5N2Y3NTU2YzFlODMzZmIyZDJmZTMyYTIifQ"
         },
         {
           "resource": "repo://docker-lite/lib/images.sh#L34-L62",
@@ -359,11 +359,11 @@
       "statement": "Both installers gate readiness on http://127.0.0.1:18080/ answering any HTTP status (up to 120 attempts, 2 s apart) because spring.flyway.enabled=true runs Flyway migrations inside Spring Boot startup; docker-entrypoint-initdb.d SQL only executes on a fresh MySQL volume, so re-importing the schema requires docker compose down -v.",
       "evidence": [
         {
-          "resource": "repo://dev-setup.sh#L535-L559",
+          "resource": "repo://dev-setup.sh#L537-L561",
           "version": "repo-lines-v1:sha256:be56869cc5d01c87d8f09ab3d20dec4fe97de6f358f8a832ab5b167944e1ac94:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE1YWYxM2YzYThmNTE0NmIyYTkwZWExOTdmNmJiOTg2ZmUyNjZlNTRmNTE4ODA2ZGU2NzBkZjQwY2IxZmZkNjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjMyNDUwNzhhYWU3ODY3NzZlMDI0ZWNmMzZmZTFhYWQ5ZjZhZjM3NTkwZWVmMWM3MWExNWFmN2FlNDQyMWE5NmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI4NzJkZGIwMGQ2MTNjNGUxNDU5N2E3ZDdiMjJkYmFhYzg1N2JmMmE5ODE5ZTIxZTliMTI2YzQ0YzcxZTE0YTMifQ"
         },
         {
-          "resource": "repo://docker-lite/deploy.sh#L426-L450",
+          "resource": "repo://docker-lite/deploy.sh#L428-L452",
           "version": "repo-lines-v1:sha256:49b8c024530b9980311b8179d5649e800d7b08d4f76e1be21c802133467a2a6f:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE1YWYxM2YzYThmNTE0NmIyYTkwZWExOTdmNmJiOTg2ZmUyNjZlNTRmNTE4ODA2ZGU2NzBkZjQwY2IxZmZkNjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZkNzJiZDkxNDQwMzA4ZTgzYjg1ZWE0MmRiMTEyYjNkNThkY2IyZjg1NGZhYTBjNDIwOGYyZDkwZWY5YjVmZGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM1OGFmYjM0ZDljYmY3ZjA4MzIwYjUyYTE0NTlkOTdlYWZjZmY1NzU5OWYwOTE2MGJmMGVmNWNhMmJiZDVmZmUifQ"
         },
         {
@@ -397,10 +397,54 @@
           "version": "repo-lines-v1:sha256:4304fde8cecf69743a76644b31834f81e8a3425a2bb3f92d7ffcb91bcd712534:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZGUyYzI1OGY4ZjBkZGZmMGE3MTQ3ZmUzNTAyOTBmMmU5YThiZTFkZDQwN2M0N2ZkMmVhMzE0MTdjNzQ1OGIxOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTFhZTBkM2Q0Mjk5Mzc5ZTU5YWZhZmE5MTg0MzI2NGI5MDU3ZjU4NTVjMzVhZjRjYzExMGM2ZWRjNmY4NWY3MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMGU4NjFiY2RhYmM2OWEyOTg0YmYyMmRiNWZkNDM2MmFlNWMwNTkzNTBmMmJmZTRiMDA0YTMzZDJkNDhkNWE2MSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOTkxODJhMjE2YTNiYjJlMThkOTY0MTBkMDgwY2Y2MDg2NmM4NWUxMjQxOGUzNDUwYjdiZDI2YzM1OGI2MTA1YiJ9"
         }
       ]
+    },
+    {
+      "id": "claim_79e4d9f4e6b843c49105a6d859ea348e",
+      "statement": "The runtime base image (docker/Dockerfile.runtime) is eclipse-temurin:17-jre-jammy rebuilt onto a pinned Temurin 17.0.21+9 JRE (vendor tarball bind-mounted at build time and sha256-verified, CVE-2026-91403) plus Node 22 (nodejs=22.23.* from nodesource) and OpenResty; dev-setup.sh reuses this same image (NODE_BUILD_IMAGE defaults to RUNTIME_BASE_IMAGE) to build the three frontends, so build-time and runtime Node versions cannot drift, and docker/build-runtime-base.sh publishes it as ecshopx-java:17-node22-openresty.",
+      "evidence": [
+        {
+          "resource": "repo://dev-setup.sh#L18-L21",
+          "version": "repo-lines-v1:sha256:8c8abe4b996887f295e3de4c687603bad5b2225b472424d11008bb93f78c7c36:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzhjOTFjZjI1Njg5NDEwOGRhNmQ0OGY4NzFmYWU1MzlmOThhMTAzNDFmNGE5MjgxYmM3MGFmODRlZGExNWVmYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiY2FiYmYyNzA2ODIwMjg1ZWM3OGZmM2FhMWZmMzI2ZmQzZDFkY2ZlYmEyZGMxYzQzMjNkZGE4YzA4YzU1MzNlZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDczZWViZjZlZTU0N2JkM2VjMThkYzAxNDExZGU4NTJlMWZjZWU2MjJjOGE3ODBhODZiOGM2NmI3ZGE3NDRlOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDQ3MmFiMTJkMjBjZTVkN2Q4NTA0YmE3YjY2NGM3YjhmM2Y0YjZiNDZhOTZjNzQxOTAxOTYxNjMyZjlkZDgwZSJ9"
+        },
+        {
+          "resource": "repo://docker/Dockerfile.runtime#L1-L54",
+          "version": "repo-lines-v1:sha256:95100f4008fb5099db296e6d30e3530515013624b6a32ddb5036a182a1c05303:eyJzZWxlY3RlZExpbmVDb3VudCI6NTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdlYjQ4YmQ3NThhMDRiMjU4MGM2MDIxYTg2ZGZiY2UyMTFmMDE1YTFkZDVjYzRmMzljMTNiNmVjZmUxNTcyOTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUxNDU4MTEwMWY3MDhkODNlYzA1MTQ1NTdiZDc3NjQ1NmVhNmY1Mzc0ZGEwNDk1MzhmYjQ3MjE0OGI0Nzc2YzEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://docker/build-runtime-base.sh#L1-L13",
+          "version": "repo-lines-v1:sha256:93afae61b44bf5788de0eb02bec7892aa0503d4e2c1d5be377e725f5ce91b982:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFkOTVmYzA0YTgwYzk1MmY0OWNlNDE4ODYyN2M1M2IwZmJlOGM0NDA0MWI5NTJkNTkyYWNkMWRlOTk4NjE0NjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM4M2FkNWE1OWY3NGNiMDE3OWU5Y2NkODVkY2NjYTk1OWYzYWQ3NTU4ZTJlY2FlYWZmMDJiODJmMDc1NDdkZjIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_2af5195588094494bbc675fc560ee098",
+      "statement": "Both installers end show_success_info with report_open_source_install_stat from docker/install-open-source-stat.sh, which POSTs {product: ecshopx-java, instance_id (first non-loopback MAC, else hostname), version (sed-parsed from the root pom.xml, never via mvn/java), timestamp, sign (uppercase MD5 of secret+sorted-key-concat+secret)} to https://gwnextapi.shopex.cn/usercenter/open_source/stat/report with curl --max-time 15; every failure path returns 0 so telemetry can never fail or delay an install.",
+      "evidence": [
+        {
+          "resource": "repo://dev-setup.sh#L28-L30",
+          "version": "repo-lines-v1:sha256:01cea1e36482becc215803925d626383466f81d19ffdd6ff6fd1a5bbb2b511aa:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYmQ5ZDlkODllNTczYzEzZDM1ZDZlZDZmZjg2ODRlNjU1MzQ3ODc1NWQzMWFjNTc3NGM5NGMzMTE3NmZiZTEyMyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNWRkZDEyZWNhMTc5MmE4Y2NjNDkwZTY3OTQ2MjZiYjgzYTY2YTYxZjViYzJlOTgzYjIzMzlkNTZhYzVmNDBlYyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTAzMjRmMWFlMGE4NDllZTI1N2FlMzkyZjFmMTg5YjU5ZjczYWZiODQ5MzE3YTFlZWM4YjUzOWZjOWEzMDkyNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiY2FkNTYyMDVjZjY2MGM5MGE5ZTQxZGU5Mjg4Mjc3Yjc1MzlmZjZmNzllNDdhMDY0MjI1MDJlOThmOTBiMmE5NyJ9"
+        },
+        {
+          "resource": "repo://dev-setup.sh#L744-L745",
+          "version": "repo-lines-v1:sha256:53b6e99c66563d3d0e8d372491c86ca6406326360f7e03b4fb2c6aaed05f76d4:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNGE2MDk4MDIzY2IwMGI3NjJlZTgzODVjMDBlYmIzZDZlMWYzODU0YzhjNzI1ZDIwMjQyNzRmNWJhYjc2YTNiMyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiM2ZlZDdjYTZjMGQ5NTU3ZmY1NThiNGM1MTg2YzJmY2VjODNkOWIxZTY4YzYyMzE3NjU2YTAzNzA4N2MwZmM2YyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZGU5MzNhZWZiNzMyMjA2MjQ3Y2U3YjUxZTViNmI2ZGZlMWVmOWQ4OGJhYjA0YzYzZDVlNmZlMWNlM2RjNDU0ZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDQ5NWRmNTk3YWJjMmIyNDk5YzY4NTllMzZlOWRjZmQ5MzcwZGI2YTcyOTdmYWQxYzVhYzJiZjQwNjRhNGY2OCJ9"
+        },
+        {
+          "resource": "repo://docker-lite/deploy.sh#L14-L16",
+          "version": "repo-lines-v1:sha256:3eec00bf3782ed3b6e6c58ae8b8ca835ecf31de4a2405b3c06a122674aa16a75:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMmIxYjM1ZTliMTE4ODAzNmE5MmRjYjdlNjMxNThkM2NlZGY0MzBmZTE5MGE0Yzk1MDExODdlNjlhYzcyY2M2NSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzgxODVhN2M5NDUxM2IyZmU5M2JkYzdiN2E4ZDA2ZGY0NzRmYWM4MDllZDdjMTcwNjFhMGU5M2ZlNjAwYThlZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTQ3MWVlNDU4N2JhOWUwMTY4OTk0YTZkMjBhZGE1ZDlhMWRkODU3MzVkZmQ0ZGNmNjI0ZDNkZmQyZjVmMmVmZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOGI3MWI3OTAwMmViMDJhNmFlZjBmNzZiODZiNDI5OTcwNjVlMTRlMzdlNDdhOTExZjE0MjVkNzViNTNiZGFiMiJ9"
+        },
+        {
+          "resource": "repo://docker-lite/deploy.sh#L598-L600",
+          "version": "repo-lines-v1:sha256:9fe5e8c0bd341e0a3a11a58d753e36a132ff447018af7b8ff9ab64fc51a73986:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMjlmMTJhMzJmZDdiODgyMTgxYTdlMTRjMjQ2MmFhYzFlYzBkNTEzY2Y4NzQ3Y2ExYzRhNzQ0MzVmNzJlYmEwMiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNWU5YmNhNGNjZWE3ODgxNTZhYzhmMzU4OTFhZTkzZWIwNDViMjdiYTZlMjg1MzYxNTY2NTQxZjRhYTgwMjkzZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZmFiNmVkZTBlNjNmZWUyZDJjZjE1MzkxYjVkZWM4ZjU3MmU4ODVhMTA4YWQ2ZTlmOWVkNjg1ZWRmZjJjZDUwNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjE5ZDgwZjRkNjQ5OGQwNWUwZmUwNGI0ZmUxMmM0NGVlNTU4MDVlMTgzNjI1ZjI5MWU2MmI0NmM0N2EyODBlNCJ9"
+        },
+        {
+          "resource": "repo://docker/install-open-source-stat.sh#L1-L127",
+          "version": "repo-lines-v1:sha256:d38a0825c3a25cf5cad974215bb398a0e5bb57c1f0522d56256a025028fa509c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTI3LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIxZDk1ZmMwNGE4MGM5NTJmNDljZTQxODg2MjdjNTNiMGZiZThjNDQwNDFiOTUyZDU5MmFjZDFkZTk5ODYxNDY2IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0MTJjYTM0NWNjZjc1YmY5YzA4MDZiY2U2OTViZThkZTgwOGI3OTk4NDI1MWE3YTU0ZDIwMmNmNjEwMWRkNDUxIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MCwicHJlY2VkaW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MCwiZm9sbG93aW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1In0"
+        }
+      ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.7.2",
-    "at": "2026-10-21T12:26:22.580Z"
+    "by": "openwiki/0.7.3",
+    "at": "2026-11-04T17:09:55.577Z"
   }
 }

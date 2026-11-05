@@ -65,10 +65,13 @@ public class InboundSignedCallbackPreparer {
 		Map<String, Object> decoded;
 		try {
 			Object root = objectMapper.readValue(rawBody == null ? "" : rawBody, Object.class);
-			if (!(root instanceof Map<?, ?>)) {
+			if (root instanceof Map<?, ?>) {
+				decoded = objectMapper.convertValue(root, new TypeReference<Map<String, Object>>() {});
+			} else if (mode == InboundSignedPrepareMode.TOKEN && root instanceof List<?> list) {
+				decoded = firstObjectFromList(list);
+			} else {
 				return err(invalidJson(mode));
 			}
-			decoded = objectMapper.convertValue(root, new TypeReference<Map<String, Object>>() {});
 		} catch (Exception e) {
 			return err(invalidJson(mode));
 		}
@@ -78,7 +81,6 @@ public class InboundSignedCallbackPreparer {
 		String platCodeFromBody = resolvePlatCodeForTenant(decoded);
 
 		CompanyShuyunOpenPlatformConfig config = null;
-		InboundPrepareResult early = null;
 		if (StringUtils.hasText(appIdFromQuery)) {
 			config = openPlatformConfigService.findByAppId(appIdFromQuery);
 		} else if (StringUtils.hasText(appIdFromBody)) {
@@ -99,7 +101,13 @@ public class InboundSignedCallbackPreparer {
 			config = r.config;
 		}
 
-		if (config == null) {
+		boolean tokenAllowMissingTenant =
+				mode == InboundSignedPrepareMode.TOKEN
+						&& !StringUtils.hasText(appIdFromQuery)
+						&& !StringUtils.hasText(appIdFromBody)
+						&& !StringUtils.hasText(platCodeFromBody);
+
+		if (config == null && !tokenAllowMissingTenant) {
 			String benefitIdOnly = trimStringish(decoded.get("benefitId"));
 			if (mode == InboundSignedPrepareMode.OFFLINE_BENEFIT && StringUtils.hasText(benefitIdOnly)) {
 				return err(offlineBenefitUnknownShadow());
@@ -149,7 +157,19 @@ public class InboundSignedCallbackPreparer {
 			return err(ResponseEntity.status(403).body(body));
 		}
 
-		return new InboundPrepareResult.Ok(new PreparedInboundCallback(config.getCompanyId(), decoded));
+		long companyId = config != null && config.getCompanyId() != null ? config.getCompanyId() : 0L;
+		return new InboundPrepareResult.Ok(new PreparedInboundCallback(companyId, decoded));
+	}
+
+	private Map<String, Object> firstObjectFromList(List<?> list) {
+		if (list == null || list.isEmpty()) {
+			return new LinkedHashMap<>();
+		}
+		Object first = list.get(0);
+		if (first instanceof Map<?, ?>) {
+			return objectMapper.convertValue(first, new TypeReference<Map<String, Object>>() {});
+		}
+		return new LinkedHashMap<>();
 	}
 
 	public String resolvePlatCodeForTenant(Map<String, Object> decoded) {
@@ -281,52 +301,77 @@ public class InboundSignedCallbackPreparer {
 		return ResponseEntity.status(http).body(body);
 	}
 
+	/** PHP Token 回调错误体：HTTP status + {@code {code,msg,data:""}}。 */
+	private static ResponseEntity<Map<String, Object>> token(int http, int code, String msg) {
+		Map<String, Object> body = new LinkedHashMap<>();
+		body.put("code", code);
+		body.put("msg", msg);
+		body.put("data", "");
+		return ResponseEntity.status(http).body(body);
+	}
+
 	private static ResponseEntity<Map<String, Object>> invalidJson(InboundSignedPrepareMode mode) {
-		return mode == InboundSignedPrepareMode.LOYALTY_MEMBER_GRADE_CHANGE
-				? loyalty("40001", "INVALID_JSON")
-				: offline(400, 400, "INVALID_JSON");
+		return switch (mode) {
+			case LOYALTY_MEMBER_GRADE_CHANGE -> loyalty("40001", "INVALID_JSON");
+			case TOKEN -> token(400, 400, "INVALID_JSON");
+			case OFFLINE_BENEFIT -> offline(400, 400, "INVALID_JSON");
+		};
 	}
 
 	private static ResponseEntity<Map<String, Object>> appIdRequired(InboundSignedPrepareMode mode) {
-		return mode == InboundSignedPrepareMode.LOYALTY_MEMBER_GRADE_CHANGE
-				? loyalty("40301", "APP_ID_REQUIRED")
-				: offline(403, 403, "APP_ID_REQUIRED");
+		return switch (mode) {
+			case LOYALTY_MEMBER_GRADE_CHANGE -> loyalty("40301", "APP_ID_REQUIRED");
+			case TOKEN -> token(403, 403, "APP_ID_REQUIRED");
+			case OFFLINE_BENEFIT -> offline(403, 403, "APP_ID_REQUIRED");
+		};
 	}
 
 	private static ResponseEntity<Map<String, Object>> unknownApp(InboundSignedPrepareMode mode) {
-		return mode == InboundSignedPrepareMode.LOYALTY_MEMBER_GRADE_CHANGE
-				? loyalty("40302", "UNKNOWN_APP")
-				: offline(403, 403, "UNKNOWN_APP");
+		return switch (mode) {
+			case LOYALTY_MEMBER_GRADE_CHANGE -> loyalty("40302", "UNKNOWN_APP");
+			case TOKEN -> token(403, 403, "UNKNOWN_APP");
+			case OFFLINE_BENEFIT -> offline(403, 403, "UNKNOWN_APP");
+		};
 	}
 
 	private static ResponseEntity<Map<String, Object>> secretNotConfigured(InboundSignedPrepareMode mode) {
-		return mode == InboundSignedPrepareMode.LOYALTY_MEMBER_GRADE_CHANGE
-				? loyalty("40304", "CALLBACK_IDENTITY_SECRET_NOT_CONFIGURED")
-				: offline(403, 403, "CALLBACK_IDENTITY_SECRET_NOT_CONFIGURED");
+		return switch (mode) {
+			case LOYALTY_MEMBER_GRADE_CHANGE -> loyalty("40304", "CALLBACK_IDENTITY_SECRET_NOT_CONFIGURED");
+			case TOKEN -> token(403, 403, "CALLBACK_IDENTITY_SECRET_NOT_CONFIGURED");
+			case OFFLINE_BENEFIT -> offline(403, 403, "CALLBACK_IDENTITY_SECRET_NOT_CONFIGURED");
+		};
 	}
 
 	private static ResponseEntity<Map<String, Object>> invalidSign(InboundSignedPrepareMode mode) {
-		return mode == InboundSignedPrepareMode.LOYALTY_MEMBER_GRADE_CHANGE
-				? loyalty("40305", "INVALID_SIGN")
-				: offline(403, 403, "INVALID_SIGN");
+		return switch (mode) {
+			case LOYALTY_MEMBER_GRADE_CHANGE -> loyalty("40305", "INVALID_SIGN");
+			case TOKEN -> token(403, 403, "INVALID_SIGN");
+			case OFFLINE_BENEFIT -> offline(403, 403, "INVALID_SIGN");
+		};
 	}
 
 	private static ResponseEntity<Map<String, Object>> replayOrStale(InboundSignedPrepareMode mode) {
-		return mode == InboundSignedPrepareMode.LOYALTY_MEMBER_GRADE_CHANGE
-				? loyalty("40306", "REPLAY_OR_STALE")
-				: offline(403, 403, "REPLAY_OR_STALE");
+		return switch (mode) {
+			case LOYALTY_MEMBER_GRADE_CHANGE -> loyalty("40306", "REPLAY_OR_STALE");
+			case TOKEN -> token(403, 403, "REPLAY_OR_STALE");
+			case OFFLINE_BENEFIT -> offline(403, 403, "REPLAY_OR_STALE");
+		};
 	}
 
 	private static ResponseEntity<Map<String, Object>> ambiguousPlatCode(InboundSignedPrepareMode mode) {
-		return mode == InboundSignedPrepareMode.LOYALTY_MEMBER_GRADE_CHANGE
-				? loyalty("40307", "AMBIGUOUS_PLAT_CODE")
-				: offline(403, 403, "AMBIGUOUS_PLAT_CODE");
+		return switch (mode) {
+			case LOYALTY_MEMBER_GRADE_CHANGE -> loyalty("40307", "AMBIGUOUS_PLAT_CODE");
+			case TOKEN -> token(403, 403, "AMBIGUOUS_PLAT_CODE");
+			case OFFLINE_BENEFIT -> offline(403, 403, "AMBIGUOUS_PLAT_CODE");
+		};
 	}
 
 	private static ResponseEntity<Map<String, Object>> ambiguousBenefitId(InboundSignedPrepareMode mode) {
-		return mode == InboundSignedPrepareMode.LOYALTY_MEMBER_GRADE_CHANGE
-				? loyalty("40308", "AMBIGUOUS_BENEFIT_ID")
-				: offline(403, 403, "AMBIGUOUS_BENEFIT_ID");
+		return switch (mode) {
+			case LOYALTY_MEMBER_GRADE_CHANGE -> loyalty("40308", "AMBIGUOUS_BENEFIT_ID");
+			case TOKEN -> token(403, 403, "AMBIGUOUS_BENEFIT_ID");
+			case OFFLINE_BENEFIT -> offline(403, 403, "AMBIGUOUS_BENEFIT_ID");
+		};
 	}
 
 	private static ResponseEntity<Map<String, Object>> offlineBenefitUnknownShadow() {

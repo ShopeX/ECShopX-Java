@@ -10,6 +10,8 @@ sources:
     resource: repo://dev-setup.sh
   - id: openwiki-source-0c106052b3286e779bed85e7
     resource: repo://docker-compose.dev.yml
+  - id: openwiki-source-57bb1d8f1a1c2bee703ee3c1
+    resource: repo://docker-lite/deploy.sh
   - id: openwiki-source-f11d31f9677b30a46da182df
     resource: repo://docker-lite/docker-compose.yml
   - id: openwiki-source-adec17adc22127bd37d68f66
@@ -108,7 +110,10 @@ sources:
     resource: repo://ecshopx-wechat/src/main/java/cn/shopex/ecshopx/wechat/wxa/WechatOpenPlatformAuthorizerTokenService.java
   - id: openwiki-source-f1b1aacc63642e5304668821
     resource: repo://readme.md
-generated: { by: "openwiki/0.7.2", at: "2026-10-23T03:04:20.471Z" }
+generated: { by: "openwiki/0.7.3", at: "2026-11-04T17:09:55.577Z" }
+verified:
+  - by: openwiki/0.7.3
+    at: 2026-11-04T17:09:55.577Z
 ---
 
 # Configuration and Secrets Reference
@@ -119,7 +124,7 @@ Three deployment shapes consume this file differently:
 
 | Shape | How config reaches the app |
 |---|---|
-| **Self-hosted / IDE** | no shipped overlay — `application-local.properties` is git-ignored (`.gitignore` line 7) and absent from fresh checkouts, so overrides arrive via env vars, `--key=value` program arguments (`APP_ARGS`), or `--spring.config.additional-location=file:./config/`; a developer may create their own `application-local.properties` and activate it with `--spring.profiles.active=local`, but nothing in the repo guarantees one exists (the readme's "already includes" wording is drift) |
+| **Self-hosted / IDE** | no shipped overlay — `ecshopx-bootstrap/src/main/resources/application-local.properties` is git-ignored (`.gitignore` line 7) and absent from fresh checkouts, so overrides arrive via env vars, `--key=value` program arguments (`APP_ARGS`), or `--spring.config.additional-location=file:./config/`; a developer may create their own `application-local.properties` and activate it with `--spring.profiles.active=local`, but nothing in the repo guarantees one exists (the readme's "already includes" wording is drift) |
 | **Docker (full dev, lite)** | profile is *not* activated; overrides arrive as `APP_ARGS` (Spring Boot CLI `--key=value` args) plus env vars, both templated in `docker-compose.dev.yml` / `docker-lite/docker-compose.yml` |
 | **Plain `java -jar`** | `--key=value` args, `--spring.profiles.active=local` (if you authored such a file), or `--spring.config.additional-location=file:./config/` |
 
@@ -152,7 +157,7 @@ Three mechanisms read these keys, and knowing which one a key uses tells you its
 
 1. **`@Value("${key:default}")`** — the dominant pattern for scalar keys (`ADMIN_LOGIN_CHECK_LEVEL`, `common.product-model`, `ecshopx.payment.wechat.notify-url`, `ecshopx.jushuitan.app-key`). `@Value` requires the key to exist when there is no default; that is why `application.properties` must list `espier.shopex-usercenter.*` even though the espier jar has defaults.
 2. **`@ConfigurationProperties(prefix = "...")`** — typed binding for grouped keys, 35 classes across the Bundles. Representative: `StorageProperties` (`ecshopx.storage`), `H5JwtProperties` (`ecshopx.h5.jwt`), `AliyunsmsSmsSceneWhitelistProperties` (`ecshopx.sms`), `PrismCoreProperties` (`ecshopx.thirdparty.prism-core`), `DoumenIntlProperties` (`ecshopx.payment.doumen-intl`), `RequestFieldProperties` (`ecshopx.request-field`), `ShuyunOpenPlatformProperties` (`ecshopx.shuyun.open-platform`).
-3. **`Environment.getProperty(...)` / `System.getenv(...)`** — used where the key name itself is dynamic. `SuperadminWxappTemplateMetadataService` builds `ecshopx.wechat.wxa-template-fallback.<key>.*` property names at runtime from the DB key; `SocialTrustLoginService.resolveAppleCallbackH5Host` falls back through `System.getenv("H5_BASE_URL")` then `System.getenv("COMMON_H5_BASE_URL")` for the Apple OAuth redirect host.
+3. **`Environment.getProperty(...)`** — used where the key name itself is dynamic. `SuperadminWxappTemplateMetadataService` builds `ecshopx.wechat.wxa-template-fallback.<key>.*` property names at runtime from the DB key and reads each suffix via the injected `Environment`.
 
 The file is deliberately a superset: many keys are read by Bundles far from bootstrap, and the file documents — in comments, mostly Chinese — the PHP-era environment variable each group replaces (`OSS_*`, `QINIU_*`, `AWS_*`, `COS_*`, `DIS_WORKWECHAT_H5_BASEURI`, `DOUMEN_INTL_*`, `BROKERAGE_URI`).
 
@@ -386,7 +391,7 @@ These are the keys where "blank" is not a no-op but a distinct — and sometimes
 | `ecshopx.thirdparty.shuyun.base-url` (+ key/secret) | `ShuyunSignedGatewayClient.getSignedJson/postSignedJson` return `null`; business layers treat that as failure and degrade |
 | `ecshopx.jushuitan.oauth-base-url` | `JushuitanSettingAdminService.getSetting` emits `oauth_url` as a bare `?query-string` instead of an absolute URL; a non-empty value that does not start with `https://` is a hard `BadRequestException` |
 | `APP_URL` | the Jushuitan `shop_callback_url` is emitted as a relative `/api/systemlink/jushuitan/{companyId}` path |
-| `common.h5-base-url` | activation messages lose their `h5_url`; Apple OAuth callback host resolution in `SocialTrustLoginService` falls all the way back to the query/state and finally empty string |
+| `common.h5-base-url` | the sole allow-listed host for the whole social trust-login flow: `resolveH5Host` / `resolveAppleCallbackH5Host` return empty when it is blank (requested/query/state hosts are accepted only when they exactly match this property), `buildAppleH5LandingUrl` throws `缺少 H5 域名配置`, and `rememberAppleOAuthH5Host` binds the opaque Apple OAuth state → host entry in Redis only when the host equals this property |
 | `common.certi-base-url` / `common.store-key` (with `prism-core.base-url`) | `ShopexOauthCertSyncService.syncAfterOauthLogin` returns early — the SaaS certificate centre is not called after OAuth login |
 | `ecshopx.thirdparty.dm-crm.setting-read.redis-enabled=false` | `DmCrmSettingReadRedisService` is not registered at all; `DmCrmSettingReadNoOp` makes every company look unintegrated with Hope |
 | `ecshopx.bspay.callback.rsa-public-key` | BSPay callbacks fail with `支付回调公钥未配置` — the channel is dead until configured |

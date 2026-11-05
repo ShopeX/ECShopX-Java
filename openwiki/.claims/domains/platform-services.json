@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:f80a00568ff336c59f007427ff513294688dd39291bd916b34d70e6d2cb96f23",
+  "pageVersion": "sha256:da5e477d57b97c6f95a0d23f38e0d65b9ed9942bf1a13d15432e05f0c6714318",
   "claims": [
     {
       "id": "claim_8d9a39ff21104a5e9f8a87abb98360a9",
@@ -43,22 +43,30 @@
           "version": "repo-lines-v1:sha256:440a789d36ca9612eb12cdc2213ffbf75dacc4a4bdf84407fd7f6a9767d863bb:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOWE0ZjIwNTBlZThhYTJmMTFiN2JhZjAxZjYwNmZjZTY4ZmRmM2FmZWI2ZTRhN2E5OTFkNTg2NDhhZTllMmFkYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMmU2MGIxOGY2NTYyNjQ3OGJjMjhmNDczZTJlNjc4Y2Q3ZDVhNjU1ZDhkNzNiNGEwN2JmY2I0ZDBjMjNhYjZkNyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzA1NWYzMmJiNGE3YjdlNTY0MzZmN2IyOWYyM2E2OTJkYjkzMWFlOWZhY2FjNTIwOTk2ODU5MjUyNmJiN2U3NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNWY5MjhjYWFiNTRhNjlhMDYyMDk2MjU4ZTRmMjI2ZGFmNmMwODEwNTNjYzY1N2JlNTAxZTUyMDExM2NhZjAyYiJ9"
         },
         {
-          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/storage/FileStorageService.java#L337-L356",
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/storage/FileStorageService.java#L341-L360",
           "version": "repo-lines-v1:sha256:f8f510590898f500634851c7e0fa451ba66ef8ff5842b22ff36386f4cacb33bc:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRiYzNiMjEwYmEzNjQ1OGMxMDkyNTgyNTAwZGM2NTM5ODFiYTdkYjM3ZGRjNmI5MWMyYTdmZGQzZjU3OWZjZjEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU0MjUyZjVjYTA1ZWQyOGQ2ZTNmMjZmMDNhZTI4ODA2OGEzMWI1NDE4YmZmYTlkYjE2ZGY1NmU0YzNlYmViZTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZjNGJkNWIwNmQxODMyNzE0MjA4NDM4N2VjNGQyNzc0MGJlMDI5YzJlMjI0NTlkNWY0MDE1MThmNjEzMmUxNjQifQ"
         }
       ]
     },
     {
       "id": "claim_5143e397ec964480934293456b180337",
-      "statement": "FileStorageService exposes two different multipart validation regimes: upload() rejects the file disk outright, requires image/* ≤ 2 MB or video/* ≤ 50 MB (BadRequestException), while uploadeImage()/uploadImportLocalRelativePath() restrict to image/jpeg|jpg|png|gif ≤ 2 MB and video/mp4 ≤ 50 MB, with the exception type chosen per caller (ResourceException vs BadRequestException); upload() always appends a literal .png extension under the local driver regardless of actual bytes, and uploadImportLocalRelativePath is local-only and returns the bare relative key.",
+      "statement": "FileStorageService exposes two multipart validation regimes: upload()'s assertUploadMultipart rejects the file disk outright with ResourceException and otherwise only checks the MIME primary type (image/* or video/*, subtype unrestricted) plus the shared EspierUploadMessages.MAX_UPLOAD_BYTES cap (50 MiB, aligned with the Spring multipart limit) via BadRequestException, while uploadeImage()/uploadImportLocalRelativePath()'s assertEspierUploadeImageMultipart restricts subtypes to image/jpeg|jpg|png|gif and video/mp4 under the same 50 MiB cap, with the exception type chosen per caller (ResourceException vs BadRequestException); upload() always appends a literal .png extension under the local driver regardless of actual bytes, and uploadImportLocalRelativePath is local-only (BadRequestException under any non-local driver, hence dead under the shipped OSS/Qiniu/AWS/COS production drivers) and returns the bare relative key, used only by FrontWxappEspierUploadImageService.uploadeLocalImage.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/storage/FileStorageService.java#L199-L269",
-          "version": "repo-lines-v1:sha256:77b6e7d18b19ef018a050c0f775e05de0b1d877ad6a3b6312d4bb57b01c0b6be:eyJzZWxlY3RlZExpbmVDb3VudCI6NzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBhZWY4MjAzZGJlYzRjY2JlY2M5YTVhZDM1MjMyY2M3M2VlMzBjZjg0MDkyNzBkYzExZTQ3NmNlMDY4NmVmYjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE0ODYzNmJjODJmZTI2NDQ4NzFmM2IyNThiNTlkZDljMGNjZDdiNjdkMDkwY2JhNmVkYzg3MjY5ZjQ1YWFkZWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU3MDMyYzFhNTJmYWJjODI2MjA1ZDJkZTk5YWZmYzg2MGFmMTBmM2UzN2ViNTg4NjA3ODk2NDZmZWQ1MmMwMzYifQ"
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/front/FrontWxappEspierUploadImageService.java#L161-L167",
+          "version": "repo-lines-v1:sha256:36efdb4d595c04133937129188b8f1fdd53b8ead2598fd38a768f38f327b253e:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiY2QxMWFiMThhYjYzY2JiMjY4NmUzMmNkNmE2MzE4Mjc0YjA2ZDg5ZTIzNjVlMzY2NGUyZTJlNWViMGY3NWQwYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzY0ZWEyOWIxZjQwMGU0YTM0NzNjOTY4YzNmZDdmNmNmOWQwMThlMDhiODI0Y2VmYzVhZmU0NmJhOGY5OTdhYiJ9"
         },
         {
-          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/storage/FileStorageService.java#L459-L538",
-          "version": "repo-lines-v1:sha256:9b9e47c71781880805e2e4cad5a9b5e43b8b4823d390db918c36c36665d206a5:eyJzZWxlY3RlZExpbmVDb3VudCI6ODAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJhYjY4YjFjOTk3ODJlMmUyNDhiNmI2MTNjNTQ3ODk0Nzg5YmM1OTNjMmI3YTI2OWM4NTM5NzFlZWM1YzU2YTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIyZjJmZjVmZWVjNjBmNTg3YzhmYWU0ZTg3ZjgwOWE2NjFjZmZlZDZiNDdhYWU1ZjZkNmEyNjUzYWE4OTUyZWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk0MmY2MjA1ZDYzODZhOGI4MzJmZGVlNDFlNjQ4NWFmMzJlNDFkNmMzNDRjOTZhN2MyY2UyY2M3NzY0NTYzYTkifQ"
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/storage/FileStorageService.java#L175-L269",
+          "version": "repo-lines-v1:sha256:5fa43f6336c36df39414ffdf83284358cc8f115f816bdb194cbb95e9742df722:eyJzZWxlY3RlZExpbmVDb3VudCI6OTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgwOTM4ZTc4NGQyOTkxNWMxNTA4MmM5NzQwNGViMmRjZjYzMmEwMThhNDU5N2NjOTFiNGY0YWJhZWM3N2FjMWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIxNDJhMjE3ZGI5YTcwYjYxY2EyZjZjOGExZTc0MjRmNzYxMDBkYmNjM2NmODBkMjlhZmI2MmE0MTNkNjhmMmQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY0NjEwOWNlMWNjODZhMDg3YThiYjE2ZjUzZTIxMWQzZGEyYmFlNzVjNWE5YWUyZmQ2ZTZmOWM0MTU2ZTJkYjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImYwYWI3M2IxMGRmY2ZlOGVlMGYzODlhODU2ZWMzNDI4MThjMjdlM2I0NDhiODk3MmYzNDE5Yzk4ZmVmMGFmNTMifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/storage/FileStorageService.java#L446-L538",
+          "version": "repo-lines-v1:sha256:f15d607d9ad51a1a62988f6336f5642b695e6192b1dfac92291e0be1c9d76aec:eyJzZWxlY3RlZExpbmVDb3VudCI6OTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZjMDZlNmZiZDc2NTNkY2VlMGExNDZhM2VkYzlkYmMxNzBjOGUxMDQzYjkzYTMxNjhjNGIwMGRjMzY2YzUyYTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVjN2JjNzExYzAwYjhlNTAzNGI3NDVmZjE2YmViMTM5NzU1ZDAwZWRkZjFlZGY5ZTM0ZDZiN2QzZDFiNjQ1OTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFkNjFmZTE2OWZhNWViNzY4OWIxMjA3MDFmMjU4ZjVjMmU2NDY1MDg1NzRhNjJhYjNmZTI2N2IyZWVkMzA5ZjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMxNGI4NDgzZTdjMWIzOWMwMjdiYzZjNDQyMDZjOTljZjU3MTg4MzliYmNlYmRiOWFiOTU0MjhhNjM3YTRlOWEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/support/EspierUploadMessages.java#L33-L35",
+          "version": "repo-lines-v1:sha256:da14188aeba0aa6d34a7a75a7c7d7d7d23eb1a2f77b599c5a0a18bcb3fbfa25c:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZDM5YTFjNzYwMjRmMDk2NjdmNGEwMjFiNjIwNzNlZmQ5MWRkM2QyYjg4Y2NkNmE2MThmODk2ZjJhZDY3N2M3MiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYTRjZjYxYTMyMTRjODRhNTQzY2ZjOTlkZWQwYjEyYWJmZDI0OGFmMjg3NGJhZGEyODU4MGVjN2U1NDc3YTc4NyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDk4OGI4NDYwZmY2NTI3N2QxOGM2M2FjMjdjMjliOTg2M2JkNzJiOGU0MTkzYmE5NmZiOTAxODlkNjFkOTgyZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZWM0NDA3MzZjMDYzNDZlYjBiYjExMTk0MjdiMzA1ZjcxYzJlM2M5NWI4OTVkZWYxMWYwMzc1N2E0OWVhODI0NSJ9"
         }
       ]
     },
@@ -67,7 +75,7 @@
       "statement": "getUploadToken returns a driver-specific credential envelope: local returns {domain, key}; oss fills an OSS Web-Post policy; aws returns a 3600-second presigned PUT URL; qiniu and cosv5 fill their vendor upload-token fields; under cosv5 a non-blank supplied filename must contain a non-empty extension (assertCosNonBlankFilenameHasExtensionIfNeeded), applied on both the token and direct-upload paths.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/storage/FileStorageService.java#L62-L130",
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/storage/FileStorageService.java#L66-L134",
           "version": "repo-lines-v1:sha256:566fa5e842a9b3c152cb8ad2185c564db7d5aa737c776751e31013be054ca020:eyJzZWxlY3RlZExpbmVDb3VudCI6NjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFmYzJlM2ZkNzhkYjZmYTE5NGNiYTk4NmY5M2Y5MzcxYTg0MDkzMzRjZjRjZjRlYTk0NWM5OTJhYTQ4ZmRiMmYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAwNDU4ODBlNzg1MTNlZDBjY2RlZmJlODFjZjEyNDhkYjcxOGY0NzRjYWIxMDJhODgzMzMxYmY3MjA2NzYxM2QiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMzZTg0Mzc4MjRiMmY3ZDVlNmVjOTM0OTcwZWJiOTNkMjc3OTA1MzEwYWE0Njk5MDI5NDIyZjRmNDFmMzk0MDMifQ"
         }
       ]
@@ -114,15 +122,15 @@
     },
     {
       "id": "claim_f8d6c2faab6f4f3e8610e1a819ed226c",
-      "statement": "EspierUploadHandlerBeans declares the ~25 built-in import types (member_info, member_update, member_consume, supplier_goods, normal_goods and variants, normal_orders(_cancel), distributor_info, upload_tb_items, employee_purchase_*, whitelist_create, update_distribution_item, limit_sale_item, adapay_tradedata, community_chief, selfform_registration_record, ...) as anonymous AbstractEspierTableUploadHandler subclasses that each bind one EspierUploadHeaderCatalog header set to the matching EspierImportRowSink; the upload_tb_items handler additionally rejects non-xlsx files.",
+      "statement": "EspierUploadHandlerBeans declares the 23 built-in import types (member_info, member_update, member_consume, supplier_goods, normal_goods and its epidemic/store/profit/tag/pointsmall variants, normal_orders(_cancel), selform_registration_record, distributor_info, upload_distributor_white, pos_store_account, whitelist_create, update_distribution_item, limit_sale_item, adapay_tradedata, community_chief, employee_purchase_employees, employee_purchase_activity_items_sort, upload_tb_items) as anonymous AbstractEspierTableUploadHandler subclasses built by one delegating(...) helper that binds one EspierUploadHeaderCatalog header set to the matching EspierImportRowSink from the espierImportRowSinkByType map (IllegalStateException when a domain bundle forgot its sink); upload_tb_items is the only handler with an extra file check, rejecting non-xlsx files.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/upload/EspierUploadHandlerBeans.java#L198-L225",
-          "version": "repo-lines-v1:sha256:99ea88ea5d453c0e2a2b1b11becc104981ef5f328b4ed1a573119be230b1eabe:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEyOGQ2Y2U0MWZhZmE3ZDE5ZDY0MDYxZTQ2M2YzZWVhZDQxNzkxNTE2OTUzMjEzYTdiZmU3YWJhNWJmM2RkOTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFiNmZlOTAxYjViYTFhY2I0NGM3MThhNTk0NWNmY2RmYWExODUzOWMxNzEzYmRiYmMxODNjM2RkYzQ4MWQxYWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/upload/AbstractEspierTableUploadHandler.java#L25-L57",
+          "version": "repo-lines-v1:sha256:6c6e9599abbde38fd5f5fe9310c65f143ba9b56eab9c88f109203aad80705b04:eyJzZWxlY3RlZExpbmVDb3VudCI6MzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg0ZWNjYTg3ZDhhYjkyZDVmZWI0NTg3MzEyMTA4N2UwYTNkNzMyZDgyZDE4ZTM0MTY4N2EwMWJmYmJmNzZjYjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQwNzdiMTk5NjBhNDQ5N2FhNjMxODcwMTZkN2Q2MjllZGRhNTRmZGY1NTA2ODNjOTk0YjE3NGZmNTcxY2M2MzQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE5OWI0NTAxNjYxZjIyYjY5ZWVhYjkxY2IxMzQ2NDUxZmNkZDM3OTQ2YmE5OGZlZTM3NDQyYWI5MWNiNWM3NTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
         },
         {
-          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/upload/EspierUploadHandlerBeans.java#L29-L196",
-          "version": "repo-lines-v1:sha256:24a5b7ac6f5faf0bf5994bd3b4b1b0670c6f87dc947feb76ec5e57077a90ae26:eyJzZWxlY3RlZExpbmVDb3VudCI6MTY4LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI3MjFjNzYwM2ExM2MzMmM1NDFmZDU1ZjJjZDNlMTEyYjVjMWVmZjZkNDgwNThhYTZmMTM3OWVlZjIxNzRmMWMzIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI2N2NkYTgyZGE2MDYyMzhlMDVlNjIzOTk1NjljNWVlMDM5OTM0MTk2NDhhZTVkNDNhMmJmOGNkNjM0N2Y4MjYzIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJjYmM2M2EzYTg3NDg3NzliYzEzYzlmOGIzYzczNTIwNGI3OGI2M2VmOWUxNmQ4MWQ5NGEzZjRiZmZkMDkxN2Q1IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJiZjdmMWQ0MzMzZTcwYzM1OTg2MjE1ODI5ZGYzYTFkMzcyZjAwOWY2NDRjZGRmMDU2ZmRlNTc2NmE5NDIxNmE0In0"
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/upload/EspierUploadHandlerBeans.java#L27-L232",
+          "version": "repo-lines-v1:sha256:b4334aadc32835619be53f3012fbbb8e312ab5fc25cc6d463acd8ec6878dfce3:eyJzZWxlY3RlZExpbmVDb3VudCI6MjA2LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJjMDU0YWVjOGNjZmY3MTNiOWYzYjRiNmMzYjZmOGE1NTc2OTU1NWMxNGMwZjZhOGY3YjA4MjM2MDQ5NzEwZTdhIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0MTJjYTM0NWNjZjc1YmY5YzA4MDZiY2U2OTViZThkZTgwOGI3OTk4NDI1MWE3YTU0ZDIwMmNmNjEwMWRkNDUxIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiIwM2E5Yzk4Y2I5ZGEyMmRlZjE3NmU0ZWE3OGM2ODFkZWZiYmJjYzE5Yjc0OTI2ZTUwNWJkOGViZTEyNGI4YmJlIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MCwiZm9sbG93aW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1In0"
         }
       ]
     },
@@ -262,15 +270,15 @@
     },
     {
       "id": "claim_446350d06b044a37b8c010f8d87db0ea",
-      "statement": "AdminAuthInterceptor (triggered by @AdminAuth on method or class) verifies the operator Bearer JWT with OperatorJwtCompactCodec against an HMAC key built from JWT_SECRET (base64-decoded or raw UTF-8), rejects expired tokens, enriches shop-app member tokens, runs CompanysActivationService.checkUserAuth (403 on failure), attaches the selected distributor for operator_type=distributor via OperatorDistributorSelectionService, and stores the claims in the request attribute OperatorJwtAuthenticationFilter.OPERATOR_JWT_USER_DATA that all controllers read.",
+      "statement": "AdminAuthInterceptor (triggered by @AdminAuth on method or class) skips verification when PosJwtRequestAttributes.POS_JWT_USER_DATA is already set (POS requests are pre-authenticated by PosJwtAuthenticationFilter), otherwise verifies the operator Bearer JWT with OperatorJwtCompactCodec against an HMAC key built from JWT_SECRET (base64-decoded or raw UTF-8), rejects expired tokens, enriches shop-app member tokens, runs CompanysActivationService.checkUserAuth (403 on failure) and attachOperatorIdFromSessionClaims, attaches the selected distributor for operator_type=distributor via OperatorDistributorSelectionService (defaulting distributor_id to 0), and stores the claims in the request attribute OperatorJwtAuthenticationFilter.OPERATOR_JWT_USER_DATA that all controllers read.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/web/interceptor/AdminAuthInterceptor.java#L127-L143",
-          "version": "repo-lines-v1:sha256:1947ddcc11bccee95db183ca0ad50d483d573670303f09c1be565d89e7ecb712:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY1OGYwMzdhZGVjM2FkNDhjMTJlNThhYjlkNzE2M2MzNWE0MzQ5NTRlOTYwY2YzY2RiNTVkMGE1MTdiMWRmNmEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY3YWJlM2M0ZjU5OWMzOGM2OWQ2ZmQyY2MzMWE2ZDVlZjE4YTZhYzg2OTVkMTY3MTAzMzBkNjlkMzMzMzFjNDgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQwYWE0ZDc0M2NmMjZjOGYwY2JlZDRhOGIwYjM1YzhlMmJkN2Q4YTBiOTdmNTcyZGRhNzUyNzE1NjBhNzRkNTgifQ"
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/web/interceptor/AdminAuthInterceptor.java#L68-L90",
+          "version": "repo-lines-v1:sha256:b7d7ee438df798656a92f78db4d96574475795abb525b90e3f7eb28494a97b19:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyN2ZmNjgzODVlNzgyYzJlOWYwZGViNDdhOGE0ODVlMWY2MGQzYjFkYTAwMWU2MjRmNDM2ZWU0MDgyNWI3ZGYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImYwZmNkMGNhNTIzNzg0ZjU3OWQ1NGU2YTM1MzY1OWZiNjI1YzhiNTVhZGY3ZTY3NGRlYTQwNWVkZjhjZDU2YWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJjZWIzYmJlNWY5YmU3NTFmMjU2MDEwNDI2OWMzZTc5ZTQwMWVlMDQ2MTcyNmRjMWRmMTMzMDkyMzg5M2M4NjQifQ"
         },
         {
-          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/web/interceptor/AdminAuthInterceptor.java#L56-L124",
-          "version": "repo-lines-v1:sha256:056371cb928c21d51d73672307a45f7e90a1f72cba528ffd85c7c1f7a1222191:eyJzZWxlY3RlZExpbmVDb3VudCI6NjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE2ZGU0NjUyZTA1YTE0OTQ1ZmUxZjljNjNlYWExMzNlNDQxNTlmZGU4OTk3ZjU5ZjllZWZkNDI4OGEyNWMwMDEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY2YWMwM2VkNmRmNWE5NjNkMTcxZDdiOTk2Y2ZmNzg3MDZmN2YxZDJiZTExYzEzNWQwMWYzNmM1ZWYyMTY1N2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRiY2FjMTllY2Q0YThiM2FkYTQxMWRiNmQyNzAxMzc3NzQwM2NhY2QyZjBiMDY5MmE4MTcxMzMzNTljOWY4NWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM4NmE1ODk0MGI4ZWUxMTI2NDZhZWIzNmQ0N2NjN2E0OWEwMDBiNTYwNzU0Mzk0ZmFjNmZkZmY5NDBjYWJjNGUifQ"
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/web/interceptor/AdminAuthInterceptor.java#L92-L147",
+          "version": "repo-lines-v1:sha256:97153371977398f0d8a9b2c8ce691b684b284b8e8b6fc0c9ab8bc9ed419d5962:eyJzZWxlY3RlZExpbmVDb3VudCI6NTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZlMzQ2YWYwNGJjM2Y4ZWVlZjcwN2JiM2RkZTFmNDNhZGUyZDAyNDU3ZWY2ODkyN2NhZTQzYTM5MjI0NjhiMWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjllZDgwOGFhNmJkMGFiMGFjN2EyZWY4MWU5ZDc2YzQ3OTllMjYzMmY4MjdhOTgyZmZiY2E5ZDYzNGRmNjkwN2UiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA5ZGMxNmFhMDNlZmY3NDlmZDBkNDYzMDdjZjI3NmJkOTc2YWE2ZjdlOGE5YTk4M2ViNTAyZTRjOGU4ODM5MWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZmMzg4ZWUxMzE4YWRlNzQ1ZTM1ZGYwOTg1NzgxMTQwMGQ5MTJiZGQ1MjU1NDFjY2FjYzM3NTdkMmMxN2VjNzQifQ"
         }
       ]
     },
@@ -346,15 +354,19 @@
     },
     {
       "id": "claim_8d2290901ca5439c9c8fcbb5c42fb215",
-      "statement": "FrontWxappEspierUploadImageService enforces a per-user daily upload quota with the membersStringRedisTemplate key uploadImageNum:<companyId>:<userId> (capped by USER_UPLOAD_IMAGE_NUM, default 10, 86400-second expiry), validates jpg/jpeg/png ≤ 2 MB, writes to the image disk with an MD5-of-time+content object key under an Asia/Shanghai yyyy/MM/dd path, and returns the public URL; getPicUploadToken enforces the same quota before delegating to FileStorageService.getUploadToken.",
+      "statement": "FrontWxappEspierUploadImageService enforces a per-user daily upload quota before any storage work with the membersStringRedisTemplate key uploadImageNum:<companyId>:<userId> (capped by USER_UPLOAD_IMAGE_NUM, default 10, 86400-second expiry; the counter is incremented before validation so a rejected upload still consumes one attempt); uploadImage accepts only jpg/jpeg/png extensions derived from the original filename within the 50 MiB cap, writes to the image disk with a md5(yyyyMMddHHmmss)+md5(content) object key under an Asia/Shanghai yyyy/MM/dd path (prefixed with <companyId>/ only when the H5 claims carry a truthy company_id) and returns the public URL; getPicUploadToken enforces the same quota before delegating to FileStorageService.getUploadToken, and uploadeLocalImage bypasses the quota via the local-only FileStorageService.uploadImportLocalRelativePath.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/front/FrontWxappEspierUploadImageService.java#L47-L71",
-          "version": "repo-lines-v1:sha256:1440100120e9cf8ac2e6faf638494fbcad1739057e7aedd1addf2466dbde7632:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJiMzM2YzQyYjJmNTIwN2I3NzVlNTBhOGRhY2UyZDZkMTViMjZmNjFlOGNkYTJjYTRkNDNmY2U0YWU0ODQ0ZjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZhMWE1NmQzOGIwMjgwNGZhMDQxZDQxZTE0MzJhYzllZDQ1MTQ2MmNlZmI3ZWJhZmI4MThmZDYyYzk4MmIwYmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxOWRjMjBkNTY2NGRiNzMxMDEyZDRkY2FlNWRiOTljNWI4ZjFhNDE2NzRmZGRjMDhmYTU5MTIyMzY1NDdmYWIifQ"
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/front/FrontWxappEspierUploadImageService.java#L168-L187",
+          "version": "repo-lines-v1:sha256:06fa19c6ae95661a3909f9cf994f6dd1bc9c05c08b14c236206d84ec89c77118:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY2YjYxZWQ2MDk1ZTJlZjQ2ZTZlYTc2NDYxMzg0YzRlODU0MTg2YmY4NTdlM2RmZDkzMmM4ZTJlYjJlNWI0ZmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU3YTgwNDMwYmZiOTdjMmM2MzAwZjYyZjk4OWNmNTdjODlmODdmMmE4MzY3YTA0NWUxNTgxNjgyNGJkOWVkMWUifQ"
         },
         {
-          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/front/FrontWxappEspierUploadImageService.java#L73-L181",
-          "version": "repo-lines-v1:sha256:2458870701af4f9db3c7fde96d8fce7a027c9295f1c0bb14d207a71f16afa131:eyJzZWxlY3RlZExpbmVDb3VudCI6MTA5LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI1ZTI4Y2RlMmRhY2MzNjI4NjJmN2VhZTRkNTA4NTIxOGJjZTVmNjI3NjcxODZlODFlN2I1Nzg5NmE5YTRmZmViIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI5YjE5NjZmMGQ3MmFjN2IwYzc0Y2ZlYWQ3ZmRjOGY1M2M3OGQwYThmNzc0MGUyZDU1N2MxYjViZDdmMmU4M2QyIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJlZjI3NzBmNGZiYjhhODY5YWUzOTVjOTNlZjJiMDdmOWU0ZWVhMzMwYjU4ZTgyMWMzZWEyZTVkMzRlNzU0MzYyIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIxZTE3NmM1ZjU4ODMxNDM0MmI4NjIxZTc2OTZlNDBjZTllYjJlZWM1YTEwOTBmZGVjZWIxMDM5YWYxN2I1ZjEzIn0"
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/front/FrontWxappEspierUploadImageService.java#L50-L72",
+          "version": "repo-lines-v1:sha256:dda41deecaf951a2e62fac3cfb32c1302148d7eb572172f2cf98dadfd00f9e65:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIyOTQ1ODUzZDcwZjQ4MmNmOGE3OGE4MDM0NTAzZTY5NTYyZGYzN2ZkMTI2NmVjOWZlM2Q1ZDdlNWIyMWQ5OGYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU0NjFkZDhiNjdmYzg3ZjdlOTgwNDExYWZiOWFlNzJmMGIyMDU4MTQ1NmIwNjkzNWQ0NjJmYmE2Yjg1YWVhZTkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNmMjE3YTk3ZjBiMmUxZmNjYTQ3MzJkZWQyMGUwM2E5ODVlYjRhYzNmYjMzZDhkOGViZDEwZGMyNGE4MzIwMDkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk1MzU0NzkyNjIzYzBlODIxNGRiNGU0MmFjNDY0MzNkNzI5ODYwZGExMmY4YmJiY2MzMTBkYjg3NWZiMTk3ZWMifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/front/FrontWxappEspierUploadImageService.java#L73-L167",
+          "version": "repo-lines-v1:sha256:c91703dfad36cea657f4828b08d766b718288cbfb83848e6691f6e67765cb0d0:eyJzZWxlY3RlZExpbmVDb3VudCI6OTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImExNzU0NzcxY2I2YTc1N2Q3OTRiMTAzYTQxMTIzMmMzNWUzMGM0ZmMyZjQ3YjQwN2U0NjVhODU0NWM1MThmMzciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNhNTdhNzI4YmUyMjIwZTM4NzQzNzVmOWM5Y2U1N2NkMmI5ZGIxOTMzOTMxYmMxZTZjNzdkZmQ0NzVmMGQxN2QiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM2NGVhMjliMWY0MDBlNGEzNDczYzk2OGMzZmQ3ZjZjZjlkMDE4ZTA4YjgyNGNlZmM1YWZlNDZiYThmOTk3YWIifQ"
         }
       ]
     },
@@ -403,8 +415,8 @@
       "statement": "ecshopx-theme (package-info: decoration, templates and page configuration) is the largest supporting bundle, with nine admin controllers (PagesTemplateController /api/v1/pagestemplate, PcTemplateController /api/v1/pctemplate, PagesTemplateSetController, WebMenuController /api/v1/web-menus, WebMenuItemController, PagesAdPlaceController /api/v1/adplace/{popup,carousel} with submit/audit/withdraw, PagesSideBarController /api/v1/sidebar, OpenScreenAdController /api/v1/openscreenad, MemberCenterShareController) and seven front controllers under /api/v1/h5app mirroring them; theme's front PagesTemplateController also exposes GET /gettdk backed by tdkset's TdkGivenSaveService.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-theme/src/main/java/cn/shopex/ecshopx/theme/api/admin/v1/PagesTemplateController.java#L70-L300",
-          "version": "repo-lines-v1:sha256:f90d6d2bdac1221d1a8ab3126aa975fb23dba2c08efda324d733989810a3c4a6:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMxLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIyM2M5MWYwN2YyMDcwYWZhZDAyMTllZDg5NTEzMzFkZTNlNTdkNWRjNTBmYmE3ODY4MTA0ZTMxNTI3YjQ3ZGFkIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0MThhNDk3N2E4ZGRkZmI2YzMyNmQzMGQxY2NjMDc1ZGIzMjViZjAxMzNjNDI4OTM2MGQ3OWRmODg2NGE4NjQ5IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI5NmFlYjIzYzczMDMxODNkMjllOGE0NzVhNDQzODIxZDliNTM1N2M1NzI1OTc4MGEyOGIwZjVhMTNjNGQwMzFjIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI4ZWM3OGJjOTg2OWNkOTFiMzE5NjA2MWZkNGExMjhjMThjZTNlZGI4OTA4NzZiZTRiNjE1ZjI2ZGQxMGMyN2NkIn0"
+          "resource": "repo://ecshopx-theme/src/main/java/cn/shopex/ecshopx/theme/api/admin/v1/PagesTemplateController.java#L72-L304",
+          "version": "repo-lines-v1:sha256:a90127ef573d48e13ec9eeaea956459450cd3b4dab9f4d98f17b91a20ebb716c:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMzLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIyM2M5MWYwN2YyMDcwYWZhZDAyMTllZDg5NTEzMzFkZTNlNTdkNWRjNTBmYmE3ODY4MTA0ZTMxNTI3YjQ3ZGFkIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0MThhNDk3N2E4ZGRkZmI2YzMyNmQzMGQxY2NjMDc1ZGIzMjViZjAxMzNjNDI4OTM2MGQ3OWRmODg2NGE4NjQ5IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI5NmFlYjIzYzczMDMxODNkMjllOGE0NzVhNDQzODIxZDliNTM1N2M1NzI1OTc4MGEyOGIwZjVhMTNjNGQwMzFjIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI4ZWM3OGJjOTg2OWNkOTFiMzE5NjA2MWZkNGExMjhjMThjZTNlZGI4OTA4NzZiZTRiNjE1ZjI2ZGQxMGMyN2NkIn0"
         },
         {
           "resource": "repo://ecshopx-theme/src/main/java/cn/shopex/ecshopx/theme/api/front/v1/PagesTemplateController.java#L186-L200",
@@ -633,7 +645,7 @@
           "version": "repo-lines-v1:sha256:093c0fd3590ef16efede489251008b7e0e1f38560cd1f8dd3f5ddc506384381d:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE4MzA4NTJmY2MyYTM2ZGNjNWRlODE1YzRhMmU4YjY5NDBhZGQ5N2YxZDY4MTEyZWFhMjhhNTA0OGQ4YTZmNGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRiOGU4Mjk1YzQwMTQzM2Q3YTIxYTMxNGE0Yjk4YTNiNDFmZGNjOGE3ZDQwZjhlMTlkZjA2ZTVhZmVhN2I1MDAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM2OGM0YmZkMTM3OGUzMWFmMGRhYjRiNzUwMWMyZjBmMDg1MzhkOGNiZDMwNDBlMDYzMjlhMWM1NGFmNTg5YmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImEwZTBjZGViNzQ5ZGMwY2RlMzgzZDcwZDhhODEzY2I1YmZiN2M1ZTY2ZjlkN2FkNDc4YzM2ZGRkNzU4ZjU0ODAifQ"
         },
         {
-          "resource": "repo://ecshopx-form/src/main/java/cn/shopex/ecshopx/form/api/admin/v1/UserTranscriptsController.java#L57-L80",
+          "resource": "repo://ecshopx-form/src/main/java/cn/shopex/ecshopx/form/api/admin/v1/UserTranscriptsController.java#L58-L81",
           "version": "repo-lines-v1:sha256:12c2f8b30a906f448f4905556f5f281775422263730fb495422863c756fddb5d:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE4MzA4NTJmY2MyYTM2ZGNjNWRlODE1YzRhMmU4YjY5NDBhZGQ5N2YxZDY4MTEyZWFhMjhhNTA0OGQ4YTZmNGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM1NDMxMWQxYmRlOTFmNGYzZTg1ODA3OTY2Zjc3YWZkMjlmZTk3MWExYjZhZmY1YjEwNDc0NWFlMzRjMDliMGMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcwZjAxYzdmNTFmN2FmYWZhOTcwNWZjMzdmZGU4NGRkOGUyMDYyNTQ2N2I5Zjg4OWZkNzRlZDg2Zjg5MDQ3YzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjVlMWUwMzE0MTIxMTZjN2RmZDRlMWM4YWFiYzUwM2ZiMjM5ZjgyMzYxNzExZDRlNTRiZmEwYjAwOTQ0ZTY2NjMifQ"
         },
         {
@@ -661,7 +673,7 @@
       "statement": "ecshopx-tb-items owns no controllers: the module contains only its package-info.java (declaring an external-goods-sync domain that may host service implementations without a v1 HTTP stub), and the actual Taobao item import behaviour lives in the upload_tb_items espier upload type — the handler registered by EspierUploadHandlerBeans (with the xlsx-only check) and the row work in goods' UploadTbItemsEspierImportRowSink → UploadTbItemsImportRowService.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/upload/EspierUploadHandlerBeans.java#L184-L196",
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/upload/EspierUploadHandlerBeans.java#L190-L202",
           "version": "repo-lines-v1:sha256:98b5d05252c8eab7693fc3854c34cb914ab5fc75926bcbf0dc418a21852fa1ed:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcyMWM3NjAzYTEzYzMyYzU0MWZkNTVmMmNkM2UxMTJiNWMxZWZmNmQ0ODA1OGFhNmYxMzc5ZWVmMjE3NGYxYzMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhjNTBlNzM0ZDY3YjYxZWYxNWM3OTgzNzllYzM1MmQ0ZmQ0ODEyYTI3MDliNmNmMjc0MzM5ZjJjNzlkM2U0MGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJmN2YxZDQzMzNlNzBjMzU5ODYyMTU4MjlkZjNhMWQzNzJmMDA5ZjY0NGNkZGYwNTZmZGU1NzY2YTk0MjE2YTQifQ"
         },
         {
@@ -749,10 +761,46 @@
           "version": "repo-lines-v1:sha256:f7d2711c074a53224d8d3b33516a7270654182846220af89fb2ef59b9bd5585e:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJkN2Y3YmFiOTYwZDU2ZmJiNzRjZDkxOTJmYzZiNjFlYTIwNjNjYWQ4NmIzNjU2ODg0NGU0NjhmYWZkNzYwNjkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA3OTEzODI5NDhiYzczNGM4YmE4OGI4NmU5MTk3YTYyYjczNzRmNTkxMDAzYWE3ZWEyZTEwZGUyNzQ5ZmExMGQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQzNzNkZmU2MWNhYWI3Mjc2ZmZhYjdlN2I5ZGFhNDlkZmRjY2IyYjFmODUyNmRlZTJjYmYzOGQzOTI4ZGRlMGIifQ"
         }
       ]
+    },
+    {
+      "id": "claim_01bba10f7b8840b587b593341596dafb",
+      "statement": "EspierUploadHeaderCatalog maps each import file_type to a UploadHeaderTitle(all, isNeed, headerInfo) triple: ordered Chinese display-label → row-field-key maps with a required-column subset, plus a headerinfo/*HeaderInfo class of per-column UploadHeaderColumnInfo(maxLength, remark, required) rows that drive template download and per-cell validation; PosStoreAccountHeaderInfo (姓名/员工号/邮箱/手机号/角色/门店/状态, all required) is the contract the companys POS store-account import relies on, its parsed rows consumed by PosStoreAccountEspierImportRowSink in ecshopx-companys; forFileType additionally covers catalog-only types with no registered handler bean (discount_goods, marketing_goods, purchase_goods, employee_purchase_activity_items) used by template-download paths.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/espier/PosStoreAccountEspierImportRowSink.java#L22-L48",
+          "version": "repo-lines-v1:sha256:416854d6d6e19c7b908f68ee4fe1cc77252dcf3e4497076aedd6c414f0e241ce:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBmZmFjOWYwZWMxMGRlMjU3ZmNkMmY5Y2VhYmI2MGVlZDllN2YxZThhNjg3MTRkZmMzYTM4ZmNhNjUwNzY0NDUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQxM2UzY2Q1ODRmMDVmNmFhZjkzZDYxMzVjMjA0N2Q2NmFhYTdkMmIzYTQ1ZDhkZjBlOGZhNzBkZTMyYTBlOTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/upload/EspierUploadHeaderCatalog.java#L710-L767",
+          "version": "repo-lines-v1:sha256:25281580cb2d52ac3382c1111eea829dffcb04a7a5ffe8a4ff8163338a9fc324:eyJzZWxlY3RlZExpbmVDb3VudCI6NTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQxMGIzNmFhNzRhNTliY2Y0YTg4MTg1ODM3ZjY1OGFmYWYzNjQ2ZWZmMmJiMTZjMzkyOGQwZTkzMzVlOTQ1ZDIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM4ODZmYTc3OWQyOWVmODlhOWQwNTRhZDYyYTE0MmU1ZjE4ZWMyOGRmMmIxM2E4MjFiMWU5MmYzZjVlNjAxMzkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/upload/UploadHeaderTitle.java#L22-L41",
+          "version": "repo-lines-v1:sha256:412b7a9fa0543e62c7de4e67e82845cc9b178aeeb1c28950a251efabf42922f9:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNlZTVkN2NkYjU0ODA3NmRjNjY4NTE3M2E0ZjIwMTg0MmUxZWEyODc0ZThlNGNjODhhOTA5OTI1Y2ZlY2QyNDMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/upload/headerinfo/PosStoreAccountHeaderInfo.java#L25-L37",
+          "version": "repo-lines-v1:sha256:83fe99eb848ae1545eecc4fe0a8dc32cf3a468a15c09d8e207a3ae3f925e6eca:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkwOTQyODljMzA2ZTM1OTRlYWIyMjQ0YTEwZWQ4MDA3NjZmOWMwNTc1ZjZjZmFkMmZmYTVhMWZiMGE0MTM5NDEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRhNWM2ZjQ3MTU3NzZiZmMyNmI4MDExYzFmNTkwOWU1NTFhYjc2MTMwOGI3NjBlMzZlMWNhYTRlMWNhMTVkY2EiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_5cb05bd5613f492cb3ec0f0f08ff3b7d",
+      "statement": "Theme's admin PagesTemplateController routes are all gated @Activated(routeAlias = \"pagestemplate.*\") and re-read company_id from the OPERATOR_JWT_USER_DATA request attribute set by the espier middleware (UnauthorizedException when absent); the lists endpoint additionally defaults distributor_id from the JWT claims, rewrites the default weapp_pages=index to distributor_index for distributor-scoped queries, supports an optional regionauth_id filter, and localizes responses from the country-code request header (default zh-CN).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-theme/src/main/java/cn/shopex/ecshopx/theme/api/admin/v1/PagesTemplateController.java#L70-L96",
+          "version": "repo-lines-v1:sha256:16e98e1fc026f1b8b00668e67095bda378fcc5037a02f409b3d1a094af9c6c39:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE5MThkMDg5NjNmYTc0NWNkOTMxMzU3YTQ1NmIxYjA1YWE4YzhmYTY4MTE2ZWUyYTBiMjBkNTdhMDBjOTQ1MjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNlY2U1NjllZjc2OWQ5MjEyZTIzZjBhOWU3MGZlZTFhNDVmNjRjNTJiODBkMDk3ZGIyYWNjMjczZGVhM2ViMmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY4MGNmNjFjMzZhMmQzNjY1ZDFhMjA4NDM1Y2VkNzExZTg0YTJmMmY5MjcyNWRjNTQwOGFlZWIwNDg4NjY0NjEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-theme/src/main/java/cn/shopex/ecshopx/theme/api/admin/v1/PagesTemplateController.java#L98-L160",
+          "version": "repo-lines-v1:sha256:3c44c30973a51d0e961fe654ad50e6e513d9b179914c23c9cd2d12029fa957bc:eyJzZWxlY3RlZExpbmVDb3VudCI6NjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRiM2E0ODVhZTE5MDRhMGI3YzlkNWRhZjhiYTRkMzM4MzY4YmQ0NmQ4ZWFjNGVhZTFhN2FkZThjMGYzMDgwOTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMwOTU4OTZhYTQ1NGQwZDc4MWE1MWM1MGFkYThlOWZjOTFiMTA4YTJmMWY2NDAyNDdmNmRkYTdhMjI1NDNkMzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk1MzYwZDkxYzY2MWU2ZjMwYjBjYTcyNWRiZWM2NDU2NTIxY2M1YWNjYTkyN2RlZWJlNjNmODE4MWM4Y2I0MWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjEwZTY1ODBhZDVkZDRjMTk0OGE4ZmJkODk1MjZjNzZmMDM5YTU4NjJlMDE4Y2UxYWY1MGY1MGE5M2Q0MDYwM2UifQ"
+        }
+      ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.7.2",
-    "at": "2026-10-21T12:26:22.580Z"
+    "by": "openwiki/0.7.3",
+    "at": "2026-11-04T17:09:55.577Z"
   }
 }

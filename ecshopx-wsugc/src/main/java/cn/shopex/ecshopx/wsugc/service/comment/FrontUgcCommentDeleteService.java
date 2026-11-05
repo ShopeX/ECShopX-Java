@@ -38,9 +38,10 @@ public class FrontUgcCommentDeleteService {
 		this.ugcCommentRedisCounterService = ugcCommentRedisCounterService;
 	}
 
-	public Map<String, Object> deleteByMember(long userId, long commentId) {
+	public Map<String, Object> deleteByMember(long userId, long companyId, long commentId) {
 		LambdaQueryWrapper<Comment> q = new LambdaQueryWrapper<>();
 		q.eq(Comment::getUserId, userId)
+				.eq(Comment::getCompanyId, companyId)
 				.eq(Comment::getCommentId, commentId)
 				.eq(Comment::getDisabled, false);
 		Comment found = commentMapper.selectOne(q);
@@ -52,6 +53,7 @@ public class FrontUgcCommentDeleteService {
 		LambdaUpdateWrapper<Comment> u = new LambdaUpdateWrapper<>();
 		u.eq(Comment::getCommentId, commentId)
 				.eq(Comment::getUserId, userId)
+				.eq(Comment::getCompanyId, companyId)
 				.eq(Comment::getDisabled, false)
 				.set(Comment::getDisabled, true)
 				.set(Comment::getUpdated, now);

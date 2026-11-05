@@ -79,6 +79,10 @@ public class ItemsGroupSaveGroupItemService {
 			if (existing == null) {
 				throw new ResourceException("group_id错误");
 			}
+			long ownerCompanyId = existing.getCompanyId() == null ? 0L : existing.getCompanyId();
+			if (ownerCompanyId != companyId) {
+				throw new ResourceException("group_id错误");
+			}
 			resolvedGroupId = existing.getId();
 			itemsGroupRow = entityToItemsGroupMap(existing);
 		}

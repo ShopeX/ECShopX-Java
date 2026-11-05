@@ -23,6 +23,7 @@ import cn.shopex.ecshopx.members.domain.Members;
 import cn.shopex.ecshopx.members.mapper.MemberTagsMapper;
 import cn.shopex.ecshopx.members.mapper.MembersMapper;
 import cn.shopex.ecshopx.members.service.MemberRelTagsBatchCreateService;
+import cn.shopex.ecshopx.members.service.systemtag.MemberSystemTagWriteGuard;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -42,14 +43,17 @@ public class OpenapiThirdApiV2MemberTagBatchUpdateService {
 	private final MembersMapper membersMapper;
 	private final MemberTagsMapper memberTagsMapper;
 	private final MemberRelTagsBatchCreateService memberRelTagsBatchCreateService;
+	private final MemberSystemTagWriteGuard memberSystemTagWriteGuard;
 
 	public OpenapiThirdApiV2MemberTagBatchUpdateService(
 			MembersMapper membersMapper,
 			MemberTagsMapper memberTagsMapper,
-			MemberRelTagsBatchCreateService memberRelTagsBatchCreateService) {
+			MemberRelTagsBatchCreateService memberRelTagsBatchCreateService,
+			MemberSystemTagWriteGuard memberSystemTagWriteGuard) {
 		this.membersMapper = membersMapper;
 		this.memberTagsMapper = memberTagsMapper;
 		this.memberRelTagsBatchCreateService = memberRelTagsBatchCreateService;
+		this.memberSystemTagWriteGuard = memberSystemTagWriteGuard;
 	}
 
 	public Map<String, Object> executeOpenapiBatchUpdateMemberTags(
@@ -103,6 +107,7 @@ public class OpenapiThirdApiV2MemberTagBatchUpdateService {
 					throw tagNotFound(tagIdInput);
 				}
 			}
+			memberSystemTagWriteGuard.rejectTagIds(companyId, resolvedTagIds);
 		}
 
 		memberRelTagsBatchCreateService.createRelTags(userIds, resolvedTagIds, companyId);

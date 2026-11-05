@@ -35,6 +35,8 @@ import cn.shopex.ecshopx.members.service.MemberTagsListService;
 import cn.shopex.ecshopx.members.service.MemberTagsRelUserService;
 import cn.shopex.ecshopx.members.service.MemberTagsUpdateService;
 import cn.shopex.ecshopx.members.service.admin.AdminMemberRelTagsUserIdsQueryService;
+import cn.shopex.ecshopx.members.service.systemtag.MemberSystemTagCodes;
+import cn.shopex.ecshopx.members.service.systemtag.MemberTagGroupWithSystemHelper;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.Collection;
@@ -219,7 +221,17 @@ public class MemberTagsController {
 		String categoryId = StringUtils.hasText(categoryIdRaw) ? categoryIdRaw : null;
 		String tagStatusRaw = request.getParameter("tag_status");
 		String tagStatus = StringUtils.hasText(tagStatusRaw) ? tagStatusRaw : null;
-		MemberTagsListParams params = new MemberTagsListParams(page, pageSize, tagName, categoryId, tagStatus);
+		String tagKindRaw = request.getParameter("tag_kind");
+		if (!StringUtils.hasText(tagKindRaw)) {
+			tagKindRaw = request.getParameter("type");
+		}
+		String tagKind = StringUtils.hasText(tagKindRaw) ? tagKindRaw.trim() : null;
+		String editableRaw = request.getParameter("editable");
+		if ("1".equals(editableRaw) || "true".equalsIgnoreCase(editableRaw)) {
+			tagKind = MemberSystemTagCodes.KIND_MANUAL;
+		}
+		MemberTagsListParams params =
+				new MemberTagsListParams(page, pageSize, tagName, categoryId, tagStatus, tagKind);
 		long[] ctx = readCompanyAndDistributorFromJwt(request);
 		String requestLangTag = RequestLangTag.current(langueProperties);
 		Map<String, Object> data = memberTagsListService.getTagsList(ctx[0], ctx[1], params, requestLangTag);
@@ -458,10 +470,12 @@ public class MemberTagsController {
 		int page = parseTagsListPage(request.getParameter("page"));
 		int pageSize = parseTagGroupListPageSize(request);
 		String raw = request.getParameter("group_name");
+		boolean withSystem = MemberTagGroupWithSystemHelper.parseWithSystem(request.getParameter("with_system"));
 		long companyId = readCompanyAndDistributorFromJwt(request)[0];
 		String requestLangTag = RequestLangTag.current(langueProperties);
 		Map<String, Object> data =
-				memberTagsListService.getTagGroupList(companyId, page, pageSize, raw, requestLangTag);
+				memberTagsListService.getTagGroupList(
+						companyId, page, pageSize, raw, requestLangTag, withSystem);
 		return ResponseEntity.ok(ApiResult.ok(data));
 	}
 

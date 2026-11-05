@@ -23,6 +23,7 @@ import cn.shopex.ecshopx.promotions.mapper.SeckillActivityMapper;
 import cn.shopex.ecshopx.promotions.mapper.SeckillRelGoodsMapper;
 import cn.shopex.ecshopx.promotions.service.SeckillActivityCreateService;
 import cn.shopex.ecshopx.promotions.service.seckill.SeckillRelGoodsLifecycleStatus;
+import cn.shopex.ecshopx.promotions.service.systemtag.MemberCrowdMatcher;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import java.util.LinkedHashMap;
 import java.util.Locale;
@@ -36,16 +37,19 @@ public class WxappSeckillItemTicketService {
 	private final SeckillRelGoodsMapper seckillRelGoodsMapper;
 	private final MessageSource messageSource;
 	private final WxappSeckillStoreTicketService wxappSeckillStoreTicketService;
+	private final MemberCrowdMatcher memberCrowdMatcher;
 
 	public WxappSeckillItemTicketService(
 			SeckillActivityMapper seckillActivityMapper,
 			SeckillRelGoodsMapper seckillRelGoodsMapper,
 			MessageSource messageSource,
-			WxappSeckillStoreTicketService wxappSeckillStoreTicketService) {
+			WxappSeckillStoreTicketService wxappSeckillStoreTicketService,
+			MemberCrowdMatcher memberCrowdMatcher) {
 		this.seckillActivityMapper = seckillActivityMapper;
 		this.seckillRelGoodsMapper = seckillRelGoodsMapper;
 		this.messageSource = messageSource;
 		this.wxappSeckillStoreTicketService = wxappSeckillStoreTicketService;
+		this.memberCrowdMatcher = memberCrowdMatcher;
 	}
 
 	public Object getSeckillItemTicket(long userId, long companyId, long seckillId, long itemId, int num, Locale locale) {
@@ -57,6 +61,14 @@ public class WxappSeckillItemTicketService {
 								.eq(SeckillActivity::getSeckillId, seckillId));
 		if (activity == null) {
 			throw new ResourceException(messageSource.getMessage("promotions.seckill.activity_removed", null, locale));
+		}
+		if (!memberCrowdMatcher.matchesLimitedTimeSale(
+				companyId,
+				userId,
+				activity.getSeckillType(),
+				activity.getMemberTagIds(),
+				activity.getMemberTagMode())) {
+			throw new ResourceException("您不在该活动适用人群内");
 		}
 		SeckillRelGoods rel =
 				seckillRelGoodsMapper.selectOne(

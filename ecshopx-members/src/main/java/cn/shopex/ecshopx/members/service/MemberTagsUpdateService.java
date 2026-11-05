@@ -20,6 +20,7 @@ import cn.shopex.ecshopx.common.exception.BadRequestException;
 import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.members.domain.MemberTags;
 import cn.shopex.ecshopx.members.mapper.MemberTagsMapper;
+import cn.shopex.ecshopx.members.service.systemtag.MemberSystemTagWriteGuard;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import java.util.Map;
 import org.springframework.dao.DataAccessException;
@@ -32,11 +33,15 @@ public class MemberTagsUpdateService {
 
 	private final MemberTagsMapper memberTagsMapper;
 	private final MemberTagsSnakeFormatter memberTagsSnakeFormatter;
+	private final MemberSystemTagWriteGuard memberSystemTagWriteGuard;
 
 	public MemberTagsUpdateService(
-			MemberTagsMapper memberTagsMapper, MemberTagsSnakeFormatter memberTagsSnakeFormatter) {
+			MemberTagsMapper memberTagsMapper,
+			MemberTagsSnakeFormatter memberTagsSnakeFormatter,
+			MemberSystemTagWriteGuard memberSystemTagWriteGuard) {
 		this.memberTagsMapper = memberTagsMapper;
 		this.memberTagsSnakeFormatter = memberTagsSnakeFormatter;
+		this.memberSystemTagWriteGuard = memberSystemTagWriteGuard;
 	}
 
 	@Transactional(rollbackFor = Exception.class)
@@ -84,10 +89,13 @@ public class MemberTagsUpdateService {
 
 		LambdaQueryWrapper<MemberTags> qw = new LambdaQueryWrapper<MemberTags>()
 				.eq(MemberTags::getTagId, tagId)
-				.eq(MemberTags::getCompanyId, companyId)
-				.eq(MemberTags::getDistributorId, distributorId);
+				.eq(MemberTags::getCompanyId, companyId);
 		MemberTags entity = memberTagsMapper.selectOne(qw);
 		if (entity == null) {
+			throw new ResourceException("未查询到更新数据");
+		}
+		memberSystemTagWriteGuard.rejectWrite(entity);
+		if (entity.getDistributorId() != null && entity.getDistributorId() != distributorId) {
 			throw new ResourceException("未查询到更新数据");
 		}
 

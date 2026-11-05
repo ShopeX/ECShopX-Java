@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:f657f7994ff99d7299940215eb44938d912ca8a8c58edf6118dc5c5cda03f9d8",
+  "pageVersion": "sha256:f32b909e180cf892482da95cbef13c287290e02a8e0ad1553e99334983c2553c",
   "claims": [
     {
       "id": "claim_9752d7d3781543a9b36be65942a23176",
@@ -33,7 +33,7 @@
           "version": "repo-lines-v1:sha256:7fc83b0a2cf7f6a1b3fdec20f27d3616ee33aaab70d90a2bc7a87e178179641b:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIyNzQ2MzM0ZmRiZDY1MTMyMzlmMTMyNmRiOGI2MTI3NTdiNWIzMmMwODA4YjUwODFhOTkzN2Y2NTMzYjhkYjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjljODExNGUyOTMxYTRlNmEyM2QxMGY4MWQ5OTlkOGQ1ODM1MjdkNjBjYzQ2NmM0NmI5MzhkOTMyYmQ3NmUyYzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY1Njg5Y2VjYTVhNDlmYTU2ZjVhZDQwZGRjODllYmY3MDM0ZDA0MjRkZDNkNTcyNDcxZTZmY2U2ZjMyNjdhZjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY0NGJkY2VlYmFjZjc5MWQwNGVlZTQwOThjMDYyMmI1NGZkZWJlZDc0MDkxOWYzOTEyZDkyZjE3NTE1N2NhY2IifQ"
         },
         {
-          "resource": "repo://docker-lite/docker-compose.yml#L114-L146",
+          "resource": "repo://docker-lite/docker-compose.yml#L117-L149",
           "version": "repo-lines-v1:sha256:830e1d3110f778aab334048b4525d84a82f5335e2f31816cee81967bffc8af96:eyJzZWxlY3RlZExpbmVDb3VudCI6MzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIyNzQ2MzM0ZmRiZDY1MTMyMzlmMTMyNmRiOGI2MTI3NTdiNWIzMmMwODA4YjUwODFhOTkzN2Y2NTMzYjhkYjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc0ZmY5MzA1ZWI5N2RkYWQ1MjVhMmFlZTllMTg1YTg4ZWNlMzBkMjI2OTMyYWE5NjM0MTY5NDQ4OWY3NTU3MjkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY1Njg5Y2VjYTVhNDlmYTU2ZjVhZDQwZGRjODllYmY3MDM0ZDA0MjRkZDNkNTcyNDcxZTZmY2U2ZjMyNjdhZjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkxYTVjNGJhNTI0MjYyZWJhYWQzZTk2ODAwODI4ZmVjZDVkYzc4YWM1MGEwMWQ4MTIzNGI2N2RjZjU1MzA3ODUifQ"
         },
         {
@@ -44,7 +44,7 @@
     },
     {
       "id": "claim_f9ee4664081243f0b93084e0b6b6c256",
-      "statement": "Keys are read through three mechanisms with different failure modes: @Value(\"${key:default}\") for scalar keys (requires the key to exist when no default is given), @ConfigurationProperties(prefix=...) for grouped keys (35 classes across the Bundles, e.g. StorageProperties on ecshopx.storage, H5JwtProperties on ecshopx.h5.jwt, PrismCoreProperties on ecshopx.thirdparty.prism-core, DoumenIntlProperties on ecshopx.payment.doumen-intl), and Environment.getProperty/System.getenv where the key name itself is dynamic (SuperadminWxappTemplateMetadataService builds ecshopx.wechat.wxa-template-fallback.<key>.* names at runtime; SocialTrustLoginService falls back through System.getenv(\"H5_BASE_URL\") then System.getenv(\"COMMON_H5_BASE_URL\")).",
+      "statement": "Keys are read through three mechanisms with different failure modes: @Value(\"${key:default}\") for scalar keys (requires the key to exist when no default is given), @ConfigurationProperties(prefix=...) for grouped keys (35 classes across the Bundles, e.g. StorageProperties on ecshopx.storage, H5JwtProperties on ecshopx.h5.jwt, PrismCoreProperties on ecshopx.thirdparty.prism-core, DoumenIntlProperties on ecshopx.payment.doumen-intl), and Environment.getProperty where the key name itself is dynamic (SuperadminWxappTemplateMetadataService builds ecshopx.wechat.wxa-template-fallback.<key>.* names at runtime from the DB key). SocialTrustLoginService uses only @Value properties for its hosts — it contains no System.getenv calls: common.h5-base-url is the single allow-listed H5 host (resolveH5Host/resolveAppleCallbackH5Host accept a requested host only when it equals this property and return empty when it is blank; buildAppleH5LandingUrl throws 缺少 H5 域名配置), common.api-base-url with an APP_URL fallback builds the Apple OAuth API callback URI, and the opaque Apple OAuth state is bound to the host only via a one-time Redis entry (ecx:apple_oauth:h5:<md5(state)>, 600s TTL, written only when the host matches common.h5-base-url).",
       "evidence": [
         {
           "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/storage/StorageProperties.java#L25-L42",
@@ -55,8 +55,20 @@
           "version": "repo-lines-v1:sha256:48ff8882dcd8f4968ff9f60e5e87cd069e4de65770b02d44ed9e0887f6bfb1c9:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE2M2E0NmM3MTBjY2FiZWU5ODk2NTVjZmUxYTBmYWYwMzU3NGY5ZmMzNjQ4NTI0MDA2ZTVhZjMzYTlkOWI3ODEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM1Mzk0MmE5ZTk3M2NiZDg3Y2ZkMjI2NDA1MGUxYTlmMmY4ODRhMmFlZjhlMzZmOGQ1OGRiY2Q0NTUzYzQyZjUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNhMzAxNzdiNTZkNWE3MWJmZTNhMGM4MWUxNTgzN2Y3Y2FiMmU5ZjQyYmE4NTJjYmE3NzQyYWRmNzM0YTQzOTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjljZjVmMjZkOTNhMzM5NjlkMjJhNDM1ODUwMGQzZThiNzVlODFhNDgyYzFiMjcxM2ZiOGM4YmVmNjIzZmY1NTkifQ"
         },
         {
-          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/trustlogin/SocialTrustLoginService.java#L186-L201",
-          "version": "repo-lines-v1:sha256:9538c4522ecd000f6a9f2a6e3957706f5545c454ad0661ca6209e25a45948266:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEyNDg4MThlOWMxMTFjYWJhMWFlYWM5Njk3ZmZmZTgzNWRlNWYxYWQzMzU0ZmQxMTY0Y2QxMjc2ODc0NWI2YjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIyZjJmZjVmZWVjNjBmNTg3YzhmYWU0ZTg3ZjgwOWE2NjFjZmZlZDZiNDdhYWU1ZjZkNmEyNjUzYWE4OTUyZWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZiMjdhMTgzMGRmZTFkZWMzZTllMmUwNWU4ZjliMTAzZjZlMjYwNmY5OGY0MWMxOWVmMzZlMDlmNDE1NDdjMGEifQ"
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/trustlogin/SocialTrustLoginService.java#L194-L203",
+          "version": "repo-lines-v1:sha256:fee03471a6d91ecae6848a9a20a1155ed41a8dfff633c9f27afa7fb873627f8a:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZmZWQ5MTZkNGU2OGY3ZTJiMjgwMTJjOThhMmE5NTg5NmU3ZDY0NDJmMmIzOGEzNDViOWUxNWNmZjM0NjkyN2YiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRiOTk4ZTM0YWY3NzEzOWU0MTg4MjE2M2M1MTI1ZjJlMDRiOThjOWRkMTg1ZGRmYjY5YmZhZGZiZmRjYjYzNDYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRlMDAzMzZjNjliMjRlNzU4YmI3NDY0YzkwMmQ1NjE3MGIzNDg5NTJjMTIwYzliYWY1ODQwYzBiNjFhYWZiMTIifQ"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/trustlogin/SocialTrustLoginService.java#L395-L438",
+          "version": "repo-lines-v1:sha256:f2b11e1a9da4e1678673b3cb0dedf974ee4f8d308eaf4b27ab0bd7aa3916afdf:eyJzZWxlY3RlZExpbmVDb3VudCI6NDQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA3YzY2ODAxMTUzNmM3Y2NkNzRiYTIzMmRkMmU2YjE2MGMzZjgxYzhmMjFkOTUzZDVhYjI3MjFkODUxZDcwMDYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNlMWM2Y2IwZDI1MDc3YTU3ZGZiZTRhNGFkODcxOTkwZGNjZjgyYjdlNjBhZmUyOTJlNDg2ODMxYTEyZWMzZGIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZjNmRjNWY2MTQ5YWZmN2JlMThhMWFiZmQzMWJjNWU0ZjViYzk5MjY3MTY3YzBkMjE5OTVmYTgwYzg5ZDNiZmYifQ"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/trustlogin/SocialTrustLoginService.java#L73-L81",
+          "version": "repo-lines-v1:sha256:0afc4d74c8fb09e1cdc036cf775b982da284f975130d49afd35d111c4d1ecda4:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODM1NDZiZWE0NDdkYzg0YmYwN2IxN2YyYmUwMmFmNWQ0ZGUzMTRmODNjNGExMTZlZmM5N2I2Y2MzNDdkNmE0OSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNTBlMzk1YzZmMmE0Mzk1OWEwYTc4ZDM5MjhmNmZhZDYzNmRlNDc3MWY0ODYwY2UzOThmYTc4NGYwOWJjYzExYyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZWQ2ZDEwZWE2M2JlNmIzODI5YmIzZWM1NzViYmY1ZDc3MDhlZTllMjdlMGE1ZDRhZDllZjAyYjBiNjczYWU1NCJ9"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/trustlogin/SocialTrustLoginService.java#L94-L131",
+          "version": "repo-lines-v1:sha256:df8e667dbdf630f3598f1636352b0f430f366c17857ae81c27a7990a4c7e7e3d:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg0OTZiYzc3MDIxMDc2NTQwM2FiOTFjMTgxNTQ3MTk1ZDk4OTI1NzMzMTA2Y2Q0NTU4ZjNkOTZmZDczMjUxYTkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFkNjBhOWI5ZjJjYjA3YjAwMzIzMWI2MDg3ZGY2OTg3NmU1NGY1ODkyY2MyMzI0ODg4NDkxNWYyNTVmNDU5ODciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRiNjkyN2Y4Mjc5YWYzNDlhYjBjNzBlYWYxNzkzZWZmOThmNTBiYjM0MmZhNjFhNmU1MzNkZTNhZDViMjhjMjUifQ"
         },
         {
           "resource": "repo://ecshopx-wechat/src/main/java/cn/shopex/ecshopx/wechat/service/wxa/SuperadminWxappTemplateMetadataService.java#L151-L162",
@@ -237,7 +249,7 @@
       "statement": "Empty third-party gateway base URLs change behaviour rather than failing: PrismCoreHttpClient/PrismIshopexHttpClient/ShuyunSignedGatewayClient all guard on isConfigured() (hasText on base-url + app-key + app-secret) and return null before any HTTP, so callers silently degrade; ShopexErpOpenApiClient.call returns {\"fail_msg\":\"ome openapi url not configured\"} when ecshopx.ome.openapi-url is blank.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L258-L290",
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L262-L294",
           "version": "repo-lines-v1:sha256:8fa89b8c9717ab2d19172590c3ee40446069da9afe0b894b902e644682b340c7:eyJzZWxlY3RlZExpbmVDb3VudCI6MzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA5YzVjM2FjOWM1YmJmZWM5Y2ZhOTRlY2VjMGE0NWUzMmJlMDJkNmIxY2YzMGEwNTJjY2IzOGYxOWNlNzg2ZDMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM5NjJmZWUzMmUzNDMxOGQ3ZWY1M2Y1OWU5MmI3MDA5M2Y3NTg4ZDU0MDY2NjY1NzAwMzQ4NzQyMmRmOGUyMGYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ2ZTI0NWRkMDJhYzYwMDA5YmJlNWExZTYzNWUzZGE5NDAyOGQzYTI1NDA0MTRjNGIxMjljMDUwYWVjMDRhZTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdlODY2YjJkNDcwYjM1NTNlMDdiZmYwMmExZjcxYjA3NGE1ZGNiYTlmMGNlYWQxMTEwOWMzOWUxYWE0MTAwMWYifQ"
         },
         {
@@ -259,7 +271,7 @@
       "statement": "Empty APP_URL or ecshopx.jushuitan.oauth-base-url changes the Jushuitan admin setting payload: with APP_URL blank the shop_callback_url is emitted as the relative path /api/systemlink/jushuitan/{companyId}, and with oauth-base-url blank oauth_url is a bare ?query-string; a non-empty oauth-base-url must start with https:// or JushuitanSettingAdminService.getSetting throws BadRequestException (聚水潭 OAuth 地址必须为 https 绝对 URL).",
       "evidence": [
         {
-          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L261-L268",
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L265-L272",
           "version": "repo-lines-v1:sha256:991ecc666be5d2232543a0257b6f021505c22c4fec93a51c8751126688a4ae22:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZGVhNjk2ODI0OTUyMTMzMjc5OGUyYTMxYTAwYzY0OTdiZGIxODNlY2QxNGFkM2VjMDA4ZDAxOTM3ZmU0NjkyNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzAzYjJkMWI1M2U3NWExNDU1NjI2Yjg2ZTU2Zjk5NWFhZDNlNzczYTZjNDhmNWRjMmU0Y2FmMGVhZmE3NzBkYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTg0MGIwOTNmMmY1MzM5MzY2ZWIzMGQ1Yzc4MmJhYmE0NWNkMGMxMTEyM2ZlMTdkNTFlNTRkYjI2M2JmMGU2YiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDdiMGMxZWU3YmNmOWM4MTFiZDE0ODk1Y2QyYzE5MzUyMzRjNjE0YTU3MWMwNWIyMGE5MTJlMDJlOGE4NzFjOSJ9"
         },
         {
@@ -277,7 +289,7 @@
       "statement": "The http-enabled / NoOp gating pattern (DmCrm point-detail-list and update-member-info-by-mobile, Shuyun member-modify and member-unbind, Shopex CRM sync-single-member, Marketing Center, Shansong, WorkWechat, and WeChat wxa subscribe-template) selects the *NoOp bean when the flag is false or missing via @ConditionalOnProperty(matchIfMissing=true) and the HTTP implementation when true; additionally ecshopx.thirdparty.dm-crm.setting-read.redis-enabled=false unregisters DmCrmSettingReadRedisService so DmCrmSettingReadNoOp treats every company as unintegrated with Hope.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L288-L334",
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L292-L338",
           "version": "repo-lines-v1:sha256:09558576cb212ee29b25c900038ec8f47c96f538518a8ffaa5057b7c5c659362:eyJzZWxlY3RlZExpbmVDb3VudCI6NDcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFmNDYzZThmYzdiMTkyOTdkOGFmYzJmNjI0YTY1NjBkNmZlNGJkNWM1NjJmYjJiYzViMjU4NDQ3YzAxNDVlODUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2ZjgyYTc4NjkxZTk3MDMzYzVjZDA4NTQxNzZhMDc0ZmQ0MDkxY2IwMDIyNWRjYjE0NTU3ZmYwNDM0NzcwZWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRmZjIyOWU1YWZlOWM3M2QxMGY3ZDg4ZmRjYzE0ZWJlODUzNDc2MDBhMjEwOTFiZGEzZDNkM2UwM2E5ZWVjNjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImVhZjFjNWM2ZTRkYmZiNGZjNzEzMjliOWYwZjcxNWI0NWY5YWVmMWM1Y2ZlMWMxMDM3MTllMmEwY2U3OWVhNzAifQ"
         },
         {
@@ -368,37 +380,49 @@
     },
     {
       "id": "claim_a4033726d7c3422aa7bdcd20cc2c54eb",
-      "statement": "docker/install-secrets.sh is a sourced helper library (not standalone) providing the production secret-injection flow for dev-setup.sh and docker-lite/deploy.sh: install_ensure_jwt_secret resolves JWT_SECRET from the env var, then the compose .env, then application.properties (read-only), generating via openssl rand -base64 32 when absent and persisting only to the compose .env (never mutating tracked application.properties or application-local.properties); install_prompt_admin_password takes ADMIN_PASSWORD or an interactive tty prompt with a 6-char minimum; install_hash_bcrypt hashes via Node inside the running app container using docker/tools/bcrypt-hash.js; install_apply_admin_password waits for MySQL then UPDATEs operators.password for the admin row; install_persist_product_model/install_apply_company_menu_type map b2c/bbc to standard/platform and menu_type 4/3.",
+      "statement": "docker/install-secrets.sh is a sourced helper library (not standalone) providing the production secret-injection flow for dev-setup.sh and docker-lite/deploy.sh: install_ensure_jwt_secret resolves JWT_SECRET from the env var, then the compose .env, then application.properties (read-only), generating via openssl rand -base64 32 when absent and persisting only to the compose .env (never mutating tracked application.properties or application-local.properties); install_prompt_admin_password takes ADMIN_PASSWORD or an interactive /dev/tty prompt with a 6-char minimum; install_hash_bcrypt hashes via Node inside the running app container (ecshopx-app / ecshopx-dev-app) or, failing that, a local runtime image (RUNTIME_BASE_IMAGE / APP_IMAGE / ecshopx-app:latest / ecshopx-java:17-node22-openresty), using docker/tools/bcrypt-hash.js + bcrypt.min.js; install_apply_admin_password waits for MySQL then UPDATEs operators.password for the admin row; install_persist_product_model/install_apply_company_menu_type map b2c/bbc to standard/platform and menu_type 4/3.",
       "evidence": [
         {
           "resource": "repo://dev-setup.sh#L253-L265",
-          "version": "repo-lines-v1:sha256:5a5053f0ab3340a59b53e54cffa281837ebac909f00c7cc84cfa6cd7700f4387:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdiNjg2MTcxMmQzNWJlNjE2ZmExYmE3NTI4NzgwYjM5NGVmYzA2NTBjZGM5YmE3MDE5YzE5MTczN2YxYWM3MjAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNjZjNhYTY1NDk2YjNhYzhhMDg4MTE0YTJmODVjZGE0ZDUyMzA4NzBkNWQ0MmZjYzIyNzE1YTRjZGViZTI4YzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkyZDE1MWUzOThiZDBhNTlmN2U1ODc3OTNmMmZhYWY1NzMzZjFlNGZhMGIwNDc3ZjQ4MDA0NDYwY2Y5MTU1ODgifQ"
+          "version": "repo-lines-v1:sha256:7886d12bce15b275c13f9200a560cac58ab6d4f33ccd1bd38e4b749f7d130a9a:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdlZDBlMzI0MzYxYTA0M2VjNGE2MGJkOWY2YzY4MTI1NDI0OTI1ZWNmNWVjMzY0ZjQ0OWFlN2M2ZmQ3MjE3ZDUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcyNjIxODNhYzYwMDJjOTM3MDFjNjMyYjcwMmE1OWM2OWRlNDYyZTA1NjEyYzA5YmRjOTVjNzkxOTc1NTRiOWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA1ZWQ0ODc0MWY0NWFlZDM4NGY3NDdiNTNmNGVmYTU1OGUwZjAxNGMxODVlZTkzNmQ3ZDNlYzQwZDRhNDMyYjcifQ"
+        },
+        {
+          "resource": "repo://docker-lite/deploy.sh#L228-L249",
+          "version": "repo-lines-v1:sha256:17dc2dfe2e071d3c913497269ea65e66ce2bbdb74b3e8bad8c3dd64509d4ec34:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2NzNhNjg3ZmJhMTY1YTVlODdlZTc0OTgxNjIxYmY4YjhiYzY5YTc5ODExNmNmZGM4N2VkMDUzNjI0ZmQxY2UiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2NzNhNjg3ZmJhMTY1YTVlODdlZTc0OTgxNjIxYmY4YjhiYzY5YTc5ODExNmNmZGM4N2VkMDUzNjI0ZmQxY2UiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjlhMTA0YWM5YjIwYTc2YTVjYjI2OTAzNGQwNzliNjk2NmVlY2M3M2VkYjhiZmZjM2I4YWMxODM2MmExM2Y2ZWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkxOGE5M2NkYzcwYWNlOGFmMjYxMjNlN2NiOTg3MjQ5MmUwNjhjNzczMDNiZmYyMDg2NDM5ZmQ0YmY3YTVlYTcifQ"
         },
         {
           "resource": "repo://docker/install-secrets.sh#L1-L81",
           "version": "repo-lines-v1:sha256:a1818d5f27c7fff8b30322274bb1f266bfc5fb29881f68b2e266d2142e5860bf:eyJzZWxlY3RlZExpbmVDb3VudCI6ODEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFkOTVmYzA0YTgwYzk1MmY0OWNlNDE4ODYyN2M1M2IwZmJlOGM0NDA0MWI5NTJkNTkyYWNkMWRlOTk4NjE0NjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM1ZTE4ZjY0NmQ3MmNmY2I1ZDcyYjJiNGQzNzFlY2FiNWEzYzM0YzJiOWI1OGY0MWRjZTM3MzY5NzZiODdmOGQifQ"
         },
         {
-          "resource": "repo://docker/install-secrets.sh#L168-L231",
-          "version": "repo-lines-v1:sha256:1e46aad8cd59c265c3755d3766f358ec9959f0549839163b4265d24de46cda72:eyJzZWxlY3RlZExpbmVDb3VudCI6NjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgyMWZjNjc1Mjc1NTYzZTJkYmIwMzcyNjUzMmNjNmEyOGIwNzhjZGI4M2VjMjQ2ZTAyNGZlM2FlNGFhNWFmMmYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNhNTU0MjkyYWIxMGJkYzNiNGYwMDc5ZjY3YjU2MDJkNDllZWM3MmFjMjdiZjgxZmFiZGExNGVjYTUyNTFkZDEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjUxYmI3ZDk4MTNkZjA5YjRlZmQyOTk3NGRjYWNjMGJmZjVmZmIwNzY0NTljYzdlYjgxZWQ0NjQwMDJhOWIzZDgifQ"
+          "resource": "repo://docker/install-secrets.sh#L142-L166",
+          "version": "repo-lines-v1:sha256:1812f9f1e04b2fabd220416f5155c45f7b16c06625fb6118ae807710ea164125:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIwN2RjOTU5NjAzYjc1ODY5NGU0N2Y3YWU3OGFkMjIyMWJmYzUyYmQ1M2ViYzQ0YzgxMWIzNjY4NzA0OWU1ZDMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc2OTJmYjI3ZWU3ZTY3NTM3OGNiZTRlYmI1NGNmY2Q3M2VlZGRiOTcyNDEwMmQ5NWI4MjQ5MDUzMTIxM2I1YTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImIwMmUzN2RmYzVlNGQ0ZjI1ZjRiZDI1MGU5NmQ0NDkyMTI1ZDZmZDM3MzIzNTA5YWE0NWQ3NTZmODZjZmM3NGMifQ"
+        },
+        {
+          "resource": "repo://docker/install-secrets.sh#L168-L235",
+          "version": "repo-lines-v1:sha256:f71888f4d822d0b4e4ef760a6137c16b516fbad3f1fb0b6654efd6b6b72f7d9d:eyJzZWxlY3RlZExpbmVDb3VudCI6NjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgyMWZjNjc1Mjc1NTYzZTJkYmIwMzcyNjUzMmNjNmEyOGIwNzhjZGI4M2VjMjQ2ZTAyNGZlM2FlNGFhNWFmMmYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZmMzU1OWE0Njc4NWZkZmE1NWM5NThlNmRmMDI1NDY3NTNkODkwYzRiNDhjNTc5YjQ2YzU1NmM1Njg1NmJjZTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNhNTU0MjkyYWIxMGJkYzNiNGYwMDc5ZjY3YjU2MDJkNDllZWM3MmFjMjdiZjgxZmFiZGExNGVjYTUyNTFkZDEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNjOGYxYjczODdiNzBlZjAwODYwYzMzMTY5NDhhMzg0NTA1OTEwODU2MWQ1NTZjMzViOWNkZjMyY2FkMjNmZDQifQ"
+        },
+        {
+          "resource": "repo://docker/install-secrets.sh#L237-L248",
+          "version": "repo-lines-v1:sha256:b916bb203e695f6c37295b9da9ce8cd07c4d7f8b9597c0f5c897ab21d6cb9eb2:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZhNTI3ODI3YzJlYzY2YTViYjkxZDUzOWYwNmEwYzcxMjdlOWQxZDg2NGM4ZWFmNDYyM2FmOWUwNmQxZTVkY2UiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ4OTgzMTA0ZGVmYmI3Y2U1YzdmOGZkN2ExMzUzZjdlYzYzNTQ1NTQ1ODIxMGQzNGFiN2QzZTJmYmQyOWJkZjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNmNzhiYTdkZmJhYmY0ODk2NDY5MTcyZDRlZGYxYjFhOTBjYzhkNjViM2IwMTA2YzY4NjIwZTJmNWRlZDExNjEifQ"
         },
         {
           "resource": "repo://docker/install-secrets.sh#L249-L328",
           "version": "repo-lines-v1:sha256:515188b86d9a15436275a64bd5535efa3d9e5937842251ad6c7f04588938b515:eyJzZWxlY3RlZExpbmVDb3VudCI6ODAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU4YWU4Nzc0OGJlMGQyMjk1Y2I3YmY3NjU0OGFjNGJjY2M4ZDM4ZTNmMjUyNGFjNTJlZTI0NTZmZGM4OTU0NWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNhNTU0MjkyYWIxMGJkYzNiNGYwMDc5ZjY3YjU2MDJkNDllZWM3MmFjMjdiZjgxZmFiZGExNGVjYTUyNTFkZDEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
         },
         {
-          "resource": "repo://docker/install-secrets.sh#L83-L125",
-          "version": "repo-lines-v1:sha256:0149e018f65881f2ccd7b4633e637143aff1c7845d85541687beeee892dc2c61:eyJzZWxlY3RlZExpbmVDb3VudCI6NDMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBlYzk3ZmQ0ZmVjOTY4NWQ3MzVmOWRiMjRmOTlmZmEwNzZiOGU1ZjBiNTRiNzI1ZThmMzI5NjhhNTdmMDk3NWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI2MTQzYjg5ZWViZjBjOTkxZWQ2NzM5MzVmNWVkMjRmZDI3YmYxNTY5ZDRmNmRhMWMwYWU3NDExNGY2ZDUxNWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJlMDQ0NzkyMWU2MWM1MjBhZjUyM2M5NmI5MzllNjYxNDRlYWZiNDYxYzQwNDQ1MWU5NjI5ZWExNDAyZjExNTUifQ"
+          "resource": "repo://docker/install-secrets.sh#L83-L141",
+          "version": "repo-lines-v1:sha256:8a1c2c41ed17ae260e4701f271e15ea03fd9fcefd0ffedc9f602f9cf1ad1a58d:eyJzZWxlY3RlZExpbmVDb3VudCI6NTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBlYzk3ZmQ0ZmVjOTY4NWQ3MzVmOWRiMjRmOTlmZmEwNzZiOGU1ZjBiNTRiNzI1ZThmMzI5NjhhNTdmMDk3NWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJkZjAzNTVjZWJhNDJkOTQ0ZmQ2ZDg4Zjk4OThkNzc2Y2NmZTU1ZjlkNzQxM2E1Zjc4MWMyZTQ3N2ZjNWRmYWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI2MTQzYjg5ZWViZjBjOTkxZWQ2NzM5MzVmNWVkMjRmZDI3YmYxNTY5ZDRmNmRhMWMwYWU3NDExNGY2ZDUxNWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImYwYzJiNmQ4NDkzMzVmZjU2ZGU4MmZlYjQ3YTM2MWYyMjlmM2NjNTEwMGQ3YmM4MDkzYTI5OWE2NmU2MzFmMTAifQ"
         }
       ]
     },
     {
       "id": "claim_429d4ccea38c4faaac67fcb58daadf25",
-      "statement": "The Docker compose stacks thread JWT_SECRET twice into the app container — once as a container environment variable and once inside APP_ARGS as --JWT_SECRET=${JWT_SECRET} — alongside the datasource/Redis/Flyway/xxl-job overrides and --common.product-model=${PRODUCT_MODEL:-platform}; .env files at the repo root and under docker-lite/ are git-ignored.",
+      "statement": "The Docker compose stacks thread JWT_SECRET twice into the app container — once as a container environment variable and once inside APP_ARGS as --JWT_SECRET=${JWT_SECRET} — alongside the datasource/Redis/Flyway/xxl-job overrides and --common.product-model=${PRODUCT_MODEL:-platform}; the compose .env files that persist these values are git-ignored: .env at the repo root (.gitignore L11) and docker-lite/.env (.gitignore L13).",
       "evidence": [
         {
-          "resource": "repo://.gitignore#L11-L12",
-          "version": "repo-lines-v1:sha256:bda913ffec734e2ea6f0f1ac47781e3bd5f486a97a096de64cc9fa2cedcf4dac:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjlhYTczY2Y1YmMzMzc3YTdkOTdmMmU4ZDJiYjc3MzE5NTgxNWVmZTIyNWFmN2YxYmU2ZjViOTMwNmJiZTE0ZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYWYxODcwOThjZTA4Y2Q1N2IyZmNlMzNhMjNhMTE5NWIxYzlhNGI3N2NjNDFlOWEyNjQ0MGU1ZDE5OTRhZTMyZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMGY2YjQyMDIyZDFiYjIyMTBjZWM2OGZjZDhiY2JlMGZlYzQ2NmQ4ZDYyZGYxM2RiZjQ1ZmIzYjYxM2U0NzU5YiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNmIzMmJkZWEwN2VkMDRkMTEzYzZjOWI0ZWIwMTk2Yzg0MjBiMGFhNDI4ZWUzODE3ZmI0NDg0NjI5ZjliNjRmZiJ9"
+          "resource": "repo://.gitignore#L11-L13",
+          "version": "repo-lines-v1:sha256:2b1562ba5303a4e10c02ac960b92632f962ebc562f2921f10c9f023bfd955093:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjlhYTczY2Y1YmMzMzc3YTdkOTdmMmU4ZDJiYjc3MzE5NTgxNWVmZTIyNWFmN2YxYmU2ZjViOTMwNmJiZTE0ZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYWYxODcwOThjZTA4Y2Q1N2IyZmNlMzNhMjNhMTE5NWIxYzlhNGI3N2NjNDFlOWEyNjQ0MGU1ZDE5OTRhZTMyZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMGY2YjQyMDIyZDFiYjIyMTBjZWM2OGZjZDhiY2JlMGZlYzQ2NmQ4ZDYyZGYxM2RiZjQ1ZmIzYjYxM2U0NzU5YiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTdlZGY4MDVjODMxNDBkNWE5YjdkMGM1MDE1Nzc4NzQ0MDJhOGI4MGU4YzI1YzY3OWNhZTI2NmEzYzE2OTg4NyJ9"
         },
         {
           "resource": "repo://docker-compose.dev.yml#L118-L143",
@@ -406,7 +430,7 @@
         },
         {
           "resource": "repo://docker-lite/docker-compose.yml#L114-L146",
-          "version": "repo-lines-v1:sha256:830e1d3110f778aab334048b4525d84a82f5335e2f31816cee81967bffc8af96:eyJzZWxlY3RlZExpbmVDb3VudCI6MzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIyNzQ2MzM0ZmRiZDY1MTMyMzlmMTMyNmRiOGI2MTI3NTdiNWIzMmMwODA4YjUwODFhOTkzN2Y2NTMzYjhkYjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc0ZmY5MzA1ZWI5N2RkYWQ1MjVhMmFlZTllMTg1YTg4ZWNlMzBkMjI2OTMyYWE5NjM0MTY5NDQ4OWY3NTU3MjkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY1Njg5Y2VjYTVhNDlmYTU2ZjVhZDQwZGRjODllYmY3MDM0ZDA0MjRkZDNkNTcyNDcxZTZmY2U2ZjMyNjdhZjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkxYTVjNGJhNTI0MjYyZWJhYWQzZTk2ODAwODI4ZmVjZDVkYzc4YWM1MGEwMWQ4MTIzNGI2N2RjZjU1MzA3ODUifQ"
+          "version": "repo-lines-v1:sha256:e8cd3790eae8c79fa0a1f14e0a50baf7274e2e060152d8da117e56db26b896c3:eyJzZWxlY3RlZExpbmVDb3VudCI6MzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiNjI4N2EwNTc4NzJlZjcyMTU5NDliODI4ZTJkZWE2ZWFhM2Y1YTg2NTljMGU1OWUzYTM3ZDRkNzQwYTgxYmMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZkYmIzZmExZTZkZDRjMzhjMDU2ZGQyMmY1ZTUzNDE0Y2VkMDVhYWFlOWUyNDkyNWJlYjc4ZjY5YjdmZjAzNTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIzODFmMzhmNjhhMWRlOWE5ZGRmNjVjODk4NjI0YWE1ODA0Njg5NzY2YjUwOWRlNjFhMDY3OWQ3ZWQ5MTk2MTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFlZDQ0NmMwOTljYTcxNGZkZTYwOTQ3YzhlMTE1ZmM5ZWM0M2RkZDk3N2U5NzFmMWZjMjExMDFhZDE1NGY2MjIifQ"
         }
       ]
     },
@@ -473,7 +497,7 @@
       "statement": "ecshopx.popularize.common-defaults.* image URLs are coalescing defaults applied at save time by PopularizeSettingSaveService.applyCommonImageDefaults: missing/null values (and, for banner/applets, also empty strings) fall back to the configured property, so the repo's yuanyuanke CDN URLs are placeholders that must match production.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L341-L350",
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L345-L354",
           "version": "repo-lines-v1:sha256:a3ba75f1e65dcbd703ca37fa444211ae1efb7e3ea7c7eebada7916549cb54da3:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQyYzgwMTliOTA1NDNkOTY1MTU0OWZlNTM0MDhlZWUyYmRjOTkyOGQ5OTI4NGZmMWMyYWI5Y2FiOGM2YjQwN2MiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY5YmQ4Yzg1ZmU4OWI5NWRkZGU2YzIwNDU4NDU5ZWQ0ZTc0NmM1OGRhZGRhZjVmMDNlMTQ2MDAwMWMzZDVhNTIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFiODlhNTk5NzI2MWMwYmY2Y2VkNTliMzc0Y2Q2ODM3Njk0Y2ExZjVlNmI0OGZlNThmZjI4ZmYxNzY0MjdhOWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
         },
         {
@@ -513,7 +537,7 @@
           "version": "repo-lines-v1:sha256:12ee35c1b43598af28ae0e0b2124bc644c0c31d69b540c07ccc5a146c9862f84:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNzk4MmQxNGEwNjMzMWUwOGU2Y2Q5NmM0NDQ1NDRlMGE0ZTg0NDdlMWU0MzZiNzVjYzFkNzJiY2U2NzUyYmVmZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNGMzZmIxZTJlN2M2MTA2ZjgyNjJkMmVjZGY5NDk4MTUzM2I2MjAyYWUzNzUxNDUzZmY5Y2E3Y2JkZmU0OWE4MiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzQ1ZWE3MmIyN2Q1MzYxYzU0ZDBhMDkzNmI0NzliNzY5ZTIyNjVmZDg2MDE3MDY1M2Y1NzQwZjk0MmI2MGEwNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOWJhOTk2ZDIwNjFjOWI5OWUxYjBmOTUxMDBkNTI0M2NiNGRjZDQ0YmQ3ZDU5ZDNiMzQyYzBkY2ZkYWFkZDcwZSJ9"
         },
         {
-          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L336-L339",
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L340-L343",
           "version": "repo-lines-v1:sha256:73f40435c89e720711838d98dab9ddffa8db22dba8a99103e00d9287c3a4fdf8:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzVjZTMxYjJiOTRhZTk0YTkwMzc5NzgyNTRhYThlNGNjYzliZWY5MDQ3ZmIzMDRhMTNiOGFmOTg0M2MxMmFiOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiODEwMzc0ZjkxMmM4ODllMjI1OTg2N2NjNWNhOTQ5YjYyZGNkODllY2YyMjVmNWM2NzJiODkyOTY1MWM3YWI4OSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzE4OTYyZWJlZjMyOWE0ZTE0MzNiODdiZDRjOTFjYTgzNmE2MDhmYjU0MmRmNzhiY2U1NWYwYTVmYjQxYWE5ZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMWViYTI1YjVkMTM5NWM3NDlhYzNiM2IxZDVmOWFiMDUxM2NmZTUwYTA5NTQ2ZTg0MzQyNWY4M2U5ODc5MzhmNCJ9"
         }
       ]
@@ -535,10 +559,24 @@
           "version": "repo-lines-v1:sha256:0f731c8e71dc34353aa5f5089cf924e833d48284553ecf720e28d7e897f16387:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzk5YjgzODNkOWZmNTc0Y2JlNDQxNDBhM2I1ZTE3N2I3ZTk3Yzg5NzM3M2ZhYmVjYWNjOWZmZDAwZDMyMDkyOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDhjYzAwN2M2M2ZhMTk0YWVjNWFkMjIwYWQ1OWQ5MWVlMzQwMGIzNzQ0MjRhNTlkOGZlYWY2YTZkMDBlMGVlZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDk5NmM0ZDhkNDIzZTY3NzlhOGJiNzk1YmI4Y2E3MmJlNWYzOWE1MmJiZmJjMjVkYjdkMmFhNzdiMTkwYTM1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiM2Y0OGEyMzg4OWExYzY5YWM3Njg1NjY4MjMzN2E2ZjRkMzJhMjA0NGRmNjQ0YmI4OTQ4NTJmNjdmMDM4ODVjNSJ9"
         }
       ]
+    },
+    {
+      "id": "claim_871779b2ab214a28bdebb8278571413c",
+      "statement": "The social trust-login Apple OAuth flow treats common.h5-base-url as the single trusted H5 host: query-supplied h5_host values and unsigned state payloads are ignored unless they exactly match the configured property, the opaque state is a 32-byte random value whose host binding lives only in Redis (ecx:apple_oauth:h5:<md5(state)>, 600s TTL, one-time via getAndDelete), and resolveAppleCallbackH5Host returns empty when common.h5-base-url is blank — so a missing H5 base URL fails the flow closed rather than falling back to request input.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/trustlogin/SocialTrustLoginService.java#L191-L203",
+          "version": "repo-lines-v1:sha256:092f023838122ac7ffe4c7b6391e420d8cf1298f8750dd8b3e4e381fbf077714:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlmZjEwYjc3N2YxMmY2OWVjN2YwMGU1N2RkY2IzNDVhMGIzMGQzYzc5OTQwOTY1ZWQ0MTFiM2U2Y2FkMzA1ZmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk4ZTIyN2VjMzU5NzEyMTlmMGRhMzkxNTExNWQ5NWZjYmFkNWZhYTQzMDQwMjQ3OGY4ZGI2Mjc5MTY2YmQ5YTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRlMDAzMzZjNjliMjRlNzU4YmI3NDY0YzkwMmQ1NjE3MGIzNDg5NTJjMTIwYzliYWY1ODQwYzBiNjFhYWZiMTIifQ"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/trustlogin/SocialTrustLoginService.java#L395-L438",
+          "version": "repo-lines-v1:sha256:f2b11e1a9da4e1678673b3cb0dedf974ee4f8d308eaf4b27ab0bd7aa3916afdf:eyJzZWxlY3RlZExpbmVDb3VudCI6NDQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA3YzY2ODAxMTUzNmM3Y2NkNzRiYTIzMmRkMmU2YjE2MGMzZjgxYzhmMjFkOTUzZDVhYjI3MjFkODUxZDcwMDYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNlMWM2Y2IwZDI1MDc3YTU3ZGZiZTRhNGFkODcxOTkwZGNjZjgyYjdlNjBhZmUyOTJlNDg2ODMxYTEyZWMzZGIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZjNmRjNWY2MTQ5YWZmN2JlMThhMWFiZmQzMWJjNWU0ZjViYzk5MjY3MTY3YzBkMjE5OTVmYTgwYzg5ZDNiZmYifQ"
+        }
+      ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.7.2",
-    "at": "2026-10-23T03:04:20.471Z"
+    "by": "openwiki/0.7.3",
+    "at": "2026-11-04T17:09:55.577Z"
   }
 }

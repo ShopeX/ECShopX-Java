@@ -1,17 +1,17 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:5c665bd73c8ffef0fb9f324b80a3b0c472154e58b22d36562450ee273f9d4e21",
+  "pageVersion": "sha256:09cddc5cb728fb89a7369b23537dce392a8b0a0659fc6ba7bbddcc734c238ffe",
   "claims": [
     {
       "id": "claim_1f618faf51234a25a7a90fd65c384347",
       "statement": "ECShopX outbound third-party integrations follow a silent-skip invariant: clients check base-URL/credentials before each call and return a `fail_msg` map (or empty map/null) instead of throwing, so an unconfigured install produces no external traffic and business flows never fail on missing integration config. All integration base-urls ship empty in application.properties.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L261-L298",
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L265-L302",
           "version": "repo-lines-v1:sha256:ba3c2cbcea2ed0c8c529b29e566e39bfa9a004b313901aa131d83676f13e31c6:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRlYTY5NjgyNDk1MjEzMzI3OThlMmEzMWEwMGM2NDk3YmRiMTgzZWNkMTRhZDNlYzAwOGQwMTkzN2ZlNDY5MjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEyMDMyMDk5NTg1NjRkNmUzYjM2ZTk3MmM0ZTlkOTJmODIyMmZiOWFiNzc2MGEwNGYwNGMwODZiNDk0NGUyY2IiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE4NDBiMDkzZjJmNTMzOTM2NmViMzBkNWM3ODJiYWJhNDVjZDBjMTExMjNmZTE3ZDUxZTU0ZGIyNjNiZjBlNmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImIzNmMzNDljMmVhZGFjYTIwY2I4Zjc1MjUzMTljZjc0YmUxZGNhODE1OGM2ZGRiZjUzY2NiZjBlYWI2MjIyOTYifQ"
         },
         {
-          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L323-L334",
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L327-L338",
           "version": "repo-lines-v1:sha256:7b332ba8fb0a87ae56606f0632b5d880a36483f404e271504f7e0601cc5e798b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM4YWJmM2JiNDhlNGIxYTA3ZDg1NDU2YjMwMzM3YjhmZWQyNzlkMTQxY2ViZDZkZTFhMGU4NWVjMDkzNGNkMWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2ZjgyYTc4NjkxZTk3MDMzYzVjZDA4NTQxNzZhMDc0ZmQ0MDkxY2IwMDIyNWRjYjE0NTU3ZmYwNDM0NzcwZWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImEzZDE0OTRkODZjY2NhNjVlZGYxMDhmOWU1MGI5MTEzYjAzMDc0YzQyNzg2Nzc3ZWFkNjk2Yzc5YjdlMjAwOTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImVhZjFjNWM2ZTRkYmZiNGZjNzEzMjliOWYwZjcxNWI0NWY5YWVmMWM1Y2ZlMWMxMDM3MTllMmEwY2U3OWVhNzAifQ"
         },
         {
@@ -25,7 +25,7 @@
       "statement": "JushuitanOpenApiClient form-POSTs to `ecshopx.jushuitan.api-base-url` with params biz/app_key/access_token/timestamp/charset=utf-8/version=2 and md5(appSecret + assembled) sign; six method→path mappings (itemsku/upload, skumap/upload, inventory/query, orders/upload, orders/cancel, aftersales/upload); missing config, unknown method, or transport error all return a fail_msg map rather than throwing.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L264-L268",
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L268-L272",
           "version": "repo-lines-v1:sha256:ede4d503b78b1668be847bda2d7e71bc170bf17031bf757cffda1fb5cd1e661d:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjI0MGIwOWNkZTA4Zjg3N2EwNzg5Mzg2YTExNzRjZjkyYjYxZjM2NTU2OWU2OGRmYzNjMWExYjdkNWUyMjM4MSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzAzYjJkMWI1M2U3NWExNDU1NjI2Yjg2ZTU2Zjk5NWFhZDNlNzczYTZjNDhmNWRjMmU0Y2FmMGVhZmE3NzBkYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTAwZjU1OGRmODA1NzMwZjRhNmVkZDdkMWM4YmI5OTQ1MWIzMDg5NDFhZmI2MWJmMGIzYzI1YzQwNDQ5ODE2OSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDdiMGMxZWU3YmNmOWM4MTFiZDE0ODk1Y2QyYzE5MzUyMzRjNjE0YTU3MWMwNWIyMGE5MTJlMDJlOGE4NzFjOSJ9"
         },
         {
@@ -40,7 +40,7 @@
       "evidence": [
         {
           "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties",
-          "version": "repo-file-v1:sha256:af18d520bda5d4d149aed9dd498b642244350e456bc2b04fec87262a51a76d8b"
+          "version": "repo-file-v1:sha256:eb1782a8d4a3c9f883c0fe6b4242d22ae063301e668ee15a0546d8191e8f57c2"
         },
         {
           "resource": "repo://ecshopx-system-link/src/main/java/cn/shopex/ecshopx/systemlink/wdterp/WdtErpInventoryPortImpl.java#L44-L53",
@@ -133,11 +133,11 @@
       "statement": "Optional outbound HTTP capabilities in ecshopx-third-party are port interfaces with two bean implementations: an HTTP impl registered by @ConditionalOnProperty(name=\"http-enabled\", havingValue=\"true\") and a NoOp registered by havingValue=\"false\", matchIfMissing=true — so an unset key means NoOp and the NoOp returns an empty result. Gated keys include dm-crm.point-detail-list.http-enabled, dm-crm.update-member-info-by-mobile.http-enabled, dm-crm.setting-read.redis-enabled (true default, @Primary Redis read vs NoOp treating point integration as off), shuyun.member-modify/member-unbind.http-enabled, shopex-crm.sync-single-member.http-enabled, plus dada/shansong local-delivery clients.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L288-L296",
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L292-L300",
           "version": "repo-lines-v1:sha256:71098961267b4cd2c0682c5b6c017ef214c5c370995b0ee89bcd43d0f767c64d:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMWY0NjNlOGZjN2IxOTI5N2Q4YWZjMmY2MjRhNjU2MGQ2ZmU0YmQ1YzU2MmZiMmJjNWIyNTg0NDdjMDE0NWU4NSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZDY5M2M4NWM5Yjg2YmQ5MjVhMGVjMTQ2NjJlYTQ1YjA2MGY3Mjk5ZjZhZTU2N2Q0Y2YzNzAwMGExMWFlNjYyZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNGZmMjI5ZTVhZmU5YzczZDEwZjdkODhmZGNjMTRlYmU4NTM0NzYwMGEyMTA5MWJkYTNkM2QzZTAzYTllZWM2NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOTBiZjk1ZmIyZjljNzI4YWQzMzY5MDg1MjIyZTg0MWYxNDJkZTgzMThhZmViZDM5YWRmOTY5YjgzOWIwNzE3NCJ9"
         },
         {
-          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L324-L334",
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L328-L338",
           "version": "repo-lines-v1:sha256:7a395f5077e405fc5020189f83af2532793c2e0bed026795db329defdf50c3fc:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkzNDk5MGRjOWM1MjQ3ZDYwMDA3ODA3NjI0OWU4MDgwMDgyOGExMWU5MzhlYmMyNDA1MGEyN2M1NThmY2IyYTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2ZjgyYTc4NjkxZTk3MDMzYzVjZDA4NTQxNzZhMDc0ZmQ0MDkxY2IwMDIyNWRjYjE0NTU3ZmYwNDM0NzcwZWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRjMzBhOWRiMzMwOGM0ZGEzNjMxOTU4YTlkM2U0ODRhOGJlN2I3NjdmMjY4ZmE0MDk2NGZjZmMxMGU1NDQyMjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImVhZjFjNWM2ZTRkYmZiNGZjNzEzMjliOWYwZjcxNWI0NWY5YWVmMWM1Y2ZlMWMxMDM3MTllMmEwY2U3OWVhNzAifQ"
         },
         {
@@ -179,7 +179,7 @@
       "statement": "PrismCoreHttpClient and PrismIshopexHttpClient share one sign contract (PrismIshopexHttpClient.produceSign): md5Upper(secret & METHOD & rawUrlEncode(path) & rawUrlEncode(headers) & rawUrlEncode(query) & rawUrlEncode(postData) & secret) with RFC-3986 encoding and only Authorization/X-Api-* headers signed; both add client_id/sign_method=md5/sign_time to the query, over https the signed query is replaced by client_id+client_secret, and unconfigured or failed calls return null so business services (OAuth token exchange, certificate issuing, lead capture) degrade.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L275-L282",
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L279-L286",
           "version": "repo-lines-v1:sha256:7fe6a86728bdabf5b805aba755622fde314a1a1f00524cc9085759a6bd37fb75:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODYwNjhiZGQwN2Y4NzVhMjE3NWZhYTFhMzc3ZjU0YTg2OGI0NmNmMDNlNzNjYTU0ZjRhZWUyNDU4ZDVhZDYxZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOWYwNTAwZTQyYTUzNzQyZTk5OTZmNjIzZmQxMTk1ZDRiNTBkZDk0MGVkZmY5MmZkMDNhNjg1OTIxZjUyODc4OSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOGNjZTNiNzRiZTY2ZjgwZDEyNGJhZmY1Y2JlODhlMmE5YWE2NGVkNjM4YWIwODlkYTliMmIwMGY4ZTUwYzk3NyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMTZhMzZmMDFlNWQxYjc0OTQyZTBmYzFkZDZmYzY2NDAyMzQ0NWM0NDA0OTlmMGI2Yjc4MjBmYzIxZDZhMjBjMSJ9"
         },
         {
@@ -193,7 +193,7 @@
       "statement": "The Shuyun open-platform gateway (ShuyunOpenGatewayClient, in ecshopx-shuyun) is the deliberate exception to fail-soft: it throws IllegalStateException on missing per-company config row and on non-2xx HTTP responses, because its listeners run on queued messages where the platform-default retry (3 attempts) is the correct behavior; it signs via Gateway-* headers (Gateway-Authid, Gateway-Sign, Gateway-Action-Method, Gateway-Request-Time, Gateway-Access-Token) with the per-company app_secret from company_shuyun_open_platform_config, and persists every call to a traffic-audit table.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L293-L298",
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L297-L302",
           "version": "repo-lines-v1:sha256:c5c24c23cfaf05b037876c129b57c6b7fb6263ee42e6d55b5a5537a5404fd9bc:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZDI3ZTA4YTNjZjliMmU1Y2U3ZGMyNThhY2ZhOTZhMWIxNGRmZjFlOGFjMmJkN2NjMjAwMmM2YmQ2ODE5YTQxZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMTIwMzIwOTk1ODU2NGQ2ZTNiMzZlOTcyYzRlOWQ5MmY4MjIyZmI5YWI3NzYwYTA0ZjA0YzA4NmI0OTQ0ZTJjYiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjhhNzg1ZjI5ZDVjYzEyZWU5YTBhYjUyNTc2MTM0NTgyNjM2YzZjNWJmZjY1MmJkNTEzYTExMjA1YTQzMjhkNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjM2YzM0OWMyZWFkYWNhMjBjYjhmNzUyNTMxOWNmNzRiZTFkY2E4MTU4YzZkZGJmNTNjY2JmMGVhYjYyMjI5NiJ9"
         },
         {
@@ -281,7 +281,7 @@
       "statement": "The OME (Shopex ERP) client ShopexErpOpenApiClient lives in ecshopx-goods (service/ome) because goods import was its first consumer, and is configured by a single `ecshopx.ome.openapi-url` (empty in application.properties ⇒ fail_msg skip); it signs per tenant with double-MD5-upper over ShopexerpSetting Redis values and form-POSTs with flag/method/type=json/charset/ver/timestamp.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L259-L259",
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L263-L263",
           "version": "repo-lines-v1:sha256:c0e2df59224240ce933ac97b62beeccbc2d4fd23f8a5391222c2137b927009f4:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzBlMmRmNTkyMjQyNDBjZTkzM2FjOTdiNjJiZWVjY2JjMmQ0ZmQyM2Y4YTUzOTEyMjJjMjEzN2I5MjcwMDlmNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYzBlMmRmNTkyMjQyNDBjZTkzM2FjOTdiNjJiZWVjY2JjMmQ0ZmQyM2Y4YTUzOTEyMjJjMjEzN2I5MjcwMDlmNCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYWZjZmRmOTVlZDA2NGU5OTJlOWFlMGU2MmEwMTlkYWJiOTIwM2Y2MjgxM2ZhNmIxMGZhNTJhNDMwNTdkOGVmMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTY4NTdmNTYwYzY5YmE2N2FhMmUzNjY1OThiMThiOWJiODZmNWE2MmJiYjVjMGI1YTNkNjRkNmQ0MjcwNTRiOSJ9"
         },
         {
@@ -405,10 +405,230 @@
           "version": "repo-lines-v1:sha256:be3a72f08c7592761b80af3f2df75e9660423ec6889cb14d8fa1264a4684a613:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNmNTFjM2NhMThlYzgxMWJiYWNkZWIxYjk2OTYxZWE3NzY0NGRkOTIyZTllZGUxOTBlYTAxM2ZiMjM1MjIxN2QiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMxMzJjY2U3ODdhYWRhYWUwMTg5YTdmYjE5YmI1YmNhNzg0YjE5N2ZiM2UwNDEwY2QzOThjNjBiNzlhYTQ3NmQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkyZTEyMzdmMmMxNzM4NGIwZWNjNDRkMTJlMGI5ZGI1YTExNDhlM2Q3Yzc3Y2IyNzUzMzhlYzEzZGFhODk2OGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY4ZWUxMGI0ODkzNzgyNjVlNWM0YWI1MGY3OTIyYjc5NWUxMmIyMWJkMzM0ZjIzZTdjYjYxYzY3NzVmZjY3YjkifQ"
         }
       ]
+    },
+    {
+      "id": "claim_bfc6e24abec44600bdcc4bbf11ff3dd7",
+      "statement": "ecshopx-digios integrates the DigiOS gateway (default base https://hobbits.ishopex.cn) via DigiOsProperties (prefix ecshopx.digios, enabled=false by default, six methods.* gateway paths, token path /gateway/token, stock-push-max-rows=200, adjustment doc types code_000008/code_000009); no ecshopx.digios.* keys appear in application.properties, and DigiOsConfigService.resolve merges the properties with a per-company digios_company_config DB row whose is_enabled=1 turns the integration on for that company and whose base_url/app_key/app_secret override the platform values.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties",
+          "version": "repo-file-v1:sha256:eb1782a8d4a3c9f883c0fe6b4242d22ae063301e668ee15a0546d8191e8f57c2"
+        },
+        {
+          "resource": "repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/config/DigiOsProperties.java",
+          "version": "repo-file-v1:sha256:1dbb130f0d49bed53504949a362dce4af222a91caea334701d7aebf15dc440c6"
+        },
+        {
+          "resource": "repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/domain/DigiOsCompanyConfig.java",
+          "version": "repo-file-v1:sha256:373de1577d0bd7189f1aff19552496940d6a3d752b798bbd390c869c9ece42df"
+        },
+        {
+          "resource": "repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/service/DigiOsConfigService.java",
+          "version": "repo-file-v1:sha256:d824bf809a88841a097d704692250245af875c5a34912e75dd2fd103ad9cd109"
+        }
+      ]
+    },
+    {
+      "id": "claim_0a6a6a4ea2734d85af6d5e01c28e9fff",
+      "statement": "DigiOsGatewayClient sends PUT/POST JSON with X-Auth-Client/X-Auth-Token/X-Message-Id headers, returns failed DigiOsGatewayResult values (\"digios disabled\" / \"digios config incomplete\") instead of throwing when unconfigured, treats 2xx without errorCode/errorMessage as success, and on a token-unauthorized response (401/403, errorCode MS-GATEWAY-0003, or a Token/Client ID message) clears the token cache, logs the failed attempt, and retries exactly once; every attempt is persisted to digios_api_log.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/client/DigiOsGatewayClient.java#L93-L170",
+          "version": "repo-lines-v1:sha256:8c732f3b0a863129a9836390bc62131ac3a7a4d2170d30f6f9ca87a92f2fde9d:eyJzZWxlY3RlZExpbmVDb3VudCI6NzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEwZjZjNDE2Yjg3ZmEzZmMwZWYzZGE2NWYwNTEwNjMyOTQ0ZTYyZWUyYWEzNWMwMjNjMjgwMmQzNmY5NDk1OGUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU5MjQwZDM3MGJiMDVmN2I4YTk1NzAzZWZjODMyMzVkNDFiNzZiMDQzMzY0NTc1NDYwOGU2MDg0NWU5MjFkNGIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY0NjhkOTA3M2FhNGZjMjg3M2U4MTk0NDgxNzEzMmMzMDcxNmFhODgzMjE0ZGJiNzI2NDA4MTJmOTZmNmI3OTQifQ"
+        },
+        {
+          "resource": "repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/client/DigiOsGatewayResponse.java",
+          "version": "repo-file-v1:sha256:4e123e444a545321e290299ae469c954e60f597d0563d8808f591c75d0d66e58"
+        }
+      ]
+    },
+    {
+      "id": "claim_e50a7ef0b2c14a38866b92a510e54dc4",
+      "statement": "DigiOsTokenService caches access tokens on the sharedStringRedisTemplate under digios:token:{companyId}:{clientId} with TTL max(60, expire - tokenExpireSkewSeconds), serializes concurrent refreshes with a 10-second SETNX lock (lock losers sleep 200 ms and re-read the cache), fetches tokens by POSTing {clientId, appSecret} to {baseUrl}/gateway/token, throws IllegalStateException on fetch failure or an invalid response, and logs every token fetch to digios_api_log as method auth.token.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/service/DigiOsTokenService.java#L68-L164",
+          "version": "repo-lines-v1:sha256:2b9ac3326595013b0cf564f98d79f17199167de2dea6ccbbce4c29342e3a32ac:eyJzZWxlY3RlZExpbmVDb3VudCI6OTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBjMTFlMDYzYzc2NmViMDM4MTg2MGZjZjZmNzU5YzZhYWYzMDBiZmFhNTM4NzNmYWQwNjNhMGI5Mjc5Mjc4M2UiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM2MzU0NjI5ZjMzMzk4ZTIwNjkxYzBiMWViMjgyNzFmNWZkOTZhYmM0MzUwZmQ4ZTg2NDljZTY4ZWE0YWEwNzciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_9b22838499374c4eb6c9b1b4920b28ef",
+      "statement": "All DigiOS traffic — outbound gateway calls, token fetches, and the inbound stock push — is persisted to the digios_api_log table (indexed on (company_id, created) and method) with direction in/out, method, http_status, outcome, runtime_ms, JSON request/response bodies, and an error message truncated at 1024 characters.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/domain/DigiOsApiLog.java",
+          "version": "repo-file-v1:sha256:a73a4cd6fbae7ff536827eba29056571729fb4d5ce8f4b80089a80219a0e9d06"
+        },
+        {
+          "resource": "repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/service/DigiOsApiLogService.java",
+          "version": "repo-file-v1:sha256:840045fbe336a2ec8cc0ae183e359dcfdd1e0235c321b0421fd5f2d6ddfe514b"
+        }
+      ]
+    },
+    {
+      "id": "claim_5708c7515d414d7e8897ad06adee1258",
+      "statement": "ecshopx-bootstrap registers five async digios dispatch listeners on existing domain planes: distributor create event:263 (@Order 79) and update event:264 (@Order 80) for store profile/warehouse sync, operator create (@Order 81) for staff-only account upsert, normal order delivery (@Order 80) for the outbound stock adjustment, and the dedicated event:digios:aftersales_return_adjustment plane (@Order 81, published ASYNC+REDIS by DigiOsAftersalesReturnAdjustmentDispatchPublisherImpl) for refund-goods inbound adjustments.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/DigiOsAftersalesReturnAdjustmentDispatchPublisherImpl.java",
+          "version": "repo-file-v1:sha256:d865e64d829fe3906c048caefbb03398a65aa1f8db2af12f45866d37be68eb1d"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/DigiOsDistributorCreateDispatchListenerRegistrationConfig.java",
+          "version": "repo-file-v1:sha256:e24b9faf905f96538321b1626318e0152830aa66dcc9cbf490592ce54c6cfd51"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/DigiOsDistributorUpdateDispatchListenerRegistrationConfig.java",
+          "version": "repo-file-v1:sha256:a383cdb78b65112dcb8a75e1569f6624f24ec8d234f7c7a7afb3830e45054647"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/DigiOsNormalOrderDeliveryAdjustmentDispatchListenerRegistrationConfig.java",
+          "version": "repo-file-v1:sha256:4dd68036eef51dec7a8eb3470855111cecc6354ef3b70ea79d5882245e9cf83a"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/DigiOsOperatorCreateDispatchListenerRegistrationConfig.java",
+          "version": "repo-file-v1:sha256:3b7d4449444115a1e7e3f1ce98bdcf21662a28646ac1c486473270ecddf6ce52"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/DigiOsDispatchEventNames.java",
+          "version": "repo-file-v1:sha256:75cd58b7186a17ec7c2f250ab2a0bf4d3cc7149ca203f0047c5872d65f865cfe"
+        }
+      ]
+    },
+    {
+      "id": "claim_b944c690b54a499fa65184575ad4cfb3",
+      "statement": "Distributor create syncs the DigiOS store profile (PUT store.create; the returned numeric store id is saved to digios_store_mapping unique per (company_id, distributor_id)) and then upserts one warehouse plus two logic warehouses ({shop_code} 正品仓 typ 0 and {shop_code}-1 次品仓 typ 1); distributor update POSTs store.update with the mapped id and skips silently when no mapping row exists; payloads are refused when shop_code/name are missing, the area code cannot be resolved, or address/contact are empty.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/domain/DigiOsStoreMapping.java",
+          "version": "repo-file-v1:sha256:667619107c870fb89796ebbd5d6bdd2c815a3be44fe89c1be8655c09dcbefea4"
+        },
+        {
+          "resource": "repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/service/DigiOsDistributorSyncService.java",
+          "version": "repo-file-v1:sha256:a27dc9981ad8404a766a76f33226fdf55b59a4649e798004cb9efd8bd056bfb1"
+        },
+        {
+          "resource": "repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/service/DigiOsStoreProfileSyncService.java",
+          "version": "repo-file-v1:sha256:988c31a20201a7e3105bfe01f94062ee638b83295ea253e20e915d7c64afa4c9"
+        },
+        {
+          "resource": "repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/service/DigiOsStoreWarehouseSyncService.java",
+          "version": "repo-file-v1:sha256:4e5d878ea7c05453149fcd7407740fa1af6ff50f643a9b74ccff9e29c0427cd2"
+        }
+      ]
+    },
+    {
+      "id": "claim_5b90c8b50f114db5af9fdcb2a311d873",
+      "statement": "DigiOsRegionMapper lazily loads digios_regions.json (configurable via ecshopx.digios.regions-json, default classpath:digios_regions.json) — a by_code tree of Chinese administrative codes with name/type/parent — and resolves a distributor's areaCd by preferring the deepest regions_id code, then falling back to name matching district→city→province with type filters and parent-chain disambiguation when a name maps to multiple codes.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/service/DigiOsRegionMapper.java#L56-L200",
+          "version": "repo-lines-v1:sha256:b5f4310fe5f8ab64a580b3be0c22badd330db6525ceb4b5c137dfc223742558a:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQ1LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJiMDkwNDYxODE4MGVjNDYxYzdlNTRjM2ZjMWJiOTlmZjc0ZmEzYmNjZmNiN2JhZTQxZTBkZmVjNDAyMWJlMGFlIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI2NGVmYzQ5NDE4ZDI2ZGNmMTI5YjIyYTZhYTIxMTA4Y2VlYzM3Njc3YTMyZDA4ZTlkNWZlZTM1ZGRhNjZiYjlkIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI4ODc0YzRhNGI1MTk5NGFlMjI5ZTgxNDgzMTgxN2IwZTAyNzg5MGUzZjkzYTBiMDc0Y2RhYmFiZTU4YmMwZDc3IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI1MjFjNGU3NGVlZWU1YmE1ZmI5NjA2MDY0MWQ1YzRjMWVmZTEwM2U4MjgyNGJmYTVlMmQ2MDhiMTI0NTI3MzMxIn0"
+        },
+        {
+          "resource": "repo://ecshopx-digios/src/main/resources/digios_regions.json",
+          "version": "repo-file-v1:sha256:a881ce7dec70be35334af31d803b27730f199784378da8361ca32ce28449fd4f"
+        }
+      ]
+    },
+    {
+      "id": "claim_5142be084f444122acb8a1d62eadae62",
+      "statement": "DigiOS account sync is deliberately split (G-D1): the operator-create listener only syncs operator_type=staff operators through DigiOsAccountSyncService (PUT account.upsert, validating data.usrId/data.acc), while distributor/POS store accounts sync via syncCreatePos and are skipped when the mobile is empty (G-D3).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/client/DigiOsAccountResponse.java",
+          "version": "repo-file-v1:sha256:aadabc80193f387091bdc01d54162825505e8e11d6f1bda3984bf81ad9a4cb80"
+        },
+        {
+          "resource": "repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/service/DigiOsAccountSyncDispatchService.java",
+          "version": "repo-file-v1:sha256:7673b9518371a7d6e698af4005fa0f2d4d629fed8f4d934a4892ed2125c03513"
+        },
+        {
+          "resource": "repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/service/DigiOsAccountSyncService.java",
+          "version": "repo-file-v1:sha256:dc572e25ada781dc9e549644dc1ef73dc6b176ef17da1817d77662f5d7ab15ae"
+        }
+      ]
+    },
+    {
+      "id": "claim_62abdea3e0404fccb1ac3be6901a5d16",
+      "statement": "PosStoreAccountDigiOsCreatePort (common interface with a @Primary digios impl and a NoOp fallback) is invoked synchronously by PosStoreAccountWriteService/PosStoreAccountImportService before the local POS account row is inserted: when DigiOS is enabled it requires a mobile and upserts first, and any failure throws BadRequestException — blocking local creation (ECX-10668) — making this the one digios path that throws instead of failing soft.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/port/digios/PosStoreAccountDigiOsCreatePortNoOp.java",
+          "version": "repo-file-v1:sha256:eae4e02b2d21da39ee41d8e9ea19d25087be20056d0491b636a374bcccbff3cb"
+        },
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/posaccount/PosStoreAccountWriteService.java#L60-L75",
+          "version": "repo-lines-v1:sha256:0f611cba7bde8ce5b4979cebf7924b29a493f22dd338c213bdc6cf3f052a098d:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM1NWRkZjI1ODI1MzFmNTFlMzgyODBjNDhmMjEzNDE0YmI5YzRjMjZlMmZkZTZmZTZmNGNiYzM0OGY3OWI4YzUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc3ZjE1ZTFjZDVmOWIwYzVkNDRhM2NiZDEyOWM5NGFjY2ZmYTk0N2Y0M2Y4OGM2Yzc1OTljYzkyYzZmMDQ4MmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdlNGQzZmU4N2E2ZmVlODUxYWQ3YmEzMzhhNTMzZjc2Mzg0OTkwNjZlMDA0OWZkYTU3N2I1MjFiNGJhNzNiYjgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc2YWYxNjk2NDYwZDI4NTUxMDgyNjEzM2ZhNDM0ZDZmZDUxM2E2NjU4YmY5MDg3YzI0MmU1ZGJiM2JjNzZmNDkifQ"
+        },
+        {
+          "resource": "repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/port/PosStoreAccountDigiOsCreatePortImpl.java",
+          "version": "repo-file-v1:sha256:fcc68db3a70ddced8c9bb5c1ff4b62f98777b2c9cb3c342f8d502ef216265bc2"
+        }
+      ]
+    },
+    {
+      "id": "claim_065149b07d72402396091a80ecadde6a",
+      "statement": "DigiOsStoreAdjustmentSyncService pushes store-inventory adjustments on order delivery (outbound, docTypCd code_000008, nm = order id) and aftersales return (inbound, code_000009, only aftersales_type=REFUND_GOODS, nm = aftersales bn); DigiOsStoreAdjustmentLineResolver resolves lines via direct JdbcTemplate reads of orders/orders_delivery/aftersales_detail and the distributor's shop_code, details are chunked by stockPushMaxRows, each chunk PUTs store.adjustment, and unresolvable lines or a disabled config skip silently.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/service/DigiOsStoreAdjustmentLineResolver.java",
+          "version": "repo-file-v1:sha256:9753220d516045c1769d8b1ee2b60174316de3e3b9c924c30d3879699c606408"
+        },
+        {
+          "resource": "repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/service/DigiOsStoreAdjustmentSyncService.java",
+          "version": "repo-file-v1:sha256:9d6a5151bd44085ed963cbea25c15f39effbd05f7f3efd54f9e51cf5d17fc59d"
+        }
+      ]
+    },
+    {
+      "id": "claim_bff2e6ac49b4421a8c3a5ed39b46aed7",
+      "statement": "The inbound DigiOS stock push arrives through the OpenAPI gateway method ecx.digios.product.stock_push (DigiOsStockController in ecshopx-openapi), which delegates via the OpenapiDigiOsProductStockPushPort (common interface, impl in digios) to DigiOsStockPushService: it validates sku_list capped at stockPushMaxRows, resolves sku_id to items by item_bn and shop_code to distributors, applies stock through the same NormalGoodsStoreImportRowService.applyRow used by CSV store imports, reports not_find_sku/update_error, and logs the call to digios_api_log as an in entry.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/openapi/OpenapiDigiOsProductStockPushPortImpl.java",
+          "version": "repo-file-v1:sha256:3e1e8a2d0bfc014cc5208076d862d58d76b47bf56d7c121aafdfb51c51539d14"
+        },
+        {
+          "resource": "repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/service/DigiOsStockPushService.java",
+          "version": "repo-file-v1:sha256:349ed4906b4efdb9549189c42fb7043ac71e0d0b26e07e7f126dd1fd375751bf"
+        },
+        {
+          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/thirdapi/v1/DigiOsStockController.java",
+          "version": "repo-file-v1:sha256:34c1eac2fff9b3880749114dab985f1c49b859b1a3b49f9ae6f17970a59dafdf"
+        }
+      ]
+    },
+    {
+      "id": "claim_0c95fffc8789473b89713e406eb06e3d",
+      "statement": "The Shuyun open platform is also an inbound surface: three callback families (token, loyalty-grade, offline-benefit create/single-send/batch-send) are exposed on dual /api/v1 and /api/v1/third paths, and all of them pass through InboundSignedCallbackPreparer, which resolves the tenant (query/body appId, platCode, or a shadow benefitId lookup), then verifies an MD5 signature keyed by the platform-wide callback-identity-secret over sorted query params plus SY-Request-Time/callBackTime and optionally the raw JSON body (ECX-10841), and finally enforces a Redis replay guard (300 s skew, 600 s TTL); an empty callback-identity-secret rejects every callback.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/api/callback/v1/ShuyunOfflineBenefitCallbackController.java#L38-L60",
+          "version": "repo-lines-v1:sha256:cd9be4d73e90c843f600482c49bb04a2acf04c7b40ec1fb295f4c62d92358dd8:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE4MzA4NTJmY2MyYTM2ZGNjNWRlODE1YzRhMmU4YjY5NDBhZGQ5N2YxZDY4MTEyZWFhMjhhNTA0OGQ4YTZmNGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEyZGE4NmU0NmFiOTdiZTZiZDkwYWVjNjhmNjU2NDUwYzVkODFmN2M3YWZhMTdhZDQ1NDk2MzBhMjZhMjFhZGUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjlmYWJkODRmMzBkN2Y4NDU1NWMwOWMzMjZlNDlmNWU5MGM3NzdlODBlYmNmNzBlZTQ1ZDBkODVhZWY5ZGU0YWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk1YzhmODkzMzMzZTVmMWQ5ZjM2NzFhYjQxNjYyYTcxNGFlNmUzYzFkNjc1OTZkNDEyYjU0ZTcyODgzZmQyNTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/api/callback/v1/ShuyunOpenPlatformTokenCallbackController.java#L50-L100",
+          "version": "repo-lines-v1:sha256:cc3af9410e01ab5f3241d2b9a898e44a6d05224e47955cfb0dfbb0678ed09aa7:eyJzZWxlY3RlZExpbmVDb3VudCI6NTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE4MzA4NTJmY2MyYTM2ZGNjNWRlODE1YzRhMmU4YjY5NDBhZGQ5N2YxZDY4MTEyZWFhMjhhNTA0OGQ4YTZmNGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBjNTNkYTRhOGU0MTY2NzhiNDhmZjg3NmY4MDk2NzQ5NGE3ZjUyMmMwN2FlODU1ZmZkOWUxMDcyMjJlNjg5MzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI3NGQ3ZDZhZTM4ZjBhZTBkODliMDFhODdjNmFjYzlhYjkxMGU3MjVlMzVjMjIzZDlkOGE2NmRmNzhkZDMzMGYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY5ZmI4ODJkMmM2ODhkZmU5Y2FmZjU1ODQ3ZGZkN2E4MWVlMjFmMGNkZDU2NmE1NTFhMDcwZmFkMGJkYzg3NTAifQ"
+        },
+        {
+          "resource": "repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/auth/CallbackSignatureVerifier.java",
+          "version": "repo-file-v1:sha256:1a260bf820d18bbfd55c017f8a4bb2f3bb57ccc76401d9228c7526b143e0dcc7"
+        },
+        {
+          "resource": "repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/auth/InboundSignedCallbackPreparer.java",
+          "version": "repo-file-v1:sha256:a5638fe88678a93e3e4b139288f6db8309c95df5a1baf8a1e090e831127ef624"
+        },
+        {
+          "resource": "repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/config/ShuyunOpenPlatformProperties.java",
+          "version": "repo-file-v1:sha256:ce6d7aa1918a89a1f4d089f84ca8f7793734347b24e2c59b74e5544055e8f91c"
+        }
+      ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.7.2",
-    "at": "2026-10-21T12:26:22.580Z"
+    "by": "openwiki/0.7.3",
+    "at": "2026-11-04T17:09:55.577Z"
   }
 }

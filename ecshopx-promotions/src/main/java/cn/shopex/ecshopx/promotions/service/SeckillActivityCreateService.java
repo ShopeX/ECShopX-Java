@@ -31,6 +31,7 @@ import cn.shopex.ecshopx.promotions.mapper.SeckillActivityMapper;
 import cn.shopex.ecshopx.promotions.mapper.SeckillRelGoodsMapper;
 import cn.shopex.ecshopx.promotions.service.multilang.SeckillActivityOutsideMultiLangWriteService;
 import cn.shopex.ecshopx.promotions.util.SeckillShopIdCsvParser;
+import cn.shopex.ecshopx.members.service.systemtag.MemberAudienceTagValidator;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -83,6 +84,7 @@ public class SeckillActivityCreateService {
 	private final ObjectMapper objectMapper;
 	private final SavePromotionItemTagJobDispatchPublisher savePromotionItemTagJobDispatchPublisher;
 	private final SalespersonItemsShelvesJobDispatchPublisher salespersonItemsShelvesJobDispatchPublisher;
+	private final MemberAudienceTagValidator memberAudienceTagValidator;
 
 	public SeckillActivityCreateService(
 			MessageSource messageSource,
@@ -96,7 +98,8 @@ public class SeckillActivityCreateService {
 			ApplicationEventPublisher applicationEventPublisher,
 			ObjectMapper objectMapper,
 			SavePromotionItemTagJobDispatchPublisher savePromotionItemTagJobDispatchPublisher,
-			SalespersonItemsShelvesJobDispatchPublisher salespersonItemsShelvesJobDispatchPublisher) {
+			SalespersonItemsShelvesJobDispatchPublisher salespersonItemsShelvesJobDispatchPublisher,
+			MemberAudienceTagValidator memberAudienceTagValidator) {
 		this.messageSource = messageSource;
 		this.marketingActivityCatalogAccess = marketingActivityCatalogAccess;
 		this.marketingActivityCrossPromotionGuardService = marketingActivityCrossPromotionGuardService;
@@ -109,6 +112,7 @@ public class SeckillActivityCreateService {
 		this.objectMapper = objectMapper;
 		this.savePromotionItemTagJobDispatchPublisher = savePromotionItemTagJobDispatchPublisher;
 		this.salespersonItemsShelvesJobDispatchPublisher = salespersonItemsShelvesJobDispatchPublisher;
+		this.memberAudienceTagValidator = memberAudienceTagValidator;
 	}
 
 	@Transactional(rollbackFor = Exception.class)
@@ -198,6 +202,7 @@ public class SeckillActivityCreateService {
 		entity.setOtherext(nullIfBlank(Objects.toString(params.get("otherext"), null)));
 		entity.setDescription(nullIfBlank(Objects.toString(params.get("description"), null)));
 		entity.setSeckillType(seckillTypeStr);
+		applyMemberCrowdFields(entity, params, seckillTypeStr, companyId);
 		entity.setItemType(nullIfBlankElseDefault(Objects.toString(params.get("item_type"), null), "normal"));
 		entity.setUseBound(useBound);
 		entity.setCreated(now);
@@ -431,6 +436,7 @@ public class SeckillActivityCreateService {
 		existing.setOtherext(nullIfBlank(Objects.toString(params.get("otherext"), null)));
 		existing.setDescription(nullIfBlank(Objects.toString(params.get("description"), null)));
 		existing.setSeckillType(seckillTypeStr);
+		applyMemberCrowdFields(existing, params, seckillTypeStr, companyId);
 		existing.setItemType(nullIfBlankElseDefault(Objects.toString(params.get("item_type"), null), "normal"));
 		existing.setUseBound(useBound);
 		existing.setDistributorId(wrapDistributorIdCsv(params.get("distributor_id")));
@@ -750,6 +756,74 @@ public class SeckillActivityCreateService {
 		return SECKILL_LISTING_DATETIME.format(Instant.ofEpochSecond(epochSec));
 	}
 
+	private void applyMemberCrowdFields(
+			SeckillActivity entity, Map<String, Object> params, String seckillTypeStr, long companyId) {
+		if (!"limited_time_sale".equals(seckillTypeStr)) {
+			return;
+		}
+		List<Long> ids = parseMemberTagIds(params.get("member_tag_ids"));
+		if (ids.isEmpty()) {
+			entity.setMemberTagIds("[]");
+			entity.setMemberTagMode(null);
+			return;
+		}
+		memberAudienceTagValidator.assertUsable(companyId, 0L, ids);
+		try {
+			entity.setMemberTagIds(objectMapper.writeValueAsString(ids));
+		} catch (Exception e) {
+			throw new BadRequestException("member_tag_ids 格式错误");
+		}
+		Object modeRaw = params.get("member_tag_mode");
+		String mode = modeRaw == null ? "" : String.valueOf(modeRaw).trim();
+		entity.setMemberTagMode(StringUtils.hasText(mode) ? mode : "include");
+	}
+
+	private List<Long> parseMemberTagIds(Object raw) {
+		if (raw == null) {
+			return List.of();
+		}
+		if (raw instanceof String s) {
+			if (!StringUtils.hasText(s) || "[]".equals(s.trim())) {
+				return List.of();
+			}
+			try {
+				raw = objectMapper.readValue(s.trim(), Object.class);
+			} catch (Exception e) {
+				throw new BadRequestException("member_tag_ids 格式错误");
+			}
+		}
+		if (!(raw instanceof List<?> list)) {
+			throw new BadRequestException("member_tag_ids 格式错误");
+		}
+		List<Long> out = new ArrayList<>();
+		for (Object o : list) {
+			if (o == null) {
+				continue;
+			}
+			try {
+				long id = o instanceof Number n ? n.longValue() : Long.parseLong(o.toString().trim());
+				if (id > 0L) {
+					out.add(id);
+				}
+			} catch (NumberFormatException e) {
+				throw new BadRequestException("member_tag_ids 格式错误");
+			}
+		}
+		return out;
+	}
+
+	private List<Long> decodeMemberTagIdsForResponse(String json) {
+		if (!StringUtils.hasText(json)) {
+			return List.of();
+		}
+		try {
+			List<Long> raw = objectMapper.readValue(json.trim(), new TypeReference<List<Long>>() {});
+			return raw == null ? List.of() : raw;
+		} catch (Exception e) {
+			return List.of();
+		}
+	}
+
 	private Object parseOtherextForResponse(String raw) {
 		if (!StringUtils.hasText(raw)) {
 			return null;
@@ -792,6 +866,8 @@ public class SeckillActivityCreateService {
 		m.put("activity_release_time", e.getActivityReleaseTime());
 		m.put("distributor_id", e.getDistributorId());
 		m.put("seckill_type", e.getSeckillType());
+		m.put("member_tag_ids", decodeMemberTagIdsForResponse(e.getMemberTagIds()));
+		m.put("member_tag_mode", e.getMemberTagMode());
 		m.put("limit_total_money", e.getLimitTotalMoney());
 		m.put("limit_money", e.getLimitMoney());
 		m.put("validity_period", e.getValidityPeriod());

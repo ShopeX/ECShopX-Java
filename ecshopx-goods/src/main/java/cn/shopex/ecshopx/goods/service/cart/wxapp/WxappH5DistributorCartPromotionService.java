@@ -110,7 +110,8 @@ public class WxappH5DistributorCartPromotionService {
 			}
 			long shopId = longVal(cart.get("shop_id"));
 			Map<String, Object> activityData =
-					wxappGoodsItemsDetailPromotionActivityService.getCurrentActivityByItemId(companyId, itemId, shopId);
+					wxappGoodsItemsDetailPromotionActivityService.getCurrentActivityByItemId(
+							companyId, itemId, shopId, userId);
 			if (activityData == null) {
 				continue;
 			}

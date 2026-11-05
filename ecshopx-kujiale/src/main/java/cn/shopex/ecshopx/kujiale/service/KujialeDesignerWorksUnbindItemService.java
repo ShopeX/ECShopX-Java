@@ -17,6 +17,8 @@
 package cn.shopex.ecshopx.kujiale.service;
 
 import cn.shopex.ecshopx.common.exception.ResourceException;
+import cn.shopex.ecshopx.goods.domain.Items;
+import cn.shopex.ecshopx.goods.repository.ItemsRepository;
 import cn.shopex.ecshopx.kujiale.domain.KujialeDesignerWorksItemRel;
 import cn.shopex.ecshopx.kujiale.mapper.KujialeDesignerWorksItemRelMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -32,13 +34,16 @@ import org.springframework.stereotype.Service;
 @Service
 public class KujialeDesignerWorksUnbindItemService {
 
+	private final ItemsRepository itemsRepository;
 	private final KujialeDesignerWorksItemRelMapper kujialeDesignerWorksItemRelMapper;
 
-	public KujialeDesignerWorksUnbindItemService(KujialeDesignerWorksItemRelMapper kujialeDesignerWorksItemRelMapper) {
+	public KujialeDesignerWorksUnbindItemService(
+			ItemsRepository itemsRepository, KujialeDesignerWorksItemRelMapper kujialeDesignerWorksItemRelMapper) {
+		this.itemsRepository = itemsRepository;
 		this.kujialeDesignerWorksItemRelMapper = kujialeDesignerWorksItemRelMapper;
 	}
 
-	public Map<String, Object> unbind(JsonNode body) {
+	public Map<String, Object> unbind(JsonNode body, long companyId) {
 		List<JsonNode> bindings = normalizeBindings(body);
 		if (bindings == null || bindings.isEmpty()) {
 		throw new ResourceException("参数格式错误，需要传入数组格式");
@@ -77,6 +82,14 @@ public class KujialeDesignerWorksUnbindItemService {
 						.last("LIMIT 1");
 				KujialeDesignerWorksItemRel existingRel = kujialeDesignerWorksItemRelMapper.selectOne(w);
 				if (existingRel == null) {
+					failCount++;
+					errors.add("第" + n + "条数据的绑定关系不存在");
+					continue;
+				}
+				// ECX-10894：商品不存在、公司为空或与当前公司不一致时不得删除关联。
+				Items item = itemsRepository.findByItemId(itemId);
+				long ownerCompanyId = item == null || item.getCompanyId() == null ? 0L : item.getCompanyId();
+				if (ownerCompanyId != companyId) {
 					failCount++;
 					errors.add("第" + n + "条数据的绑定关系不存在");
 					continue;

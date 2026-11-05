@@ -35,7 +35,7 @@ public class WxappH5CartListTotalAndPromotionAggregator {
 		this.goodsItemsListPromotionEnrichmentService = goodsItemsListPromotionEnrichmentService;
 	}
 
-	public void apply(long companyId, Map<String, Object> listResult) {
+	public void apply(long companyId, long userId, Map<String, Object> listResult) {
 		if (listResult == null) {
 			return;
 		}
@@ -63,7 +63,7 @@ public class WxappH5CartListTotalAndPromotionAggregator {
 			}
 		}
 		if (!flatSkuRows.isEmpty()) {
-			goodsItemsListPromotionEnrichmentService.enrich(flatSkuRows);
+			goodsItemsListPromotionEnrichmentService.enrich(flatSkuRows, userId);
 		}
 		BigDecimal goodsFee = BigDecimal.ZERO;
 		for (Map<String, Object> row : flatSkuRows) {

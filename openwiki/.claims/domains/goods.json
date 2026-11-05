@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:257deba611a79bbc9f1a255d135ea2e38a8e2616e17b6f675920af1c6f55277c",
+  "pageVersion": "sha256:ba5bcacf3dc5f670fa4823caa11d94e5919ad1dbce321d56ca66ca6529eb006e",
   "claims": [
     {
       "id": "claim_9b43b991325b4e1e83b149b1960be8a7",
@@ -29,7 +29,7 @@
           "version": "repo-lines-v1:sha256:61942050c86205c934213325db13c8ecd94448a1c9b8af214a5f707412dacfbf:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE1NTdiNGIwMTM0MjVlNTIwYmUxYWI0MDFkMDNlZmJlOTY2MWYxN2QyNjQxNGQ5Yjg2MzAyY2MxMzlkYjk5ODUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg2NmQ3NzM2ZmE2ZWVjYTU1OThiOTdlMDg0YmQwYjQ3NDZkMzAyZjE0ZmI0MWU1MTkwN2YyYmUwMjA4NmJjMzQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImMwZDZmOGY0MDI3ZjQ1ZmU5NGMxZjg2OGZiMTBhMGNlMTIyOTY5MmZiZTI5ZjI1Yjg4MzM2NzZjM2JkYjA0ZGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFlN2RhY2U1YWYyMjRiY2E1OGFkNDMwZGIzNWI4ZmZlNzEwNDkzYmUwNmI1NTlkOGUyNjZhMTVlNWE5YmE1MzMifQ"
         },
         {
-          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/domain/Items.java#L278-L280",
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/domain/Items.java#L282-L284",
           "version": "repo-lines-v1:sha256:e1f4357616aa17737a2fada66277a5909c923673ec3bad074fe058e6c3dfb686:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjI1OWYyMDllMzMxNmRjZGE1YWIyMzdlN2RlZDJmMWI5M2EyYTM4MmJhM2NkOWVjNTIzMDRhYzdhMzllM2UxZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNGJkMmFhMjFmOGRlNTA4MmUxYzEzZmFkODM2NWNkZWM2YjIyMzFkMDk0MjBkZTlhMzlkOWE4ZDE1NzVlZGExMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjhjNTQyNzI0ZjRjM2ZkZGRhNjRmMGNmZDRmOTYxMzI4MjNjYTVhYWM3YjUzZWZkNTdjODJkNjYzZGFkMjVlYyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDY0NzE4NzA1MGJhZjNkOTE5MmYwOTkzNDA3NDQyZDY1N2ZhZGI2MmI3M2VmNzE1ZjFiZjRhYzY2OWY5YWI5YSJ9"
         },
         {
@@ -43,7 +43,7 @@
       "statement": "Admin goods APIs live under /api/v1/goods (18 controllers, @AdminAuth @ShopLog, central ItemsController ~1,600 lines) and front wxapp APIs under /api/v1/h5app/wxapp/goods (5 controllers, @FrontNoAuth with Dingo response style), including the salesperson item surface under /api/v1/h5app/wxapp/goods/salesperson/*.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/api/admin/v1/ItemsController.java#L83-L87",
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/api/admin/v1/ItemsController.java#L84-L88",
           "version": "repo-lines-v1:sha256:7968862273b06a5b501bdbd84a0591ef2104f1552bd07a478aff24f826475d90:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMWI4ZTRiNmUwYTRiMGMyODc2NjhjNDFlM2EwNmFhYjM0ODY1ZWU1ZTZiYTczZDQ3NzZiNzgxYWU4MjhiNGQ2OCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiM2FhMjVjYWU5OWQ4ZWJhZmJkODUwYzc3NzFkYzU2MGQ2ZWFlMjNhNTQyN2EyOTc3MjcyMjZiYjUxNzFmYzFhMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYWRiNTUxOTdiMDM2MWRhNjA5MWM5OGRmYmQ0MGFkMTk4ZjEwNGE5M2E5OGYzOWU1YzcwZDVkY2U2OWE1MDcwYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDU5N2JkMzhkMzY0NDU2NWYyOWM2OTFjMjY2NTU5YjMwMTI2MjUzYTk5YmI4MDViZDFkOWZlMGQwNjA4MDE0MCJ9"
         },
         {
@@ -67,7 +67,7 @@
       "statement": "GoodsItemsCreateRequestGate guards the create/audit/delete/update admin routes: it requires a logged-in operator with operator_type, checks super-admin route permissions per route alias (skipped for salesperson_workwechat source), requires an activated company (未激活 otherwise, skipped for salesperson source), and confines distributor operators to distributors they own, injecting their selected distributor_id into the merged params.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/api/admin/v1/ItemsController.java#L248-L290",
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/api/admin/v1/ItemsController.java#L249-L291",
           "version": "repo-lines-v1:sha256:fcff597b4f5f3c26abe2c5b8e1f3a0e35057637ac087bc23d971e77a416da817:eyJzZWxlY3RlZExpbmVDb3VudCI6NDMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZkNGJjYTJkODIzNWVhZGExOTA2YTk1ZjEwNGU1OWJlYTExMDNhNWRmYzI0NWFjOGY1OGUyN2U1NGYwMTRmODMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM1NDgxOTExMmRiOGMzMzg0NTVhNzY0YWRmMWE4MmU1MDJmNmQxMzUzYzg4MmVkOGI4MGVhMjllZjQ1NDRjNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRlNThkZWQ4Yjg4NDU0NTRlNDFkMTBiNzlkODQ1ZDc4ZTA3ODgwNzUyOTI4YTM2MDdiZmIzYzk3OWVmZmJhMTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ2MjQ4ZmNmOTk0YzcyNTczNWZjNGI0YTA3ZjEzNGIzMmU0YmQyYTk1ZTJjYjBiM2JmODEzZWUyNTA5MGNmOTIifQ"
         },
         {
@@ -85,7 +85,7 @@
       "statement": "POST /api/v1/goods/items merges query/form/JSON params, forces supplier_id=0 unless the operator JWT says operator_type=supplier — in which case supplier_id=operator_id and audit_status defaults to submitting (anything not already processing); non-supplier operators get audit_status=approved.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/api/admin/v1/ItemsController.java#L266-L288",
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/api/admin/v1/ItemsController.java#L267-L289",
           "version": "repo-lines-v1:sha256:c804e3e4863595ca836da2273a2e0a9e862f119d154dd93c0672a88731c0c87c:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBmZDc1YzY5Y2Q5ZDllYTM0NzhhZGViNGI5ZGNiNzk5NzVmNjY2MGE0ZDYxZGM2NmVmM2IyNGMzMTNmYjliNzUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRlMTU1ZTUyZWNlMTRmNzgyZDQwMTEzYjJkNzk3ODJhNDQxNDFiY2EwMjhlMWQ0NTQ2OTcxZWQ2ZDVmZmZjZjgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjYyYzQzZDEwMGM3YzQ0MTEyZjgxMGI3MDRlYTI2MDFkNWMxZDgxNjA0NjI3NzcxY2I2NDJiNTE0ZGUzZjU0MTYifQ"
         }
       ]
@@ -158,29 +158,41 @@
     },
     {
       "id": "claim_2e850174e97c44fc91a30bfa4c457872",
-      "statement": "When a supplier edits master data, SupplierItemsAddService.syncPlatformIfNeeded propagates a PHP-whitelist field patch (store, pics, approve_status, item_name, optional cost_price/start_num, audit reset on submitting|processing) to every items row linked by supplier_item_id and refreshes each linked Redis store.",
+      "statement": "When a supplier edits master data, SupplierItemsAddService.syncPlatformIfNeeded propagates a PHP-whitelist field patch (store, pics, other_product_materials, approve_status, item_name, optional cost_price/start_num, audit reset on submiting|submitting|processing) to every items row linked by supplier_item_id and refreshes each linked Redis store; the sync is skipped unless the goods' supplier_items.is_sync_platform flag is on, and addItemsTransactional resets that flag to 0 after the edit so the platform pool owns the rows until the next explicit syncToPool.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/SupplierItemsAddService.java#L284-L331",
-          "version": "repo-lines-v1:sha256:0a68242e36d2ad40ce55f5d0548884597aac7b651e83ac1b05761c39ad885de4:eyJzZWxlY3RlZExpbmVDb3VudCI6NDgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc4OTZlZWVhNjEzYjQ2YTg5YWNjOWRmY2EwMjkyMDYxZTU5YWE3YzM3NTE5MzdmYWIzOGY3MzdhNDUwMzQ2MWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdhZWNiYzA4ZWRmNzk2NDE0NjIzODk0N2VmZGFhM2JlZDQ1M2I5NzkwYWQ2MTFmOGZkZWJiMDhlMWU1OTBlNjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjYzMDFmNWQzZTJiODA0N2Q1NTVhMWZhYTZmNDM0MDI4NWUwMDM0MmZhMmQwNDVkNTY5NjExZDQyODIzZGNmYmUifQ"
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/SupplierItemsAddService.java#L137-L162",
+          "version": "repo-lines-v1:sha256:a5c28d96abec563ed1cb17836208e40336b2e8b084b586896a06f8db24a2fcc7:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg1NDRiMmY2ZTE5NDdhZjYyNTNlNzVlYWY2Mzk1YTIwOTA0ZjE2OGE2MmZiN2RjMTBiYWJhZDJkYWYwNTU2MjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImMxYzhhNDUwZDM5YjlmNmIzMDY3OGQyMTU2OGNkYThmNDQxMmQ5NmE4YzYzOGQ2NTk1YTBjOTllYTk5NGRhOTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNhOWEyZTI1M2Q1ZDRhNzY4ZGE4Y2RlMDhjOWEzY2ZiNjJhM2MyY2ZhN2NmYTM0OTNmM2YzOWY3N2RjNmM1NzcifQ"
         },
         {
-          "resource": "repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/service/items/SupplierItemsAddServiceSyncPlatformIfNeededTest.java#L75-L76",
-          "version": "repo-lines-v1:sha256:0f4cac9ea56dadc3ab937efd356713123873931c01003cc0c14b5c99c2e90bc1:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNGJhMWIxZjBkOTM5NTc0MmUyMTZmNzFjOWU5MGM4ZmI5YWE2YjQyOTZhYWE0Y2U3Y2MwNWM5NmVhNWI4N2JhZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMmIzNDJlZTM2NWVjMDU3ZTU1MzYzMjQyZGZmOGJiMjhkN2ViNTY2MmExNDc5NWE2OTdkODk0NzBiMmI4MjYwMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzBhN2RlNTk0NTQ4N2NlNmJiMTA3OWQzZWE1OWRhMDNjNzg4ZjQ2YmZkZTBhNTEzMGI2NjExZjk5OTY2MzJkOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNjRmNzdkNTEyM2ZiNmUzZDMzMWQxNTkxMTc2NWRhYjdhNzdkNmM0ZDc4ZGRhYWViY2UyMGYzOWMwMDI3MTNhMiJ9"
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/SupplierItemsAddService.java#L290-L345",
+          "version": "repo-lines-v1:sha256:120e0152e31011040fcbc8ddd36695e79d3ad19666f105c5bd76eb90048ca7d3:eyJzZWxlY3RlZExpbmVDb3VudCI6NTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc4OTZlZWVhNjEzYjQ2YTg5YWNjOWRmY2EwMjkyMDYxZTU5YWE3YzM3NTE5MzdmYWIzOGY3MzdhNDUwMzQ2MWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRiZTE3NTNkMDc1MjQ5MmFlNTNlMmU3MTI2ODFiZmQ4ZDA1MDI5YTliNWNjMGE1YmUzMDBiMjQyNDE2YjlkY2IiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdhZWNiYzA4ZWRmNzk2NDE0NjIzODk0N2VmZGFhM2JlZDQ1M2I5NzkwYWQ2MTFmOGZkZWJiMDhlMWU1OTBlNjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBiNDU2MDM0OWQ3MDRiZmIyYmI1MWI4ZmJjMGFkZjk3MTkzZTU1NDg0YTE5ZmI2ZjEzNDg3OTE3YjQ0ZjNkNDcifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/service/items/SupplierItemsAddServiceSyncPlatformIfNeededTest.java#L75-L116",
+          "version": "repo-lines-v1:sha256:c52aa599831e251543a40c6d8d8f6936440194c49db08e7f241e0c87a6d15634:eyJzZWxlY3RlZExpbmVDb3VudCI6NDIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY5OGRhNzkyYjI1ZDk5YTU3ZDFkZWRlOWY5NWFiOTI0MmU5YTcyMDgwNzljOWFjZTkyYTgyNjU4MjdkOTU3YWIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM5ZTI1NmRkMGQ4MzVmZGM3ODdkNzFkMjMzMTlhMzFiYmU1ZGJkNGY2MjgzNTM5NDliMTI4OTk5ZTk5ZjdjYTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFlOTUyZjIxNDA2NmFiOWMxMWU1NGY5MjkwMmNhNDM4Yzc4OGMzYTc3ODU0YTZmMzFlMjExYmVlYzlkMDg0NmUifQ"
         }
       ]
     },
     {
       "id": "claim_a0f23abe0a6f4a51ad17636a5345b00e",
-      "statement": "SupplierItemsReviewGoodsService implements the common SupplierItemsReviewGoodsExecutor/SyncToPoolExecutor/SyncToShopExecutor interfaces driven by the supplier bundle: reviewGoods with approved audit automatically syncs the goods into the platform pool, and syncToShop is restricted to platform product-model companies and dual-writes shop-scoped barcode rows.",
+      "statement": "SupplierItemsReviewGoodsService implements the common SupplierItemsReviewGoodsExecutor/SyncToPoolExecutor/SyncToShopExecutor interfaces driven by the supplier bundle, with audit and sync split: reviewGoods only writes audit_status/audit_reason/audit_date (an approved verdict no longer auto-syncs into the pool); pool copies happen exclusively through the explicit syncToPool, which requires an already-approved row, upserts one pool items row per supplier SKU with store seeding and pool barcodes, deletes vanished SKUs, stamps is_sync_platform=1, and re-syncs previously copied shops under the platform product model; syncToShop is restricted to platform product-model companies, requires approved, and dual-writes shop-scoped barcode rows.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/SupplierItemsReviewGoodsService.java#L53-L139",
-          "version": "repo-lines-v1:sha256:75ca841a0c23ba8ba9c755062c12db433d2d5fd009ee32c02a19a9829947c3ed:eyJzZWxlY3RlZExpbmVDb3VudCI6ODcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJiMzM2YzQyYjJmNTIwN2I3NzVlNTBhOGRhY2UyZDZkMTViMjZmNjFlOGNkYTJjYTRkNDNmY2U0YWU0ODQ0ZjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIzMzlhZTRmNzk4ZGEzYjlmOGY1OWY5NWEwODFkZTFlY2EzNGU2NjM3NjRlZGE4MDc2NjdjMzI0ODNiNGFjNDYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjE1YmFiZmJlMWRjMDY5MmZlYjkwMDNlMWE5MTkzZTY1MThkZWQ5NjhjOGU0NzE3MmQ5M2M1MDE0NmRiMWVhNTkifQ"
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/SupplierItemsReviewGoodsService.java#L89-L139",
+          "version": "repo-lines-v1:sha256:759f2729bf505355f33a20bb12ee1847bcf6278058bc05861dc80e4864d43ff7:eyJzZWxlY3RlZExpbmVDb3VudCI6NTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ODRmNjRiMTc1ZjI4M2U3NjYzYjk5ZGI5NTM3ZjNiZTY2NTk2NjgzMzZjY2ZhODE5OTI1YTY1MTI0YTk3OTkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYxYWY5MzZkZDRiMzIwNzc3MTcwYzdiMDdiZTZiNmE4NDc3OTExYjBlNzg5NjQ2ZTM4Mjk5NGNjZTc0ODZhMzYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFiNDkwNzFkYzA2YjgxZTVmYjUwNzFjY2ZkZTMxMDYzMDJkYzk0ZGQ5ZTY4YWUxOGRhOWE4ZmJmNGQzNjI1YWUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/service/items/SupplierItemsReviewGoodsServiceAuditSyncSplitTest.java#L66-L86",
+          "version": "repo-lines-v1:sha256:79aa0529d0b9fb393cac3b5c2f1533ed1e4177cdf0c7bd3f0719f5e6974f568c:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU5M2Y3YzU5NDA5Y2FkZjJlZDFhMjE3NWUxNWY2YzZlNGM1OGJkYTViM2E4MmEyZGUwOTA1YmM2ZDRhZGFlYzgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFhYzQ0NzFhZWY5MzhiNTNmYTY2M2NmNTE1YWY2NGY1N2Q2ZjJhY2ZiMDFiMzllYmZjNmYwZDVjYTlhZmY0NTIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFiNjA3NTYxZmU1YWNlYmJiMDRkZjVmZDJjMWU3N2Y1MThjM2Q0ZTQyOWIzMWQ1MGI0ZDE4YTZlMzVlOWQ3NjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFlOTUyZjIxNDA2NmFiOWMxMWU1NGY5MjkwMmNhNDM4Yzc4OGMzYTc3ODU0YTZmMzFlMjExYmVlYzlkMDg0NmUifQ"
         },
         {
           "resource": "repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/service/items/SupplierItemsReviewGoodsServiceShopBarcodeDualWriteTest.java#L58-L61",
           "version": "repo-lines-v1:sha256:1f8054c78249b934cfa42996ff1eb783aa7bd097a10332c9914452a807cb0b4f:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTc3Njk5NTIxMmMzNGMzNzVjMjRhZmVjODBhNzIwZmJhNTJmMjkwZTQ3MGY1MDA2Y2YxYjhiNjc0OWU3NDljMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNWRiZGYzM2UzZDM5YzYzYjE0NGZhOWE0MWI5ODY2MmY3YmRjMzE4ZWQ2ODk2NGM4Y2E1MzhiNmY5NzFkNjQ2YyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjhmNTc1MTRlODZlNmExMTQ0MjlkYjZkOTk2ZTE4MWE2YTM4ZjYyYzc0ZWVmNGZiYmNlNDBiNTBmMzYwYmQ3OSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOGRkZTljNTQ0OGVmMTJmY2I0MzJkNGY0ODk1ZjUwMjdjYWYyYWMwYTcxNGY0ZjhlODAwZWMyMzUxMmRkNmQzNyJ9"
+        },
+        {
+          "resource": "repo://ecshopx-supplier/src/main/java/cn/shopex/ecshopx/supplier/service/SupplierItemBatchSyncToPoolService.java#L37-L65",
+          "version": "repo-lines-v1:sha256:a4bc1007d07c9f9544ebbaee0f16e4b6132cff50f26e9ce24db3306f91817007:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYyZTk2OGJiMGMzNWI3NjA0YWRmN2E1YzllYjJhMDdmNDUwN2JiYjA3MTgxNmVhNzc4ZGZjYjQ1MGI2Y2IzMjAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVjZWM0MWFiMDQxNTc2ODc3NjQxNDA4OTU0YWJkM2NlMGZhZTZmZGE2MDEzZDMyMTc5MTNjODQ1YWE5ODczODgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQwMzk5NDVmNzEzY2VjY2MyYTJiZTk4MWFiNWM1ZWVhMzdmOTVmOTc2OWU1NzVjZDhlZDlhOWZjYmFmZGYwNmEifQ"
         }
       ]
     },
@@ -214,11 +226,15 @@
     },
     {
       "id": "claim_b59900550bb54e07ac11ab7bf8a271b2",
-      "statement": "ItemsBatchUpdateStoreOrchestrator.batchUpdate writes store either to supplier_items rows plus their supplier_item_store Redis keys (supplier operator or operate_source=supplier), or — for platform operators — to all sibling SKUs by default_item_id (when the row id is treated as default) with each Redis store refreshed, or to a single item.",
+      "statement": "ItemsBatchUpdateStoreOrchestrator.batchUpdate routes on the effective operator_type — which ItemsController forces to \"supplier\" when the merged request carries operate_source=supplier — writing store either to supplier_items rows plus their supplier_item_store Redis keys (supplier operator), or, for platform operators, to all sibling items SKUs by default_item_id with each Redis store refreshed when the row id is treated as default, or to a single item otherwise.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/ItemsBatchUpdateStoreOrchestrator.java#L46-L74",
-          "version": "repo-lines-v1:sha256:e155851bb91d6e05afc25f18dbb8fd0e92d6a1cc785871ea017c48cf6cd33137:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcyODkyN2I2ZmIxNDllNjVmZTlhNzI2MDU4YmI2OGU0YzIyMWVlMWY4MDljZWUxMmY0YjA5ZjA2OTAwMTU0YWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY3NWVmYjk2ZTRhOTJhODI1ZTk3NTU4ZmRiOTAwYjczNzMzNjNkOWFlOGNkYzYxZjU2ZWEzOTc3YTYzMjYzZjQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/api/admin/v1/ItemsController.java#L1039-L1056",
+          "version": "repo-lines-v1:sha256:21119ce13998c1f91ab8f2adfe209cc1e0335441dd224e0ea4e64ee7ad6fd264:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMwZjJiMzZjZTJhODVlZDQxN2Q2YzUzM2YzMzczMDRkM2EyYTliZWJjMTZjYTJjMzA1M2I4NTZlOTBhYTAxMDgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIxYjI3NDMxNzE2NmVjY2NhOWRlZmNhMzk5MTlmNGZlNGU3MTg2OTk4OGNkYmZkMTAzNDU1ZTk3NGVlNzgzOTgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkxYzE0NzNlMDE1MjkyNGY5MzRiNWU3YzgzN2NhYzYyZjQ3ZGY0NWE2MmQ1MmJjNjdmOWU1NGE5OGQ4MmFkOTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMzI1ZTI3Nzk0NjU0ZmI2ZWEzNmYzYjc4YTZlNTllNWFkMDRiYzU4MTY0ODk0MWE1OTk3MzAxNTIxMGQ2OWMifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/ItemsBatchUpdateStoreOrchestrator.java#L46-L77",
+          "version": "repo-lines-v1:sha256:fcd3dd4c8ee74ff8db935f0f580f6af09cb1ddead74ecefca500acd275b0093a:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVkNWZjZjQ5OTBhMGIyZjY1Y2JlNzk4ZDQ1NmM4ZTY2NTY1ZjMzYzIzYTlmMmU3Y2I3YjE2YWI0YjdkZDNiZTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI3YjcwYmI2OWRjN2FiY2VlODg5OWFmZDJiNzFiYzdjYTAzMzUzNGRiNmU3OTEzZmY0YTc4YjliMmEwNTE4MTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
         }
       ]
     },
@@ -629,8 +645,8 @@
           "version": "repo-lines-v1:sha256:ff817478fb4eeb0d4cb8c73b5f88c2d9fcf4ea72731a02c215f4225c8215e10a:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJiMjJmMDcyNWMzMmEyODI4MmQwMjc4ZGM1MTFiMDMwNjRiMjU3ZDIyYWYxMmNlMGRjM2I2ZDNiNGEwY2Y5YWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY5NmEwOTMxNWM1YTA1NTRkMDI1OGYxNTc5YzlhNzAyYWU2ZTVlZjQ1MWU1MTRkYmNjYjFkZGUxZDRlMTcxOTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
         },
         {
-          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/api/admin/v1/OperatorCartController.java#L48-L108",
-          "version": "repo-lines-v1:sha256:d3847fb5df71a2c8b51aa7069fbc5b9b13cc918776229eecd0d60347a9d56e62:eyJzZWxlY3RlZExpbmVDb3VudCI6NjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFiOGU0YjZlMGE0YjBjMjg3NjY4YzQxZTNhMDZhYWIzNDg2NWVlNWU2YmE3M2Q0Nzc2Yjc4MWFlODI4YjRkNjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFhNmY0NTQ2YmI0YTNhMDczZWFlNTFkYTdlNzEyYzY5ZmE5NTU2NTIyYWYwMGQwNzgxNDI0ODU0ZTk0ZGQ1MjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMyYzBhOWI1ZDg2ZDg2MDVjZGVjMTI3YTcyYmE5ZGMxZDU0ZTgzZjI2ZGY1NzE4NTQ3MTlhZDhlZmI5OWFlYWEifQ"
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/api/admin/v1/OperatorCartController.java#L47-L102",
+          "version": "repo-lines-v1:sha256:5fa5567814c2f638cff9e61547c6405f597fe7085f18defe5c8f0e6e7a696979:eyJzZWxlY3RlZExpbmVDb3VudCI6NTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFiOGU0YjZlMGE0YjBjMjg3NjY4YzQxZTNhMDZhYWIzNDg2NWVlNWU2YmE3M2Q0Nzc2Yjc4MWFlODI4YjRkNjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFhNmY0NTQ2YmI0YTNhMDczZWFlNTFkYTdlNzEyYzY5ZmE5NTU2NTIyYWYwMGQwNzgxNDI0ODU0ZTk0ZGQ1MjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMyYzBhOWI1ZDg2ZDg2MDVjZGVjMTI3YTcyYmE5ZGMxZDU0ZTgzZjI2ZGY1NzE4NTQ3MTlhZDhlZmI5OWFlYWEifQ"
         }
       ]
     },
@@ -685,7 +701,7 @@
       "statement": "OnsalePlatformStoreSupport.resolvePlatformStoreForSkuRow (PHP ItemsService::appendPlatformStoreForOnsaleSkuList parity) computes the cloud/platform-bucket stock per SKU row with strict precedence: logistics_store present → that value; headquarters shipment (is_total_store truthy per DistributorPlatformStoreBuySupport.isSkuHeadquartersShipment) → store; a distributor_store key present → 0 (independent shop stock, nothing platform-borne); otherwise store — and GoodsItemsListFacadeService.listOnsaleItems injects platform_store and echoes is_platform_store_buy only when the request resolves a single shop (onsaleDistributorId > 0) whose is_platform_store_buy switch is on.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/GoodsItemsListFacadeService.java#L273-L295",
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/GoodsItemsListFacadeService.java#L272-L294",
           "version": "repo-lines-v1:sha256:4c9e2b1d7fede4bc0f6f3624664ca891afb7927febb19c718f3df0c68c442e8e:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQwNjkxYzViYjYxMWIwZGY2YzRjOGIyOWUzNzExYjY0MDI0ZTFkM2M4NGFhMjFhZWNlZmVhMWYyYjBjYTNjMDUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY0MWZmZmZlNTljMGVhY2M3ZWVmYmY0MTRkODIzOTE2N2Q1ZGVlZDk3MzdiNzc1ZGYxY2I5NDAwZDdjYzI2MmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJhYmJjNzVjMjEyMTM2OTUyMjMxMTA2N2E0MjYzOTI1ZmY0NGY4Njc4MWFlY2IxODIyY2E3ZjUxNmM0MWZkYTQifQ"
         },
         {
@@ -745,14 +761,28 @@
           "version": "repo-lines-v1:sha256:a128d501b4a1eaba6c87af3274413dddf1d2d8cede1dd9762e213a6a037d08a5:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJiMzM2YzQyYjJmNTIwN2I3NzVlNTBhOGRhY2UyZDZkMTViMjZmNjFlOGNkYTJjYTRkNDNmY2U0YWU0ODQ0ZjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNlNzljMTJiYWZlMmViNmJkOTM5MWZmOTZhZTBkYWZkZWE1Nzc2NzdjNmNiOTBhNDJjZGM2NWEyMDlmOTVjMTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
         },
         {
-          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/GoodsArrivalSubscribeMatchService.java#L96-L119",
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/GoodsArrivalSubscribeMatchService.java#L120-L143",
           "version": "repo-lines-v1:sha256:d8ac7975f7785f4d00f81f35feac4a9c5336f6de5cbdc6ec4455c1015ab97201:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdkMTAwYWM0MThhYzM5YjQ4Y2MxMjVjOGQxMmIzYmU4NDBlOTM4ZjQyOGE2YTAwMTZhNzZiZTE2MWZjYjJhZTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE1OWI5ZTFkMjk0MmZlMTE0ZTIwZmFjZmUyMGU4M2M0NzFlNDRkZTFmZDYwNzk3NzJiMDQxN2VhNWIzYTYyMzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZiNTZlYTE2YWYyN2M0YTQxNmM2MzQ5ZDZiYzVkYzdlMzI2YjA3NGYyNmJiZjE2OTk3YjEyYzZkZGFlODg4ZDQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_1ec7ee0e5cac4a03ba0579176fa44d75",
+      "statement": "For shopadmin order creates, the orders bundle's ShopadminNormalOrderCreateOrchestrator synchronously invokes the goods-implemented ports in a fixed order — OrderCreateNeedParamsPort.validate, OrderCheckoutCartPort.fillItemsFromOperatorCart, OrderCreateItemCheckPort.check, OrderCreateFormatDataPort.format, OrderCreateFormatDataPort.assertDepositBalance — then writes a deferred Redis snapshot without persisting; OrderCreateInventoryPort.minusStores runs only later inside the payment-materialization transaction (ShopadminNormalOrderCreateTransactionalRunner.persistPreparedSnapshot), so an abandoned shopadmin checkout never deducts stock.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/shopadmin/ShopadminNormalOrderCreateOrchestrator.java#L65-L100",
+          "version": "repo-lines-v1:sha256:4afd694c126d52b200f4067acace5d3cc7842abc65acc658a72612e84202a9e0:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU0ZDMyZDA3NDQ4YWJhODExZjliODRiNDhiZGYzMDE4Y2QyMTI0ZjM5ZjRiZjUwMWM4OTM5OWRhNDY0NzdhZTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhhMGQxZTU2OWQ4NzM1YmFhNDliN2NjMmMxYzM5NWE5NjYwYTMxMTUzM2NhMjg5MjA3ODQ4NDJlZWQ0YTk2NTciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImYxYWZlZjFiMTU2MjhkZDI2ZjMyZjBhN2YxYmQyNWU0OGY2MWY1MWJkOTZjMzhhYWNlZTQ4YTg2OWU2MTY5NGQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIyZjc4OTU4NzQ2Yzg4MWQzYWQyZmI4YTk4ZDk3YWQ1ODY3YzFkOGJhZDc1MjE2Y2QyY2YxZjZlYjJjMWI0NWYifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/shopadmin/ShopadminNormalOrderCreateTransactionalRunner.java#L64-L78",
+          "version": "repo-lines-v1:sha256:9f26487e26450876d58eb546a386337698d0a95659f6de8e32ddaaee7c41df2b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwMWMwYTdjMzIzNzhlMjhmMmZhN2MwNGZiMzNjMmViN2Q4MTVjMzUwMjY1NTgxZDBjYTNkNjAwMjFkNjY5MjQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFlMzNiZmEzY2MwNjU4N2MxYTg0ZTYxYWNjZDU5YjlkYzJmYWE1OGJkYzBlZjUyZDJlYTFmYmY1YWJlODVjODUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI5MGQyYTMyYTJhNTUwZmUzZDlhYTBkMDM1NmEyMzk4MmFiNzZmZjQwZGNkNGFmYTc5N2NlZGJkNmM1ZDg4ZTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFmMTg1NWIzZWU0YWJjYjdlNGQ4YTQwYmI1ZjJiYzNhNzZhMmE1MmRiNmQ1ZDMwNWQ4MjdkMGRmODdlYzZhMjgifQ"
         }
       ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.7.2",
-    "at": "2026-10-25T17:14:04.348Z"
+    "by": "openwiki/0.7.3",
+    "at": "2026-11-04T17:09:55.577Z"
   }
 }

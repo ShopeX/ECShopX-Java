@@ -87,11 +87,23 @@ public class ShopCommentListService {
 			return out;
 		}
 
+		// ECX-10918：批量取用户信息，消除列表内逐行 N+1 查询
+		LinkedHashMap<Long, Map<String, Object>> userInfoByUserId = new LinkedHashMap<>();
+		{
+			List<Long> userIds = new ArrayList<>();
+			for (Map<String, Object> rowMap : list) {
+				Long uid = parseUserIdOrNull(rowMap.get("user_id"));
+				if (uid != null && !userIds.contains(uid)) {
+					userIds.add(uid);
+				}
+			}
+			if (!userIds.isEmpty()) {
+				userInfoByUserId.putAll(memberAccountService.getWechatUserInfoByUserIds(userIds));
+			}
+		}
 		for (Map<String, Object> rowMap : list) {
-			Map<String, Object> userFilter = new HashMap<>();
-			userFilter.put("user_id", rowMap.get("user_id"));
-			userFilter.put("company_id", rowMap.get("company_id") != null ? rowMap.get("company_id").toString() : "");
-			Map<String, Object> userInfo = memberAccountService.getWechatUserInfo(userFilter);
+			Long uid = parseUserIdOrNull(rowMap.get("user_id"));
+			Map<String, Object> userInfo = uid != null ? userInfoByUserId.get(uid) : null;
 			if (userInfo == null || userInfo.isEmpty()) {
 				throw new ResourceException("用户信息错误");
 			}
@@ -105,6 +117,24 @@ public class ShopCommentListService {
 		out.put("total_count", totalCount);
 		out.put("list", list);
 		return out;
+	}
+
+	private static Long parseUserIdOrNull(Object raw) {
+		if (raw == null) {
+			return null;
+		}
+		if (raw instanceof Number n) {
+			return n.longValue();
+		}
+		try {
+			String t = raw.toString().trim();
+			if (!StringUtils.hasText(t)) {
+				return null;
+			}
+			return Long.parseLong(t);
+		} catch (NumberFormatException e) {
+			return null;
+		}
 	}
 
 	private static String formatCreateDate(Object createdVal) {

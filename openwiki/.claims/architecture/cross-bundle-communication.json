@@ -1,36 +1,40 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:f19e22c7b0a452bdecfe57c4668855193c436633bef684055315a6f09315d620",
+  "pageVersion": "sha256:e4df6a775049f30c7b2cefee23f1ece4486adbb6e77da40f7712a730dbdac2f5",
   "claims": [
     {
       "id": "claim_99031e08043c4fcd9e0aeed337a19e0b",
-      "statement": "ecshopx-payment owns the Alipay async-notify endpoint (PaymentNotifyController at POST /api/v1/alipay/notify, delegating to AlipayNotifyFacade) but applies payment results through two Ports payment itself declares in payment/integration/alipay — AlipayNotifyOrderSidePort (resolveDistributorIdForAlipayRedis + applyTradePaymentAfterAlipay) and AlipayNotifyDepositSidePort (rechargeCallback). AlipayNotifyFacade.handle routes by passback parameter: attach=depositRecharge goes to the deposit Port, everything else to the order Port. This inverts the natural dependency because orders and deposit already depend on payment, so a direct call would create a Maven cycle; payment's POM contains neither ecshopx-orders nor ecshopx-deposit.",
+      "statement": "ecshopx-payment owns the Alipay async-notify endpoint (PaymentNotifyController at POST /api/v1/alipay/notify, delegating to AlipayNotifyFacade) but applies payment results through two Ports payment itself declares in payment/integration/alipay — AlipayNotifyOrderSidePort (requireCompanyIdByTradeId + resolveDistributorIdForAlipayRedis + applyTradePaymentAfterAlipay) and AlipayNotifyDepositSidePort (requireCompanyIdByDepositTradeId + rechargeCallback). AlipayNotifyFacade.handle routes by passback parameter: attach=depositRecharge goes to the deposit Port, everything else to the order Port, and before signature verification it calls the chosen side's requireCompanyIdBy* method and rejects the notify with BadRequestException when the trade's owning company does not match the company resolved from the notify context. This inverts the natural dependency because orders and deposit already depend on payment, so a direct call would create a Maven cycle; payment's POM contains neither ecshopx-orders nor ecshopx-deposit.",
       "evidence": [
         {
           "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/api/admin/v1/PaymentNotifyController.java",
           "version": "repo-file-v1:sha256:79068b81ad0291c9cba7c664b6cbe1d81502bca7c5c70f20aeb4e39607313d52"
         },
         {
-          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/integration/alipay/AlipayNotifyOrderSidePort.java",
-          "version": "repo-file-v1:sha256:f76f9fdadde1d742216b4ac578b0c3d60d4a293b92516a8441914e9cfc5cf549"
+          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/integration/alipay/AlipayNotifyDepositSidePort.java",
+          "version": "repo-file-v1:sha256:508dbf663768725503ee3d87f34f672693af3ef8c6628d395b9fa44f31638c31"
         },
         {
-          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/AlipayNotifyFacade.java#L100-L120",
-          "version": "repo-lines-v1:sha256:584d698e15dde525cee8121c3844ae22dd3d507c35b7422354e39b93eb9c4e51:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdhZmM4YWUyYmUzNTJhMDk3NDJmNWZkNjUzN2JhYTQyMmUyMjQ0ZjExNzdiZWNlMDgzNzc1NDAyYzMyNjNkYjkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ3MjRmY2VjNzZjMjZjMDdkNTYxY2U2OTc5ZTRiMTFjNmQyZmVhY2JkYzJiMDNhOTJlOTk2ZWUwZGU3MTQzNDAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQyNDMzY2IxNjJhYTkwMWY2N2ExZDAyNTg2OGFkZmZmNjk0ZDc5Y2MyN2Y0ODY2M2EwOGQ2MDc4OGI1ZmIyN2YifQ"
+          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/integration/alipay/AlipayNotifyOrderSidePort.java",
+          "version": "repo-file-v1:sha256:0c1127ade15e10f469ad68d3564dc084c47d592ac8ce668e3a17d68308075617"
+        },
+        {
+          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/AlipayNotifyFacade.java#L86-L121",
+          "version": "repo-lines-v1:sha256:9855a8b161131c1f3792e302bc1bf76f397811fdf3144209634042d2732855d9:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk1NTc5ZDkxOGU3YTA3ZGY1MDBlZWRjNTc2ODc5OTI3NDFhYzZmNTVmM2RjYzUzM2M2ZmM4MGI0Y2NiOTM2ZGEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJiMDY3YzA4Yjk1YzQ1OWZlNmQ5ZTY3NDg3NzBjYTdlNmE5NThhYzk0YTg0MjE1OTczYWQ5ZDY4MGUzNmU0OGUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM5Njc2OGIxZTA3YTE5N2NlNzE2YjlhOTQ1ZGFlN2QzMGIxZDkzZmQwZGU1YTc2NmU2NDY1MmRkMTFjYWRiZmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZhOGZmMDk3NGViZDAwNjA5MGY4OThkODNlZWMwODYyOWJkNjBjZjdiNmJlZDY4NjBmMDFmZjRiODE0OGEzZGQifQ"
         }
       ]
     },
     {
       "id": "claim_661cbc13483846d5898e23e15b5fe82e",
-      "statement": "The payment-owned Alipay notify Ports are implemented by the provider bundles: orders/service/alipay/AlipayNotifyOrderSidePortImpl delegates applyTradePaymentAfterAlipay to OrdersTradePaymentCallbackService.applyTradePaymentNotify (trade-row update plus the trade-finish cascade on SUCCESS) and reads trade + distribution_distributor_peek for the distributor payment-subject setting; deposit/integration/alipay/AlipayNotifyDepositSidePortImpl delegates rechargeCallback to AdapayDepositTradeRechargeCallbackService.rechargeCallback. WxpayNotifyPaymentContextLoader also injects AlipayNotifyOrderSidePort to resolve distributor settings for wxpay notifies.",
+      "statement": "The payment-owned Alipay notify Ports are implemented by the provider bundles: orders/service/alipay/AlipayNotifyOrderSidePortImpl implements requireCompanyIdByTradeId by loading the trade row and returning its owning company id (throwing BadRequestException when the trade is missing or the id is invalid), delegates applyTradePaymentAfterAlipay to OrdersTradePaymentCallbackService.applyTradePaymentNotify (trade-row update plus the trade-finish cascade on SUCCESS), and reads trade + distribution_distributor_peek for the distributor payment-subject setting; deposit/integration/alipay/AlipayNotifyDepositSidePortImpl implements requireCompanyIdByDepositTradeId against DepositTrade and delegates rechargeCallback to AdapayDepositTradeRechargeCallbackService.rechargeCallback. WxpayNotifyPaymentContextLoader also injects AlipayNotifyOrderSidePort to resolve distributor settings for wxpay notifies.",
       "evidence": [
         {
           "resource": "repo://ecshopx-deposit/src/main/java/cn/shopex/ecshopx/deposit/integration/alipay/AlipayNotifyDepositSidePortImpl.java",
-          "version": "repo-file-v1:sha256:eb4a542044ac933ee41d75caa5037825695c395968988a5dca9bb858a939edbd"
+          "version": "repo-file-v1:sha256:a0fb6ae12c20876039cb579e098783e51b7091f30f665513864b01740163b8f5"
         },
         {
           "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/alipay/AlipayNotifyOrderSidePortImpl.java",
-          "version": "repo-file-v1:sha256:208fbfd931800c3b47bb7385ab1873531574bc6ff59b408d62513fbfaf42986f"
+          "version": "repo-file-v1:sha256:1753fa1a2b6a097f9edad7c9a1365f3d405442fe1d07594e67c9ebb1c240cdd5"
         },
         {
           "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/WxpayNotifyPaymentContextLoader.java",
@@ -339,10 +343,58 @@
           "version": "repo-file-v1:sha256:72c4fa09b26673deb2fefbb18a04b7cb0d0081f330f222af633dd3539847d0d4"
         }
       ]
+    },
+    {
+      "id": "claim_99e0d8be86064c0dbb82f5f77a1d9a27",
+      "statement": "Beyond common/port/<consumer-domain>/, newer cross-Bundle seams have grown thematic packages in ecshopx-common: common/auth/ holds the POS/operator/H5 JWT issuer, blacklist, and session ports (e.g. PosJwtIssuerPort, PosJwtBlacklistPort) whose implementations live in ecshopx-espier's security package (PosJwtIssuer implements PosJwtIssuerPort) so consumer Bundles such as companys depend only on the interfaces; common/openapi/ holds the Openapi*Port family the ecshopx-openapi inbound API delegates into owning Bundles (e.g. OpenapiDigiOsProductStockPushPort for method ecx.digios.product.stock_push, consumed by openapi's DigiOsStockController and implemented by ecshopx-digios); and common/operatorcart/ holds the operator-cart orchestration Facades (OperatorCartDataListFacade, OperatorCartFastBuyFacade, OperatorCartScanBarcodeFacade, OperatorCartSkuLoadFacade) implemented by goods/service/operatorcart/OperatorCartDataListFacadeImpl and consumed by companys' OperatorCartController.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/auth/PosJwtIssuerPort.java",
+          "version": "repo-file-v1:sha256:09883a112b806ab11346bd1e664c882bf1393ca00ae90b1866fa565e9ea5502a"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/openapi/OpenapiDigiOsProductStockPushPort.java",
+          "version": "repo-file-v1:sha256:5d5ced5851e493448cc72c7bbfb8471a593285f1822afac983253d50a2373f4f"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/operatorcart/OperatorCartDataListFacade.java",
+          "version": "repo-file-v1:sha256:6c3def19630476ba7f49b8e685391406d8fc28eb29dc8160487971c7df2257b8"
+        },
+        {
+          "resource": "repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/openapi/OpenapiDigiOsProductStockPushPortImpl.java",
+          "version": "repo-file-v1:sha256:3e1e8a2d0bfc014cc5208076d862d58d76b47bf56d7c121aafdfb51c51539d14"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/PosJwtIssuer.java",
+          "version": "repo-file-v1:sha256:a69ec5183e03090b027da9f0064790ed693a749371b70042c34610fb2b48df7d"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/operatorcart/OperatorCartDataListFacadeImpl.java",
+          "version": "repo-file-v1:sha256:6cb8a221b43f80caa6d1eac6b45a1c43824875fa886c953a56b92a1d126f7b6f"
+        }
+      ]
+    },
+    {
+      "id": "claim_59368075b8164e8e9aeaee16d7f11764",
+      "statement": "common/port/digios/PosStoreAccountDigiOsCreatePort extends the NoOp-default + @Primary-adapter pattern with a silent variant: the NoOp in common is a pass-through so POS store-account creation succeeds locally when DigiOS is absent, while ecshopx-digios's @Primary PosStoreAccountDigiOsCreatePortImpl pushes an account.upsert to the DigiOS gateway on create and throws BadRequestException when the push fails; the consumer is companys' PosStoreAccountImportService.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/port/digios/PosStoreAccountDigiOsCreatePort.java",
+          "version": "repo-file-v1:sha256:75a93a6ef55981f32d4f08eec71a9c455414caf9ffd168b2267e1f53ca5c1b63"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/port/digios/PosStoreAccountDigiOsCreatePortNoOp.java",
+          "version": "repo-file-v1:sha256:eae4e02b2d21da39ee41d8e9ea19d25087be20056d0491b636a374bcccbff3cb"
+        },
+        {
+          "resource": "repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/port/PosStoreAccountDigiOsCreatePortImpl.java",
+          "version": "repo-file-v1:sha256:fcc68db3a70ddced8c9bb5c1ff4b62f98777b2c9cb3c342f8d502ef216265bc2"
+        }
+      ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.7.2",
-    "at": "2026-10-21T12:26:22.580Z"
+    "by": "openwiki/0.7.3",
+    "at": "2026-11-04T17:09:55.577Z"
   }
 }

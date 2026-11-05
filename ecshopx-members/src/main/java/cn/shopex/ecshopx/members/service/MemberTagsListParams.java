@@ -17,4 +17,4 @@
 package cn.shopex.ecshopx.members.service;
 
 public record MemberTagsListParams(
-		int page, int pageSize, String tagName, String categoryId, String tagStatus) {}
+		int page, int pageSize, String tagName, String categoryId, String tagStatus, String tagKind) {}

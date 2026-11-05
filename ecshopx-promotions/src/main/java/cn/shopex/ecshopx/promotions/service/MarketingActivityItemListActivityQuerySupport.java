@@ -96,6 +96,8 @@ public class MarketingActivityItemListActivityQuerySupport {
 		m.put("use_shop", row.getUseShop());
 		m.put("shop_ids", shopIdsSegmentsForItemListPayload(row.getShopIds()));
 		m.put("valid_grade", decodeValidGradeList(row.getValidGrade()));
+		m.put("member_tag_ids", decodeJsonArrayField(row.getMemberTagIds()));
+		m.put("member_tag_mode", row.getMemberTagMode());
 		m.put("condition_type", row.getConditionType());
 		m.put("condition_value", normalizeDecodedJsonNumbers(parseConditionValueJson(row.getConditionValue())));
 		m.put("in_proportion", row.getInProportion());

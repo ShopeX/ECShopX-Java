@@ -62,8 +62,11 @@ public class EmployeePurchaseActivityItemWriteService {
 			return;
 		}
 		try {
+			// ECX-10910：活动必须归属当前租户（对齐 PHP ActivitiesService::addActivityItems）
 			Activities activity = activitiesMapper.selectOne(
-					Wrappers.<Activities>lambdaQuery().eq(Activities::getId, activityId));
+					Wrappers.<Activities>lambdaQuery()
+							.eq(Activities::getId, activityId)
+							.eq(Activities::getCompanyId, companyId));
 			if (activity == null) {
 				throw new ResourceException("活动不存在");
 			}

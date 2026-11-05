@@ -121,6 +121,7 @@ public class DistributorWhiteListController {
 	public ResponseEntity<ApiResult<Map<String, Object>>> deleteWhiteList(
 			HttpServletRequest request, @FlexibleBody(required = false) Map<String, Object> body) {
 		Map<String, Object> jwtMap = readOperatorJwtMap(request);
+		long companyId = parseCompanyIdStrict(jwtMap);
 		Map<String, Object> merged = new LinkedHashMap<>(FlexibleHttpServletParameterMap.toObjectMap(request));
 		if (body != null) {
 			merged.putAll(body);
@@ -134,7 +135,7 @@ public class DistributorWhiteListController {
 		String operatorType = jwtMap.get("operator_type") == null ? "" : jwtMap.get("operator_type").toString();
 		Long jwtDistributorId = parseNullablePositiveLong(jwtMap.get("distributor_id"));
 		distributorWhiteListDeleteService.deleteWhiteList(
-				deleteByWhiteListId, idRaw, operatorType, jwtDistributorId);
+				companyId, deleteByWhiteListId, idRaw, operatorType, jwtDistributorId);
 		return ResponseEntity.ok()
 				.contentType(MediaType.APPLICATION_JSON)
 				.body(ApiResult.ok(Map.of("status", Boolean.TRUE)));

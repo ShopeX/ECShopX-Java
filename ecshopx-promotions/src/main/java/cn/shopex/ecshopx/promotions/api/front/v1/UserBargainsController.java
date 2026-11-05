@@ -191,6 +191,7 @@ public class UserBargainsController {
 		return s;
 	}
 
+	@FrontAuth
 	@PostMapping(value = "/bargainlog", name = "砍价助力", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ApiResult<Map<String, Object>>> createBargainLog(
 			HttpServletRequest request, @FlexibleBody(required = false) Map<String, Object> body) {
@@ -203,15 +204,22 @@ public class UserBargainsController {
 		Map<String, Object> claims = readH5AuthClaimsMap(request);
 		merged.put("authorizer_appid", Objects.toString(claims.get("woa_appid"), "").trim());
 		merged.put("wxa_appid", Objects.toString(claims.get("wxapp_appid"), "").trim());
-		long authUserId = parseAuthUserIdFromClaims(claims);
-		if (authUserId > 0L) {
-			merged.put("open_id", firstNonBlankString(merged.get("open_id"), claims.get("open_id")));
-			merged.put("nickname", firstNonBlankString(merged.get("nickname"), claims.get("nickname")));
-			merged.put("headimgurl", firstNonBlankString(merged.get("headimgurl"), claims.get("headimgurl")));
-		}
+		// ECX-10876：助力人身份强制来自登录 claims，忽略请求体伪造
+		bindHelperIdentityFromClaims(merged, claims);
 		Locale locale = messageLocale(request, body, companyId);
 		Map<String, Object> row = userBargainCreateBargainLogService.createBargainLog(merged, locale);
 		return ResponseEntity.ok(ApiResult.ok(row));
+	}
+
+	/** package-visible for tests：校验登录并把助力人身份写入 merged。 */
+	static void bindHelperIdentityFromClaims(Map<String, Object> merged, Map<String, Object> claims) {
+		long authUserId = parseAuthUserIdFromClaims(claims);
+		if (authUserId <= 0L) {
+			throw new UnauthorizedException("Unable to authenticate user.");
+		}
+		merged.put("open_id", Objects.toString(claims.get("open_id"), "").trim());
+		merged.put("nickname", Objects.toString(claims.get("nickname"), "").trim());
+		merged.put("headimgurl", Objects.toString(claims.get("headimgurl"), "").trim());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -234,14 +242,6 @@ public class UserBargainsController {
 		} catch (NumberFormatException e) {
 			return 0L;
 		}
-	}
-
-	private static String firstNonBlankString(Object a, Object b) {
-		if (a == null) {
-			return Objects.toString(b, "").trim();
-		}
-		String sa = String.valueOf(a).trim();
-		return sa.isEmpty() ? Objects.toString(b, "").trim() : sa;
 	}
 
 	private static long parseCompanyIdFromRequest(HttpServletRequest request) {

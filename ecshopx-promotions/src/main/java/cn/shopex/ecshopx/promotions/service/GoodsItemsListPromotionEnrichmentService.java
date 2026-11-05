@@ -19,8 +19,11 @@ package cn.shopex.ecshopx.promotions.service;
 import cn.shopex.ecshopx.members.service.account.MemberAccountService;
 import cn.shopex.ecshopx.promotions.domain.MarketingActivity;
 import cn.shopex.ecshopx.promotions.domain.PromotionsItemsTag;
+import cn.shopex.ecshopx.promotions.domain.SeckillActivity;
 import cn.shopex.ecshopx.promotions.mapper.MarketingActivityMapper;
 import cn.shopex.ecshopx.promotions.mapper.PromotionsItemsTagMapper;
+import cn.shopex.ecshopx.promotions.mapper.SeckillActivityMapper;
+import cn.shopex.ecshopx.promotions.service.systemtag.MemberCrowdMatcher;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -45,24 +48,34 @@ public class GoodsItemsListPromotionEnrichmentService {
 
 	private final PromotionsItemsTagMapper promotionsItemsTagMapper;
 	private final MarketingActivityMapper marketingActivityMapper;
+	private final SeckillActivityMapper seckillActivityMapper;
 	private final MemberAccountService memberAccountService;
 	private final ObjectMapper objectMapper;
+	private final MemberCrowdMatcher memberCrowdMatcher;
 
 	public GoodsItemsListPromotionEnrichmentService(PromotionsItemsTagMapper promotionsItemsTagMapper,
 			MarketingActivityMapper marketingActivityMapper,
+			SeckillActivityMapper seckillActivityMapper,
 			MemberAccountService memberAccountService,
-			ObjectMapper objectMapper) {
+			ObjectMapper objectMapper,
+			MemberCrowdMatcher memberCrowdMatcher) {
 		this.promotionsItemsTagMapper = promotionsItemsTagMapper;
 		this.marketingActivityMapper = marketingActivityMapper;
+		this.seckillActivityMapper = seckillActivityMapper;
 		this.memberAccountService = memberAccountService;
 		this.objectMapper = objectMapper;
+		this.memberCrowdMatcher = memberCrowdMatcher;
 	}
 
 	public void enrich(List<Map<String, Object>> rows) {
-		enrich(rows, 0L);
+		doEnrich(rows, 0L, false);
 	}
 
 	public void enrich(List<Map<String, Object>> rows, long userId) {
+		doEnrich(rows, userId, true);
+	}
+
+	private void doEnrich(List<Map<String, Object>> rows, long userId, boolean applyCrowd) {
 		if (rows == null || rows.isEmpty()) {
 			return;
 		}
@@ -115,6 +128,7 @@ public class GoodsItemsListPromotionEnrichmentService {
 			marketingIds.addAll(m.keySet());
 		}
 		Map<Long, MarketingActivity> activityById = loadActivities(marketingIds);
+		Map<Long, SeckillActivity> seckillById = loadSeckillActivities(marketingIds);
 
 		for (Map<String, Object> items : rows) {
 			Object g = items.get("goods_id");
@@ -141,6 +155,27 @@ public class GoodsItemsListPromotionEnrichmentService {
 							&& !passesMemberPreferenceGrade(ma, userId, companyId)) {
 						continue;
 					}
+					if (applyCrowd
+							&& !memberCrowdMatcher.matchesFullCrowdActivity(
+									companyId,
+									userId,
+									ma == null ? tagType : ma.getMarketingType(),
+									ma == null ? null : ma.getMemberTagIds(),
+									ma == null ? null : ma.getMemberTagMode())) {
+						continue;
+					}
+				}
+				if (applyCrowd && "limited_time_sale".equals(tagType)) {
+					SeckillActivity seckill = seckillById.get(promotionId);
+					if (seckill != null
+							&& !memberCrowdMatcher.matchesLimitedTimeSale(
+									companyId,
+									userId,
+									seckill.getSeckillType(),
+									seckill.getMemberTagIds(),
+									seckill.getMemberTagMode())) {
+						continue;
+					}
 				}
 				promotionActivity.add(data);
 				if (ACTIVITY_PRICE_TAG_TYPES.contains(tagType)) {
@@ -159,6 +194,19 @@ public class GoodsItemsListPromotionEnrichmentService {
 		}
 		List<MarketingActivity> list = marketingActivityMapper.selectBatchIds(ids);
 		return list.stream().filter(Objects::nonNull).collect(Collectors.toMap(MarketingActivity::getMarketingId, a -> a, (a, b) -> a));
+	}
+
+	private Map<Long, SeckillActivity> loadSeckillActivities(Set<Long> ids) {
+		if (ids == null || ids.isEmpty()) {
+			return Map.of();
+		}
+		List<SeckillActivity> list = seckillActivityMapper.selectBatchIds(ids);
+		if (list == null || list.isEmpty()) {
+			return Map.of();
+		}
+		return list.stream()
+				.filter(Objects::nonNull)
+				.collect(Collectors.toMap(SeckillActivity::getSeckillId, a -> a, (a, b) -> a));
 	}
 
 	private boolean passesMemberPreferenceGrade(MarketingActivity ma, long userId, long companyId) {

@@ -54,15 +54,17 @@ public class TranscriptUpdateService {
 		if (entity == null) {
 			throw new ResourceException("transcriptId为" + transcriptId + "的成绩单不存在");
 		}
+		// ECX-10912：对齐 PHP FormTenantScopeGuard::assertTranscriptIdBelongsToCompany
+		Long entityCompanyId = entity.getCompanyId() == null ? 0L : entity.getCompanyId();
+		if (!entityCompanyId.equals(companyId)) {
+			throw new ResourceException("无权访问该成绩单");
+		}
 
 		if (params.containsKey("transcript_name") && params.get("transcript_name") != null) {
 			entity.setTranscriptName(String.valueOf(params.get("transcript_name")));
 		}
 		if (params.containsKey("template_name") && params.get("template_name") != null) {
 			entity.setTemplateName(String.valueOf(params.get("template_name")));
-		}
-		if (params.containsKey("company_id") && params.get("company_id") != null) {
-			entity.setCompanyId(toLongCompany(params.get("company_id")));
 		}
 		applyTranscriptStatusForUpdate(entity, params);
 
@@ -136,7 +138,15 @@ public class TranscriptUpdateService {
 					Object pidObj = v.get("prop_id");
 					if (isTruthyPropId(pidObj)) {
 						long propId = parsePropIdStrict(pidObj);
-						TranscriptProperties existing = transcriptPropertiesMapper.selectById(propId);
+						// ECX-10875：禁止用任意 prop_id 跨租户/跨成绩单抢绑属性
+						LambdaQueryWrapper<TranscriptProperties> scopedProp =
+								new LambdaQueryWrapper<>();
+						scopedProp
+								.eq(TranscriptProperties::getCompanyId, companyId)
+								.eq(TranscriptProperties::getTranscriptId, transcriptId)
+								.eq(TranscriptProperties::getPropId, propId)
+								.last("LIMIT 1");
+						TranscriptProperties existing = transcriptPropertiesMapper.selectOne(scopedProp);
 						if (existing == null) {
 							throw new ResourceException("propid为" + propId + "的属性不存在");
 						}
@@ -147,8 +157,6 @@ public class TranscriptUpdateService {
 							existing.setPropUnit(
 									v.get("prop_unit") == null ? "" : String.valueOf(v.get("prop_unit")));
 						}
-						existing.setTranscriptId(transcriptId);
-						existing.setCompanyId(companyId);
 						assertNoDuplicatePropName(companyId, transcriptId, existing.getPropName(), propId);
 						transcriptPropertiesMapper.updateById(existing);
 						transcriptProps.add(toPropRowMap(existing));
@@ -167,13 +175,6 @@ public class TranscriptUpdateService {
 
 		transcriptResult.put("evaluate_items", transcriptProps);
 		return transcriptResult;
-	}
-
-	private static long toLongCompany(Object o) {
-		if (o instanceof Number n) {
-			return n.longValue();
-		}
-		return Long.parseLong(o.toString());
 	}
 
 	private static void applyTranscriptStatusForUpdate(Transcripts entity, Map<String, Object> params) {

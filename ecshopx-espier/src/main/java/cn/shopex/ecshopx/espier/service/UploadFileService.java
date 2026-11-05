@@ -473,7 +473,8 @@ public class UploadFileService {
 		}
 	}
 
-	public Map<String, String> exportUploadErrorFile(String idRaw, String fileTypeRaw) {
+	/** ECX-10878：错误文件导出必须限定当前租户，未命中则禁止读对象存储。 */
+	public Map<String, String> exportUploadErrorFile(long companyId, String idRaw, String fileTypeRaw) {
 		String normalizedType = EspierAdminJwtControllerSupport.optionalTrimmedString(fileTypeRaw);
 		if (normalizedType == null || normalizedType.isEmpty()) {
 			throw new BadRequestException("file_type 必填");
@@ -484,7 +485,10 @@ public class UploadFileService {
 		}
 		String routeId = idRaw == null ? "" : idRaw.trim();
 
-		LinkedHashMap<String, Object> info = uploadeFileRepository.getInfoByRouteId(routeId);
+		LinkedHashMap<String, Object> info = uploadeFileRepository.getInfoByRouteId(routeId, companyId);
+		if (info == null || info.isEmpty()) {
+			throw new ResourceException("上传记录不存在");
+		}
 		Object hm = info.get("handle_message");
 		boolean needRegenerate = false;
 		List<?> errorRows = null;

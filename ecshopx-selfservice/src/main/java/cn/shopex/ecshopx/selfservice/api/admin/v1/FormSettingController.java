@@ -183,8 +183,16 @@ public class FormSettingController {
 
 	@Activated(routeAlias = "selfhelp.form.delete")
 	@PostMapping(value = "/selfhelp/formdata/discard/{id}", name = "废弃表单元素配置项")
-	public ResponseEntity<ApiResult<Object>> deleteData(@PathVariable("id") String id) {
-		Object data = formSettingCreateService.deleteData(id);
+	public ResponseEntity<ApiResult<Object>> deleteData(HttpServletRequest httpRequest, @PathVariable("id") String id) {
+		@SuppressWarnings("unchecked")
+		Map<String, Object> jwt =
+				(Map<String, Object>) httpRequest.getAttribute(OperatorJwtRequestAttributes.OPERATOR_JWT_USER_DATA);
+		if (jwt == null || jwt.isEmpty()) {
+			throw new UnauthorizedException(
+					"Failed to authenticate because of bad credentials or an invalid authorization header.");
+		}
+		long companyId = parseCompanyId(jwt);
+		Object data = formSettingCreateService.deleteData(id, companyId);
 		return ResponseEntity.ok(ApiResult.ok(data));
 	}
 

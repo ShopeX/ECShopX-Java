@@ -56,15 +56,18 @@ public class RightsFrontWxappGetRightsDetailService {
 			throw new ResourceException("rights_id=%d的权益不存在".formatted(rightsId));
 		}
 
+		// ECX-10881：详情须校验公司 + 归属用户，并在组装行（含解密）之前拒绝。
+		long authCompanyId = longVal(authClaims == null ? null : authClaims.get("company_id"));
+		long authUserId = longVal(authClaims == null ? null : authClaims.get("user_id"));
+		long rowCompanyId = r.getCompanyId() != null ? r.getCompanyId() : 0L;
+		long rowUserId = r.getUserId() != null ? r.getUserId() : 0L;
+		if (authCompanyId != rowCompanyId || authUserId <= 0L || authUserId != rowUserId) {
+			throw new ResourceException("获取权益信息有误，请确认权益 ID");
+		}
+
 		int nowEpochSec = (int) (System.currentTimeMillis() / 1000L);
 		Map<String, Object> result = rightsTimesCardRowFactory.toWxappRightsDetailRow(r, nowEpochSec);
 		result.put("server_time", (long) nowEpochSec);
-
-		long authCompanyId = longVal(authClaims.get("company_id"));
-		long rowCompanyId = r.getCompanyId() != null ? r.getCompanyId() : 0L;
-		if (authCompanyId != rowCompanyId) {
-			throw new ResourceException("获取权益信息有误，请确认权益 ID");
-		}
 
 		return result;
 	}

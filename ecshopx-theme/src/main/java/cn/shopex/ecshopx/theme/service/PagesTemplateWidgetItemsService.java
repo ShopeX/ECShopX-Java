@@ -229,7 +229,8 @@ public class PagesTemplateWidgetItemsService {
 			wxappGoodsItemsListMemberPriceApplyService.applyForRows(
 					companyId, memberPriceUserIdOrNull.longValue(), list, acceptLanguage);
 		}
-		goodsItemsListPromotionEnrichmentService.enrich(list);
+		goodsItemsListPromotionEnrichmentService.enrich(
+				list, memberPriceUserIdOrNull == null ? 0L : memberPriceUserIdOrNull);
 		long eActivityId = q.getEActivityId();
 		if (eActivityId > 0L && list != null && !list.isEmpty()) {
 			employeePurchaseActivityItemsPriceOverlayService.overlayActivityPrice(

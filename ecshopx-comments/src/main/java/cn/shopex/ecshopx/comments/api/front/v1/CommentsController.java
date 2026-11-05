@@ -211,6 +211,13 @@ public class CommentsController {
 		return 1;
 	}
 
+	/** ECX-10918：每页条数上限（对齐 PHP Comments MAX_PAGE_SIZE）。 */
+	static final int MAX_PAGE_SIZE = 50;
+
+	static int parsePageSizeForTest(Map<String, Object> mergedQuery) {
+		return parsePageSize(mergedQuery);
+	}
+
 	private static int parsePageSize(Map<String, Object> mergedQuery) {
 		if (mergedQuery.containsKey("pageSize")) {
 			Object v = mergedQuery.get("pageSize");
@@ -218,7 +225,8 @@ public class CommentsController {
 				try {
 					int s = Integer.parseInt(v.toString().trim());
 					if (s > 0) {
-						return s;
+						// ECX-10918：裁剪到上限，防超大 pageSize 拉全量
+						return Math.min(s, MAX_PAGE_SIZE);
 					}
 					throw new BadRequestException("每页条数必须大于 0");
 				} catch (NumberFormatException e) {
@@ -226,6 +234,6 @@ public class CommentsController {
 				}
 			}
 		}
-		return 50;
+		return MAX_PAGE_SIZE;
 	}
 }

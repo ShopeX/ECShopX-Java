@@ -16,10 +16,13 @@
 
 package cn.shopex.ecshopx.shuyun.api.callback.v1;
 
+import cn.shopex.ecshopx.shuyun.auth.InboundPrepareResult;
+import cn.shopex.ecshopx.shuyun.auth.InboundSignedCallbackPreparer;
+import cn.shopex.ecshopx.shuyun.auth.InboundSignedPrepareMode;
+import cn.shopex.ecshopx.shuyun.domain.CompanyShuyunOpenPlatformConfig;
 import cn.shopex.ecshopx.shuyun.service.openplatform.OpenPlatformConfigService;
 import cn.shopex.ecshopx.shuyun.service.openplatform.TokenCallbackService;
 import cn.shopex.ecshopx.shuyun.service.openplatform.TrafficAuditWriter;
-import cn.shopex.ecshopx.shuyun.domain.CompanyShuyunOpenPlatformConfig;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -40,7 +43,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * C1 Token 回调（不验签）。default + third 双路径。
+ * C1 Token 回调（入站验签后落库，对齐 PHP）。default + third 双路径。
  * 响应体为 PHP 原样 {@code {code,msg,data}}，不加 ApiResult 包装。
  */
 @RestController("shuyunOpenPlatformTokenCallbackV1")
@@ -53,16 +56,19 @@ public class ShuyunOpenPlatformTokenCallbackController {
 	private final TrafficAuditWriter trafficAuditWriter;
 	private final OpenPlatformConfigService openPlatformConfigService;
 	private final ObjectMapper objectMapper;
+	private final InboundSignedCallbackPreparer preparer;
 
 	public ShuyunOpenPlatformTokenCallbackController(
 			TokenCallbackService tokenCallbackService,
 			TrafficAuditWriter trafficAuditWriter,
 			OpenPlatformConfigService openPlatformConfigService,
-			ObjectMapper objectMapper) {
+			ObjectMapper objectMapper,
+			InboundSignedCallbackPreparer preparer) {
 		this.tokenCallbackService = tokenCallbackService;
 		this.trafficAuditWriter = trafficAuditWriter;
 		this.openPlatformConfigService = openPlatformConfigService;
 		this.objectMapper = objectMapper;
+		this.preparer = preparer;
 	}
 
 	@PostMapping(
@@ -74,6 +80,11 @@ public class ShuyunOpenPlatformTokenCallbackController {
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Map<String, Object>> token(HttpServletRequest request) throws IOException {
 		String rawBody = StreamUtils.copyToString(request.getInputStream(), StandardCharsets.UTF_8);
+		InboundPrepareResult prepared = preparer.prepare(request, rawBody, InboundSignedPrepareMode.TOKEN);
+		if (prepared instanceof InboundPrepareResult.Err err) {
+			return err.response();
+		}
+
 		Map<String, Object> payload = tokenCallbackService.handle(rawBody);
 		String responseJson;
 		try {

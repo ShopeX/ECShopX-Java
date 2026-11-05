@@ -17,8 +17,10 @@
 package cn.shopex.ecshopx.wsugc.service.post;
 
 import cn.shopex.ecshopx.common.exception.BadRequestException;
+import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.wsugc.domain.Post;
 import cn.shopex.ecshopx.wsugc.mapper.PostMapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,17 +41,17 @@ public class PostDeleteService {
 		this.postMapper = postMapper;
 	}
 
-	public Map<String, Object> softDeleteByPostId(Object rawPostId) {
+	public Map<String, Object> softDeleteByPostId(Object rawPostId, long companyId) {
 		validateInitial(rawPostId);
 
 		boolean multiFromCollection = rawPostId instanceof Collection<?> col && !col.isEmpty();
 		boolean multiFromArray = rawPostId.getClass().isArray() && arrayLength(rawPostId) > 0;
 
 		if (multiFromCollection || multiFromArray) {
-			return softDeleteMulti(rawPostId);
+			return softDeleteMulti(rawPostId, companyId);
 		}
 
-		return softDeleteScalar(rawPostId);
+		return softDeleteScalar(rawPostId, companyId);
 	}
 
 	private void validateInitial(Object rawPostId) {
@@ -67,7 +69,7 @@ public class PostDeleteService {
 		}
 	}
 
-	private Map<String, Object> softDeleteMulti(Object rawPostId) {
+	private Map<String, Object> softDeleteMulti(Object rawPostId, long companyId) {
 		LinkedHashSet<Long> ids = new LinkedHashSet<>();
 		List<Object> displayTokens = new ArrayList<>();
 
@@ -95,7 +97,7 @@ public class PostDeleteService {
 			throw new BadRequestException("post_id参数不能为空");
 		}
 
-		runUpdate(ids);
+		runUpdate(ids, companyId);
 
 		LinkedHashMap<String, Object> out = new LinkedHashMap<>();
 		out.put("post_id", displayTokens);
@@ -103,12 +105,12 @@ public class PostDeleteService {
 		return out;
 	}
 
-	private Map<String, Object> softDeleteScalar(Object rawPostId) {
+	private Map<String, Object> softDeleteScalar(Object rawPostId, long companyId) {
 		if (rawPostId instanceof Number n) {
 			long v = n.longValue();
 			LinkedHashSet<Long> ids = new LinkedHashSet<>();
 			ids.add(v);
-			runUpdate(ids);
+			runUpdate(ids, companyId);
 			LinkedHashMap<String, Object> out = new LinkedHashMap<>();
 			out.put("post_id", v);
 			out.put("message", "删除成功");
@@ -119,7 +121,7 @@ public class PostDeleteService {
 			if (v != null) {
 				LinkedHashSet<Long> ids = new LinkedHashSet<>();
 				ids.add(v);
-				runUpdate(ids);
+				runUpdate(ids, companyId);
 				LinkedHashMap<String, Object> out = new LinkedHashMap<>();
 				out.put("post_id", v);
 				out.put("message", "删除成功");
@@ -134,7 +136,7 @@ public class PostDeleteService {
 		if (v != null) {
 			LinkedHashSet<Long> ids = new LinkedHashSet<>();
 			ids.add(v);
-			runUpdate(ids);
+			runUpdate(ids, companyId);
 			LinkedHashMap<String, Object> out = new LinkedHashMap<>();
 			out.put("post_id", v);
 			out.put("message", "删除成功");
@@ -146,7 +148,24 @@ public class PostDeleteService {
 		return out;
 	}
 
-	private void runUpdate(LinkedHashSet<Long> ids) {
+	private void runUpdate(LinkedHashSet<Long> ids, long companyId) {
+		// ECX-10909：对齐 PHP WsugcTenantScopeGuard::assertPostIdsBelongToCompany
+		if (companyId <= 0L) {
+			throw new ResourceException("无权访问该笔记");
+		}
+		LambdaQueryWrapper<Post> q = new LambdaQueryWrapper<>();
+		q.in(Post::getPostId, ids);
+		q.select(Post::getPostId, Post::getCompanyId);
+		List<Post> rows = postMapper.selectList(q);
+		if (rows.size() != ids.size()) {
+			throw new ResourceException("无权访问该笔记");
+		}
+		for (Post row : rows) {
+			Long rowCompanyId = row.getCompanyId() == null ? 0L : row.getCompanyId();
+			if (!rowCompanyId.equals(companyId)) {
+				throw new ResourceException("无权访问该笔记");
+			}
+		}
 		LambdaUpdateWrapper<Post> uw = new LambdaUpdateWrapper<>();
 		uw.set(Post::getDisabled, 1);
 		if (ids.size() == 1) {

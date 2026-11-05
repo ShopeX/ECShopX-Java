@@ -19,6 +19,8 @@ package cn.shopex.ecshopx.comments.service;
 import cn.shopex.ecshopx.comments.domain.ShopComments;
 import cn.shopex.ecshopx.comments.mapper.ShopCommentsMapper;
 import cn.shopex.ecshopx.common.exception.ResourceException;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
 import org.springframework.stereotype.Service;
@@ -34,9 +36,11 @@ public class ShopCommentUpdateService {
 		this.objectMapper = objectMapper;
 	}
 
-	public Map<String, Object> update(String commentIdRaw, Map<String, Object> merged) {
+	public Map<String, Object> update(String commentIdRaw, Map<String, Object> merged, long companyId) {
 		Long id = parseCommentId(commentIdRaw);
-		ShopComments entity = shopCommentsMapper.selectById(id);
+		String companyIdStr = String.valueOf(companyId);
+		LambdaQueryWrapper<ShopComments> scope = ownershipQuery(id, companyIdStr);
+		ShopComments entity = shopCommentsMapper.selectOne(scope);
 		if (entity == null) {
 			throw new ResourceException("comment_id=" + commentIdRaw + "的评论不存在");
 		}
@@ -54,8 +58,13 @@ public class ShopCommentUpdateService {
 		ShopComments forResponse;
 		if (touch) {
 			entity.setUpdated((int) (System.currentTimeMillis() / 1000L));
-			shopCommentsMapper.updateById(entity);
-			ShopComments reloaded = shopCommentsMapper.selectById(id);
+			LambdaUpdateWrapper<ShopComments> writeScope = new LambdaUpdateWrapper<>();
+			writeScope.eq(ShopComments::getCommentId, id).eq(ShopComments::getCompanyId, companyIdStr);
+			int rows = shopCommentsMapper.update(entity, writeScope);
+			if (rows == 0) {
+				throw new ResourceException("comment_id=" + commentIdRaw + "的评论不存在");
+			}
+			ShopComments reloaded = shopCommentsMapper.selectOne(ownershipQuery(id, companyIdStr));
 			if (reloaded == null) {
 				throw new ResourceException("comment_id=" + commentIdRaw + "的评论不存在");
 			}
@@ -64,6 +73,12 @@ public class ShopCommentUpdateService {
 			forResponse = entity;
 		}
 		return ShopCommentResponseMaps.buildCommentResponseMap(forResponse, objectMapper);
+	}
+
+	private static LambdaQueryWrapper<ShopComments> ownershipQuery(long commentId, String companyId) {
+		LambdaQueryWrapper<ShopComments> q = new LambdaQueryWrapper<>();
+		q.eq(ShopComments::getCommentId, commentId).eq(ShopComments::getCompanyId, companyId);
+		return q;
 	}
 
 	private static Long parseCommentId(String commentIdRaw) {

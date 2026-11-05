@@ -190,15 +190,31 @@ public class FormTemplateController {
 
 	@Activated(routeAlias = "selfhelp.template.delete")
 	@PostMapping(value = "/selfhelp/formtem/discard/{id}", name = "废弃表单模板")
-	public ResponseEntity<ApiResult<Object>> deleteData(@PathVariable("id") String id) {
-		Object data = formTemplateCreateService.deleteData(id);
+	public ResponseEntity<ApiResult<Object>> deleteData(HttpServletRequest httpRequest, @PathVariable("id") String id) {
+		@SuppressWarnings("unchecked")
+		Map<String, Object> jwt =
+				(Map<String, Object>) httpRequest.getAttribute(OperatorJwtRequestAttributes.OPERATOR_JWT_USER_DATA);
+		if (jwt == null || jwt.isEmpty()) {
+			throw new UnauthorizedException(
+					"Failed to authenticate because of bad credentials or an invalid authorization header.");
+		}
+		long companyId = parseCompanyId(jwt);
+		Object data = formTemplateCreateService.deleteData(id, companyId);
 		return ResponseEntity.ok(ApiResult.ok(data));
 	}
 
 	@Activated(routeAlias = "selfhelp.template.delete")
 	@PostMapping(value = "/selfhelp/formtem/restore/{id}", name = "恢复表单模板")
-	public ResponseEntity<ApiResult<Object>> restoreData(@PathVariable("id") String id) {
-		Object data = formTemplateCreateService.restoreData(id);
+	public ResponseEntity<ApiResult<Object>> restoreData(HttpServletRequest httpRequest, @PathVariable("id") String id) {
+		@SuppressWarnings("unchecked")
+		Map<String, Object> jwt =
+				(Map<String, Object>) httpRequest.getAttribute(OperatorJwtRequestAttributes.OPERATOR_JWT_USER_DATA);
+		if (jwt == null || jwt.isEmpty()) {
+			throw new UnauthorizedException(
+					"Failed to authenticate because of bad credentials or an invalid authorization header.");
+		}
+		long companyId = parseCompanyId(jwt);
+		Object data = formTemplateCreateService.restoreData(id, companyId);
 		return ResponseEntity.ok(ApiResult.ok(data));
 	}
 }

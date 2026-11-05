@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:4b59a3a0700fc5c04207f13343372fae9400e6786b9ed3d68fd27a52db2b0659",
+  "pageVersion": "sha256:3b3ded2758c53484701dcb3a75a918f76c97553ddad4fac6d4ccfeec46a491c5",
   "claims": [
     {
       "id": "claim_e361b42057894e21933ebeee8e65ec0b",
       "statement": "All business data is stored in a single MySQL database (default jdbc:mysql://127.0.0.1:3306/ecshopx) reached through MyBatis-Plus 3.5.16 (mybatis-plus-spring-boot3-starter, version pinned in the root pom.xml), with the MySQL JDBC driver (com.mysql:mysql-connector-j, runtime scope) declared only in ecshopx-bootstrap; ecshopx-common also declares the MyBatis-Plus starter because it hosts the shared configuration.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-bootstrap/pom.xml#L237-L249",
+          "resource": "repo://ecshopx-bootstrap/pom.xml#L241-L253",
           "version": "repo-lines-v1:sha256:9887a465df10544e814f7148c84a07e45b90c52a3f63845d78efd96b62716c02:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwNDcxYzUxZWU1YzlhMGUwMTA3OWRhOTBiZGI3MWVjYjc2ZjZkNDhiNjY0OGE1MGFmYTYzNzdmNTIyYTU0YmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA2MGJhYjA0ZjIxOTY1NjZjNGU0ZDQyZjYwNjM3MmMyMzc3ODljODdmNjQ3ZTMwNDcxOTM2NzcwN2E4ODQ0MDkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFiOTUzM2FlNzEyMjU0ODc4NDk4NmEwMzc0OWE0Y2Q4MmQwMTdlNmVlYTk1NTljYzlhZTBhMTM2YzJkNmM1MjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM0MWUyMjM1NmY0MDNiZjYwZGQwMzA5OWYxMzMxOGFjMGY0NzZkZjU0MWEzOGY1YjBiNzBiNjk1NGY3MjQ1NjcifQ"
         },
         {
@@ -20,7 +20,7 @@
         },
         {
           "resource": "repo://pom.xml#L20-L24",
-          "version": "repo-lines-v1:sha256:57583bcc037e1b0721ae819898e71fa2aa50c3e24899ac5b9fc9a695b2b9a7c8:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTM3MDRhZGI3MjhlMDAyNzA4OTljMTQxNmM3ODI1ODg0NjA5NWNmZDAyZjU0N2U3MDU2ZWI1NmIxOTIxZGE5YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjNkOGRjMzliMWNhZDI2YjgwMjcyNGUxNGM0ZDg2NzljYjMzY2RlMjNjODU0ODNiY2I5YTBlNjM0MDI1OTg4NSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjFjMWQzNmVjNmVmNjMxNjZjNjFlZDFmMDMyZWJlZDIyODA0OWZhY2ZlNTAwNTZjYjFkYmViOTkyOTYwNDJjYyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzA5YTA1OTRhMTE1OTk1YzlkZDQ4YmY5NjI0MmE4OWM4YWQxZTdlOTQ4NTllMDgxYmM5YmNlYjAxMmE5NzFiMyJ9"
+          "version": "repo-lines-v1:sha256:0ba1a9e90a360e3356758af24e8624cc00daa9722886ec6eae3cc09acecc87b2:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTM3MDRhZGI3MjhlMDAyNzA4OTljMTQxNmM3ODI1ODg0NjA5NWNmZDAyZjU0N2U3MDU2ZWI1NmIxOTIxZGE5YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjNkOGRjMzliMWNhZDI2YjgwMjcyNGUxNGM0ZDg2NzljYjMzY2RlMjNjODU0ODNiY2I5YTBlNjM0MDI1OTg4NSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjFjMWQzNmVjNmVmNjMxNjZjNjFlZDFmMDMyZWJlZDIyODA0OWZhY2ZlNTAwNTZjYjFkYmViOTkyOTYwNDJjYyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzA5YTA1OTRhMTE1OTk1YzlkZDQ4YmY5NjI0MmE4OWM4YWQxZTdlOTQ4NTllMDgxYmM5YmNlYjAxMmE5NzFiMyJ9"
         }
       ]
     },
@@ -33,7 +33,7 @@
           "version": "repo-lines-v1:sha256:9f746a0b7c76524491ba4d2c2bfcbc85ccb234b1e1ee905558296f35fc99eef7:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNmNkNWZlNmQwNmFkNzNhYmM4NDI1NjQ2ZTMwN2UwYWNmNTIyMzBhNDk0ZTAxZDg5ZmQ4NjViZjRjNmQxMWQwOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYjQzMjdhNTg2MTQ0ZjJiYmVjMzlhYjI0NTRmNjU3OGQyOWRmZjdlMTE0YjM4MTdjMzFjMjZjYjVmYzJkMTMyYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDFlNjcyZjcxNGJiZGE1MTJiNGU0MDZhMDZiMzkyMmQyOTEzYmUwOTY1MTRjOTUwZDNlZjIxYWE5OGUxODJlYyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMjkxNmM2MWQ1YWM5YzEzOGY2NWQzOTBjNDdiZTY5NWQ3YTYxNWRkM2Q2ZTc2NzYyZjNlNzBjNDRmN2NhNGE5MiJ9"
         },
         {
-          "resource": "repo://bin/make-migration#L760-L769",
+          "resource": "repo://bin/make-migration#L767-L776",
           "version": "repo-lines-v1:sha256:54b066c476a29558fa3cbe7295fedc09e3606c56bf7e3796b03fceaf87b35bb0:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFjZTQ3YTZkMWVhZTE0MzE3Mjg1NGY4NjI2N2RhYmI5NmM0NGY4MDEwZGE3NTNkYWEzNWNlNGY4NTRhMDlkOWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwZjJkMzkyNjQ1MjVkNjRjNmMyMmE5OGI2NDNkMjJmY2MyNWFhNjliOTkxNGIyMzBjM2E1YmRmYWYyYjIzOTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVlZWM4ZDU1ZmQ3NGRhZTE2NDhlY2NkOGY3OGQ0MDg3YWYwMjNjMGEwYTQyYjVlMGJlMmQ0NWM0YTU4Njc0OTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJiNDE5YzE1OGNmMzYyYzQ0Zjk4NDcxYWUxNGM5YTk0YTNmZDMxZmY5MWI0YjVhZWZiZjAwZWYwYmZlYjI4NjgifQ"
         },
         {
@@ -41,8 +41,8 @@
           "version": "repo-lines-v1:sha256:ff2695c31bc57015cd9f11c2f599d09427dc1b6fff2754b3a142b4a0775edfdb:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQxYTE4Nzg4MDllNDc5ZDFiMzYwMzk5YTk2YmM3M2NiNmM1OGI4MThiODg0YWY1MGJjMDlkYjlkYTlkOTc2NTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE4NjgzZTVkOTdiNmFlODJmMmU0Zjg4MzVhZGE4YjBmNDdkM2NhOGNhNjFjODFkMmM2ODkwYjQ4YTYxNmJlYTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhjYjVmYWJiZjcyMTQxOTk4NzkzMGI0YTU1NzU1NjU5MDZiMjk2ZTBjMjhiZTM4MzBmMDczNmMyZjMxYzBmZmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIzZjRiMjE3ZTEzN2QxMTg4YzA1NjUxYWExOTAyNjNiNjMwZjQ1MmQyYWQxMWJkNThlYzlhZTVjNjNkZGIzMjcifQ"
         },
         {
-          "resource": "repo://docker-lite/docker-compose.yml#L20-L40",
-          "version": "repo-lines-v1:sha256:5b6901dfc3d05f5d330469338bde758b5d0777381b8bd0e542ca5b0dbf744418:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQxYTE4Nzg4MDllNDc5ZDFiMzYwMzk5YTk2YmM3M2NiNmM1OGI4MThiODg0YWY1MGJjMDlkYjlkYTlkOTc2NTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE4NjgzZTVkOTdiNmFlODJmMmU0Zjg4MzVhZGE4YjBmNDdkM2NhOGNhNjFjODFkMmM2ODkwYjQ4YTYxNmJlYTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjlkNjQxOThkMzQwYzlhZjYzYjYxMzM1NDgyYWU1OGFkOGY1OGE0Y2ZmYmFmNzZjNDA3MGY5YTEwMTZhNTM3MDgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIzZjRiMjE3ZTEzN2QxMTg4YzA1NjUxYWExOTAyNjNiNjMwZjQ1MmQyYWQxMWJkNThlYzlhZTVjNjNkZGIzMjcifQ"
+          "resource": "repo://docker-lite/docker-compose.yml#L20-L41",
+          "version": "repo-lines-v1:sha256:7e7b2e924f442ddf5bc6096f3d8a498c4d7f77f5d87da3442c23e89da75f9816:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQxYTE4Nzg4MDllNDc5ZDFiMzYwMzk5YTk2YmM3M2NiNmM1OGI4MThiODg0YWY1MGJjMDlkYjlkYTlkOTc2NTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE4NjgzZTVkOTdiNmFlODJmMmU0Zjg4MzVhZGE4YjBmNDdkM2NhOGNhNjFjODFkMmM2ODkwYjQ4YTYxNmJlYTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjlkNjQxOThkMzQwYzlhZjYzYjYxMzM1NDgyYWU1OGFkOGY1OGE0Y2ZmYmFmNzZjNDA3MGY5YTEwMTZhNTM3MDgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIzZjRiMjE3ZTEzN2QxMTg4YzA1NjUxYWExOTAyNjNiNjMwZjQ1MmQyYWQxMWJkNThlYzlhZTVjNjNkZGIzMjcifQ"
         },
         {
           "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L23-L23",
@@ -135,7 +135,7 @@
           "version": "repo-lines-v1:sha256:f573c2b28870e9e134376ca6a48a05f93a991d05cfa82126171d9fbf41dd3fd1:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdmOTc2OWQ4MWI3ODRlOThiY2FmMjQ0OGM5ODExZDM3NzFkMWY0NDUxNzJhOTYxZGMwZDg0ZDZmNDE5NTJkYmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
         },
         {
-          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/repository/ItemsRepository.java#L408-L417",
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/repository/ItemsRepository.java#L423-L432",
           "version": "repo-lines-v1:sha256:0fdc97ae0715a5f74f028b9aeed0304a0d5f7204e4dcb8de71a6701529580c67:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQzYTZjMTJiOWM3ODM5YzA4M2UwNTc1MzJjZjg3NmQ3ZjMwZGFiMTFjZTk4Nzk3YTY0MTk0YzhjZGYyYmJhYzQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJhNzZhMmZmOTgxZWU2M2EyNWJlYzRiNzYyNmVkNGFiNWMyODZmOTY0ODBkNDZhMmYzYmY3OWI3MzBlZmVmMWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk2MDZjOWJjZjM3OWU4Yjk5NTU2ZmMyZGNmMTE3NDJkYTIzOTFhNzQ5NjQzMWNlNDQ1MTZmNzI3YzMxOTNhYzQifQ"
         }
       ]
@@ -185,7 +185,7 @@
           "version": "repo-lines-v1:sha256:52c26846bd432dd6740701b4a99c65e6de9ea2853f3a7030b43716518c8f378f:eyJzZWxlY3RlZExpbmVDb3VudCI6NDQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE2ZTFjMjI0YmExMmU5ZmRiNDc1MTc1ZDhhMGY0MGM3NzUxMWYyYjNlZGQ1MTk3YTkyZmJjMTE0MTIzMWY1NGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNmYWIwMWM5MjQ2MmQ5MWM4MDUyZGQzMTZkNmJjOTg3NWQzNDAwNmUyZjIxZWNiODZkNTY1NGQxMTk0YTAyYzYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBhZDA1OGEwYzFkZDlkZDQxMTlkZDgzZjJiOWUzNGE4MWVjYjFjOWNjNDE3ZDI4NzNhMDAzMmU3ZTgxMWU5NjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBmZDY3NWQ2ZDA1MzQ4NjU4OTgwOWRkN2NlYzE1ODdkNDUzMTE3ZTdjYjliMzRiMGYwMWMzZDRlMjI3NmNiZDAifQ"
         },
         {
-          "resource": "repo://bin/make-migration#L879-L955",
+          "resource": "repo://bin/make-migration#L886-L962",
           "version": "repo-lines-v1:sha256:abf0b8edfec9c0d3cf8bd91ace5fd96f2706ed82a7462055f029625f13f09cf7:eyJzZWxlY3RlZExpbmVDb3VudCI6NzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUwNjIwYWU4NWVlNmVmMDc1NTcwNzk5OTIyZjg3OWMyZThlYzAxNTM4Y2Y4MWYzNTExNzViOWYzNjdhZjY5MDUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMwYzFmMTg4ZjE0MmVkN2E4MjQ2ODBiMjA3MTcyYzU1MTliYzYxNGE0OGZkYTdjZjE2N2VkYjhkZGY3OTk1NmMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImMxOWUyYzU5OWVlMDQxYWU0YzgwNDE4N2RmNWM4N2YwZjQ3MWU2NDgwMDM5ZWZmMDgxMTVhZGJmZjQyY2Y4MTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUxMzcxZDY4ZWY1Y2MwZDM0MTBmOTAzNjUwNGZkM2MyZGNiYWZlNTFmY2EzNWY2N2M1NTA1NDg0MWU4ZjgyMzUifQ"
         },
         {
@@ -203,11 +203,11 @@
       "statement": "Tenancy is by company_id (with distributor_id as the shop dimension and distributor_id = 0 meaning the platform pool), and there is no automatic tenant filter: every query and update must be scoped explicitly with LambdaQueryWrapper/LambdaUpdateWrapper eq(Entity::getCompanyId, companyId), and hand-written XML or annotation SQL must repeat the company_id predicate itself — a forgotten predicate is a cross-tenant data leak whose only defenses are review and tests.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/repository/ItemsRepository.java#L399-L406",
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/repository/ItemsRepository.java#L414-L421",
           "version": "repo-lines-v1:sha256:de433739f978bffe68475de1efc14247d8d3cfcdd5a54cd41d96ecac2a006ded:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOWNmOGQ5ZmNjNWFjNGE4MDg2YmI0ZGUyNDkyNjFjOWUyZDg3NjU4NGY3MThiZDE0Mjk5M2Y4OGRkMWI1NGQzOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMjMwZmQ3NTE4MDZmNThhYzlkODQ5OWM2YmU4MzRlMzg4MWI2ZmMyOTAyMWU2OWQ5Y2Y0ZjdlNDI0MTQ4ZmZmNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZGM1MDNhZjczYWIwMmY5YmY2ZDkwMTA3NDUwNTNlOTljOTYxZWRhOTZjYjU3NjA1NTBlNDFjM2QxOGQ2NzhhYSJ9"
         },
         {
-          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/repository/ItemsRepository.java#L427-L436",
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/repository/ItemsRepository.java#L442-L451",
           "version": "repo-lines-v1:sha256:67019cc4a596f0644607c42e31878685c893408ca0c61cf302a146f8c7dc5e64:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ5NTlmMGFlZmM3MjJlOTM0MDZkOWZhOWM0YWMxMGYwNGYzOGJlNWI3Y2MxOGRjNzM5MzhlMzc1OWMxNWMxYWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFjMjIxNTE4MWMxZjlhZDFjZWY5MjE2MmE2MDFiZDU3MzUwZDNhMGI4OWExOTgyYTNmZTRmYTdiNzdjMDRjYjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM2MmU1ZjE0NDEyNzM4NDRjNjljN2MxYjYzNWI2ZGZjZDcwYWQyOGRhOTcxODUzNGU0MjY1ZGQ5Nzk1NjM5MDYifQ"
         },
         {
@@ -243,7 +243,7 @@
       "statement": "Primary-key lookups are not automatically tenant-safe: repositories add eq(companyId) even when filtering by a per-company id (getByItemIdAndCompany, deleteByItemIdsAndCompanyId, updateAuditFieldsByCompanyAndGoodsId), while selectById is reserved for globally unique keys such as the string trade_id used by payment callbacks; ItemsRepository.findByItemId is the documented rare exception that queries by item_id only, without a company filter.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/repository/ItemsRepository.java#L399-L406",
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/repository/ItemsRepository.java#L414-L421",
           "version": "repo-lines-v1:sha256:de433739f978bffe68475de1efc14247d8d3cfcdd5a54cd41d96ecac2a006ded:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOWNmOGQ5ZmNjNWFjNGE4MDg2YmI0ZGUyNDkyNjFjOWUyZDg3NjU4NGY3MThiZDE0Mjk5M2Y4OGRkMWI1NGQzOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMjMwZmQ3NTE4MDZmNThhYzlkODQ5OWM2YmU4MzRlMzg4MWI2ZmMyOTAyMWU2OWQ5Y2Y0ZjdlNDI0MTQ4ZmZmNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZGM1MDNhZjczYWIwMmY5YmY2ZDkwMTA3NDUwNTNlOTljOTYxZWRhOTZjYjU3NjA1NTBlNDFjM2QxOGQ2NzhhYSJ9"
         },
         {
@@ -419,7 +419,7 @@
           "version": "repo-lines-v1:sha256:c1613091aa809882deb7f0e4040b50d320539b9dbce6de6c349676267131b187:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBjZWM4NWY5N2ZlOTNlZDc0MmE3YmM0ZTA1OTJhMjI1MGM4NDY2NDZlNmU4NDNhNzJhOTFmMzgzZTQyNmEwOGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxOGJjODZhOGUxM2VmZmY3ZDNjM2EzM2YxNDk3YTA3ZmE4OWMyZmY5NTczM2ExOTJmNjhmMmI1NDU3ODIzODQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImYzOWIwNzc5Nzk3OWU3NTJiMmM1NDg0OWZiYzY0MmNjYzlhYjI2YmNlZTdmM2U2MjczMzhlOWQ4MjFmYTQ3NWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJmOTJiZDhkYmZhZDNhOTFiMzVhMDVjYzBlNjM0YzZiZjc4ZGZkMGIxY2NhMDFmNTVkMTIxODNiMDkyNWJkNjcifQ"
         },
         {
-          "resource": "repo://docker-lite/docker-compose.yml#L125-L139",
+          "resource": "repo://docker-lite/docker-compose.yml#L128-L142",
           "version": "repo-lines-v1:sha256:c1613091aa809882deb7f0e4040b50d320539b9dbce6de6c349676267131b187:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBjZWM4NWY5N2ZlOTNlZDc0MmE3YmM0ZTA1OTJhMjI1MGM4NDY2NDZlNmU4NDNhNzJhOTFmMzgzZTQyNmEwOGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxOGJjODZhOGUxM2VmZmY3ZDNjM2EzM2YxNDk3YTA3ZmE4OWMyZmY5NTczM2ExOTJmNjhmMmI1NDU3ODIzODQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImYzOWIwNzc5Nzk3OWU3NTJiMmM1NDg0OWZiYzY0MmNjYzlhYjI2YmNlZTdmM2U2MjczMzhlOWQ4MjFmYTQ3NWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJmOTJiZDhkYmZhZDNhOTFiMzVhMDVjYzBlNjM0YzZiZjc4ZGZkMGIxY2NhMDFmNTVkMTIxODNiMDkyNWJkNjcifQ"
         },
         {
@@ -434,7 +434,7 @@
     }
   ],
   "verification": {
-    "by": "openwiki/0.7.2",
-    "at": "2026-10-23T03:04:20.471Z"
+    "by": "openwiki/0.7.3",
+    "at": "2026-11-04T17:09:55.577Z"
   }
 }

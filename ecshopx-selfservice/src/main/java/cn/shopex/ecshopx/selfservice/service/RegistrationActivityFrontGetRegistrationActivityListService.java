@@ -93,7 +93,7 @@ public class RegistrationActivityFrontGetRegistrationActivityListService {
 		if (StringUtils.hasText(activityNameTrimmed)) {
 			w.apply("activity_name LIKE CONCAT('%', {0}, '%')", activityNameTrimmed);
 		}
-		w.orderByDesc(RegistrationActivity::getActivityId);
+		applyFrontActivityListOrder(w, status, now);
 
 		long total = registrationActivityMapper.selectCount(w);
 		Page<RegistrationActivity> mpPage = new Page<>(page, pageSize, false);
@@ -259,6 +259,30 @@ public class RegistrationActivityFrontGetRegistrationActivityListService {
 		out.put("content", entity.getContent());
 		out.put("distributor_id", entity.getDistributorId());
 		return out;
+	}
+
+	/**
+	 * status=0（全部活动）：进行中 → 未开始 → 已结束；组内 activity_id 降序。
+	 * 其它 status 仍按 activity_id 降序。
+	 */
+	static void applyFrontActivityListOrder(LambdaQueryWrapper<RegistrationActivity> w, int status, int now) {
+		String last = frontActivityListOrderByLastClause(status, now);
+		if (last != null) {
+			w.last(last);
+		} else {
+			w.orderByDesc(RegistrationActivity::getActivityId);
+		}
+	}
+
+	static String frontActivityListOrderByLastClause(int status, int now) {
+		if (status != 0) {
+			return null;
+		}
+		return "ORDER BY CASE WHEN start_time > "
+				+ now
+				+ " THEN 1 WHEN end_time < "
+				+ now
+				+ " THEN 2 ELSE 0 END ASC, activity_id DESC";
 	}
 
 	private static String formatActivityDate(Integer epochSec) {

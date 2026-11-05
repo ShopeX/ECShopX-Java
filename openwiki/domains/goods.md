@@ -162,6 +162,8 @@ sources:
     resource: repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/service/items/ItemsUpdateOrchestratorDistributorSyncTest.java
   - id: openwiki-source-e01da6476a3e75c45d854ba1
     resource: repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/service/items/SupplierItemsAddServiceSyncPlatformIfNeededTest.java
+  - id: openwiki-source-84ae714fd4b33a8f08f702aa
+    resource: repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/service/items/SupplierItemsReviewGoodsServiceAuditSyncSplitTest.java
   - id: openwiki-source-74a7efd119ec7c5080b6a290
     resource: repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/service/items/SupplierItemsReviewGoodsServiceShopBarcodeDualWriteTest.java
   - id: openwiki-source-25ad5756a543273d2d6431c2
@@ -178,10 +180,16 @@ sources:
     resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/GoodsArrivalSubscribeMatchService.java
   - id: openwiki-source-2e8626d63f714e784ae5de1d
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/create/OrderCreatePostCommitPortImpl.java
-generated: { by: "openwiki/0.7.2", at: "2026-10-25T17:14:04.348Z" }
+  - id: openwiki-source-c9da549abb50240724e0a2e2
+    resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/shopadmin/ShopadminNormalOrderCreateOrchestrator.java
+  - id: openwiki-source-6bee7c44879ca7bd01cdede7
+    resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/shopadmin/ShopadminNormalOrderCreateTransactionalRunner.java
+  - id: openwiki-source-8d15062ef9d8156f9a51625c
+    resource: repo://ecshopx-supplier/src/main/java/cn/shopex/ecshopx/supplier/service/SupplierItemBatchSyncToPoolService.java
+generated: { by: "openwiki/0.7.3", at: "2026-11-04T17:09:55.577Z" }
 verified:
-  - by: openwiki/0.7.2
-    at: 2026-10-25T17:14:04.348Z
+  - by: openwiki/0.7.3
+    at: 2026-11-04T17:09:55.577Z
 ---
 
 # Goods Domain (ecshopx-goods)
@@ -221,7 +229,7 @@ A unique index enforces `(company_id, distributor_id, item_bn)`; a composite ind
 | `DELETE /items/{item_id}` | `ItemsDeleteOrchestrator` | delete goods (`goods.items.delete`), `distributor_id` query param selects the shop scope |
 | `PUT /audit/items` | `ItemsAuditUpdateService` | write `audit_status`/`audit_reason` by `goods_id` clause (`goods.items.audit`) |
 | `PUT /itemstatusupdate` | `GoodsItemsBatchApproveStatusService` | batch onsale/instock (`goods.status.upate`) |
-| `PUT /itemstoreupdate` | `ItemsBatchUpdateStoreOrchestrator` | batch store write (supplier rows when `operate_source=supplier`) |
+| `PUT /itemstoreupdate` | `ItemsBatchUpdateStoreOrchestrator` | batch store write; the controller forces `operator_type=supplier` when the request carries `operate_source=supplier`, so the orchestrator routes on the effective operator type |
 | `PUT /itemsupdate` | `ItemsPriceStoreStatusWriteService` | price/store/shelf combined edit |
 | `GET /items`, `GET /items/onsale`, `GET /sku` | `GoodsItemsListFacadeService` | admin/SKU lists |
 | `GET /items/{item_id}` | `GoodsItemsDetailFacadeService` | admin detail |
@@ -303,9 +311,10 @@ Caption: the item create flow — permission gating, supplier-vs-platform routin
 * **Update** — `PUT /items/{item_id}` reuses the gate (`validateBeforeUpdate`) and `GoodsItemsCreateParamValidator.validateForUpdate` (name/pics/sort required; `normal` items require freight template + brand; supplier goods require `audit_status`), then `ItemsUpdateOrchestrator.updateItems` branches: supplier operator → `SupplierItemsAddService` with audit reset to `submitting` (unless already `processing`); platform operator editing a supplier good (`supplier_id>0` in body) → supplier add when `audit_status=approved`, then `SupplierItemsReviewGoodsService.reviewGoods`; plain platform good → platform add + `syncGoods`. The branch exclusivity is pinned by `ItemsUpdateOrchestratorDistributorSyncTest` (supplier paths never call `syncGoods`).
 * **Audit** — `PUT /audit/items` → `ItemsAuditUpdateService.auditItems` writes `audit_status`/`audit_reason` by a `goods_id` clause that accepts null/single/list semantics.
 * **Delete** — `ItemsDeleteOrchestrator.delete` routes by `operator_type`. `PlatformItemsDeleteService.deleteCore` verifies the row and the queried `distributor_id` match, expands multi-spec to all sibling SKUs (by `default_item_id`), deletes per SKU the `items` row + Redis `item_store` key + attribute rows, then rel-cats (default SKU), services rel-type, `distributor_items`, member prices and barcodes, and publishes `ItemDeleteEvent` **after commit** (payload: `item_id`, `company_id`, `del_ids`, full `item_info` snapshot).
-* **Supplier-linked sync.** When a supplier edits its master data, `SupplierItemsAddService.syncPlatformIfNeeded` propagates a PHP-whitelist field patch (`store`, `pics`, `approve_status`, `item_name`, optional `cost_price`/`start_num`, audit reset on `submitting|processing`) to every linked `items` row and refreshes each Redis store — pinned by `SupplierItemsAddServiceSyncPlatformIfNeededTest`.
-* **Supplier review** — `SupplierItemsReviewGoodsService` implements the common `SupplierItemsReviewGoodsExecutor` / `SupplierItemsSyncToPoolExecutor` / `SupplierItemsSyncToShopExecutor` interfaces the **supplier bundle** drives: `reviewGoods(approved)` automatically syncs the goods into the platform pool; `syncToShop` is restricted to `platform` product-model companies and dual-writes shop-scoped barcode rows (`SupplierItemsReviewGoodsServiceShopBarcodeDualWriteTest`).
+* **Supplier-linked sync.** When a supplier edits its master data, `SupplierItemsAddService.syncPlatformIfNeeded` propagates a PHP-whitelist field patch — `store`, `pics`, `other_product_materials`, `approve_status`, `item_name`, optional `cost_price` (yuan→fen, non-negative only)/`start_num`, and an audit reset (`audit_reason=""`, `audit_date=NULL`) when the edit carries `submiting`/`submitting`/`processing` — to every `items` row linked by `supplier_item_id` and refreshes each linked Redis store. It is skipped unless the goods' `supplier_items.is_sync_platform` flag is on (`isSyncPlatformEnabledForGoods`), and the surrounding `addItemsTransactional` resets that flag to `0` afterwards, so the platform pool owns the rows until the next explicit `syncToPool`. Pinned by `SupplierItemsAddServiceSyncPlatformIfNeededTest`.
+* **Supplier review and sync are split.** `SupplierItemsReviewGoodsService` implements three common interfaces the **supplier bundle** drives: `SupplierItemsReviewGoodsExecutor.reviewGoods` (called from `SupplierItemBatchReviewService`, and by `ItemsUpdateOrchestrator` when a platform operator audits a supplier good) now only writes `audit_status`/`audit_reason`/`audit_date` across the supplier `goods_id` — even an `approved` verdict no longer syncs rows into the platform pool. Pool copies happen exclusively through the explicit `SupplierItemsSyncToPoolExecutor.syncToPool` (driven by the supplier bundle's `SupplierItemBatchSyncToPoolService`), which requires the row to already be `approved` (`仅审核通过的商品可同步到商品池`), inserts/updates one pool `items` row per supplier SKU (with item-store seeding and pool-scope barcodes), deletes vanished SKUs, stamps `is_sync_platform=1`, and — under the `platform` product model — re-syncs every shop that previously copied the goods. `SupplierItemsSyncToShopExecutor.syncToShop` is likewise restricted to `platform` product-model companies, requires `approved`, and writes shop-scoped `items` rows plus dual-written shop barcode rows (`SupplierItemsReviewGoodsServiceAuditSyncSplitTest`, `SupplierItemsReviewGoodsServiceShopBarcodeDualWriteTest`).
 * **Batch status** — `PUT /itemstatusupdate` expands a truthy `query` filter into distinct `goods_id`s, then `GoodsItemsBatchApproveStatusService.updateItemsStatus`: `onsale` rejects supplier-controlled goods (`供应商商品不可售`) and prescription drugs unless the pharma-industry setting is on and their audit is not pending (`instock` skips those checks — deliberate); each goods gets `updateApproveStatusByCompanyAndGoodsId` plus an enqueue of the batch-status event through `job:74` (slow queue). The `job:74` handler republishes `EVENT_ITEM_BATCH_EDIT_STATUS`, whose listeners are the third-party marketing-center push **and** the goods-bundle's own `ItemsApproveStatusSyncDispatchListener`, which cascades the status to `distributor_items`.
+* **Batch store** — `PUT /itemstoreupdate` → `ItemsBatchUpdateStoreOrchestrator.batchUpdate`. The controller resolves `operator_type` from the JWT but overrides it to `supplier` when the merged request carries `operate_source=supplier`, so the orchestrator only branches on the effective operator type: supplier writes go to `supplier_items` rows (`updateStoreByCompanyAndProductKey`, keyed by item id or goods-group id via `treatItemIdAsDefaultItemId`) plus each row's `supplier_item_store` Redis key; platform writes go to `items` — all sibling SKUs by `default_item_id` with every sibling's Redis `item_store` refreshed when the row id is treated as the default, otherwise the single item's row and key only.
 
 ## Inventory: three pools, one resolver
 
@@ -348,7 +357,7 @@ The same `is_total_store` semantics cross the bundle boundary in the other direc
 
 ## Goods-side services of order create
 
-The bundle implements the common order-create ports the orders bundle calls:
+The bundle implements the common order-create ports the orders bundle calls. For shopadmin (代客下单) creates, the caller is the orders bundle's `ShopadminNormalOrderCreateOrchestrator.create`, which runs the staged goods ports synchronously in a fixed order — `OrderCreateNeedParamsPort.validate` → `OrderCheckoutCartPort.fillItemsFromOperatorCart` (the fast-buy bucket detour below) → `OrderCreateItemCheckPort.check` → `OrderCreateFormatDataPort.format` → `OrderCreateFormatDataPort.assertDepositBalance` — then caches a deferred Redis snapshot instead of persisting. `OrderCreateInventoryPort.minusStores` is only invoked later, inside the payment-materialization transaction (`ShopadminNormalOrderCreateTransactionalRunner.persistPreparedSnapshot`), so an abandoned shopadmin checkout never deducts stock (the deferred pipeline is documented on the [Orders Domain](orders.md) page).
 
 ```mermaid
 sequenceDiagram

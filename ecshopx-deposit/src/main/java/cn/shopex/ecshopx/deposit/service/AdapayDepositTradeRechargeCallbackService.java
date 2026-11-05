@@ -69,6 +69,8 @@ public class AdapayDepositTradeRechargeCallbackService {
 		int now = (int) (System.currentTimeMillis() / 1000L);
 		LambdaUpdateWrapper<DepositTrade> uw = new LambdaUpdateWrapper<>();
 		uw.eq(DepositTrade::getDepositTradeId, depositTradeId)
+				// ECX-10915：条件更新原子抢占，对齐 PHP FOR UPDATE + 锁后检查，防并发双次入账
+				.ne(DepositTrade::getTradeStatus, "SUCCESS")
 				.set(DepositTrade::getTradeStatus, status)
 				.set(DepositTrade::getBankType, str(options.get("bank_type")))
 				.set(DepositTrade::getTransactionId, str(options.get("transaction_id")))
@@ -76,7 +78,7 @@ public class AdapayDepositTradeRechargeCallbackService {
 				.set(DepositTrade::getTimeExpire, String.valueOf(now));
 		int n = depositTradeMapper.update(null, uw);
 		if (n <= 0) {
-			throw new ResourceException("储值单状态更新失败");
+			throw new ResourceException("更新已处理，不需要更新");
 		}
 		row = depositTradeMapper.selectById(depositTradeId);
 		long totalFeeFen = parseMoneyFen(row.getCurPayFee());

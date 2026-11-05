@@ -70,12 +70,15 @@ sources:
     resource: repo://pom.xml
   - id: openwiki-source-f1b1aacc63642e5304668821
     resource: repo://readme.md
-generated: { by: "openwiki/0.7.2", at: "2026-10-23T03:04:20.471Z" }
+generated: { by: "openwiki/0.7.3", at: "2026-11-04T17:09:55.577Z" }
+verified:
+  - by: openwiki/0.7.3
+    at: 2026-11-04T17:09:55.577Z
 ---
 
 # ECShopX-Java Wiki Quickstart
 
-ECShopX-Java is the Java server-side reimplementation of the ECShopX commerce system, keeping business semantics and configuration keys aligned with the legacy PHP version. It is **one multi-module Maven reactor** (parent `cn.shopex:ecshopx`, `${revision}` = `5.2.0`, on `spring-boot-starter-parent:3.5.12` / Java 17) of **52 modules**: four infrastructure modules — `ecshopx-bom`, `ecshopx-common` (shared contracts, no peer dependencies), `ecshopx-dispatch` (the message bus), and `ecshopx-bootstrap` (the only Spring Boot executable, which assembles everything) — plus **48 business Bundles**, one per domain (goods, orders, aftersales, members, marketing, payments, WeChat, third-party integrations, …). The single application (`cn.shopex.ecshopx.EcshopxApplication`) runs on Undertow, port **18080**, and serves the PHP-compatible `/api/`, `/storage/`, and `/wechatAuth/` URL spaces. State lives in **one MySQL database** (`ecshopx`, utf8mb4, `Asia/Shanghai`) reached through **MyBatis-Plus 3.5** mappers with pervasive `company_id` tenant scoping, plus **one Redis instance** partitioned into logical databases by hand-built Lettuce factories. All cross-Bundle asynchronous work rides the in-process **dispatch bus** (`DispatchFacade.publishEvent` / `dispatchJob` → Redis lists `dispatch:default` / `dispatch:slow` / `dispatch:sms` plus a delayed ZSET), whose message names preserve the legacy PHP job/event class names; all time-driven work is triggered by **XXL-JOB 2.5.0** (executor appname `ecshopx-executor`, port 19999) against a separately deployed admin console. Cross-Bundle calls never create Maven cycles: the consumer owns a Port or publisher interface (usually in `ecshopx-common`), the provider implements it, and `ecshopx-bootstrap` — which depends on everything — wires the remaining edges through `*DispatchPublisherImpl` and `*RegistrationConfig` classes in its `config` package.
+ECShopX-Java is the Java server-side reimplementation of the ECShopX commerce system, keeping business semantics and configuration keys aligned with the legacy PHP version. It is **one multi-module Maven reactor** (parent `cn.shopex:ecshopx`, `${revision}` = `5.4.6`, on `spring-boot-starter-parent:3.5.12` / Java 17) of **53 modules**: four infrastructure modules — `ecshopx-bom`, `ecshopx-common` (shared contracts, no peer dependencies), `ecshopx-dispatch` (the message bus), and `ecshopx-bootstrap` (the only Spring Boot executable, which assembles everything) — plus **49 business Bundles**, one per domain (goods, orders, aftersales, members, marketing, payments, WeChat, third-party integrations, …). The single application (`cn.shopex.ecshopx.EcshopxApplication`) runs on Undertow, port **18080**, and serves the PHP-compatible `/api/`, `/storage/`, and `/wechatAuth/` URL spaces. State lives in **one MySQL database** (`ecshopx`, utf8mb4, `Asia/Shanghai`) reached through **MyBatis-Plus 3.5.16** mappers with pervasive `company_id` tenant scoping, plus **one Redis instance** partitioned into logical databases by hand-built Lettuce factories. All cross-Bundle asynchronous work rides the in-process **dispatch bus** (`DispatchFacade.publishEvent` / `dispatchJob` → Redis lists `dispatch:default` / `dispatch:slow` / `dispatch:sms` plus a delayed ZSET), whose message names preserve the legacy PHP job/event class names; all time-driven work is triggered by **XXL-JOB 2.5.0** (executor appname `ecshopx-executor`, port 19999) against a separately deployed admin console. Cross-Bundle calls never create Maven cycles: the consumer owns a Port or publisher interface (usually in `ecshopx-common`), the provider implements it, and `ecshopx-bootstrap` — which depends on everything — wires the remaining edges through `*DispatchPublisherImpl` and `*RegistrationConfig` classes in its `config` package.
 
 ## Route your task
 
@@ -90,12 +93,12 @@ ECShopX-Java is the Java server-side reimplementation of the ECShopX commerce sy
 | Understand, add, or re-time scheduled/cron work | [Scheduled Jobs: XXL-JOB Executor and Cron Handlers](concepts/scheduling-xxljob.md) |
 | Change the database schema (entity → `bin/make-migration` → Flyway `V*.sql`) | [Workflow: Schema Changes with bin/make-migration and Flyway](workflows/schema-migration.md) |
 | Understand persistence, mapper conventions, or the `company_id` tenancy pattern | [Persistence: MySQL, MyBatis-Plus, Mappers, and Tenancy](concepts/persistence-mybatis.md) |
-| Debug the money path — cart → order create → payment → async notify → trade-finish fan-out; covers both entries: the wxapp member flow and the admin 代客下单 deferred create-and-pay flow (`POST /api/v1/order/create` → Redis `WAIT_PAY` snapshot → `POST /api/v1/order/payment` materialize-and-charge with refund-on-failure) | [Workflow: Checkout, Payment, Notify, and Trade-Finish Fan-out](workflows/order-payment-flow.md), [Orders Domain](domains/orders.md) |
+| Debug the money path — cart → order create → payment → async notify → trade-finish fan-out; covers both entries: the wxapp member flow and the admin 代客下单 deferred create-and-pay flow (`POST /api/v1/order/create` in `NormalOrderController` runs `ShopadminNormalOrderCreateOrchestrator`, which enforces `order_type` = `normal_shopadmin`, prices without inserting DB rows, and saves a Redis `WAIT_PAY` snapshot under `shopadmin:deferred:<companyId>:<orderId>`; `POST /api/v1/order/payment` detects the snapshot and `ShopadminDeferredOrderService.payDeferredOrder` charges the channel, materializes the `NormalOrders` row, and refunds on business failure) | [Workflow: Checkout, Payment, Notify, and Trade-Finish Fan-out](workflows/order-payment-flow.md), [Orders Domain](domains/orders.md) |
 | Payment channel surfaces (wechat/alipay/adapay/hfpay/bspay/chinaums notify endpoints, refunds, withdrawals) | [Payments and Channels](domains/payments.md) |
-| Enable, disable, or tune a third-party integration (Jushuitan, WdtErp, OME, DM CRM, Prism, Shuyun, Youshu, cross-border customs) | [Third-Party Integrations](integrations/third-party.md) |
-| Work on the public Open API surface (`/api/openapi/**`, sign verification, forward registry) | [OpenAPI Gateway](integrations/openapi.md) |
-| Touch Redis — which logical DB, which template, settings-store and counter patterns | [Redis: Logical Database Isolation and Templates](concepts/redis-databases.md) |
-| Deploy or run the stack (dev compose, lite offline pack, self-hosted jar) | [Deployment: Compose, Full Dev, and Lite Offline](operations/deployment.md) |
+| Enable, disable, or tune a third-party integration (Jushuitan, WdtErp, OME, DM CRM, Prism, DigiOS, Shuyun, Youshu, cross-border customs) | [Third-Party Integrations](integrations/third-party.md) |
+| Work on the public Open API surface (`/api/openapi/**`, sign verification, handler forward registry) | [OpenAPI Gateway (ecshopx-openapi)](integrations/openapi.md) |
+| Touch Redis — which logical DB (sessions, carts, captcha, pickup QR, …), which template, settings-store and counter patterns | [Redis Database Layout](concepts/redis-databases.md) |
+| Deploy or run the stack (`dev-setup.sh` + `docker-compose.dev.yml` full dev, `docker-lite/pack.sh` + `deploy.sh` offline pack, `install.sh --full/--lite` bootstrap, self-hosted jar) | [Deployment: Compose, Full Dev, and Lite Offline](operations/deployment.md) |
 | Find or change a config key, env overlay, or secret | [Configuration and Secrets Reference](operations/configuration.md) |
 | Write, name, or run tests | [Testing Conventions and Verification](testing.md) |
 
@@ -103,19 +106,19 @@ ECShopX-Java is the Java server-side reimplementation of the ECShopX commerce sy
 
 | Domain you are changing | Page |
 |---|---|
-| Products, SKUs, categories, inventory, checkout-time goods services | [Goods Domain](domains/goods.md) |
-| Orders, cart, logistics, settlement, the `Trade` vs `NormalOrders` model | [Orders Domain](domains/orders.md) |
-| After-sales, refund pipeline and per-channel refund executors | [Aftersales Domain](domains/aftersales.md) |
-| Members, login orchestration, member JWT, create/update fan-out | [Members Domain](domains/members.md) |
+| Products, SKUs, categories, inventory, checkout-time goods services | [Goods Domain (ecshopx-goods)](domains/goods.md) |
+| Orders, cart, logistics, settlement, the `Trade` vs `NormalOrders` model | [Orders Domain (ecshopx-orders)](domains/orders.md) |
+| After-sales, refund pipeline and per-channel refund executors | [Aftersales Domain (ecshopx-aftersales)](domains/aftersales.md) |
+| Members, login orchestration, member JWT, create/update fan-out | [Members Domain (ecshopx-members)](domains/members.md) |
 | Promotions, coupons/kaquan, points, points mall, deposit, employee purchase | [Marketing and Loyalty Domains](domains/marketing.md) |
 | Companies/shops, distributors-as-stores, merchants, salespersons, suppliers, community group-buy | [Stores, Distributors, Merchants, and Salespersons](domains/stores-and-merchants.md) |
-| WeChat Open Platform, mini-programs, official account, WeCom | [WeChat Ecosystem](domains/wechat.md) |
+| WeChat Open Platform, mini-programs, official account, WeCom | [WeChat Ecosystem (ecshopx-wechat, ecshopx-work-wechat)](domains/wechat.md) |
 | Espier platform capabilities (storage drivers, uploads, middleware/interceptors) and the other supporting Bundles (super-admin, theme, data-cube, comments, im, form, …) | [Platform Services and Supporting Bundles](domains/platform-services.md) |
 
 ## Ground rules for working in this repository
 
 1. **Source code and tests are authoritative.** `AGENTS.md` states this explicitly for this repository: treat source and tests as the ground truth over any brief or README claim, and prefer the narrowest quiet validation that proves the changed behavior. Concretely: when the README disagrees with the code or the compose files, follow the code.
-2. **The English readme has a known drift.** Its "Docker Deployment (Recommended)" section describes a root `docker-compose.yml` and a `docker/Dockerfile` that do **not** exist in the working tree — the real stacks are `docker-compose.dev.yml` and `docker-lite/docker-compose.yml` (see the note in [Deployment](operations/deployment.md)). Also, both compose stacks publish the XXL-Job admin on host port **8080**, while `9080` is only the self-hosted default in `application.properties`. In the same "Self-Hosted Deployment" section, the readme claims the repo "already includes" `ecshopx-bootstrap/src/main/resources/application-local.properties` — that file is git-ignored (`.gitignore` line 7) and absent from fresh checkouts; local overrides actually arrive via env vars, Spring Boot CLI args (`APP_ARGS`), or `--spring.config.additional-location=file:./config/` (see [Configuration](operations/configuration.md)).
+2. **The English readme has a known drift.** Its "Docker Deployment (Recommended)" section describes a root `docker-compose.yml` and a `docker/Dockerfile` that do **not** exist in the working tree — the real stacks are `docker-compose.dev.yml` and `docker-lite/docker-compose.yml` (see the note in [Deployment](operations/deployment.md)). Also, both compose stacks publish the XXL-Job admin on host port **8080**, while `9080` is only the self-hosted default in `application.properties`. In the same "Self-Hosted Deployment" section, the readme claims the repo "already includes" `ecshopx-bootstrap/src/main/resources/application-local.properties` — that file is git-ignored (`.gitignore` line 7) and absent from fresh checkouts; local overrides actually arrive via env vars, Spring Boot CLI args (`APP_ARGS`), or `--spring.config.additional-location=file:./config/` (see [Configuration](operations/configuration.md)). Both compose stacks run the same four services: `mysql:8.0` (seeded from `docker/tables_xxl_job.sql` then `docker/ecshopx.sql`), `redis:7-alpine`, `xuxueli/xxl-job-admin:2.5.0`, and the unified `ecshopx-app` container (Java + OpenResty + Nuxt) built from `docker/Dockerfile.app`, wired with `depends_on: service_healthy` ordering; the three operator paths converge on it — full development via `dev-setup.sh` + `docker-compose.dev.yml`, lite offline via `docker-lite/pack.sh` + `docker-lite/deploy.sh` (prebuilt jar and frontend dists), and `install.sh --full` / `--lite` as the zero-dependency bootstrap that hands off to them.
 3. **Javadoc and config comments are largely Chinese.** Write new wiki/code prose in English, but keep config keys, dispatch event/job names (e.g. `event:288:OrdersBundle\Events\NormalOrderPaySuccessEvent`, `job:128:OrdersBundle\Jobs\FinishOrderJob`), handler names (e.g. `finish-orders`), and Chinese error strings quoted verbatim — they are contract identifiers, not prose.
 4. **When gathering evidence, skip** `target/`, `.flattened-pom.xml`, docker SQL dumps (`docker/ecshopx.sql`, `docker/tables_xxl_job.sql`), logos/media, and local `logs/`.
 
@@ -143,7 +146,9 @@ ECShopX-Java is the Java server-side reimplementation of the ECShopX commerce sy
 bin/make-migration add_order_extra_index   # entity-annotation → SQL diff, review before applying
 bin/make-migration migrate                 # Flyway Maven plugin
 
-# Dev compose stack (mysql + redis + xxl-job-admin + ecshopx-app)
+# Dev compose stack (mysql:8.0 seeded from docker/tables_xxl_job.sql + docker/ecshopx.sql,
+# redis:7-alpine, xxl-job-admin:2.5.0, unified ecshopx-app built from docker/Dockerfile.app —
+# Java + OpenResty + Nuxt in one container, joined by depends_on service_healthy)
 docker compose -f docker-compose.dev.yml up -d
 ```
 

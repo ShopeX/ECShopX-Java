@@ -117,6 +117,7 @@ class WxappOfflinePaymentUpdateVoucherOrderProcessLogDispatchPublishProbeTest {
 
 		OfflinePayment beforeUpdate = new OfflinePayment();
 		beforeUpdate.setId(paymentId);
+		beforeUpdate.setCompanyId(companyId);
 		beforeUpdate.setCheckStatus(2);
 		beforeUpdate.setOrderId(orderId);
 

@@ -86,6 +86,12 @@ public class WxappOfflinePaymentUpdateVoucherService {
 		if (info == null) {
 			throw new ResourceException("凭证不存在");
 		}
+		// ECX-10905：对齐 PHP GuideOrderTenantScopeGuard::assertOfflineVoucherBelongsToOrder
+		Long infoCompanyId = info.getCompanyId() == null ? 0L : info.getCompanyId();
+		Long infoOrderId = info.getOrderId() == null ? 0L : info.getOrderId();
+		if (!infoCompanyId.equals(companyId) || !infoOrderId.equals(orderId)) {
+			throw new ResourceException("凭证不存在");
+		}
 
 		NormalOrders order = normalOrdersMapper.selectOne(
 				new LambdaQueryWrapper<NormalOrders>()

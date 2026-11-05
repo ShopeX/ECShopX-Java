@@ -29,6 +29,8 @@ import cn.shopex.ecshopx.members.mapper.MembersOffineLogMapper;
 import cn.shopex.ecshopx.members.security.LegacyFixedMobileEncrypt;
 import cn.shopex.ecshopx.members.integration.point.MemberImportPointPort;
 import cn.shopex.ecshopx.members.service.MemberRelTagsBatchCreateService;
+import cn.shopex.ecshopx.members.service.systemtag.MemberSystemTagCodes;
+import cn.shopex.ecshopx.members.service.systemtag.NewCustomerTagReconcileService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -60,6 +62,7 @@ public class MemberInfoImportRowOrchestrator {
 	private final MemberTagsMapper memberTagsMapper;
 	private final MemberRelTagsBatchCreateService memberRelTagsBatchCreateService;
 	private final MemberImportPointPort memberImportPointPort;
+	private final NewCustomerTagReconcileService newCustomerTagReconcileService;
 	private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
 	public MemberInfoImportRowOrchestrator(
@@ -68,13 +71,15 @@ public class MemberInfoImportRowOrchestrator {
 			MembersOffineLogMapper membersOffineLogMapper,
 			MemberTagsMapper memberTagsMapper,
 			MemberRelTagsBatchCreateService memberRelTagsBatchCreateService,
-			MemberImportPointPort memberImportPointPort) {
+			MemberImportPointPort memberImportPointPort,
+			NewCustomerTagReconcileService newCustomerTagReconcileService) {
 		this.membersMapper = membersMapper;
 		this.membersInfoMapper = membersInfoMapper;
 		this.membersOffineLogMapper = membersOffineLogMapper;
 		this.memberTagsMapper = memberTagsMapper;
 		this.memberRelTagsBatchCreateService = memberRelTagsBatchCreateService;
 		this.memberImportPointPort = memberImportPointPort;
+		this.newCustomerTagReconcileService = newCustomerTagReconcileService;
 	}
 
 	@Transactional(rollbackFor = Exception.class)
@@ -188,6 +193,8 @@ public class MemberInfoImportRowOrchestrator {
 			memberRelTagsBatchCreateService.createRelTagsByUserId(userId, tagIds, companyId);
 		}
 		applyInitialPointIfPresent(userId, companyId, row.get("point"));
+		newCustomerTagReconcileService.reconcile(
+				companyId, userId, MemberSystemTagCodes.SOURCE_REGISTER);
 	}
 
 	private void applyInitialPointIfPresent(long userId, long companyId, Object pointObj) {

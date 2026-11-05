@@ -88,7 +88,7 @@ public class UploadeFileRepository {
 	}
 
 	/**
-	 * 按数值主键查询；其它功能使用；上传错误文件导出接口请使用 {@link #getInfoByRouteId(String)}。
+	 * 按数值主键查询；其它功能使用；上传错误文件导出接口请使用 {@link #getInfoByRouteId(String, long)}。
 	 */
 	public LinkedHashMap<String, Object> getInfoById(long id) {
 		UploadeFile e = uploadeFileMapper.selectById(id);
@@ -99,13 +99,16 @@ public class UploadeFileRepository {
 	}
 
 	/**
-	 * 按路径参数 id 的字符串形式查询上传文件表主键列：先 trim，再按主键取至多一行，
+	 * 按路径参数 id + 租户 companyId 查询上传文件表主键列：先 trim，再按主键与公司取至多一行，
 	 * 无匹配行则返回空映射，有则返回与 {@link #getColumnNamesData(UploadeFile)} 一致的列映射。
 	 */
-	public LinkedHashMap<String, Object> getInfoByRouteId(String id) {
+	public LinkedHashMap<String, Object> getInfoByRouteId(String id, long companyId) {
 		String key = id == null ? "" : id.trim();
 		UploadeFile e = uploadeFileMapper.selectOne(
-				new LambdaQueryWrapper<UploadeFile>().apply("id = {0}", key).last("LIMIT 1"));
+				new LambdaQueryWrapper<UploadeFile>()
+						.eq(UploadeFile::getCompanyId, companyId)
+						.apply("id = {0}", key)
+						.last("LIMIT 1"));
 		if (e == null) {
 			return new LinkedHashMap<>();
 		}

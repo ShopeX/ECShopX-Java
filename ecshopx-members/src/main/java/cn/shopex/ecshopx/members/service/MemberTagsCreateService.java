@@ -26,6 +26,8 @@ import cn.shopex.ecshopx.members.mapper.MemberRelTagsMapper;
 import cn.shopex.ecshopx.members.mapper.MemberTagGroupMapper;
 import cn.shopex.ecshopx.members.mapper.MemberTagGroupRelMapper;
 import cn.shopex.ecshopx.members.mapper.MemberTagsMapper;
+import cn.shopex.ecshopx.members.service.systemtag.MemberSystemTagCodes;
+import cn.shopex.ecshopx.members.service.systemtag.MemberSystemTagWriteGuard;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import java.util.ArrayList;
@@ -52,6 +54,7 @@ public class MemberTagsCreateService {
 	private final MemberTagsMultiLangWriteService memberTagsMultiLangWriteService;
 	private final MemberTagsSnakeFormatter memberTagsSnakeFormatter;
 	private final MemberTagGroupDeleteTxService memberTagGroupDeleteTxService;
+	private final MemberSystemTagWriteGuard memberSystemTagWriteGuard;
 
 	public MemberTagsCreateService(
 			MemberTagsMapper memberTagsMapper,
@@ -61,7 +64,8 @@ public class MemberTagsCreateService {
 			JdbcTemplate jdbcTemplate,
 			MemberTagsMultiLangWriteService memberTagsMultiLangWriteService,
 			MemberTagsSnakeFormatter memberTagsSnakeFormatter,
-			MemberTagGroupDeleteTxService memberTagGroupDeleteTxService) {
+			MemberTagGroupDeleteTxService memberTagGroupDeleteTxService,
+			MemberSystemTagWriteGuard memberSystemTagWriteGuard) {
 		this.memberTagsMapper = memberTagsMapper;
 		this.memberTagGroupMapper = memberTagGroupMapper;
 		this.memberTagGroupRelMapper = memberTagGroupRelMapper;
@@ -70,6 +74,7 @@ public class MemberTagsCreateService {
 		this.memberTagsMultiLangWriteService = memberTagsMultiLangWriteService;
 		this.memberTagsSnakeFormatter = memberTagsSnakeFormatter;
 		this.memberTagGroupDeleteTxService = memberTagGroupDeleteTxService;
+		this.memberSystemTagWriteGuard = memberSystemTagWriteGuard;
 	}
 
 	@Transactional(rollbackFor = Exception.class)
@@ -79,6 +84,7 @@ public class MemberTagsCreateService {
 			throw new BadRequestException("标签名称不能为空");
 		}
 		String tagNameTrim = tn.toString().trim();
+		memberSystemTagWriteGuard.rejectCreatePayload(merged);
 		assertNoDuplicateTagName(companyId, distributorId, tagNameTrim);
 
 		String tagColor = resolveStringOrDefault(merged.get("tag_color"), "#ff1939");
@@ -96,6 +102,7 @@ public class MemberTagsCreateService {
 		row.setTagColor(tagColor);
 		row.setFontColor(fontColor);
 		row.setCategoryId(categoryId);
+		row.setTagKind(MemberSystemTagCodes.KIND_MANUAL);
 		row.setCreated(nowSec);
 		row.setUpdated(nowSec);
 
@@ -598,6 +605,7 @@ public class MemberTagsCreateService {
 			String requestLangTag) {
 		Object tn = tagData.get("tag_name");
 		String tagNameTrim = tn.toString().trim();
+		memberSystemTagWriteGuard.rejectCreatePayload(tagData);
 		assertNoDuplicateTagName(companyId, distributorId, tagNameTrim);
 		String tagColor = resolveStringOrDefault(tagData.get("tag_color"), "#ff1939");
 		String fontColor = resolveStringOrDefault(tagData.get("font_color"), "#ffffff");
@@ -612,6 +620,7 @@ public class MemberTagsCreateService {
 		row.setTagColor(tagColor);
 		row.setFontColor(fontColor);
 		row.setCategoryId(categoryId);
+		row.setTagKind(MemberSystemTagCodes.KIND_MANUAL);
 		row.setCreated(nowSec);
 		row.setUpdated(nowSec);
 		try {
@@ -642,7 +651,6 @@ public class MemberTagsCreateService {
 		QueryWrapper<MemberTags> wrapper = new QueryWrapper<>();
 		wrapper.eq("tag_id", pathTagId == null ? "" : pathTagId.trim());
 		wrapper.eq("company_id", companyId);
-		wrapper.eq("distributor_id", distributorId);
 		List<MemberTags> list;
 		try {
 			list = memberTagsMapper.selectList(wrapper);
@@ -653,7 +661,13 @@ public class MemberTagsCreateService {
 			return;
 		}
 		for (MemberTags row : list) {
+			memberSystemTagWriteGuard.rejectWrite(row);
+		}
+		for (MemberTags row : list) {
 			if (row.getTagId() == null) {
+				continue;
+			}
+			if (row.getDistributorId() != null && row.getDistributorId() != distributorId) {
 				continue;
 			}
 			Long id = row.getTagId();

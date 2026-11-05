@@ -26,6 +26,8 @@ import cn.shopex.ecshopx.members.mapper.MemberOperateLogMapper;
 import cn.shopex.ecshopx.members.mapper.MembersInfoMapper;
 import cn.shopex.ecshopx.members.mapper.MembersMapper;
 import cn.shopex.ecshopx.members.service.account.MemberAccountService;
+import cn.shopex.ecshopx.members.service.systemtag.MemberSystemTagCodes;
+import cn.shopex.ecshopx.members.service.systemtag.NewCustomerTagReconcileService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -64,6 +66,7 @@ public class OpenapiThirdApiV2MemberUpdateDetailService {
 	private final MemberAccountService memberAccountService;
 	private final SensitiveFieldEncryptor sensitiveFieldEncryptor;
 	private final ObjectMapper objectMapper;
+	private final NewCustomerTagReconcileService newCustomerTagReconcileService;
 
 	public OpenapiThirdApiV2MemberUpdateDetailService(
 			MembersMapper membersMapper,
@@ -71,13 +74,15 @@ public class OpenapiThirdApiV2MemberUpdateDetailService {
 			MemberOperateLogMapper memberOperateLogMapper,
 			MemberAccountService memberAccountService,
 			SensitiveFieldEncryptor sensitiveFieldEncryptor,
-			ObjectMapper objectMapper) {
+			ObjectMapper objectMapper,
+			NewCustomerTagReconcileService newCustomerTagReconcileService) {
 		this.membersMapper = membersMapper;
 		this.membersInfoMapper = membersInfoMapper;
 		this.memberOperateLogMapper = memberOperateLogMapper;
 		this.memberAccountService = memberAccountService;
 		this.sensitiveFieldEncryptor = sensitiveFieldEncryptor;
 		this.objectMapper = objectMapper;
+		this.newCustomerTagReconcileService = newCustomerTagReconcileService;
 	}
 
 	@Transactional(rollbackFor = Exception.class)
@@ -151,6 +156,10 @@ public class OpenapiThirdApiV2MemberUpdateDetailService {
 		if (after == null) {
 			throw v2Fail(OpenapiErrorCode.MEMBER_NOT_FOUND, "会员找不到");
 		}
+		newCustomerTagReconcileService.reconcile(
+				companyId,
+				userId,
+				disabled ? MemberSystemTagCodes.SOURCE_DISABLE : MemberSystemTagCodes.SOURCE_ENABLE);
 		collector.register(
 				MemberAccountService.mapMembersTable(after), MemberAccountService.mapMembersTable(before));
 	}

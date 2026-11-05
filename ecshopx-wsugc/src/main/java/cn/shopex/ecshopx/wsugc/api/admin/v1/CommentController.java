@@ -250,10 +250,13 @@ public class CommentController {
 		if (!(raw instanceof Map<?, ?> ud)) {
 			throw new UnauthorizedException("未登录");
 		}
+		long companyId = readLongFromMap(ud, "company_id", 0L);
+		if (companyId <= 0L) {
+			throw new UnauthorizedException("未登录");
+		}
 		Map<String, Object> merged = mergeVerifyCommentInput(request, body);
-		Map<String, Object> data = commentDeleteService.deleteComments(merged);
+		Map<String, Object> data = commentDeleteService.deleteComments(merged, companyId);
 
-		long companyId = readLongFromMap(ud, "company_id", 1L);
 		long operatorId = readLongFromMap(ud, "operator_id", 0L);
 		Map<String, Object> logCtx = new LinkedHashMap<>();
 		logCtx.put("company_id", companyId);

@@ -107,7 +107,8 @@ class MarketingActivityCreatePersistenceServiceSavePromotionItemTagDispatchInTra
 						applicationEventPublisher,
 						shelvesPublisher,
 						tagPublisher,
-						new ObjectMapper());
+						new ObjectMapper(),
+						mock(cn.shopex.ecshopx.members.service.systemtag.MemberAudienceTagValidator.class));
 
 		PlatformTransactionManager txMgr = mock(PlatformTransactionManager.class);
 		when(txMgr.getTransaction(org.mockito.ArgumentMatchers.any()))
@@ -216,7 +217,8 @@ class MarketingActivityCreatePersistenceServiceSavePromotionItemTagDispatchInTra
 						applicationEventPublisher,
 						shelvesPublisher,
 						tagPublisher,
-						new ObjectMapper());
+						new ObjectMapper(),
+						mock(cn.shopex.ecshopx.members.service.systemtag.MemberAudienceTagValidator.class));
 
 		PlatformTransactionManager txMgr = mock(PlatformTransactionManager.class);
 		when(txMgr.getTransaction(org.mockito.ArgumentMatchers.any()))
@@ -326,7 +328,8 @@ class MarketingActivityCreatePersistenceServiceSavePromotionItemTagDispatchInTra
 						applicationEventPublisher,
 						shelvesPublisher,
 						tagPublisher,
-						new ObjectMapper());
+						new ObjectMapper(),
+						mock(cn.shopex.ecshopx.members.service.systemtag.MemberAudienceTagValidator.class));
 
 		PlatformTransactionManager txMgr = mock(PlatformTransactionManager.class);
 		when(txMgr.getTransaction(org.mockito.ArgumentMatchers.any()))

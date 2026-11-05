@@ -83,7 +83,8 @@ public class WxappGoodsItemsPriceAndStoreService {
 			return Map.of("item_id", 0L);
 		}
 		Map<String, Object> promotionActivityData =
-				wxappGoodsItemsDetailPromotionActivityService.getCurrentActivityByItemId(companyId, pathItemId, distributorId);
+				wxappGoodsItemsDetailPromotionActivityService.getCurrentActivityByItemId(
+						companyId, pathItemId, distributorId, userId);
 		List<Long> limitItemIds = deriveLimitItemIds(promotionActivityData);
 		long effectiveItemId = pathItemId;
 		if (!limitItemIds.isEmpty() && !limitItemIds.contains(pathItemId)) {

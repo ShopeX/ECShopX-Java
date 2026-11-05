@@ -37,6 +37,8 @@ import cn.shopex.ecshopx.members.mapper.MembersInfoMapper;
 import cn.shopex.ecshopx.members.mapper.MembersMapper;
 import cn.shopex.ecshopx.members.mapper.WechatUsersMapper;
 import cn.shopex.ecshopx.members.security.LegacyFixedMobileEncrypt;
+import cn.shopex.ecshopx.members.service.systemtag.MemberSystemTagCodes;
+import cn.shopex.ecshopx.members.service.systemtag.NewCustomerTagReconcileService;
 import cn.shopex.ecshopx.common.port.shuyun.ShuyunOpenPlatformMemberUnbindPort;
 import cn.shopex.ecshopx.thirdparty.service.shuyun.ShuyunMemberUnbindPort;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -87,6 +89,8 @@ public class WxappMemberDeleteMemberService {
 	private final ShuyunMemberUnbindPort shuyunMemberUnbindPort;
 
 	private final ShuyunOpenPlatformMemberUnbindPort openPlatformMemberUnbindPort;
+
+	private final NewCustomerTagReconcileService newCustomerTagReconcileService;
 
 	private final ObjectProvider<WxappMemberDeleteMemberService> selfProvider;
 
@@ -193,6 +197,9 @@ public class WxappMemberDeleteMemberService {
 					new LambdaQueryWrapper<Members>()
 							.eq(Members::getCompanyId, companyId)
 							.eq(Members::getUserId, userId));
+
+			newCustomerTagReconcileService.reconcile(
+					companyId, userId, MemberSystemTagCodes.SOURCE_DISABLE);
 
 			disablePromoterPort.disablePromoter(companyId, userId);
 			deleteVipGradeRelPort.deleteVipGradeRelForMember(companyId, userId);

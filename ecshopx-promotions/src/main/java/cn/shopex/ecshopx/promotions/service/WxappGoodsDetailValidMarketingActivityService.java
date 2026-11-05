@@ -22,6 +22,7 @@ import cn.shopex.ecshopx.promotions.domain.MarketingActivity;
 import cn.shopex.ecshopx.promotions.domain.MarketingActivityItems;
 import cn.shopex.ecshopx.promotions.mapper.MarketingActivityItemsMapper;
 import cn.shopex.ecshopx.promotions.mapper.MarketingActivityMapper;
+import cn.shopex.ecshopx.promotions.service.systemtag.MemberCrowdMatcher;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -50,15 +51,18 @@ public class WxappGoodsDetailValidMarketingActivityService {
 	private final MemberAccountService memberAccountService;
 	private final OperatorCartCompanyProductModelReader operatorCartCompanyProductModelReader;
 	private final ObjectMapper objectMapper;
+	private final MemberCrowdMatcher memberCrowdMatcher;
 
 	public WxappGoodsDetailValidMarketingActivityService(MarketingActivityMapper marketingActivityMapper,
 			MarketingActivityItemsMapper marketingActivityItemsMapper, MemberAccountService memberAccountService,
-			OperatorCartCompanyProductModelReader operatorCartCompanyProductModelReader, ObjectMapper objectMapper) {
+			OperatorCartCompanyProductModelReader operatorCartCompanyProductModelReader, ObjectMapper objectMapper,
+			MemberCrowdMatcher memberCrowdMatcher) {
 		this.marketingActivityMapper = marketingActivityMapper;
 		this.marketingActivityItemsMapper = marketingActivityItemsMapper;
 		this.memberAccountService = memberAccountService;
 		this.operatorCartCompanyProductModelReader = operatorCartCompanyProductModelReader;
 		this.objectMapper = objectMapper;
+		this.memberCrowdMatcher = memberCrowdMatcher;
 	}
 
 	@Nullable
@@ -97,6 +101,10 @@ public class WxappGoodsDetailValidMarketingActivityService {
 			}
 			List<?> validGrade = decodeJsonList(value.getValidGrade());
 			if (validGrade != null && !validGrade.isEmpty() && userGrade != null && !gradeListContains(validGrade, userGrade)) {
+				continue;
+			}
+			if (!memberCrowdMatcher.matchesFullCrowdActivity(
+					companyId, userId, value.getMarketingType(), value.getMemberTagIds(), value.getMemberTagMode())) {
 				continue;
 			}
 			Map<String, Object> row = activityToRow(value, now, userId, relByMarketing.get(value.getMarketingId()));

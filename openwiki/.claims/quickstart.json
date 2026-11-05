@@ -1,26 +1,26 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:d5c7e24c3ec4886edc2c775757e8ddfecbdfacbff6c261c9446a19b65cfd634e",
+  "pageVersion": "sha256:dd3b226d42d2bfa2a447177a2a5eea0154dcc2a28f5c695e2b767ba215e6cfeb",
   "claims": [
     {
       "id": "claim_59497cc7f3f044ed96e27a805c72b37b",
-      "statement": "ECShopX-Java is one multi-module Maven reactor: the root pom.xml declares parent cn.shopex:ecshopx (version ${revision} = 5.2.0) extending spring-boot-starter-parent:3.5.12 with Java 17, lists 52 modules (four infrastructure — ecshopx-bom, ecshopx-common, ecshopx-dispatch, ecshopx-bootstrap — plus 48 business Bundles), and skips the spring-boot-maven-plugin everywhere except ecshopx-bootstrap, where it is re-enabled with mainClass cn.shopex.ecshopx.EcshopxApplication.",
+      "statement": "ECShopX-Java is one multi-module Maven reactor: the root pom.xml declares parent cn.shopex:ecshopx (version ${revision} = 5.4.6) extending spring-boot-starter-parent:3.5.12 with Java 17, lists 53 modules (four infrastructure — ecshopx-bom, ecshopx-common, ecshopx-dispatch, ecshopx-bootstrap — plus 49 business Bundles), and skips the spring-boot-maven-plugin everywhere except ecshopx-bootstrap, where it is re-enabled with mainClass cn.shopex.ecshopx.EcshopxApplication.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-bootstrap/pom.xml#L260-L271",
-          "version": "repo-lines-v1:sha256:39d9164cdadbbb6d98c6cddc249977c3d78b281ea0ceaea759155ac4fc3ddaa5:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMwYTBlMTVjNjM3NWM1NmI2ZWExNGFjMGUxZWY3M2NiNGE1NjVmZDE5ZGYxODA0ZmI0NzIxYTQ2NTc0NTczNGQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYyZTg0MTI0MThhMDQ0OWRjODU1ODZiYjRkYTYzNGFiYjRlY2YzZDk5YThlMDhmZDZiODI2YzQyYjgzZDZiOGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjExZjUxYmUzY2M0YWE0MDZhOGVhN2EyODhkMTRkM2ZlYmVkNTAzZGFjMjJmNTk3MDAxZTMzNWNiNjM3OGY4NjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI2ZTMyYTMwZjNmMjBiYmM4MmY1YzUzZDQ4MDg4M2RhODk0OWQwYWJhYTllZGQwNWFkMzJjZDdhYzRlMjc5ZTcifQ"
+          "resource": "repo://ecshopx-bootstrap/pom.xml#L264-L272",
+          "version": "repo-lines-v1:sha256:08d1765fd046f2929fe0f30bfcd858c7779637475b183a826ba12e267bba5ad3:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzBhMGUxNWM2Mzc1YzU2YjZlYTE0YWMwZTFlZjczY2I0YTU2NWZkMTlkZjE4MDRmYjQ3MjFhNDY1NzQ1NzM0ZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMTZlZmVmY2Y3NTk3MjA5NmM0NThhMTE4ZTg5MmNmN2VlMDQ1YzIxZjI3ZGEwYzAxMzA5MGJjZjAyYjNmNmI5NSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTFmNTFiZTNjYzRhYTQwNmE4ZWE3YTI4OGQxNGQzZmViZWQ1MDNkYWMyMmY1OTcwMDFlMzM1Y2I2Mzc4Zjg2OSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjc3OWVlMzg2MDY3YjIwYjQxZmQ2MDcxMGE0ZWQ2NTUyZWEwMDhlMGJlNTZhODk4ZTE0NzAxMTc2NjRmZjZkYiJ9"
         },
         {
           "resource": "repo://pom.xml#L362-L415",
-          "version": "repo-lines-v1:sha256:7fcf5e6f8c122c0f86e3bdcdb625e1099e474226b0f20b449a5b42d3ef8a5ad0:eyJzZWxlY3RlZExpbmVDb3VudCI6NTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk1OTE5OTljNTNjMWFmMzUyZDk5YWQyNzljNTU5NGRiOTBhMmQ0NzdhMDE2NDA2OTNmZGE3ZWM1M2UzNzNlMTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI0NWEzNDAxYjEwNTIwOGY0ZmViZWZjMDYyNTljNzNhMzY3MGFiZTVkNzQzYWJjMDEzNzkxYWZmMjMxNzc4MGYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk2ODE0Mjc1NWJiMTdjZDVmYzAzZDE5YjQ1N2FjYmMzMGZlN2MyNGU2N2I5OTJmMmUxZjNlMDI0ZjhiZTZkYTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ0NDM4MDBmZTUyNGFlZjQ4ZGU2MTE3MjhmMTY5NGVhZDAwMWYyZjQyNGI3OWY4NTU3ZmZiYTFmOTMxZDFiYmYifQ"
+          "version": "repo-lines-v1:sha256:1f346c7200ad523f73096b92e0c3c17389040c4471ac6e4e9903cbf9f4a191a0:eyJzZWxlY3RlZExpbmVDb3VudCI6NTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMzZmVlYTU4MGVjMGM4YTA5MWM1ZDhhYzRiMzEwMjEzMmM5NjdhZGY3YmFhODY3MTc5MDI0NzIyY2Q3MTk5YTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVkNzZlYTlhMTk3Y2QwMzNiNGU0NDRjODI4NmNlY2YyOTM3M2Y5YjQzOTk0MDYwODEzZTU1NTVlM2ZlMjAzZGEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU5NGEwODk1NTM3YTJmZTRkOGZhNWQwZjViNzBjZDBjZTFhZjZiZDBjMDEwZTMxNTE3NTRiZmRkMDBlMjc5ZDMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQwM2ExZTVjNTliZWI5ODhlOGY5YWY1MDk0OTVhY2MxYWU3OTM3MjgyNjQxZGQ5MWRlODE3NDE2NDQ0YWVjZGYifQ"
         },
         {
           "resource": "repo://pom.xml#L426-L435",
-          "version": "repo-lines-v1:sha256:76edb72fb7535a5fb858a61c2c579223a7f777a8553b8789a69d1b03fdf9faf8:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMwYTBlMTVjNjM3NWM1NmI2ZWExNGFjMGUxZWY3M2NiNGE1NjVmZDE5ZGYxODA0ZmI0NzIxYTQ2NTc0NTczNGQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYxMWNjZTk5ODMxMDU2ZDQ0YTNlMTFhMTlmYWNjMTFjZmViODI4ZjFmMDA4ZTYzZTI3ODIxOWNjYmJmYmNhOTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZlN2QwZjI3YzNjODdmMWVhNzkzNWY1MTk0NzNhZjBmNzdiNDMyMWEwZDEyNWY5NTY3MjU1ZmQyMGNkZjQyOTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZmNDFjMzRhMmMwZmZiNDA3MGFiYjU3N2ExZDk5ZWFiNmM0OWJiNTAwNzQyMmM0OWY2NTU2YTEwZWUxNjk0YzIifQ"
+          "version": "repo-lines-v1:sha256:ae5acb529d79b674696ca48eace8ce933c91536a4aba57b55d18eae543159423:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRlOGE3NjRmM2I1MWQ2OGE5Mzk1OWVhMGNmMWJhYjg3MTJkZDgyNmVmZGZlNzhkOGQwYTM3YzAwM2M2MDJiZmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIxZjQzMTdjYjNmNzgyOWEzNGJjYTZmYTVhYTVhMjM5YjMzOWRjMTQwMmFiNTNjNzYyOGJiMGNjNWYyYjhlOGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImYwZDNlZjRjZDg0OTBiNzA5NDY0ZjA5ZDE1ZWNjYzdmY2NjN2MxMmI1NzA4ZGRhMmQwNWIyMmU2OWMzODQ4NjgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjUyZGU5MjJiMjdhMTkwNjc1NzczNDRhZjczMmI5ZDgxMTZjY2JjNTYyMTg2NTdlNWFjM2VhYjk4NjkzODU0ZWIifQ"
         },
         {
           "resource": "repo://pom.xml#L9-L23",
-          "version": "repo-lines-v1:sha256:0ea5981d9b564149d520c2d708953b3f40831548edf2341cafca36d9a3331f1f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBmZGZmN2QwNTFhODljMGM2YzBjODMwMzI2Yzg1YWM2NTExMDU1OWUyZDllNDA0M2RjOGY5YmQ2ZjE5Y2I3MDgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxYjg1MzA5OGRmNWRmM2MzNzA0MWVmZjljZjgzODhhYmQ5ZWNhZDM4MmU0YmE2ZTg3OTUzYjRkMTkyN2JhNjgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE3YTg1NTYyODFmZGFjMzE3MTA5ODBlYzcyMjE5MzYxYjYwZTY0NDYzNGUzMmJjNzI1Y2ZjZTBkMDI3MDEyN2IiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUxYTBiMmFjNTJkN2ZlYmJmNjU0ZGIyNmMxZDMzNzkxODE0ZTgyNWRiOTk1NjA2NGE5MmVhZjEyYzkxMmU3ZWEifQ"
+          "version": "repo-lines-v1:sha256:a3c08ff586ca905a4695ee1ed7f95087895fdccdb13c2119254d318a981cbff8:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBmZGZmN2QwNTFhODljMGM2YzBjODMwMzI2Yzg1YWM2NTExMDU1OWUyZDllNDA0M2RjOGY5YmQ2ZjE5Y2I3MDgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxYjg1MzA5OGRmNWRmM2MzNzA0MWVmZjljZjgzODhhYmQ5ZWNhZDM4MmU0YmE2ZTg3OTUzYjRkMTkyN2JhNjgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE3YTg1NTYyODFmZGFjMzE3MTA5ODBlYzcyMjE5MzYxYjYwZTY0NDYzNGUzMmJjNzI1Y2ZjZTBkMDI3MDEyN2IiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUxYTBiMmFjNTJkN2ZlYmJmNjU0ZGIyNmMxZDMzNzkxODE0ZTgyNWRiOTk1NjA2NGE5MmVhZjEyYzkxMmU3ZWEifQ"
         }
       ]
     },
@@ -184,7 +184,7 @@
         },
         {
           "resource": "repo://docker-compose.dev.yml#L71-L117",
-          "version": "repo-lines-v1:sha256:5027aee6073fcac0cd95b14cdafe8a6d74ab7ab985590ae5764315dbb3bfbe20:eyJzZWxlY3RlZExpbmVDb3VudCI6NDcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVkMDZiMzkzYzFhMGFiMzIwZDU1ZTE3Mzk1MjM0NjQyMTFlZmIyYjZiMzA3MzMwMzAzNzg5MTg5NTc1ZDYxYWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFmNGM5MzBhYzM5ODU5ZjY0YTYwZjA4NWY3ZTUwNWU4YjBmNTY3YjIyZTdmNTdlYTE4OTZmMDliMTUzZjBkNTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdmOWZkMDdmNDU5MmQ4Zjc2NjRjNzMwNTIxM2I2ZjhmY2Y1NjY2Njc1ZDg5NDA0ODYyMDhmZWMyODBhODgxNzkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRmZDlmZjM3MmYwZGI5YmY3OWI5NjQ0NWM3ZDAxY2NlNGNkYjM2ODFmMjQyZjc0ZGRkMjJjY2U5ZDA0MGViYTMifQ"
+          "version": "repo-lines-v1:sha256:d6b03e35331c0e0ea5767284d76e24afb764912380608454aad4d6b5250843dd:eyJzZWxlY3RlZExpbmVDb3VudCI6NDcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVkMDZiMzkzYzFhMGFiMzIwZDU1ZTE3Mzk1MjM0NjQyMTFlZmIyYjZiMzA3MzMwMzAzNzg5MTg5NTc1ZDYxYWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFmNGM5MzBhYzM5ODU5ZjY0YTYwZjA4NWY3ZTUwNWU4YjBmNTY3YjIyZTdmNTdlYTE4OTZmMDliMTUzZjBkNTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdmOWZkMDdmNDU5MmQ4Zjc2NjRjNzMwNTIxM2I2ZjhmY2Y1NjY2Njc1ZDg5NDA0ODYyMDhmZWMyODBhODgxNzkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRmZDlmZjM3MmYwZGI5YmY3OWI5NjQ0NWM3ZDAxY2NlNGNkYjM2ODFmMjQyZjc0ZGRkMjJjY2U5ZDA0MGViYTMifQ"
         },
         {
           "resource": "repo://docker-lite/README.md#L7-L15",
@@ -269,8 +269,8 @@
       "statement": "The admin 代客下单 (staff order-for-customer) flow is a deferred create-and-pay pipeline: POST /api/v1/order/create (NormalOrderController, order_type normal_shopadmin enforced by ShopadminNormalOrderCreateOrchestrator with error 无此类型订单！) validates and prices the order but persists no database rows — it saves a WAIT_PAY snapshot in Redis under shopadmin:deferred:<companyId>:<orderId> (TTL from auto_cancel_time, else 15 minutes); POST /api/v1/order/payment detects the snapshot when no OrderAssociations row exists and ShopadminDeferredOrderService.payDeferredOrder, under a shopadmin:deferred:lock:<orderId> SET-NX lock (120s), charges through the channel, then materializes the NormalOrders row from the snapshot, applies the trade pay-success bridge, splits supplier orders, publishes the order-add dispatch event, and deletes the snapshot. Business failures after payment trigger a channel refund (wxpay secpapi or alipay trade refund; pay_type pos returns true without a channel call) that marks the trade REFUND, other runtime failures mark the snapshot PAID_WAIT_ORDER for compensation through the payment-query supplement path (snapshots carry WAIT_PAY / PAID_WAIT_ORDER / ORDERED / REFUNDED / REFUND_FAILED statuses with a 24h compensation TTL).",
       "evidence": [
         {
-          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/api/admin/v1/NormalOrderController.java#L82-L109",
-          "version": "repo-lines-v1:sha256:055de8bc4b18c2b2e7a66fe06e16e337891577fed0baa325e41d1b251987af6c:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI5NWNmZjc2YzE3MjEzMjgzNGE0NzY5MGRlZGIxZDIwODVkNmEzMmE5NDIzMTg1ZjZjMjJhMTc1NWM0ODQ3YmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI1MmUxNTJiY2JlMWVkZjliMDA0MTg5ODgxYThlZmE4MWVhNWI3MjQyMmM1MDZiYTFiN2I5MzBmMWFkMzJlMDQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjE5YWIwZDE3MTllMzlkNDRlN2YyMDg0NGEzMTc0ZGYzMzM2M2I0NzIzNTU0NzEyY2E1MDg4ZWE3NDI3NTg3NzUifQ"
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/api/admin/v1/NormalOrderController.java#L80-L93",
+          "version": "repo-lines-v1:sha256:d0f9d4286a50ab27c91ea7bfd8e37633a54c52eb28b9d726da91d812532b662c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZmMGQwMmMxNTJlOTkyNjFhMDJlMjI0NTNkNzgzYWU5ZmE2ZTA1YmQyMjMyZWE0OWQwNGZhNTEyNWYyZjZmODEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhmMzY1OTk0NDE3NDJhZWVkMDViYmMxY2QyMDcwMmM2MjA1MTdmYzQ2NTU4NmE4ZmNlNmVmNTk5NWE4OTRhZjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI1MmUxNTJiY2JlMWVkZjliMDA0MTg5ODgxYThlZmE4MWVhNWI3MjQyMmM1MDZiYTFiN2I5MzBmMWFkMzJlMDQifQ"
         },
         {
           "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/shopadmin/NormalOrderAdminPaymentService.java#L107-L118",
@@ -279,6 +279,10 @@
         {
           "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/shopadmin/ShopadminDeferredOrderCache.java#L34-L62",
           "version": "repo-lines-v1:sha256:4e17be360f2be7d60dc785cf0dcbd75eae40eae2f8546081412652c1b071f6d2:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjllYWNmOTNkMTQzZjcwNzkzZTU3ODQyNzkyMGY0OTczMzA5OTE0YTlmYTI1NDgwYTRiNzg2ZDgyODI4OTIyZTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQyZWQwOWIxYWRmNDk5MzMxNjRjMGNhODFhYWFiMzZmZTlmNjI0NDcwNzE1MDVlN2EwM2QyMTZkYjA0YzUzMDkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjcxZjk3MGQyYTdhNGYwZTUwMGQyZmNmYTJlOThhYzZhYjIyOWIzNTVhM2ExZTc4MTg5ZTMwMjUyMDlkYTZkNDEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/shopadmin/ShopadminDeferredOrderCache.java#L93-L117",
+          "version": "repo-lines-v1:sha256:961f4858fda38c784925c3bc2278afe727dd0a4b10c442b7f164c65484e8127e:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVkYTBmMzYxNWQwNGQ1NzMxYzI0YzBhNzI0NzYyZGZhMDlkNmQxYTUwZTMyODY0OTMzMGMyODlkODc0NzA2NzIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIyZjJmZjVmZWVjNjBmNTg3YzhmYWU0ZTg3ZjgwOWE2NjFjZmZlZDZiNDdhYWU1ZjZkNmEyNjUzYWE4OTUyZWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImEyNWMxZmJlOGY0MmI1MGM5ZGZhZDU2ZTJjMWZlYTMxNjgzYzc5MzgxZDZhYWRkZGRhZTE5NzQ0ZDVkNDgxMWYifQ"
         },
         {
           "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/shopadmin/ShopadminDeferredOrderService.java#L220-L335",
@@ -300,7 +304,7 @@
     }
   ],
   "verification": {
-    "by": "openwiki/0.7.2",
-    "at": "2026-10-23T03:04:20.471Z"
+    "by": "openwiki/0.7.3",
+    "at": "2026-11-04T17:09:55.577Z"
   }
 }

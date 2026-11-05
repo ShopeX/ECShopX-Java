@@ -96,7 +96,7 @@ public class MemberItemsFavListGoodsEnrichmentPortImpl implements MemberItemsFav
 		}
 		distributorCouponListAppendService.appendDistributorInfo(companyId, list);
 		wxappGoodsItemsListMemberPriceApplyService.applyForRows(companyId, userId, list, acceptLanguageHeader);
-		goodsItemsListPromotionEnrichmentService.enrich(list);
+		goodsItemsListPromotionEnrichmentService.enrich(list, userId);
 		applyCrossBorderTax(companyId, list);
 		return list;
 	}

@@ -67,8 +67,9 @@ public class KuController {
 
 	@PostMapping(value = "/kujiale/designer-works/bind-item", name = "绑定设计师作品与商品")
 	public ResponseEntity<Map<String, Object>> bindDesignerWorksItem(
-			@FlexibleBody KujialeDesignerWorksBindItemRequest body) {
-		return ResponseEntity.ok(kujialeDesignerWorksBindItemService.bind(body));
+			HttpServletRequest request, @FlexibleBody KujialeDesignerWorksBindItemRequest body) {
+		long companyId = readCompanyIdForDesignerWorks(request);
+		return ResponseEntity.ok(kujialeDesignerWorksBindItemService.bind(body, companyId));
 	}
 
 	@DeleteMapping(value = "/kujiale/designer-works/unbind-item", name = "解绑设计师作品与商品")
@@ -80,7 +81,8 @@ public class KuController {
 		if (ct != null && ct.toLowerCase().contains("multipart/form-data")) {
 			effective = JsonNodeFactory.instance.objectNode();
 		}
-		Map<String, Object> inner = kujialeDesignerWorksUnbindItemService.unbind(effective);
+		long companyId = readCompanyIdForDesignerWorks(request);
+		Map<String, Object> inner = kujialeDesignerWorksUnbindItemService.unbind(effective, companyId);
 		return ResponseEntity.ok(Map.of("data", inner));
 	}
 

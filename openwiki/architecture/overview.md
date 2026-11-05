@@ -1,11 +1,8 @@
 ---
 type: architecture-overview
 title: System Overview and Runtime Topology
-description: The big-picture map of ECShopX-Java — the Spring Boot 3.5 / Java 17 multi-module Maven reactor under cn.shopex:ecshopx, the single ecshopx-bootstrap Spring Boot entry that assembles 48 business Bundles, and the runtime topology (Undertow on 18080, MySQL via MyBatis-Plus, multi-DB Redis, XXL-JOB admin + executor, Redis-backed dispatch queues, and the /api, /storage, /wechatAuth URL spaces).
+description: The big-picture map of ECShopX-Java — the Spring Boot 3.5 / Java 17 multi-module Maven reactor under cn.shopex:ecshopx, the single ecshopx-bootstrap Spring Boot entry that assembles 49 business Bundles, and the runtime topology (Undertow on 18080, MySQL via MyBatis-Plus, multi-DB Redis, XXL-JOB admin + executor, Redis-backed dispatch queues, and the /api, /storage, /wechatAuth URL spaces).
 tags: [architecture, overview, maven, bootstrap, undertow, redis, xxl-job, dispatch, deployment, topology]
-verified:
-  - by: openwiki/0.7.2
-    at: 2026-10-23T03:04:20.471Z
 sources:
   - id: openwiki-source-ea70eb6c045047448e446296
     resource: repo://.gitignore
@@ -25,6 +22,8 @@ sources:
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/FinishOrderJobDispatchPublisherImpl.java
   - id: openwiki-source-6154c1d27f3b807ac0dd5b04
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/FinishOrderJobRegistrationConfig.java
+  - id: openwiki-source-0904c0e3cebac22f3a004917
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MigrationSeedRunner.java
   - id: openwiki-source-d796c74a7df3139966d43e8d
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MultiRedisConfig.java
   - id: openwiki-source-919f62d871898539e11d1107
@@ -47,6 +46,8 @@ sources:
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/OrdersDispatchJobNames.java
   - id: openwiki-source-2c4a54ebc839a0b89bdbcdf0
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/mybatis/FqcnMapperBeanNameGenerator.java
+  - id: openwiki-source-27d0d0b9eb5f333a0fcbcf84
+    resource: repo://ecshopx-digios/pom.xml
   - id: openwiki-source-bdf2e5ba61aa04534071bea1
     resource: repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/redis/RedisDispatchListener.java
   - id: openwiki-source-c3ce781e36cc4f90ca50966a
@@ -73,17 +74,20 @@ sources:
     resource: repo://pom.xml
   - id: openwiki-source-f1b1aacc63642e5304668821
     resource: repo://readme.md
-generated: { by: "openwiki/0.7.2", at: "2026-10-23T03:04:20.471Z" }
+generated: { by: "openwiki/0.7.3", at: "2026-11-04T17:09:55.577Z" }
+verified:
+  - by: openwiki/0.7.3
+    at: 2026-11-04T17:09:55.577Z
 ---
 
 # System Overview and Runtime Topology
 
-ECShopX-Java is the Java server-side implementation of the ECShopX commerce system, rewritten from the legacy PHP codebase with aligned business semantics and one-to-one mapped configuration keys. The whole repository is a single **multi-module Maven reactor**: the root `pom.xml` declares the parent project `cn.shopex:ecshopx` (version `${revision}` = `5.2.0`, CI-friendly) under `spring-boot-starter-parent:3.5.12`, and lists every module as a `<module>`. The reactor has 52 modules: exactly four infrastructure modules plus 48 business "Bundles":
+ECShopX-Java is the Java server-side implementation of the ECShopX commerce system, rewritten from the legacy PHP codebase with aligned business semantics and one-to-one mapped configuration keys. The whole repository is a single **multi-module Maven reactor**: the root `pom.xml` declares the parent project `cn.shopex:ecshopx` (version `${revision}` = `5.4.6`, CI-friendly, Java 17) under `spring-boot-starter-parent:3.5.12`, and lists every module as a `<module>`. The reactor has 53 modules: exactly four infrastructure modules plus 49 business "Bundles":
 
 * **`ecshopx-bom`** — a `pom`-packaging bill-of-materials module that imports `spring-boot-dependencies:3.5.12` and pins MyBatis-Plus / Lombok versions.
 * **`ecshopx-common`** — shared cross-cutting code with **no** Shopex peer dependencies (only Spring Boot starters, MyBatis-Plus, Lombok): unified response body, exception hierarchy, pagination, audit base classes, annotations, and the ~150 `common/dispatch` interfaces (dispatch job/event names + publisher ports) that keep cross-Bundle wiring acyclic.
 * **`ecshopx-dispatch`** — the in-process dispatch-bus core (`DispatchFacade`, drivers, registry, retry/failed-job recording), depending on common + Spring Data Redis + Spring AMQP.
-* **`ecshopx-bootstrap`** — the only Spring Boot executable. Its POM declares all 48 business Bundles plus the runtime starters (Undertow, Data Redis, AMQP, Flyway, MySQL connector, `xxl-job-core:2.5.0`), and the `spring-boot-maven-plugin` is re-enabled here (`skip=false`, `mainClass=cn.shopex.ecshopx.EcshopxApplication`) while the parent POM disables it everywhere else.
+* **`ecshopx-bootstrap`** — the only Spring Boot executable. Its POM declares all 49 business Bundles plus the runtime starters (Undertow, Data Redis, AMQP, Flyway core+mysql, MySQL connector, `xxl-job-core:2.5.0`), and the `spring-boot-maven-plugin` is re-enabled here (`skip=false`, `mainClass=cn.shopex.ecshopx.EcshopxApplication`) while the parent POM disables it everywhere else.
 
 One business domain = one Bundle = one Maven module. Bundles are plain libraries that expose capabilities; `ecshopx-bootstrap` wires everything together and runs as one Spring application. For how a single Bundle is structured internally, see [Bundle Layering](bundle-layering.md); for how Bundles communicate without Maven cycles, see [Cross-Bundle Communication](cross-bundle-communication.md).
 
@@ -105,7 +109,7 @@ public class EcshopxApplication {
 
 The main class `cn.shopex.ecshopx.EcshopxApplication` (in `ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/EcshopxApplication.java`) is deliberately the **only** place `@MapperScan` appears, and the Javadoc on the class records why:
 
-1. **Bean-name collisions.** With 48 Bundles each carrying `mapper/` packages, same-name `*Mapper` interfaces are inevitable. MyBatis' default bean name is the short interface name (e.g. `statisticsMapper`), so two `StatisticsMapper` interfaces in different Bundles would collide. `FqcnMapperBeanNameGenerator` (in `ecshopx-common`, `common/mybatis/FqcnMapperBeanNameGenerator.java`) replaces every `.` in the fully-qualified class name with `_` for any class whose name ends in `Mapper`, and falls back to Spring's default generator otherwise.
+1. **Bean-name collisions.** With 49 Bundles each carrying `mapper/` packages, same-name `*Mapper` interfaces are inevitable. MyBatis' default bean name is the short interface name (e.g. `statisticsMapper`), so two `StatisticsMapper` interfaces in different Bundles would collide. `FqcnMapperBeanNameGenerator` (in `ecshopx-common`, `common/mybatis/FqcnMapperBeanNameGenerator.java`) replaces every `.` in the fully-qualified class name with `_` for any class whose name ends in `Mapper`, and falls back to Spring's default generator otherwise.
 2. **Registration order vs. auto-configuration.** Placing `@MapperScan` on the main class makes `MapperScannerRegistrar` register the `MapperFactoryBean` definitions while the *primary configuration class* is being processed. That satisfies MyBatis-Plus's `@ConditionalOnMissingBean(MapperFactoryBean)` condition, so MyBatis-Plus's own auto mapper scanning backs off — the standard Spring Boot + MyBatis pattern, with no placeholder `MapperScannerConfigurer` needed.
 3. **`lazyInitialization = "true"`** defers mapper bean instantiation until first use, which keeps the (very large) single application context's startup cost bounded.
 
@@ -117,7 +121,7 @@ The scan root is `cn.shopex.ecshopx` for components and `cn.shopex.ecshopx.**.ma
 flowchart TD
     subgraph app["ecshopx-app container (single Spring context)"]
         APP["EcshopxApplication on Undertow :18080"]
-        BUNDLES["48 business Bundles"]
+        BUNDLES["49 business Bundles"]
         CORE["ecshopx-common + ecshopx-dispatch"]
         EXE["XxlJobSpringExecutor :19999"]
         DRIVERS["DispatchCore with Sync and Redis drivers"]
@@ -187,9 +191,9 @@ In Docker deployments an OpenResty/nginx front (port 80) routes `/api/`, `/stora
 
 A single MySQL database `ecshopx` (JDBC URL pinned to `utf8mb4` and `serverTimezone=Asia/Shanghai`) is accessed through **MyBatis-Plus 3.5.16** with `map-underscore-to-camel-case` enabled. All persistence is mapper-based: `@Mapper` interfaces extending `BaseMapper<T>` per Bundle, with XML in each Bundle's `resources/mapper/`, aggregated by `mybatis-plus.mapper-locations=classpath*:mapper/**/*.xml`.
 
-Schema evolution is **Flyway**, enabled at startup (`spring.flyway.enabled=true`, `locations=classpath:db/migration`, `baseline-on-migrate=true`, `baseline-version=0`). The baseline behavior matters operationally: existing databases imported from `docker/ecshopx.sql` (the legacy business schema + demo data) are baselined at version 0 rather than replaying history. Migration files live only in `ecshopx-bootstrap/src/main/resources/db/migration` (currently `V00000000000001.sql` / `V00000000000002.sql`); `bin/make-migration` generates new files in `VyyyyMMddHHmmss__description.sql` format by diffing the live schema against MyBatis-Plus `@TableName`/`@TableId`/`@TableField` annotations (see the repository readme for the caveats — generated SQL must be reviewed for types, defaults, NULLability, and indexes; DROPs are only emitted with `--allow-drop`).
+Schema evolution is **Flyway**, enabled at startup (`spring.flyway.enabled=true`, `locations=classpath:db/migration`, `baseline-on-migrate=true`, `baseline-version=0`). The baseline behavior matters operationally: existing databases imported from `docker/ecshopx.sql` (the legacy business schema + demo data) are baselined at version 0 rather than replaying history. Migration files live only in `ecshopx-bootstrap/src/main/resources/db/migration` (currently `V00000000000001.sql` through `V00000000000005.sql`); `bin/make-migration` generates new files in `VyyyyMMddHHmmss__description.sql` format by diffing the live schema against MyBatis-Plus `@TableName`/`@TableId`/`@TableField` annotations (see the repository readme for the caveats — generated SQL must be reviewed for types, defaults, NULLability, and indexes; DROPs are only emitted with `--allow-drop`).
 
-After Flyway completes, `MigrationSeedRunner` (an `ApplicationRunner` in bootstrap) aligns seed data with the PHP `EspierBundle\Listeners\UpdateMenuListener`: it imports logistics companies only when the `logistics` table is empty (failure logs but does not block startup), and — when `common.use-system-menu=true` — atomically deletes and re-imports all `company_id=0` system menus from six JSON seed files under `classpath:seed/menu/`, inside a programmatic `TransactionTemplate` transaction (a proxied `@Transactional` would be bypassed by the self-call, and half-filled menus must roll back together).
+After Flyway completes, `MigrationSeedRunner` (an `ApplicationRunner` in bootstrap) aligns seed data with the PHP `EspierBundle\Listeners\UpdateMenuListener`: it imports logistics companies only when the `logistics` table is empty (failure logs but does not block startup), and — when `common.use-system-menu=true` (the default in `application.properties`) — atomically deletes all `company_id=0` system menus (and their menu-type relations), then re-imports six role-based JSON seed files under `classpath:seed/menu/` — `platform_menu.json`, `it_menu.json`, `shop_menu.json`, `dealer_menu.json`, `merchant_menu.json`, and `supplier_menu.json` — in a fixed order, inside a programmatic `TransactionTemplate` transaction (a proxied `@Transactional` would be bypassed by the self-call, and half-filled menus must roll back together).
 
 ### Redis: one instance, many logical databases
 
@@ -301,13 +305,14 @@ Every business Bundle declares its domain in a Chinese `package-info.java` at it
 | `ecshopx-kujiale` | 酷家乐域模块 |
 | `ecshopx-tb-items` | 外部商品同步等业务域 |
 | `ecshopx-third-party` | 第三方对接域模块 |
+| `ecshopx-digios` | DigiOS POS 直连集成（店铺/账号/库存同步）域 |
 | `ecshopx-openapi` | OpenAPI 设置域模块 |
 | `ecshopx-espier` | 平台通用能力（上传、地址、升级等）域 |
 | `ecshopx-theme` | 装修、模板与页面配置域 |
 | `ecshopx-tdkset` | TDK 设置域模块 |
 | `ecshopx-data-cube` | 数据魔方与统计分析域 |
 
-Adding a Bundle means: create the module rooted at `cn.shopex.ecshopx.<domain>` with a `package-info.java` stating the domain, add it to the parent `<modules>` and `dependencyManagement`, add the dependency to `ecshopx-bootstrap`, and (for async work) a bootstrap `*RegistrationConfig` plus the `*DispatchPublisher` interface in `ecshopx-common`.
+Adding a Bundle means: create the module rooted at `cn.shopex.ecshopx.<domain>` with a `package-info.java` stating the domain (the newest Bundle, `ecshopx-digios`, is the current exception — it declares its domain only in its POM description), add it to the parent `<modules>` and `dependencyManagement`, add the dependency to `ecshopx-bootstrap`, and (for async work) a bootstrap `*RegistrationConfig` plus the `*DispatchPublisher` interface in `ecshopx-common`.
 
 ## Where bootstrap breaks the rules — and why
 

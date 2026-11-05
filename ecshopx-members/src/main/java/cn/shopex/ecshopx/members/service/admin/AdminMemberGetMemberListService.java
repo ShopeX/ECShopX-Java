@@ -844,29 +844,9 @@ public class AdminMemberGetMemberListService {
 			f.setShopIds(shopIds);
 		}
 		Object tagRaw = merged.get("tag_id");
-		if (tagRaw != null && StringUtils.hasText(String.valueOf(tagRaw).trim())) {
-			String ts = String.valueOf(tagRaw).trim();
-			if (ts.contains(",")) {
-				List<Long> tids = new ArrayList<>();
-				for (String p : ts.split(",")) {
-					String x = p.trim();
-					if (x.isEmpty()) {
-						continue;
-					}
-					try {
-						tids.add(Long.parseLong(x));
-					} catch (NumberFormatException ignored) {
-					}
-				}
-				if (!tids.isEmpty()) {
-					f.setTagIdIn(tids);
-				}
-			} else {
-				try {
-					f.setTagIdEq(Long.parseLong(ts));
-				} catch (NumberFormatException ignored) {
-				}
-			}
+		List<Long> tagIds = normalizeIdList(tagRaw);
+		if (!tagIds.isEmpty()) {
+			f.setTagIdIn(tagIds);
 		}
 		return f;
 	}

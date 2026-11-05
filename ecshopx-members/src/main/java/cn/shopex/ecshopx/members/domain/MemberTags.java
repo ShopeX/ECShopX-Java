@@ -25,7 +25,7 @@ import lombok.Data;
 
 /** 会员标签库表 */
 @Data
-@MpTable(value = "members_tags", comment = "会员标签库表", indexes = {@MpIndex(name = "idx_company_id", columns = {"company_id"}), @MpIndex(name = "idx_source", columns = {"source"}), @MpIndex(name = "idx_tag_name", columns = {"tag_name"})})
+@MpTable(value = "members_tags", comment = "会员标签库表", indexes = {@MpIndex(name = "idx_company_id", columns = {"company_id"}), @MpIndex(name = "idx_source", columns = {"source"}), @MpIndex(name = "idx_tag_name", columns = {"tag_name"})}, uniqueIndexes = {@MpIndex(name = "uk_company_tag_code", columns = {"company_id", "tag_code"})})
 public class MemberTags {
 
     /** 标签id */
@@ -89,4 +89,16 @@ public class MemberTags {
     /** 企业微信标签ID */
     @MpField(value = "wechat_tag_id", columnType = "string", length = 100, nullable = true, comment = "企业微信标签ID")
     private String wechatTagId;
+
+    /** 标签编码，系统标签必填 */
+    @MpField(value = "tag_code", columnType = "string", length = 64, nullable = true, comment = "标签编码，系统标签必填")
+    private String tagCode;
+
+    /** 标签种类 manual|system */
+    @MpField(value = "tag_kind", columnType = "string", length = 16, comment = "标签种类 manual|system", defaultValue = "manual")
+    private String tagKind = "manual";
+
+    /** 规则版本 */
+    @MpField(value = "rule_version", columnType = "integer", comment = "规则版本", defaultValue = "1")
+    private Integer ruleVersion = 1;
 }

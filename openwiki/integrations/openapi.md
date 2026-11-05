@@ -2,10 +2,7 @@
 type: integration
 title: OpenAPI Gateway (ecshopx-openapi)
 description: How the public Open API surface works — the /api/openapi vs /api/openapi/internal path split, MD5 sign verification in OpenapiAuthInterceptor, the forward-registry dispatch into per-domain internal controllers, the PHP-compatible response envelope and error codes, and the openapi_developer credential lifecycle including the app_secret salt.
-tags: [openapi, gateway, sign-auth, ports, thirdparty, interceptors, credentials]
-verified:
-  - by: openwiki/0.7.2
-    at: 2026-10-21T12:26:22.580Z
+tags: [openapi, gateway, sign-auth, ports, thirdparty, interceptors, credentials, digios]
 sources:
   - id: openwiki-source-89b43138f8e75edb4615495b
     resource: repo://ecshopx-bootstrap/src/main/resources/application.properties
@@ -13,6 +10,8 @@ sources:
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/openapi/OpenapiAuthAttributes.java
   - id: openwiki-source-92e7927705572dc5fc2ce3c2
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/openapi/OpenapiDeveloperLookupPort.java
+  - id: openwiki-source-9802d0f36a5d467899742577
+    resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/openapi/OpenapiDigiOsProductStockPushPort.java
   - id: openwiki-source-fb774e59d6986a0ca401584b
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/openapi/OpenapiEnvelope.java
   - id: openwiki-source-089bb9b59a67e987221db251
@@ -27,6 +26,14 @@ sources:
     resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/activation/ActivatedMiddlewareService.java
   - id: openwiki-source-3bc03631d6d71b8c93f2617d
     resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/openapi/OpenapiDeveloperBootstrapService.java
+  - id: openwiki-source-b736acca292b771b3827af6b
+    resource: repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/config/DigiOsProperties.java
+  - id: openwiki-source-372a9d2838d9f167f6d06757
+    resource: repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/openapi/OpenapiDigiOsProductStockPushPortImpl.java
+  - id: openwiki-source-501893d0beeaf763073492f4
+    resource: repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/service/DigiOsStockPushMapper.java
+  - id: openwiki-source-9c7782133c2c1d43844a661e
+    resource: repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/service/DigiOsStockPushService.java
   - id: openwiki-source-ecc705da626fec47a869310b
     resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/OperatorJwtAuthenticationFilter.java
   - id: openwiki-source-d81b1c0223076d39ef879541
@@ -47,6 +54,8 @@ sources:
     resource: repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/thirdapi/OpenapiMethodRegistry.java
   - id: openwiki-source-167baa4ee8f825cf1730b5a8
     resource: repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/thirdapi/OpenapiRequestParamCollector.java
+  - id: openwiki-source-a3bf0cb63921c01a187b0409
+    resource: repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/thirdapi/v1/DigiOsStockController.java
   - id: openwiki-source-9d1de23698f8058e91ebfbc9
     resource: repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/thirdapi/v2/orders/OrderController.java
   - id: openwiki-source-2a6ed641b7be57a3f7fcd6a5
@@ -79,12 +88,15 @@ sources:
     resource: repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/openapi/thirdapi/v2/orders/OpenapiThirdApiV2OrderWriteoffServiceFailMappingTest.java
   - id: openwiki-source-68528e8fae60f39cf40a5d5e
     resource: repo://ecshopx-third-party/src/main/java/cn/shopex/ecshopx/thirdparty/service/marketingcenter/MarketingCenterOpenApiSignedFormClient.java
-generated: { by: "openwiki/0.7.2", at: "2026-10-21T12:26:22.580Z" }
+generated: { by: "openwiki/0.7.3", at: "2026-11-04T17:09:55.577Z" }
+verified:
+  - by: openwiki/0.7.3
+    at: 2026-11-04T17:09:55.577Z
 ---
 
 # OpenAPI Gateway (ecshopx-openapi)
 
-`ecshopx-openapi` is the migration of the legacy PHP `OpenapiBundle` — the HTTP API that *external* third-party systems (ERPs, CRMs, marketing centers, mini-program tooling) call to read and mutate shop data. It is deliberately **not** one of the business-Bundle `api/` surfaces ([Bundle Layering](../architecture/bundle-layering.md)): it is a standalone Maven module whose only Shopex dependency is `ecshopx-common`, so it can never reach a business Bundle directly. All domain behaviour is injected through the 145 `Openapi*Port` interfaces declared in `ecshopx-common/openapi/` and implemented in the owning Bundles' own `openapi/` packages — `orders`, `goods`, `members`, `aftersales`, `kaquan`, `point`, `deposit`, `distribution`, `salesperson`, `companys`, `espier`, `wechat` — the same dependency inversion documented in [Cross-Bundle Communication](../architecture/cross-bundle-communication.md). (The one exception is `OpenapiDeveloperLookupPort`, implemented inside `ecshopx-openapi` itself against the module's own table.)
+`ecshopx-openapi` is the migration of the legacy PHP `OpenapiBundle` — the HTTP API that *external* third-party systems (ERPs, CRMs, marketing centers, mini-program tooling) call to read and mutate shop data. It is deliberately **not** one of the business-Bundle `api/` surfaces ([Bundle Layering](../architecture/bundle-layering.md)): it is a standalone Maven module whose only Shopex dependency is `ecshopx-common`, so it can never reach a business Bundle directly. All domain behaviour is injected through the ~150 `Openapi*Port` interfaces declared in `ecshopx-common/openapi/` and implemented in the owning Bundles' own `openapi/` packages — `orders`, `goods`, `members`, `aftersales`, `kaquan`, `point`, `deposit`, `distribution`, `salesperson`, `companys`, `espier`, `wechat`, `digios` — the same dependency inversion documented in [Cross-Bundle Communication](../architecture/cross-bundle-communication.md). (The one exception is `OpenapiDeveloperLookupPort`, implemented inside `ecshopx-openapi` itself against the module's own table.)
 
 The module owns four things:
 
@@ -198,7 +210,7 @@ When `openapi.debug=1`, the interceptor skips **both** the timestamp window and 
 
 ### `OpenapiHandlerForwardRegistry` — the authoritative routing table
 
-The registry is a `LinkedHashMap<String, String>` populated by **145 hard-coded `register(...)` calls in the constructor** — 44 `1.0` routes and 101 `2.0` routes (80 POST, 45 GET, 9 DELETE, 8 PATCH, 3 PUT). The key is `normalizeVersion(version) + " " + verb + " " + method.trim()`; the value is always `/api/openapi/internal/v{n}/{method}`:
+The registry is a `LinkedHashMap<String, String>` populated by **146 hard-coded `register(...)` calls in the constructor** — 45 `1.0` routes and 101 `2.0` routes (81 POST, 45 GET, 9 DELETE, 8 PATCH, 3 PUT). The key is `normalizeVersion(version) + " " + verb + " " + method.trim()`; the value is always `/api/openapi/internal/v{n}/{method}`:
 
 ```java
 register("2.0", "POST", "ecx.order.writeoff", "/api/openapi/internal/v2/ecx.order.writeoff");
@@ -248,7 +260,7 @@ Handlers take `HttpServletRequest`, one `@RequestParam(name = "…", required = 
 
 `OpenapiErrorCode` (`ecshopx-common/openapi/`) is the aligned copy of PHP `OpenapiBundle\Constants\ErrorCode`, with per-constant Javadoc recording the PHP twin and its exact message. The families:
 
-* **`E0000`** success · **`E0001`** business error **and** not-implemented (the same string is deliberately reused) · **`E9999`** system error.
+* **`E0000`** success · **`E0001`** business error **and** not-implemented (the same string is deliberately reused) · **`E9999`** system error. Per-request failures surface through `ResourceException` → `E0001`, so a handler that needs a *successful* response with partial per-row failures (e.g. the DigiOS stock push) must return them in `data` instead of throwing.
 * **Validation/auth family**: `E4001` missing params, `E4002` timestamp, `E4003` app_key, `E4004` sign, `E4005` method not found, `E5001`/`E5002` service params.
 * **Domain families**: `E51xx` goods (`E5100` goods, `E5101` not found, `E5110`/`E5113` brand, `E5120`/`E5123` category, `E5130`/`E5131` main category), `E53xx` orders (`E5300` is_dada, `E5301` order not found, `E5310` handle, `E5312` handle-exist, `E5320` aftersales handle, `E5331` member not found, `E5340` refund handle), `E54xx` distributor (`E5401`/`E5402`/`E5410`), `E55xx` members (tags `E556x`/`E557x`, recharge `E558x`, point `E5550`, grades `E553x`, vip grades `E554x`), `E5601`/`E5612` salesperson, `E5700` wechat.
 
@@ -338,6 +350,23 @@ sequenceDiagram
 
 `ecx.order.writeoff` (and `ecx.aftersales.get`, and v2 `ecx.member.create`) carry `@Activated(routeAlias = "…")` — the annotation that on admin endpoints drives menu-permission checks through `ActivatedInterceptor` → `ActivatedMiddlewareService`. On the openapi surface it is **inert**: `ActivatedMiddlewareService.handle` returns immediately when the operator-JWT map is `null`, and nothing ever sets `OPERATOR_JWT_USER_DATA` for `/api/openapi` paths (`OperatorJwtAuthenticationFilter` skips the prefix; `AdminAuthInterceptor` requires `@AdminAuth`). So `order.writeoff.set` is *not* a permission gate here — the alias is PHP-parity scaffolding. Do not rely on it for authorization, and do not "fix" it by making the openapi surface require an operator JWT.
 
+## Worked example: the DigiOS stock push endpoint (v1)
+
+`ecx.digios.product.stock_push` is the v1 inbound endpoint through which a DigiOS POS/ERP pushes per-store stock levels into the shop, and the one route whose provider lives in the `ecshopx-digios` Bundle. The wiring follows the same four-layer template as the writeoff example:
+
+* **Route** — `register("1.0", "POST", "ecx.digios.product.stock_push", "/api/openapi/internal/v1/ecx.digios.product.stock_push")` in the registry constructor.
+* **Port** — `OpenapiDigiOsProductStockPushPort` (common) declares `pushStoreStock(long companyId, Object skuListRaw)` and the `OPENAPI_METHOD = "ecx.digios.product.stock_push"` constant.
+* **Handler** — `DigiOsStockController` (`thirdapi/v1/`, bean `openapiV1DigiOsStock`, PHP twin `OpenapiBundle/Http/ThirdApi/V1/Action/DigiOsStock`) takes `@RequestParam(required = false) String sku_list` plus the `@FlexibleBody` map, prefers the decoded body value when the key is present (otherwise `OpenapiRequestParams.mergeRequiredString`, failing with `"sku_list 必填且格式正确"`), and returns an explicit `OpenapiEnvelope("success", "E0000", "更新成功", data)`.
+* **Provider** — `OpenapiDigiOsProductStockPushPortImpl` (digios) delegates to `DigiOsStockPushService`.
+
+The service's semantics differ from a typical all-or-nothing endpoint, and they are the contract:
+
+* `DigiOsStockPushMapper.parseAndValidate` accepts a JSON-array string or an already-decoded list; an empty payload, a malformed row, a `stock` outside 0–999999999 (or not a strict integer), or a missing `shop_code` throws `ResourceException` — i.e. one `E0001` fail envelope for the whole request. Batch size is capped by `ecshopx.digios.stock-push-max-rows` (default 200).
+* Each row is then applied independently: an unknown `sku_id` lands in `not_find_sku`, an unresolvable `shop_code` or a failed `NormalGoodsStoreImportRowService.applyRow` lands in `update_error` with a per-row message, and successful rows update that distributor's store stock. The response `data` is `{not_find_sku, not_update_sku, update_error}` with status still `success`/`E0000` — partial failure is reported **in the payload, not the envelope code**.
+* Every call is journaled via `DigiOsApiLogService.writeInbound` (method, 200, runtime ms, request and response payloads), giving the inbound push the same `digios_api_log` audit trail as the outbound DigiOS sync traffic described in [Third-Party Integrations](third-party.md).
+
+`OpenapiHandlerForwardRegistryTest` pins this registration (`isImplemented("1.0", "POST", "ecx.digios.product.stock_push")`) alongside the v2 writeoff entry — the two routes the test suite treats as canaries for the whole table.
+
 ## Credentials: `openapi_developer` and the salt
 
 ### Storage and lookup
@@ -396,6 +425,6 @@ Module-local `ecshopx-openapi/src/main/resources/application-openapi.yml` is an 
 
 * `OpenapiSignSupportTest` (common) — 32-char uppercase MD5, `assemble` key-sorted concatenation (`app_keyktimestamp1version2.0`), booleans as `1`/`0`, nulls skipped, round-trip `signMatches`.
 * `OpenapiMethodRegistryTest` (openapi) — CSV line sanitization of the dirty PHP export and `normalizeVersion` (`v2`/`2`/`2.0` → `2.0`); documents that routing no longer uses the CSV.
-* `OpenapiHandlerForwardRegistryTest` (openapi) — `isImplemented("2.0", "POST", "ecx.order.writeoff")` and its forward path `/api/openapi/internal/v2/ecx.order.writeoff`.
+* `OpenapiHandlerForwardRegistryTest` (openapi) — two canary routes: `isImplemented("1.0", "POST", "ecx.digios.product.stock_push")`, and `isImplemented("2.0", "POST", "ecx.order.writeoff")` with its forward path `/api/openapi/internal/v2/ecx.order.writeoff`.
 * `OrderControllerWriteoffTest` (openapi) — company id taken from the `OPENAPI_AUTH` request attribute, `order_id` merged body-wins (`501L` → `"501"`), delegation to `OpenapiOrderWriteoffPort.executeWriteoff(9L, "501", null)`, and the `{"status": true}` payload that the advice wraps.
 * `OpenapiThirdApiV2OrderWriteoffServiceFailMappingTest` + `OpenapiThirdApiV2OrderWriteoffServiceThirdPartyTradeUpdatePublishProbeTest` + `OpenapiThirdApiV2OrdersOrderWriteoffDelegationTest` (orders) — the `E5001` / `E5301` / `E5310` mapping per precondition and the third-party trade-update publish on write-off.
