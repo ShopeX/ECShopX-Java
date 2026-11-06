@@ -163,7 +163,7 @@ public class SignController {
 
 		Optional<Long> idOpt = AliyunsmsAdminSignInfoQueryId.resolveSignInfoPrimaryKey(request);
 		Long id = idOpt.orElse(null);
-		Map<String, Object> data = aliyunsmsSignInfoService.getInfo(id, request);
+			Map<String, Object> data = aliyunsmsSignInfoService.getInfo(companyId, id, request);
 		if (data.isEmpty()) {
 			return ResponseEntity.ok(ApiResult.ok(List.of()));
 		}

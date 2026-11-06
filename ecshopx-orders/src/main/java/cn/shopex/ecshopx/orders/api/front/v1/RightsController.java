@@ -109,8 +109,18 @@ public class RightsController {
 			value = "/rightscode/{rights_id}",
 			name = "核销码",
 			produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Map<String, Object>> getRightsCode(@PathVariable("rights_id") String rightsId) {
-		Map<String, Object> body = rightsFrontWxappGetRightsCodeService.getRightsCode(rightsId);
+	public ResponseEntity<Map<String, Object>> getRightsCode(
+			@PathVariable("rights_id") String rightsId, HttpServletRequest request) {
+		// ECX-10924：核销码生成须校验权益归属本人本租户
+		Object rawAuth = request.getAttribute(H5FrontAuthAttributes.H5_AUTH_CLAIMS);
+		if (!(rawAuth instanceof Map<?, ?> authRaw)) {
+			throw new UnauthorizedException("未登录");
+		}
+		Map<String, Object> auth = new LinkedHashMap<>();
+		for (Map.Entry<?, ?> e : authRaw.entrySet()) {
+			auth.put(String.valueOf(e.getKey()), e.getValue());
+		}
+		Map<String, Object> body = rightsFrontWxappGetRightsCodeService.getRightsCode(rightsId, auth);
 		return ResponseEntity.ok(body);
 	}
 }

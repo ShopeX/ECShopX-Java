@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:939785017614d6622cc47056d67ccb55002a03658315f636ba85e6e02c46dbb8",
+  "pageVersion": "sha256:87392311394a206fa338e0f89c538488a9f59c4c54bb08e8b1285177da306770",
   "claims": [
     {
       "id": "claim_2ff2e0400aa34a0da54b075e69d8f8fe",
@@ -599,10 +599,126 @@
           "version": "repo-lines-v1:sha256:02a9803127af997fb964432c7e5cb69f6d7fdfaa47b26b31881f4114aaaea5de:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjExMGNiZTNlYjI5NGYwZDYzNjc4NjMyYWU0YjkxN2NlYTIxZjE3NzNlNGE4NTUwMDU4NGUwZWFmMDg4M2U4ZjkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY3MzU1ZDIxMWZhNTg3OTAyZTcwZDk0MWNlNTQzNWQ0NGY3N2YxODQxNDZhNTdlMDJhYzBhY2IyZmI2ZjM0ZDIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQyMjM5ZDRhNzNmZTk4Y2JiZDZhNzUwMjFkZjRlZjFjZmM5YzAwYTcxN2UwM2I1YTBlNzdmNmQzM2I1YWEzODQifQ"
         }
       ]
+    },
+    {
+      "id": "claim_0aa745f32f704054899b9b31045a21de",
+      "statement": "BSPay withdrawal execution is dispatched over the dispatch bus: the interface WithdrawJobDispatchPublisher lives in ecshopx-common/dispatch, is implemented in bootstrap by WithdrawJobDispatchPublisherImpl (dispatching BsPayBundleDispatchJobNames.WITHDRAW_JOB = \"job:93:BsPayBundle\\Jobs\\WithdrawJob\" ASYNC on the REDIS driver, default queue, platform-default retry), and bootstrap's WithdrawJobRegistrationConfig registers WithdrawJobHandler (ecshopx-bspay) for that job; the handler requires numeric apply_id/company_id in the payload and calls WithdrawApplyService.executeHuifuWithdraw. WithdrawController enqueues the job only after an approve audit.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/WithdrawJobDispatchPublisherImpl.java#L38-L52",
+          "version": "repo-lines-v1:sha256:53f2e0aefa724f4b7bbad90235b8d3d547b7716a5af2849fa54fa23ab0cc235c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwOGNjMTVkMDc1NGI2ZjIxZjcxZTBiMDNiOWRkNzg2YmM5ODgwMDNiMmI1NzU2NGM2MDUwYTgwMjI1MTdjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE0ZGJiNjE0NzA1MDU0NGY0NDhmYjk2ZmIxZmNkMmYyODE3MjQxY2ZkZGYxNTVjM2M4MzRjZTA3YjM4YTljMTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/WithdrawJobRegistrationConfig.java#L35-L39",
+          "version": "repo-lines-v1:sha256:8d007d4acbd66dbcaa540b1b97f587d2c1e303320531d037caf0c03ddd5c797c:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMjdkNWVkOTcxOTZjNjBjYzYxZDMxNDQ1ZWYyNTA0ZGExYzVlOWEyODNhMDk5ZTE3YzAyMjFlNTI1MTVmY2I4NCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-bspay/src/main/java/cn/shopex/ecshopx/bspay/api/admin/v1/WithdrawController.java#L391-L397",
+          "version": "repo-lines-v1:sha256:b6384646fbfce2adcbf4b13e5cc8d5427f4b8bd1237984f3cd40a50556b81d48:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODUxOGZjZTMyNmI2MzA2MTBmYWJmYjFiYzg2NjZkMTc2MzZhZTBmMzQxYmZiYzZhZGFjNzM4ZDUzMjkxNDAwZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNzg3YTNmMTUxNTI5ZDAxYjQ5NTQ4ODhiNzBmNzc2MzcwNTUwOGUyNTU1MzZhNDY2OWRlYWU2ZjBhMzJhYzEyNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNWQzNWFkY2E1NmM2Y2EyNjY0MTM0ODdlNWNmODkyZThlNDY2YmEwZjBhZDcxYzcwZDFhZTk2MDQ0YjcyODc5MSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-bspay/src/main/java/cn/shopex/ecshopx/bspay/dispatch/WithdrawJobHandler.java#L34-L47",
+          "version": "repo-lines-v1:sha256:9bac23d2e14ad360380929691b9ce874722bae7887902e095765683bf9085433:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwOGNjMTVkMDc1NGI2ZjIxZjcxZTBiMDNiOWRkNzg2YmM5ODgwMDNiMmI1NzU2NGM2MDUwYTgwMjI1MTdjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImYwMjczNThhM2FjNDZhMzI4MDlkYzliNTg3MjI1N2UzMzUzMWM5ZDM1M2UwZTM4ZmNhYTJmZGYwZWM1YWI5ODIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/BsPayBundleDispatchJobNames.java#L21-L21",
+          "version": "repo-lines-v1:sha256:d3b07231821125dc0133a0548b8756d22b0a264bab060590165eae1f572e2c09:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZDNiMDcyMzE4MjExMjVkYzAxMzNhMDU0OGI4NzU2ZDIyYjBhMjY0YmFiMDYwNTkwMTY1ZWFlMWY1NzJlMmMwOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZDNiMDcyMzE4MjExMjVkYzAxMzNhMDU0OGI4NzU2ZDIyYjBhMjY0YmFiMDYwNTkwMTY1ZWFlMWY1NzJlMmMwOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjU4ZDU4NDgzYmU2MjBiODRmYjU2OWVmY2VjYzZiN2RiNjI2NDEyMjY2ODgyNjllMWVmZWJjNmJmM2VlYjIzZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMWRkODhlZTE4Y2MxODk5YTIyMmIxOTZlNjE5OWY3ODc4MGMxNDkzMjNlYmJiMWM2NTRhOWE3ZDRhZWJlNTBlYSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/WithdrawJobDispatchPublisher.java",
+          "version": "repo-file-v1:sha256:5920e780763730a0b68764a7255d6e85e130058d5b11bbbce836a40b522b9039"
+        }
+      ]
+    },
+    {
+      "id": "claim_2117b02763f2428ca4eb4f4c8495ecc8",
+      "statement": "WithdrawApplyService enforces tenant and role scoping on the withdraw lifecycle: auditWithdraw is admin-only (只有管理员可以审核提现申请), refuses re-audit of a non-status-0 row, and every operation loads the row via requireWithdrawApplyForCompany which throws ForbiddenException (无权操作该提现申请) when the row's company_id differs from the caller's — covered by WithdrawApplyServiceAuditScopeTest.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bspay/src/main/java/cn/shopex/ecshopx/bspay/service/WithdrawApplyService.java#L582-L660",
+          "version": "repo-lines-v1:sha256:bfcb25c190461d4c8d6f4a960ff8946d5e2eb50389c5e64fafb10b1f7f8eab30:eyJzZWxlY3RlZExpbmVDb3VudCI6NzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNmMmJjNzIwM2M1OThkZGJiZGM5OGIwN2Q3NTNjODE5MjdiMzhkNDIxNmUwNzQxZWVjN2RlNzg0MTE2OGQxZjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkzOTUwYzIxYjRhZDYwYTk5YzdkYzBlODE3MWI1M2I4ZDNkZjExODIzZjg4ZGNhOTVjZTRlNDRlZjcxOGQ0ZDYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBhMWEyNDdjN2EwYzE4OWZjZTE4MjVjNGZmOTMzNTJmNmIyODRhZWI2MTM1NmFkYTVjZjk5OWViMTY4NzE0NWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImVlYjM3YTgwZWNkMTJmZmI3ODdkYWEzYzVhODYxMDMzM2E1YTU2NmE2ZThiY2Q2YTFmYWQ5ZDA1NWM2MjkxZDMifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bspay/src/main/java/cn/shopex/ecshopx/bspay/service/WithdrawApplyService.java#L717-L728",
+          "version": "repo-lines-v1:sha256:013cec14bcb840797ca5e386c237ae799629b23df3031b88d01cf024e3ac98e8:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhMDE1NTQ3Zjk0NDkyOTc2ZjU3OTEzYjY5ZTBiOWQwNjAyY2YxYzAxNWVhMjIwMWIxNjI3MTZhYTVhZDEzZDAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMxYjNlN2I2ZjFhMTkxMjRkMzQwMjA1YjMyZjBlZmY1Nzg0Y2FhNWVmYjY0YTE0YTFlNzNhNTY1NGE3ODY5M2MiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk4NmZiNWY0Y2I4ZGUyYjE0NDNkZDE4YTUxMzQ5Y2EwMWMwZWZmYTAxM2RhMWIzNjk0NjM0MTM2NDc2MzBkZmQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjcxZDA1NTJlMDIwYTc1OGIwNGUwNTJhNzAzZTUzMDNlYTk5ZGU4OGQ2NGQ3OGZiMDQwZDM1ZjdiMzljOTMwYzgifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bspay/src/test/java/cn/shopex/ecshopx/bspay/service/WithdrawApplyServiceAuditScopeTest.java#L94-L140",
+          "version": "repo-lines-v1:sha256:823b427239c270b167a73807381ff73b28feb91e12896f0e7a871d400f32eac1:eyJzZWxlY3RlZExpbmVDb3VudCI6NDcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdkZjI1YzlmYzZkYmMwOTMxNTcxNmJmZWIwNzMzMjkyZDQwMWI4ODQ0OWQwZWFmMzBkZDNlYTk2M2IwZjY2ZTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM1YTU0ODJiNDFhZGQyOTZjY2Q4YmFiNTBjZTI0ZjBkYjMwNjcwMGMxYjI5YWMyMjM4NGU1YmMyZjJlZTljZWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_4927e63e2f9c4bf5a93a314f99da59f9",
+      "statement": "BSPay withdraw execution is replay-safe and failure-persistent: executeHuifuWithdraw skips rows already in status 3/4, resolves token_no (admin_token_no from the bspay setting or the bound UserCard.apply_no), and WithdrawHuifuWithdrawTransactionalService atomically CASes status 1/5 → 3 before calling the gateway, persisting hf_seq_id/req_seq_id and keeping status 3 on trans_stat=P (otherwise 4); any exception is recorded as status 5 with the failure reason in a separate REQUIRES_NEW transaction so it survives the outer rollback, then rethrown for the dispatch retry policy.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bspay/src/main/java/cn/shopex/ecshopx/bspay/service/WithdrawApplyService.java#L645-L715",
+          "version": "repo-lines-v1:sha256:8330aecb533117a4919d1beb896ceb7e3296988b7c378a783126853b348117d1:eyJzZWxlY3RlZExpbmVDb3VudCI6NzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjliOTg5ODdkNGVkMTYwODA4MmQ1YzEwNWM3NTRhOWY0ZjQ2MzJlMGIyZDBmY2ZkNTQzZmNkYTU3NzFlMWY4NTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY4NDNlYWYzNjk3OTU1ODczM2RlOWQzY2Y5MGJmMTZhYjZkMGFjNzA1YWNjODM4NjE0ZmM4OThkYjNlZWE5ZTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjUxNmJlNDdlNTFhNWY4Y2VjZmZmY2U3MjgyOWVkOTg1OTU5YmMwMGEwMWZlODVjMmZiZTc1MzBhY2EyMzgyMDIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI5NmE1MzllNmFiMjRmMzY0ZTNkNWYxZDkzYTQyNTY0MGMwNmQzMzgzNGM2OTUxNzU0OWEyN2JkNzY1ZGIyNGQifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bspay/src/main/java/cn/shopex/ecshopx/bspay/service/WithdrawHuifuWithdrawTransactionalService.java#L37-L89",
+          "version": "repo-lines-v1:sha256:d453521ea50d67723434821a10e63e75410ade93a841ed1d39b5f8496c19dcaa:eyJzZWxlY3RlZExpbmVDb3VudCI6NTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZmYTU3MWZiOTM2YTBmNWE5ODQzOGUyOGY5ZWE2ZmY0MDFhOTVmNzI4ZWNiNmI3MTI0OTk0NjY3YzcxMzMyM2QiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI4ZmQxZmU2MDU0MDUxYWE4ZmQ0NDAwYTU0OTU2ZDA3NzFmNjA4MzEyNGExY2ZjYmQwNjJlYzI1ZDNmZGUxMjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVkZjYwYWY5ZTQzOTcxNzMxOWUxMDU5MTg3ZTU1NTBkN2I2NmZlODNhZTkwZjNkNWZhMjY4YjIwM2YxYzIzZDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxY2ZjZWQxMmM3YjFhMzRkNTFjODhiOWFiNTM3OTE2MmZhYWQzZTFhZWFiZDA2YmI2NjdlODZmYjRiZmEzN2UifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d7214b3eeefe4d8cba8dc10894a5080b",
+      "statement": "AdapayTradeListQueryService and AdapayTradeExportDataService honor a distributor_name request filter (resolved to distributor ids within the company) only after AdapayTradeDistributorNameScopeGuard.assertAllowed(jwtMap), which rejects any JWT with operator_type=distributor via ForbiddenException (无权筛选其他店铺) so a shop operator cannot widen the trade list/export beyond their JWT distributor_id; ECX-10906/10908 PHP parity, probed by AdapayTradeDistributorNameScopeGuardTest, AdapayTradeListQueryServiceDistributorNameScopeTest, and AdapayTradeExportDataServiceDistributorNameScopeTest.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-adapay/src/main/java/cn/shopex/ecshopx/adapay/service/AdapayTradeDistributorNameScopeGuard.java#L32-L44",
+          "version": "repo-lines-v1:sha256:a7b286beb3138012302948f5214384d0727b133b7e903b40fb3da51ff56c3e3b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMwNDY5YWVkNzFiNjMzNjE5ZDllYjM1MWMxM2QyOWIwZDZjNjFkODRiMWVmODY4MmY0OGJiNjdhMjdhMDRiMzQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFiZGY2N2U4ZmUxNWFiZTY3NTQwNzQ3NTNmOTA4ZTU1MDI2NWJiZjE4Yzk4MTYzOGFmNDdhYmRhNTc3ZmVkM2MiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-adapay/src/main/java/cn/shopex/ecshopx/adapay/service/AdapayTradeExportDataService.java#L108-L121",
+          "version": "repo-lines-v1:sha256:1365735aaba771716b62c893a639503b11d2d7b5f6c26fdc14b65e210a0b06df:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlmZTA0MDY5ZjgzY2Q0MmM3MWI3NzA1ZDkwNDUxZjgxMzMxNTE0YjgwZThlOGZlNTJmOGUxZDQ0OTkzMTAzOWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI3Mzc4ZjJhNDc0NTVhNzA2OWU5NDMyY2UyOTRjM2RhZWEyNDgxZTUzMDVkNmY1NWJjYzU5NDhjNWI2N2FjNzkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ1ZDU2Y2VkZmY0Y2Y4YjdmYTU1NGQwYjgwZjBmNzlmNjhhMzAwOTMyZTk4ZGVhZTc5M2NhNzkyZjBiMDRjZDIifQ"
+        },
+        {
+          "resource": "repo://ecshopx-adapay/src/main/java/cn/shopex/ecshopx/adapay/service/AdapayTradeListQueryService.java#L149-L162",
+          "version": "repo-lines-v1:sha256:fe944a1257e88e872375e5a3a58adddac6f11013cd34a317766dc738b9ea1185:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJkODM2MmU3MWFlOTE5YjIyYjhjNzZhMjU0MjU2NzY2OTgzYzk4NzY2NjY2YmYyYzJlYTM0MDgwMmU4MDQxNDEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA2MjEzOGNjY2VkNDgyZGVlZTUwZWY2NzQ4ODc3ODc3YzEyMjlkZDU4NDI4N2NjMDNhNzk1YWI5MzAxYjZjYjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZiOGNjNjdlODAxOWZmOGY5YmFiMzk3MmQ2MTVhZGJhYjc3YzZlYWI0Y2FkYzJlMGQzYWRjNmNiM2I2OTczNjgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc4MTNmNjBjNDEwYzZkOTliOGY0MzA3MjJkOWNkMDRlYzNmZDMwYWY3YWU4Y2Y0ODIxYTM5ZjllNzVkZmUwNDcifQ"
+        },
+        {
+          "resource": "repo://ecshopx-adapay/src/test/java/cn/shopex/ecshopx/adapay/service/AdapayTradeDistributorNameScopeGuardTest.java",
+          "version": "repo-file-v1:sha256:f45e4030e1bf76ad6c2b6d18dde8fae6341989164c1894d8c5fc7e223d6d3284"
+        }
+      ]
+    },
+    {
+      "id": "claim_3a09949ffd384c47bde473c8f2ab8c29",
+      "statement": "AdapayWithdrawSetSaveService.save enforces distributor scope on the per-distributor auto-withdraw rule via AdapayWithdrawSetDistributorScopeGuard.assertTargetAllowed: admin passes unconditionally, other operators must have the target distributor id inside their JWT shop scope (distributor_id plus the distributor_ids claim), and an empty JWT shop scope (HQ-style operator) gets company-wide latitude subject to a separate company-membership check (DistributorRepositoryGetInfoSimpleService.getDistributorInfoForCompanyShop), with 店铺权限不足 on any miss — probed by AdapayWithdrawSetSaveServiceScopeTest.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-adapay/src/main/java/cn/shopex/ecshopx/adapay/service/AdapayWithdrawSetDistributorScopeGuard.java#L31-L50",
+          "version": "repo-lines-v1:sha256:3fa9fb582d7b5b19d0ca30ec8fd3416f3e873be016f31d19934350c0a7f831dc:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFjZjQwZmZiMDEzM2VkOTJiMmU0ZjE4NDIzZmRlYjA2NzFkNzA5ZjU2MzY3ZDdjMmY0YWE0NGRjMmRhOWRiZDYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk4MjBmZDEwYzk3ZDllOTMxMTU5YjIyMjBjZmUzYmRjYWUzYzRlZTYxNmFkMDYwNGFiMjU3ODI4MmNmNDVhMjgifQ"
+        },
+        {
+          "resource": "repo://ecshopx-adapay/src/main/java/cn/shopex/ecshopx/adapay/service/AdapayWithdrawSetSaveService.java#L99-L114",
+          "version": "repo-lines-v1:sha256:b9adbc05eec59c5e3c96b0644f34a02fb8775c603471fbcfb698419da7155f6f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgyYmZlNTdhNjViZjU4Y2MyYTgxMWM3NjFhNWQ0MWNlZTgzMTMyMGQ5YmY2M2Q2ZGQwMGMwYjI2MjFmYmMxMGEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVjZTE3YmY5Y2JhN2U4ZWNiZmQzMGQ1NTk1MGIyN2E2MDU1MGQ2N2Y0N2IzNjQ4NWZhZDMyZThhY2EwMjk2MDIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZkYjJiZTUxMjdhZjhmMDRlNDFhZWYxN2Y0Yjc4YzViMmM3NGM1MmVkYzRkYmFhNWEzYmE5OWU2MzA2NjZjYzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk3NjE1NjMzYmM4ZmQ1Y2M1NzdlNWI3MGFmNGEzYjQ3YjhhNzdkY2E5ZjdlYTk3NDczMGI1YWRkOWI5MzdiYzgifQ"
+        },
+        {
+          "resource": "repo://ecshopx-adapay/src/test/java/cn/shopex/ecshopx/adapay/service/AdapayWithdrawSetSaveServiceScopeTest.java",
+          "version": "repo-file-v1:sha256:cde85bfe7577df22128b92c04bbf30c5005f86884fbe8225274ffb7f0bbd5e99"
+        }
+      ]
+    },
+    {
+      "id": "claim_b3705b84e1904f5e8924c22df1911b05",
+      "statement": "The deposit recharge callback (AdapayDepositTradeRechargeCallbackService.rechargeCallback) is idempotent by atomic claim (ECX-10915): a row already at trade_status SUCCESS throws 更新已处理，不需要更新, and the flip itself is a guarded update with a trade_status != SUCCESS WHERE condition — a 0-row result throws the same already-processed exception — so concurrent double-notifies cannot double-credit the Redis deposit counters (shopDepositTotal, dayRechargeTotal{date}, per-user balance); the recharge SMS notice is published after commit via RechargeSendSmsNoticeJobDispatchPublisher. Probed by AdapayDepositTradeRechargeCallbackServiceIdempotencyTest and AdapayDepositTradeRechargeCallbackServiceSmsDispatchTest.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/deposit/service/AdapayDepositTradeRechargeCallbackServiceIdempotencyTest.java#L42-L102",
+          "version": "repo-lines-v1:sha256:096d082e3267baef9b794e3c1bae4877cad972bdba085bb4e40b79f5c5a6333d:eyJzZWxlY3RlZExpbmVDb3VudCI6NjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIwNGYyNzljZmYyNGRiZjc1NGEzNzdlYjNmYTMyOGM5ZjVkZTBjNjEwOWYyOTY3MzM2OWQzYzYwMmYzNjcyYTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU0NWVmNDM5ZmY5ZTA4ZDYwNzZkMjc2ZDhlMWRmOTExZWRmOTAyMDY2ODI0M2M0YWRjODlmMzUyOTFmMTNhYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAzN2I2OGQyYzE5ODZkMmQwNGMwNmIxN2E0YTU1YmYyMDU2OGRhZjY5Mzc1ODM4ODMyY2FiNDg0NTIxZDU2ZTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNkOWNlMzRmZTQwYmVjMzA5NjM4MjFjYjcyZTc1MjJhY2IzNDI3MjIwYjA4NDZlYWZhMzY4ODYwMjQ4N2YzYmMifQ"
+        },
+        {
+          "resource": "repo://ecshopx-deposit/src/main/java/cn/shopex/ecshopx/deposit/service/AdapayDepositTradeRechargeCallbackService.java#L56-L114",
+          "version": "repo-lines-v1:sha256:ee6112c51f0c2dce70194f7bddb62c17ac8cd25fe004b97b95407e7d959c3d50:eyJzZWxlY3RlZExpbmVDb3VudCI6NTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ4Mzc5NTljZTBlZmZjYzgyZDNhZTY3NjRmNWIxY2IxNjVhN2I2ZDQwMzlmYjc2YjNhZWU4ZWM3MGVkZTQwNzEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE5NmQ2Yjk3OGQ1OGViNWE0MTFkOTcyNzI5NDI5OWExNDY2ODc0NTYzMWMzMTQ1ZmE0MzMzZDdmMjg0Mzc0ZDQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdhMzFjMDdkNjc5MWNjMTFjNmI5NDA5Y2E5YTlhYWNmOGMwYTcxN2YxZDc4NDA4OGJlOWYwNTQ0NjY3ZTNiMjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ4YmFmZjU1M2M3NmVlOWNlMmZmOGJkM2EwOTM3NWM0N2Y2MWQ3NjNjM2UzMGNlNTUxNDRlODFiNDQ4YmNmYzEifQ"
+        }
+      ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.7.3",
-    "at": "2026-11-04T17:09:55.577Z"
+    "by": "openwiki/0.9.0",
+    "at": "2026-11-05T17:10:02.238Z"
   }
 }

@@ -1,11 +1,33 @@
 ---
 type: domain-reference
 title: Orders Domain (ecshopx-orders)
-description: The order/cart/logistics/settlement Bundle — the two-level Trade vs NormalOrders/NormalOrdersItems model with order_class variants, the wxapp create-and-pay pipeline, the admin 代客下单 deferred create-and-pay pipeline (Redis snapshot, materialize-after-pay, refund-on-failure, cloud-warehouse fast-buy branch), the trade-finish → order pay-success bridge with the shopadmin/shopscreen ziti auto-complete, auto-cancel/finish cron families, statements settlement, invoicing, and the cross-bundle cart ports (goods and promotions) behind the front CartController surface.
-tags: [orders, cart, trade, settlement, invoice, logistics, dispatch-bus, xxl-job, wxapp, payment, supplier-split, shopadmin, deferred-create, fast-buy, shopscreen, notify]
+description: The order/cart/logistics/settlement Bundle — the two-level Trade vs NormalOrders/NormalOrdersItems model with order_class variants, the wxapp create-and-pay pipeline, the admin 代客下单 deferred create-and-pay pipeline (Redis snapshot, materialize-after-pay, refund-on-failure, cloud-warehouse fast-buy branch), the trade-finish → order pay-success bridge with the shopadmin/shopscreen ziti auto-complete, auto-cancel/finish cron families, statements settlement, invoicing, the cross-bundle cart ports (goods and promotions), rights redemption ownership guards, and the POS order-document access guard.
+tags: [orders, cart, trade, settlement, invoice, logistics, dispatch-bus, xxl-job, wxapp, payment, supplier-split, shopadmin, deferred-create, fast-buy, shopscreen, notify, pos, rights]
 sources:
+  - id: openwiki-source-83df98cc525ce829d359eba9
+    resource: repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/service/AftersalesApplyService.java
+  - id: openwiki-source-214f4a43a8dbc13e5179d2dc
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/DigiOsNormalOrderDeliveryAdjustmentDispatchListenerRegistrationConfig.java
+  - id: openwiki-source-9ce82340fe6f5be0bfcfe0a7
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MembersNormalOrderCancelNewCustomerDispatchListenerRegistrationConfig.java
+  - id: openwiki-source-0315455e54e2688cacf7a480
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MembersNormalOrderPaySuccessNewCustomerDispatchListenerRegistrationConfig.java
   - id: openwiki-source-54c2942be6423a972467854a
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/OrdersTradeFinishNormalOrderPaySuccessBridgeDispatchListenerRegistrationConfig.java
+  - id: openwiki-source-614eaf4ca124989edf62b782
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ShuyunOpenPlatformNormalOrderCancelDispatchListenerRegistrationConfig.java
+  - id: openwiki-source-b6335fa9c0ece965e6db4d50
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ShuyunOpenPlatformNormalOrderConfirmReceiptDispatchListenerRegistrationConfig.java
+  - id: openwiki-source-f324880274cc5f35bf9d36f4
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ShuyunOpenPlatformNormalOrderDeliveryDispatchListenerRegistrationConfig.java
+  - id: openwiki-source-6794b7e88ab1775f38c31571
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ShuyunOpenPlatformNormalOrderPaySuccessDispatchListenerRegistrationConfig.java
+  - id: openwiki-source-cc86c87bac74caebe654b604
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ShuyunOpenPlatformOfflineBenefitConsumeCancelDispatchListenerRegistrationConfig.java
+  - id: openwiki-source-5f8f8dc234430bba81295584
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ShuyunOpenPlatformOfflineBenefitConsumePaySuccessDispatchListenerRegistrationConfig.java
+  - id: openwiki-source-c006b43585c4309283fc9235
+    resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/auth/PosOrderDocAccessPort.java
   - id: openwiki-source-27bfcace5400d2804562fba2
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/OrdersDispatchEventNames.java
   - id: openwiki-source-5ecb22a008c7475c40eec372
@@ -16,6 +38,10 @@ sources:
     resource: repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/service/DistributorPlatformStoreBuyGateService.java
   - id: openwiki-source-6b736dfa4c0754defee19eb0
     resource: repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/service/order/normal/OrderCreateDistributorCheckPortImpl.java
+  - id: openwiki-source-a1f68480771cd92413f00be5
+    resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/PosJwtAuthenticationFilter.java
+  - id: openwiki-source-a7b2be30f60d866cf32e516a
+    resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/PosJwtPathWhitelist.java
   - id: openwiki-source-cccea56ead2aaf5463693ac8
     resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/cart/wxapp/WxappCartAddPortImpl.java
   - id: openwiki-source-6d42ce597e8782d354259630
@@ -30,6 +56,10 @@ sources:
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/api/admin/v1/NormalOrderController.java
   - id: openwiki-source-22d01d814b19408aafd92925
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/api/front/v1/CartController.java
+  - id: openwiki-source-bfe6d6f18351fc248cd7b204
+    resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/api/front/v1/RightsController.java
+  - id: openwiki-source-07fb8468822e1637135de269
+    resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/api/front/v1/WxappOrderController.java
   - id: openwiki-source-2f2f509ddef48c4bd871109f
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/cron/ScheduleCancelNormalOrdersHandler.java
   - id: openwiki-source-ed65984a7a7370ed7a4a3265
@@ -50,16 +80,24 @@ sources:
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/admin/AdminNormalOrderDeliveryCoreService.java
   - id: openwiki-source-33cab7854832bc5d0f92ec3d
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/admin/AdminNormalOrderFullCancelService.java
+  - id: openwiki-source-98844588f9706a41812b3335
+    resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/admin/AdminOrderCancelService.java
   - id: openwiki-source-ac4f22cc6b429722429f379f
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/excard/NormalOrderNumericIdService.java
   - id: openwiki-source-b30ccaf3a71ef98378fd3e75
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/finish/FinishOrderBatchService.java
+  - id: openwiki-source-da30d999830db13c520004dd
+    resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/front/wxapp/RightsFrontWxappGetRightsCodeService.java
+  - id: openwiki-source-d43f41d57c721be74e7da527
+    resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/front/wxapp/RightsFrontWxappGetRightsDetailService.java
   - id: openwiki-source-a4cf0a0e6cd3b01a1aa649b3
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/front/wxapp/WxappCartParamMergeSupport.java
   - id: openwiki-source-d6fb3304229c6ae20e8ccc1d
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/front/wxapp/WxappNormalOrderConfirmReceiptService.java
   - id: openwiki-source-11c92ab35f4ce1f9788dbd95
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/front/wxapp/WxappNormalOrderCreateOrchestrator.java
+  - id: openwiki-source-5fd8daefc46d870a83fb5aa8
+    resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/front/wxapp/WxappOfflinePaymentUpdateVoucherService.java
   - id: openwiki-source-bd603f0f3a098aa945fef8a0
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/front/wxapp/WxappOrderCreateService.java
   - id: openwiki-source-e1364acc237f099b221cab9b
@@ -116,6 +154,8 @@ sources:
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/payment/OrdersPaymentTradeQueryService.java
   - id: openwiki-source-ff50bf9d82f8a9d1db0a8c21
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/payment/OrdersTradePaymentCallbackService.java
+  - id: openwiki-source-f08b4f8c06e4e935888e75cd
+    resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/pos/PosOrderDocAccessGuard.java
   - id: openwiki-source-70666a8a14ab1658f8f9bc57
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/setting/OrderValiditySettingRedisReadService.java
   - id: openwiki-source-7ac91aedda87207ccbed77d5
@@ -126,6 +166,10 @@ sources:
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/statement/generate/StatementGenerateJobInliner.java
   - id: openwiki-source-ab420cef928add1ab3268149
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/supplier/service/SupplierOrderSplitOnNormalOrderAddService.java
+  - id: openwiki-source-0e983b4fde485bf2f006c24e
+    resource: repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/orders/service/front/wxapp/RightsFrontWxappGetRightsCodeOwnershipTest.java
+  - id: openwiki-source-d6719c5406b11d3876199f13
+    resource: repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/orders/service/front/wxapp/WxappOfflinePaymentUpdateVoucherOrderOwnershipTest.java
   - id: openwiki-source-bfa6962bc8fd8f6d10b3b674
     resource: repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/orders/service/normal/create/OrderCreatePersistencePortImplShopIdAlignPhpTest.java
   - id: openwiki-source-4ee1ed8a9b50ea016a31ed25
@@ -134,14 +178,22 @@ sources:
     resource: repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/orders/service/normal/shopadmin/NormalOrderAdminCreateUserOrderServiceNormalOrderAddDispatchPublishProbeTest.java
   - id: openwiki-source-42b59755b5fcb0f2909b92e8
     resource: repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/orders/service/normal/shopadmin/ShopadminNormalOrderCreateOrchestratorNormalOrderAddDispatchPublishProbeTest.java
+  - id: openwiki-source-e1a3872ac3208de5388c4a15
+    resource: repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/orders/service/pos/PosOrderDocAccessGuardTest.java
   - id: openwiki-source-791cd7b9c29e1613315c4aab
     resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/integration/orders/WxappCartGoodsPromotionApplyRulesPortImpl.java
   - id: openwiki-source-3188f5eb948fe45eeed8fdf9
     resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/integration/orders/WxappCheckPlusItemPortImpl.java
-generated: { by: "openwiki/0.7.3", at: "2026-11-04T17:09:55.577Z" }
+  - id: openwiki-source-d88d74fead180ae405fa9428
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/systemtag/MemberCrowdMatcher.java
+  - id: openwiki-source-4cc10a5188beb43abe30da3a
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/wxapp/WxappSeckillItemTicketService.java
+  - id: openwiki-source-8533324b29578695d2393415
+    resource: repo://ecshopx-promotions/src/test/java/cn/shopex/ecshopx/promotions/service/systemtag/MemberCrowdMatcherTest.java
+generated: { by: "openwiki/0.9.0", at: "2026-11-05T17:10:02.238Z" }
 verified:
-  - by: openwiki/0.7.3
-    at: 2026-11-04T17:09:55.577Z
+  - by: openwiki/0.9.0
+    at: 2026-11-05T17:10:02.238Z
 ---
 
 # Orders Domain (ecshopx-orders)
@@ -431,7 +483,7 @@ Every trade that reaches SUCCESS publishes the trade-finish event (`event:291:Or
 * Target status: `WAIT_GROUPS_SUCCESS` for `normal_groups`; `PAYED` otherwise — **except shopadmin-class orders, which jump to `DONE` only when the order is NOT `uses_platform_item_stock`** (the PHP parity: 店务收银自提支付后 DONE；云仓立即购买（uses_platform_item_stock）保持 PAYED 待发货 — a cloud-warehouse fast-buy order has goods to ship, so it lands in `PAYED` awaiting delivery, and only the counter self-pickup variant completes immediately). The update is guarded by `order_status = 'NOTPAY'` on the main row — zero affected rows means someone else already paid/cancelled, and the method returns empty so no pay-success event fires.
 * Mirrors the same status onto `orders_associations` and (for `PAYED`/`DONE` targets) promotes `supplier_order` children from `NOTPAY`/`PART_PAYMENT`, setting their `pay_status=PAYED`.
 * **Ziti auto-complete for shopadmin and shopscreen orders** (`maybeAutoCompleteShopadminOrShopscreenZiti`, comment 店务代客 / 大屏自提单支付成功后自动完成自提与收货): fires when the order class is `shopadmin` **or** `is_shopscreen` is true, `pay_status=PAYED` and `receipt_type=ziti`. It computes `order_auto_close_aftersales_time = now + latest_aftersale_time days` from `OrderValiditySettingRedisReadService.readPlatformSetting(companyId)` (`service/setting/`, companys Redis hash with defaults), then `markNonLogisticsItemsDelivered` sets every non-logistics line (`is_logistics` false or null) to `delivery_status=DONE`, `delivery_item_num=num`, `auto_close_aftersales_time`. The header update then stamps `ziti_status=DONE`; when the whole order is not `is_logistics`, the order jumps straight to `DONE` with `delivery_status=DONE`, `delivery_time`, `end_time`, `order_auto_close_aftersales_time` and `left_aftersales_num` summed from the item nums; when it is a logistics order and any non-logistics line was delivered, the header only flips `delivery_status=PARTAIL` (the mixed case — platform-shipped lines still await courier delivery).
-* On success it builds the pay-success payload (order, user, pay_type, trade ids, fees) and the bridge publishes `NormalOrderPaySuccessDispatchPublisher` → `event:288:OrdersBundle\Events\NormalOrderPaySuccessEvent` (ASYNC/REDIS), which youshu, wsugc, shuyun-open-platform and employee-purchase listeners consume.
+* On success it builds the pay-success payload (order, user, pay_type, trade ids, fees) and the bridge publishes `NormalOrderPaySuccessDispatchPublisher` → `event:288:OrdersBundle\Events\NormalOrderPaySuccessEvent` (ASYNC/REDIS), which youshu, wsugc, members new-customer, Shuyun open-platform (trade.sync + offline-benefit consume) and employee-purchase listeners consume.
 
 The same `markPayedIfNeeded` is invoked **directly** (not via the bus) by the deferred pipeline after `persistPreparedSnapshot`, which is why a shopadmin order can reach `DONE` without a dispatch round-trip — the trade-finish event the charge published found no order row yet, so the bridge returned empty at that moment.
 
@@ -474,7 +526,7 @@ The `finish-orders` cron does not process inline — `scheduleFinishOrders` publ
 
 ## Logistics and local delivery
 
-* **Courier delivery** — admin `POST /delivery` and `PUT /order/updateDelivery` funnel into `AdminNormalOrderDeliveryCoreService` (the shared core for every delivery-writing surface): it inserts `orders_delivery` (+items), stamps `delivery_corp`/`delivery_code`, flips `delivery_status` (PENDING→PARTAIL→DONE → `order_status=WAIT_BUYER_CONFIRM` on both header and association), publishes the "订单发货" OPL, the `event:orders:wx_order_shipping` and `event:orders:normal_order_delivery` fan-outs (youshu, marketing-center, DM-CRM, shuyun — the dispatch publishes registered after-commit, the third-party trade update too), and then fires the **delivery-success notify hook**: `sendDeliveryNotices` calls `OrderDeliverySuccessNotifyPort.sendDeliverySuccessNotice` once per shipment, or once per item with `item_name` for a `sep` (按包裹分开发货) delivery. The port has two impls selected by `ecshopx.orders.delivery-success-notify.enabled`: `orderDeliverySuccessNotifyWechat` (default on, `matchIfMissing=true`) builds the `orderDeliverySucc` subscribe-message payload — recipient (wxa_appid + openId) from `OrderTradeMiniProgramRecipientLookupPort`, `item_name` falling back to the order title, the courier display name — and sends it through `OrderDeliverySuccessWxaSubscribeSendPort` (implemented in promotions, `OrderDeliverySuccessWxaSubscribeSendAdapter` → the template-message sender), swallowing any failure at debug; `orderDeliverySuccessNotifyNoOp` (`havingValue="false"`) sends nothing. This mirrors the PHP `AbstractNormalOrder::sendDeliverySucc` contract and the payload envelope is pinned by `OrderDeliverySuccessNotifyWechatServiceTest`. `GET /trackerpull` pulls tracking from the kdniao (快递鸟) integration (`service/kdniao`); `CompanyRelLogisticsController` manages courier credentials and mappings.
+* **Courier delivery** — admin `POST /delivery` and `PUT /order/updateDelivery` funnel into `AdminNormalOrderDeliveryCoreService` (the shared core for every delivery-writing surface): it inserts `orders_delivery` (+items), stamps `delivery_corp`/`delivery_code`, flips `delivery_status` (PENDING→PARTAIL→DONE → `order_status=WAIT_BUYER_CONFIRM` on both header and association), publishes the "订单发货" OPL, the `event:orders:wx_order_shipping` and `event:orders:normal_order_delivery` fan-outs (youshu, marketing-center, DM-CRM, Shuyun trade.sync, DigiOS store-adjustment — the dispatch publishes registered after-commit, the third-party trade update too), and then fires the **delivery-success notify hook**: `sendDeliveryNotices` calls `OrderDeliverySuccessNotifyPort.sendDeliverySuccessNotice` once per shipment, or once per item with `item_name` for a `sep` (按包裹分开发货) delivery. The port has two impls selected by `ecshopx.orders.delivery-success-notify.enabled`: `orderDeliverySuccessNotifyWechat` (default on, `matchIfMissing=true`) builds the `orderDeliverySucc` subscribe-message payload — recipient (wxa_appid + openId) from `OrderTradeMiniProgramRecipientLookupPort`, `item_name` falling back to the order title, the courier display name — and sends it through `OrderDeliverySuccessWxaSubscribeSendPort` (implemented in promotions, `OrderDeliverySuccessWxaSubscribeSendAdapter` → the template-message sender), swallowing any failure at debug; `orderDeliverySuccessNotifyNoOp` (`havingValue="false"`) sends nothing. This mirrors the PHP `AbstractNormalOrder::sendDeliverySucc` contract and the payload envelope is pinned by `OrderDeliverySuccessNotifyWechatServiceTest`. `GET /trackerpull` pulls tracking from the kdniao (快递鸟) integration (`service/kdniao`); `CompanyRelLogisticsController` manages courier credentials and mappings.
 * **Self-pickup (ziti)** — `ziti_code`/`pickupcode` endpoints and the `NormalOrderZitiWriteoffService` write-off flow (admin `/writeoff/{order_id}`, `/qr_writeoff`, openapi writeoff port) verify and complete the pickup; `NormalOrdersRelZiti` stores pickup location/date; the ziti QR mapping lives in Redis. The shopadmin 代客下单 flow is `receipt_type=ziti` end to end and completes itself on payment (no writeoff step).
 * **Local delivery (same-city)** — `receipt_type=dada` orders get a `NormalOrdersRelDada` row; `LocalDeliveryBusinessReceiptService.businessReceipt` (admin `/businessreceipt/{orderId}`, 达达商家接单) branches on the `common.local-delivery-dirver` property (`dada` default, `shansong` the alternative — only these two are supported), calls the respective port (`DadaLocalDeliveryReceiptPort` / `ShansongLocalDeliveryReceiptPort`), updates the rel row's `dada_status=1`, and publishes the "商家接单" OPL shared by both drivers. Full cancel refuses when the rider has picked up (non-cancellable `dada_status`).
 * **Merchant self-delivery** — `self_delivery_status` (CONFIRMING→RECEIVEORDER→PACKAGED→DELIVERING→DONE) advanced by the wxapp `/order/delivery` and `/order/updateDelivery` endpoints reusing the admin services; OPL is emitted from the service branches, never the controller (the controller Javadoc pins this).
@@ -493,9 +545,30 @@ The `orders_cart` table (`Cart` entity, `CartMapper`) and `CartController` (`@Fr
 
 Local cart mutations stay in this bundle over `orders_cart`: `DELETE /cartdel` + `DELETE /cartdelbat` (`WxappDeleteCartDataService`), `PUT /cartupdate/checkstatus` 选中状态 (`WxappUpdateCartCheckStatusService` — cart ids accept single, array and comma-string forms, else `购物车参数错误`; `is_checked` is parsed loosely), `PUT /cartupdate/num` 商品数量 (`WxappUpdateCartNumService`), `PUT /cartupdate/batchnum` 批量数量 (`WxappBatchUpdateCartNumService`) and `PUT /cartupdate/promotion` 促销 (`WxappUpdateCartItemPromotionService`, which itself crosses to promotions for `WxappCartGoodsPromotionApplyRulesPort.assertUserCanApplyGoodsPromotion` and stamps `activity_type=goods_promotion`).
 
+The promotions-side rules check is the full gate chain (all in `WxappCartGoodsPromotionApplyRulesPortImpl.assertUserCanApplyGoodsPromotion`, i18n `ResourceException` on failure): the `MarketingActivity` row must exist and be `check_status=agree`, not yet released (`release_time ≤ now`), inside `[start_time, end_time)`; when `use_bound > 0` the SKU must be scoped into the activity via `MarketingActivityCatalogAccess.listMarketingIdsHitBySkuItem` (商品不适用该营销活动); when `use_shop > 0` the cart row's shop must be in the parsed `shop_ids` list unless it contains `all` (当前店铺不适用该营销活动); under the `platform` product model the cart shop must equal the activity's `source_id` (平台活动与店铺不匹配); a non-empty `valid_grade` JSON list requires the member's `grade_id` (resolved through `MemberAccountService.getMemberInfo`) to be listed (您的会员等级不能参加该活动); then the **member-crowd tag gate** runs through `MemberCrowdMatcher.matchesFullCrowdActivity` — see below; and finally a `join_limit > 0` is enforced against the `MarketingUserJoinNum:{companyId}:{marketingId}` Redis hash counter `user_{userId}` (已超过活动参与次数).
+
 Controller-level guards worth knowing: every authed endpoint resolves the claim map from the wxapp request attribute, falling back to the H5 claims, else throws `UnauthorizedException("未登录")`; `GET /cart/list` is the one `@FrontNoAuth` surface (company id from claims, then the H5 company attribute, else `UnauthorizedException("未授权")`, and a falsy `user_id` short-circuits to an empty list — except `cart_type=offline`, which lists for walk-in buyers); `POST /cart` strips a blank `shop_type` so the goods add port is the one that rejects it, and `WxappCartParamMergeSupport` applies the buy-on-behalf rule there (`promoter_user_id == session user_id` and non-zero → `user_id` becomes `buy_user_id`); `GET /cartcount` throws `BadRequestException("参数非法")` when `shop_type` is blank and defaults `cart_type=cart`; `PUT /cartupdate/batchnum` throws `BadRequestException("参数非法")` when `cart` is missing, not a list, or an entry is not a map (an empty list returns `[]` without calling the service); `/cartupdate/checkstatus` applies the simpler buy-on-behalf rule (`buy_user_id` non-zero replaces the auth user, unconditionally); `/cartupdate/promotion` validates `cart_id`/`activity_id` strictly (`购物车参数错误` / `商品促销id错误`), the service accepts only `shop_type=distributor` (default when blank, else `ResourceException("无此购车类型")`) and re-checks via the promotions port before stamping `activity_type=goods_promotion`; the shop filter accepts `shop_id` or `distributor_id` and treats `undefined`/blank/`0` as unset. See [Goods Domain](goods.md).
 
 The same pattern carries the whole create pipeline: `OrderCreateNeedParamsPort`, `OrderCheckoutCartPort` (operator/member/distributor/pointsmall/groups carts — the operator branch with its fastbuy gate is described above), `OrderCreateItemCheckPort`, `OrderCreateFormatDataPort` (stamps `uses_platform_item_stock=1` only for shopadmin fastbuy and passes through the shopadmin `receiver_*` keys; `assertDepositBalance`, `applyCheckoutCouponAfterFreight`), `OrderCreateInventoryPort` (store minus — a `uses_platform_item_stock` order forces `is_total_store` on every line, which is what makes the platform bucket the deduction target) are declared in `ecshopx-common/order/normal` and implemented in **ecshopx-goods** (`goods/service/order/normal/*`, `goods/service/operatorcart/OrderCheckoutCartPortImpl`); `OrderCreateDistributorCheckPort` is implemented in **ecshopx-distribution** (店铺不存在或已失效 / 该门店不支持自提). Both the wxapp orchestrator and the shopadmin orchestrator inject exactly the same port beans, which is what makes the 代客下单 pipeline a true reuse of the wxapp semantics; `OrderTypeSlugMapper` in ecshopx-common is the shared slug → order_type/order_class contract between both create chains, cron scoping and list filters.
+
+### Member-crowd matching (`MemberCrowdMatcher`)
+
+The crowd scoping behind the cart-promotion gate lives in ecshopx-promotions `service/systemtag/MemberCrowdMatcher`: an activity carries a JSON list `member_tag_ids` and a `member_tag_mode` of `include` (default) or `exclude`. When the id list parses empty, every member matches; with ids configured the matcher loads the member's tag ids from `members_rel_tags` (`MemberRelTagsMapper`, scoped by company + user) and tests intersection — `include` requires a hit, `exclude` requires no hit; an anonymous user (`user_id ≤ 0`) with a non-empty list always fails. Two type guards decide whether the tag check applies at all: `matchesFullCrowdActivity` only gates `MarketingActivity` rows whose `marketing_type` is `full_minus` / `full_discount` / `full_gift`, and `matchesLimitedTimeSale` only gates `SeckillActivity` rows whose `seckill_type` is `limited_time_sale`; every other activity type passes through unconditionally. Beyond `PUT /cartupdate/promotion` the same matcher is consulted by the goods-detail/list promotion enrichers (`GoodsItemsListPromotionEnrichmentService`, `SkuValidMarketingActivityService`, `WxappGoodsDetailValidMarketingActivityService`, `MarketingActivityItemListService`) and the wxapp seckill surfaces (`WxappSeckillActivity{Info,List}Service`, `WxappSeckillItemTicketService` — a `limited_time_sale` outside the member's crowd fails the ticket fetch with 您不在该活动适用人群内), all pinned by `MemberCrowdMatcherTest`. See [Marketing Domain](marketing.md).
+
+## Rights ownership guards and offline-voucher hardening
+
+Two member-facing surfaces on `RightsController` were hardened (ECX-10924 / ECX-10881, aligning the PHP `GuideOrderTenantScopeGuard::assertRightsBelongsToAuthUser`) so a rights record can never be read or redeemed across members or tenants:
+
+* `GET /rights/{rights_id}` → `RightsFrontWxappGetRightsDetailService.getRightsDetail` validates the id (blank/non-numeric/`<1` → `BadRequestException("获取权益详情出错", 422)`), loads the `Rights` row, and rejects with `获取权益信息有误，请确认权益 ID` unless the row's `company_id` equals the auth company **and** its `user_id` equals the auth user — checked **before** `RightsTimesCardRowFactory` assembles (and decrypts) the detail row.
+* `GET /rightscode/{rights_id}` → `RightsFrontWxappGetRightsCodeService.getRightsCode` applies the same id validation (`获取核销码出错`, 422) and the same company+user ownership check (`无权访问该权益`), and only then mints a 16-digit numeric redemption code, stores it in the **wechat Redis** under `timescardcode:{code}` → `rights_id` with a 60 s TTL, and returns barcode/QR data-URLs via `MemberBarcodeGenerateService`. A failed check touches neither Redis nor the barcode generator — pinned by `RightsFrontWxappGetRightsCodeOwnershipTest` (other-user, foreign-company, missing and malformed ids all rejected without side effects) and the sibling `RightsFrontWxappGetRightsDetailOwnershipTest`.
+
+The offline bank-transfer voucher flow got the matching guard (ECX-10905, aligning `assertOfflineVoucherBelongsToOrder`): `POST /order/offline/update/voucher` → `WxappOfflinePaymentUpdateVoucherService.updateOfflineVoucher` rejects with `凭证不存在` when the `OfflinePayment` row is missing **or** its `company_id`/`order_id` do not match the authenticated company and the supplied `order_id` — the voucher must belong to that exact order in that tenant. The order itself must exist, still be `order_status=NOTPAY` (订单已支付，请勿重复操作), have `pay_type=offline_pay`, and belong to the caller: with a truthy `promoter_user_id` the order's `salesman_id` must equal it, otherwise the order's `user_id` must equal the auth user (`订单用户错误`). Only a voucher in `check_status=2` (refused) can be re-submitted (`不能修改凭证`); the update resets it to `check_status=0`, re-snapshots the target `OfflineBankAccount`, syncs `orders_normal_orders.offline_payment_status`, and publishes the 线下转账提交 OPL. The ownership/tenant rejection shape is pinned by `WxappOfflinePaymentUpdateVoucherOrderOwnershipTest` (cross-order and cross-company vouchers rejected without any UPDATE).
+
+## POS order-document access guard
+
+`PosOrderDocAccessGuard` (`orders/service/pos/`) implements `PosOrderDocAccessPort` from ecshopx-common and is the service-layer enforcement behind the POS JWT surface: `PosJwtAuthenticationFilter` (ecshopx-espier) authenticates POS tokens, rejects paths outside `PosJwtPathWhitelist` (a deliberately narrow set — `/api/v1/order*`, `/api/v1/aftersales*`, `/api/v1/checkout`, `/api/v1/operator/cart*`, `POST /api/v1/delivery`, `POST /api/v1/qr_writeoff`, `/api/v1/writeoff/*`, plus a handful of exact GET reads — with `/api/v1/store/pos-accounts` explicitly denied even though it would match a prefix), and the whitelist is what *lets* a POS session reach the order write endpoints at all; the guard then scopes **what the POS session may touch** on those endpoints. The port is invoked by the order write paths in this bundle (`AdminOrderCancelService.cancelOrder`, `AdminOrderDeliveryService` deliver, `AdminOrderMarkDownService` markdown) and cross-bundle by ecshopx-aftersales (`AftersalesApplyService`, `AftersalesRefundConfirmService`) — which is why the port is declared in ecshopx-common with the implementation here, the same dependency inversion used for the cart ports.
+
+Rules (`G-P2/P3/B4`, POS 写单据 — 本店隔离；店员仅经手): a non-POS session returns immediately (operator JWTs are unaffected); a POS session loads the order by company + id (`订单不存在` when missing) and asserts the JWT `distributor_id` equals the order's `distributor_id` (`无权操作其他门店单据`). `role=store_manager` / `supervisor` may then write any of the store's orders; any other role (clerk) may only write an order whose `pos_store_account_id` equals the caller's `pos_store_account_id` claim (falling back to the `id` claim), and an order with no handler (`pos_store_account_id` 0/null) is unwritable by clerks — `无权操作该单据` (`ForbiddenException`). The pure-rule half (`assertStoreAndClerkWrite`) is pinned by `PosOrderDocAccessGuardTest` (manager any-in-store, cross-store rejected, clerk own/zero-id/others' orders).
 
 ## Events published and who listens
 
@@ -504,11 +577,11 @@ Event and listener name constants live in `ecshopx-common/dispatch/OrdersDispatc
 | event | name | publishers | listeners |
 | --- | --- | --- | --- |
 | `EVENT_TRADE_FINISH` | `event:291:OrdersBundle\Events\TradeFinishEvent` (+`event:292` twin for offline bank approval) | `OrdersTradeFinishAfterCommitDispatchPublisher` (`@Primary` bean in bootstrap), notify path | pay-success bridge (sync, `@Order(77)`), OPL 订单支付, work-wechat, wxa template, brokerage, profit, custom declare, fapiao, link member, notify push, SMS, item sales, Jushuitan trade-finish upload, WdtErp push, hfpay listener |
-| `EVENT_NORMAL_ORDER_PAY_SUCCESS` | `event:288:OrdersBundle\Events\NormalOrderPaySuccessEvent` | bridge listener (only when the order actually flipped) | youshu, wsugc, shuyun open-platform, employee-purchase, marketing center |
-| `EVENT_NORMAL_ORDER_ADD` | `event:orders:normal_order_add` | wxapp orchestrator after supplier split; shopadmin deferred pipeline **at materialization** (payment), not at create | youshu, marketing-center push |
-| `EVENT_NORMAL_ORDER_CANCEL` | `event:orders:normal_order_cancel` | full cancel + every auto-cancel batch (after commit) | youshu, marketing center, orders auto-pass refund listener |
-| `EVENT_NORMAL_ORDER_DELIVERY` / `EVENT_WX_ORDER_SHIPPING` | `event:orders:normal_order_delivery` / `event:orders:wx_order_shipping` | delivery services | youshu, marketing center, DM-CRM, shuyun |
-| `EVENT_NORMAL_ORDER_CONFIRM_RECEIPT` | `event:orders:normal_order_confirm_receipt` | confirm-receipt services | youshu, marketing center, Shopex CRM |
+| `EVENT_NORMAL_ORDER_PAY_SUCCESS` | `event:288:OrdersBundle\Events\NormalOrderPaySuccessEvent` | bridge listener (only when the order actually flipped) | youshu, wsugc, **members new-customer** (`listener:members.normal_order_pay_success_new_customer`, registered `@DependsOn` the wsugc registration), **Shuyun open-platform trade.sync**, **Shuyun offline-benefit consume (result.push.v2 USED)**, employee-purchase behavior log |
+| `EVENT_NORMAL_ORDER_ADD` | `event:orders:normal_order_add` | wxapp orchestrator after supplier split; shopadmin deferred pipeline **at materialization** (payment), not at create | youshu (`listener:youshu.orders_normal_order_add`), thirdparty marketing-center push (`listener:thirdparty.order_add_push_marketing_center_on_normal_order_add`) |
+| `EVENT_NORMAL_ORDER_CANCEL` | `event:orders:normal_order_cancel` | full cancel + every auto-cancel batch (after commit) | youshu, **members new-customer** (`listener:members.normal_order_cancel_new_customer`), **Shuyun open-platform trade.sync** (`listener:shuyun.open_platform.trade_sync_on_normal_order_cancel`), **Shuyun offline-benefit consume (result.push.v2 NOT_USED)** (`listener:shuyun.open_platform.offline_benefit_consume_on_normal_order_cancel`), thirdparty schedule-cancel marketing-center push, orders auto-pass refund listener |
+| `EVENT_NORMAL_ORDER_DELIVERY` / `EVENT_WX_ORDER_SHIPPING` | `event:orders:normal_order_delivery` / `event:orders:wx_order_shipping` | delivery services | youshu, thirdparty marketing-center push, DM-CRM push, **Shuyun open-platform trade.sync**, **DigiOS store-adjustment outbound** (`listener:digios.store_adjustment_on_normal_order_delivery`, 订单发货 → 门店库存调整单出站, registered `@Order(80)`) |
+| `EVENT_NORMAL_ORDER_CONFIRM_RECEIPT` | `event:orders:normal_order_confirm_receipt` | confirm-receipt services | youshu, thirdparty marketing-center push, Shopex CRM sync (`sync_confirm_receipt_order`), **Shuyun open-platform trade.sync**, orders invoice finish listener (`listener:orders.listeners.OrderFinishInvoice`, sync, `@Order(96)`) |
 | `EVENT_ORDER_PROCESS_LOG` | `event:orders:order_process_log` | every OPL publish port call | `OrderProcessLogDispatchListener` → `orders_process_log` insert |
 
 ## Jobs this bundle owns
@@ -556,6 +629,10 @@ Handlers live in `dispatch/`; registration in bootstrap `*RegistrationConfig` cl
 * `NormalOrderCronServiceTest` + `NormalOrderCronServiceScheduleCancel*OrderProcessLogDispatchPublishProbeTest` — cancel-query shape, restore fan-out, OPL publish envelope for both cancel families.
 * `GroupsOrderService*`, `SeckillNormalOrderService*`, `PointsmallNormalOrderService*` (each with a `ScheduleCancelOplDispatchPublishProbeTest`) — per-class cancel semantics.
 * `NormalOrderCheckoutPointDeduct*`, `NormalOrderPointDeductFormatterPayTypePointTest`, `NormalOrderCreatePrePersistEnrichmentServiceAutoCancelTimeTest` — pricing stages shared by both create pipelines.
+* `RightsFrontWxappGetRightsCodeOwnershipTest` / `RightsFrontWxappGetRightsDetailOwnershipTest` — the rights ownership guards: cross-member, cross-company, missing and malformed rights ids rejected before any Redis/barcode or decrypt side effect.
+* `WxappOfflinePaymentUpdateVoucherOrderOwnershipTest` — voucher-to-order/tenant binding for the offline voucher update (cross-order and cross-company rejected with no UPDATE).
+* `PosOrderDocAccessGuardTest` — POS write scope: manager any-in-store, cross-store forbidden, clerk own-handler only, unhandled (0) orders unwritable by clerks.
+* `MemberCrowdMatcherTest` (ecshopx-promotions) — the include/exclude member-tag matching that the cart promotion gate and the seckill/full-crowd surfaces share.
 * `StatementsServiceTest`, statement tests under `statement/` — window computation, cursor handling, platform-product-model filter.
 * `OrderInvoiceServiceTest` — apply-node branching, stale inProgress threshold, red-flush query.
 * The ~60 `integration/*OrderProcessLogEventAsyncConsumeTest` classes — async consume envelope for every OPL-emitting flow (create, cancel, delivery, writeoff, refund, offline payment, notify).
@@ -572,4 +649,5 @@ Handlers live in `dispatch/`; registration in bootstrap `*RegistrationConfig` cl
 * [Aftersales Domain](aftersales.md) — the refund execution half (`doRefund`, `NormalOrderRefundCompleteJobBusinessService`, `left_aftersales_num`).
 * [Payments Domain](payments.md) — payment-channel notify entry points and refund channel executors.
 * [Goods Domain](goods.md) — implements the wxapp cart add/list ports and the order-create pipeline ports this bundle owns.
+* [Marketing Domain](marketing.md) — the promotions bundle hosting `MemberCrowdMatcher` and the cart-promotion rules port described above.
 * [Order Payment Flow](../workflows/order-payment-flow.md) — the member-side pay-an-existing-order path over the same `doPayment` core.

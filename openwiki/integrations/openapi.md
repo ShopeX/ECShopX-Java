@@ -68,6 +68,8 @@ sources:
     resource: repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/web/OpenapiPathPatterns.java
   - id: openwiki-source-0838a12fa7dd5edb843e4355
     resource: repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/web/OpenapiResponseBodyAdvice.java
+  - id: openwiki-source-4889f150849f66bdb3e774ab
+    resource: repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/web/OpenapiSignedRequestReplayGuard.java
   - id: openwiki-source-c3326a09b0b53b767ed6480a
     resource: repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/web/OpenapiWebMvcConfigurer.java
   - id: openwiki-source-7c1f330f6a92561bbc003ef7
@@ -78,6 +80,10 @@ sources:
     resource: repo://ecshopx-openapi/src/test/java/cn/shopex/ecshopx/openapi/thirdapi/OpenapiMethodRegistryTest.java
   - id: openwiki-source-67e8f8ce236bc9bedd4a955d
     resource: repo://ecshopx-openapi/src/test/java/cn/shopex/ecshopx/openapi/thirdapi/v2/orders/OrderControllerWriteoffTest.java
+  - id: openwiki-source-86ec1788b9f975eaacc0039f
+    resource: repo://ecshopx-openapi/src/test/java/cn/shopex/ecshopx/openapi/web/OpenapiAuthInterceptorReplayTest.java
+  - id: openwiki-source-05f1689fa8b246986a24bcd3
+    resource: repo://ecshopx-openapi/src/test/java/cn/shopex/ecshopx/openapi/web/OpenapiSignedRequestReplayGuardTest.java
   - id: openwiki-source-69350f381860fc3a7525933d
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/openapi/thirdapi/v2/orders/OpenapiThirdApiV2OrderWriteoffService.java
   - id: openwiki-source-60b672f3ed8053f882cd63d5
@@ -88,10 +94,10 @@ sources:
     resource: repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/openapi/thirdapi/v2/orders/OpenapiThirdApiV2OrderWriteoffServiceFailMappingTest.java
   - id: openwiki-source-68528e8fae60f39cf40a5d5e
     resource: repo://ecshopx-third-party/src/main/java/cn/shopex/ecshopx/thirdparty/service/marketingcenter/MarketingCenterOpenApiSignedFormClient.java
-generated: { by: "openwiki/0.7.3", at: "2026-11-04T17:09:55.577Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-05T17:10:02.238Z" }
 verified:
-  - by: openwiki/0.7.3
-    at: 2026-11-04T17:09:55.577Z
+  - by: openwiki/0.9.0
+    at: 2026-11-05T17:10:02.238Z
 ---
 
 # OpenAPI Gateway (ecshopx-openapi)
@@ -148,12 +154,15 @@ flowchart TD
     J -- no --> X4["E4003 VALIDATION_APPKEY_ERROR"]
     J -- yes --> K{"MD5 secret wrap matches sign"}
     K -- no --> X5["E4004 SIGN_ERROR"]
-    K -- yes --> L["set auth company_id and pass"]
+    K -- yes --> R{"replay guard first sighting"}
+    R -- no --> X6["E4002 VALIDATION_TIMESTAMP_ERROR replay"]
+    R -- yes --> L["set auth company_id and pass"]
     X1 --> W["HTTP 200 OpenapiEnvelope fail, return false"]
     X2 --> W
     X3 --> W
     X4 --> W
     X5 --> W
+    X6 --> W
 ```
 
 *The auth decision tree in `OpenapiAuthInterceptor.preHandle`; every failure path writes the PHP-style envelope with HTTP 200 and stops the chain.*
@@ -179,7 +188,11 @@ POST /api/openapi/ecx.order.writeoff   form: version=2.0&...
 * `genSign(params, token)` — `MD5(token + assemble(params) + token)`, hex **uppercase** (32 chars).
 * `signMatches(params, token, providedSign)` — recomputes over `paramsForSign(params)` (the same map with the `sign` key removed) and compares against the provided sign trimmed and uppercased; a blank provided sign always fails.
 
-Verification order in the interceptor: required `version` / `timestamp` / `app_key` (`E4001`) → debug bypass → `timestampWithinTolerance(timestamp, 600)` (`E4002`) → `sign` present (`E4004`) → `developerLookupPort.findByAppKey(appKey)` (`E4003`) → `signMatches` (`E4004`) → `OpenapiAuthAttributes.setAuth(request, credentials.companyId())`.
+Verification order in the interceptor: required `version` / `timestamp` / `app_key` (`E4001`) → debug bypass → `timestampWithinTolerance(timestamp, 600)` (`E4002`) → `sign` present (`E4004`) → `developerLookupPort.findByAppKey(appKey)` (`E4003`) → `signMatches` (`E4004`) → `replayGuard.assertOnce(appKey, sign, timestamp, 600)` (`E4002` "请求已失效或重复") → `OpenapiAuthAttributes.setAuth(request, credentials.companyId())`.
+
+### Replay guard: one-time use of a signed request
+
+`OpenapiSignedRequestReplayGuard` (`openapi/web/`, ticket ECX-10869) makes a valid signature usable exactly once. After the sign check passes, the interceptor calls `assertOnce`, which builds the Redis key `openapi:auth:replay:{sha256(app_key|sign|timestamp)}` and attempts `setIfAbsent(key, "1", ttl)` — the TTL is the same 600 seconds as the timestamp tolerance (clamped to at least 1 second), so the replay record expires exactly when the signature itself stops being acceptable. The guard **fails closed**: a blank `app_key`/`sign`/`timestamp`, a duplicate key (`setIfAbsent` → `false`), or any Redis exception all return `false`, and the interceptor reports the rejection as `E4002` (`VALIDATION_TIMESTAMP_ERROR`, message "请求已失效或重复") — deliberately indistinguishable from a stale timestamp, so a re-sent request looks expired rather than revealing that it was seen before. An attacker replaying a captured request within the 600-second window is rejected because the original request already consumed the key; after the window the timestamp check rejects it anyway. The debug bypass (`openapi.debug=1`) returns before the replay guard, so it also skips one-time-use enforcement — another reason it is dev-only. The Redis dependency is why `spring-boot-starter-data-redis` is one of the module's few declared dependencies, and the behaviour is pinned by `OpenapiSignedRequestReplayGuardTest` (fail-closed on Redis exceptions, key prefix, TTL) and `OpenapiAuthInterceptorReplayTest` (replay → `E4002`, first sighting passes without writing a body).
 
 Two operational quirks worth knowing:
 
@@ -424,6 +437,8 @@ Module-local `ecshopx-openapi/src/main/resources/application-openapi.yml` is an 
 ## Focused tests that pin this design
 
 * `OpenapiSignSupportTest` (common) — 32-char uppercase MD5, `assemble` key-sorted concatenation (`app_keyktimestamp1version2.0`), booleans as `1`/`0`, nulls skipped, round-trip `signMatches`.
+* `OpenapiSignedRequestReplayGuardTest` (openapi) — `openapi:auth:replay:` key prefix, `setIfAbsent` with the 600-second TTL, duplicate key → reject, blank params → reject, Redis exception → fail-closed reject.
+* `OpenapiAuthInterceptorReplayTest` (openapi) — with a *valid* sign and in-window timestamp, `replayGuard.assertOnce(...)` returning `false` yields `preHandle == false` and an `E4002` envelope whose message contains "重复"; a first sighting passes the chain without writing a response body.
 * `OpenapiMethodRegistryTest` (openapi) — CSV line sanitization of the dirty PHP export and `normalizeVersion` (`v2`/`2`/`2.0` → `2.0`); documents that routing no longer uses the CSV.
 * `OpenapiHandlerForwardRegistryTest` (openapi) — two canary routes: `isImplemented("1.0", "POST", "ecx.digios.product.stock_push")`, and `isImplemented("2.0", "POST", "ecx.order.writeoff")` with its forward path `/api/openapi/internal/v2/ecx.order.writeoff`.
 * `OrderControllerWriteoffTest` (openapi) — company id taken from the `OPENAPI_AUTH` request attribute, `order_id` merged body-wins (`501L` → `"501"`), delegation to `OpenapiOrderWriteoffPort.executeWriteoff(9L, "501", null)`, and the `{"status": true}` payload that the advice wraps.

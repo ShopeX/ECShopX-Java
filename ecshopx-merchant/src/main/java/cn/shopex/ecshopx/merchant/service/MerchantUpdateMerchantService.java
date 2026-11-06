@@ -18,53 +18,60 @@ package cn.shopex.ecshopx.merchant.service;
 
 import cn.shopex.ecshopx.common.crypto.SensitiveFieldEncryptor;
 import cn.shopex.ecshopx.common.exception.ResourceException;
+import cn.shopex.ecshopx.common.goods.port.MerchantSettlementMainCategoryPort;
 import cn.shopex.ecshopx.merchant.domain.Merchant;
+import cn.shopex.ecshopx.merchant.domain.MerchantSettlementApply;
 import cn.shopex.ecshopx.merchant.mapper.MerchantMapper;
+import cn.shopex.ecshopx.merchant.mapper.MerchantSettlementApplyMapper;
+import cn.shopex.ecshopx.merchant.port.MerchantOperatorLoginMobileOccupancyPort;
 import cn.shopex.ecshopx.merchant.repository.MerchantRepository;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 @Service
 public class MerchantUpdateMerchantService {
 
-	private static final List<String> LANG_FIELD_KEYS =
-			List.of("province", "city", "area", "address", "legal_name");
+	private static final List<String> LANG_FIELD_KEYS = List.of("merchant_name");
 
 	private final MerchantUpdateMerchantParamValidator merchantUpdateMerchantParamValidator;
 	private final MerchantRepository merchantRepository;
 	private final MerchantMapper merchantMapper;
+	private final MerchantSettlementApplyMapper merchantSettlementApplyMapper;
 	private final SensitiveFieldEncryptor sensitiveFieldEncryptor;
 	private final MerchantOutsideLangWriteService merchantOutsideLangWriteService;
-	private final ObjectMapper objectMapper;
+	private final MerchantSettlementMainCategoryPort mainCategoryPort;
+	private final MerchantSettlementApplyDuplicateCheckService duplicateCheckService;
+	private final MerchantOperatorLoginMobileOccupancyPort operatorLoginMobileOccupancyPort;
 
 	public MerchantUpdateMerchantService(
 			MerchantUpdateMerchantParamValidator merchantUpdateMerchantParamValidator,
 			MerchantRepository merchantRepository,
 			MerchantMapper merchantMapper,
+			MerchantSettlementApplyMapper merchantSettlementApplyMapper,
 			SensitiveFieldEncryptor sensitiveFieldEncryptor,
 			MerchantOutsideLangWriteService merchantOutsideLangWriteService,
-			ObjectMapper objectMapper) {
+			MerchantSettlementMainCategoryPort mainCategoryPort,
+			MerchantSettlementApplyDuplicateCheckService duplicateCheckService,
+			MerchantOperatorLoginMobileOccupancyPort operatorLoginMobileOccupancyPort) {
 		this.merchantUpdateMerchantParamValidator = merchantUpdateMerchantParamValidator;
 		this.merchantRepository = merchantRepository;
 		this.merchantMapper = merchantMapper;
+		this.merchantSettlementApplyMapper = merchantSettlementApplyMapper;
 		this.sensitiveFieldEncryptor = sensitiveFieldEncryptor;
 		this.merchantOutsideLangWriteService = merchantOutsideLangWriteService;
-		this.objectMapper = objectMapper;
+		this.mainCategoryPort = mainCategoryPort;
+		this.duplicateCheckService = duplicateCheckService;
+		this.operatorLoginMobileOccupancyPort = operatorLoginMobileOccupancyPort;
 	}
 
 	@Transactional(rollbackFor = Exception.class)
 	public void update(long merchantId, long companyId, Map<String, Object> params, String acceptLanguageHeader) {
 		merchantUpdateMerchantParamValidator.validateAndNormalizeForUpdate(params);
-		processRegions(params);
 		params.put("company_id", companyId);
 
 		Merchant existing = merchantRepository.findById(merchantId);
@@ -72,70 +79,49 @@ public class MerchantUpdateMerchantService {
 			throw new ResourceException("未查询到更新数据");
 		}
 
+		if (isSet(params, "main_category_selection")) {
+			String json = mainCategoryPort.validateNormalizeAndSerialize(companyId, params.get("main_category_selection"));
+			params.put("main_category_selection", json);
+		}
+
+		if (isSet(params, "contact_mobile")) {
+			String mobilePlain = str(params.get("contact_mobile")).trim();
+			Long applyId = existing.getSettlementApplyId();
+			if (applyId != null) {
+				duplicateCheckService.assertContactMobileNotDuplicateForWxappSave(companyId, applyId, mobilePlain);
+			}
+			operatorLoginMobileOccupancyPort.assertNotOccupiedByOtherMerchant(mobilePlain, merchantId);
+			syncApplyMobile(companyId, applyId, mobilePlain);
+		}
+
 		int now = (int) (System.currentTimeMillis() / 1000L);
 		LambdaUpdateWrapper<Merchant> w = new LambdaUpdateWrapper<>();
 		w.eq(Merchant::getId, merchantId);
 
-		if (isSet(params, "company_id")) {
-			w.set(Merchant::getCompanyId, toLong(params.get("company_id")));
-		}
-		if (isSet(params, "merchant_type_id")) {
-			w.set(Merchant::getMerchantTypeId, toLong(params.get("merchant_type_id")));
-		}
-		if (isSet(params, "province")) {
-			w.set(Merchant::getProvince, str(params.get("province")));
-		}
-		if (isSet(params, "city")) {
-			w.set(Merchant::getCity, str(params.get("city")));
-		}
-		if (isSet(params, "area")) {
-			w.set(Merchant::getArea, str(params.get("area")));
-		}
-		if (isSet(params, "regions_id")) {
-			w.set(Merchant::getRegionsId, str(params.get("regions_id")));
-		}
-		if (isSet(params, "address")) {
-			w.set(Merchant::getAddress, str(params.get("address")));
-		}
-		if (isSet(params, "legal_name")) {
-			w.set(Merchant::getLegalName, sensitiveFieldEncryptor.encrypt(str(params.get("legal_name"))));
-		}
+		setIfPresent(w, params, "settled_type", Merchant::getSettledType);
+		setIfPresent(w, params, "merchant_name", Merchant::getMerchantName);
+		setIfPresent(w, params, "contact_name", Merchant::getContactName);
+		setIfPresent(w, params, "main_category_selection", Merchant::getMainCategorySelection);
+		setIfPresent(w, params, "social_credit_code_id", Merchant::getSocialCreditCodeId);
+		setIfPresent(w, params, "license_registered_address", Merchant::getLicenseRegisteredAddress);
+		setIfPresent(w, params, "license_legal_representative", Merchant::getLicenseLegalRepresentative);
 		if (isSet(params, "legal_cert_id")) {
 			w.set(Merchant::getLegalCertId, sensitiveFieldEncryptor.encrypt(str(params.get("legal_cert_id"))));
 		}
-		if (isSet(params, "legal_mobile")) {
-			w.set(Merchant::getLegalMobile, sensitiveFieldEncryptor.encrypt(str(params.get("legal_mobile"))));
-		}
-		if (isSet(params, "email")) {
-			w.set(Merchant::getEmail, str(params.get("email")));
-		}
-		if (isSet(params, "bank_acct_type")) {
-			w.set(Merchant::getBankAcctType, str(params.get("bank_acct_type")));
-		}
+		setIfPresent(w, params, "email", Merchant::getEmail);
+		setIfPresent(w, params, "bank_acct_type", Merchant::getBankAcctType);
 		if (isSet(params, "card_id_mask")) {
-			w.set(Merchant::getCardIdMask, str(params.get("card_id_mask")));
+			w.set(Merchant::getCardIdMask, sensitiveFieldEncryptor.encrypt(str(params.get("card_id_mask"))));
 		}
-		if (isSet(params, "bank_name")) {
-			w.set(Merchant::getBankName, str(params.get("bank_name")));
-		}
+		setIfPresent(w, params, "bank_name", Merchant::getBankName);
 		if (isSet(params, "bank_mobile")) {
 			w.set(Merchant::getBankMobile, sensitiveFieldEncryptor.encrypt(str(params.get("bank_mobile"))));
 		}
-		if (isSet(params, "license_url")) {
-			w.set(Merchant::getLicenseUrl, str(params.get("license_url")));
-		}
-		if (isSet(params, "legal_certid_front_url")) {
-			w.set(Merchant::getLegalCertidFrontUrl, str(params.get("legal_certid_front_url")));
-		}
-		if (isSet(params, "legal_cert_id_back_url")) {
-			w.set(Merchant::getLegalCertIdBackUrl, str(params.get("legal_cert_id_back_url")));
-		}
-		if (isSet(params, "bank_card_front_url")) {
-			w.set(Merchant::getBankCardFrontUrl, str(params.get("bank_card_front_url")));
-		}
-		if (isSet(params, "contract_url")) {
-			w.set(Merchant::getContractUrl, str(params.get("contract_url")));
-		}
+		setIfPresent(w, params, "license_url", Merchant::getLicenseUrl);
+		setIfPresent(w, params, "legal_certid_front_url", Merchant::getLegalCertidFrontUrl);
+		setIfPresent(w, params, "legal_cert_id_back_url", Merchant::getLegalCertIdBackUrl);
+		setIfPresent(w, params, "bank_card_front_url", Merchant::getBankCardFrontUrl);
+		setIfPresent(w, params, "contract_url", Merchant::getContractUrl);
 		if (isSet(params, "audit_goods")) {
 			w.set(Merchant::isAuditGoods, booleanFrom(params.get("audit_goods")));
 		}
@@ -157,117 +143,29 @@ public class MerchantUpdateMerchantService {
 		}
 	}
 
-	private void processRegions(Map<String, Object> params) {
-		if (params.containsKey("regions_id") && params.containsKey("regions")) {
-			List<String> regionNames = normalizeRegionNameList(params.get("regions"));
-			for (int i = 0; i < regionNames.size() && i < 3; i++) {
-				String v = regionNames.get(i);
-				if (i == 0) {
-					params.put("province", v);
-				} else if (i == 1) {
-					params.put("city", v);
-				} else {
-					params.put("area", v);
-				}
-			}
+	private void syncApplyMobile(long companyId, Long applyId, String mobilePlain) {
+		if (applyId == null) {
+			return;
 		}
-
-		Object rawRegionsId = params.get("regions_id");
-		if (rawRegionsId == null) {
-			throw new ResourceException("区域必填");
-		}
-		List<Object> regionIds = normalizeRegionIdList(rawRegionsId);
-		try {
-			params.put("regions_id", objectMapper.writeValueAsString(regionIds));
-		} catch (Exception e) {
-			throw new ResourceException("区域必填");
-		}
-		params.remove("regions");
+		LambdaUpdateWrapper<MerchantSettlementApply> uw = new LambdaUpdateWrapper<>();
+		uw.eq(MerchantSettlementApply::getId, applyId)
+				.eq(MerchantSettlementApply::getCompanyId, companyId)
+				.set(MerchantSettlementApply::getMobile, mobilePlain);
+		merchantSettlementApplyMapper.update(null, uw);
 	}
 
-	private List<String> normalizeRegionNameList(Object raw) {
-		if (raw instanceof JsonNode node) {
-			if (node.isArray()) {
-				List<String> out = new ArrayList<>();
-				for (JsonNode n : node) {
-					out.add(n == null || n.isNull() ? "" : String.valueOf(n.asText()));
-				}
-				return out;
-			}
-			if (node.isObject()) {
-				return mapObjectToOrderedStringList(node);
-			}
-			throw new ResourceException("区域必填");
+	private static <T> void setIfPresent(
+			LambdaUpdateWrapper<Merchant> w,
+			Map<String, Object> params,
+			String key,
+			com.baomidou.mybatisplus.core.toolkit.support.SFunction<Merchant, T> col) {
+		if (isSet(params, key)) {
+			w.set(col, str(params.get(key)));
 		}
-		if (raw instanceof Collection<?> c) {
-			List<String> out = new ArrayList<>();
-			for (Object o : c) {
-				out.add(o == null ? "" : String.valueOf(o));
-			}
-			return out;
-		}
-		if (raw instanceof Object[] arr) {
-			List<String> out = new ArrayList<>();
-			for (Object o : arr) {
-				out.add(o == null ? "" : String.valueOf(o));
-			}
-			return out;
-		}
-		throw new ResourceException("区域必填");
-	}
-
-	private List<String> mapObjectToOrderedStringList(JsonNode objectNode) {
-		Map<Integer, String> sorted = new TreeMap<>();
-		var it = objectNode.fields();
-		while (it.hasNext()) {
-			var e = it.next();
-			int k;
-			try {
-				k = Integer.parseInt(e.getKey().trim());
-			} catch (NumberFormatException ex) {
-				throw new ResourceException("区域必填");
-			}
-			JsonNode val = e.getValue();
-			sorted.put(k, val == null || val.isNull() ? "" : val.asText());
-		}
-		return new ArrayList<>(sorted.values());
-	}
-
-	private List<Object> normalizeRegionIdList(Object raw) {
-		if (raw instanceof JsonNode node) {
-			if (!node.isArray()) {
-				throw new ResourceException("区域必填");
-			}
-			List<Object> out = new ArrayList<>();
-			for (JsonNode n : node) {
-				if (n == null || n.isNull()) {
-					out.add(null);
-				} else if (n.isNumber()) {
-					out.add(n.numberValue());
-				} else {
-					out.add(n.asText());
-				}
-			}
-			return out;
-		}
-		if (raw instanceof Collection<?> c) {
-			return new ArrayList<>(c);
-		}
-		if (raw instanceof Object[] arr) {
-			List<Object> out = new ArrayList<>(arr.length);
-			for (Object o : arr) {
-				out.add(o);
-			}
-			return out;
-		}
-		throw new ResourceException("区域必填");
 	}
 
 	private static boolean isSet(Map<String, Object> params, String key) {
-		if (!params.containsKey(key)) {
-			return false;
-		}
-		return params.get(key) != null;
+		return params.containsKey(key) && params.get(key) != null;
 	}
 
 	private static String str(Object o) {
@@ -275,13 +173,6 @@ public class MerchantUpdateMerchantService {
 			return "";
 		}
 		return String.valueOf(o);
-	}
-
-	private static long toLong(Object o) {
-		if (o instanceof Number n) {
-			return n.longValue();
-		}
-		return Long.parseLong(String.valueOf(o).trim());
 	}
 
 	private static boolean booleanFrom(Object v) {

@@ -69,10 +69,12 @@ public class UserBargainCreateUserBargainService {
 		if (bargainIdForQuery == null) {
 			promotion = null;
 		} else {
-			LambdaQueryWrapper<BargainPromotions> w =
-					new LambdaQueryWrapper<BargainPromotions>()
-							.eq(BargainPromotions::getBargainId, bargainIdForQuery)
-							.last("LIMIT 1");
+				// ECX-10934：只加载当前公司的活动；他公司或公司为空时与活动不存在相同
+				LambdaQueryWrapper<BargainPromotions> w =
+						new LambdaQueryWrapper<BargainPromotions>()
+								.eq(BargainPromotions::getBargainId, bargainIdForQuery)
+								.eq(BargainPromotions::getCompanyId, companyId)
+								.last("LIMIT 1");
 			promotion = bargainPromotionsMapper.selectOne(w);
 		}
 		if (promotion == null) {

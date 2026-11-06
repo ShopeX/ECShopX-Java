@@ -12,10 +12,14 @@ sources:
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/TradeFinishSmsNotifyDispatchListenerRegistrationConfig.java
   - id: openwiki-source-89b43138f8e75edb4615495b
     resource: repo://ecshopx-bootstrap/src/main/resources/application.properties
+  - id: openwiki-source-423c7bde5a386038c2869dcc
+    resource: repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/deposit/service/AdapayDepositTradeRechargeCallbackServiceIdempotencyTest.java
   - id: openwiki-source-48403aa24e1185d0a351e2e3
     resource: repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/dispatch/WxappPaymentTradeFinishSmsNotifySyncDispatchFlowTest.java
   - id: openwiki-source-c9890b49121b99230c30246e
     resource: repo://ecshopx-deposit/src/main/java/cn/shopex/ecshopx/deposit/integration/alipay/AlipayNotifyDepositSidePortImpl.java
+  - id: openwiki-source-f70b6d04e8550513ce6b3aa6
+    resource: repo://ecshopx-deposit/src/main/java/cn/shopex/ecshopx/deposit/service/AdapayDepositTradeRechargeCallbackService.java
   - id: openwiki-source-0a1caaa71538649542913a46
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/api/admin/v1/NormalOrderController.java
   - id: openwiki-source-f2e1c65d6d39cb3db1a8a7e8
@@ -68,10 +72,10 @@ sources:
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/orderrefund/WxpaySecapiAftersalesRefundRunner.java
   - id: openwiki-source-f1d910dfde8ea50422ca49b0
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/WxpayNotifyFacade.java
-generated: { by: "openwiki/0.7.3", at: "2026-11-04T17:09:55.577Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-05T17:10:02.238Z" }
 verified:
-  - by: openwiki/0.7.3
-    at: 2026-11-04T17:09:55.577Z
+  - by: openwiki/0.9.0
+    at: 2026-11-05T17:10:02.238Z
 ---
 
 # Workflow: Checkout, Payment, Notify, and Trade-Finish Fan-out
@@ -580,13 +584,22 @@ On the notify side the same `WxpayNotifyFacade` runs, but the decoded
 `AlipayNotifyDepositSidePort.rechargeCallback` → deposit's
 `AlipayNotifyDepositSidePortImpl` → `AdapayDepositTradeRechargeCallbackService.rechargeCallback`:
 
+* A blank or unknown `deposit_trade_id` throws
+  `ResourceException`("储值单不存在或主键无效，无法完成回调").
 * Only `status=SUCCESS` proceeds (any other status returns without touching
   the row — there is no failure state for a deposit trade).
 * An already-`SUCCESS` deposit trade throws
   `ResourceException`("更新已处理，不需要更新") — the same already-handled
   exception the wxpay facade swallows, so a replayed recharge notify also acks.
-* The UPDATE sets `trade_status`, `bank_type`, `transaction_id`, `pay_type`
-  and `time_expire`; zero rows throws "储值单状态更新失败".
+* The status flip is a **guarded conditional update** (ECX-10915 — atomic
+  takeover, aligned with PHP's `FOR UPDATE` + lock-then-check, preventing
+  concurrent double crediting): the UPDATE carries `WHERE trade_status !=
+  'SUCCESS'` and sets `trade_status`, `bank_type`, `transaction_id`,
+  `pay_type` and `time_expire`; **zero affected rows throws the same
+  already-handled "更新已处理，不需要更新"**, so a concurrent or replayed
+  notify that loses the atomic takeover produces no side effects — the
+  balance credits and the SMS job only run after the guarded update
+  succeeds.
 * The balance is added **synchronously in Redis** (not via a trade-finish
   listener): `shopDepositTotal` company hash, the user's deposit total via
   `UserDepositBalanceMutationService.addUserDepositTotal`, and the daily
@@ -857,7 +870,12 @@ is the recovery path when a notify is lost or delayed.
 * **Only `NOTPAY` trades transition.** Both the notify path (explicit
   re-read + throw) and the internal paths (CAS `WHERE trade_state='NOTPAY'`)
   enforce it. The notify path throws and the facade swallows; the internal
-  path re-publishes idempotently for an already-`SUCCESS` trade.
+  path re-publishes idempotently for an already-`SUCCESS` trade. The deposit
+  recharge callback applies the twin guard on its own table (ECX-10915): a
+  conditional `WHERE trade_status != 'SUCCESS'` update atomically takes over
+  the row and zero rows throws the same already-handled
+  `ResourceException` — a concurrent double callback cannot credit the
+  balance twice.
 * **The ack is decoupled from the outcome.** Business exceptions (already
   handled, unknown trade) still produce XML `SUCCESS`; only unexpected
   exceptions produce `FAIL`. This is what makes replayed notifies harmless —
@@ -973,6 +991,13 @@ downstream port:
 * `TradeFinishWxaTemplateMsgEventSyncDispatchFlowTest` and
   `TradeFinishWorkWechatNotifyEventSyncDispatchFlowTest` cover the same
   listeners from non-wxapp entry shapes.
+
+The deposit recharge idempotency guard is pinned in
+`AdapayDepositTradeRechargeCallbackServiceIdempotencyTest` (bootstrap,
+ECX-10915): the update wrapper's SQL segment carries the `trade_status`
+guard; a takeover loss (guarded update returns 0) throws
+"更新已处理，不需要更新" with **no** Redis balance mutation and no SMS publish;
+a successful first callback credits the user's deposit total exactly once.
 
 The deferred variant is pinned in `ecshopx-orders`:
 

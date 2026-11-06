@@ -23,10 +23,12 @@ import cn.shopex.ecshopx.common.web.FlexibleHttpServletParameterMap;
 import cn.shopex.ecshopx.common.web.H5FrontAuthAttributes;
 import cn.shopex.ecshopx.wechat.service.PcLoginQrcodeService;
 import cn.shopex.ecshopx.wechat.service.PcQrcodeService;
+import cn.shopex.ecshopx.wechat.service.WxappLegacyQrcodePngService;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,10 +47,29 @@ public class QrcodeController {
 
 	private final PcLoginQrcodeService pcLoginQrcodeService;
 	private final PcQrcodeService pcQrcodeService;
+	private final WxappLegacyQrcodePngService wxappLegacyQrcodePngService;
 
-	public QrcodeController(PcLoginQrcodeService pcLoginQrcodeService, PcQrcodeService pcQrcodeService) {
+	public QrcodeController(
+			PcLoginQrcodeService pcLoginQrcodeService,
+			PcQrcodeService pcQrcodeService,
+			WxappLegacyQrcodePngService wxappLegacyQrcodePngService) {
 		this.pcLoginQrcodeService = pcLoginQrcodeService;
 		this.pcQrcodeService = pcQrcodeService;
+		this.wxappLegacyQrcodePngService = wxappLegacyQrcodePngService;
+	}
+
+	/**
+	 * 小程序端部分版本将 API 根 {@code /api/v1/h5app/wxapp} 与 PHP 相对路径 {@code wechatAuth/wxapp/qrcode.png}
+	 * 拼接；canonical 路由为 {@code GET /wechatAuth/wxapp/qrcode.png}（{@link
+	 * cn.shopex.ecshopx.wechat.api.open.WxappLegacyQrcodeController}）。
+	 */
+	@GetMapping(
+			value = "/wechatAuth/wxapp/qrcode.png",
+			name = "获取小程序码PNG(H5路径兼容)",
+			produces = MediaType.IMAGE_PNG_VALUE)
+	public ResponseEntity<byte[]> getLegacyWxappQrcodePng(HttpServletRequest request) {
+		byte[] png = wxappLegacyQrcodePngService.generateQrcodePng(request);
+		return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(png);
 	}
 
 	@GetMapping(value = "/pcqrcode", name = "PC二维码")

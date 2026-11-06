@@ -25,9 +25,6 @@ public record MerchantSettlementApplyListQueryInput(
 		int pageSize,
 		String auditStatus,
 		String merchantName,
-		String province,
-		String city,
-		String area,
 		String settledType,
 		Integer createdGte,
 		Integer createdLte) {}

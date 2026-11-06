@@ -19,8 +19,10 @@ package cn.shopex.ecshopx.wsugc.service.post;
 import cn.shopex.ecshopx.common.exception.BadRequestException;
 import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.common.util.ElementJoiner;
+import cn.shopex.ecshopx.wsugc.domain.Badge;
 import cn.shopex.ecshopx.wsugc.domain.Post;
 import cn.shopex.ecshopx.wsugc.domain.PostBadge;
+import cn.shopex.ecshopx.wsugc.mapper.BadgeMapper;
 import cn.shopex.ecshopx.wsugc.mapper.PostBadgeMapper;
 import cn.shopex.ecshopx.wsugc.mapper.PostMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -30,6 +32,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -38,10 +41,12 @@ public class PostSetBadgesService {
 
 	private final PostMapper postMapper;
 	private final PostBadgeMapper postBadgeMapper;
+	private final BadgeMapper badgeMapper;
 
-	public PostSetBadgesService(PostMapper postMapper, PostBadgeMapper postBadgeMapper) {
+	public PostSetBadgesService(PostMapper postMapper, PostBadgeMapper postBadgeMapper, BadgeMapper badgeMapper) {
 		this.postMapper = postMapper;
 		this.postBadgeMapper = postBadgeMapper;
+		this.badgeMapper = badgeMapper;
 	}
 
 	public Map<String, Object> setBadges(
@@ -67,13 +72,46 @@ public class PostSetBadgesService {
 		long companyId = readLong(operatorJwtOrEmpty.get("company_id"), 1L);
 		int now = (int) (System.currentTimeMillis() / 1000);
 
+		// ECX-10925：对齐 PHP WsugcTenantScopeGuard（post + badge 双维度）
+		List<Post> postRows =
+				postMapper.selectList(
+						new LambdaQueryWrapper<Post>().in(Post::getPostId, postIds));
+		if (postRows.size() != postIds.stream().distinct().count()) {
+			throw new ResourceException("无权访问该笔记");
+		}
+		for (Post pr : postRows) {
+			Long rowCompanyId = pr.getCompanyId() == null ? 0L : pr.getCompanyId();
+			if (!rowCompanyId.equals(companyId)) {
+				throw new ResourceException("无权访问该笔记");
+			}
+		}
+		List<Long> badgeIds = badgeList.stream()
+				.map(PostSetBadgesService::tryParseBadgeId)
+				.filter(Objects::nonNull)
+				.distinct()
+				.toList();
+		if (!badgeIds.isEmpty()) {
+			List<Badge> badgeRows =
+					badgeMapper.selectList(
+							new LambdaQueryWrapper<Badge>().in(Badge::getBadgeId, badgeIds));
+			if (badgeRows.size() != badgeIds.size()) {
+				throw new ResourceException("无权访问该角标");
+			}
+			for (Badge br : badgeRows) {
+				Long rowCompanyId = br.getCompanyId() == null ? 0L : br.getCompanyId();
+				if (!rowCompanyId.equals(companyId)) {
+					throw new ResourceException("无权访问该角标");
+				}
+			}
+		}
+
 		LinkedHashMap<String, Object> out = new LinkedHashMap<>();
 		out.put("post_id", input.get("post_id"));
 		out.put("badges", input.get("badges"));
 
-		for (Long postId : postIds) {
+		for (Post post : postRows) {
 			postBadgeMapper.delete(
-					new LambdaQueryWrapper<PostBadge>().eq(PostBadge::getPostId, postId));
+					new LambdaQueryWrapper<PostBadge>().eq(PostBadge::getPostId, post.getPostId()));
 			for (Object vb : badgeList) {
 				if (!isBadgeEntryValid(vb)) {
 					continue;
@@ -83,15 +121,11 @@ public class PostSetBadgesService {
 					continue;
 				}
 				PostBadge row = new PostBadge();
-				row.setPostId(postId);
+				row.setPostId(post.getPostId());
 				row.setBadgeId(badgeIdLong);
 				row.setCompanyId(companyId);
 				row.setCreated(now);
 				postBadgeMapper.insert(row);
-			}
-			Post post = postMapper.selectById(postId);
-			if (post == null) {
-				throw new ResourceException("未查询到更新数据");
 			}
 			post.setBadges(badgesStr);
 			post.setUpdated(now);

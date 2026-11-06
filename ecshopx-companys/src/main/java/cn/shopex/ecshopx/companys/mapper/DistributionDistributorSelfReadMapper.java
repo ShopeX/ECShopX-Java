@@ -47,4 +47,7 @@ public interface DistributionDistributorSelfReadMapper {
 
 	Map<String, Object> selectShopByCompanyAndShopCode(
 			@Param("companyId") long companyId, @Param("shopCode") String shopCode);
+
+	List<Long> listDistributorIdsByCompanyAndNameLike(
+			@Param("companyId") long companyId, @Param("nameLike") String nameLike);
 }

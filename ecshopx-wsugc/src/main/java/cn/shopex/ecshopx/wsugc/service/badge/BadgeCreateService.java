@@ -44,7 +44,9 @@ public class BadgeCreateService {
 		String mobile = readString(operatorJwt.get("mobile"), "");
 		long companyId = readLong(operatorJwt.get("company_id"), 1L);
 
+		// ECX-10927：同名查重限定本租户，他租户重名不误拒
 		LambdaQueryWrapper<Badge> w = new LambdaQueryWrapper<>();
+		w.eq(Badge::getCompanyId, companyId);
 		w.eq(Badge::getBadgeName, badgeName);
 		List<Badge> existing = badgeMapper.selectList(w);
 		if (!existing.isEmpty()) {
@@ -78,6 +80,11 @@ public class BadgeCreateService {
 		Badge loaded = badgeMapper.selectById(requestBadgeId);
 		if (loaded == null) {
 			throw new ResourceException("未查询到更新数据");
+		}
+		// ECX-10927：对齐 PHP WsugcTenantScopeGuard::assertBadgeIdsBelongToCompany
+		Long loadedCompanyId = loaded.getCompanyId() == null ? 0L : loaded.getCompanyId();
+		if (!loadedCompanyId.equals(companyId)) {
+			throw new ResourceException("无权访问该角标");
 		}
 		loaded.setBadgeName(badgeName);
 		loaded.setBadgeMemo(badgeMemo);

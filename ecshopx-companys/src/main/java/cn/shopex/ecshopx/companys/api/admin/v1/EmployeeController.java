@@ -113,6 +113,7 @@ public class EmployeeController {
 			@RequestParam(value = "staff_type", required = false) String staffType,
 			@RequestParam(value = "distributor_id", required = false) String distributorId,
 			@RequestParam(value = "shop_code", required = false) String shopCode,
+			@RequestParam(value = "shop_name", required = false) String shopName,
 			@RequestParam(value = "is_disable", required = false) String isDisable,
 			@RequestParam(value = "supplier_name", required = false) String supplierName,
 			@RequestParam(value = "operator_type", required = false) String operatorType) {
@@ -129,6 +130,7 @@ public class EmployeeController {
 		query.setStaffType(staffType);
 		query.setDistributorId(distributorId);
 		query.setShopCode(shopCode);
+		query.setShopName(shopName);
 		query.setIsDisable(isDisable);
 		query.setSupplierName(supplierName);
 		query.setOperatorType(operatorType);

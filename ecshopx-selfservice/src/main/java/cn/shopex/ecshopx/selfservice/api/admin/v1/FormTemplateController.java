@@ -184,7 +184,8 @@ public class FormTemplateController {
 			throw new UnauthorizedException(
 					"Failed to authenticate because of bad credentials or an invalid authorization header.");
 		}
-		Object data = formTemplateDataInfoService.getDataInfo(id, countryCode);
+		long companyId = parseCompanyId(jwt);
+		Object data = formTemplateDataInfoService.getDataInfo(id, companyId, countryCode);
 		return ResponseEntity.ok(ApiResult.ok(data));
 	}
 

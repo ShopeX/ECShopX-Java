@@ -1,8 +1,8 @@
 ---
 type: domain-reference
 title: Members Domain (ecshopx-members)
-description: The member/account bundle — H5 and wxapp login orchestration behind espier's LoginController, HS256 JWT issuing/verification and blacklist-backed token refresh, member account creation with the post-commit CreateMemberSuccess dispatch fan-out to CRM/Shuyun/Youshu/promotions/points/datacube, member update and mobile-change flows, wechat fans/tag sync, the goods-arrival subscription surface (缺货订阅) whose wxapp subscribe-message notices fire from the goods bundle's event:258 item-store update, overseas trust login (Apple/Google/Facebook/Line), and member-side SMS verification codes.
-tags: [members, h5, login, jwt, auth, wxapp, trust-login, wechat-fans, dispatch-bus, create-member-success, sms, shuyun, youshu, dm-crm, datacube, promotions, redis, goods-arrival, subscribe-notice, wxa-notify, item-store-update]
+description: The member/account bundle — H5 and wxapp login orchestration behind espier's LoginController, HS256 JWT issuing/verification and blacklist-backed token refresh, member account creation with the post-commit CreateMemberSuccess dispatch fan-out to CRM/Shuyun/Youshu/promotions/points/datacube, member update and mobile-change flows, wechat fans/tag sync, the goods-arrival subscription surface (缺货订阅) whose wxapp subscribe-message notices fire from the goods bundle's event:258 item-store update, overseas trust login (Apple/Google/Facebook/Line), member-side SMS verification codes, the hardened address buy_user_id scoping on the front MembersController, and the member system-tag subsystem (tag_kind/tag_code schema, new_customer/birthday_this_month/sleeping_user reconcile services with cron and dispatch listeners, write guard, audit table).
+tags: [members, h5, login, jwt, auth, wxapp, trust-login, wechat-fans, dispatch-bus, create-member-success, sms, shuyun, youshu, dm-crm, datacube, promotions, redis, goods-arrival, subscribe-notice, wxa-notify, item-store-update, system-tags, member-tags, reconcile, address-scope, xxl-job, audit]
 sources:
   - id: openwiki-source-aefde5c5815dc42e82aa67f0
     resource: repo://ecshopx-ali/src/main/java/cn/shopex/ecshopx/ali/service/alitemplate/ItemStoreGoodsArrivalAliTemplateOrchestrator.java
@@ -14,8 +14,14 @@ sources:
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ItemStoreUpdatedEventDispatchListenerRegistrationConfig.java
   - id: openwiki-source-1b5abe9a617b898225d1c6dd
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MembersCreateMemberSuccessDispatchPublisherImpl.java
+  - id: openwiki-source-4079f3bdff589d9fa360eb2e
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MembersCreateMemberSuccessNewCustomerDispatchListenerRegistrationConfig.java
   - id: openwiki-source-f5d41797c5b93672758b511c
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MembersCreateMemberSuccessNoticeDispatchListenerRegistrationConfig.java
+  - id: openwiki-source-9ce82340fe6f5be0bfcfe0a7
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MembersNormalOrderCancelNewCustomerDispatchListenerRegistrationConfig.java
+  - id: openwiki-source-0315455e54e2688cacf7a480
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MembersNormalOrderPaySuccessNewCustomerDispatchListenerRegistrationConfig.java
   - id: openwiki-source-1934321a6d758092fa3b0e5a
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/PromotionsCreateMemberSuccessDispatchListenerRegistrationConfig.java
   - id: openwiki-source-1a74edff54f16eb2ef107c71
@@ -32,6 +38,8 @@ sources:
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/YoushuCreateMemberSuccessDispatchListenerRegistrationConfig.java
   - id: openwiki-source-89b43138f8e75edb4615495b
     resource: repo://ecshopx-bootstrap/src/main/resources/application.properties
+  - id: openwiki-source-306979beecba6167a958ddc4
+    resource: repo://ecshopx-bootstrap/src/main/resources/db/migration/V00000000000006.sql
   - id: openwiki-source-b0eb945d98bdcd196458e4d1
     resource: repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/dispatch/ItemStoreUpdatedAliTemplateBusDispatchFlowTest.java
   - id: openwiki-source-18166d6db75da9333bacd41b
@@ -66,10 +74,24 @@ sources:
     resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/api/front/v1/TrustLoginAppleCallbackController.java
   - id: openwiki-source-d047c7468d273d91dfd23e49
     resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/config/H5JwtProperties.java
+  - id: openwiki-source-0dc8108aad3a021385563889
+    resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/cron/ScheduleBirthdayThisMonthTagHandler.java
+  - id: openwiki-source-d1ae183c81bdc1fdae2f0ac4
+    resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/dispatch/CreateMemberSuccessNewCustomerDispatchListener.java
+  - id: openwiki-source-d332b3afaea16086bf6d2dd6
+    resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/dispatch/NormalOrderCancelNewCustomerDispatchListener.java
+  - id: openwiki-source-07dc9354b98cdbc7dac4f2d1
+    resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/dispatch/NormalOrderPaySuccessNewCustomerDispatchListener.java
   - id: openwiki-source-f3a1f1ca529c7133c628618f
     resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/domain/SubscribeNotice.java
+  - id: openwiki-source-ad7bfcc65994f6bf9f3fb14e
+    resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/listener/CompanyActivatedSystemTagListener.java
   - id: openwiki-source-452f7de77c6a6d3a53a5bf10
     resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/listener/ItemStoreUpdatedGoodsArrivalDispatchListener.java
+  - id: openwiki-source-329e433271ed5b9c82fd2046
+    resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/listener/MemberSystemTagHistoricalSeedRunner.java
+  - id: openwiki-source-37f8235b20fdd10827bbdef2
+    resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/listener/TradeRefundNewCustomerListener.java
   - id: openwiki-source-88e01cb173099cd318238ee4
     resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/security/LegacyFixedMobileEncrypt.java
   - id: openwiki-source-d72b1aefaba3b3b4fbda25c4
@@ -108,8 +130,30 @@ sources:
     resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/h5/WxappMemberUpdateMemberService.java
   - id: openwiki-source-da52a7049271f0ed0625b0f2
     resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/ItemStoreGoodsArrivalWxaTemplateOrchestrator.java
+  - id: openwiki-source-1712ab006fdbf434bafc3169
+    resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/MemberTagsCreateService.java
   - id: openwiki-source-6ced3d2bfe3c421ea3098928
     resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/sms/MemberSmsVerificationCodeDeliveryService.java
+  - id: openwiki-source-ddc4441d84575dd506f9b822
+    resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/systemtag/BirthdayThisMonthReconcileService.java
+  - id: openwiki-source-71f800dcbe73d59f7d04af1d
+    resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/systemtag/MemberAudienceTagValidator.java
+  - id: openwiki-source-e2cfac4ae8d1079dfdd55c73
+    resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/systemtag/MemberSystemTagCodes.java
+  - id: openwiki-source-ec1010c0d063326efaf9de3f
+    resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/systemtag/MemberSystemTagQueryScope.java
+  - id: openwiki-source-7b93b434cb08968740f6b9e2
+    resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/systemtag/MemberSystemTagSeedService.java
+  - id: openwiki-source-a204a89b1ce5a22cd0a0fe06
+    resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/systemtag/MemberSystemTagWriteGuard.java
+  - id: openwiki-source-1d035a8dc7df21b6b6e6293f
+    resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/systemtag/NewCustomerEffectivePaidOrderQuery.java
+  - id: openwiki-source-7681fec725fb0dff41f89dce
+    resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/systemtag/NewCustomerTagReconcileService.java
+  - id: openwiki-source-cb52f315fb94b2b597d772ca
+    resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/systemtag/SleepingUserLastCompletedOrderQuery.java
+  - id: openwiki-source-2fa3fab0fcfbd1087f3968d6
+    resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/systemtag/SleepingUserTagReconcileService.java
   - id: openwiki-source-9e5ba1b03959db9c3ca0ecc3
     resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/trustlogin/SocialTrustLoginService.java
   - id: openwiki-source-57a176485cdb255bfe68fd95
@@ -120,6 +164,8 @@ sources:
     resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/wxapp/GoodsArrivalNoticeSubscribeRedisKeys.java
   - id: openwiki-source-2da9676c04bb79e8e655eb5e
     resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/wxapp/WxappGoodsArrivalNoticeSubscribeService.java
+  - id: openwiki-source-2425b7a1af8631937f2e830a
+    resource: repo://ecshopx-members/src/test/java/cn/shopex/ecshopx/members/api/front/v1/MembersControllerAddressBuyUserScopeTest.java
   - id: openwiki-source-4836dae026b0cbd94cd9416b
     resource: repo://ecshopx-members/src/test/java/cn/shopex/ecshopx/members/service/account/MemberAccountServiceCreateMemberForWxappBindNoBindSalespersonDispatchTest.java
   - id: openwiki-source-6abe756b6b1ec9215d78d6c9
@@ -130,16 +176,28 @@ sources:
     resource: repo://ecshopx-members/src/test/java/cn/shopex/ecshopx/members/service/h5/prelogin/H5NewLoginPathsCreateMemberSuccessDispatchProbeTest.java
   - id: openwiki-source-5328b6eb55d9372bad32201a
     resource: repo://ecshopx-members/src/test/java/cn/shopex/ecshopx/members/service/ItemStoreGoodsArrivalWxaTemplateOrchestratorTest.java
+  - id: openwiki-source-c590b40d0618e09eba6414ee
+    resource: repo://ecshopx-members/src/test/java/cn/shopex/ecshopx/members/service/systemtag/MemberSystemTagSeedServiceTest.java
+  - id: openwiki-source-65806a16fc6ef7f885cfdb29
+    resource: repo://ecshopx-members/src/test/java/cn/shopex/ecshopx/members/service/systemtag/MemberSystemTagWriteGuardTest.java
+  - id: openwiki-source-8b507d26166423a2c08f6bce
+    resource: repo://ecshopx-members/src/test/java/cn/shopex/ecshopx/members/service/systemtag/NewCustomerTagReconcileServiceTest.java
+  - id: openwiki-source-b8aa34ba6ad29cda61e4b104
+    resource: repo://ecshopx-members/src/test/java/cn/shopex/ecshopx/members/service/systemtag/SleepingUserTagReconcileServiceTest.java
+  - id: openwiki-source-8978c6a395936578f3e3b971
+    resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/finish/FinishOrderJobService.java
   - id: openwiki-source-043e01b99cf95e87d89828b8
     resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/integration/members/GoodsArrivalWxaSubscribeSendAdapter.java
+  - id: openwiki-source-df26736cc03664d777529023
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/MarketingActivityCreatePersistenceService.java
   - id: openwiki-source-9c61992f85949d88e97006d2
     resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/wxatemplate/WxaTemplateSceneDefinitions.java
   - id: openwiki-source-eab9c10485100198740b4183
     resource: repo://ecshopx-wechat/src/main/java/cn/shopex/ecshopx/wechat/repository/WeappAuthorizerAppidRepository.java
-generated: { by: "openwiki/0.7.3", at: "2026-11-04T17:09:55.577Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-05T17:10:02.238Z" }
 verified:
-  - by: openwiki/0.7.3
-    at: 2026-11-04T17:09:55.577Z
+  - by: openwiki/0.9.0
+    at: 2026-11-05T17:10:02.238Z
 ---
 
 # Members Domain (ecshopx-members)
@@ -278,7 +336,7 @@ All H5 member tokens are **HS256 (Nimbus) JWTs**, configured by `ecshopx.h5.jwt.
 
 The payload keys are stable across all paths — `company_id`, `user_id`, `mobile`, `openid`, `wxa_appid`, `inviter_id`, `distributor_id`, `source_id`, `monitor_id`, `salesperson_id`, `if_register_promotion` — because downstream listeners read exactly these. `if_register_promotion` is false when the tenant's `member_logout_config.new_rights` is off *and* a `members_delete_record` row exists for that mobile (i.e. the member had deregistered, so they do not get new-member rights again).
 
-Bootstrap registers **eight listeners** on the event (each in its own `*DispatchListenerRegistrationConfig`, wired in `@PostConstruct` with `DispatchRegistry.registerEventListener`):
+Bootstrap registers **nine listeners** on the event (each in its own `*DispatchListenerRegistrationConfig`, wired in `@PostConstruct` with `DispatchRegistry.registerEventListener`):
 
 | Listener name | Bundle / listener | Queue | Gate |
 |---|---|---|---|
@@ -290,6 +348,7 @@ Bootstrap registers **eight listeners** on the event (each in its own `*Dispatch
 | `listener:datacube.register_num_stats` | datacube `CreateMemberSuccessRegisterNumStatsDispatchListener` → `datecube_tracklog` Redis hashes + source tags | slow | failures swallowed at debug |
 | `listener:members.create_member_success_notice` | members' own `CreateMemberSuccessNoticeDispatchListener` → `CreateMemberSuccessNoticeExecutionService` (wxapp template message "welcome / 邀请人 …") | slow | requires `openid` and `wxa_appid` |
 | `listener:promotions.create_member_success_send_membercard` | promotions `CreateMemberSuccessSendMembercardDispatchListener` → `RegisterPromotionsMembercardPromotionService` (membercard register promotion, coupons via kaquan's `VipGradeOrderReceiveMembercardPromotionService`) | default | `if_register_promotion` must be `true` |
+| `listener:members.create_member_success_new_customer` | members' own `CreateMemberSuccessNewCustomerDispatchListener` → `NewCustomerTagReconcileService.reconcile(companyId, userId, register)` | default | needs positive `company_id` + `user_id`; see the [member system-tag subsystem](#member-system-tags-tag_kindtag_code--three-reconcile-loops) |
 
 The marketing-side view of the same fan-out is in [Marketing Domain](marketing.md).
 
@@ -422,12 +481,55 @@ Overseas social login is its own small sub-domain in `service/trustlogin/`:
 * `H5SocialOAuthLoginService.loginOrRegister` (`auth_type=social_oauth`): validates the tag is social and the channel row is enabled, resolves the h5 host (else `缺少 H5 域名配置`), exchanges `code` for a `SocialOAuthUser` through `SocialTrustLoginService.resolveUserFromCode`, then either maps an existing `members_associations` row (`user_type` from the provider, `unionid` = the provider user id) to the member, or **allocates a synthetic mobile** (`MemberSyntheticMobileService.allocateUnique`: `10` + 9 random digits, unique per company, ≤80 attempts) and creates the member through `creatMemberForH5Post` with `auth_type=social_oauth` — which is why the social path joins the CreateMemberSuccess fan-out too.
 * **Apple needs a server-side callback** because Apple posts the authorization code as a form: `TrustLoginAppleCallbackController` (`/api/v1/h5app/wxapp/trustlogin/apple/callback`, GET *and* POST, deliberately **without** `@FrontNoAuth`, matching PHP `routes/frontapi/member.php`) resolves the h5 host **only from the one-time remembered `state`** and then 302-redirects to the H5 landing URL with the normalized `code` (or the `error`/`error_description` pair). The authorize step (`getAuthorizeUrl`) asks Apple for `response_mode=form_post`, generates an opaque `state` (`encodeAppleOAuthState` — 32 random bytes, base64url) and stores the `state → h5Host` binding in the shared Redis template under `ecx:apple_oauth:h5:<md5(state)>` for 600 s (`rememberAppleOAuthH5Host`). `resolveAppleCallbackH5Host` is hardened: the query `h5_host` and unsigned state payloads are ignored, the Redis binding is `GETDEL`-consumed (`recallAppleOAuthH5Host`) and must equal `common.h5-base-url` — otherwise the callback answers 500 rather than redirecting to an attacker-chosen host. `SocialTrustLoginService` also carries the redirect/callback URI builders (against `common.api-base-url` / `APP_URL`), `normalizeApplePrivateKey`, the ES256 client-secret signing (`generateAppleClientSecret`, 180-day `exp`) and the Apple `id_token` verification against `https://appleid.apple.com/auth/keys` (RS256, issuer and audience checked).
 
+## Member system tags (tag_kind/tag_code + three reconcile loops)
+
+New this window: members grew a **system-tag subsystem** — tenant-level, rule-driven member tags that no operator may edit, reconciled automatically from order/birthday state. The schema half is Flyway `V00000000000006` (see [Schema Migration](../workflows/schema-migration.md)):
+
+* `members_tags` gains `tag_code` (varchar 64, nullable; required for system tags), `tag_kind` (`manual` | `system`, default `manual`) and `rule_version` (default 1), plus the unique key **`uk_company_tag_code (company_id, tag_code)`** — one tag of a given code per tenant (manual rows with a NULL code are unaffected).
+* `members_rel_tags` gains `source` (default `manual`), `rule_version`, `effective_at` and `updated_at`.
+* New table **`members_rel_tags_audit`**: one row per attach/detach with `action` (`attach`/`detach`), `source`, `rule_version`, `reason`, `event_id` and `created`, keyed `idx_company_user_tag (company_id, user_id, tag_id)`.
+* The same migration also adds `member_tag_ids` (JSON) + `member_tag_mode` (`include`/`exclude`) to `promotions_marketing_activity` and `promotions_seckill_activity` — the audience columns whose tag ids are validated by `MemberAudienceTagValidator` (below; see [Marketing Domain](marketing.md)).
+
+`MemberSystemTagCodes` is the single vocabulary: three reserved codes — **`new_customer`** (新客, "当前没有有效已付订单的会员"), **`birthday_this_month`** (当月生日, "生日月份等于当前自然月的会员") and **`sleeping_user`** (沉睡用户, "距离上次完成订单超过 180 天的会员", threshold constant `SLEEPING_THRESHOLD_SECONDS = 180 * 86400`, strictly greater-than: exactly 180 days does not match) — plus `RULE_VERSION = 1`, the `SOURCE_*` provenance strings (`register`, `pay`, `refund`, `cancel`, `bind`, `disable`, `enable`, `compensate`, `daily`) and the audit `ACTION_ATTACH`/`ACTION_DETACH`.
+
+**Seeding.** `MemberSystemTagSeedService.seedCompany(companyId)` idempotently inserts the three tags (`tag_kind=system`, `distributor_id=0`, color `#ff1939`, status `online`, source `self`) keyed by `(company_id, tag_code)`, so the unique index is the guard against duplicates. Three triggers call it: `MemberSystemTagHistoricalSeedRunner` (`ApplicationRunner`, `@Order(200)`) sweeps every tenant at boot; `CompanyActivatedSystemTagListener` seeds the new tenant `@TransactionalEventListener(AFTER_COMMIT, fallbackExecution = true)` on `CompanyActivatedEvent` in a `REQUIRES_NEW` transaction (the sibling of the staff-tag listener); and every reconcile service lazily re-seeds its own tag when the lookup misses, so a tenant that lost a row self-heals on the next event.
+
+### The reconcile pattern
+
+All three services follow the same shape: compute the desired membership from a rule query, diff against the existing `members_rel_tags` row, and write **one audit row per actual change** (attaches catch `DuplicateKeyException` for idempotency; detaches delete the rel row by id; nothing is written when the desired state already holds). Every audit insert stamps the `SOURCE_*` of the triggering event and the current `rule_version`.
+
+* **`new_customer`** — `NewCustomerTagReconcileService.reconcile(companyId, userId, source)` (`@Transactional`): a blank source falls back to `compensate`; `disable`, a missing member, or `disabled=true` **detaches every system tag** of that member (not just new_customer). Otherwise `NewCustomerEffectivePaidOrderQuery.countEffectivePaid` (raw `JdbcTemplate` over `orders_normal_orders`): an *effective paid* order is `pay_status='PAYED'` **and** `cancel_status != 'SUCCESS'` **and** (`total_fee = 0` or `total_fee` greater than the sum of its `SUCCESS` refunds in `aftersales_refund`); `paid == 0` ⇒ attach, `paid > 0` ⇒ detach the existing rel.
+* **`birthday_this_month`** — `BirthdayThisMonthReconcileService`, driven by the XXL-Job cron handler **`member-system-tag-birthday-this-month`** (`ScheduleBirthdayThisMonthTagHandler`, which publishes a `CronAlertEvent` and rethrows on failure): `executeMonthly` runs **only when today is the 1st of the month** (otherwise it logs a skip), loops all tenants, and a tenant failure is logged per-company then surfaced as one `IllegalStateException` at the end. Per company (`reconcileCompany`, `@Transactional`) the desired set is non-disabled members whose birth month — `members_info.month` when valid (1–12), else parsed from the `birthday` string (`ISO_LOCAL_DATE`, `yyyy-MM-dd HH:mm:ss`, or the first 10 chars) — equals the current month; attach/detach diffs against existing rels, with audit rows sourced `compensate` and `reason="birthday_this_month"`.
+* **`sleeping_user`** — `SleepingUserTagReconcileService`, driven from the orders bundle's `FinishOrderJobService` (the daily finish-orders job `FinishOrderJobHandler` runs it after the batch, failure logged, never failing the job): per company it pages `SleepingUserLastCompletedOrderQuery.listUserIdsLastCompletedBefore` (users whose `MAX(end_time)` over `order_status='DONE'` orders is older than `now - 180d`, page size 200) and additionally re-reconciles every member already carrying the tag, so both directions settle. `reconcile` per member: missing/disabled ⇒ detach; else desired = last completed `end_time` more than 180 days ago (a member with **no** completed order is never sleeping); audit rows sourced `daily` from the sweep.
+
+### The listeners that feed it
+
+| Trigger | Kind / registration | Listener → reconcile source |
+|---|---|---|
+| `event:members:create_member_success` | dispatch, bootstrap `MembersCreateMemberSuccessNewCustomerDispatchListenerRegistrationConfig` (default queue, async) | `CreateMemberSuccessNewCustomerDispatchListener` → `SOURCE_REGISTER` |
+| `event:288:OrdersBundle\Events\NormalOrderPaySuccessEvent` | dispatch, bootstrap `MembersNormalOrderPaySuccessNewCustomerDispatchListenerRegistrationConfig` (default queue, async, after the wsugc listener) | `NormalOrderPaySuccessNewCustomerDispatchListener` → `SOURCE_PAY` |
+| `event:orders:normal_order_cancel` | dispatch, bootstrap `MembersNormalOrderCancelNewCustomerDispatchListenerRegistrationConfig` (default queue, async, after the youshu listener) | `NormalOrderCancelNewCustomerDispatchListener` → `SOURCE_CANCEL` |
+| `TradeRefundSpringEvent` | Spring `@EventListener` in `REQUIRES_NEW`, gated on payload `refund_status == SUCCESS` | `TradeRefundNewCustomerListener` → `SOURCE_REFUND` |
+
+The two orders listeners resolve `user_id` leniently: when the payload's `user_id` is not positive they look it up from `order_id` via `NewCustomerEffectivePaidOrderQuery.findUserIdByOrder`, and return silently when neither is positive — the same `MemberSystemTagPayloadIds` Number-or-String parsing the goods-arrival listener uses. Pay-success and cancel/re-refund both route through the same idempotent reconcile, so a refund of the member's only paid order re-attaches the 新客 tag.
+
+### Read-side and the write guard
+
+System tags appear beside manual tags in the admin tag list/detail: `MemberSystemTagQueryScope.applyListScope` / `applyDetailScope` scope `MemberTagsListService` queries so that `distributor_id`-scoped manual tags and tenant-wide system tags are both visible (with an optional `tag_kind` filter), `MemberTagGroupWithSystemHelper` adds the system group to tag groupings, and `MemberDetailTagFieldsAssembler` splits a member's tags into manual vs system fields for the member detail page. On the write side **`MemberSystemTagWriteGuard`** throws `ResourceException("系统标签不可编辑")` — from `rejectWrite` (any update of a `tag_kind=system` row), `rejectCreatePayload` (creating a manual tag with `tag_kind=system`/`type=system` or one of the reserved codes) and `rejectTagId(s)` (attaching/detaching a system tag to a member by id). Its callers are the admin tag services (`MemberTagsCreateService`, `MemberTagsUpdateService`), the rel-tag writer `MemberRelTagsBatchCreateService` (used by the datacube source-tag listener), and the openapi tag batch/cover/update/delete services — so the reconcile services are the **only** writers of system-tag rels on any surface. The matching read-side gate for the new promotion audience columns is `MemberAudienceTagValidator.assertUsable` (used by promotions' `MarketingActivityCreatePersistenceService` and `SeckillActivityCreateService`): every referenced tag id must exist in the tenant, and a *manual* tag must belong to the activity's `distributor_id`, while system tags are usable from any distributor.
+
+## Address buy_user_id scoping (ECX-10913 / ECX-10923)
+
+The front `MembersController` hardened the address surface against cross-member access (PHP `MembersOwnerScopeGuard::assertActingUserBoundToAuth` parity — Java has no shopping-guide acting-on-behalf-of flow, so any foreign target is rejected):
+
+* `POST /api/v1/h5app/wxapp/member/address` (添加地址, `@FrontAuth`) resolves the acting user through `resolveEffectiveUserIdForCreate(body, authUserId)`: only when the body carries a truthy `promoter_user_id` loosely equal to the authenticated user **and** a truthy `buy_user_id` is the latter consulted — a positive `buy_user_id` different from the authenticated user throws `ResourceException("无权访问该数据")`; every other combination (no `buy_user_id`, self `buy_user_id`, a `promoter_user_id` that is not the caller) falls through to `authUserId`. `MembersControllerAddressBuyUserScopeTest` pins all four branches.
+* `GET /api/v1/h5app/wxapp/member/addresslist` (地址列表) applies the same rule to the filter user via `resolveFilterUserIdForAddressList(request, promoter_user_id, buy_user_id, authUserId)`, and additionally **always returns `authUserId` instead of the old null fallback** — the orphan-address bypass (a `filterUserId=null` list query) no longer exists.
+
 ## Other members-owned surfaces (brief)
 
 * `service/email/` — member email registration + verification (`MemberEmailVerificationService` powers `check_type=email_otp` local login, requiring `email_verified_at`).
 * `service/reg/` — registration settings (`MemberRegSettingService` for SMS vcode check, `AdminMemberRegisterSettingService` for image vcode).
 * `service/account/`, `service/admin/`, `service/export/`, `service/importrow/` — admin console member CRUD, batch operations, export jobs (`AdminMemberExportFileJob*`), import.
-* Tag services (`MemberTags*`, `TagsCategory*`, `MemberTagLibrary*`, `segment/`) — member tags/groups/segments, including `MemberRelTagsBatchCreateService` used by the datacube source-tag listener.
+* Tag services (`MemberTags*`, `TagsCategory*`, `MemberTagLibrary*`, `segment/`) — member tags/groups/segments, including `MemberRelTagsBatchCreateService` used by the datacube source-tag listener; the rule-driven system tags (`tag_kind=system`) on top of them are documented in [Member system tags](#member-system-tags-tag_kindtag_code--three-reconcile-loops) above.
 * `MedicationPersonnel*` services + controller — pharmacy-industry medication personnel records.
 * `WxappMemberDeleteMemberService` (`DELETE /wxapp/member`, 会员注销) — writes `members_delete_record`, which is what makes the *next* registration of that mobile lose `if_register_promotion`.
 * `CompanyActivatedStaffTagListener` — a Spring `@TransactionalEventListener(AFTER_COMMIT, fallbackExecution = true)` on `CompanyActivatedEvent` that seeds the default `员工` staff tag per tenant; one of the few members listeners that is a Spring event rather than a dispatch listener.
@@ -459,6 +561,7 @@ Overseas social login is its own small sub-domain in `service/trustlogin/`:
 * `CreateMemberSuccessEventDispatchFlowTest` / `CreateMemberSuccessShopexCrmSyncDispatchFlowTest` / `SyncWechatFansEventDispatchFlowTest` (bootstrap) — the registry/fan-out/consume side: N registered listeners ⇒ N enqueued `DispatchMessage`s in registration order, each consumed by `DispatchConsumerRuntime`.
 * `LoginControllerWxappNewLoginWebTest` (espier) — the controller slice: merged params are handed to `FrontWxappNewLoginService` unchanged.
 * `WxappMemberUpdateMemberShopexCrmDispatchFlowTest`, `WxappMemberBindTxServiceNewMemberBranchTest`, `AdminMemberMembersInfoUpdateShopexCrmDispatchFlowTest`, `WechatSubscribeDispatchListenerUnsubscribeBranchTest` — the update event, the bind transaction's new-member branch, and the wechat unsubscribe branch.
+* **Member system-tag family** (`ecshopx-members/src/test/.../service/systemtag/`) — `NewCustomerTagReconcileServiceTest` (zero effective paid ⇒ single attach + audit with the caller's `SOURCE`; a paid order detaches the existing rel; `disable`/missing/disabled member detaches **all** system tags; `DuplicateKeyException` on attach is swallowed without an audit row), `BirthdayThisMonthReconcileServiceTest`, `SleepingUserTagReconcileServiceTest` (the 180-day strict threshold and the daily sweep's attach/detach diffs), `MemberSystemTagWriteGuardTest` (system tags rejected for edit/attach, reserved codes rejected for create), `MemberSystemTagSeedServiceTest` (idempotent per-tenant seed), plus `MemberSystemTagQueryScopeTest` / `MemberTagGroupWithSystemHelperTest` / `MemberDetailTagFieldsAssemblerTest` / `MemberTagsSnakeFormatterSystemTagTest` for the read-side; `TradeRefundNewCustomerListenerTest` pins the refund listener's `refund_status=SUCCESS` gate. `MembersControllerAddressBuyUserScopeTest` pins the address `buy_user_id` self-scope (foreign id rejected with 无权访问该数据, foreign `promoter_user_id` ignored).
 * **Goods-arrival subscribe family** (`ecshopx-members/src/test/.../service/`) — `GoodsArrivalSubscribeMatchServiceTest` pins the shop-vs-headquarters matching rule (shop event = exact `distributor_id`, headquarters event = `distributor_id=0` rows plus only `is_total_store=true` shops) plus the marking leg's Redis cleanup (`markSuccess` clears the matched rows' `arrivalNoticeSub` hash fields), and `ItemStoreGoodsArrivalWxaTemplateOrchestratorTest` pins the send leg (skip on `store<=0`, payload `{scenes_name: goodsArrivalNotice, appid, openid, data, page_query_str id=<itemId>}` with `forceFire=true`, per-row `arrivalNoticeSub:<companyId>:<itemId>:<rowDistributorId>` appid lookup). The bus-level flow — `event:258` running both listeners inline then the ali template job — is pinned by bootstrap's `ItemStoreUpdatedAliTemplateBusDispatchFlowTest`.
 
 ## Change guidance
@@ -469,3 +572,4 @@ Overseas social login is its own small sub-domain in `service/trustlogin/`:
 * **New member-facing endpoint:** annotate `@FrontAuth` (claims injected via `H5_AUTH_CLAIMS` / `H5_COMPANY_ID`) or `@FrontNoAuth` (anonymous claims with `user_id=0`). For a `@FrontNoAuth` handler that must work without any resolvable company, follow the explicit `getNoAuthDecryptPhoneNumber` carve-out in `FrontNoAuthInterceptor` rather than loosening the interceptor.
 * **Mobile columns:** always write through `LegacyFixedMobileEncrypt.fixedEncryptMobile` and read through `findMemberByCompanyAndMobile`/`resolvePlainMobileForMember`; a raw `members.mobile` equality query breaks the moment `common.encrypt-sensitive-data` is switched on.
 * **Goods-arrival notify changes:** keep `listPending` and `markSuccess` in sync — they must apply the same shop/headquarters matching, or rows get marked without a send. A new `sub_type` (a new kind of subscribe notice) needs a new matching predicate *and* a new orchestrator/scene; the current code only ever queries `sub_type='goods'`. Do not move the send out of the `try/catch` in `ItemStoreGoodsArrivalWxaTemplateOrchestrator.dispatchIfApplicable` — a notify failure must not roll back the caller's stock write, because the publisher is a SYNC dispatch event running inside the goods transaction.
+* **New system tag:** add the reserved code + name/description to `MemberSystemTagCodes` (which extends `isReservedCode` and the write guard automatically), seed it in `MemberSystemTagSeedService.seedCompany`, and write a reconcile service following the compute-desired → diff → audit pattern. Membership must only ever change through that reconcile — never through `MemberTagsCreateService`/`MemberRelTagsBatchCreateService`, which the write guard rejects for system rows. A new trigger is a dispatch listener registered in its own bootstrap config (or a Spring `@EventListener` like `TradeRefundNewCustomerListener`) that calls `reconcile` with a new or existing `SOURCE_*`.

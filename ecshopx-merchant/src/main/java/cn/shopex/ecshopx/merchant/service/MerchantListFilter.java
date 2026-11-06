@@ -22,20 +22,20 @@ import org.springframework.util.StringUtils;
 public final class MerchantListFilter {
 
 	private final String merchantNameContainsOrNull;
-	private final String legalNameEncryptedOrNull;
-	private final String legalMobileEncryptedOrNull;
+	private final String contactNameContainsOrNull;
+	private final String contactMobileEqualsOrNull;
 	private final Integer createdGteOrNull;
 	private final Integer createdLteOrNull;
 
 	public MerchantListFilter(
 			String merchantNameContainsOrNull,
-			String legalNameEncryptedOrNull,
-			String legalMobileEncryptedOrNull,
+			String contactNameContainsOrNull,
+			String contactMobileEqualsOrNull,
 			Integer createdGteOrNull,
 			Integer createdLteOrNull) {
 		this.merchantNameContainsOrNull = blankToNull(merchantNameContainsOrNull);
-		this.legalNameEncryptedOrNull = blankToNull(legalNameEncryptedOrNull);
-		this.legalMobileEncryptedOrNull = blankToNull(legalMobileEncryptedOrNull);
+		this.contactNameContainsOrNull = blankToNull(contactNameContainsOrNull);
+		this.contactMobileEqualsOrNull = blankToNull(contactMobileEqualsOrNull);
 		this.createdGteOrNull = createdGteOrNull;
 		this.createdLteOrNull = createdLteOrNull;
 	}
@@ -48,12 +48,12 @@ public final class MerchantListFilter {
 		return merchantNameContainsOrNull;
 	}
 
-	public String getLegalNameEncryptedOrNull() {
-		return legalNameEncryptedOrNull;
+	public String getContactNameContainsOrNull() {
+		return contactNameContainsOrNull;
 	}
 
-	public String getLegalMobileEncryptedOrNull() {
-		return legalMobileEncryptedOrNull;
+	public String getContactMobileEqualsOrNull() {
+		return contactMobileEqualsOrNull;
 	}
 
 	public Integer getCreatedGteOrNull() {

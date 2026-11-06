@@ -43,6 +43,20 @@ public class MerchantSettlementApplyDuplicateCheckService {
 		}
 	}
 
+	public void assertContactMobileNotDuplicateForWxappSave(long companyId, long excludeApplyId, String mobilePlain) {
+		if (!StringUtils.hasText(mobilePlain)) {
+			return;
+		}
+		Long cnt = merchantSettlementApplyMapper.selectCount(new LambdaQueryWrapper<MerchantSettlementApply>()
+				.eq(MerchantSettlementApply::getCompanyId, companyId)
+				.eq(MerchantSettlementApply::getMobile, mobilePlain.trim())
+				.ne(MerchantSettlementApply::getId, excludeApplyId)
+				.ne(MerchantSettlementApply::getAuditStatus, "3"));
+		if (cnt != null && cnt > 0) {
+			throw new ResourceException("账号的手机号已经存在，请确认后再重试");
+		}
+	}
+
 	public void assertSocialCreditNotDuplicateForWxappSave(long companyId, long excludeApplyId, String socialCreditPlain) {
 		if (!StringUtils.hasText(socialCreditPlain)) {
 			return;

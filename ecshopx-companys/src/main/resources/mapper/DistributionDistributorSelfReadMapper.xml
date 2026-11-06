@@ -60,4 +60,11 @@
 		  AND shop_code = #{shopCode}
 		LIMIT 1
 	</select>
+
+	<select id="listDistributorIdsByCompanyAndNameLike" resultType="java.lang.Long">
+		SELECT distributor_id
+		FROM distribution_distributor
+		WHERE company_id = #{companyId}
+		  AND name LIKE CONCAT('%', #{nameLike}, '%')
+	</select>
 </mapper>

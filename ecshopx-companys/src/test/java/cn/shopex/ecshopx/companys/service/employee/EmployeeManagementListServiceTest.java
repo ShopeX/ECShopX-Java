@@ -126,6 +126,71 @@ class EmployeeManagementListServiceTest {
 	}
 
 	@Test
+	@DisplayName("店铺名称模糊筛选绑定该店的账号")
+	void shopNameRestrictsAccountListToMatchingDistributors() {
+		EmployeeManagementListService service =
+				new EmployeeManagementListService(
+						operatorsQueryService,
+						operatorDeliveryStaffRoleDataService,
+						employeeSelfDeliveryStaffMapper,
+						distributionDistributorSelfReadMapper,
+						supplierOperatorReadMapper,
+						sensitiveFieldEncryptor,
+						operatorAccountOutsideLangReadService,
+						new ObjectMapper());
+		EmployeeAccountManagementListQuery query = new EmployeeAccountManagementListQuery();
+		query.setOperatorType("distributor");
+		query.setShopName("江山欧派");
+
+		when(distributionDistributorSelfReadMapper.listDistributorIdsByCompanyAndNameLike(1001L, "江山欧派"))
+				.thenReturn(List.of(3361L, 3362L));
+		when(operatorsQueryService.countAccountManagementList(any())).thenReturn(0L);
+
+		service.getListData(
+				Map.of("company_id", 1001L, "operator_id", 2002L, "operator_type", "admin"),
+				query,
+				0,
+				"zh-CN");
+
+		ArgumentCaptor<AccountManagementOperatorsFilter> filter =
+				ArgumentCaptor.forClass(AccountManagementOperatorsFilter.class);
+		verify(operatorsQueryService).countAccountManagementList(filter.capture());
+		assertThat(filter.getValue().getDistributorIds()).containsExactlyInAnyOrder(3361L, 3362L);
+	}
+
+	@Test
+	@DisplayName("未知店铺名称不返回账号")
+	void unknownShopNameReturnsNoAccounts() {
+		EmployeeManagementListService service =
+				new EmployeeManagementListService(
+						operatorsQueryService,
+						operatorDeliveryStaffRoleDataService,
+						employeeSelfDeliveryStaffMapper,
+						distributionDistributorSelfReadMapper,
+						supplierOperatorReadMapper,
+						sensitiveFieldEncryptor,
+						operatorAccountOutsideLangReadService,
+						new ObjectMapper());
+		EmployeeAccountManagementListQuery query = new EmployeeAccountManagementListQuery();
+		query.setShopName("不存在的店");
+
+		when(distributionDistributorSelfReadMapper.listDistributorIdsByCompanyAndNameLike(1001L, "不存在的店"))
+				.thenReturn(List.of());
+		when(operatorsQueryService.countAccountManagementList(any())).thenReturn(0L);
+
+		service.getListData(
+				Map.of("company_id", 1001L, "operator_id", 2002L, "operator_type", "admin"),
+				query,
+				0,
+				"zh-CN");
+
+		ArgumentCaptor<AccountManagementOperatorsFilter> filter =
+				ArgumentCaptor.forClass(AccountManagementOperatorsFilter.class);
+		verify(operatorsQueryService).countAccountManagementList(filter.capture());
+		assertThat(filter.getValue().getOperatorIds()).containsExactly(-1L);
+	}
+
+	@Test
 	@DisplayName("未知店铺号不返回账号")
 	void unknownShopCodeReturnsNoAccounts() {
 		EmployeeManagementListService service =

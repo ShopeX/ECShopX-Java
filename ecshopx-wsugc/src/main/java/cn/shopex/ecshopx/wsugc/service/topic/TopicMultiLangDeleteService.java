@@ -54,11 +54,12 @@ public class TopicMultiLangDeleteService {
 	}
 
 	@Transactional(rollbackFor = Exception.class)
-	public void deleteMultiLangForTopics(List<Long> topicIds) {
+	public void deleteMultiLangForTopics(long companyId, List<Long> topicIds) {
 		if (topicIds == null || topicIds.isEmpty()) {
 			return;
 		}
 		MapSqlParameterSource base = new MapSqlParameterSource();
+		base.addValue("company_id", companyId);
 		base.addValue("table_name", TABLE_NAME);
 		base.addValue("module_name", MODULE_NAME);
 		base.addValue("ids", topicIds);
@@ -67,7 +68,8 @@ public class TopicMultiLangDeleteService {
 			String sql =
 					"DELETE FROM "
 							+ outsideTable
-							+ " WHERE table_name = :table_name AND module_name = :module_name AND data_id IN (:ids)";
+							+ " WHERE company_id = :company_id AND table_name = :table_name"
+							+ " AND module_name = :module_name AND data_id IN (:ids)";
 			try {
 				namedParameterJdbcTemplate.update(sql, base);
 			} catch (DataAccessException ignored) {

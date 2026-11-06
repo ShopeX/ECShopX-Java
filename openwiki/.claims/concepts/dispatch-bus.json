@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:8e0662c5b4f57696a4952dccac90632dfb8096268014b101a7984711791b91bc",
+  "pageVersion": "sha256:9ff49524c1740656b5f0bfb7045f012b1a120f46f89f7dd01c78e69f1e1de698",
   "claims": [
     {
       "id": "claim_a430e315735a4af5adc3a18089a3897e",
@@ -232,19 +232,19 @@
     },
     {
       "id": "claim_5781e26b64c54ba98caf02130857e101",
-      "statement": "Message-name constants live in ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch as final *DispatchEventNames / *DispatchJobNames classes per Bundle, with event:<csvId>:<PhpBundle>\\Events\\<Class> and job:<csvId>:<PhpBundle>\\Jobs\\<Class> forms aligned with the legacy PHP CSV inventory, shorter event:<bundle>:<snake_case> forms for Java-first planes, and listener: constants as either PHP listener FQNs (optionally @method-qualified) or dotted descriptive names; distinct CSV ids can expose the same PHP event as separate bus planes (event:291 vs event:292 TradeFinishEvent) and alias constants can fold several CSV ids onto one bus name.",
+      "statement": "Message-name constants live in ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch as final *DispatchEventNames / *DispatchJobNames classes per Bundle, with event:<csvId>:<PhpBundle>\\Events\\<Class> and job:<csvId>:<PhpBundle>\\Jobs\\<Class> forms aligned with the legacy PHP CSV inventory, shorter event:<bundle>:<snake_case> forms for Java-first planes, and listener: constants as either PHP listener FQNs (optionally @method-qualified) or dotted descriptive names; distinct CSV ids can expose the same PHP event as separate bus planes (event:291 vs event:292 TradeFinishEvent) and alias constants can fold several CSV ids onto one bus name. The orders family additionally carries the members new-customer listeners, the DigiOS store-adjustment listener on normal-order delivery, and the Shuyun trade.sync / offline-benefit listener constants.",
       "evidence": [
         {
           "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/DispatchHandler.java#L21-L25",
           "version": "repo-lines-v1:sha256:b5714df3958d404155de99a36daa0acbef307623f4a11f19859be942865aef7a:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzEwNzYxOTZjNjY5NDVkODkzOWNkZDY4ODgwOTk4ZThlMjBkMjQ5NTk3ZDJhYjI1ZThlMTFjNDJjZTVmNDJhZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMmYyNzhmYzI0OGUzZDIwYWZhZGJhYzg1YzRhMDU3ZjdjMzI0YjY2NTU3YzQ4YjM3MDQzMjE3MDQxNzNhMzNmZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
         },
         {
-          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/OrdersDispatchEventNames.java#L21-L62",
-          "version": "repo-lines-v1:sha256:94fe744a3c5a58356ec3d5f41aee1e8c3eeec8f90b26567629f449fb63c394f1:eyJzZWxlY3RlZExpbmVDb3VudCI6NDIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ5Nzc1NTJjZTNhNDkwZWJhNWY4ZWM4MzhiODA5NGUwMGIyNGY3NjNhODA3MTA1YzM3YzlhYjY4MGVlMDExZjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNmODRkZjQ2NDkxMzQwNzk5YmI2YTJkMjllZGM1MzYyODQ3OTYzYmFmMGM1YWMxMWNjYjdiZDBkNDliY2I3MmUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRkMDY2ZGRjN2JlNTc0YmE5NjYxYWEwYTM1ZjlmYzc0MGJhNGNiZjI2NWIyM2RmNTU5ZmQwYTUwM2U4YjE0OGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJhMWNiZWNlZDcyMWJkZWRlNmE5YzE4YTVmYjM4MmVjMjEyNWY5OTdiOTk2MTVlMTkxYTVhM2ZmNTA0NzkxODYifQ"
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/OrdersDispatchEventNames.java#L21-L128",
+          "version": "repo-lines-v1:sha256:9a2cccb341197b5609801e532cb8c2d53dbf3c4c6ed89133f2ce916137bae50e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTA4LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJkOTc3NTUyY2UzYTQ5MGViYTVmOGVjODM4YjgwOTRlMDBiMjRmNzYzYTgwNzEwNWMzN2M5YWI2ODBlZTAxMWYyIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0MTJjYTM0NWNjZjc1YmY5YzA4MDZiY2U2OTViZThkZTgwOGI3OTk4NDI1MWE3YTU0ZDIwMmNmNjEwMWRkNDUxIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJkZDA2NmRkYzdiZTU3NGJhOTY2MWFhMGEzNWY5ZmM3NDBiYTRjYmYyNjViMjNkZjU1OWZkMGE1MDNlOGIxNDhhIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MCwiZm9sbG93aW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1In0"
         },
         {
-          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/SalespersonDispatchJobNames.java#L27-L63",
-          "version": "repo-lines-v1:sha256:c2089e31d00379aba84c28ba450bdc5dfdcd1e9ae6ccd051807c7388aa75c1c4:eyJzZWxlY3RlZExpbmVDb3VudCI6MzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNlMmVhNWM2YzczOGM5ZDlkZGUyMzdkNTM5M2Y3ODI2ZTdkNjVhMmEwMTExOGQ4YWJlM2U2ZjJjNjUyYmQxMmYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRlYjQyZGZhODFhNDQ0MWRiNDNhNmQ5NjViNGY0MTlhN2IwNzYwYjMzZmJjYjRkNzljNjUyNDRlNDAxMGM2YTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRlNzQ1NjY4ZWJkYzdiZmFmZTU2YWE3MmE1NDA4MTE4MTE4OTI3NjE1MDY1MDhlYWFjMjEwMjE5NjZhN2ZiMWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNjNTY3MmI0NjFkYzQwMTllMjViYTFlM2YxMzAzMTk5ZTkxYTZhZGY2MDJmYTA3MWE1NzY2NzEwYjFkYWUyNGQifQ"
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/SalespersonDispatchJobNames.java#L21-L90",
+          "version": "repo-lines-v1:sha256:0e41c6279cfd81a29e53adf2020855ef7793b56515b04057ed31e3ebd5ea37eb:eyJzZWxlY3RlZExpbmVDb3VudCI6NzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUwZDE4NzEzYzIzY2QzMmM4MjJmMThiMDU4NWVhMDNkNDY4ZmJkZGVmODBmYmE0M2RlZTdiNmNjOGQyZTRmZGQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY5MWZlYTU2YmRhNTUyMGU4OGIzMmFkYjZkNWMyNzA5OGZmZjA4OWJjYjZmYzVjZDQwNWIyMTc4YWYzY2M2NjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImExMTY3MjQxYTNlOGI1NTk1YmJhMjAxYTIxMWRiNjMxZTI5MGM3YjlkNTdkMzIwMDFlMTJkOWRhMGFmMDc5MDkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQwMzk5NDVmNzEzY2VjY2MyYTJiZTk4MWFiNWM1ZWVhMzdmOTVmOTc2OWU1NzVjZDhlZDlhOWZjYmFmZGYwNmEifQ"
         }
       ]
     },
@@ -321,10 +321,188 @@
           "version": "repo-lines-v1:sha256:22ff5fea409b02d7b94de4f5e3c6182281b1a72b5a5373744d0d5a23fe160abd:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwNDcxYzUxZWU1YzlhMGUwMTA3OWRhOTBiZGI3MWVjYjc2ZjZkNDhiNjY0OGE1MGFmYTYzNzdmNTIyYTU0YmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgxZGNiOThhZmNjOTU5YmU5YTk5MGFhNDQxYTBkYTgzMTRjZTE3ODE5OTUzYzI2M2Q4MDY4OWY0OGJkOGY1ZWMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc1NWMzMTUwNjA2YTBlMDVmYmQyZmZhZjgzNjdjZTNlYzliMmY0NjY4MTNlN2FkNzQzMjg2MzRjNDRjMDBlYmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI2ZTMyYTMwZjNmMjBiYmM4MmY1YzUzZDQ4MDg4M2RhODk0OWQwYWJhYTllZGQwNWFkMzJjZDdhYzRlMjc5ZTcifQ"
         }
       ]
+    },
+    {
+      "id": "claim_0cf868f4b5b14d82aa8ed4b5f474ec29",
+      "statement": "The orders normal-order listener fan-out is registered by bootstrap *RegistrationConfig classes with explicit ordering: on EVENT_NORMAL_ORDER_ADD the third-party marketing-center listener config @DependsOn the youshu config (supplier-split then youshu order pinned by the fan-out flow test); on EVENT_NORMAL_ORDER_PAY_SUCCESS wsugc @DependsOn youshu and the members new-customer config @DependsOn wsugc; the confirm-receipt invoice and youshu listeners use @Order(96)/@Order(97); and the trade-finish to normal-order-pay-success bridge listener is registered SYNC (ListenerDispatchOptions.syncDefaults()) against both the event:291 and event:292 TradeFinishEvent planes.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MembersNormalOrderPaySuccessNewCustomerDispatchListenerRegistrationConfig.java#L24-L48",
+          "version": "repo-lines-v1:sha256:79cc31cd8c75c4ceb2f05e310ae61efeed7e9efd50c83c71d8ca97eb494dd9d8:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4YWM0NzA4NGVlYTk1YjU4M2VkNWJkZjk1NDM1ZWM4YzJiMzU2YTE4MGMyZDA1NmQ5ZjJmMzU3ZTA3NzA3ZWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYzZWIyMDliMzk4OWU1MGIzMTQ4Mjc1Nzc5MWJiOTVlYjgzN2JlZWU5ZDliNmYxMWQzMWMwYjhjNGE4OWMzNjgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/NormalOrderConfirmReceiptInvoiceDispatchListenerRegistrationConfig.java#L25-L51",
+          "version": "repo-lines-v1:sha256:6361d95b71140010b57f6e840a391219d6991d69398a5c1ad758ff040b7d1d29:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY2YzJkNDVjOGJiYzdjYWQ0OWZkOWE2N2Y2Zjk1NDA4YTU2MGMxYjI3NDU4ZTE5MGVhMmM3YmUyMmQ0NDA1NDkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU2OWQ0YWNkOTExZGU2ZWJkNDkyYWFjYTI5MDdkNThmNTlhZDQ4ZDQzZWNjMDhjNTUyY2I1MzhkMzYyMWY0YzUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/OrdersTradeFinishNormalOrderPaySuccessBridgeDispatchListenerRegistrationConfig.java#L24-L54",
+          "version": "repo-lines-v1:sha256:7d59b17da16186e233025e9937797cc0a7d2dbeee64d9f7c55a2b19e3aee5445:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4YWM0NzA4NGVlYTk1YjU4M2VkNWJkZjk1NDM1ZWM4YzJiMzU2YTE4MGMyZDA1NmQ5ZjJmMzU3ZTA3NzA3ZWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYyZWI4ODRhMzk4MThlNjIxMDIyNzRlMzA0NDJiZjMwNmRmZDAzYWY3NjkxODdmZDYyNTgzYTRlYTNlZWUxOTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ThirdPartyOrderAddPushMarketingCenterOnNormalOrderAddDispatchListenerRegistrationConfig.java#L25-L52",
+          "version": "repo-lines-v1:sha256:4c9ae15349cbb71833b2a9929c8fb43cdfc834599763efe94dd41949bce66a70:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU4NjJlNjI4MjAyOTdkZmEyZTUyNTNjZGQ2NDBmOTZjZjliMWQxZjhlYzViMzVkNGQyZmNmOGFhMWM4NWEyYTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU1ODQ1YTk3MTYzZjNmZTY2NjE2NDcyMGUxMDc2ODdhYjI4MDUzNjQ5ZThmMWE0NmVkMGM1ZTA4MGUxYzc3YmQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/WsugcNormalOrderPaySuccessDispatchListenerRegistrationConfig.java#L25-L49",
+          "version": "repo-lines-v1:sha256:c04612bfe97ca2f5d357d7c16a233eb63a46e46d12faec59a777c23aa886c76d:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU4NjJlNjI4MjAyOTdkZmEyZTUyNTNjZGQ2NDBmOTZjZjliMWQxZjhlYzViMzVkNGQyZmNmOGFhMWM4NWEyYTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVlODBiYjMxMTUzODE1MzhjNzdmOWNiOTY5NDE2ZDEwZTIwMGZkYjU1MjY5NWIwYjZmNzU0NTZhMThjMDA1MzciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/dispatch/NormalOrderAddEventAsyncFanOutSupplierAndYoushuDispatchFlowTest.java#L23-L84",
+          "version": "repo-lines-v1:sha256:79bd218b584071e94c02eb5f19dc0ae8642ac7fcf1d4d43d6a211f1a650c3d00:eyJzZWxlY3RlZExpbmVDb3VudCI6NjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE2MGE2ZDFjMzlkNTY3MmU1MDU1OTcxYWFiMzhjOTFiMTg0ODY2NjlkYzUzNzEwOTUxMDk5NDAwNzBlMDQ4NGYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ0NDUyYmZlMGY3NjQxMzEwYmEwMjIzMDYwZGRhMjNjOWVkNjM4NTgwNTFjOTIyMWI1Y2E0Y2M0MDg3YWNlZTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_e2a3bcd2ffc64282bc2a58c3b4deab48",
+      "statement": "The BsPay withdraw plane is a complete publish-register-consume job pipeline: WithdrawJobDispatchPublisherImpl publishes BsPayBundleDispatchJobNames.WITHDRAW_JOB (job:93:BsPayBundle\\Jobs\\WithdrawJob) ASYNC/REDIS on the default queue with payload apply_id+company_id; WithdrawController enqueues it only when an auditWithdraw call returns action=approve; WithdrawJobRegistrationConfig registers WithdrawJobHandler, which rejects non-Number apply_id/company_id with BadRequestException and calls WithdrawApplyService.executeHuifuWithdraw; WithdrawJobDispatchFlowTest pins the enqueue tuple and the handler invocation.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/WithdrawJobDispatchPublisherImpl.java#L30-L53",
+          "version": "repo-lines-v1:sha256:5b8d5f9f2e2bc941afbc0a57483e1bccfba1db7c33861002167bf2922a13113a:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjExNjQ4OTBlYTIxMDQ4YWIzYjFkYzkwMGI3NDFkZWM0NTc0NDI2ZTQwMTliMzlhMDYzMTkyY2ExNDI2ZDBhNWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcyY2Q2OWIyM2NmNzU4MDE3NjVjNDIyMDViN2VlNjgzMzIwOWI1OWMyMjhmNGU3NTNhMjU4OGUyNzA2N2RkMTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/WithdrawJobRegistrationConfig.java#L23-L39",
+          "version": "repo-lines-v1:sha256:f469e420c2553782493714e33165cc08c84aab2300e08bb17f50a9d5bbf38930:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4YWM0NzA4NGVlYTk1YjU4M2VkNWJkZjk1NDM1ZWM4YzJiMzU2YTE4MGMyZDA1NmQ5ZjJmMzU3ZTA3NzA3ZWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRkNWNkMDczNWFlMWJlMjI4NTZmZmY3YWNkMWJiZDRmZjI3NTM4YTY3MTRiN2YxYWM0MjdhZTA1NTY1ZGJmNjEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/dispatch/WithdrawJobDispatchFlowTest.java#L23-L76",
+          "version": "repo-lines-v1:sha256:d1f89576c6c1da2edaf8bd1d6a315a206c8c52f7888fe1bb6268948b4334ba89:eyJzZWxlY3RlZExpbmVDb3VudCI6NTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE1MzZjODMwYmY2NTJlZGE3YzZlMjVmNDY2M2FiN2JhMDg5MmRlNjI4MGE4NDc1ZjZlMDZhOTVhNzg5YmRmNzciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA5MDQ5YmNlYzE1M2I4ZWI4MjAyZDk4YTQyZmIwYjNlMDk4ODBhYTc4ZDFmZTM1MjRkMzAyMDIzOWVlYWM1OTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE5OTVmYTM3ZDUwZjk5YjYxYWYzNDZlNmJhZDljZDZmMmQ5ODliNDczNzQ1YmEwZjEwMDc3NjFmNmYwYzUzZjYifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bspay/src/main/java/cn/shopex/ecshopx/bspay/api/admin/v1/WithdrawController.java#L382-L392",
+          "version": "repo-lines-v1:sha256:ef04f9bd96b2d8ecdfc6dcb937ce93b34811199cdb8adb2a8412ff14532dda59:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU3ZWU1MjUxZDQ4YWRkZTk2MWNlN2JkZWY0MmI3ZmE3NTkyZTczYTAzMmZlOTA4MThhZGU5ZDY2N2JkMjc5MDkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhN2UxOGQzMDA3MjYwODY1NmUwODc2YjY4YTE3ODVmN2RiOWJlYTg2MWQ1MjI1MGIwNjQ0MWRhZTk2OGZhZTciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc3NzVhMjA5NjY2MDllOGU1YjA4MmI0NzA1ZjVkZGNmY2EwODk0YTI3OTFlNmNlNGIzZmZmOThlM2VmNmRhOTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJlMGJiNWYzMzM1NmE5NWMxZWU2ZTllMTAwOTQxZTcwZTY0YjI2MmI0ZDk4YTFjNWQ3Njg4ZjUyMGVhY2M1NDkifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bspay/src/main/java/cn/shopex/ecshopx/bspay/dispatch/WithdrawJobHandler.java#L24-L47",
+          "version": "repo-lines-v1:sha256:b5a88e359d701b3ff81d944709ef451bb2dd1c1a79645e94eaf4fdfd172b70b1:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZkZGZhMzQxNzg1MWE0NTcwNjE3MmFjNjNkYzJmZmM3MDU0NTRmZWJiNmFlMGIxZDgwMmI3OWUxOGUyMGEwYjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_49a38737401a43d0b5b6d5d477bc4656",
+      "statement": "The DigiOS aftersales-return adjustment is an ASYNC event plane: DigiOsAftersalesReturnAdjustmentDispatchPublisherImpl publishes DigiOsDispatchEventNames.EVENT_AFTERSALES_RETURN_ADJUSTMENT (event:digios:aftersales_return_adjustment) ASYNC/REDIS with a null queue and silently returns without publishing when companyId or aftersalesBn is below 1; ecshopx-aftersales' AftersalesRefundAsyncPortImpl.scheduleDigiOsStoreAdjustmentOnAftersalesReturn is the caller; NoopDigiOsAftersalesReturnAdjustmentDispatchPublisher in ecshopx-common/cron/mock satisfies the dependency in wiring contexts without the bus; and DigiOsAftersalesReturnAdjustmentDispatchListenerRegistrationConfig (@Order(81)) registers the single listener digios.store_adjustment_on_aftersales_return with async(default, null).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/integration/AftersalesRefundAsyncPortImpl.java#L115-L119",
+          "version": "repo-lines-v1:sha256:9cfa969cf0e00025f7e9e37c1155a353ec8c2b6448fce0a59a2e010368075b8f:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYmJjNjkyNjliNTJlMjUyZGYwOTc5ZTIwZmFjYWIzODZkYTY1ZDFlNjQ5MDlkZjU2MDRlYTIwMTA1NTY1MzI2YSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/DigiOsAftersalesReturnAdjustmentDispatchListenerRegistrationConfig.java#L22-L48",
+          "version": "repo-lines-v1:sha256:0d898f03a6c6c2b6816e686f2b8eb969ece89762bd408201926a3338d4f47c61:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYyOTUxM2I0NTM4YTA2MGM0ZjU4ZWFkZjEzNWUxZmFlMzY4MjI2OTViZTNiNzE2MDgyOTlhZDFjYjhlNTM0MGEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI3MjFiZjI1NzY4OTY0ZDdkYmE5MDMyMWM3MTJlZmIyOWRhZWNmMjM5NjVjNmY3OGExNjhlNTA4MTE4NTBhZTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/DigiOsAftersalesReturnAdjustmentDispatchPublisherImpl.java#L31-L53",
+          "version": "repo-lines-v1:sha256:8cf64ab4cf7c92b382710aa9118087e4b50a591cfaa864ad7a6083cde025427f:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIwZDAwMDg3YWI4MDhiNWFiMjEzNjQ2NGFiNmE5MmRlN2U0ZGRkMGZiYzczNGM4YWUzZmFhYjJlZDgwYWU5ZmMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcyY2Q2OWIyM2NmNzU4MDE3NjVjNDIyMDViN2VlNjgzMzIwOWI1OWMyMjhmNGU3NTNhMjU4OGUyNzA2N2RkMTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/cron/mock/NoopDigiOsAftersalesReturnAdjustmentDispatchPublisher.java#L19-L25",
+          "version": "repo-lines-v1:sha256:873bdd50025251b0c7ac0ceaf511e0e480f6e970fdeec15964643acfe5c093f4:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTE2NjhlMWQ5MDgyNTEwMTdjM2M5ZTllMmNjODlhMjM1MDViNWE4ZGZkNmEzODEzY2MwZjdkZDMzNWI1MThmOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDljMjEzOWYzODFjOTNhMzk5OTQ0MGY5NzM5MWRkY2NmN2MzOGQxMTVjNzg0M2YyYTZjMGI0ODhkZWRlNjdiZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/DigiOsDispatchEventNames.java#L17-L25",
+          "version": "repo-lines-v1:sha256:38dfe8da27228ebaa60a718804169007e20e7ca81117412d10c81c02497deb36:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTY4YzhiM2YxODk4NTE2NGQ4YzcwYTg3MThkYWZmMzdkODY4NDliMTQ1NDQ0YTAzZDU4NzA4MzVmM2Q5ZTU1NiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOGI2MWRjMDk5ODFlYzZjMTkyMzZmYTAzMTM3YjAzMjNhOGY5MjRmZTE5NGViZDA0NDA4MGFiMzAwMWQzYzY3NyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjk2YTA5MzE1YzVhMDU1NGQwMjU4ZjE1NzljOWE3MDJhZTZlNWVmNDUxZTUxNGRiY2NiMWRkZTFkNGUxNzE5MiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiN2IyYWYxYTk2ZmM0NWVlNTdkMjBhOWU4ZTk1N2JiNmU2YzliYjc0NzNlYWFlYzE1YmUzYThhNTZhZDUxNmU1MSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_78dede93d44a4178bcb3e795f605a740",
+      "statement": "The shuyun.open_platform.* listeners registered on the normal-order pay-success, delivery, confirm-receipt and cancel events are guarded delegates: each skips payloads lacking company_id/order_id (the pay-success offline-benefit listener also skips user_id == 0 or non-positive total_fee) before delegating to TradeSyncDispatchService / OfflineBenefitConsumePushService, the latter pushing result.push.v2 USED on pay-success and NOT_USED on cancel; the DigiOS store-adjustment listener on EVENT_NORMAL_ORDER_DELIVERY (registered @Order(80) on the default queue) hands company_id and order_id to DigiOsStoreAdjustmentSyncDispatchService.dispatchOnDelivery.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/DigiOsNormalOrderDeliveryAdjustmentDispatchListenerRegistrationConfig.java#L23-L49",
+          "version": "repo-lines-v1:sha256:8cd710697ee8233005534f5e770f72c0fd3ecb5b108902a09c751a656a3ed42a:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdlNDAxOWFmN2UwYTE1MjU5ODllMWFjMzEzMTJmN2I0N2Q5Yjk0MGRlNjc1ZDUzMjgxZTBiNDQ0ZTA0YmQzY2QiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVjZjcyYTUzNDAzYTU0YjEyN2FlYjUwNGY0YjZkOGU5NzUxMjU3NzFjMTY5MWI4NGM1ZWEyNjFmODViYTQ4ZmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ShuyunOpenPlatformNormalOrderDeliveryDispatchListenerRegistrationConfig.java#L36-L46",
+          "version": "repo-lines-v1:sha256:bf6f2ab9ce3c588a1d6aad833320d6d0b84b3ae9dde77144eac375eab62249c1:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhkMGFkOTUwN2FiYjVjOTU3ZmI1ZjdiOTI3MmEzOWY1ZGYwYWRlYzcwNTcxY2NlNTBmZDkxNzBlNGJlMTdhZWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/dispatch/NormalOrderDeliveryDigiOsStoreAdjustmentDispatchListener.java#L34-L42",
+          "version": "repo-lines-v1:sha256:22c9c99c97dfd0b6fc56b2a82f0086cb125f35b7aec9533da33d3517034f400f:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjA4Y2MxNWQwNzU0YjZmMjFmNzFlMGIwM2I5ZGQ3ODZiYzk4ODAwM2IyYjU3NTY0YzYwNTBhODAyMjUxN2M1ZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDAwYTcxMzRlYzdkNDI5ZGU2NDIyNmE4MjA4OWEyNWIxZWVhMWI2ZjcyYTc1MDhmM2Y2NWM1ZmUxNzI2NDljYyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNTVkMzhlMzc5MTVkMDgxNmQzMGEzYjZhZGQzZjliYThjZjM3YTVjZTU1ZmMyOWQzZGZmMmM2ZTliMGI3MmM0NCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzJhMTcyZmM3MjIyY2E5OTU2MjBlZDI1MTJmMDkxMmExN2IyODY2YzcwZjg4NTAyMTVlZDEyMjI5NWY3ZGQ3YyJ9"
+        },
+        {
+          "resource": "repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/dispatch/NormalOrderPaySuccessShuyunOfflineBenefitConsumeDispatchListener.java#L35-L50",
+          "version": "repo-lines-v1:sha256:c43bc7a402bdfd5024e3909c04f4f61ac6a2e1e1199b9b34ddcfb4dcdcba3b08:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwOGNjMTVkMDc1NGI2ZjIxZjcxZTBiMDNiOWRkNzg2YmM5ODgwMDNiMmI1NzU2NGM2MDUwYTgwMjI1MTdjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYyM2YyODBkNGExYjhkMGIzOGE3NjI0ODA0YmFlNWIzM2RiYzBhMTk0YTViOWQ4N2RkOTRkZWQzZjUzMmM3OWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJkNjNiNzIzN2I3ZDhjZGI5NGFmODAzMDU0NzE3OTQyNjIyZDYxMzI3OTJhNGFhMmQ0ODk2YjQxYzZlNmU3ZmUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/dispatch/NormalOrderPaySuccessShuyunTradeSyncDispatchListener.java#L33-L42",
+          "version": "repo-lines-v1:sha256:8ae2c1696cd67bf6a06e026b1e2a78f70241adeb04bd44a2de6b07f04db8d028:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFkYmM5MjllYmExYWVkZGI2NDY3Y2Y4ODZiNTRlYTIyZGVkMDVlY2JhZWIwN2Q2ZWNiMjg4YTNkNDdlMDJhYzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImEyOThhMzAzZjliZjk5NmY0NDAwZDZhZGJhZGI5ZDgzNDg1Mjg5MjY0MDUyMWE1ODcwN2EzOTY3OTA4ZTkzOTMifQ"
+        },
+        {
+          "resource": "repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/service/openplatform/OfflineBenefitConsumePushService.java#L39-L39",
+          "version": "repo-lines-v1:sha256:c2b9ee84d73c89698c2a0ea742057ecb86f7199fbcdd37d551130a3117baee18:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzJiOWVlODRkNzNjODk2OThjMmEwZWE3NDIwNTdlY2I4NmY3MTk5ZmJjZGQzN2Q1NTExMzBhMzExN2JhZWUxOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYzJiOWVlODRkNzNjODk2OThjMmEwZWE3NDIwNTdlY2I4NmY3MTk5ZmJjZGQzN2Q1NTExMzBhMzExN2JhZWUxOCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiN2QzNzA3YTk0MGEyMmY5YzdjODViZmFjYTQ1YmNhMTE3MTYzNzZlZmRjMDgyMzc1ODlmMTA1NzdjZWUwOGQxNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTgyMjY5OWYzOWZhZjMxOTUyMWQ2NjhkYmUyMzI5OWFhMGZhNmRmODkxZTdmYjA4NjI3OGYwZmRhOTA0YjZhZCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_c2b3ac23c9ae4f48b880aaa8ccecde01",
+      "statement": "PosStoreAccountCreateEventDispatchPublisherImpl publishes CompanysDispatchEventNames.EVENT_POS_STORE_ACCOUNT_CREATE (event:companys:pos_store_account_create) with DispatchOptions.eventDefaults() — SYNC, in-process and in-transaction — on behalf of PosStoreAccountWriteService and PosStoreAccountImportService in ecshopx-companys; although the constants file already names listener:digios.account_sync_on_pos_store_account_create, no bootstrap registration config registers a listener for the event yet, so it is currently published with zero subscribers.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/PosStoreAccountCreateEventDispatchPublisherImpl.java#L28-L44",
+          "version": "repo-lines-v1:sha256:5df2c1730eb131fe64b3a59f8df46b20346b59ef52fbb8b20148e4eeaf44dc40:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU1ZTIzODI3ZmFmMjgwZTViMzVlMmNjZDg5ZTNlNjI2YzhiZTlkMWJiYzBlMDI4YWFhZjk3MDVjMTk5NGI2ZGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcyY2Q2OWIyM2NmNzU4MDE3NjVjNDIyMDViN2VlNjgzMzIwOWI1OWMyMjhmNGU3NTNhMjU4OGUyNzA2N2RkMTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQxMGIzNmFhNzRhNTliY2Y0YTg4MTg1ODM3ZjY1OGFmYWYzNjQ2ZWZmMmJiMTZjMzkyOGQwZTkzMzVlOTQ1ZDIifQ"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/CompanysDispatchEventNames.java#L29-L33",
+          "version": "repo-lines-v1:sha256:f8311ad1c8b51caf05e073f9039912d575ce7d58fc9197e6ca4352fe3b9d4297:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOTU2MzkxYWY3YmM3N2IyMTgzNDljYWM3ZmIwNjQzYWZhZjVlNTg1OWU3YjU3NzE3ZDc0MWIyZmJlNmRlNjEwNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYWFhNjlkMGFhNGIzYzQ4ZGJmYTcwMWJlZTU0YjZhNjk2NzMyODhmOWY2ZjJiZjJlZGYzYzc0MGY3ZmY4NmIxNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzNmMmY0ZTEwOWE3MDcyMzdhMDBmYzcwNTkzODhiNGRhNmUyMGQ4MzQxMzQ1N2Q5YjdlNjkwYjJkYmUzMGQ5YSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTk2MzU1MmRlMTc1MWNlMDQxNmYxZDMxYTg3NWM2ODE0MmRhMTgzN2E3OTlhMjNmZTJkOWQ5Njc1YzdmOTI5OCJ9"
+        },
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/posaccount/PosStoreAccountWriteService.java#L42-L50",
+          "version": "repo-lines-v1:sha256:62ef4c13b780448845be961c11455b33d6a333a4122e67db309a1f554d53b7bc:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTkxMzBjYjFlMDUyN2ViMjM5ZTUzZjdlMjE5OGI0MzdmNmFlNzdmZmNiYzdmMjgyM2RkNWQ5ODg0NGRkMDlkMiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDEzMjk4ODEyYTIxZTZjZWRhOGZjMTQwNjg0YzY2MDY5ZTdlM2NkNmJlNmJiM2YxNjJmODBmNDYzZTgxN2VlMiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDViYjhiMzUzOGFjZGI5MjdiMGI3YWZhOTAzYmZlNzFjMWNiZDFmNjVjOTVjZDJjOTdmZTAxYjc5MmQ2ODk3NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMjdiNDAzYTdmM2I4Y2Y3MTZmMzk3NDFkZDVhZDQ3YWYyZTc2OTRlOTMzMWI5MjQwMmYzNzM3MmYzNjFkN2M5MyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_5b6fcfa19825473bbccfa234fad8118e",
+      "statement": "PosStoreAccountExportDispatchPublisherImpl dispatches EspierDispatchJobNames.EXPORT_FILE_JOB (job:10:EspierBundle\\Jobs\\ExportFileJob) ASYNC/REDIS onto the slow queue; EspierDispatchJobNames exposes the single PHP ExportFileJob class under roughly twenty distinct CSV ids, and EspierExportFileJobRegistrationConfig registers every one of them against the same EspierExportFileJobDispatchHandler; the publisher interface is defined inside ecshopx-companys' own service/posaccount package rather than in ecshopx-common.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/EspierExportFileJobRegistrationConfig.java#L39-L84",
+          "version": "repo-lines-v1:sha256:e73ffe64c535f63824fef0afbd2a08a57d436f81df184307e551372027abec67:eyJzZWxlY3RlZExpbmVDb3VudCI6NDYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJmYmI5ZGM5ZjZkZDg5ODI2NGU4NDE1NWI0OTgyNjU1ODViZWViNWNmOGZiNjJlZTkzMjA4YTVlMTU5MjE2MzciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/PosStoreAccountExportDispatchPublisherImpl.java#L28-L46",
+          "version": "repo-lines-v1:sha256:1c7b780df89bc927399e52f113b5dbca3207fac2199c164c62b53642d2dfe3a4:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIyNDY2ZTQ5NDhiMjI3YTJhNDJjNzA4NWQ2MDFlNGZmYzk4NGU3Yjk3ZjhiMjUwYWEyMWFhYjFkNTJhNmVlNzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/EspierDispatchJobNames.java#L21-L67",
+          "version": "repo-lines-v1:sha256:9d40138be6632df021175517f025949d9bc2a64d236b3be6b1622ab1484b0433:eyJzZWxlY3RlZExpbmVDb3VudCI6NDcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk3N2I5MWRlMjA1NTRhOWE0NzIzZWVkNTNkZjA4NGY0NTNmMmNmZTIwOGVhNDdmNTUyNDI0MTA0Njk2Mjk2NTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjllYjkwY2YyZGQ0YWUxN2JkMmUxNGRjNjAyODVlNDM2NjMwZDg3YmQ5Y2U5ODkxYWRlODVhOWUzZmVlZDE3YzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk2OTMwMDYwNzE3MzlhMjBiZTAwY2NlZmRmODBlNTZjYjZiZDk4NmQ0MjA5YzllOThmNzJjZTM0NzExNDFiZTYifQ"
+        },
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/posaccount/PosStoreAccountExportDispatchPublisher.java",
+          "version": "repo-file-v1:sha256:7cfc7899c39783e0b8497ee37cdf09dea71478dfcb39a036ce8bcc5861b9da8d"
+        }
+      ]
+    },
+    {
+      "id": "claim_bc7e132efc1d4055aea5303b5c412019",
+      "statement": "The four MerchantDispatchJobNames notice jobs (job:1..4 MerchantBundle MerchantAuditSuccessNotice / MerchantAuditFailNotice / MerchantEnterSuccessNotice / MerchantResetPasswordNotice) are published ASYNC/REDIS onto the sms queue with company_id + mobile (+ password where applicable) payloads, and their handlers in ecshopx-promotions/dispatch call CompanySceneSmsSendPort.sendSceneTemplatedSms with the matching scene key while deliberately catching RuntimeException, logging the masked mobile tail, and returning normally — a failing notice is acked, never retried and never recorded as a failed job.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MerchantEnterSuccessNoticeDispatchPublisherImpl.java#L36-L49",
+          "version": "repo-lines-v1:sha256:98b39ea69cfb2bdb218554596629da04e7c0d7329f50e23ed374f3570bba6b18:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFjNzE2ODFkYTAwYjM0MmMyOTM2NjhkOTJmYmUzZjY2MjE2ZDM4NzY4Y2JhMjExMjQzNjMxMDBjM2NhMDFkMDYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/dispatch/MerchantAuditSuccessNoticeJobDispatchFlowTest.java#L26-L105",
+          "version": "repo-lines-v1:sha256:92e6cd9f8db6c79ae4df082bd384bd7ab7e6200696d7e6e00a473fe6fd071ea9:eyJzZWxlY3RlZExpbmVDb3VudCI6ODAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEwMzJhZmE4ODg2MzgwNjJkZTI2ZTY2NjZjNDczNDAwOGQ0MDcwZGRmNzY0NDFmOTEzYjBhNTNiYjJlOGJkNTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY1YzJjODcwZjkzOTQwMzFkMzg4NGI5NjVlMTQzMWQzZDhiMzdmNDlkMDIzNzVlMGVkMGIxODAxZjk2OTZhNGYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/MerchantDispatchJobNames.java#L17-L32",
+          "version": "repo-lines-v1:sha256:cb2dadafacc1bf06de7bcb0f42115d902f0ce449bf50510559cda0a0c1bbd0c1:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU2OGM4YjNmMTg5ODUxNjRkOGM3MGE4NzE4ZGFmZjM3ZDg2ODQ5YjE0NTQ0NGEwM2Q1ODcwODM1ZjNkOWU1NTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY5NmEwOTMxNWM1YTA1NTRkMDI1OGYxNTc5YzlhNzAyYWU2ZTVlZjQ1MWU1MTRkYmNjYjFkZGUxZDRlMTcxOTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg2YjdhNDUxYTc4Y2U2MTdmYjFmMTcwOGEwYWNmNzdiMTBkZDk4MDg0Y2U4NzA4NTE4MzZkYzEwNTgyYWVmMmUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/dispatch/MerchantAuditSuccessNoticeJobHandler.java#L37-L53",
+          "version": "repo-lines-v1:sha256:599a10f55eaa7871cb7364926d4ca20bac5facec8e23f0d1f6daa8f88be237de:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM2YmYxOThhZTNhMWQ2N2FiNzc5MTFkNTAyYWEwNWE3MThiOTE1N2I1YmI5NWYxMzNlNGVmYWI0Y2Q5MjhiN2EiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM3OTAyMjdkYzM4YmUzODFmMTEwYjQ4M2MyY2M0Y2UzOGU3NmYyMzVlMGVkODFmMGI2NWE4OWUwN2NhM2VmZmQifQ"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/dispatch/MerchantResetPasswordNoticeJobHandler.java#L36-L48",
+          "version": "repo-lines-v1:sha256:a789cfa0791d381b3e6723e569dbfc080c4d27e15ecc90ebde2bb8835b884bdb:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFlY2ZiOTQwNTRlNDY5NDgyNmFiNjFlY2MxN2Q4MWQzNTViMDA1NmRiNjA3MWY2NDY0M2VhNDFlMTg3ZWI0MzEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ0NTIxYTAwYTU3NmI2MWZhZDUwYmE4ZTZhNDdlMDFlYTNjNzg0OWI1YzZhNTExNTEzZDgyYWJmYzE5MGUwODkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRhZTBjYzM1YjEwMDU3NDE0N2RkNDcwMTdkODUyZmNkNWNlMDQxY2M2NGE0ZTNiYmJhZDZhZWE1NDc1MzNiMDYifQ"
+        }
+      ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.7.2",
-    "at": "2026-10-21T12:26:22.580Z"
+    "by": "openwiki/0.9.0",
+    "at": "2026-11-05T17:10:02.238Z"
   }
 }

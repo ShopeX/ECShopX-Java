@@ -18,6 +18,7 @@ package cn.shopex.ecshopx.merchant.service;
 
 import cn.shopex.ecshopx.common.crypto.SensitiveFieldEncryptor;
 import cn.shopex.ecshopx.common.exception.ResourceException;
+import cn.shopex.ecshopx.common.goods.port.MerchantSettlementMainCategoryPort;
 import cn.shopex.ecshopx.merchant.domain.MerchantSettlementApply;
 import cn.shopex.ecshopx.merchant.mapper.MerchantSettlementApplyMapper;
 import java.util.LinkedHashMap;
@@ -28,20 +29,19 @@ import org.springframework.stereotype.Service;
 @Service
 public class MerchantSettlementApplyDetailQueryService {
 
-	private static final List<String> DECRYPT_KEYS =
-			List.of("legal_cert_id", "legal_mobile", "card_id_mask", "bank_mobile");
+	private static final List<String> DECRYPT_KEYS = List.of("legal_cert_id", "card_id_mask", "bank_mobile");
 
 	private final MerchantSettlementApplyMapper merchantSettlementApplyMapper;
 	private final SensitiveFieldEncryptor sensitiveFieldEncryptor;
-	private final MerchantTypeNameQueryService merchantTypeNameQueryService;
+	private final MerchantSettlementMainCategoryPort mainCategoryPort;
 
 	public MerchantSettlementApplyDetailQueryService(
 			MerchantSettlementApplyMapper merchantSettlementApplyMapper,
 			SensitiveFieldEncryptor sensitiveFieldEncryptor,
-			MerchantTypeNameQueryService merchantTypeNameQueryService) {
+			MerchantSettlementMainCategoryPort mainCategoryPort) {
 		this.merchantSettlementApplyMapper = merchantSettlementApplyMapper;
 		this.sensitiveFieldEncryptor = sensitiveFieldEncryptor;
-		this.merchantTypeNameQueryService = merchantTypeNameQueryService;
+		this.mainCategoryPort = mainCategoryPort;
 	}
 
 	public Map<String, Object> getDetail(long applyId, String acceptLanguageHeader) {
@@ -57,10 +57,7 @@ public class MerchantSettlementApplyDetailQueryService {
 			}
 		}
 		long companyId = entity.getCompanyId();
-		long merchantTypeId = entity.getMerchantTypeId();
-		Map<String, Object> typeName =
-				merchantTypeNameQueryService.getTypeNameById(companyId, merchantTypeId, acceptLanguageHeader);
-		row.putAll(typeName);
+		mainCategoryPort.enrichDetailCategoryFields(companyId, entity.getMainCategorySelection(), row);
 		return row;
 	}
 
@@ -69,19 +66,15 @@ public class MerchantSettlementApplyDetailQueryService {
 		row.put("id", m.getId());
 		row.put("company_id", m.getCompanyId());
 		row.put("mobile", m.getMobile());
+		row.put("contact_mobile", m.getMobile());
+		row.put("contact_name", m.getContactName());
 		row.put("is_agree_agreement", m.isAgreeAgreement());
-		row.put("merchant_type_id", m.getMerchantTypeId());
 		row.put("settled_type", m.getSettledType());
 		row.put("merchant_name", m.getMerchantName());
 		row.put("social_credit_code_id", m.getSocialCreditCodeId());
-		row.put("province", m.getProvince());
-		row.put("city", m.getCity());
-		row.put("area", m.getArea());
-		row.put("regions_id", m.getRegionsId());
-		row.put("address", m.getAddress());
-		row.put("legal_name", m.getLegalName());
+		row.put("license_registered_address", m.getLicenseRegisteredAddress());
+		row.put("license_legal_representative", m.getLicenseLegalRepresentative());
 		row.put("legal_cert_id", m.getLegalCertId());
-		row.put("legal_mobile", m.getLegalMobile());
 		row.put("bank_acct_type", m.getBankAcctType());
 		row.put("card_id_mask", m.getCardIdMask());
 		row.put("bank_name", m.getBankName());

@@ -161,8 +161,11 @@ public class AftersalesController {
 		return ApiResult.ok(aftersalesAdminListService.getAftersalesList(q, request));
 	}
 
+	/** 管理端售后列表 pageSize 上限（与前端分页选项 100 对齐）。 */
+	static final int ADMIN_LIST_MAX_PAGE_SIZE = 100;
+
 	/** @return 错误文案；null 表示通过 */
-	private static String validateAdminListPagination(String pageRaw, String pageSizeRaw) {
+	static String validateAdminListPagination(String pageRaw, String pageSizeRaw) {
 		List<String> errs = new ArrayList<>();
 		if (pageRaw == null || pageRaw.isBlank()) {
 			errs.add("page 字段必填");
@@ -183,8 +186,8 @@ public class AftersalesController {
 				int ps = Integer.parseInt(pageSizeRaw.trim());
 				if (ps < 1) {
 					errs.add("pageSize 必须至少为 1");
-				} else if (ps > 50) {
-					errs.add("pageSize 不能超过 50");
+				} else if (ps > ADMIN_LIST_MAX_PAGE_SIZE) {
+					errs.add("pageSize 不能超过 " + ADMIN_LIST_MAX_PAGE_SIZE);
 				}
 			} catch (NumberFormatException e) {
 				errs.add("pageSize 必须是整数");
@@ -234,7 +237,7 @@ public class AftersalesController {
 		}
 		String bn = aftersalesBn.trim();
 		long companyId = readCompanyIdFromJwt(request);
-		return ApiResult.ok(aftersalesAdminDetailService.getAftersalesDetail(companyId, bn));
+		return ApiResult.ok(aftersalesAdminDetailService.getAftersalesDetail(companyId, bn, request));
 	}
 
 	/**

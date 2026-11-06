@@ -19,14 +19,9 @@ package cn.shopex.ecshopx.employeepurchase.service;
 import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.employeepurchase.mapper.EmployeeFrontCheckQueryMapper;
 import cn.shopex.ecshopx.employeepurchase.mapper.dto.EmployeeEmailVcodeEnterpriseRow;
-import jakarta.mail.MessagingException;
+import java.util.Locale;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Pattern;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.mail.MailException;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -40,19 +35,21 @@ public class EmployeeEmailVcodeSendService {
 			"^([a-z0-9]*[-_.]?[a-z0-9]+)*@([a-z0-9]*[-_]?[a-z0-9]+)+\\.[a-z]{2,3}(\\.[a-z]{2})?$",
 			Pattern.CASE_INSENSITIVE);
 
-	private static final Logger log = LoggerFactory.getLogger(EmployeeEmailVcodeSendService.class);
-
 	private final EmployeeFrontCheckQueryMapper employeeFrontCheckQueryMapper;
 	private final EmployeePurchaseEmailVcodeRedisService emailVcodeRedisService;
+	private final EmployeeEmailVcodeMailGateway mailGateway;
 
 	public EmployeeEmailVcodeSendService(
 			EmployeeFrontCheckQueryMapper employeeFrontCheckQueryMapper,
-			EmployeePurchaseEmailVcodeRedisService emailVcodeRedisService) {
+			EmployeePurchaseEmailVcodeRedisService emailVcodeRedisService,
+			EmployeeEmailVcodeMailGateway mailGateway) {
 		this.employeeFrontCheckQueryMapper = employeeFrontCheckQueryMapper;
 		this.emailVcodeRedisService = emailVcodeRedisService;
+		this.mailGateway = mailGateway;
 	}
 
-	public boolean sendEmailVcode(long companyId, String email, int distributorId, long enterpriseId) {
+	public boolean sendEmailVcode(
+			long companyId, String email, int distributorId, long enterpriseId, String clientIp) {
 		String trimmedEmail = email == null ? "" : email.trim();
 		if (!StringUtils.hasText(trimmedEmail)) {
 			throw new ResourceException("收件邮箱格式不正确");
@@ -96,13 +93,26 @@ public class EmployeeEmailVcodeSendService {
 			throw new ResourceException("企业发件箱配置错误");
 		}
 
-		int port;
 		try {
-			port = Integer.parseInt(smtpPort.trim());
+			Integer.parseInt(smtpPort.trim());
 		} catch (NumberFormatException e) {
 			throw new ResourceException("企业发件箱配置错误");
 		}
 
+		String limitEmail = trimmedEmail.toLowerCase(Locale.ROOT);
+		if (emailVcodeRedisService.hasSendCooldown(companyId, limitEmail)) {
+			throw new ResourceException("发送过于频繁，请稍后再试");
+		}
+		if (emailVcodeRedisService.nextDailyEmailSendCount(companyId, limitEmail) > 5) {
+			throw new ResourceException("该邮箱今日发送次数已达上限");
+		}
+		String limitIp = clientIp == null ? "" : clientIp.trim();
+		if (StringUtils.hasText(limitIp)
+				&& emailVcodeRedisService.nextDailyIpSendCount(companyId, limitIp) > 200) {
+			throw new ResourceException("请求过于频繁，请稍后再试");
+		}
+
+		emailVcodeRedisService.rememberSendCooldown(companyId, limitEmail);
 		String vcode = String.format("%06d", ThreadLocalRandom.current().nextInt(100000, 1000000));
 		emailVcodeRedisService.storeVcodeWithTtl(trimmedEmail, vcode, 1800L);
 
@@ -110,39 +120,6 @@ public class EmployeeEmailVcodeSendService {
 				"<p>尊敬的用户:</p>\n<p style=\"text-indent: 2em;\">您的验证码是:"
 						+ vcode
 						+ "位数字，30分钟内有效，请尽快完成验证。</p>\n";
-
-		try {
-			JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-			mailSender.setHost(relayHost.trim().replaceFirst("(?i)^(ssl|smtps|smtp)://", ""));
-			mailSender.setPort(port);
-			mailSender.setUsername(emailUser.trim());
-			mailSender.setPassword(emailPassword);
-			mailSender.getJavaMailProperties().put("mail.smtp.auth", "true");
-			mailSender.getJavaMailProperties().put("mail.smtp.connectiontimeout", "30000");
-			mailSender.getJavaMailProperties().put("mail.smtp.timeout", "30000");
-			if (port == 465) {
-				mailSender.getJavaMailProperties().put("mail.smtp.ssl.enable", "true");
-			} else if (port == 587) {
-				mailSender.getJavaMailProperties().put("mail.smtp.starttls.enable", "true");
-				mailSender.getJavaMailProperties().put("mail.smtp.starttls.required", "true");
-			}
-
-			var message = mailSender.createMimeMessage();
-			MimeMessageHelper helper = new MimeMessageHelper(message, false, "UTF-8");
-			helper.setTo(trimmedEmail);
-			helper.setSubject("企业员工验证");
-			helper.setText(body, true);
-			helper.setFrom(emailUser.trim());
-			mailSender.send(message);
-			return true;
-		} catch (MailException | MessagingException e) {
-			log.warn(
-					"sendEmailVcode: SMTP failed for companyId={} emailSuffix={} to={}",
-					companyId,
-					suffix,
-					trimmedEmail,
-					e);
-			return false;
-		}
+		return mailGateway.send(row, trimmedEmail, body);
 	}
 }

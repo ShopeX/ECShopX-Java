@@ -49,6 +49,8 @@ public class ItemsBatchUpdateStoreOrchestrator {
 			if (supplier) {
 				supplierItemsRepository.updateStoreByCompanyAndProductKey(
 						companyId, row.itemId(), row.treatItemIdAsDefaultItemId(), row.store());
+				supplierItemsRepository.updateAuditStatusByCompanyAndProductKey(
+						companyId, row.itemId(), row.treatItemIdAsDefaultItemId(), "processing");
 				List<SupplierItems> supplierRows =
 						supplierItemsRepository.listByCompanyAndProductKey(
 								companyId, row.itemId(), row.treatItemIdAsDefaultItemId());

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:09cddc5cb728fb89a7369b23537dce392a8b0a0659fc6ba7bbddcc734c238ffe",
+  "pageVersion": "sha256:c563cd11baf5f63d8d5bdc327bc3c33aa60dfda98f3f958ac68e9faad548270b",
   "claims": [
     {
       "id": "claim_1f618faf51234a25a7a90fd65c384347",
@@ -468,8 +468,12 @@
     },
     {
       "id": "claim_5708c7515d414d7e8897ad06adee1258",
-      "statement": "ecshopx-bootstrap registers five async digios dispatch listeners on existing domain planes: distributor create event:263 (@Order 79) and update event:264 (@Order 80) for store profile/warehouse sync, operator create (@Order 81) for staff-only account upsert, normal order delivery (@Order 80) for the outbound stock adjustment, and the dedicated event:digios:aftersales_return_adjustment plane (@Order 81, published ASYNC+REDIS by DigiOsAftersalesReturnAdjustmentDispatchPublisherImpl) for refund-goods inbound adjustments.",
+      "statement": "ecshopx-bootstrap registers five async digios dispatch listeners on existing domain planes: distributor create event:263 (@Order 79) and update event:264 (@Order 80) for store profile/warehouse sync, operator create (@Order 81) for staff-only account upsert, normal order delivery (@Order 80) for the outbound stock adjustment, and the dedicated event:digios:aftersales_return_adjustment plane (@Order 81). The aftersales plane is published ASYNC+REDIS by bootstrap's DigiOsAftersalesReturnAdjustmentDispatchPublisherImpl, which AftersalesMerchantSendbackConfirmService (ecshopx-aftersales) invokes after commit when a merchant confirms a REFUND_GOODS send-back; the declared POS-store-account create listener name (`listener:digios.account_sync_on_pos_store_account_create`) is never registered — POS accounts sync through the synchronous PosStoreAccountDigiOsCreatePort gate and, on success, only an unlistened `event:companys:pos_store_account_create` event is published. ecshopx-common also carries NoopDigiOsAftersalesReturnAdjustmentDispatchPublisher in its mock package as a no-op fallback publisher.",
       "evidence": [
+        {
+          "resource": "repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/service/AftersalesMerchantSendbackConfirmService.java#L60-L90",
+          "version": "repo-lines-v1:sha256:b4f411e6aa80074f3df97e9d300eed41152f4f071f8e9f013507c425aefb63c4:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4YzNlYmRjZDk3YzFhMDViYTI0MGIyNTJiNzNlMjk2YWUwMzdkZWU2YmUwMjdjMmZlNzUwZTNjY2Q5YTUwNDIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI1ZDkwNGQzY2Q0OTJjOTZlMzE5NjYyMmM0N2Q3YTRiMzQwMDRiZjY2NmM4Y2NmOGE3NWRiNDNkMjkxYmZmYzEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
         {
           "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/DigiOsAftersalesReturnAdjustmentDispatchPublisherImpl.java",
           "version": "repo-file-v1:sha256:d865e64d829fe3906c048caefbb03398a65aa1f8db2af12f45866d37be68eb1d"
@@ -489,6 +493,18 @@
         {
           "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/DigiOsOperatorCreateDispatchListenerRegistrationConfig.java",
           "version": "repo-file-v1:sha256:3b7d4449444115a1e7e3f1ce98bdcf21662a28646ac1c486473270ecddf6ce52"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/PosStoreAccountCreateEventDispatchPublisherImpl.java#L34-L44",
+          "version": "repo-lines-v1:sha256:53ef582af67db67e37fcbaa334d60d764408eba955b21eb6d3781b62f52cb8ed:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU2YWZmOTdlNWFlYTdhN2JhNWU1NzhmMzVjNWY3YzA3MTVmNDhmN2UzNTVlYTkxYzRlYTY1MTA2MmJmMThmNDgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQxMGIzNmFhNzRhNTliY2Y0YTg4MTg1ODM3ZjY1OGFmYWYzNjQ2ZWZmMmJiMTZjMzkyOGQwZTkzMzVlOTQ1ZDIifQ"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/cron/mock/NoopDigiOsAftersalesReturnAdjustmentDispatchPublisher.java",
+          "version": "repo-file-v1:sha256:b2644744fda049aaa74abdcf7997322a86e41c73c2315ab5978f517e368ecc17"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/CompanysDispatchEventNames.java#L28-L33",
+          "version": "repo-lines-v1:sha256:82fe6ad8165afd664e38c56dfbecd2b1a5f042f8caa74e558daf61d83ebf6f6b:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYWFhNjlkMGFhNGIzYzQ4ZGJmYTcwMWJlZTU0YjZhNjk2NzMyODhmOWY2ZjJiZjJlZGYzYzc0MGY3ZmY4NmIxNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNWE5ZjI4NjQzYjkyZDkxN2M1MjdmODhlYzcxMGU4NzM2ZTFmNjE1N2NiODQxZDRiMDA0NTcwMTZlNTZiNmQ3ZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTk2MzU1MmRlMTc1MWNlMDQxNmYxZDMxYTg3NWM2ODE0MmRhMTgzN2E3OTlhMjNmZTJkOWQ5Njc1YzdmOTI5OCJ9"
         },
         {
           "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/DigiOsDispatchEventNames.java",
@@ -602,7 +618,7 @@
     },
     {
       "id": "claim_0c95fffc8789473b89713e406eb06e3d",
-      "statement": "The Shuyun open platform is also an inbound surface: three callback families (token, loyalty-grade, offline-benefit create/single-send/batch-send) are exposed on dual /api/v1 and /api/v1/third paths, and all of them pass through InboundSignedCallbackPreparer, which resolves the tenant (query/body appId, platCode, or a shadow benefitId lookup), then verifies an MD5 signature keyed by the platform-wide callback-identity-secret over sorted query params plus SY-Request-Time/callBackTime and optionally the raw JSON body (ECX-10841), and finally enforces a Redis replay guard (300 s skew, 600 s TTL); an empty callback-identity-secret rejects every callback.",
+      "statement": "The Shuyun open platform is also an inbound surface: three callback families (token, loyalty-grade, offline-benefit create/single-send/batch-send) are exposed on dual /api/v1 and /api/v1/third paths, and all of them pass through InboundSignedCallbackPreparer, which resolves the tenant (query/body appId, platCode, or a shadow benefitId lookup), then verifies an MD5 signature keyed by the platform-wide callback-identity-secret over sorted query params plus SY-Request-Time/callBackTime and optionally the raw JSON body (ECX-10841), and finally enforces a Redis replay guard (300 s skew, 600 s TTL) whose replays are detected by a SETNX on `shuyun:cb:replay:{sha256(sign|requestTime)}` with the request time accepted as seconds or milliseconds epoch; an empty callback-identity-secret rejects every callback.",
       "evidence": [
         {
           "resource": "repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/api/callback/v1/ShuyunOfflineBenefitCallbackController.java#L38-L60",
@@ -621,6 +637,10 @@
           "version": "repo-file-v1:sha256:a5638fe88678a93e3e4b139288f6db8309c95df5a1baf8a1e090e831127ef624"
         },
         {
+          "resource": "repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/auth/InboundSignedCallbackReplayGuard.java#L40-L80",
+          "version": "repo-lines-v1:sha256:6304d51d01a28fd36b747400564a6165b0f3dd6b3f0e1bfa2d9735c1b1e5b9a4:eyJzZWxlY3RlZExpbmVDb3VudCI6NDEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJlZTFkOTM1NDdlZDQwNGVkZDAwY2EzNDEzMjUxMzkyYWE1MzNjODM0ZTUyODc5NjdjODk2MmNhYWViYWQ3NGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMyMTk5ZDBjMGZlMjVlMTQxMGQ1MzU4NjQ5ODhlYjhiYTA5MGIyNTBiNDAxNjE5NWVlYzYyMjZjY2ZlNDk1YzYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA2ZjJkNTM1ZTdjZGRjYmVlYTIxNTk3OTc0YTEwZWM0YmE3MDY0NzczNzE3ZmY0MGIzODRkNDQ1ZjAzZjkzNmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQyN2I3MjQxMjY3MmVhYzJkMTA0ZTM4MTk4ZjhlNmY0YmIxYzJlZDYxMzFjZjhlN2I1MTc3MjFjZTJhOGM2ZDEifQ"
+        },
+        {
           "resource": "repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/config/ShuyunOpenPlatformProperties.java",
           "version": "repo-file-v1:sha256:ce6d7aa1918a89a1f4d089f84ca8f7793734347b24e2c59b74e5544055e8f91c"
         }
@@ -628,7 +648,7 @@
     }
   ],
   "verification": {
-    "by": "openwiki/0.7.3",
-    "at": "2026-11-04T17:09:55.577Z"
+    "by": "openwiki/0.9.0",
+    "at": "2026-11-05T17:10:02.238Z"
   }
 }

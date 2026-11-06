@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:827603568825c8c187aca65479377761147cf9b05a26c0c005eccfd0b1a534dc",
+  "pageVersion": "sha256:ef2a38a27bf169029b171139bda5220728c31bceb3f2dc53abed02bf9ae18fe1",
   "claims": [
     {
       "id": "claim_f8125c36eada410396ebd177c71a5a4f",
-      "statement": "The repository is a single multi-module Maven reactor: root pom.xml declares parent cn.shopex:ecshopx with version ${revision}=5.4.6 (Java 17) under spring-boot-starter-parent:3.5.12, with 53 modules total — four infrastructure modules (ecshopx-bom, ecshopx-common, ecshopx-dispatch, ecshopx-bootstrap) and 49 business Bundles — each also pinned in dependencyManagement.",
+      "statement": "The repository is a single multi-module Maven reactor: root pom.xml declares parent cn.shopex:ecshopx with version ${revision}=5.4.7 (Java 17) under spring-boot-starter-parent:3.5.12, with 53 modules total — four infrastructure modules (ecshopx-bom, ecshopx-common, ecshopx-dispatch, ecshopx-bootstrap) and 49 business Bundles — each also pinned in dependencyManagement.",
       "evidence": [
         {
           "resource": "repo://pom.xml#L367-L421",
@@ -12,7 +12,7 @@
         },
         {
           "resource": "repo://pom.xml#L6-L29",
-          "version": "repo-lines-v1:sha256:6fd15df0d51aaf049be7a270661e3991fb19ffbe7516806dda03d1af14768fe4:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYyZDg2OTJjNDcwNGI5Y2Q5ZmMwN2Y5ODNhMDFjYWNlOTI2MjYzZjJjZjJkOGM0M2QzZGQ0NDc3ODQ0NmU4OWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhiZGY5NDQzNjg2NmE5Y2ZjYTBhYzNkNjIzMDc3ZWQwNzIxOGQ1NDFhMTQ5ZjliMDM4Y2U0MjcxYzYxNjM1ZDMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM5OGMzN2Q5M2QwNWZkYWY1MjYxYjkwNzg3YWU2MzFjODhkMzIyMmQwZGE1YWRkZGU2NWJiMDU4ZjVlMzZhMWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU5ZGFhYTVkNDZkZmViYWViODdmYWViMTFhMDE0Yjg0MWFlZmI0OTA3ZGE4NmMwNzU5MjAyMWU4NzRhYzE5OGUifQ"
+          "version": "repo-lines-v1:sha256:c8fcc34b0f165c9c46a24aea3f8487cb8012601c727a76e0912eba7f2df788e3:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYyZDg2OTJjNDcwNGI5Y2Q5ZmMwN2Y5ODNhMDFjYWNlOTI2MjYzZjJjZjJkOGM0M2QzZGQ0NDc3ODQ0NmU4OWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhiZGY5NDQzNjg2NmE5Y2ZjYTBhYzNkNjIzMDc3ZWQwNzIxOGQ1NDFhMTQ5ZjliMDM4Y2U0MjcxYzYxNjM1ZDMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM5OGMzN2Q5M2QwNWZkYWY1MjYxYjkwNzg3YWU2MzFjODhkMzIyMmQwZGE1YWRkZGU2NWJiMDU4ZjVlMzZhMWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU5ZGFhYTVkNDZkZmViYWViODdmYWViMTFhMDE0Yjg0MWFlZmI0OTA3ZGE4NmMwNzU5MjAyMWU4NzRhYzE5OGUifQ"
         }
       ]
     },
@@ -154,7 +154,7 @@
         },
         {
           "resource": "repo://ecshopx-bootstrap/src/main/resources/seed/menu/platform_menu.json",
-          "version": "repo-file-v1:sha256:be654caf551b6bd809d07beef76becfd8681dd490b82b3b1e4806a9967a152f4"
+          "version": "repo-file-v1:sha256:a002a9b0d07e54345d9657828dbe480f9850d1c10caa5a6b1fd39dd1a865b7d9"
         }
       ]
     },
@@ -359,10 +359,114 @@
           "version": "repo-lines-v1:sha256:10153952170236a81682ddce73101dc19d25a71ac4bb9047cb6034e8226a38bf:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMTAxNTM5NTIxNzAyMzZhODE2ODJkZGNlNzMxMDFkYzE5ZDI1YTcxYWM0YmI5MDQ3Y2I2MDM0ZTgyMjZhMzhiZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMTAxNTM5NTIxNzAyMzZhODE2ODJkZGNlNzMxMDFkYzE5ZDI1YTcxYWM0YmI5MDQ3Y2I2MDM0ZTgyMjZhMzhiZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNGYzMDYyNzE5MmFkYTgxYzE1Yzg5NzUzMGI3OGI4YWY0MGRiZWRiMTUxMWIxYTU1YzVkMzBiMWM2OWUyYWYxNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZGRmNTNjMzEyZDk2ZjNlOTdmODgyY2M2OWM5MzRhZTRiYjZlYzZmOWRjYTI3ZDFjMTZmMGZjNjEwNTc0YmI1YyJ9"
         }
       ]
+    },
+    {
+      "id": "claim_caa13811f0a74047b48b74d3915e2037",
+      "statement": "The current Flyway schema head is V00000000000006.sql (release 5.4.7): it creates members_rel_tags_audit (attach/detach audit trail with source, rule_version, reason, event_id, indexed on company_id,user_id,tag_id), adds source/rule_version/effective_at/updated_at to members_rel_tags, adds tag_code/tag_kind (manual|system)/rule_version plus a uk_company_tag_code unique key to members_tags, and adds member_tag_ids (JSON)/member_tag_mode (include|exclude) to both promotions_marketing_activity and promotions_seckill_activity.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/db/migration/V00000000000006.sql#L1-L41",
+          "version": "repo-lines-v1:sha256:1537e2c2a280aacdbc0e49d959d7a842837436e3cae66b0bb5698fae3649fea2:eyJzZWxlY3RlZExpbmVDb3VudCI6NDEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJhMjA4YTdiMmIxZGFlNmUxYWYxMzEyYTQzNjJjNzg4OTdmN2E2ZDM5YjFkMjNkOGQ2NTkwYTc1YzQwOGNmZmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNmN2E0ODQ0MGNmZGM1YjdiY2JjNjk2NmQ3OTQxYTZiMDFjZGVjMDYxOWNhZjExZGQ3NDE1OWU2Y2I0ZDFhNDkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_e1424ef939d84fd7a672123db96b3adb",
+      "statement": "POS terminal authentication is exposed at /api/v1/pos/auth by PosAuthController (ecshopx-companys api/pos/v1) with POST /login (employee number + password → POS JWT), POST /logout (blacklists the presented token), and GET /me (role/permission snapshot read from the POS_JWT_USER_DATA request attribute installed by the filter).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/api/pos/v1/PosAuthController.java#L36-L99",
+          "version": "repo-lines-v1:sha256:c7897bfee6b4c7746b39b6056425733559a129a575b360b5202f3750e9704240:eyJzZWxlY3RlZExpbmVDb3VudCI6NjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM5ZjY4MDE0NmZmMmU1ZGRiZWY0OTJhNTE5NjZlYjdkNjJkOGIxNTgyNDRlZWY2ZTQzMDEzZWY3MmVkYzdlYzkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZhNjc3ZTMyNjkwYzk4MDkyOWQxODUwZWU3ZjJiZjI0Njk5ZDRkNDMxZjVlMGM3ZDQ3ZmRlMDQzNTBjYzhjNjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_da624c1f12d3487b80a4c100dc5bb8e8",
+      "statement": "PosAuthService (companys service/posauth) authenticates POS logins by looking up the pos_store_account row by employee number, decrypting the stored password cipher through SensitiveFieldEncryptor, rejecting disabled/resigned accounts and accounts whose shop no longer allows login, then delegates token issuance to the PosJwtIssuerPort interface defined in ecshopx-common/auth — keeping ecshopx-companys decoupled from the espier JWT implementation.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/auth/PosJwtIssuerPort.java",
+          "version": "repo-file-v1:sha256:09883a112b806ab11346bd1e664c882bf1393ca00ae90b1866fa565e9ea5502a"
+        },
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/posauth/PosAuthService.java#L36-L110",
+          "version": "repo-lines-v1:sha256:9031f4085ec6ce8e067dd24aba15d417a9cc94ddd24d8288613c8884b400f872:eyJzZWxlY3RlZExpbmVDb3VudCI6NzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIzZWE4OWIxZmVlZjU1NDM5Yzg0Y2E1ODhiNjk4YzlkYWY0ZDk4MWRkOGY1MTRiNDQ5YmUwMzNlZmQyMmE5YzAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM3NDY0OTUyODg4ZWQ4ODBjMjEzZTU3MGZhMzE1M2EyZTYyMGY5OGM3NzczNmQyNzhjZGI3NWUyMzEwNGE5ZDUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdkMzcwN2E5NDBhMjJmOWM3Yzg1YmZhY2E0NWJjYTExNzE2Mzc2ZWZkYzA4MjM3NTg5ZjEwNTc3Y2VlMDhkMTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM2YzVhMDY2NTM0YjRkOGM2ODE3N2U1MmE3YmY1ZGY5YzVhY2NjOTdlZjhkZGI5YzU0YWNlZDU5ZDIxMTExOWMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_68709fa638cf4b1a811f05adfeefc08a",
+      "statement": "PosJwtIssuer (ecshopx-espier/security, implementing common's PosJwtIssuerPort) signs HS512 compact POS JWTs keyed from JWT_SECRET with claims token_kind=pos, issuer POS_JWT_ISSUER (default ecshopx-pos), a random jti, and TTL from JWT_TTL minutes; invalidate() (logout) verifies the token and blacklists it via PosJwtBlacklistService, which stores pos_jwt_invalidate:<sha256(token)> keys with exp-derived TTL on the prism Redis template (logical DB 2 by default).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L62-L64",
+          "version": "repo-lines-v1:sha256:19dc31ffe3fc12428b1053e8eb769fa17f04f5ca8734d792a85a3155629fbdd4:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMmIzYTQ4MDdjY2FmMzA2MmM4Zjc1OTFkZjdhNjFiMzk3ZWM1MWViMTAwY2M4Y2MwYjk0MTVlNmIxYjg5MWJhZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjA0MjU3NjAyNTk0ZTJiMDVjZGQyZmU1N2RmYmJkZWJlODcyMGUxOGJjOGRlYjBlMDIxNzRkMmRmYzM1YjllZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjViMDc3Y2ExYWVkZTgzZWMxZjVjYWI2ZWMyYjMzM2I3OThjM2UwNGRlODA0NjlhZmI0MjY1NTc1ZGEzZjdkNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMTgxMTcxZGEzMDM4YWQzMmMyOTQ5ODRhYzBlYmI5MDJiNDRhYThiMGJlZGEzZGE1MDlkZDA5NGY3YWFiMWYyZiJ9"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/PosJwtBlacklistService.java#L30-L60",
+          "version": "repo-lines-v1:sha256:a240d970cc90e7474144639c9ecdfa4cfec41284aee42f9e957a9fc22cfb713e:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkzMTc3NzBkZWI5NDE5M2M5YmE2YWZjMTlkNWNlYzY5YzAxMjhjZjI1MGU5NmNkYWI5MTg4ZTRjZTQ1YzdkZDIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcyY2Q2OWIyM2NmNzU4MDE3NjVjNDIyMDViN2VlNjgzMzIwOWI1OWMyMjhmNGU3NTNhMjU4OGUyNzA2N2RkMTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjVjNjgzYmYyMjMyN2JiN2E2YjgzN2YzOGYxYmFiYzAwMjlkYWU5NzZkNzgzOTA5M2ZhMTIzNzlhZTQ4M2QyZDQifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/PosJwtIssuer.java#L36-L123",
+          "version": "repo-lines-v1:sha256:26d8b1bb68eeffc0ff24b318b71f52d76bdd8047ad1473cd79579a0875191ac0:eyJzZWxlY3RlZExpbmVDb3VudCI6ODgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU0M2U0ZWNiYmM0NWRkYTNkNmNlOTM0NWIzNTRlZmEzMzcyYzQxYmNhMTY5N2I2NDUyNDE1ZWJhMTZlZjJlYTkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcyY2Q2OWIyM2NmNzU4MDE3NjVjNDIyMDViN2VlNjgzMzIwOWI1OWMyMjhmNGU3NTNhMjU4OGUyNzA2N2RkMTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_5621e344b97f41019b69103228b90c9c",
+      "statement": "PosJwtAuthenticationFilter (ecshopx-espier/security, OncePerRequestFilter at HIGHEST_PRECEDENCE+40) engages only when the Bearer token parses as a POS token (token_kind=pos or the POS issuer, skipping POST /api/v1/pos/auth/login and all non-POS requests), then enforces PosJwtPathWhitelist (auth endpoints, order/aftersales/checkout prefixes, operator cart paths, goods/member/tag/logistics reads, delivery and write-off POSTs, explicit deny on /api/v1/store/pos-accounts), rejects blacklisted or expired tokens, and calls PosJwtSessionValidatorPort before attaching the claims map as the POS_JWT_USER_DATA request attribute.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/PosJwtAuthenticationFilter.java#L44-L162",
+          "version": "repo-lines-v1:sha256:fab7d5d838cd21d9e37faa1c416c0c4b342f4dc4a8baa8969f6f427d7370c940:eyJzZWxlY3RlZExpbmVDb3VudCI6MTE5LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIwMWJhNDcxOWM4MGI2ZmU5MTFiMDkxYTdjMDUxMjRiNjRlZWVjZTk2NGUwOWMwNThlZjhmOTgwNWRhY2E1NDZiIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIwMWJhNDcxOWM4MGI2ZmU5MTFiMDkxYTdjMDUxMjRiNjRlZWVjZTk2NGUwOWMwNThlZjhmOTgwNWRhY2E1NDZiIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI2NTY0ZjBjODcyYjJkYzhlMmUwMTZlYWZkM2I5ZTg4MjMzNTFjOGRkNjkxOGU2YzJjZmI3NjI4OTZjZWFiZGY3IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIzMjFjYmNjNDM3ZWY3M2YyYmQ4MjVkNzNhNDU1YzEzY2M5NTUyNjZlZDAyMjA5Y2MxNjI4NTVlMGQ0Y2Y0MzIxIn0"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/PosJwtPathWhitelist.java#L22-L110",
+          "version": "repo-lines-v1:sha256:f242b7d2a3770cfd770509a09cd723a608bc06149a9ecdb8ecc1e5a55a972044:eyJzZWxlY3RlZExpbmVDb3VudCI6ODksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJmYWJjNWM4NDVkMTE0YTgxNWEyMjA4ODcwOGUwNWVlMGIwMzU2NGJjZmI1ZTRjNzFmMjc0ZTBiM2Y1ZmIwMzYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY3Njk0ZTg3NGZiOWVhNTIzNDk2MGEzZDk4NjEzMjUyNmUxODY4Yjg0YWMyZWY4N2Y4ZDVhODBjNWEyNDExZGYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_701ee94990034664b0b01988b7b167a0",
+      "statement": "PosJwtSessionValidator (companys service/posauth, implementing common's PosJwtSessionValidatorPort) re-reads the pos_store_account row on every POS request and invalidates the token immediately when the account is disabled, resigned, reassigned to another store, or re-roled (spec rule G-L9), so status/distributor_id/role changes take effect without waiting for JWT expiry.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/posauth/PosJwtSessionValidator.java#L27-L63",
+          "version": "repo-lines-v1:sha256:4430ff23f93e67adc440b3cbe3c00432990497ccccbad856114da2d93bbd088c:eyJzZWxlY3RlZExpbmVDb3VudCI6MzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlkNDI3NTljYzg1ZDM5OGI2OTlkYzUwNzVhZjc5NmRiYTllOTEzMmVlYmUyZWM4NGRkZGRmNzgzNWNmMjY3MTAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFlNjMzZTBjMTVmMWZmN2ZiMzMzMTAzYTIzODNlNzdiZTFhOTQ4MDdlNWIxMmQ5Mzg1NGJiOGYzMDgyOWQxNTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIyZjJmZjVmZWVjNjBmNTg3YzhmYWU0ZTg3ZjgwOWE2NjFjZmZlZDZiNDdhYWU1ZjZkNmEyNjUzYWE4OTUyZWYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_4490e0e070594c769904d1b93771ac3f",
+      "statement": "POS store account provisioning reaches the dispatch bus through common's PosStoreAccountCreateEventDispatchPublisher port: bootstrap's PosStoreAccountCreateEventDispatchPublisherImpl publishes event:companys:pos_store_account_create (CompanysDispatchEventNames.EVENT_POS_STORE_ACCOUNT_CREATE) so DigiOS account-sync listeners can consume it without a companys→digios Maven edge.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/PosStoreAccountCreateEventDispatchPublisherImpl.java#L27-L44",
+          "version": "repo-lines-v1:sha256:20b86d904ff637cf532f47b365c4f3b22482ca285ae8744110ba97cc3e23b9a5:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4ZmExZTlmNDQ5NDlmYTg5YTNiNDJiMDQ5MmRkYmRmZmEyZWI3NjQ4NDhkMzU3NzhjOWZiNTNjMjA3ZWJkYmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk3OGQ3NWRjMzgwY2YzNzJiNmQ5OWNkNjUxYTRhMzJhMzJlZGFkYTU3OGEzZTc4Nzg4YzM0M2Q1NGJhNmVlYTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQxMGIzNmFhNzRhNTliY2Y0YTg4MTg1ODM3ZjY1OGFmYWYzNjQ2ZWZmMmJiMTZjMzkyOGQwZTkzMzVlOTQ1ZDIifQ"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/CompanysDispatchEventNames.java#L29-L33",
+          "version": "repo-lines-v1:sha256:f8311ad1c8b51caf05e073f9039912d575ce7d58fc9197e6ca4352fe3b9d4297:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOTU2MzkxYWY3YmM3N2IyMTgzNDljYWM3ZmIwNjQzYWZhZjVlNTg1OWU3YjU3NzE3ZDc0MWIyZmJlNmRlNjEwNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYWFhNjlkMGFhNGIzYzQ4ZGJmYTcwMWJlZTU0YjZhNjk2NzMyODhmOWY2ZjJiZjJlZGYzYzc0MGY3ZmY4NmIxNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzNmMmY0ZTEwOWE3MDcyMzdhMDBmYzcwNTkzODhiNGRhNmUyMGQ4MzQxMzQ1N2Q5YjdlNjkwYjJkYmUzMGQ5YSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTk2MzU1MmRlMTc1MWNlMDQxNmYxZDMxYTg3NWM2ODE0MmRhMTgzN2E3OTlhMjNmZTJkOWQ5Njc1YzdmOTI5OCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_ffac224a8c5b421a8309adfbda7c1011",
+      "statement": "Bootstrap's config package registers the ecshopx-digios sync listeners through five DigiOs*DispatchListenerRegistrationConfig classes (operator create, distributor create/update, and normal-order-delivery/aftersales-return store adjustments), each wiring a digios listener to its event name from ecshopx-common with async ListenerDispatchOptions on the default queue.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/DigiOsDistributorCreateDispatchListenerRegistrationConfig.java#L29-L48",
+          "version": "repo-lines-v1:sha256:1fbda33cbff8f84b2e081073fe71b3228eddb3debbac3bc43beaa763bf72143e:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI5ZTVjZTUzNDliMWQ0MmI1YzUzODRhNTk1NDQ5OTQ2NTZmZDk2ZGE4YjA0YWZkNTUyZTdhODBjZTI3OWZhNTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJkYWJkNzg1MWY5MDMwNWMxMWE2N2RmN2JjNGIzZDQxMTRhZGVhYWQxZGEwNzkyYjc4M2Y4ZjRmNjRkODg3MjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/DigiOsOperatorCreateDispatchListenerRegistrationConfig.java#L29-L48",
+          "version": "repo-lines-v1:sha256:b60ad69d7d2fe18f2ce781f5641544135de422526a3e9a2964c4dbf9c9912ef5:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYxZmRlZmQ2MTViMzA0OGY4N2E3NTNmZWJjNjc2ZTYzNWRhZDdkYmQ4MmZmNDIzMDEzNjJjZmI0ODlmNmUzMTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjljZjgxYTEyM2YzMmQzNTQ0ZjRiMTZhODdlYmVlNDA3NGNlMGU0YTkyZjk2MzZjOGFhNTU0NWI3YTg3NWQ4N2EiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.7.3",
-    "at": "2026-11-04T17:09:55.577Z"
+    "by": "openwiki/0.9.0",
+    "at": "2026-11-05T17:10:02.238Z"
   }
 }

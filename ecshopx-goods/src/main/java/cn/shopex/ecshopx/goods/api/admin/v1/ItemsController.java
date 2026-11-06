@@ -1266,9 +1266,9 @@ public class ItemsController {
 		if (!(raw instanceof Map<?, ?> ud)) {
 			throw new UnauthorizedException("未登录");
 		}
-		readRequiredLong(ud, "company_id");
+		long companyId = readRequiredLong(ud, "company_id");
 		long idVal = parseKeywordsDetailQueryId(id);
-		Map<String, Object> row = goodsKeywordsQueryService.getInfoById(idVal);
+		Map<String, Object> row = goodsKeywordsQueryService.getInfoById(companyId, idVal);
 		if (row == null) {
 			return ResponseEntity.ok(ApiResult.ok(Collections.emptyList()));
 		}

@@ -215,15 +215,33 @@ public class RegistrationActivityController {
 	@PostMapping(value = "/selfhelp/registrationActivity/del", name = "删除报名活动")
 	public ResponseEntity<ApiResult<Object>> deleteData(
 			HttpServletRequest httpRequest, @FlexibleBody(required = false) Map<String, Object> body) {
+		// ECX-10928：删除报名活动须限定当前租户
+		@SuppressWarnings("unchecked")
+		Map<String, Object> jwt =
+				(Map<String, Object>) httpRequest.getAttribute(OperatorJwtRequestAttributes.OPERATOR_JWT_USER_DATA);
+		if (jwt == null || jwt.isEmpty()) {
+			throw new UnauthorizedException(
+					"Failed to authenticate because of bad credentials or an invalid authorization header.");
+		}
+		long companyId = parseCompanyId(jwt);
 		Object data = registrationActivityDeleteService.deleteData(
-				httpRequest, body == null ? Collections.emptyMap() : body);
+				httpRequest, body == null ? Collections.emptyMap() : body, companyId);
 		return ResponseEntity.ok(ApiResult.ok(data));
 	}
 
 	@Activated(routeAlias = "selfhelp.registrationActivity.invalid")
 	@PostMapping(value = "/selfhelp/registrationActivity/invalid", name = "过期报名活动")
 	public ResponseEntity<ApiResult<Object>> restoreData(HttpServletRequest httpRequest) {
-		Object data = registrationActivityCreateService.restoreData(httpRequest);
+		// ECX-10926：作废报名活动须限定当前租户
+		@SuppressWarnings("unchecked")
+		Map<String, Object> jwt =
+				(Map<String, Object>) httpRequest.getAttribute(OperatorJwtRequestAttributes.OPERATOR_JWT_USER_DATA);
+		if (jwt == null || jwt.isEmpty()) {
+			throw new UnauthorizedException(
+					"Failed to authenticate because of bad credentials or an invalid authorization header.");
+		}
+		long companyId = parseCompanyId(jwt);
+		Object data = registrationActivityCreateService.restoreData(httpRequest, companyId);
 		return ResponseEntity.ok(ApiResult.ok(data));
 	}
 

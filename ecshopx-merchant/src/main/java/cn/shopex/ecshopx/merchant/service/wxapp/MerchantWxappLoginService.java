@@ -119,7 +119,6 @@ public class MerchantWxappLoginService {
 			row.setCompanyId(companyId);
 			row.setMobile(mobile);
 			row.setAgreeAgreement(true);
-			row.setMerchantTypeId(0L);
 			row.setAuditStatus("1");
 			row.setSource("h5");
 			row.setDisabled(true);

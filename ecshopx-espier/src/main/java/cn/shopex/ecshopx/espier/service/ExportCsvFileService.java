@@ -106,6 +106,13 @@ public class ExportCsvFileService {
 	}
 
 	private static void writeCsvField(BufferedWriter w, String s) throws IOException {
+		// ECX-10937：以公式前缀开头的单元格按文本写出，含以减号开头的金额
+		if (!s.isEmpty()) {
+			char first = s.charAt(0);
+			if (first == '=' || first == '+' || first == '-' || first == '@') {
+				s = "'" + s;
+			}
+		}
 		boolean needQuote = s.indexOf(',') >= 0 || s.indexOf('"') >= 0 || s.indexOf('\n') >= 0
 				|| s.indexOf('\r') >= 0;
 		if (!needQuote) {

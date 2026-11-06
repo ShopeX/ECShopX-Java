@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:087c823b27361a19cc187118d2fc45178b23a10d4151eee78d8a36bd2e00298e",
+  "pageVersion": "sha256:ba5bff8fdfd7b3c8ee4d447740a12c457ad2ff1e70901a961b686e71c352cede",
   "claims": [
     {
       "id": "claim_a77f54208d174b0c866c7d5de18e4130",
@@ -48,7 +48,7 @@
       "evidence": [
         {
           "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/account/MemberAccountService.java",
-          "version": "repo-file-v1:sha256:2b320047f5a0b5d843626942ef98abf4637a2f2c506f0d873183c7e012c29f0c"
+          "version": "repo-file-v1:sha256:ec46a20eefcc3c159154b63cdc1772a132acd77c490c193a5270ca3a2cb25a48"
         },
         {
           "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/h5/H5JwtUserLoginInfoEnrichService.java",
@@ -176,11 +176,15 @@
     },
     {
       "id": "claim_b8cf3fd083bd40aa978fff37a3cf8531",
-      "statement": "Bootstrap registers eight dispatch listeners on create_member_success, each in its own registration config: youshu member sync, shuyun open-platform member.register, third-party Shopex CRM add-member (gated on crm.crm-sync), promotions register-promotion (gated on if_register_promotion), promotions register-point (gated on Redis register-point config), datacube register-num stats (slow queue), members' own create-member-success notice (slow queue, needs openid+wxa_appid) and promotions send-membercard (gated on if_register_promotion).",
+      "statement": "Bootstrap registers nine dispatch listeners on create_member_success, each in its own registration config: youshu member sync, shuyun open-platform member.register, third-party Shopex CRM add-member (gated on crm.crm-sync), promotions register-promotion (gated on if_register_promotion), promotions register-point (gated on Redis register-point config), datacube register-num stats (slow queue), members' own create-member-success notice (slow queue, needs openid+wxa_appid), promotions send-membercard (gated on if_register_promotion), and — new this window — members' own create_member_success_new_customer listener feeding NewCustomerTagReconcileService (default queue, needs positive company_id+user_id).",
       "evidence": [
         {
           "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/DatacubeRegisterNumStatsCreateMemberSuccessDispatchListenerRegistrationConfig.java",
           "version": "repo-file-v1:sha256:5380ae626f445fce9ddad1000a4e75064f4d6cc40f89d8df5b4785bc3aa71d6e"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MembersCreateMemberSuccessNewCustomerDispatchListenerRegistrationConfig.java",
+          "version": "repo-file-v1:sha256:26b52332f0839984c8bca226306593a23e6ad9807e81fef59412c5637f403fe5"
         },
         {
           "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MembersCreateMemberSuccessNoticeDispatchListenerRegistrationConfig.java",
@@ -340,7 +344,7 @@
       "evidence": [
         {
           "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/account/MemberAccountService.java",
-          "version": "repo-file-v1:sha256:2b320047f5a0b5d843626942ef98abf4637a2f2c506f0d873183c7e012c29f0c"
+          "version": "repo-file-v1:sha256:ec46a20eefcc3c159154b63cdc1772a132acd77c490c193a5270ca3a2cb25a48"
         }
       ]
     },
@@ -417,7 +421,7 @@
       "statement": "`POST /api/v1/h5app/wxapp/member/subscribe/item/{item_id}` (缺货订阅) is a toggle: an existing matching row with sub_status=NO is deleted (unsubscribe), otherwise the item must exist (MembersSubscribeNoticeItemNamePort.itemExists, else ResourceException(\"商品不存在\")) and a new row is inserted; the recipient open_id and source (wechat via open_id/wxapp_appid claims, alipay via alipay_user_id) come from the caller's enriched claims.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/api/front/v1/MembersController.java#L1166-L1201",
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/api/front/v1/MembersController.java#L1153-L1188",
           "version": "repo-lines-v1:sha256:df8c2334fcc4d1f60dd7fb9bc77e556eb0852d97e023fef430561da002bab780:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY1ZTE3ZDMxOTVkYjVmYjRiM2Q5ZDkyZDNhMzEyZWM5MWI4MDlkMWE0NjY2ZWQ5ZWMyZWY5ZWZmZGE0MGFhODgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImViNjRjZDI5NmI5OTIwZGEyMzVlMWJmZDIyMjI3ZTVlMjRlYmNjNzRmZTgwNDY0N2E2NGQ1MmYzNWJkNzUzMmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA2YjExMGFjOGZkMDFkZGJmMWRjNDc2OTkxYTBhMDYzYWNjMjdiMzcwODQyMzMwZTNiM2FlMmU2Y2Y1OGEzMTcifQ"
         },
         {
@@ -431,11 +435,11 @@
       "statement": "The `arrivalNoticeSub` Redis hash on the shared template is the subscribe/notify contract: the toggle writes/deletes field userId with JSON {open_id, wxa_appid} under key `arrivalNoticeSub:<companyId>:<itemId>[:<distributorId>]` for wechat (a source segment is prepended for alipay, per GoodsArrivalNoticeSubscribeRedisKeys.hashKey); it has no expiry, is read by `GET /wxapp/member/item/is_subscribe/{item_id}` (rather than the table) and by the wechat notify leg's per-row appid lookup (the alipay leg never reads it), and is now also cleared per matched row by GoodsArrivalSubscribeMatchService.markSuccess via clearArrivalNoticeSubscribeRedis — so the mini-program stops showing 已订阅到货通知 after a restock consume, and a Redis flush desynchronizes hash and table until the next toggle or notify.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/api/front/v1/MembersController.java#L1167-L1201",
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/api/front/v1/MembersController.java#L1154-L1188",
           "version": "repo-lines-v1:sha256:8c0f0784f54df360929946072057315eef6ba8ac699c4898935a0313e1f37266:eyJzZWxlY3RlZExpbmVDb3VudCI6MzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQwYWI1NmE1NjFjNmNhZmRjYzY5OTM2OGFiOWE5YTRkMTBiMGVmMDU0MjA4ZDEyZjQ4NzYzZjVmMGUwMTQ5OTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNlZDM2NTU3YzM3OTZhZWJjYTRmNThmNTM3NjBlMGM3OTRhYjlhNjE2MTliMGExMGIzN2VmZWNkNWJiNzAyMTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA2YjExMGFjOGZkMDFkZGJmMWRjNDc2OTkxYTBhMDYzYWNjMjdiMzcwODQyMzMwZTNiM2FlMmU2Y2Y1OGEzMTcifQ"
         },
         {
-          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/api/front/v1/MembersController.java#L1654-L1685",
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/api/front/v1/MembersController.java#L1641-L1672",
           "version": "repo-lines-v1:sha256:feda8ae52f5e619309024ad651d9ba9aace593455cc92c2e8e46b4521b8a4e7b:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU3MWFiNGI3NzQxYmM5ZjE1NDAwZTZmMWM4Y2ZiOWYxNDAzNTUwYzE5NTBjNjNiOGJiNTZlZjhlM2VjNjY0NWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdmZWUwYmY2NzNhY2M4MjkyMzhlMjU5ZTg5MDczNzJiZmFmZjU4NGJhYWFkZjc2NGY1MWIwZWIxYWI2NWQyMGYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY3ZGZiNGYzODc1Yzk4ZmNlMmMwMjRmZTBmMmFiOTk2MGU3NDY5OWUxYmU3MzNmNmIyNTMwNjRhMTE0ZGI4MjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFlMDBkZjFkMDcxZWU4ZmQ4NjU0YmZlYjlmY2MwZmZhNzEwNzY5NzJkYTMwZGM3Yjg5ZDA2ZjNhYTFkMjVlZDAifQ"
         },
         {
@@ -619,10 +623,226 @@
           "version": "repo-lines-v1:sha256:d3d0e7f5622ff0c6dd5d8e5f65499890be6ca9d5995d983b9a2dce144163a372:eyJzZWxlY3RlZExpbmVDb3VudCI6NTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiYTFiMWYwZDkzOTU3NDJlMjE2ZjcxYzllOTBjOGZiOWFhNmI0Mjk2YWFhNGNlN2NjMDVjOTZlYTViODdiYWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU1NzI0MzJhMjRlNzIzMzUxMTQ2NTY0OGI1YWRmMzQ1OWNkMWI1OGY5MGRlYWUzZDhkMmYyMDFiM2Y0OWE0MjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
         }
       ]
+    },
+    {
+      "id": "claim_dbaad2828eab4dfca817e1ee79817ee2",
+      "statement": "Flyway migration V00000000000006 adds the member system-tag schema: members_tags gains tag_code + tag_kind (manual|system, default manual) + rule_version with the unique key uk_company_tag_code (company_id, tag_code) enforcing one tag per code per tenant; members_rel_tags gains source/rule_version/effective_at/updated_at; a new members_rel_tags_audit table records one row per attach|detach with source/rule_version/reason/event_id keyed idx_company_user_tag; and promotions_marketing_activity/promotions_seckill_activity gain the member_tag_ids JSON + member_tag_mode (include|exclude) audience columns.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/db/migration/V00000000000006.sql",
+          "version": "repo-file-v1:sha256:1537e2c2a280aacdbc0e49d959d7a842837436e3cae66b0bb5698fae3649fea2"
+        }
+      ]
+    },
+    {
+      "id": "claim_474bf140e4344d979c527404384879aa",
+      "statement": "MemberSystemTagCodes is the single vocabulary of the system-tag subsystem: the reserved codes new_customer (新客, no effective paid order), birthday_this_month (当月生日, birth month equals the current calendar month) and sleeping_user (沉睡用户, last completed order strictly more than SLEEPING_THRESHOLD_SECONDS = 180*86400 seconds ago — exactly 180 days does not match), plus RULE_VERSION=1, the SOURCE_* provenance strings (register, pay, refund, cancel, bind, disable, enable, compensate, daily) and the audit actions attach/detach; isReservedCode drives the write guard's create rejection.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/systemtag/MemberSystemTagCodes.java",
+          "version": "repo-file-v1:sha256:3c4fa583bde76fda21dc88bdc16323052c781fa8a18ae9957e2c23f311971d3b"
+        }
+      ]
+    },
+    {
+      "id": "claim_cc5994c0c3494facbfad19ad2c50dd09",
+      "statement": "MemberSystemTagSeedService.seedCompany idempotently inserts the three system tags (tag_kind=system, distributor_id=0, tag_code set) keyed by (company_id, tag_code); it is triggered by MemberSystemTagHistoricalSeedRunner (ApplicationRunner @Order(200) sweeping all tenants at boot), by CompanyActivatedSystemTagListener (@TransactionalEventListener AFTER_COMMIT fallbackExecution=true on CompanyActivatedEvent in REQUIRES_NEW) for new tenants, and lazily by each reconcile service when its tag lookup misses, so a tenant that lost a system-tag row self-heals on the next event.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/listener/CompanyActivatedSystemTagListener.java",
+          "version": "repo-file-v1:sha256:3bb237bfe7f52182a156cb444c36902febdbe1055b19b00a4976ca9d77b6e2b1"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/listener/MemberSystemTagHistoricalSeedRunner.java",
+          "version": "repo-file-v1:sha256:e0e6013215425e58d14fee1d19544a0909c1346384882d872459e66e6ebb6e03"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/systemtag/MemberSystemTagSeedService.java",
+          "version": "repo-file-v1:sha256:0762ca1c1c1dd87b3a25a07589e66f83f47334be96d9c15973b6db72fbb5fb26"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/systemtag/NewCustomerTagReconcileService.java#L96-L110",
+          "version": "repo-lines-v1:sha256:2c9b69d7bd53afe155da792973730b7507bfb8995558d013ab74d9e4fdf56b00:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI2MTc2NmY4ODlhYTIzZDNhMGRkMzA5NmFlNjdkZjE2OWZlMzk3NjA5ZTc0ODU5MjM1NTJiYmE0OWU3YTJhMDYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjEwM2ZlY2E1NDNjZWI0MDJmMzVkNGQ0NmRlZGIxYjAwMjYwMmU5NTAyYWE3N2M4NGQxNDI4MTM2YmQ4YThhMDQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRkMjg0NGE4OWEzMGQxMTkzMmUwMDhiNmI3MWNmNDI5MGJjYTc0MDVjOTk1ZjUzNzVlZmIxMjhlMzViOWNlODQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_cab54d3ac9f34985b3741d8f66704d0a",
+      "statement": "All three reconcile services share one pattern — compute the desired membership from a rule query, diff against the existing members_rel_tags row, and write exactly one members_rel_tags_audit row per actual change stamped with the triggering SOURCE_* and RULE_VERSION; attaches catch DuplicateKeyException (idempotent under concurrent events), detaches delete the rel row by id, and nothing is written when the desired state already holds.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/systemtag/BirthdayThisMonthReconcileService.java#L195-L244",
+          "version": "repo-lines-v1:sha256:3d2d3a8a92d1d7e24cd24481c97297e4beb3b6eb36378426e3d48259461ebce7:eyJzZWxlY3RlZExpbmVDb3VudCI6NTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJlMjhjZTVlNTg0YWI2OWNhNmM4ZjlkMGRmMDA0YjJiNDExM2M1OWE5MWZiNWZhNjQwNzYxM2YxOGMxMmMxMmMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM3OGU0Y2E5YjA4ZGU5YTkxMjIyMzQxMTAyZWFhNjhiNDQ4ZDdkMTU4MTkzODBkMWZiODAzNWI5NWU2ZDA1YmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/systemtag/NewCustomerTagReconcileService.java#L126-L189",
+          "version": "repo-lines-v1:sha256:8364155e03c4c39951bad4b0152d5d61abda5d7cdee9dd4f0abafd07da191b15:eyJzZWxlY3RlZExpbmVDb3VudCI6NjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFjZTg4ODdlOWY0N2YzYmE0MTIwNmZkNjg3MzEzNWE5OGQ4N2I0MmQwYzMwNjA4OWFhYTQ1ZDM2ZDZlY2Q2ZWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQzMDBkMjBiMTQ4OTNhNDZhMjZjNzBkZWMzMTgzMzg2ZDE5N2QwNDAxZTkwZTFlOWIyMDQ4N2MxNmEzZjM0M2YiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/systemtag/SleepingUserTagReconcileService.java#L203-L244",
+          "version": "repo-lines-v1:sha256:d0e41fba325541d966be516ba82805393910f87a7ca08ee4e2e92922bd411729:eyJzZWxlY3RlZExpbmVDb3VudCI6NDIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI0ZTZmMjg0Yjc1OWFhMTRjYmJiZTcwMjUzZGYxYzgxYzFjZjQ1ZjEyOTg5NzUzMGI5OGQ0NDQ1NjhmYTM2MWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjlmN2FjOGU5YjNhY2IxMGEwMTJkZGI5ZTNmYzg4YzEzNzc4YmYxNWVhZWQ1MDczZWYzMDQ0NzFhZDkyNTA4N2YiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_367f8798ab1a4e09bc35b5f8db3f139d",
+      "statement": "NewCustomerTagReconcileService.reconcile (blank source falls back to compensate) detaches ALL of the member's system tags when the source is disable, the member is missing, or disabled=true; otherwise NewCustomerEffectivePaidOrderQuery.countEffectivePaid (JdbcTemplate over orders_normal_orders) defines an effective paid order as pay_status='PAYED' and cancel_status<>'SUCCESS' and (total_fee=0 or total_fee greater than the sum of its SUCCESS refunds in aftersales_refund), attaching the 新客 rel when the count is 0 and detaching the existing rel when it is positive.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/systemtag/NewCustomerEffectivePaidOrderQuery.java#L24-L46",
+          "version": "repo-lines-v1:sha256:58dbcda53806eca45de956d26ef71d1f61d7d1e4efb4a8c9ac0bf686f104ef15:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdhMGZlNTdlMzhlZGIzNjUzNTg4NGRjMjNjMDM5Y2E5Y2I5NmE0NDE0MTljMmJmNmE0OWE2NWQ4NGNkZThhYzkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU0NTQxMjNmZjc1NmNiYTkzOGFkNDhlODZhNWZlNjU5NTNhMmUxNjEwODVhYTE0YmYxNjVlNDlkZTg4ODQxZTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk2ZDgxMmViNzMzZjUxZDM2ZDA0YzRjMWZjNjhkMzUwYjI1YjNjOGI3ZGYxZDZlYjQ0MmY5YzczZDlhMWQ5NTYifQ"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/systemtag/NewCustomerTagReconcileService.java#L64-L94",
+          "version": "repo-lines-v1:sha256:4814d9370dd890dc1ab77946b0bad7786d952ecad803ae166c124aaafdc0279c:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVjMDg4YjM0YWE4Mzc3ZTU0ZGQ1MjM5ODNkMDJkMzU3YzIyMTk3ZGVhY2Y4N2YzZDdjMWM1NDhlYWNiZTgwOGQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI0ZDZiYzk4Nzk5YzI5NzFmOGQyMmRlMzExNTIyYzBmYTI0YWQ0MzNmMjAzZDY4NGQwNDhlYWFkMDQ5YWFjODAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYxYWY5MzZkZDRiMzIwNzc3MTcwYzdiMDdiZTZiNmE4NDc3OTExYjBlNzg5NjQ2ZTM4Mjk5NGNjZTc0ODZhMzYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU2NGY3MTBlMjk3ZWE0M2E2YWQyYzdkNjg5MGQzZWZjMTRhMzdlMjk2MzMxMzc4NDJkNGNjOGJkZTJlZmVkY2YifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b46dd41a0d91450d8631b6d35a513e72",
+      "statement": "BirthdayThisMonthReconcileService runs only on the first day of the month (executeMonthly skips otherwise), is driven by the XXL-Job cron handler member-system-tag-birthday-this-month (ScheduleBirthdayThisMonthTagHandler, which publishes a CronAlertEvent and rethrows on failure, with per-company failures aggregated into one IllegalStateException at the end), and per company attaches/detaches so the tag set equals non-disabled members whose birth month — members_info.month when valid, else parsed from the birthday string (ISO date, 'yyyy-MM-dd HH:mm:ss', or first 10 chars) — equals the current month, auditing with source=compensate and reason=birthday_this_month.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/cron/ScheduleBirthdayThisMonthTagHandler.java#L27-L55",
+          "version": "repo-lines-v1:sha256:aa15663660c7f7a59d335f2bb35fb137fdf83a62d96ffc1538c596afd42cc1eb:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4ZmExZTlmNDQ5NDlmYTg5YTNiNDJiMDQ5MmRkYmRmZmEyZWI3NjQ4NDhkMzU3NzhjOWZiNTNjMjA3ZWJkYmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU4NjRjOTQyZWMwNWUwNWUyM2YxMWUyZDJkYjliMjMzYzliYjY3MDBlNTE5NWVjMDkzZjk1MWUwZmQ0M2U3MTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/systemtag/BirthdayThisMonthReconcileService.java#L80-L193",
+          "version": "repo-lines-v1:sha256:fad5a8e915443a7c0740c9dcf37df480ef13e06724c8dc2a4eee8588db7fa558:eyJzZWxlY3RlZExpbmVDb3VudCI6MTE0LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJiNmJiZWFiNGRkNjRhNDYxMzQ1NzQ4ZmE3ZjRmZmNmNWM0YjQ5NTgwZTU5MTM2ZTljMThhNWU5MzcxNGI5YWQ3IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI2NGVmYzQ5NDE4ZDI2ZGNmMTI5YjIyYTZhYTIxMTA4Y2VlYzM3Njc3YTMyZDA4ZTlkNWZlZTM1ZGRhNjZiYjlkIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiIzYzAwZDQ0YWY3ZWJjZGQ2NWIwMWFlZWI0NzI5Y2Y0NzRhODlhMTI0YWZiMTM3YTE5NDk2ZDhiYjMzNTI3OTE2IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJlM2Y1ZmEwMWJkMDM3YTk5N2Q4YWRlOTRlNDIxMTE1NGFiODc2ODc2YzQ0N2U0OWIzYmMzNjM0NzJhNTY4ZDg1In0"
+        }
+      ]
+    },
+    {
+      "id": "claim_01228fa73bf740aa8ea6e0d6f4551d50",
+      "statement": "SleepingUserTagReconcileService is driven daily from the orders bundle's FinishOrderJobService (the finish-orders job runs it after the batch and never fails the job on its RuntimeException): per company it pages SleepingUserLastCompletedOrderQuery.listUserIdsLastCompletedBefore (users whose MAX(end_time) over DONE orders is older than now-180d, page size 200) and additionally re-reconciles every current tag holder so both directions settle; a member with no completed order is never sleeping, and a missing/disabled member is detached.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/systemtag/SleepingUserLastCompletedOrderQuery.java#L22-L48",
+          "version": "repo-lines-v1:sha256:59b7b7b8ff7bf5d5d93d0196cb1884850c5afbe3608bee097fe16d97bf370e2a:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZkNWJhNmI5ZjlhYWI0ZTUzYWQ1ZWE3OTc5NTkwODJmYzNlMzA0M2FmNjY0YWY4NmM5NzY1YTcxMmJjNjcwODEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZmZmFjYWNjYzQ4ZGRjZjQwMmY5ZGFiNDZiZDEyZTZmNjQwOGNlYmQ3Y2MzMDFmNWZmNmE1NWUxMzg3MDAwY2UiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBlOGQ3YjlhYjNiYWQxMjkyZGU2NjMxOTUyZDYwY2U4YjRmMmI5NDBkZGIzMGFmYTQyMGMwYjZiNDUxOTA5ZmUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/systemtag/SleepingUserTagReconcileService.java#L69-L201",
+          "version": "repo-lines-v1:sha256:40ca64c3c9f3709d00b6d1e43386855bacb72c1615ff2df26f236c5243fccf25:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMzLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJjYWVjY2ExNDEzODQwYTYyMzBlNDg0MTcyOGUwY2Q2OWM1MzQ4MTUyNTUyYzdmZTUxYzEzNDg2YzE3ZmU3ZTY1IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI4MDY1NGZhYTAwNWVjNDY5ZTgyZDgzY2ZiZDE4ZDkwMGZjMDVlMjE2NzQwOWQ2MTM3ZDlkYTM3ZjQwNDIzZGQ2IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiIzYzAwZDQ0YWY3ZWJjZGQ2NWIwMWFlZWI0NzI5Y2Y0NzRhODlhMTI0YWZiMTM3YTE5NDk2ZDhiYjMzNTI3OTE2IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIxNzk3ZDkzMWRjZDE5MjJjNzIzMjViMjFlODAxY2VkNDNlMDI4NGIyY2M1MGZjYmYwYTFlMTNlZjdhY2JmOThhIn0"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/finish/FinishOrderJobService.java#L27-L43",
+          "version": "repo-lines-v1:sha256:70f8ac748cd6cf8f49e2a1a1b248960100b0ba877a79f0629f6b0829d4a62954:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJiMzM2YzQyYjJmNTIwN2I3NzVlNTBhOGRhY2UyZDZkMTViMjZmNjFlOGNkYTJjYTRkNDNmY2U0YWU0ODQ0ZjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFlMDYyZmFjNTJkOThlMmRiMzE1Y2Y2OTM3Y2E4MWFjNzRiZjExODlhYjNkMjJlYjRhNmJmOTY0NzA1YzBiYWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_ae2eab02125944e4b4938bc987c7e9da",
+      "statement": "Four triggers feed NewCustomerTagReconcileService: CreateMemberSuccessNewCustomerDispatchListener on event:members:create_member_success (SOURCE_REGISTER), NormalOrderPaySuccessNewCustomerDispatchListener on event:288:OrdersBundle\\Events\\NormalOrderPaySuccessEvent (SOURCE_PAY) and NormalOrderCancelNewCustomerDispatchListener on event:orders:normal_order_cancel (SOURCE_CANCEL) — all three dispatch listeners registered in bootstrap on the default queue, the two order listeners resolving user_id from order_id via NewCustomerEffectivePaidOrderQuery.findUserIdByOrder when the payload's user_id is not positive and returning silently otherwise — plus the Spring TradeRefundNewCustomerListener on TradeRefundSpringEvent in REQUIRES_NEW, gated on refund_status=SUCCESS (SOURCE_REFUND).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MembersCreateMemberSuccessNewCustomerDispatchListenerRegistrationConfig.java#L26-L47",
+          "version": "repo-lines-v1:sha256:7d5ba208a5d18ceb70e8f73573df8b56520860756c01040f16b63bb5615bbe77:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJhOWQ1OWZmMTgwNjIzYzMzODc3YjYzNWNmZjc2MzE0M2VhZmNmNDBkOWRiNzBmMGFiNjVjMTlhMmE2OGMzNDAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MembersNormalOrderCancelNewCustomerDispatchListenerRegistrationConfig.java#L27-L47",
+          "version": "repo-lines-v1:sha256:e69817111bd572f660a196ed07c34dea193b76995b5119438aed560606b1e25b:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiMTQ3NjJhYWFkNThkMTM4NDRjZjJlYzU0NzQwYTRkOTdmNWUwN2VlNTE2ZDMyMGQ2MDM2YzFjN2NlNDJkZmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjEwOTJhMDVlN2ZlYWRkNGEwZThiNjJlMWE2OGY3MWIwNGM1ZTBmMzJlOTAwMzc4YWJkYTY0YTM0ZWZkOWVjMjEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MembersNormalOrderPaySuccessNewCustomerDispatchListenerRegistrationConfig.java#L27-L47",
+          "version": "repo-lines-v1:sha256:1b4681b2e31b6d6f01a161d80a27b39ea34c359f3a44c5f2d775df463a8a128e:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiMTQ3NjJhYWFkNThkMTM4NDRjZjJlYzU0NzQwYTRkOTdmNWUwN2VlNTE2ZDMyMGQ2MDM2YzFjN2NlNDJkZmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjEwOTJhMDVlN2ZlYWRkNGEwZThiNjJlMWE2OGY3MWIwNGM1ZTBmMzJlOTAwMzc4YWJkYTY0YTM0ZWZkOWVjMjEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/dispatch/CreateMemberSuccessNewCustomerDispatchListener.java#L26-L44",
+          "version": "repo-lines-v1:sha256:34af42260f11c2a38e33f075bc1f0ef7224f4ff589a9023c98ef545be673077b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4ZmExZTlmNDQ5NDlmYTg5YTNiNDJiMDQ5MmRkYmRmZmEyZWI3NjQ4NDhkMzU3NzhjOWZiNTNjMjA3ZWJkYmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk3OGQ3NWRjMzgwY2YzNzJiNmQ5OWNkNjUxYTRhMzJhMzJlZGFkYTU3OGEzZTc4Nzg4YzM0M2Q1NGJhNmVlYTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/dispatch/NormalOrderCancelNewCustomerDispatchListener.java#L39-L55",
+          "version": "repo-lines-v1:sha256:c0c80bb1673057731d4c57048983bd8e47be8b3a9469703cba9ccb5fb1770dff:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjEyOTQxMWRhNGI0NTBiMTY4ODZjYjFmMjgzNWQ0NzhhMTAwNGYxOGIyYTM5ZjQ2NGE5NjgxODMwYTcyYmRkN2QiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/dispatch/NormalOrderPaySuccessNewCustomerDispatchListener.java#L39-L55",
+          "version": "repo-lines-v1:sha256:2f7e1eeb73d932654f026b2489c3aaa34861c8af1812a7acbb03593c82c054f9:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjEyOTQxMWRhNGI0NTBiMTY4ODZjYjFmMjgzNWQ0NzhhMTAwNGYxOGIyYTM5ZjQ2NGE5NjgxODMwYTcyYmRkN2QiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/listener/TradeRefundNewCustomerListener.java#L36-L51",
+          "version": "repo-lines-v1:sha256:b12d10efabe4336bb79c6a0579186cf431c7e534c731436ea7238e7a4883e39c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRhYzBlN2YwNjAyYTk1M2I4MDg0MWEyNzRjYTdmMWY5NDRmNTI4MTAxZmI2MDIwNmRhNjVkYWEwMjQwYmVhNDgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_90c12aff4e8542ac8aaa004cc1a6b272",
+      "statement": "MemberSystemTagWriteGuard throws ResourceException(系统标签不可编辑) from rejectWrite (updating a tag_kind=system row), rejectCreatePayload (creating with tag_kind/type=system or one of the reserved codes) and rejectTagId(s) (attaching/detaching a system tag by id), and is enforced by the admin tag services (MemberTagsCreateService/MemberTagsUpdateService), the rel-tag writer MemberRelTagsBatchCreateService and the openapi tag batch/cover/update/delete services — so the reconcile services are the only writers of system-tag relations on any surface; on the read side MemberSystemTagQueryScope keeps system tags visible beside distributor-scoped manual tags in MemberTagsListService list/detail queries.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/MemberTagsCreateService.java#L87-L105",
+          "version": "repo-lines-v1:sha256:94d14f9e425b1d2073329f7e76556964e675470c85f45c434ec1fab45f355d22:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI5YTM4OTkyNzJmNWFlMjVhOTdhOTg5NmNjNzdjMDI5ZmQ0YjhjMDJkZmZmY2VmODUzYjUxMjJlMDgyNmQ4NWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkzNzQ0NGI1YWM3ZTI0YzZhZTQ0MTc1ZThkODE3NWJkMTM0MTA2ZjNhNzgzODY2NDA4ZmY1YjM1ZTBjMjQyYjYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdiZWY5OGM3NmU2NmFmMDVkOWZiNWE0YzgyZWU4Njc5ZjM2ZmVkMjU3MjQyMzA0YTMxYzgzNDkwMTg4MDIxYWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY3NDFiODRhN2RlYzk3NjRkNjgwMGZiMThmOWI5MjE0MDJkMWYyYjc4ZTAxNjExODYwM2FkM2Q5NmEzY2FiYzAifQ"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/systemtag/MemberSystemTagQueryScope.java#L38-L65",
+          "version": "repo-lines-v1:sha256:b0b5ee011a6e58e9a0881b6dc9f7912cf2c1989c750ab88fea69bcc87343aea5:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJiMmIwNDQ4MTA4YjI2MmVmYmU5Mjg0YzA4YzQ5MTFmNmRhMzQ4YjdlYjE2NTNjZjk2ZmQ0YzJlNzAzNTg2MGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZjMWZjMzE4NGI2Y2Y4ZDJjZDViZjEyNzRlYzc0YTIzNzY0MzIzMTNiZWFjNzM5Y2U1NDJlNjY3ZjUyYjgyZWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/systemtag/MemberSystemTagWriteGuard.java#L38-L94",
+          "version": "repo-lines-v1:sha256:34b6bb1d9f5d9e89cf2476d1f4ca55bba2d9c0e179c58bab2570e147d145655e:eyJzZWxlY3RlZExpbmVDb3VudCI6NTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBlODdkYmQzMjViNTM1ZTBlZjhmNTA4OTAwNmRmNjNiYjMyYjI5OWVlZTc4YzcyZjU3MTI2YzU5MTc2OTYzMjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_03065258b14a41918825f133342dbc3d",
+      "statement": "MemberAudienceTagValidator.assertUsable is the read-side gate for the new promotions audience columns (used by promotions' MarketingActivityCreatePersistenceService and SeckillActivityCreateService): every referenced member_tag_id must exist in the tenant, and a manual tag must belong to the activity's distributor_id, while system tags are usable from any distributor.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/systemtag/MemberAudienceTagValidator.java#L38-L71",
+          "version": "repo-lines-v1:sha256:3c24c24f5ea225ffcc9256b8df73ab5a04f63bfae58690bb9fc0f9cb224e4204:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM2NTM0NTI0NjlhYTg1YjcyZWZmOGQxMDhiYTk0MmEzYjRmMzMwMGMzNzFkNzUyNWUyNGYxMzFmNGVkODA4MzQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNiMGY1YjBhNzJlODlmNmU4YmU4Zjc4ZTI0OWNmOTEzZmFmZmMyODE0MjY2NzQyZGNiNDMwNzY2Mzk4MGYwMTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/MarketingActivityCreatePersistenceService.java#L28-L74",
+          "version": "repo-lines-v1:sha256:e5897533c19530330a104c7dbaf91b09d5aa0706d1131476677277961b3de5e9:eyJzZWxlY3RlZExpbmVDb3VudCI6NDcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNiYWRjMzY3OTVlOTg0ZmU2NzJlMmZkMzVhOGJlZGE4ZmM2YjVhMGQyMWZkNmRjZTg5NjllMzJiMzRjOTVkODIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZjNDBlYWRiNDNlNmZjYWVhMWFmMmNlZTYyNTI5ZDdhNjg4NjNiODJhODY0YzJkYTQ3YmNlZWNjNjUxYjFlYTAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImMzNzE5NDMwMDgzNzQwNzgxNmE5NTI2NTBlYmI1ZmZkZDc5OGJjY2VlNzM0MTI0NWYzYjgwZjViNzg2M2ZkNTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ5YmE0MjQ1N2I5YzMxYmI5Y2ExZjVlNTg0ZGViNjZkYWRmOWE4ZThmODFjNmQ0YWI1ZDAxNTlhYmUzNDhkNGMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_83fa3cd558ca4ebf9c2e3e36357dcc62",
+      "statement": "The front MembersController address surface is hardened against cross-member access (ECX-10913/ECX-10923, PHP MembersOwnerScopeGuard parity): POST /wxapp/member/address resolves the acting user through resolveEffectiveUserIdForCreate, which only consults buy_user_id when a truthy promoter_user_id loosely equals the authenticated user, rejects a positive buy_user_id different from the caller with ResourceException(无权访问该数据), and otherwise falls through to authUserId; GET /wxapp/member/addresslist applies the same rule via resolveFilterUserIdForAddressList and always returns authUserId, removing the old null filterUserId orphan-address bypass — the four create branches are pinned by MembersControllerAddressBuyUserScopeTest.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/api/front/v1/MembersController.java#L2912-L2923",
+          "version": "repo-lines-v1:sha256:bc9f2a93a1de699bff577b7ee97bf0020c11724b8a815426e703c3236d25ce79:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE2NmE4ZTNhNDRiMWZjODM1MWY0ZDUyM2YyYjI0MWQxYzA3NGFhMmVmYWJmN2RiYmUyYmJhMDJmZjEzZWU0ODMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFjNTVlZjY2MzhlMTgzNTE3NGFiOGQ2ZDljZjQ2YjQ2MzZiOWJiYWEyN2JiNzhlZmExNzI4MjQxMTkwNjFkN2YiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg5YzhiZWNlNjMwM2Q1MDdjNmYyMmVhNDNmMzhlNGYyZWJmMTM2NmI5NzEyYTI4MDY3ZjdmOTAzZTg1ZTMxZjcifQ"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/api/front/v1/MembersController.java#L2976-L2992",
+          "version": "repo-lines-v1:sha256:9ef9d3b8ab390ce9b889102c4c28c5e17d06052b6f8b571a48b25c4d3e47dfb6:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYzMGE5NzViNzZkNjYzMTY1YjM0Yjc1MTFlYjg1M2E1M2VjMjI2OTdiNDMxYTgxNzhiOWQ3ZWY1YzBhZmFhM2YiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjgzMzg5YTE4MzZhNThjMmRiNTQ3ZDRmOGE1ZjFlYTZlOTgwOWFjMmEyYThlNmYwMGNhODA0ZmRlZTA2M2Y4OWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMyNjJmZjRhMWMxMTlmM2JmMTY1Y2QyMTViYTdiN2ZlYTg2MGY4ZjM4ZTg2YzA5ZWE1MTgwZTEyMzNiMDY0OTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/api/front/v1/MembersController.java#L449-L509",
+          "version": "repo-lines-v1:sha256:5d2b9c6a19a13bf241297784308b401b39dadd12628d4432c3553094cdf934d5:eyJzZWxlY3RlZExpbmVDb3VudCI6NjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY1ZTE3ZDMxOTVkYjVmYjRiM2Q5ZDkyZDNhMzEyZWM5MWI4MDlkMWE0NjY2ZWQ5ZWMyZWY5ZWZmZGE0MGFhODgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY3YWY1N2Q5NTdiYWZmZGYwYTBlMWIzZjVmNDliNDgxMDU4NGMxZWVhNDhkMWZiZTkxNGQwNzdiNGZmMDdmZGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI1MmUxNTJiY2JlMWVkZjliMDA0MTg5ODgxYThlZmE4MWVhNWI3MjQyMmM1MDZiYTFiN2I5MzBmMWFkMzJlMDQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY5NmI5ZGIyZDdkNDc5NzJiNzIzNWZjMzU1NmI0NTgxYjE4MWIzZThkN2M5ZTJlODVlMTI2NTQ2NjM4YzFlMTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/test/java/cn/shopex/ecshopx/members/api/front/v1/MembersControllerAddressBuyUserScopeTest.java#L28-L65",
+          "version": "repo-lines-v1:sha256:4e61464728d40ddfe65ca9b29e9723da74ed99e7aaf3390a8cb07d45bccb44e5:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFkNGI1YTExMzFkYTVkOThiODdkZGVjYmNlMDNkYTQyZjExNWMyM2U2YTQ4Njc5NTE2MDk1ZGQ4NzZhNGQ4ZmEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY1MTk2YWFlMGVhMmEyNTQ5Nzk0MWM3MWQ2ZTlkNjU4MzI3MTk4MWUzNDc3NmMwYzAwM2NjNjc3ZTkzZWFiOTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_6d1c6cc2c5c44fef9ca4c30f4fe623a9",
+      "statement": "The system-tag subsystem is pinned by unit tests in ecshopx-members/src/test/.../service/systemtag/: NewCustomerTagReconcileServiceTest (zero effective paid attaches once with the caller's SOURCE in the audit row, a paid order detaches, disable/missing/disabled detaches all system tags), SleepingUserTagReconcileServiceTest (180-day strict threshold and sweep diffs), BirthdayThisMonthReconcileServiceTest, MemberSystemTagWriteGuardTest and MemberSystemTagSeedServiceTest, plus TradeRefundNewCustomerListenerTest for the refund SUCCESS gate.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-members/src/test/java/cn/shopex/ecshopx/members/service/systemtag/MemberSystemTagSeedServiceTest.java",
+          "version": "repo-file-v1:sha256:44e852f6e45714427551820a0499de020462fc7d243d0630c5e75ee709bb5d7d"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/test/java/cn/shopex/ecshopx/members/service/systemtag/MemberSystemTagWriteGuardTest.java",
+          "version": "repo-file-v1:sha256:670b3025b15e5d3121c1569e0a04616d7edcc1b4fa91d51c9986ee0d00b5b476"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/test/java/cn/shopex/ecshopx/members/service/systemtag/NewCustomerTagReconcileServiceTest.java#L69-L95",
+          "version": "repo-lines-v1:sha256:68d51a3728c785aeeb17a0c8bd6705672802686755b82e39792f8d9f9153c127:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRkNDAwNzQ0ZTM1ZDBiODkyY2ZmMTJjMDRhNmZkY2YzYTMzYTZmOGFiNjhlNGI1ZTVhZDRjYzFkNmQzNmUwMjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc3ZTA3YTYzNTAwNjIwYzhjYjUwOWVmZDE3NjIxYjBiOTBkYmJiNDg1MjYxZDgyMTI1MTljMDRiZjY0MDRmOWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFkOTU1YmYxNzhiMGFkMjMwYzRhNDBmNzdlZTJkNDkwM2EzOWY2YTgyZTBkNjNjMjVlZDQ5MjEyYmRiNzJkNjgifQ"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/test/java/cn/shopex/ecshopx/members/service/systemtag/SleepingUserTagReconcileServiceTest.java",
+          "version": "repo-file-v1:sha256:b05c47876c886870b92368698ca36e30bf9f61eecbc045a194dfa1fee0da3130"
+        }
+      ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.7.3",
-    "at": "2026-11-04T17:09:55.577Z"
+    "by": "openwiki/0.9.0",
+    "at": "2026-11-05T17:10:02.238Z"
   }
 }

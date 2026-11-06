@@ -107,6 +107,16 @@ public class ItemsCategoryRepository {
 		return mapper.selectList(w);
 	}
 
+	/** 入驻类目：展开 2 级节点下全部 3 级管理分类（平台店铺 distributor_id=0）。 */
+	public List<ItemsCategory> listMainCategoryChildrenByParentId(long companyId, long parentId, long distributorId) {
+		LambdaQueryWrapper<ItemsCategory> w = new LambdaQueryWrapper<>();
+		w.eq(ItemsCategory::getCompanyId, companyId)
+				.eq(ItemsCategory::getParentId, parentId)
+				.eq(ItemsCategory::getIsMainCategory, true)
+				.eq(ItemsCategory::getDistributorId, distributorId);
+		return mapper.selectList(w);
+	}
+
 	/**
 	 * 平面创建分类：同公司、同父级、同主类目标记、同店铺维度下的重名检测。
 	 */

@@ -260,7 +260,7 @@ public class RegistrationActivityController {
 		String requestLangTag = requestLangTag(request, null);
 		int page = pageRaw == null ? 1 : (int) LeadingNumberParser.parseAsLong(pageRaw.trim());
 		int pageSize = pageSizeRaw == null ? 1 : (int) LeadingNumberParser.parseAsLong(pageSizeRaw.trim());
-		int status = statusRaw == null ? 0 : (int) LeadingNumberParser.parseAsLong(statusRaw.trim());
+		Integer statusTab = parseRegistrationActivityListStatusTab(statusRaw);
 		String activityNameTrimmed = activityName == null ? "" : activityName.trim();
 		long companyId = resolveCompanyId(request);
 		Map<String, Object> data = registrationActivityFrontGetRegistrationActivityListService.getRegistrationActivityList(
@@ -270,7 +270,7 @@ public class RegistrationActivityController {
 				parseClaimsUserId(request),
 				page,
 				pageSize,
-				status,
+				statusTab,
 				activityNameTrimmed);
 		return ResponseEntity.ok(ApiResult.ok(data));
 	}
@@ -284,6 +284,20 @@ public class RegistrationActivityController {
 			throw new BadRequestException("page 格式不正确");
 		}
 		return (int) p;
+	}
+
+	/**
+	 * 前端 Tab：不传或空 = 全部；0 = 未开始；1 = 进行中；2 = 已结束。
+	 */
+	private static Integer parseRegistrationActivityListStatusTab(String statusRaw) {
+		if (statusRaw == null || statusRaw.isBlank()) {
+			return null;
+		}
+		long parsed = LeadingNumberParser.parseAsLong(statusRaw.trim());
+		if (parsed < Integer.MIN_VALUE || parsed > Integer.MAX_VALUE) {
+			return null;
+		}
+		return (int) parsed;
 	}
 
 	private static int parseRegistrationRecordListPageSize(String pageSizeRaw) {

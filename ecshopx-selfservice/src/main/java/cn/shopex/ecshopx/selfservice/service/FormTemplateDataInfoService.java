@@ -41,7 +41,7 @@ public class FormTemplateDataInfoService {
 		this.formTemplateOutsideMultiLangReadService = formTemplateOutsideMultiLangReadService;
 	}
 
-	public Object getDataInfo(String idRaw, String countryCode) {
+	public Object getDataInfo(String idRaw, long companyId, String countryCode) {
 		String t = idRaw == null ? "" : idRaw.trim();
 		if (t.isEmpty() || "0".equals(t)) {
 			return Collections.emptyList();
@@ -57,15 +57,15 @@ public class FormTemplateDataInfoService {
 		}
 
 		FormTemplate entity = formTemplateMapper.selectById(id);
-		if (entity == null) {
+		// ECX-10944：他公司或公司为空与记录不存在相同，且不读取多语言
+		if (entity == null || entity.getCompanyId() == null || !entity.getCompanyId().equals(companyId)) {
 			return Collections.emptyList();
 		}
 
 		Map<String, Object> row = formTemplateApiRowAssembler.toRow(entity);
 
 		String requestLangTag = resolveLangTag(countryCode);
-		formTemplateOutsideMultiLangReadService.applyListLangOverrides(
-				entity.getCompanyId(), List.of(row), requestLangTag);
+		formTemplateOutsideMultiLangReadService.applyListLangOverrides(companyId, List.of(row), requestLangTag);
 
 		// Multilang may replace decoded content with a JSON string; decode again so the detail response stays structured.
 		Object content = row.get("content");

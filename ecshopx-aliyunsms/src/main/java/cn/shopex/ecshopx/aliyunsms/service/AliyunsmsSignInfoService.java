@@ -18,6 +18,7 @@ package cn.shopex.ecshopx.aliyunsms.service;
 
 import cn.shopex.ecshopx.aliyunsms.domain.Sign;
 import cn.shopex.ecshopx.aliyunsms.mapper.SignMapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -48,11 +49,16 @@ public class AliyunsmsSignInfoService {
 		this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
 	}
 
-	public Map<String, Object> getInfo(Long id, HttpServletRequest request) {
+	public Map<String, Object> getInfo(long companyId, Long id, HttpServletRequest request) {
 		if (id == null) {
 			return new LinkedHashMap<>();
 		}
-		Sign row = signMapper.selectById(id);
+		// ECX-10932：对齐模板详情，按主键和公司一起查询；不存在、公司为空或不匹配都得到空 Map
+		Sign row =
+				signMapper.selectOne(
+						Wrappers.<Sign>lambdaQuery()
+								.eq(Sign::getId, id)
+								.eq(Sign::getCompanyId, companyId));
 		if (row == null) {
 			return new LinkedHashMap<>();
 		}

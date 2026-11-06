@@ -32,8 +32,7 @@ import org.springframework.util.StringUtils;
 @Service
 public class MerchantSettlementApplyListQueryService {
 
-	private static final List<String> DECRYPT_KEYS =
-			List.of("legal_cert_id", "legal_mobile", "card_id_mask", "bank_mobile");
+	private static final List<String> DECRYPT_KEYS = List.of("legal_cert_id", "card_id_mask", "bank_mobile");
 
 	private final MerchantSettlementApplyMapper merchantSettlementApplyMapper;
 	private final SensitiveFieldEncryptor sensitiveFieldEncryptor;
@@ -53,15 +52,6 @@ public class MerchantSettlementApplyListQueryService {
 		}
 		if (StringUtils.hasText(input.merchantName())) {
 			w.like(MerchantSettlementApply::getMerchantName, "%" + input.merchantName() + "%");
-		}
-		if (StringUtils.hasText(input.province())) {
-			w.eq(MerchantSettlementApply::getProvince, input.province());
-		}
-		if (StringUtils.hasText(input.city())) {
-			w.eq(MerchantSettlementApply::getCity, input.city());
-		}
-		if (StringUtils.hasText(input.area())) {
-			w.eq(MerchantSettlementApply::getArea, input.area());
 		}
 		if (StringUtils.hasText(input.settledType())) {
 			w.eq(MerchantSettlementApply::getSettledType, input.settledType());
@@ -108,18 +98,13 @@ public class MerchantSettlementApplyListQueryService {
 		row.put("company_id", m.getCompanyId());
 		row.put("mobile", m.getMobile());
 		row.put("is_agree_agreement", m.isAgreeAgreement());
-		row.put("merchant_type_id", m.getMerchantTypeId());
 		row.put("settled_type", m.getSettledType());
 		row.put("merchant_name", m.getMerchantName());
+		row.put("contact_name", m.getContactName());
 		row.put("social_credit_code_id", m.getSocialCreditCodeId());
-		row.put("province", m.getProvince());
-		row.put("city", m.getCity());
-		row.put("area", m.getArea());
-		row.put("regions_id", m.getRegionsId());
-		row.put("address", m.getAddress());
-		row.put("legal_name", m.getLegalName());
+		row.put("license_registered_address", m.getLicenseRegisteredAddress());
+		row.put("license_legal_representative", m.getLicenseLegalRepresentative());
 		row.put("legal_cert_id", m.getLegalCertId());
-		row.put("legal_mobile", m.getLegalMobile());
 		row.put("bank_acct_type", m.getBankAcctType());
 		row.put("card_id_mask", m.getCardIdMask());
 		row.put("bank_name", m.getBankName());

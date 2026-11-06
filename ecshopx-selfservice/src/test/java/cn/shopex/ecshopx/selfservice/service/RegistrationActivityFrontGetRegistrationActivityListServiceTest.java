@@ -25,7 +25,7 @@ class RegistrationActivityFrontGetRegistrationActivityListServiceTest {
 	@Test
 	void frontActivityListOrderByLastClause_statusAll_ordersOngoingThenWaitingThenEnded() {
 		String sql = RegistrationActivityFrontGetRegistrationActivityListService.frontActivityListOrderByLastClause(
-				0, 1_700_000_000);
+				null, 1_700_000_000);
 		assertThat(sql).isNotNull();
 		assertThat(sql).contains("ORDER BY CASE");
 		assertThat(sql).contains("start_time > 1700000000 THEN 1");
@@ -36,6 +36,9 @@ class RegistrationActivityFrontGetRegistrationActivityListServiceTest {
 
 	@Test
 	void frontActivityListOrderByLastClause_filteredStatus_usesDefaultActivityIdDesc() {
+		assertThat(RegistrationActivityFrontGetRegistrationActivityListService.frontActivityListOrderByLastClause(
+						0, 1_700_000_000))
+				.isNull();
 		assertThat(RegistrationActivityFrontGetRegistrationActivityListService.frontActivityListOrderByLastClause(
 						1, 1_700_000_000))
 				.isNull();

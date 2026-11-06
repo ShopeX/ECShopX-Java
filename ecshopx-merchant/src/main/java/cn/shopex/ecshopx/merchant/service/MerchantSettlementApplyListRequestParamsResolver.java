@@ -32,9 +32,6 @@ public class MerchantSettlementApplyListRequestParamsResolver {
 		putSingleOrList(out, "page_size", request.getParameterValues("page_size"));
 		putSingleOrList(out, "audit_status", request.getParameterValues("audit_status"));
 		putSingleOrList(out, "merchant_name", request.getParameterValues("merchant_name"));
-		putSingleOrList(out, "province", request.getParameterValues("province"));
-		putSingleOrList(out, "city", request.getParameterValues("city"));
-		putSingleOrList(out, "area", request.getParameterValues("area"));
 		putSingleOrList(out, "settled_type", request.getParameterValues("settled_type"));
 		String[] ts = request.getParameterValues("time_start");
 		if (ts == null || ts.length == 0) {

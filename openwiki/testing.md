@@ -1,8 +1,8 @@
 ---
 type: testing-conventions
 title: Testing Conventions and Verification
-description: How ECShopX-Java verifies changes — per-Bundle plain JUnit 5 unit tests with mocked persistence, the DispatchFlow / PublishProbe / BusProbe / Delegation / WebSlice / ScopeTest / TableContractTest naming taxonomy that pins dispatch publishing, AFTER_COMMIT timing, distributor/company scoping, and entity table metadata, the narrowest mvnw commands per change type, and the suite's coverage boundaries.
-tags: [testing, junit, mockito, dispatch, probes, webslice, scopetest, tablecontract, mockmvc, maven, verification]
+description: How ECShopX-Java verifies changes — per-Bundle plain JUnit 5 unit tests with mocked persistence, the DispatchFlow / PublishProbe / BusProbe / Delegation / WebSlice / ScopeTest / CompanyScopeTest / OwnershipTest / IdempotencyTest / ReplayGuardTest / TableContractTest naming taxonomy that pins dispatch publishing, AFTER_COMMIT timing, tenant/ownership scoping, idempotency and replay guards, and entity table metadata, the narrowest mvnw commands per change type, and the suite's coverage boundaries.
+tags: [testing, junit, mockito, dispatch, probes, webslice, scopetest, ownership, idempotency, replayguard, tablecontract, mockmvc, maven, verification]
 sources:
   - id: openwiki-source-8037e2358a2c4f9b2c722a11
     resource: repo://AGENTS.md
@@ -16,6 +16,10 @@ sources:
     resource: repo://ecshopx-aftersales/src/test/java/cn/shopex/ecshopx/aftersales/service/AftersalesApplyCheckApplyServiceFreightTest.java
   - id: openwiki-source-7dd053095170d5ad4fe73bfc
     resource: repo://ecshopx-aftersales/src/test/java/cn/shopex/ecshopx/aftersales/service/AftersalesApplyCheckApplyServiceTopLevelRefundTest.java
+  - id: openwiki-source-32f8e9527cad9c094a5ec0db
+    resource: repo://ecshopx-aftersales/src/test/java/cn/shopex/ecshopx/aftersales/service/AftersalesRefundListDistributorScopeTest.java
+  - id: openwiki-source-97c89a01de81cceb97001ab4
+    resource: repo://ecshopx-aftersales/src/test/java/cn/shopex/ecshopx/aftersales/service/AftersalesRefundLogExportDistributorScopeTest.java
   - id: openwiki-source-f43b322f8b50f1451fda66cc
     resource: repo://ecshopx-aftersales/src/test/java/cn/shopex/ecshopx/aftersales/service/AftersalesTestMessageSource.java
   - id: openwiki-source-84aeb105875424c9aac7edf8
@@ -28,6 +32,10 @@ sources:
     resource: repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/companys/api/admin/v1/OperatorsGetCredentialsWebSliceTest.java
   - id: openwiki-source-c2704d8c6e6fb3c680b55461
     resource: repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/config/ItemAddEventDispatchPublisherImplAfterCommitTest.java
+  - id: openwiki-source-423c7bde5a386038c2869dcc
+    resource: repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/deposit/service/AdapayDepositTradeRechargeCallbackServiceIdempotencyTest.java
+  - id: openwiki-source-90cdad558f0137ebf2ca7776
+    resource: repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/deposit/service/AdapayDepositTradeRechargeCallbackServiceSmsDispatchTest.java
   - id: openwiki-source-221dc963163a3ac47be4e89b
     resource: repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/dispatch/DispatchBusConfigTest.java
   - id: openwiki-source-dd56e6783c33d267dc49000b
@@ -50,12 +58,16 @@ sources:
     resource: repo://ecshopx-companys/src/test/java/cn/shopex/ecshopx/companys/domain/PosStoreAccountTableContractTest.java
   - id: openwiki-source-b46999eafd87f9221c90e9f4
     resource: repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/integration/OrderProcessLogPublishPortImpl.java
+  - id: openwiki-source-bcc5391c60f8a5033bd2cf22
+    resource: repo://ecshopx-employee-purchase/src/test/java/cn/shopex/ecshopx/employeepurchase/service/EmployeePurchaseActivityItemWriteServiceCompanyScopeTest.java
   - id: openwiki-source-4c1a598ea111a3cf1912ad1e
     resource: repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/service/ItemsProfitSaveServiceScopeTest.java
   - id: openwiki-source-fdde77b5e0fe122a5896b993
     resource: repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/service/order/normal/OrderCreateFormatDataPortImplShopIdAlignPhpTest.java
   - id: openwiki-source-0d8d2be20738e721172f6849
     resource: repo://ecshopx-members/pom.xml
+  - id: openwiki-source-2425b7a1af8631937f2e830a
+    resource: repo://ecshopx-members/src/test/java/cn/shopex/ecshopx/members/api/front/v1/MembersControllerAddressBuyUserScopeTest.java
   - id: openwiki-source-6abe756b6b1ec9215d78d6c9
     resource: repo://ecshopx-members/src/test/java/cn/shopex/ecshopx/members/service/account/MemberAccountServiceCreateMemberLocalAutoRegisterDispatchTest.java
   - id: openwiki-source-fee537e6550e9e99a27ddcd9
@@ -64,6 +76,10 @@ sources:
     resource: repo://ecshopx-members/src/test/java/cn/shopex/ecshopx/members/service/account/MemberAccountServiceDispatchIntegrationTestConfiguration.java
   - id: openwiki-source-ebeaa8eab25d1fdbf30994ef
     resource: repo://ecshopx-members/src/test/java/cn/shopex/ecshopx/members/service/h5/prelogin/H5NewLoginPathsCreateMemberSuccessDispatchProbeTest.java
+  - id: openwiki-source-4889f150849f66bdb3e774ab
+    resource: repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/web/OpenapiSignedRequestReplayGuard.java
+  - id: openwiki-source-05f1689fa8b246986a24bcd3
+    resource: repo://ecshopx-openapi/src/test/java/cn/shopex/ecshopx/openapi/web/OpenapiSignedRequestReplayGuardTest.java
   - id: openwiki-source-07fb8468822e1637135de269
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/api/front/v1/WxappOrderController.java
   - id: openwiki-source-1e59ed1d09620110f69b2b0a
@@ -72,6 +88,10 @@ sources:
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/shopadmin/ShopadminDeferredOrderService.java
   - id: openwiki-source-62affb568b07c8a112eceb19
     resource: repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/orders/integration/AlipayNotifyOrderProcessLogEventAsyncConsumeTest.java
+  - id: openwiki-source-0e983b4fde485bf2f006c24e
+    resource: repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/orders/service/front/wxapp/RightsFrontWxappGetRightsCodeOwnershipTest.java
+  - id: openwiki-source-4ac8fcb4979b99e135bda9cf
+    resource: repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/orders/service/front/wxapp/WxappOfflinePaymentGetVoucherOwnerScopeTest.java
   - id: openwiki-source-bfa6962bc8fd8f6d10b3b674
     resource: repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/orders/service/normal/create/OrderCreatePersistencePortImplShopIdAlignPhpTest.java
   - id: openwiki-source-7aab81459a9c49fc95cc70fd
@@ -88,6 +108,14 @@ sources:
     resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/SeckillActivityCreateService.java
   - id: openwiki-source-4859543f3a926b7f5deb24d9
     resource: repo://ecshopx-promotions/src/test/java/cn/shopex/ecshopx/promotions/service/SeckillActivityCreateServiceLimitedTimeSaleShopOverlapTest.java
+  - id: openwiki-source-ff9eb737c3f5fd8b605a107f
+    resource: repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/auth/InboundSignedCallbackReplayGuard.java
+  - id: openwiki-source-8820a9e01de0795da2508b07
+    resource: repo://ecshopx-shuyun/src/test/java/cn/shopex/ecshopx/shuyun/auth/InboundSignedCallbackReplayGuardTest.java
+  - id: openwiki-source-19d2b0be785f41a69b8d89b4
+    resource: repo://ecshopx-work-wechat/src/test/java/cn/shopex/ecshopx/workwechat/service/WorkWechatVerifyDomainFileServiceCompanyScopeTest.java
+  - id: openwiki-source-0240a7de48923742c25dc762
+    resource: repo://ecshopx-wsugc/src/test/java/cn/shopex/ecshopx/wsugc/service/post/PostVerifyServiceCompanyScopeTest.java
   - id: openwiki-source-5a780646d86a0aaa3f978db0
     resource: repo://ecshopx-youshu/src/test/java/cn/shopex/ecshopx/youshu/dispatch/CouponDeleteYoushuDispatchListenerDispatchConsumerRuntimeTest.java
   - id: openwiki-source-2355f81d7cf522f8dbdaabd4
@@ -95,14 +123,14 @@ sources:
   - id: openwiki-source-f1b1aacc63642e5304668821
     resource: repo://readme.md
 verified:
-  - by: openwiki/0.7.3
-    at: 2026-11-04T17:09:55.577Z
-generated: { by: "openwiki/0.7.3", at: "2026-11-04T17:09:55.577Z" }
+  - by: openwiki/0.9.0
+    at: 2026-11-05T17:10:02.238Z
+generated: { by: "openwiki/0.9.0", at: "2026-11-05T17:10:02.238Z" }
 ---
 
 # Testing Conventions and Verification
 
-ECShopX-Java verifies changes with **fast, narrow, per-Bundle unit tests**, not with a Spring integration harness. A test almost never boots a Spring context, never opens a database connection, and never talks to Redis or RabbitMQ; instead it constructs the class under test directly, injects Mockito mocks for every collaborator (mappers, Redis templates, cross-Bundle ports, dispatch publishers), and asserts on captured arguments. What makes the suite distinctive is how much of the *dispatch bus contract* is pinned this way: several hundred test classes across the reactor assert exact publish tuples, AFTER_COMMIT publication timing, listener wiring, and consume-side envelopes — see [Dispatch Bus](concepts/dispatch-bus.md) for the runtime being tested.
+ECShopX-Java verifies changes with **fast, narrow, per-Bundle unit tests**, not with a Spring integration harness. A test almost never boots a Spring context, never opens a database connection, and never talks to Redis or RabbitMQ; instead it constructs the class under test directly, injects Mockito mocks for every collaborator (mappers, Redis templates, cross-Bundle ports, dispatch publishers), and asserts on captured arguments. What makes the suite distinctive is how much of the *dispatch bus contract* and the *tenant-scoping / idempotency / replay-safety contract* is pinned this way: several hundred test classes across the reactor assert exact publish tuples, AFTER_COMMIT publication timing, listener wiring, consume-side envelopes, cross-tenant rejection, atomic callback takeover, and Redis replay-guard keys — see [Dispatch Bus](concepts/dispatch-bus.md) for the runtime being tested.
 
 The repository-level operating principle (from `AGENTS.md`): **prefer the narrowest quiet validation that proves the changed behavior, and preserve complete failure output.** Everything below — the naming taxonomy and the `mvnw` recipes — exists to make that narrow validation easy to find and run.
 
@@ -128,7 +156,7 @@ Suffixes are load-bearing: the suffix tells you which layer a test pins and whic
 | `*AfterCommitTest` | `ecshopx-bootstrap/src/test/.../config/` | The AFTER_COMMIT wrapper itself: zero facade interactions inside the transaction, exactly one publish with the exact options after commit, immediate publish with no active transaction. |
 | `*EventAsyncConsumeTest` | `ecshopx-orders/src/test/.../orders/integration/` (~50 classes) | Consume-side envelope: hand-construct a `DispatchMessage` carrying the real listener name and queue, register the real listener on an `InMemoryDispatchRegistry`, and drive `DispatchConsumerRuntime.consume(msg, 1)` to prove the listener's underlying service (`OrderProcessLogBusService.persistEntitiesMap`, …) runs once with the payload. |
 | `*DispatchConsumerRuntimeTest` | Consuming bundles (`ecshopx-youshu`, `ecshopx-hfpay`, `ecshopx-reservation`) | Same consume-side shape as above, named after the runtime: the listener is registered with its production `ListenerDispatchOptions` and the runtime is proven to reach the real downstream service. |
-| `*ScopeTest` | Service packages across many bundles (`ecshopx-goods`, `ecshopx-orders`, `ecshopx-promotions`, `ecshopx-aftersales`, `ecshopx-members`, `ecshopx-comments`, …) | Distributor/company scoping: the real service runs with mocked repositories/ports and the test pins that cross-tenant input is rejected or narrowed (a foreign `item_id` aborts the whole write with `never()` verifications on every write path; a distributor account's export filter is forced to the activated/JWT `distributor_id` while an admin account gets no forced scope). |
+| `*ScopeTest` / `*CompanyScopeTest` / `*OwnershipTest` / `*IdempotencyTest` / `*ReplayGuardTest` | Service packages across nearly every bundle (see the hardening families below) | Tenant-scoping, ownership, idempotency, and replay-safety guards added by the security-hardening window — see the dedicated section below. |
 | `*TableContractTest` | Bundle `domain` packages (currently `ecshopx-companys`: `PosStoreAccountTableContractTest`) | Entity-to-schema metadata contract: reflects on the entity's `@MpTable` annotation (ecshopx-common's MyBatis-Plus metadata extension carrying index definitions) and asserts the table name plus exact unique-index name/columns — e.g. `pos_store_account` must expose exactly `uk_employee_no(employee_no)` — and, when the local Flyway `db/migration` directory is present, that the incremental SQL keeps the same index. |
 | `*EnqueueTest`, `*ChainTest`, `*ProbeTest` (bare) | Various bundles | Local variants of the publish probe for non-dispatch side effects (SMS enqueues, reservation notice chains, orchestrator fan-out). |
 
@@ -156,9 +184,36 @@ Because these tests live in `ecshopx-bootstrap`'s test tree, they can see both t
 
 Publish probes cannot use a real database transaction, so they install a hand-rolled `PlatformTransactionManager` whose `getTransaction` calls `TransactionSynchronizationManager.initSynchronization()` and whose `commit` iterates the registered synchronizations and calls each `afterCommit()` before clearing (see `syncFiringTxManager()` in `OfflinePaymentDoCheckTradeFinishCanceledRefundOplPublishProbeTest`, or the Mockito-stubbed `newCommitFiresAfterSynchronizationsTxManager()` in `AftersalesAdminApplyOrderProcessLogDispatchPublishProbeTest`). The service under test is then driven through a `TransactionTemplate` over that manager, and the test asserts `publishEvent` / `dispatchJob` fired **only** after commit — e.g. `ItemAddEventDispatchPublisherImplAfterCommitTest` proves zero facade interactions inside `tt.execute` and exactly one publish with the exact options tuple afterwards, plus the no-transaction fallback (immediate publish). An `@AfterEach` clears `TransactionSynchronizationManager` so state never leaks between tests.
 
-### Scope probes: `*ScopeTest`
+The same fake-transaction idiom pins a **dispatch publish after commit** in a non-probe class: `AdapayDepositTradeRechargeCallbackServiceSmsDispatchTest` drives the real callback service through a `TransactionTemplate` over a Mockito-stubbed manager (`getTransaction` → `initSynchronization()`, `commit` → fire each `afterCommit()` then `clear()`), and asserts `verifyNoInteractions(publisher)` **inside** the transaction body plus exactly one `publishRechargeSendSmsNotice(10L, 20L, "13900001001", 8000L)` after commit; a second test proves a non-`SUCCESS` status never touches the publisher. This is the "dispatch probe asserting bus publish after commit" shape applied to a callback side effect rather than a named `*PublishProbeTest`.
 
-`*ScopeTest` classes pin tenant scoping rules that are easy to regress silently, using the same plain-Mockito harness as publish probes but with no dispatch involved. Two shapes dominate:
+### Scope, ownership, idempotency, and replay guards: the hardening families
+
+The security-hardening window (ECX-108xx/109xx tickets) added a broad family of plain-Mockito tests that pin **authorization and exactly-once invariants** rather than dispatch behavior. They reuse the standard harness (real service constructed with `new`, mocked mappers/Redis/ports, `@BeforeAll TableInfoHelper.initTableInfo` when lambda wrappers are built) but the assertion target is a guard, not a publish tuple. Class Javadoc cites the ticket — e.g. `/** ECX-10886：退款列表未授权 distributor_id 须收束到 JWT 门店，不得去掉门店条件。 */`.
+
+**`*ScopeTest` / `*CompanyScopeTest` — tenant scoping.** These now span `ecshopx-adapay`, `ecshopx-aftersales`, `ecshopx-ali`, `ecshopx-bspay`, `ecshopx-comments`, `ecshopx-companys`, `ecshopx-data-cube`, `ecshopx-distribution`, `ecshopx-employee-purchase`, `ecshopx-espier`, `ecshopx-form`, `ecshopx-goods`, `ecshopx-kujiale`, `ecshopx-members`, `ecshopx-orders`, `ecshopx-promotions`, `ecshopx-salesperson`, `ecshopx-selfservice`, `ecshopx-work-wechat`, `ecshopx-wsugc`, and more. Three assertion shapes recur:
+
+* **SQL-segment scoping** — capture the MyBatis-Plus wrapper and assert the query carries the tenant predicate. `EmployeePurchaseActivityItemWriteServiceCompanyScopeTest` captures the `selectOne` wrapper and asserts `getSqlSegment()` contains `company_id`, then uses a `thenAnswer` that returns a foreign-company row **only when the wrapper lacks the `company_id` clause** to prove a correctly-scoped query never sees it — followed by `never()` verifications on every write path (`insertIgnoreActivityItems`, `insertIgnoreActivityGoods`, the Redis `store`).
+* **JWT/activated-shop clamping** — a caller-supplied `distributor_id` outside the operator's JWT scope is narrowed, never dropped. `AftersalesRefundListDistributorScopeTest` builds a JWT with `distributor_ids` `[10, 20]`, feeds an unauthorized `distributorIdRaw="99"` (or an empty activated-shop intersection), and captures the `selectCount` wrapper to assert its params contain `10L, 20L`; the authorized `"10"` case pins that exactly `10L` (not `20L`) is bound. `AftersalesRefundLogExportDistributorScopeTest` pins the same clamp on the export-filter map (`filter.get("distributor_id")` is `[10, 20]` for an unauthorized input, `10L` for an authorized one).
+* **Cross-tenant write rejection** — `WorkWechatVerifyDomainFileServiceCompanyScopeTest` proves a same-name row owned by another company makes `saveVerifyInfo` throw `ResourceException("验证文件名已被占用")` with `never()` on `updateById`/`insert`, and that the own-company update carries the unchanged `company_id` (100L) in the captured entity.
+
+The form bundle shows a **pure-function scope** variant: `UserTranscriptListCompanyScopeTest` calls the static `UserTranscriptListCompanyScope.apply(filters, 100L)` directly and asserts client-supplied `company_id` keys (including `company_id|neq`, `company_id|in`) are stripped and the JWT company is forced — no mocks at all.
+
+**`*OwnershipTest` — front-endpoint self-service ownership.** Front (C-end) endpoints must prove the requested resource belongs to the authenticated member, with **no side effects on rejection**.
+
+* `RightsFrontWxappGetRightsCodeOwnershipTest` — a foreign-user or foreign-company `Rights` row (or a missing one) makes `getRightsCode` throw `ResourceException("无权访问该权益")`, and the test verifies `never()` on **both** downstream effectors (`wechatStringRedisTemplate.opsForValue()` and `memberBarcodeGenerateService.generateBarcodeAndQrcodeDataUrlsForPlainContent`) — so a rejected request can neither write the Redis code nor generate a barcode. Invalid ids throw `BadRequestException("获取核销码出错")`; the own-rights positive case asserts a 16-char code and the Redis `set`.
+* `WxappOfflinePaymentGetVoucherOwnerScopeTest` — an order owned by someone else returns `Collections.emptyList()` and `never()` touches `offlinePaymentMapper`, so the voucher row is never read for a non-owner.
+* `MembersControllerAddressBuyUserScopeTest` — the static `MembersController.resolveEffectiveUserIdForCreate` pins that a `buy_user_id` of another user is rejected (`ResourceException("无权访问该数据")`) while a missing or self `buy_user_id` resolves to the auth user — guarding that address creation stays self-service.
+
+**`*IdempotencyTest` — atomic callback takeover.** `AdapayDepositTradeRechargeCallbackServiceIdempotencyTest` pins the deposit-recharge callback's optimistic state transition: (1) the `update` wrapper's SQL segment carries a `trade_status` guard (`containsIgnoringCase("trade_status")`) so the transition is `WHERE trade_status <> 'SUCCESS'`; (2) when `update` returns `0` (a concurrent caller already won the takeover), the service throws `ResourceException("更新已处理，不需要更新")` and the test verifies `never()` on the balance mutation plus `verifyNoInteractions(redis)` and `verifyNoInteractions(publisher)` — **zero side effects on a lost race**; (3) the first-callback success path verifies the balance mutation runs exactly once with the right amounts.
+
+**`*ReplayGuardTest` — Redis `SET NX` replay guards.** Two guards share one shape: a `StringRedisTemplate` mock whose `opsForValue().setIfAbsent(key, "1", ttl)` result decides admission.
+
+* `OpenapiSignedRequestReplayGuardTest` (openapi) — `assertOnce(appKey, sign, timestamp, ttl)`: first acquire returns `true` and the captured key starts with `openapi:auth:replay:`; an already-seen key returns `false`; a missing `app_key`/`sign`/`timestamp` returns `false`; and a Redis exception is **fail-closed** (`false`).
+* `InboundSignedCallbackReplayGuardTest` (shuyun) — `assertFreshAndOnce(sign, time, skewSeconds, ttlSeconds, nowMsSupplier)`: an injectable clock pins the freshness window (a timestamp >300 s old is rejected), the first-acquire key starts with `shuyun:cb:replay:`, an already-seen key is rejected, and a missing timestamp is rejected. The production guard scales 10-digit seconds-epoch to milliseconds and keys on `sha256(sign|time)`.
+
+### Scope probes: the original `*ScopeTest` shapes
+
+Two earlier shapes dominate the scoping family and are still the reference for the write-side / read-side split:
 
 * **Write-side rejection.** `ItemsProfitSaveServiceScopeTest` stubs `itemsRepository.getByItemIdAndCompany(42L, 100L)` to return `null` (item owned by another company) and asserts the save throws `ResourceException("商品不存在")` — then `verify(..., never())` on **every** write path (`deleteByCompanyAndItemIds`, `insertRow`, `updateProfitFeeByItemId`, `updateProfitByItemId`) proves a rejected entry aborts the entire batch with zero partial writes. The positive case verifies the update is issued with the company id in scope (`updateProfitFeeByItemId(eq(100L), ...)`).
 * **Read-side filter forcing.** `OrderExportFilterAssemblerDistributorScopeTest` drives the real assembler with a `MockHttpServletRequest` carrying the activated `DISTRIBUTOR_ID` request attribute (or the JWT `distributor_ids` attribute) and asserts the resulting export filter forces `distributor_id` to the scoped shop — including that an attacker-supplied `distributor_id` request parameter is overridden — while an `admin` account's filter gains no distributor key at all.
@@ -257,7 +312,10 @@ Map that to the taxonomy:
 | Shopadmin deferred create (no publish at create) | `./mvnw -pl ecshopx-orders test -Dtest=ShopadminNormalOrderCreateOrchestratorNormalOrderAddDispatchPublishProbeTest,NormalOrderAdminCreateUserOrderServiceNormalOrderAddDispatchPublishProbeTest` |
 | Order-persist field alignment with PHP `_formatOrderData` | `./mvnw -pl ecshopx-orders test -Dtest=OrderCreatePersistencePortImplShopIdAlignPhpTest` (and `-pl ecshopx-goods ...OrderCreateFormatDataPortImplShopIdAlignPhpTest` for the format side) |
 | Seckill shop-overlap relaxation / guard wiring | `./mvnw -pl ecshopx-promotions test -Dtest=SeckillActivityCreateServiceLimitedTimeSaleShopOverlapTest` |
-| Distributor/company scoping of a service | `./mvnw -pl ecshopx-<bundle> test -Dtest=<Service>ScopeTest` (e.g. `ItemsProfitSaveServiceScopeTest`, `OrderExportFilterAssemblerDistributorScopeTest`) |
+| Distributor/company scoping of a service | `./mvnw -pl ecshopx-<bundle> test -Dtest=<Service>ScopeTest` / `<Service>CompanyScopeTest` (e.g. `ItemsProfitSaveServiceScopeTest`, `OrderExportFilterAssemblerDistributorScopeTest`, `AftersalesRefundListDistributorScopeTest`, `PostVerifyServiceCompanyScopeTest`) |
+| Front-endpoint ownership of a resource | `./mvnw -pl ecshopx-<bundle> test -Dtest=<Endpoint>OwnershipTest` (e.g. `RightsFrontWxappGetRightsCodeOwnershipTest`) |
+| Callback idempotency / atomic takeover | `./mvnw -pl ecshopx-bootstrap test -Dtest=AdapayDepositTradeRechargeCallbackServiceIdempotencyTest` |
+| Signed-request / signed-callback replay guard | `./mvnw -pl ecshopx-openapi test -Dtest=OpenapiSignedRequestReplayGuardTest` / `./mvnw -pl ecshopx-shuyun test -Dtest=InboundSignedCallbackReplayGuardTest` |
 | Entity table/unique-index metadata | `./mvnw -pl ecshopx-<bundle> test -Dtest=<Entity>TableContractTest` (e.g. `PosStoreAccountTableContractTest`) |
 | Aftersales apply-check rules (freight, top-level refund) | `./mvnw -pl ecshopx-aftersales test -Dtest=AftersalesApplyCheckApplyService*Test` |
 | Consume-side envelope / listener wiring | `./mvnw -pl ecshopx-<bundle> test -Dtest=<Event>EventAsyncConsumeTest` (orders) or `...DispatchConsumerRuntimeTest` |
@@ -274,16 +332,16 @@ Production code also documents its own re-verification commands: `WxappOrderCont
 
 ## What the suite does and does not cover
 
-**Covered well:** dispatch publish tuples and AFTER_COMMIT timing; fan-out planning (per-listener queue/delay, parent-delay precedence — `DispatchFanOutPlannerTest`); consume envelopes and listener wiring; controller→service delegation and the HTTP envelope; tenant scoping of writes and export filters (`*ScopeTest`); pure business rules (aftersales freight/refund validation, limits, codecs, CSV export flattening); entity table/unique-index metadata (`*TableContractTest`); MyBatis-Plus wrapper construction (via mocked mappers + `TableInfoHelper`); the bus drivers' behaviors against mocked Redis/Rabbit templates (`RedisDispatchDriverTest`, `RedisDelayedDispatchMoverTest`, `RabbitDispatchDriverTest`, …).
+**Covered well:** dispatch publish tuples and AFTER_COMMIT timing; fan-out planning (per-listener queue/delay, parent-delay precedence — `DispatchFanOutPlannerTest`); consume envelopes and listener wiring; controller→service delegation and the HTTP envelope; tenant scoping of writes, reads, exports, and cross-tenant batch rejects (`*ScopeTest` / `*CompanyScopeTest`); front-endpoint self-service ownership (`*OwnershipTest`); callback idempotency / atomic takeover (`*IdempotencyTest`); signed-request and signed-callback replay guards (`*ReplayGuardTest`); pure business rules (aftersales freight/refund validation, limits, codecs, CSV export flattening); entity table/unique-index metadata (`*TableContractTest`); MyBatis-Plus wrapper construction (via mocked mappers + `TableInfoHelper`); the bus drivers' behaviors against mocked Redis/Rabbit templates (`RedisDispatchDriverTest`, `RedisDelayedDispatchMoverTest`, `RabbitDispatchDriverTest`, …).
 
 **Not covered by the automated suite — verify by other means:**
 
-* **No real database anywhere.** Mapper XML, SQL correctness, index behavior, and Flyway migrations are never executed by tests. `*TableContractTest` classes pin the entity-side annotation contract and any present local SQL text, but schema changes rely on the migration workflow (see [Workflow: Schema Migration](workflows/schema-migration.md)) and a manual/docker run — there is no test that replays `V*.sql` against MySQL.
-* **No real Redis, no AMQP broker.** Queue draining, the delayed-ZSET mover loop, and the 1-second pollers are only exercised with mocked `ListOperations`/`ZSetOperations`. The at-most-once consumption semantics documented on the dispatch page are consequences of code shape, not guarded by an integration test.
+* **No real database anywhere.** Mapper XML, SQL correctness, index behavior, and Flyway migrations are never executed by tests. `*TableContractTest` classes pin the entity-side annotation contract and any present local SQL text, but schema changes rely on the migration workflow (see [Workflow: Schema Migration](workflows/schema-migration.md)) and a manual/docker run — there is no test that replays `V*.sql` against MySQL. The idempotency tests assert the `trade_status` guard is present in the update wrapper's SQL text, but the actual atomic `UPDATE ... WHERE trade_status <> 'SUCCESS'` semantics depend on the real database.
+* **No real Redis, no AMQP broker.** Queue draining, the delayed-ZSET mover loop, and the 1-second pollers are only exercised with mocked `ListOperations`/`ZSetOperations`. The at-most-once consumption semantics documented on the dispatch page are consequences of code shape, not guarded by an integration test. The replay guards are proven against a mocked `setIfAbsent`, so the real Redis `SET NX EX` atomicity is assumed, not exercised.
 * **No end-to-end HTTP + DB + dispatch run.** `EcshopxApplicationTests.contextLoads` boots the context (needing the configured MySQL/Flyway environment) but asserts nothing beyond startup; there is no request→database→queue→handler round-trip test.
 * **Failure paths that need real infrastructure** — payment gateway callbacks, XXL-JOB triggers, WeChat APIs — are pinned only at the unit seam (mocked clients/ports), not against sandboxes.
 
-Practical consequences: a green `./mvnw -pl <module> test` proves your units and bus contracts, **not** that the SQL is valid or the schema matches the entities. Budget a manual or docker-compose run (see [Deployment](operations/deployment.md)) for anything touching mappers or migrations, and add or update the probe/flow/consume trio when you change a message contract — [Workflow: Adding a Dispatch Event, Job, or Cron Handler](workflows/add-event-or-job.md) walks through exactly which test families to add.
+Practical consequences: a green `./mvnw -pl <module> test` proves your units, bus contracts, and guard logic, **not** that the SQL is valid, the schema matches the entities, or Redis/DB atomicity holds under real concurrency. Budget a manual or docker-compose run (see [Deployment](operations/deployment.md)) for anything touching mappers, migrations, or takeover-critical updates, and add or update the probe/flow/consume trio when you change a message contract — [Workflow: Adding a Dispatch Event, Job, or Cron Handler](workflows/add-event-or-job.md) walks through exactly which test families to add.
 
 ## Focused tests
 
@@ -303,6 +361,21 @@ Practical consequences: a green `./mvnw -pl <module> test` proves your units and
 | `SeckillActivityCreateServiceLimitedTimeSaleShopOverlapTest` | Guard-relaxation test: `assertDoesNotThrow` around a same-shop overlapping `limited_time_sale` create/update plus `verify(guard).checkActivityValidBySecKill` — the shop mutex stays relaxed, the item-overlap guard stays wired |
 | `ItemsProfitSaveServiceScopeTest` | Write-side scope probe: a foreign `item_id` makes the whole save throw with `never()` on every repository write; the owned-item update carries the company id in scope |
 | `OrderExportFilterAssemblerDistributorScopeTest` | Read-side scope probe: distributor accounts get `distributor_id` forced from the activated shop or JWT `distributor_ids` (request parameters cannot override); admin accounts get no forced scope |
+| `AftersalesRefundListDistributorScopeTest` | JWT/activated-shop clamping: an unauthorized `distributorIdRaw` or an empty activated-shop intersection is narrowed to the JWT `distributor_ids` (`10, 20`) in the captured `selectCount` wrapper; an authorized id keeps exactly that shop |
+| `AftersalesRefundLogExportDistributorScopeTest` | The same clamp on the export-filter map: unauthorized input → `distributor_id=[10, 20]`, authorized input → `distributor_id=10` |
+| `EmployeePurchaseActivityItemWriteServiceCompanyScopeTest` | SQL-segment scoping: the activity `selectOne` wrapper carries `company_id`; a foreign-company activity is rejected with `never()` on every insert and the Redis `store` |
+| `WorkWechatVerifyDomainFileServiceCompanyScopeTest` | Cross-tenant name guard: a same-name row owned by another company throws with zero writes; the own-company update keeps the original `company_id` |
+| `PostVerifyServiceCompanyScopeTest` | B-end batch scope guard: a mixed batch containing a foreign-company post is rejected whole with `never()` on the update, point, and message writes; own-company posts verify normally |
+| `KujialeDesignerWorksBindItemServiceCompanyScopeTest` | Foreign-item bind is recorded as missing and never inserted; the own-company insert carries the caller's item/design/goodsBn |
+| `UserTranscriptListCompanyScopeTest` | Pure-function scope: client `company_id` keys (incl. `|neq` / `|in`) are stripped and the JWT company is forced |
+| `RightsFrontWxappGetRightsCodeOwnershipTest` | Front ownership: a foreign-user / foreign-company / missing rights row is rejected with `never()` on Redis and barcode generation; the own-rights path emits a 16-char code and Redis `set` |
+| `WxappOfflinePaymentGetVoucherOwnerScopeTest` | Voucher read ownership: another user's order returns an empty list and never touches the voucher mapper |
+| `WxappOfflinePaymentUpdateVoucherOrderOwnershipTest` | Voucher update ownership: the order/tenant must match before any write |
+| `MembersControllerAddressBuyUserScopeTest` | Address-create self-service: a foreign `buy_user_id` is rejected; self/missing resolves to the auth user |
+| `AdapayDepositTradeRechargeCallbackServiceIdempotencyTest` | Callback idempotency: the update wrapper carries a `trade_status` guard; a lost takeover (`update==0`) throws with zero side effects (`never()` on mutation, `verifyNoInteractions` on Redis and publisher); the first callback applies the deposit once |
+| `AdapayDepositTradeRechargeCallbackServiceSmsDispatchTest` | Dispatch probe asserting bus publish after commit: `verifyNoInteractions(publisher)` inside the fake transaction, exactly one `publishRechargeSendSmsNotice` after commit; non-`SUCCESS` status never publishes |
+| `OpenapiSignedRequestReplayGuardTest` | Signed-request replay guard: first `SET NX` acquire accepts with an `openapi:auth:replay:`-prefixed key; already-seen, missing params, and Redis exceptions all reject (fail-closed) |
+| `InboundSignedCallbackReplayGuardTest` | Signed-callback replay guard: freshness window via an injectable clock, `shuyun:cb:replay:`-prefixed first-acquire key, already-seen and missing-timestamp rejects |
 | `PosStoreAccountTableContractTest` | Table contract: `@MpTable` on `PosStoreAccount` pins table `pos_store_account` and unique index `uk_employee_no(employee_no)`; local Flyway scripts, when present, must keep the same index |
 | `AftersalesAdminApplyOrderProcessLogBusProbeTest` | Port-call probe: service chain reaches `OrderProcessLogPublishPort.publish` with the expected payload; bus delivery deferred to orders/bootstrap tests |
 | `AlipayNotifyOrderProcessLogEventAsyncConsumeTest` | Consume-side envelope: hand-built message with real listener name on queue `slow`, runtime drives `OrderProcessLogBusService.persistEntitiesMap` once |

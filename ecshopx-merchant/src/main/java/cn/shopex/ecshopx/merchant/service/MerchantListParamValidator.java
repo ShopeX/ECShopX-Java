@@ -36,7 +36,7 @@ public class MerchantListParamValidator {
 	public void validateFromMap(Map<String, Object> params) {
 		requirePositiveInt(scalarFrom(params.get("page")), "page 不能为空", "page 必须大于等于 1");
 		int pageSize = requirePositiveInt(
-				scalarFrom(params.get("pageSize")), "pageSize 不能为空", "pageSize 必须大于等于 1");
+				scalarFrom(pageSizeValue(params)), "pageSize 不能为空", "pageSize 必须大于等于 1");
 		if (pageSize > 1000) {
 			throw new ResourceException("pageSize 必须在 1～1000 之间");
 		}
@@ -143,7 +143,12 @@ public class MerchantListParamValidator {
 	}
 
 	static int pageSizeFromValidatedMap(Map<String, Object> params) {
-		return requirePositiveIntLoose(scalarFrom(params.get("pageSize")));
+		return requirePositiveIntLoose(scalarFrom(pageSizeValue(params)));
+	}
+
+	private static Object pageSizeValue(Map<String, Object> params) {
+		Object value = params.get("pageSize");
+		return value != null ? value : params.get("page_size");
 	}
 
 	private static int requirePositiveIntLoose(Object scalar) {

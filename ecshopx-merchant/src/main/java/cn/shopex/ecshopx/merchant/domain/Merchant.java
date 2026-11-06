@@ -25,7 +25,7 @@ import lombok.Data;
 
 /** 商户表 */
 @Data
-@MpTable(value = "merchant", comment = "商户表", indexes = {@MpIndex(name = "idx_company_id", columns = {"company_id"}), @MpIndex(name = "idx_settlement_apply_id", columns = {"settlement_apply_id"}), @MpIndex(name = "idx_legal_mobile", columns = {"legal_mobile"}, lengths = {64})})
+@MpTable(value = "merchant", comment = "商户表", indexes = {@MpIndex(name = "idx_company_id", columns = {"company_id"}), @MpIndex(name = "idx_settlement_apply_id", columns = {"settlement_apply_id"})})
 public class Merchant {
 
     /** ID */
@@ -44,46 +44,33 @@ public class Merchant {
     @MpField(value = "merchant_name", columnType = "string", nullable = true, comment = "商户名称")
     private String merchantName;
 
-    /** 商户类型ID */
-    @MpField(value = "merchant_type_id", columnType = "bigint", comment = "商户类型ID")
-    private long merchantTypeId;
+    /** 联系人姓名 */
+    @MpField(value = "contact_name", columnType = "string", nullable = true, comment = "联系人姓名")
+    private String contactName;
 
     /** 商户入驻类型。enterprise:企业;soletrader:个体户 */
     @MpField(value = "settled_type", columnType = "string", comment = "商户入驻类型。enterprise:企业;soletrader:个体户")
     private String settledType = "";
 
+    /** 商户类目选择 JSON */
+    @MpField(value = "main_category_selection", columnType = "text", nullable = true, comment = "商户类目选择 JSON")
+    private String mainCategorySelection;
+
     /** 统一社会信用代码 */
     @MpField(value = "social_credit_code_id", columnType = "string", nullable = true, comment = "统一社会信用代码")
     private String socialCreditCodeId;
 
-    @MpField(value = "province", columnType = "string", length = 50, nullable = true)
-    private String province;
+    /** 营业执照注册地址 */
+    @MpField(value = "license_registered_address", columnType = "string", nullable = true, comment = "营业执照注册地址")
+    private String licenseRegisteredAddress;
 
-    @MpField(value = "city", columnType = "string", length = 50, nullable = true)
-    private String city;
-
-    @MpField(value = "area", columnType = "string", length = 50, nullable = true)
-    private String area;
-
-    /** 国家行政区划编码组合，逗号隔开 */
-    @MpField(value = "regions_id", columnType = "text", nullable = true, comment = "国家行政区划编码组合，逗号隔开")
-    private String regionsId;
-
-    /** 详细地址 */
-    @MpField(value = "address", columnType = "string", nullable = true, comment = "详细地址")
-    private String address;
-
-    /** 联系人 */
-    @MpField(value = "legal_name", columnType = "string", length = 500, comment = "联系人")
-    private String legalName;
+    /** 营业执照法定代表人 */
+    @MpField(value = "license_legal_representative", columnType = "string", nullable = true, comment = "营业执照法定代表人")
+    private String licenseLegalRepresentative;
 
     /** 法人身份证号码 */
     @MpField(value = "legal_cert_id", columnType = "string", length = 255, comment = "法人身份证号码")
     private String legalCertId = "";
-
-    /** 法人手机号码 */
-    @MpField(value = "legal_mobile", columnType = "string", nullable = true, comment = "法人手机号码")
-    private String legalMobile;
 
     /** 联系邮箱 */
     @MpField(value = "email", columnType = "string", nullable = true, comment = "联系邮箱")

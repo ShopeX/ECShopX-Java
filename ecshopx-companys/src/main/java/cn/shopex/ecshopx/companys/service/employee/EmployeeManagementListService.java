@@ -192,6 +192,7 @@ public class EmployeeManagementListService {
 			}
 		}
 		applyShopCodeFilter(filter, companyId, query.getShopCode());
+		applyShopNameFilter(filter, companyId, query.getShopName());
 
 		if (filter.getMobile() != null && !filter.getMobile().isEmpty()) {
 			filter.setMobile(sensitiveFieldEncryptor.encrypt(filter.getMobile()));
@@ -751,6 +752,36 @@ public class EmployeeManagementListService {
 			return;
 		}
 		filter.setDistributorIds(List.of(shopDistributorId.getAsLong()));
+	}
+
+	private void applyShopNameFilter(AccountManagementOperatorsFilter filter, long companyId, String shopName) {
+		if (!StringUtils.hasText(shopName)) {
+			return;
+		}
+		if (filter.getOperatorIds() != null && filter.getOperatorIds().size() == 1 && filter.getOperatorIds().contains(-1L)) {
+			return;
+		}
+		List<Long> matched =
+				distributionDistributorSelfReadMapper.listDistributorIdsByCompanyAndNameLike(
+						companyId, shopName.trim());
+		if (matched == null || matched.isEmpty()) {
+			filter.setOperatorIds(List.of(-1L));
+			return;
+		}
+		List<Long> ids = matched.stream().filter(Objects::nonNull).filter(id -> id > 0L).distinct().toList();
+		if (ids.isEmpty()) {
+			filter.setOperatorIds(List.of(-1L));
+			return;
+		}
+		if (filter.getDistributorIds() != null && !filter.getDistributorIds().isEmpty()) {
+			Set<Long> allowed = new HashSet<>(filter.getDistributorIds());
+			ids = ids.stream().filter(allowed::contains).toList();
+			if (ids.isEmpty()) {
+				filter.setOperatorIds(List.of(-1L));
+				return;
+			}
+		}
+		filter.setDistributorIds(new ArrayList<>(ids));
 	}
 
 	private static OptionalLong normalizePositiveOperatorId(Object raw) {

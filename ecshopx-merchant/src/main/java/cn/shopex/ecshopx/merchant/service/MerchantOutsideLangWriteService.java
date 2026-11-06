@@ -29,8 +29,7 @@ import cn.shopex.ecshopx.common.marketing.support.OutsideMultiLangTableSupport;
 @Service
 public class MerchantOutsideLangWriteService {
 
-	private static final List<String> MULTI_LANG_FIELDS =
-			List.of("merchant_name", "province", "city", "area", "address", "legal_name");
+	private static final List<String> MULTI_LANG_FIELDS = List.of("merchant_name");
 
 	private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 	private final ObjectMapper objectMapper;
@@ -82,7 +81,7 @@ public class MerchantOutsideLangWriteService {
 	}
 
 	public void applyAfterUpdate(long merchantId, long companyId, Map<String, Object> data, String requestLangTag) {
-		List<String> fields = List.of("province", "city", "area", "address", "legal_name");
+		List<String> fields = List.of("merchant_name");
 		String normalizedLang = normalizeLangTableSuffix(requestLangTag);
 		String table = "outside_item_multi_lang_mod_lang_" + normalizedLang;
 		int now = (int) (System.currentTimeMillis() / 1000L);

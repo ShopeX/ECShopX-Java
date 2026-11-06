@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:f0d2ff134a8ccc1d1c7b6731e1524fbd5d109edcf8f44e919da2bb3924128590",
+  "pageVersion": "sha256:92cd907e8825cbe7f5919a804e94c4a2637e648030afcc54fd839f02cc824fe2",
   "claims": [
     {
       "id": "claim_3d9864ae8e5d4123b40f3da9acfcc8e6",
@@ -99,7 +99,7 @@
       "statement": "Where a service genuinely needs Spring transaction proxies, tests use @SpringJUnitConfig with a hand-written @Configuration that @Imports the real service, declares every mapper/publisher/port as a Mockito mock() bean, and backs @EnableTransactionManagement with an H2 EmbeddedDatabaseBuilder DataSource plus DataSourceTransactionManager — H2 is a test-scoped dependency only in ecshopx-members, ecshopx-goods, and ecshopx-third-party, and the in-memory DB holds no tables (it exists solely so the transaction manager is real).",
       "evidence": [
         {
-          "resource": "repo://ecshopx-members/pom.xml#L85-L89",
+          "resource": "repo://ecshopx-members/pom.xml#L90-L94",
           "version": "repo-lines-v1:sha256:33a63a270ae93fe637cd6822e2a91406203a0e58d6167a322495dd0af8413b35:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjA0NzFjNTFlZTVjOWEwZTAxMDc5ZGE5MGJkYjcxZWNiNzZmNmQ0OGI2NjQ4YTUwYWZhNjM3N2Y1MjJhNTRiZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDYwYmFiMDRmMjE5NjU2NmM0ZTRkNDJmNjA2MzcyYzIzNzc4OWM4N2Y2NDdlMzA0NzE5MzY3NzA3YTg4NDQwOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiODkzNDQxYmFjZWY1NmI5ZDMwY2NlMTk0NTdkYzA3OTg2ZWJlYWEwYTVmMTNiYWM5ZGI4MDAxODJjNDZmYzQwMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjIsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMmZhMTQ0NWU4YTMyNjcxYzliMDdlOGVhYzhhZGE2OTJiY2EyNjlkYTBkMGQ3NWRlYzcyYmI0ZjM4Yzc2ZDM4NiJ9"
         },
         {
@@ -285,7 +285,7 @@
           "version": "repo-lines-v1:sha256:81167bf1e43770e8ba252b81bce6d8ffcceab53b0dd20d00fe88a27c8fa24039:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgxOThmNGRjNDQzOGYxMjdiMDMxNDJjOWMzMzJmYWIzNjY1YjRhODk1ZmIyZjgwZTU0OWU3Mzg0MWY1NWMyYjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdjNTY0OTAwNTM0YTViOTZkMDdmOGE2NWI4Mzg1OGM0NjBiNzUxZjI4ZjViZmYwOGI3OWZlNjBkZmQ2YjNlM2YiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ5MWFjZDUyMWM5YWY4ZjRiNzkzYjEwOWEwOTYzNzU4ODA3NDE1NzdjODc4MmNkMjJmZmU2MjYzZTEyMDU3NjEifQ"
         },
         {
-          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/SeckillActivityCreateService.java#L167-L178",
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/SeckillActivityCreateService.java#L171-L182",
           "version": "repo-lines-v1:sha256:79db2cb830e2630b81a3008efc6127ddb59a4db745c3ad91b71bf441ad4dda62:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZjODI4YzJlZmM5YWY4NGZkNTY2MDgzN2JjMjI5NGZlNWNkZGJiMGVjZTNhZmYxYTAyNzEzYTVmMGQ0YmUyNjEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVmNGNmMGQ3OTMyNDJmZTE4NDQyZDI2M2FjNzRlZjBiZWU4ZGZhMDlhYTI2ZjY1ZGM5MGM0ZTkxZDgyNDM2YWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcxZGU0OTBhM2E4NDg3N2IwYTAxZDYwOTI1NjM3YTQyNjBiMTYwOWU0ODBlOTlkZWY0NjllMDZlMDYxMTU2ZTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY3NmIyNzg5ZjU3YzY2ZWVmMjNkMTYzYzc3NTEyYzM5N2IxM2NmYmY3YzY2OGQzOGY2MjExZTdlYTkyNjVjMmMifQ"
         },
         {
@@ -331,10 +331,120 @@
           "version": "repo-lines-v1:sha256:dd4d2441334bb9cd886fc2aece887b28f6e102405387ce35ce3819cccb035711:eyJzZWxlY3RlZExpbmVDb3VudCI6NDQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI2Nzg4MTE5MDk5OTk1MGFlNTg3M2Y2MmQxZGZlNTNiNjA5YWU1MzJkZTBkODQxNzBiOTZiZjA3MGUzMjE3MmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
         }
       ]
+    },
+    {
+      "id": "claim_ff4ca638ff3d43319b03746b504e19e1",
+      "statement": "The security-hardening window added a family of plain-Mockito tests that pin tenant-scoping (company/distributor) guards across nearly every bundle (adapay, aftersales, ali, bspay, comments, companys, data-cube, distribution, employee-purchase, espier, form, goods, kujiale, members, orders, promotions, salesperson, selfservice, work-wechat, wsugc), reusing the standard harness (real service constructed with new, mocked mappers/Redis/ports, @BeforeAll TableInfoHelper.initTableInfo) but asserting an authorization guard rather than a dispatch tuple; class Javadoc cites the ECX-108xx/109xx ticket.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-aftersales/src/test/java/cn/shopex/ecshopx/aftersales/service/AftersalesRefundListDistributorScopeTest.java#L45-L46",
+          "version": "repo-lines-v1:sha256:d952b536befa16b8dd1c10dc0360a62faf1148cf04beb3565968f879d5204931:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDdlNDhiMzk2YzA1N2Q1YmFiMmUzZThiM2ZjYTEwZWIyMjljNTgyZDMyMTE3ZGI0ZDRjNThkZDkxYjQwODhiNyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzBiNTJmZjFlN2UyOWQ2NmNiNmZiNmJiYWJlOTlmMzMxOWY0NGEzNmJkZmI3NGQxYWE5M2U3MTk3ZmQwNjEwNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMjIxNWY5M2JkMjVlZDA4ZTYyNTRkYWNlNGYyOTFjODFmMDZlYzgxZWRmNWE2YzZmNmE3NzA4ZmUzYjg4NDMxYyJ9"
+        },
+        {
+          "resource": "repo://ecshopx-employee-purchase/src/test/java/cn/shopex/ecshopx/employeepurchase/service/EmployeePurchaseActivityItemWriteServiceCompanyScopeTest.java#L45-L46",
+          "version": "repo-lines-v1:sha256:5ebe05646a7c077b2f945aa8188ff06dc10867aefa6dbef0999b234ce87ca06a:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTA3ZTg5YjdmYzRkMmIyOTVmM2FiMDdhMTc1NWQ2ZTc0Nzc1MzA2M2EzZTM5MTZhNTMzZTk5OTVkZGNhZGNkNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYzk1M2I5M2IxMjYxOWU0NmE5Yjk3MzkzMmYyYjNiMjU3ZmVhMTg1MWMzZTk3ZTY1OWYwZDVlOWI2OGU4NThkOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTQxZjBlNzU1OGJjOTNmZDg4OTM0MzVmM2E3Y2I0ODdlNjk2MDMyMWRjNjYwODA5ZTdiNTA4Y2IwNjg1NWE1OSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzZjYjJiZjdkMDJlNjM5YTc0YzZiZGI5Y2M2YjA2NWYzZmIxOGZhM2Y0ODQ4ODcwOTg0NWYxNWRhZjRjNDVjZSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-work-wechat/src/test/java/cn/shopex/ecshopx/workwechat/service/WorkWechatVerifyDomainFileServiceCompanyScopeTest.java#L28-L29",
+          "version": "repo-lines-v1:sha256:5697d676d0f18f38f45bb2d2ec98761d7e8522df4ba6921ae0aaad4d666f6d2c:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZGRlNzBlNTA0NDEyNWQ5ZmNjOTUzOWRlNTg2MjQ1MGVhN2MyM2JlMjhjNzYwZTczZmM4OWVjYjlhODVlODMyYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYmQ0ZDRiNDQ2YjlhZTVlNjY1ZDUyNzhjYWY4ZGI2NmZjODBhNzc3OWVhNDBhYTFmOTA3MTUyNzYwNWVkNDQ2NiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTA0ODQwNjE2ODI4N2I4NTJiYzViNTRmNDAxY2EwMjk0NGM1ZmY0NGFjNGZiOTcyMmRjMjMxZTNmNDljNDVjOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNGY1NDk4MmQ4MDdiMzNlNWZiMjI1OWE2NDAwNTIyYmM2ZTgzY2E5Mjc5MTQxMmU1OTRjYjk1OWUyYmU4Njg0YiJ9"
+        },
+        {
+          "resource": "repo://ecshopx-wsugc/src/test/java/cn/shopex/ecshopx/wsugc/service/post/PostVerifyServiceCompanyScopeTest.java#L49-L50",
+          "version": "repo-lines-v1:sha256:75727486a24827f03f29c18c316f016d489351309a6d18b9485ce4166b017a85:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODdmNzUxMzcxNzdhMjU2YjJlYjdlOWRlYTlhMjA4NzM3NTI3NjNhYWQ0OTRkYmM2ZWM0YTk0ZGI4ZGM5ZTg5NSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYWY4ZGI1MzM3M2M3YzI2NTVkMTI4N2NmMWJjM2JiOGI5YzAzZDViZDYyNGQ5N2MyMmFhNzZlZGRkYjJiODE2NyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNGU1N2Y4Y2VlOWVhMzEzMGFjMjBlNTgwM2E3MjE5ODExZWMwZGJkN2QxMjQ1ZDM3N2EwZjkxMTc3NGRlMmRiMyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_5f4bfe71fe9d40fc87ae40b3b66e13b3",
+      "statement": "Distributor-list scope tests pin JWT/activated-shop clamping: AftersalesRefundListDistributorScopeTest builds a JWT with distributor_ids [10,20], feeds an unauthorized distributorIdRaw (or an empty activated-shop intersection), and captures the selectCount LambdaQueryWrapper to assert its params bind the JWT shops (10L, 20L) rather than the requested shop; the authorized-id case pins that exactly that one shop is bound, and AftersalesRefundLogExportDistributorScopeTest pins the same clamp on the export-filter map.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-aftersales/src/test/java/cn/shopex/ecshopx/aftersales/service/AftersalesRefundListDistributorScopeTest.java#L76-L127",
+          "version": "repo-lines-v1:sha256:1a46b7b034a3a1779d297744ea3470397c4fc21df8350bb342dd19445ab0130d:eyJzZWxlY3RlZExpbmVDb3VudCI6NTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI3MzY2ZGVkM2IwNGJmNDFkZTA0N2M1ZDIzMWQzNDM3NTQ3MzVjZGJjMGE3ZmEzZTk2OGI3MmEzMjY0N2RiNzciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImEzYjMwMTUxODM1OWVkZDZhN2EzNWE2N2ZmNmY2MjNmYzNmMjYwZmUzZmZiYzVlODEzNTJjMjNhNGE5MjU3OTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-aftersales/src/test/java/cn/shopex/ecshopx/aftersales/service/AftersalesRefundLogExportDistributorScopeTest.java#L56-L84",
+          "version": "repo-lines-v1:sha256:42665d5f788bbbe5dedeb4f14d72cbd0ac9c2366bacffc1a055bdd35843d5444:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI1MDdlOWY2NDhhYzIyNTFjZjE1NmNhNjY4NWQ4YzhhMTJiYmE0ZjdjOTUzOGNkZWI0OTFkYmVjYThmZWNmY2QiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVmOThiNTM4MWIyNzdiMDg0ZmZiNGMyODFhZjE3NjNlZGNjNTlhODM2ZDdmMzVlNDNjMWRjNDI3NDllYThiYjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d1f4c038a1bc4bbe8f80f57694d03c60",
+      "statement": "Company-scope tests pin cross-tenant write rejection with two assertion shapes: SQL-segment scoping (EmployeePurchaseActivityItemWriteServiceCompanyScopeTest captures the selectOne wrapper and asserts its SQL segment contains company_id, then uses a thenAnswer that returns a foreign-company row only when the wrapper lacks the company_id clause, proving a correctly-scoped query never sees it, with never() on every write path), and name-collision rejection (WorkWechatVerifyDomainFileServiceCompanyScopeTest proves a same-name row owned by another company makes the write throw with never() on updateById/insert, and the own-company update keeps the original company_id in the captured entity).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-employee-purchase/src/test/java/cn/shopex/ecshopx/employeepurchase/service/EmployeePurchaseActivityItemWriteServiceCompanyScopeTest.java#L79-L122",
+          "version": "repo-lines-v1:sha256:5c83f728bc1110bc689f2edf08082b6243775342885ed34721b6ae1d0940376b:eyJzZWxlY3RlZExpbmVDb3VudCI6NDQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUyNzEzMDUxYTFjZjEyZDZkNGU2ODVhOTE1ZDQ3MWRiZWQ4NjUyNmU1MjNlMTg5NjkzN2Y4NmI2MjFmZTg1NDgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxY2I1ZDBjZmNiYjk5NGU2MmZjNzc0OTJhNjI4MDY1Y2Y5MjI2NDZiYTQyMTdlYTIwMTBmNDQ5MmNlOWUxOTciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIyNWM4ODc1ZjQ4NjQ0Mjc0NjM3N2Y1NjFmNDkyMjU3N2ZhZDE0N2ZlY2ExMmJmYjczODA4Mjc0MTkwNzY1YTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU0MzQxMzg5MmMxZjU0MjE5OGQ5ODc1NTI2ZDQ2MzJlN2Q3NjdjNzg4NDYxNjRiNTU3ZDAwZjU1NmUwNmZjNjMifQ"
+        },
+        {
+          "resource": "repo://ecshopx-work-wechat/src/test/java/cn/shopex/ecshopx/workwechat/service/WorkWechatVerifyDomainFileServiceCompanyScopeTest.java#L41-L100",
+          "version": "repo-lines-v1:sha256:602a39e6ea0fe6e53f542131112e1621862752294abe02d6211d191d4ac000af:eyJzZWxlY3RlZExpbmVDb3VudCI6NjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIyYTFjNTYxZGU1NTdjOTZjNzcyNWQzNjRkMDVhMmYwNjg2NmI4MjhlZjE5ZjlhNGFiODE0YzUyOThkOGM4NDEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM2ZGQ0ZTg5M2RhMDVmNTZkM2E4NGRkZmU3ZWEwYWQ3YTRmNThjODFmZTQ2MDVkZWRkYTlkNGE3OWZhODg4ZjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_201cab93e71b4b29ad212f46baacd422",
+      "statement": "*OwnershipTest classes pin front-endpoint self-service ownership with no side effects on rejection: RightsFrontWxappGetRightsCodeOwnershipTest proves a foreign-user/foreign-company/missing rights row throws ResourceException(无权访问该权益) with never() on both downstream effectors (wechatStringRedisTemplate.opsForValue and the barcode-generate service), WxappOfflinePaymentGetVoucherOwnerScopeTest proves another user's order returns an empty list and never touches the voucher mapper, and MembersControllerAddressBuyUserScopeTest pins that a foreign buy_user_id is rejected while a self/missing one resolves to the auth user.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-members/src/test/java/cn/shopex/ecshopx/members/api/front/v1/MembersControllerAddressBuyUserScopeTest.java#L43-L53",
+          "version": "repo-lines-v1:sha256:ecfd82c7cd3e105333580881255ef8c111e997d3a9eac1c0334898342338d388:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg3Yjg0Yjc1ZTk2MzliYjVlMzljMTFlODhjZTkzMWM5NzY2Y2FjMzA4MzU2MmM1NDFlMzhjM2ZhZDQ4MGYxZjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMxODFmNDEyMTNkZGFlYTg4MDZlZTZhMTA0NTdkN2VhOGI3ZGQyZTZjYTBlYTExZDcyNGVhYWE3YjdjZTdjOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImYyN2Y3YmIwODkwNTdmNDhmODg0ODgxNmZhMDJmYzA4NzU5NzY5MWZjMzFjMzNlNWRkZDI3NzVjN2NkYjg5MWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM2YTdhZTMzZGJmZGNmYmVlNmM3OTU3N2M3MzA4YjRjMGU3YTg4ODY3NDFhY2JmYTQ0NzliNzA0MDZlZWE0MTYifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/orders/service/front/wxapp/RightsFrontWxappGetRightsCodeOwnershipTest.java#L86-L108",
+          "version": "repo-lines-v1:sha256:ff9615f9ad86b572c5a7266c5c2641ad95481fec0def7a388f5e8ddbd74b6e12:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAzN2QyZTAxMTJkYjM2Njc1MzU0NGM3ODI1ODg5OWQxOGE5YjZjNzc3MzE4MjZhZDEwODc2OWViNTdlNDU5YzEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAwZTRlZjUyODRkN2MyNTZhM2RhZDkzM2Y4YWRlYjVlOTliNmQ1MTQxODhlNmI4ZDQ1YjQ4OWFkNDM3NTRlNDQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBjODlmM2M2ZmVkZTNiN2JmZjRhM2FmZWUzNDlhMTkxYjNhZmExNmRiNjhhNjM4MmY5ZDY0ZmRmOWU2MmJhOGUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/orders/service/front/wxapp/WxappOfflinePaymentGetVoucherOwnerScopeTest.java#L77-L91",
+          "version": "repo-lines-v1:sha256:0dfd646a0359063a4e8abaa50012fb5d35834832ef056400ad22226137af0e29:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZjZDJmMTNiZjliNWExZWVkMzUwNjg5MjdhYjkzNjgzZmU2NmY1MDgxOThlY2FmMDM0MDRhOWZiMmU4YmRkNmYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFmZjE5MDE2MmM1MzlkMjUzZTZiOWQwYzk4ZjY5ODQyZjc2ZDdhNzNmOWQwNTA2OGZmNGZlYzc5OTk1NWZhYTAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjgxNmY3NTgxY2Q3NTNlNzRhMTI2OGMyMzFmYTczMTU4YzE2M2NlMDE1MzM3YzcyMjEzY2EzMjY5ZmIyOTFhZWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjViOWI2NmNhNzA0NGRlZWZiMGNmNzE1OTczMjg5MWNjMmRmN2Q3MTg4ZTAzMzllMmM0YjI4NWNhMjMyOWYwMWMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_08246e031cc7434ca051ea3366d16b48",
+      "statement": "AdapayDepositTradeRechargeCallbackServiceIdempotencyTest pins the deposit-recharge callback's atomic takeover: the update wrapper's SQL segment carries a trade_status guard (so the transition is guarded by trade_status), a lost race (update returns 0) throws ResourceException(更新已处理，不需要更新) with zero side effects (never() on the balance mutation, verifyNoInteractions on Redis and the SMS publisher), and the first-callback success path applies the deposit balance mutation exactly once with the right amounts.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/deposit/service/AdapayDepositTradeRechargeCallbackServiceIdempotencyTest.java#L66-L147",
+          "version": "repo-lines-v1:sha256:c053141def94291996f3ddb9c83fefd7cdf8f868a7d74a1c2f2b5709f829f111:eyJzZWxlY3RlZExpbmVDb3VudCI6ODIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUwMTQ5N2YxZjU3YjEwNTliNzdiYTFmY2YxM2UwOGY1ODczOTYyNjM5ZDRmNzdmMmI2MTVhYTA5ZTVlYjZjOTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJiYmQyNWQ1Njk2NTdlYTM1ZGY4YmUzYzcyMjdjOGQ5MTBlMjFlYmM5ODk0YTMyMDNiNTUwYWQ0MzUzNjY0ZDgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_6cbc50bf8bb84a1b9aecc8f8f9aa7ba1",
+      "statement": "Two *ReplayGuardTest classes pin Redis SET NX replay guards with an identical shape (mocked StringRedisTemplate whose setIfAbsent result decides admission): OpenapiSignedRequestReplayGuardTest proves first-acquire accepts with an openapi:auth:replay:-prefixed key while already-seen, missing app_key/sign/timestamp, and a Redis exception all reject (fail-closed); InboundSignedCallbackReplayGuardTest adds a freshness window via an injectable nowMsSupplier clock (a timestamp older than the skew is rejected) and a shuyun:cb:replay:-prefixed key.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/web/OpenapiSignedRequestReplayGuard.java#L41-L66",
+          "version": "repo-lines-v1:sha256:1b788606e8160464b681d30e1d81ad87a0b0dca8bad83c94fde520fd8da04de5:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQwYjI3ZDk0NGExZTRkZjIxODQ1NGU1NTYzY2NkYjBmMGUwMmU0YzIzOTQ4NTljODFlNTE1OTY2MjIwMDljNzciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM1MzY2YjJhMWMzMGMwN2Y3OGEzODI1OTk2NmUzNjk5MWU4NmRhOTI5YjI1Nzc1MWEyZDM1NzdiZjI4ZjQ2ZGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhlY2UxOWY4YWI4ZmNlNzA1ZTRhZTg3Mzk4MzIyMWYxZGY1YTA4M2M3ZDUzY2FmYjg1YTU0NzU4YTBjMDE1ZmEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-openapi/src/test/java/cn/shopex/ecshopx/openapi/web/OpenapiSignedRequestReplayGuardTest.java#L36-L72",
+          "version": "repo-lines-v1:sha256:839dfa0f49aff7d6c5decd9758a09ea65d26a34e08045115f2f664d11bc47bc8:eyJzZWxlY3RlZExpbmVDb3VudCI6MzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjliNDBkNjllODY4OWEwZTkxYjk1MDQ5OGFiZmI5NzI3ZWZhOGNiODgxYmY3MGJlYzQxYzY2ZDhmNTY3MGEzMDMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZjMTM2NjI0OWVkNTVkMWYwYmY5NTZiYzUxMTFmMWRmMDc1YTdlOTUxZjVhOTc5MTA2OTEzZjEwY2VjZjkzMDciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/auth/InboundSignedCallbackReplayGuard.java#L42-L82",
+          "version": "repo-lines-v1:sha256:80323c19318634ce9b6652b53e31b35b5aab809f616970708c3902fb17ae45b2:eyJzZWxlY3RlZExpbmVDb3VudCI6NDEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI1YmE4ZWFhMTQ2NmY4MzAyMjc3ZWFmZWJhZTBkZTQxOWVlYmEyNzA2MDk1ZjVmMzMxNmY2OGFjMjRmNzY0MmUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAwYTFlMWZkMDI0ZGY4NjU1MGMyZjRiMzQ4Mzk1NGUwOWQ2ZDVkMDAxNjk0YzM0ODM5OWQyMjFmNzM3ZjUyNTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImEyOWIwNzFmYWQwYjMzNmM2YzM5NDFiMzUyZDY0MjljOGU0NTRiMDM3ZmQ3ZTZiY2Q5MWI0Y2E5ZDY3ZTNjYjAifQ"
+        },
+        {
+          "resource": "repo://ecshopx-shuyun/src/test/java/cn/shopex/ecshopx/shuyun/auth/InboundSignedCallbackReplayGuardTest.java#L36-L73",
+          "version": "repo-lines-v1:sha256:332ef7205699bf6b098e7e85996278dabd15313f52bd1519cddbf1707788653d:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjlhZmU5NDAzMWU0YzU0N2E1YjcyOGIyYmQzYzAxYzc2NDhmOTdjZGFlZDUxMTI4ZWZiY2NlYmM1ZTBjNTk3Y2YiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_3509b99e9a7c4ab9bc72ce6ea149a4e9",
+      "statement": "AdapayDepositTradeRechargeCallbackServiceSmsDispatchTest pins a dispatch publish after commit using the fake-transaction idiom: the service is driven through a TransactionTemplate over a Mockito-stubbed PlatformTransactionManager (getTransaction calls initSynchronization, commit fires each afterCommit then clears), asserts verifyNoInteractions(publisher) inside the transaction body and exactly one publishRechargeSendSmsNotice(10L, 20L, mobile, money) after commit, and proves a non-SUCCESS status never touches the publisher.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/deposit/service/AdapayDepositTradeRechargeCallbackServiceSmsDispatchTest.java#L44-L141",
+          "version": "repo-lines-v1:sha256:92a6269a8ca9f585174b6b08d8307b119b58392a907ebf4386652ba43e92de32:eyJzZWxlY3RlZExpbmVDb3VudCI6OTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY1YjMwOGMzNjA0ZmI4NDE3NmRjMDc0MjUxZmY3YTMwZjE5MDhjZDg5Y2Y5NzIwYWNmZDQ0ZThjNGE3ZjI0NDkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.7.3",
-    "at": "2026-11-04T17:09:55.577Z"
+    "by": "openwiki/0.9.0",
+    "at": "2026-11-05T17:10:02.238Z"
   }
 }

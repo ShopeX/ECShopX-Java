@@ -329,9 +329,10 @@ public class ItemsTagsController {
 	public ResponseEntity<ApiResult<Object>> getTagsInfo(HttpServletRequest request,
 			@PathVariable("tag_id") String tagIdStr) {
 		Object raw = request.getAttribute(OperatorJwtAuthenticationFilter.OPERATOR_JWT_USER_DATA);
-		if (!(raw instanceof Map<?, ?>)) {
+		if (!(raw instanceof Map<?, ?> ud)) {
 			throw new UnauthorizedException("未登录");
 		}
+		long companyId = readRequiredLong(ud, "company_id");
 		long tagId;
 		try {
 			tagId = tagIdStr == null ? 0L : Long.parseLong(tagIdStr.trim());
@@ -341,7 +342,7 @@ public class ItemsTagsController {
 		if (tagId <= 0) {
 			tagId = 0L;
 		}
-		Object data = itemsTagsQueryService.getTagInfoByTagId(tagId);
+		Object data = itemsTagsQueryService.getTagInfoByTagId(companyId, tagId);
 		return ResponseEntity.ok(ApiResult.ok(data));
 	}
 

@@ -1,5 +1,6 @@
 package cn.shopex.ecshopx.goods.service.items;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -11,6 +12,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import cn.shopex.ecshopx.goods.domain.Items;
+import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.supplier.domain.SupplierItems;
 import cn.shopex.ecshopx.supplier.domain.SupplierItemsAuditPatch;
 import cn.shopex.ecshopx.supplier.repository.SupplierItemsRepository;
@@ -75,6 +77,7 @@ class SupplierItemsReviewGoodsServiceAuditSyncSplitTest {
 		when(supplierItemsRepository.findByItemId(42L)).thenReturn(supplier);
 
 		Map<String, Object> params = new HashMap<>();
+		params.put("company_id", 7001L);
 		params.put("audit_status", "approved");
 		params.put("audit_reason", "ok");
 
@@ -84,6 +87,24 @@ class SupplierItemsReviewGoodsServiceAuditSyncSplitTest {
 		verify(itemsRepository, never()).insert(any());
 		verify(itemStoreService, never()).saveItemStore(anyLong(), anyInt(), anyLong());
 		verify(itemsBarcodeRepository, never()).saveBarcode(anyLong(), anyLong(), anyLong(), anyLong(), any());
+	}
+
+	@Test
+	void reviewGoods_foreignCompany_rejectsWithoutAuditUpdate() {
+		SupplierItems supplier = new SupplierItems();
+		supplier.setCompanyId(7002L);
+		supplier.setGoodsId(100L);
+		when(supplierItemsRepository.findByItemId(42L)).thenReturn(supplier);
+
+		Map<String, Object> params = new HashMap<>();
+		params.put("company_id", 7001L);
+		params.put("audit_status", "approved");
+
+		assertThatThrownBy(() -> sut.reviewGoods(params, 42L))
+				.isInstanceOf(ResourceException.class)
+				.hasMessage("商品不存在或无权");
+
+		verify(supplierItemsRepository, never()).updateAuditByGoodsId(anyLong(), anyLong(), any());
 	}
 
 	@Test

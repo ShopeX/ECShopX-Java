@@ -56,11 +56,17 @@ public class MerchantRepository {
 			String escaped = escapeSqlLike(merchantName.trim());
 			w.like(Merchant::getMerchantName, "%" + escaped + "%");
 		}
-		if (StringUtils.hasText(filter.getLegalNameEncryptedOrNull())) {
-			w.eq(Merchant::getLegalName, filter.getLegalNameEncryptedOrNull());
+		if (StringUtils.hasText(filter.getContactNameContainsOrNull())) {
+			String escaped = escapeSqlLike(filter.getContactNameContainsOrNull());
+			w.like(Merchant::getContactName, "%" + escaped + "%");
 		}
-		if (StringUtils.hasText(filter.getLegalMobileEncryptedOrNull())) {
-			w.eq(Merchant::getLegalMobile, filter.getLegalMobileEncryptedOrNull());
+		if (StringUtils.hasText(filter.getContactMobileEqualsOrNull())) {
+			w.apply(
+					"EXISTS (SELECT 1 FROM merchant_settlement_apply a"
+							+ " WHERE a.id = merchant.settlement_apply_id"
+							+ " AND a.company_id = {0} AND a.mobile = {1})",
+					companyId,
+					filter.getContactMobileEqualsOrNull());
 		}
 		if (filter.getCreatedGteOrNull() != null) {
 			w.ge(Merchant::getCreated, filter.getCreatedGteOrNull());
@@ -109,12 +115,4 @@ public class MerchantRepository {
 		merchantMapper.update(null, w);
 	}
 
-	public boolean existsByCompanyIdAndMerchantTypeIdIn(long companyId, List<Long> merchantTypeIds) {
-		if (merchantTypeIds == null || merchantTypeIds.isEmpty()) {
-			return false;
-		}
-		LambdaQueryWrapper<Merchant> w = new LambdaQueryWrapper<>();
-		w.eq(Merchant::getCompanyId, companyId).in(Merchant::getMerchantTypeId, merchantTypeIds);
-		return merchantMapper.selectCount(w) > 0;
-	}
 }

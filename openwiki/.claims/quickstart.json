@@ -1,18 +1,18 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:dd3b226d42d2bfa2a447177a2a5eea0154dcc2a28f5c695e2b767ba215e6cfeb",
+  "pageVersion": "sha256:488ad8ab67984e5b30ec79570bb04500fe1c54ede47bc1c71e484274d8ad0ac6",
   "claims": [
     {
       "id": "claim_59497cc7f3f044ed96e27a805c72b37b",
-      "statement": "ECShopX-Java is one multi-module Maven reactor: the root pom.xml declares parent cn.shopex:ecshopx (version ${revision} = 5.4.6) extending spring-boot-starter-parent:3.5.12 with Java 17, lists 53 modules (four infrastructure — ecshopx-bom, ecshopx-common, ecshopx-dispatch, ecshopx-bootstrap — plus 49 business Bundles), and skips the spring-boot-maven-plugin everywhere except ecshopx-bootstrap, where it is re-enabled with mainClass cn.shopex.ecshopx.EcshopxApplication.",
+      "statement": "ECShopX-Java is one multi-module Maven reactor: the root pom.xml declares parent cn.shopex:ecshopx (version ${revision} = 5.4.7) extending spring-boot-starter-parent:3.5.12 with Java 17, lists 53 modules (four infrastructure — ecshopx-bom, ecshopx-common, ecshopx-dispatch, ecshopx-bootstrap — plus 49 business Bundles), and skips the spring-boot-maven-plugin everywhere except ecshopx-bootstrap, where it is re-enabled with mainClass cn.shopex.ecshopx.EcshopxApplication.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-bootstrap/pom.xml#L264-L272",
-          "version": "repo-lines-v1:sha256:08d1765fd046f2929fe0f30bfcd858c7779637475b183a826ba12e267bba5ad3:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzBhMGUxNWM2Mzc1YzU2YjZlYTE0YWMwZTFlZjczY2I0YTU2NWZkMTlkZjE4MDRmYjQ3MjFhNDY1NzQ1NzM0ZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMTZlZmVmY2Y3NTk3MjA5NmM0NThhMTE4ZTg5MmNmN2VlMDQ1YzIxZjI3ZGEwYzAxMzA5MGJjZjAyYjNmNmI5NSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTFmNTFiZTNjYzRhYTQwNmE4ZWE3YTI4OGQxNGQzZmViZWQ1MDNkYWMyMmY1OTcwMDFlMzM1Y2I2Mzc4Zjg2OSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjc3OWVlMzg2MDY3YjIwYjQxZmQ2MDcxMGE0ZWQ2NTUyZWEwMDhlMGJlNTZhODk4ZTE0NzAxMTc2NjRmZjZkYiJ9"
+          "resource": "repo://ecshopx-bootstrap/pom.xml#L264-L274",
+          "version": "repo-lines-v1:sha256:a502ac31f05156a306e2721d66fa69f104ed4281abda5aaec0422561f98639f4:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMwYTBlMTVjNjM3NWM1NmI2ZWExNGFjMGUxZWY3M2NiNGE1NjVmZDE5ZGYxODA0ZmI0NzIxYTQ2NTc0NTczNGQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU4ZmIxYjhmZjkzYzU5ZjBjZjUzMTUzOTQ0YWJmM2Q3ZTE2ZDY3MGE2MWRkN2I2MjkwZjMxNjhmYWIyZDdlYTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjExZjUxYmUzY2M0YWE0MDZhOGVhN2EyODhkMTRkM2ZlYmVkNTAzZGFjMjJmNTk3MDAxZTMzNWNiNjM3OGY4NjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ2MmY2YjcyYmUxYjk3N2JkMGUyMWI3N2Q0YzE2ZDQ0MzAyYzA0NmE1NzJmY2M4MmMyZjRjOGJjY2I5OTBlOTYifQ"
         },
         {
-          "resource": "repo://pom.xml#L362-L415",
-          "version": "repo-lines-v1:sha256:1f346c7200ad523f73096b92e0c3c17389040c4471ac6e4e9903cbf9f4a191a0:eyJzZWxlY3RlZExpbmVDb3VudCI6NTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMzZmVlYTU4MGVjMGM4YTA5MWM1ZDhhYzRiMzEwMjEzMmM5NjdhZGY3YmFhODY3MTc5MDI0NzIyY2Q3MTk5YTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVkNzZlYTlhMTk3Y2QwMzNiNGU0NDRjODI4NmNlY2YyOTM3M2Y5YjQzOTk0MDYwODEzZTU1NTVlM2ZlMjAzZGEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU5NGEwODk1NTM3YTJmZTRkOGZhNWQwZjViNzBjZDBjZTFhZjZiZDBjMDEwZTMxNTE3NTRiZmRkMDBlMjc5ZDMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQwM2ExZTVjNTliZWI5ODhlOGY5YWY1MDk0OTVhY2MxYWU3OTM3MjgyNjQxZGQ5MWRlODE3NDE2NDQ0YWVjZGYifQ"
+          "resource": "repo://pom.xml#L358-L410",
+          "version": "repo-lines-v1:sha256:7f0dece4f89a772716226eda2351a7113e549fa7982b6de41d431f5e31a8cc5c:eyJzZWxlY3RlZExpbmVDb3VudCI6NTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJiYzI1Yjk3ZWJkMDY5ODlmZmViNTI4MDBhMjE3Njk1NTA2MjhiYmQyZjVhMmNhZWE4ZmI3MzBmZjEyYWIyZjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBjNzIzYjUyMzlmMTQwYmVlZDdlNGQ5ZDFmN2Y0YzA3YmExNzI5MTdlYmFlZGRmYTkwYjRmMGFmMDg4NzY4NzEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM3OTgxNGViZGNjNzFmOWZjYTU5NDI2YzNkNTUxNjIyZjJlNmViMmQ0NDIyNjVlMmM2NmQyYjE5YTA3YmQ4OTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNhMjEyZmZkZjcyZjE0MzlkZTc0NGE1Y2MyNjkzMTAzYjAyZmYyNGYyMzZkMGY3NzFjNGIzNTU0NDZkMTBhN2MifQ"
         },
         {
           "resource": "repo://pom.xml#L426-L435",
@@ -20,7 +20,7 @@
         },
         {
           "resource": "repo://pom.xml#L9-L23",
-          "version": "repo-lines-v1:sha256:a3c08ff586ca905a4695ee1ed7f95087895fdccdb13c2119254d318a981cbff8:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBmZGZmN2QwNTFhODljMGM2YzBjODMwMzI2Yzg1YWM2NTExMDU1OWUyZDllNDA0M2RjOGY5YmQ2ZjE5Y2I3MDgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxYjg1MzA5OGRmNWRmM2MzNzA0MWVmZjljZjgzODhhYmQ5ZWNhZDM4MmU0YmE2ZTg3OTUzYjRkMTkyN2JhNjgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE3YTg1NTYyODFmZGFjMzE3MTA5ODBlYzcyMjE5MzYxYjYwZTY0NDYzNGUzMmJjNzI1Y2ZjZTBkMDI3MDEyN2IiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUxYTBiMmFjNTJkN2ZlYmJmNjU0ZGIyNmMxZDMzNzkxODE0ZTgyNWRiOTk1NjA2NGE5MmVhZjEyYzkxMmU3ZWEifQ"
+          "version": "repo-lines-v1:sha256:22cab9c768b5d1e5d4ebaed7078fda4552ee9692f612201a400adb8b6e35d04e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBmZGZmN2QwNTFhODljMGM2YzBjODMwMzI2Yzg1YWM2NTExMDU1OWUyZDllNDA0M2RjOGY5YmQ2ZjE5Y2I3MDgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxYjg1MzA5OGRmNWRmM2MzNzA0MWVmZjljZjgzODhhYmQ5ZWNhZDM4MmU0YmE2ZTg3OTUzYjRkMTkyN2JhNjgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE3YTg1NTYyODFmZGFjMzE3MTA5ODBlYzcyMjE5MzYxYjYwZTY0NDYzNGUzMmJjNzI1Y2ZjZTBkMDI3MDEyN2IiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUxYTBiMmFjNTJkN2ZlYmJmNjU0ZGIyNmMxZDMzNzkxODE0ZTgyNWRiOTk1NjA2NGE5MmVhZjEyYzkxMmU3ZWEifQ"
         }
       ]
     },
@@ -301,10 +301,64 @@
           "version": "repo-lines-v1:sha256:66a01ea0beaf720e5655db7539da7be0a881797cc7c158a8f5f48d3347c5a7f5:eyJzZWxlY3RlZExpbmVDb3VudCI6NDUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYzY2FmZTY0NTRhZDhhMDhjMGFmYmYwYWIxNDNhZWE2ZjU4ZmQwZTBkY2ZhMTIxM2Q5OGFmNzkxYTBmMjM0MTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU3MWVkNjY0MjUzNGUwN2VmNTVjNzIwNDFjYjI4YjExMTVlMTllYjJmZGFlYzYwZDA1ZjdkYjkyNDEyYWNmMDAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRkOGM5Y2VmZGIyNGVmN2NlOWM2NzdlMDM5ZjM4MmIyNGZkMmU4MTg5YTliYjdkZGFlYTQxMzZkNTA1ZWFkN2IifQ"
         }
       ]
+    },
+    {
+      "id": "claim_ad598a19fcd7427c8f66da0d9c21226a",
+      "statement": "The routing table directs POS-auth work to the request-lifecycle page and the stores-and-merchants domain page: the POS surface is a dual-JWT filter chain (PosJwtAuthenticationFilter / PosJwtIssuer in ecshopx-espier, token_kind=pos claims with POS_JWT_ISSUER defaulting to ecshopx-pos, blacklist and session-validator Ports) plus the pos_store_account handling-account table introduced by migration V00000000000005.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/db/migration/V00000000000005.sql#L51-L71",
+          "version": "repo-lines-v1:sha256:3d4e9edf61a73a20ed0b93f5e5f9b1ac466fe8f635f777f0c6b43bda15c17684:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE5NDQwNTU5ZjA2Mjk3ZTE3YWJlZGIxMzhkNTM3N2VhOTQyM2M2NGI4YmJhYzQxZTkwNGIxZmNhMDk2NzhkYzgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYxOGY1OTZjNDA0YzJiNTIyOTRlZWM3ZDk3ZGU0ZGFkMjUzMGNkMDIyMzlmMWFkNDFlNmQ1NjgyOTgyN2VmNGIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRiY2YzODJjZGRlOThkZWJkMDY0MjJmY2I5NWYyMjFkZTUxMjQzYjBmZjcyYmFjZDE3OTdhN2FkYjEzYWJjOWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU2OTIyMjA0ZWQxMThmMDFkNTlkNGE1NzgxMmU0NzI3MTg1OWViZWFmYzUyNGEyMTE1MDRkZjEzMDhkNDdkMDAifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/PosJwtAuthenticationFilter.java#L44-L67",
+          "version": "repo-lines-v1:sha256:b1cbec561f97e20724c5c98bad074912c49ab3b3ebeedf1de3660b22262cf32a:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdmNTAwOGI0YTc4MTVlNTk2YTIzN2IyZWE5Nzg0ZThhZDNmMTZiNzQ5MzIwMDYzM2Q0ODQxN2M2NTlhY2NkMTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY1NjRmMGM4NzJiMmRjOGUyZTAxNmVhZmQzYjllODgyMzM1MWM4ZGQ2OTE4ZTZjMmNmYjc2Mjg5NmNlYWJkZjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJiN2E0NTI0MjQ3NThjYmQyY2IzODkzMmMyYTc1MmEyMTRjZWZlNDAwMTU1NTE2MzIwNTAyMDhmMWUxY2QyODEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/PosJwtIssuer.java#L43-L50",
+          "version": "repo-lines-v1:sha256:a320dd66e9b5a0389043303ab9a66273d4622d64d295e68a1d537a5e8d1d4c1a:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYjI5MTBlODIwMDVjYTQ0ODE5ZmRjNWE2OTkyMDc4NDU1N2MwMzM3ZGVjYTlhMTE3OGE1NTExNjAzZmQzZWRhYyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjE3MjQ5Zjg2NWIyMDk0MGE2YTUyMzM3NmY2NTMwMjcyZjU4ZDQzZTU1OTg1MzQ5ZTFhNDk5ZThiZmI3NGZhNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDNkZGFmMmQ4MDIxZTRiZGFmZGExNGE2MmVmZmY3YmUyZGI4MDU3NTgxYjIyYzk2NGVkNWVjNmIwOTRmODE5NiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_7231d8d161c2465693bc142e08d0c079",
+      "statement": "The routing table directs member system-tag work to the members domain page: the subsystem is keyed by tag_kind/tag_code with reconcile services and a MemberSystemTagWriteGuard in ecshopx-members, and member-crowd promotion targeting routes to the marketing page, which matches member_tag_ids/member_tag_mode via MemberCrowdMatcher against those system tags.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/domain/MemberTags.java",
+          "version": "repo-file-v1:sha256:de7485f14f3c8d1d5f0f492644fdd4c6c82db9e0960d23edab58f9c9f0ad53c6"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/systemtag/MemberSystemTagWriteGuard.java",
+          "version": "repo-file-v1:sha256:f77147f0c589162ed0dc4313909eaf7402dcd681b2156404e54239978679356a"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/test/java/cn/shopex/ecshopx/members/service/systemtag/MemberSystemTagWriteGuardTest.java",
+          "version": "repo-file-v1:sha256:670b3025b15e5d3121c1569e0a04616d7edcc1b4fa91d51c9986ee0d00b5b476"
+        }
+      ]
+    },
+    {
+      "id": "claim_038fa4bb0b70455e9a0d2ade9285775e",
+      "statement": "The routing table directs DigiOS retail integration work to the third-party integrations page: the ecshopx-digios module is a business Bundle in the reactor whose DigiOsGatewayClient and per-company config, store mapping, and digios_api_log tables (migration V00000000000005) back the store/account/stock/adjustment sync documented there.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/db/migration/V00000000000005.sql#L8-L45",
+          "version": "repo-lines-v1:sha256:2f769bb91b680539aaabe698f666004b1772fd11604e8ec295a1d21b0effd4dd:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU2ZDgxYzk0YWQ1ZTU1YTQ0ZDk2ZmJmNjUyOTU4YjU1MTI3ZDcyMjMxOWYwY2U5MzI3OGRmMWM0M2M0Y2RkOTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMzYTllNDRmNjRmYmFmYjFhNjMwNjU2OWMxN2IyZDA0YTE4YTM1NTgzMDVjMTJmMjg3OGQwNjAwZmM1YmIyOGYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI3N2YwYTU5NGUyMTJhZDVmNWY2NDg0NGFhMjlkNGQ0NWNkMWVlZjZmNDE5ZTMxZDhkNzMzNTFiYjdmZDVjMjEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjE2NjZhZTg3ODVkMDUzYjRmZmMzODExZGY4N2U1Njk5OWQwMTdjYTQxYjU2ZTEyZDVmYjEzNWViZjE3NjdjNmQifQ"
+        },
+        {
+          "resource": "repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/client/DigiOsGatewayClient.java",
+          "version": "repo-file-v1:sha256:c7deb12094a8db84c227f3311fe2b8bd0879ac3ba836b85dca8e66c5ce2cd6ef"
+        },
+        {
+          "resource": "repo://pom.xml#L374-L374",
+          "version": "repo-lines-v1:sha256:4dc17af72d06ae96fa1fe9819f4abfe18552283f7008e8968e170ceb018a091e:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNGRjMTdhZjcyZDA2YWU5NmZhMWZlOTgxOWY0YWJmZTE4NTUyMjgzZjcwMDhlODk2OGUxNzBjZWIwMThhMDkxZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNGRjMTdhZjcyZDA2YWU5NmZhMWZlOTgxOWY0YWJmZTE4NTUyMjgzZjcwMDhlODk2OGUxNzBjZWIwMThhMDkxZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZmY4ODgzYThmNTU0N2I2YzQyNWI3NTNmOWEzMTcxYzgyZDM4MzE5NTk0NmRlNzUxOGYzY2Q4MGYyN2Q3NGM0ZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTZmOWUyNzRlM2M1ZWJiMmE5MzAxNGUxY2JlYzU2ZDNlYzBlY2NkODlkMmY3MzRiOWNmYzYzZDJhOWE0NjMyMCJ9"
+        }
+      ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.7.3",
-    "at": "2026-11-04T17:09:55.577Z"
+    "by": "openwiki/0.9.0",
+    "at": "2026-11-05T17:10:02.238Z"
   }
 }

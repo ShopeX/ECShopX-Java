@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:b23d96a5002278327c107502982b6ed8bf7a7f16e940a867fc2e0b328ca53934",
+  "pageVersion": "sha256:5e0ab72e6819d8dc829b7c83014231e4f27d4ddb8f3f7418c6a43cbb91e020ef",
   "claims": [
     {
       "id": "claim_e141deba2f1e4ba0894ebb2a18613af2",
@@ -12,7 +12,7 @@
         },
         {
           "resource": "repo://ecshopx-openapi/pom.xml",
-          "version": "repo-file-v1:sha256:c5520b09364eee93c91d69e637227130e73dc51a6f98b49975b10db1d1648b0c"
+          "version": "repo-file-v1:sha256:1550f085db094b5e1f22ccb90e2333821fa5b61fd957b90379cc94608027cf85"
         },
         {
           "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/integration/OpenapiDeveloperLookupPortImpl.java",
@@ -39,7 +39,7 @@
           "version": "repo-lines-v1:sha256:d0cbcb062e319e85405f0f6940840107b5d43adbff9d81044c1210d75c97e773:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQyYTliOTMxN2Y3MGY5MzA1NzU3YTY2NjIxNWViMzM2MDhiM2E5ZGZmZmZmZGUyNzlmOGNjNWYzYjk4NDljZTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ4M2IwZDk2YTgzNjBiZWYwMTc0NTJkMzljMjM3NmNkY2E0MTdmN2E1NGJiZGM0NDk3YjlmMGE5N2VjYTU0NjgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
         },
         {
-          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/web/OpenapiAuthInterceptor.java#L62-L69",
+          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/web/OpenapiAuthInterceptor.java#L65-L72",
           "version": "repo-lines-v1:sha256:a4659fdcf594d15850d0a28e91974563ea55d4766de30ac5e8aaef13e5e17abb:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMWUwOTg1N2VmZGU4OWQxZTk0YWQ5NDhiZTYxMzVhOTIwNDM3ZDM4MGRlMTgzMzEzZGY0ZGZmMTg2MGUyYjQzZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjRlZmM0OTQxOGQyNmRjZjEyOWIyMmE2YWEyMTEwOGNlZWMzNzY3N2EzMmQwOGU5ZDVmZWUzNWRkYTY2YmI5ZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTY4NzM4NjhkYTVjYWVkMjFjOWZkZjY5ODYyYjBkYTU0MDY5ZWNkZjE4ODJjMjE2NTM1NmM3NGY1YTdkMWQwMyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZGY5OGRmMDRmNDE5MzgzMzkwZTFmZDdkMGIzZjBkMGY3NmViNjA0MzcwNjNkN2FlMDRlMTAzZTBkZDg2MjczNiJ9"
         },
         {
@@ -64,11 +64,11 @@
     },
     {
       "id": "claim_fb2cff4128cf498ca7d2a8360276d12c",
-      "statement": "Public-path auth verification order in OpenapiAuthInterceptor: required version/timestamp/app_key (E4001 VALIDATION_MISSING_PARAMS) → debug bypass → timestamp within a 600-second tolerance (E4002 VALIDATION_TIMESTAMP_ERROR) → sign present (E4004 SIGN_ERROR) → app_key resolves via OpenapiDeveloperLookupPort (E4003 VALIDATION_APPKEY_ERROR) → MD5 sign match (E4004) → set auth company_id via OpenapiAuthAttributes and pass. Every auth failure writes an HTTP 200 OpenapiEnvelope fail body and returns false to stop the chain.",
+      "statement": "Public-path auth verification order in OpenapiAuthInterceptor.preHandle: required version/timestamp/app_key (E4001 VALIDATION_MISSING_PARAMS) → openapi.debug=1 bypass (stamps auth with the fixed system company id, default ${common.system-companys-id:1}, skipping all later checks) → timestamp within a 600-second tolerance (E4002 VALIDATION_TIMESTAMP_ERROR) → sign present (E4004 SIGN_ERROR) → app_key resolves via OpenapiDeveloperLookupPort (E4003 VALIDATION_APPKEY_ERROR) → MD5 sign match via OpenapiSignSupport.signMatches (E4004) → one-time-use assertion via OpenapiSignedRequestReplayGuard.assertOnce(appKey, sign, timestamp, 600) (rejection reported as E4002 '请求已失效或重复') → set auth company_id via OpenapiAuthAttributes and pass. Every auth failure writes an HTTP 200 OpenapiEnvelope fail body and returns false to stop the chain.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/web/OpenapiAuthInterceptor.java#L71-L116",
-          "version": "repo-lines-v1:sha256:e0af4bba3adcac7c778b2c6bf4aee6b8c2adc764ebd0d90e5fb025e7ef95d4ea:eyJzZWxlY3RlZExpbmVDb3VudCI6NDYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRhN2Y3NjJkNzc4ZTkzOWExNDA2ZmQ4ODFiNjQ0MzNmZWUwYzMxZWU3MWVlMjkyMWQyYWU3NWFjOTVhOTI3NDQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI1MTJhZmQwN2Y1MTRmNzJhMTg3MTYyMmJkMjAzZTk0ODk5ZTgxYzdhNWVlOTcwMDVkZGU0Y2JiNDI3YjMwMmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ2OWFlYWM4ODM3MGU0MjZkYWZmMGNlMjZjNWE5NDI3YWEwNjM1NzZlNzAzNjdjMTUwMDNhZjE4OTU2OGE0YTcifQ"
+          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/web/OpenapiAuthInterceptor.java#L66-L121",
+          "version": "repo-lines-v1:sha256:5ad6cc1eb794663517bc7a5fc4b66b1378f908fa97c70e47e1b279e1692f29f0:eyJzZWxlY3RlZExpbmVDb3VudCI6NTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE5ZWFkMGY1OWFiZjBlNDE5NzViMmIzMjA5NGZmMTYwNTBkNGI0YmZhMTY0Mzg2NzkxODJhZGZkMzYxYmFhNmEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk5NDYyMjBlOTY2OWE0NWNlMTgyMWVlZTI4OTdjMDM1OTc3N2NjYjI0MmFlNDIwNmU1Y2JmOGRkY2Y3Y2I1ZDQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVhMzAzNDAzODMyOTM0ZjEzNTM3MWNkZjdiZTg3NTY5MGQ5NDAyM2VjMGY2MmY1MDAzYjJmNmViZmU2MzNmMTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhhNzNlMjgzMDVjMGU1N2ZmMTczY2E3ZWZkMDhiODFkMjZjZGZlMDBlNjg3ZGZmY2ViODhiYzhjZTFjYmNhYTEifQ"
         }
       ]
     },
@@ -95,11 +95,11 @@
           "version": "repo-lines-v1:sha256:05e09b1abdb91b08a6950595825bb3417254252d737d64802fe3550bac2de941:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZGJkYjYwZGMwM2Q3M2IwNDliYjhmOWM2MzIwMGM3YzY4OWNiNWMwYTM1NTkyYWMxYzI5YjVkOWY5ODczZjE5YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNmJmNzU3Y2Q1MWEyMDMwYjc0YjE3MWU1MzE1NGY1NWU2MTM1NjYwMTMxMzQwNjkxOTlhNTVjMjMwODhhZjNjZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTU0OTk5NWViMTkwNmI2MDNhOTU1YmQwZjllMDE3NWNmY2VmYWEzZTQ2ZTVkZTNkYjRmNTM5MzVlYWQwODkyNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTMzMzQ4ZTgwOGY3NDA3YTg0M2YyNjU2ZWIwMzFiMzVjYzMzOGY2NzVhYzhiNGRiZTAwZjVlYjE5MzIwYWFhMyJ9"
         },
         {
-          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/web/OpenapiAuthInterceptor.java#L46-L50",
+          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/web/OpenapiAuthInterceptor.java#L47-L51",
           "version": "repo-lines-v1:sha256:3564bb1470388971bd86ef77a122b3cd97bf74ab1a2d2d9d3cd567d99bdd7da7:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTRmZGJlOTU2MTdhMmZkMjljZWJlMWZkODY3ZGU5Zjg5ODdiNGIzNDc5YTVmNjU3N2U0ZGNjMGM1YjdjYTRiMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYjMzYzNmOThkNDJiZjc1ZThmZmEzODFlNDI3YTU0OWE4MGZkODU5NzE4NmUwMmFlMDNkMjM3Y2I3YjA3ZjY1NiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMWNlN2UwM2IxZTQ4YmY2OTg3ODcxMGM2ZTI4NzZkNDAzMWFmYzY5ZDdlMzhlZmMyZDI1ZTcxNzI3MzdlNWNjZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZGE1NjlhZmRmOWM0N2NlNTNkZmY4ZTM2YTY2ZGZhNGNhMDdkMjM5MjY0OTAzZDFkZDllMDc3OTE5YTRiNDYxMCJ9"
         },
         {
-          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/web/OpenapiAuthInterceptor.java#L86-L89",
+          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/web/OpenapiAuthInterceptor.java#L89-L92",
           "version": "repo-lines-v1:sha256:3be0a4ee9bec42c17396f15c0657fdf8ddbc08d2d971cbda8cb70a0c39a8f869:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTk2YWY5MzliMWE1NjVlYTAwNGJhNzdiYzQ0OTAzYzUzNDVmZjc2NTExY2FlZDFlZDhkYjQyZmE5OTQ2NTMwMyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTY4MDZmMTU1YzVhYzFhZTI3MjJjYTA2ZjJhYzljYWRjYjg4MWI5MTIzY2I2MjRhM2MxMDQ3NWI0NDQ5ZGMyZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNzA0MjkwOGFhMDhkOWRkYTdkOTlhODk5N2VjYTNkMmI1NzExYjUyOGUzODQ1ZTQxZDAzYjZkM2M5ZDdjOGVlNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNGI3ZmE3MzRjYTQ5YTNiOTNiOTRlNWY1Njc5ZjFkYWM0MTM0NDg4YWJlYjNkZjMyNGE4ZjUxYzQwMDczODlmZCJ9"
         }
       ]
@@ -387,10 +387,28 @@
           "version": "repo-file-v1:sha256:ebb60651e840d9c5f760c45054e2162f5c93250dda671891fd6f43b1c710ce2c"
         }
       ]
+    },
+    {
+      "id": "claim_71d001e3a74740c6a0486ebad9392bca",
+      "statement": "OpenapiSignedRequestReplayGuard makes a valid signature usable exactly once: it attempts Redis setIfAbsent on the key openapi:auth:replay:{sha256(app_key|sign|timestamp)} with a TTL equal to the 600-second timestamp tolerance (clamped to at least 1 second), so the replay record expires when the signature itself stops being acceptable. The guard fails closed — blank app_key/sign/timestamp, an already-present key (duplicate request within the window), or any Redis exception all return false — meaning a Redis outage rejects otherwise-valid public Open API requests rather than silently disabling replay protection. The behavior is pinned by OpenapiSignedRequestReplayGuardTest (key prefix, 600s TTL, duplicate reject, blank reject, Redis-exception fail-closed) and OpenapiAuthInterceptorReplayTest (valid sign + in-window timestamp still rejected with an E4002 envelope when the guard reports a repeat).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/web/OpenapiSignedRequestReplayGuard.java#L30-L62",
+          "version": "repo-lines-v1:sha256:a1f978175e1d282cdf30abbdc897e19d77de59e3740d8422a137da4be54fa0dc:eyJzZWxlY3RlZExpbmVDb3VudCI6MzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg5NDgyYzdmNmEzNDM1ODEzOTJmODdjYjExMDk5MzJkNzVmZGRjNjNhNDk0YThmN2EzM2E3ZDA0NTViMjY5MzIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZjMDBkYzAyYjY0OTg0OGE0NzU5N2IwMGM5Y2Y3ZTdlN2YyNjA2YzFlOGZmNDc3NzFmOGEyM2ExYmI5YjA2MDUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImMzOGZiYmEwYmIyY2UzZjgzZWYzNGM0ZDU1NTVlNTE5ZWNmZTA1NDIxZGM5NTQ5Y2M0NjZjNzgwOWM4OWY5MmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIyZjJmZjVmZWVjNjBmNTg3YzhmYWU0ZTg3ZjgwOWE2NjFjZmZlZDZiNDdhYWU1ZjZkNmEyNjUzYWE4OTUyZWYifQ"
+        },
+        {
+          "resource": "repo://ecshopx-openapi/src/test/java/cn/shopex/ecshopx/openapi/web/OpenapiAuthInterceptorReplayTest.java",
+          "version": "repo-file-v1:sha256:a0a344832259924d1dbb72b29d5a39df92f2274d334d0988980397dc35dca243"
+        },
+        {
+          "resource": "repo://ecshopx-openapi/src/test/java/cn/shopex/ecshopx/openapi/web/OpenapiSignedRequestReplayGuardTest.java",
+          "version": "repo-file-v1:sha256:fc79db1e710cffa6dfc5e2ca0e9f47971690abb3ceba46572e2ad56d87ee41dd"
+        }
+      ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.7.3",
-    "at": "2026-11-04T17:09:55.577Z"
+    "by": "openwiki/0.9.0",
+    "at": "2026-11-05T17:10:02.238Z"
   }
 }

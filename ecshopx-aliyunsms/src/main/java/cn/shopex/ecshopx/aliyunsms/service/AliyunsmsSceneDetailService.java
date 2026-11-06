@@ -34,11 +34,12 @@ public class AliyunsmsSceneDetailService {
 		this.objectMapper = objectMapper;
 	}
 
-	public Map<String, Object> getDetail(Long id) {
+	public Map<String, Object> getDetail(Long id, long companyId) {
 		Map<String, Object> data = null;
 		if (id != null) {
 			Scene row = sceneMapper.selectById(id);
-			if (row != null) {
+			// ECX-10930：仅返回当前公司的场景；不存在、公司为空或不匹配时走下方占位结果
+			if (row != null && row.getCompanyId() != null && row.getCompanyId() == companyId) {
 				data = new LinkedHashMap<>();
 				data.put("id", row.getId());
 				data.put("company_id", row.getCompanyId());

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:4b9eb2d918002f1745d7b34c003a218ceb4fe5e28b56cbc1a002697e683de69d",
+  "pageVersion": "sha256:d6653737b5497036f6a9d82989be602c4457a0226e35916e45966cbaa0783bd4",
   "claims": [
     {
       "id": "claim_69ac159b62bf45208bbe954b62b22d78",
@@ -240,7 +240,7 @@
     },
     {
       "id": "claim_8ddd5ecf70d1424bb18c4539ee1adb1c",
-      "statement": "The orders_cart table and CartController live in ecshopx-orders, but the read-heavy cart endpoints delegate through ports declared in orders/port whose implementations live elsewhere: WxappCartAddPort/WxappCartListPort (add, list, distributor cart list, cart count) are implemented in ecshopx-goods, while WxappCheckPlusItemPort (POST /cart/check/plusitem, records the chosen plus-buy SKU in the PlusBuyCartRedisKeys Redis bucket) and WxappCartGoodsPromotionApplyRulesPort (promotion re-check for PUT /cartupdate/promotion) are implemented in ecshopx-promotions — the documented pattern to avoid a direct orders-to-goods/promotions Maven dependency edge; local cart mutations (num update, batch num, check-status, delete, batch delete) stay in this bundle.",
+      "statement": "The orders_cart table and CartController live in ecshopx-orders, but the read-heavy cart endpoints delegate through ports declared in orders/port whose implementations live elsewhere: WxappCartAddPort/WxappCartListPort (add, list, distributor cart list, cart count) are implemented in ecshopx-goods, while WxappCheckPlusItemPort (POST /cart/check/plusitem, records the chosen plus-buy SKU in the PlusBuyCartRedisKeys Redis bucket) and WxappCartGoodsPromotionApplyRulesPort (promotion re-check for PUT /cartupdate/promotion) are implemented in ecshopx-promotions — the documented pattern to avoid a direct orders-to-goods/promotions Maven dependency edge; local cart mutations (num update, batch num, check-status, delete, batch delete) stay in this bundle. The promotions-side apply-rules port now runs a full gate chain (activity exists and is check_status=agree, release/start/end time window, use_bound SKU scoping via MarketingActivityCatalogAccess, use_shop shop list, platform product-model source_id match, valid_grade member-grade check) and then consults MemberCrowdMatcher.matchesFullCrowdActivity on the MarketingActivity's member_tag_ids/member_tag_mode (include default, exclude inverted) before enforcing the join_limit Redis counter.",
       "evidence": [
         {
           "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/cart/wxapp/WxappCartAddPortImpl.java",
@@ -256,11 +256,15 @@
         },
         {
           "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/integration/orders/WxappCartGoodsPromotionApplyRulesPortImpl.java",
-          "version": "repo-file-v1:sha256:5a8a88b76f968efb9c95d95bb7f3ba5cfa8eda56e7baa18a36dfcae49a4eac0f"
+          "version": "repo-file-v1:sha256:dd2150c21394c67000bcaa0adf429c6bbed803277895dcaf99c8dde5aabbee5b"
         },
         {
           "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/integration/orders/WxappCheckPlusItemPortImpl.java",
           "version": "repo-file-v1:sha256:5cdaeebdeabd73621696236dab34e4b73821af83df5207c2d6f86d3fbe9abf6a"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/systemtag/MemberCrowdMatcher.java",
+          "version": "repo-file-v1:sha256:53ef6dc2e49334c781a065b76ca066293b48099ad20a3e41358cc8818194165c"
         }
       ]
     },
@@ -280,11 +284,47 @@
     },
     {
       "id": "claim_2eee05217af14365b4c815a212702b2d",
-      "statement": "Orders publishes its cross-bundle state changes through the dispatch bus with constants catalogued in ecshopx-common OrdersDispatchEventNames (EVENT_TRADE_FINISH event:291:OrdersBundle\\Events\\TradeFinishEvent and the event:292 offline bank-approval twin, EVENT_NORMAL_ORDER_PAY_SUCCESS event:288:OrdersBundle\\Events\\NormalOrderPaySuccessEvent, EVENT_NORMAL_ORDER_ADD/CANCEL/DELIVERY/CONFIRM_RECEIPT, EVENT_WX_ORDER_SHIPPING, EVENT_ORDER_PROCESS_LOG) and job names in OrdersDispatchJobNames (FinishOrderJob job:128, ConsumptionOrderJob job:129, GenerateStatementsJob job:118, InvoiceCreateJob job:124, InvoiceRedQueryJob job:125, InvoiceQueryJob job:126, SendPayOrdersRemindJob job:115, InvoiceRedJob job:20, TradeRefundStatistics job:66), with listeners registered in bootstrap *RegistrationConfig classes rather than annotation scanning.",
+      "statement": "Orders publishes its cross-bundle state changes through the dispatch bus with constants catalogued in ecshopx-common OrdersDispatchEventNames (EVENT_TRADE_FINISH event:291:OrdersBundle\\Events\\TradeFinishEvent and the event:292 offline bank-approval twin, EVENT_NORMAL_ORDER_PAY_SUCCESS event:288:OrdersBundle\\Events\\NormalOrderPaySuccessEvent, EVENT_NORMAL_ORDER_ADD/CANCEL/DELIVERY/CONFIRM_RECEIPT, EVENT_WX_ORDER_SHIPPING, EVENT_ORDER_PROCESS_LOG) and job names in OrdersDispatchJobNames (FinishOrderJob job:128, ConsumptionOrderJob job:129, GenerateStatementsJob job:118, InvoiceCreateJob job:124, InvoiceRedQueryJob job:125, InvoiceQueryJob job:126, SendPayOrdersRemindJob job:115, InvoiceRedJob job:20, TradeRefundStatistics job:66), with listeners registered in bootstrap *RegistrationConfig classes rather than annotation scanning. The current fan-out: normal_order_add -> youshu + thirdparty marketing-center push; normal_order_pay_success -> youshu, wsugc, members new-customer (listener:members.normal_order_pay_success_new_customer), Shuyun open-platform trade.sync and offline-benefit consume (result.push.v2 USED), employee-purchase behavior log; normal_order_delivery -> youshu, thirdparty marketing-center push, DM-CRM push, Shuyun trade.sync, and the DigiOS store-adjustment outbound (listener:digios.store_adjustment_on_normal_order_delivery); normal_order_cancel -> youshu, members new-customer (listener:members.normal_order_cancel_new_customer), Shuyun trade.sync and offline-benefit consume (result.push.v2 NOT_USED), thirdparty schedule-cancel marketing-center push, orders auto-pass refund listener; normal_order_confirm_receipt -> youshu, thirdparty marketing-center push, Shopex CRM sync, Shuyun trade.sync, and the orders invoice-finish listener (listener:orders.listeners.OrderFinishInvoice, sync).",
       "evidence": [
         {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/DigiOsNormalOrderDeliveryAdjustmentDispatchListenerRegistrationConfig.java",
+          "version": "repo-file-v1:sha256:4dd68036eef51dec7a8eb3470855111cecc6354ef3b70ea79d5882245e9cf83a"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MembersNormalOrderCancelNewCustomerDispatchListenerRegistrationConfig.java",
+          "version": "repo-file-v1:sha256:d18611f1c93acd8de7f4b448e6e9086e127d876a98e304af7cfe9611d67ddc2f"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MembersNormalOrderPaySuccessNewCustomerDispatchListenerRegistrationConfig.java",
+          "version": "repo-file-v1:sha256:65667f0a34d1c1d70b07247e31baa3972fd9ac2d18b9439a73257f38a5ea38b8"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ShuyunOpenPlatformNormalOrderCancelDispatchListenerRegistrationConfig.java",
+          "version": "repo-file-v1:sha256:238fdb3312bf15a98e29396d5f0e317fde57200c04f24d863ebd74832829e307"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ShuyunOpenPlatformNormalOrderConfirmReceiptDispatchListenerRegistrationConfig.java",
+          "version": "repo-file-v1:sha256:51dd49760903ad5ae14efa3b023c7f1088bfaa43d2386bd8b4fdf7f6e7c9a829"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ShuyunOpenPlatformNormalOrderDeliveryDispatchListenerRegistrationConfig.java",
+          "version": "repo-file-v1:sha256:da0868ca868ef8fd8872cc1c77a5f0208360d3464c625dc6b4b6c1ec42f6a6be"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ShuyunOpenPlatformNormalOrderPaySuccessDispatchListenerRegistrationConfig.java",
+          "version": "repo-file-v1:sha256:b371a8d6bbcd4afc42e307be88791525dc36a7824f2034cc91fd6bdf0f7ccada"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ShuyunOpenPlatformOfflineBenefitConsumeCancelDispatchListenerRegistrationConfig.java",
+          "version": "repo-file-v1:sha256:a07cfcac5576a8b420948a15c8d73038734d4b1007bf5221728f6379afcd6b6f"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ShuyunOpenPlatformOfflineBenefitConsumePaySuccessDispatchListenerRegistrationConfig.java",
+          "version": "repo-file-v1:sha256:86e82e77c63b884dd346b67a0de50de2280cabd82620e8b8981f78498acef170"
+        },
+        {
           "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/OrdersDispatchEventNames.java",
-          "version": "repo-file-v1:sha256:7acf907dca602d8536b55a66c0ff1f6f49f25acb326bb7edf4f9f3b95e3d04d0"
+          "version": "repo-file-v1:sha256:2024db58709c8eb7d1890a3cf4260b39e8b7a2770c474a42939b83c5d2360cd9"
         },
         {
           "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/OrdersDispatchJobNames.java",
@@ -659,10 +699,106 @@
           "version": "repo-lines-v1:sha256:90ebd416e531f3564433fe796e0c36a1775dfb932f3065f320189b77f33f466d:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk3YjEzZjRhMDYyMjUwYmE4MDljMWQxOWQwYjc1ZDg5NmE2NWQzODQ3OGIxM2Y0OTI5Nzk1Y2NlZjcxODBlZTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImEyYjRjNGVjYmU0YmNlYmI3M2U3MjAwMjJhNjkyN2VjYWJkZDhlODFlNzJhYWNjY2VjYmM2NGRiMDVkMDk3NGYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjYzMjgwMTlkM2VkYjZhNzUzMjA5ZDczOTcwNWUwYmMxOTVkZGQ3OGMxNzNhNTM4NWFiYzIwZGI2OWNiYTcxN2UifQ"
         }
       ]
+    },
+    {
+      "id": "claim_4b320d2646d64f4f98600ddaa64c49ec",
+      "statement": "MemberCrowdMatcher (ecshopx-promotions service/systemtag) is the shared member-crowd gate: an activity carries a JSON member_tag_ids list and a member_tag_mode of include (default) or exclude; an empty id list matches everyone, an anonymous user (user_id <= 0) with a non-empty list always fails, and otherwise the member's tag ids are loaded from members_rel_tags (MemberRelTagsMapper, company+user scoped) and tested for intersection (include requires a hit, exclude requires none). Type guards scope the check: matchesFullCrowdActivity only gates MarketingActivity rows with marketing_type full_minus/full_discount/full_gift, and matchesLimitedTimeSale only gates SeckillActivity rows with seckill_type limited_time_sale. The matcher is consulted by the cart promotion apply-rules port, the goods detail/list promotion enrichers, and the wxapp seckill surfaces (a limited_time_sale outside the member's crowd fails ticket fetch with 您不在该活动适用人群内), pinned by MemberCrowdMatcherTest.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/integration/orders/WxappCartGoodsPromotionApplyRulesPortImpl.java",
+          "version": "repo-file-v1:sha256:dd2150c21394c67000bcaa0adf429c6bbed803277895dcaf99c8dde5aabbee5b"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/systemtag/MemberCrowdMatcher.java",
+          "version": "repo-file-v1:sha256:53ef6dc2e49334c781a065b76ca066293b48099ad20a3e41358cc8818194165c"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/wxapp/WxappSeckillItemTicketService.java",
+          "version": "repo-file-v1:sha256:45b0c7bb4bbb9bd6b41e7aa89895564b56c6938bd8dcbc0615dd009e1eea4a80"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/test/java/cn/shopex/ecshopx/promotions/service/systemtag/MemberCrowdMatcherTest.java",
+          "version": "repo-file-v1:sha256:39aeb3339ff026db11f09dde2f25a9e041473a4410221d86f13494c9b555691f"
+        }
+      ]
+    },
+    {
+      "id": "claim_611fadc31d3244df84055c673d382a99",
+      "statement": "The wxapp rights redemption surfaces are ownership-hardened (ECX-10924/ECX-10881, aligning PHP GuideOrderTenantScopeGuard::assertRightsBelongsToAuthUser): GET /rightscode/{rights_id} (RightsFrontWxappGetRightsCodeService) and GET /rights/{rights_id} (RightsFrontWxappGetRightsDetailService) validate the id (blank/non-numeric/<1 -> BadRequestException 422), load the Rights row, and reject unless the row's company_id equals the auth company and its user_id equals the auth user (无权访问该权益 / 获取权益信息有误，请确认权益 ID) — checked before any side effect. Only then does the code service mint a 16-digit numeric redemption code, store it in the wechat Redis under timescardcode:{code} -> rights_id with a 60s TTL, and return barcode/QR data-URLs via MemberBarcodeGenerateService; a failed check touches neither Redis nor the barcode generator, pinned by RightsFrontWxappGetRightsCodeOwnershipTest and the sibling detail ownership test.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/api/front/v1/RightsController.java",
+          "version": "repo-file-v1:sha256:ecd8cce0398e4f2e612cdc8a32005f89117b17ac3379dbc2f8b41242733aa079"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/front/wxapp/RightsFrontWxappGetRightsCodeService.java",
+          "version": "repo-file-v1:sha256:abc0296cbbed88ce84de6aa398b6febe43554f662a14b636d47d6ebcf16bfbbf"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/front/wxapp/RightsFrontWxappGetRightsDetailService.java",
+          "version": "repo-file-v1:sha256:c19a6626e6e2e207da1a957d63268f9a6356962722b72b9f582fe3aa7d668993"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/orders/service/front/wxapp/RightsFrontWxappGetRightsCodeOwnershipTest.java",
+          "version": "repo-file-v1:sha256:50e9af3a33e42b12cc0e3972c5fa3618139ca898c3d5418ac35467948a701a5f"
+        }
+      ]
+    },
+    {
+      "id": "claim_2bb403d8906b4f178da286b7949018e7",
+      "statement": "The offline bank-transfer voucher update (POST /order/offline/update/voucher -> WxappOfflinePaymentUpdateVoucherService) is ownership-hardened (ECX-10905, aligning PHP assertOfflineVoucherBelongsToOrder): the OfflinePayment voucher row must exist and its company_id/order_id must match the authenticated company and the supplied order_id (else 凭证不存在); the order must exist, still be order_status=NOTPAY and pay_type=offline_pay, and belong to the caller (a truthy promoter_user_id must equal the order's salesman_id, otherwise the order's user_id must equal the auth user — 订单用户错误); only a refused voucher (check_status=2) can be re-submitted (不能修改凭证). The update resets check_status to 0, re-snapshots the OfflineBankAccount, syncs orders_normal_orders.offline_payment_status and publishes the 线下转账提交 OPL; cross-order and cross-company vouchers are rejected without any UPDATE, pinned by WxappOfflinePaymentUpdateVoucherOrderOwnershipTest.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/api/front/v1/WxappOrderController.java#L1045-L1076",
+          "version": "repo-lines-v1:sha256:dd10a7aae9e2ef2fd3dc62fe745c9d1e7effa0d5b39d3165ff39dfc6f9d6520a:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZlMDJlOWZmYmY3NmFhOGVjMmQ4ZjY3MGY0M2JhN2U4NWY0MTg1NGM4NjhjZGQ4NGUxMDk0M2U3ZDBiYzgxMDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU3NzA3YzJjMWYyNmRmMjRlNDhjYWQzZjYyNjk3Nzg4NmQ3ZDk2MjBmY2IyMmRmYWQ1ZDc0YWU3NzNlMGYyNDQifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/front/wxapp/WxappOfflinePaymentUpdateVoucherService.java",
+          "version": "repo-file-v1:sha256:3a7008efb9fe54774a44ac2d99018685fe40db146a14a2f6a98e2d9c91b5638f"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/orders/service/front/wxapp/WxappOfflinePaymentUpdateVoucherOrderOwnershipTest.java",
+          "version": "repo-file-v1:sha256:5ebc54abec79f3ebfa76c0d3fa852cec9df3f6b9089e8b8c4a524ca66c9e7995"
+        }
+      ]
+    },
+    {
+      "id": "claim_26a0a38400ea40b7a06879a9a26ba294",
+      "statement": "PosOrderDocAccessGuard (orders/service/pos) implements PosOrderDocAccessPort from ecshopx-common and is the service-layer scope check behind the POS JWT path whitelist (PosJwtAuthenticationFilter/PosJwtPathWhitelist in ecshopx-espier admit POS tokens only to a narrow path set — /api/v1/order*, /api/v1/aftersales*, /api/v1/checkout, /api/v1/operator/cart*, POST /api/v1/delivery, /api/v1/writeoff/* etc., with /api/v1/store/pos-accounts explicitly denied). The guard is invoked by the orders write paths (AdminOrderCancelService, AdminOrderDeliveryService, AdminOrderMarkDownService) and cross-bundle by ecshopx-aftersales (AftersalesApplyService, AftersalesRefundConfirmService) via the common port. Rules: non-POS sessions pass; a POS session must match the order's distributor_id (无权操作其他门店单据); role store_manager/supervisor may write any of the store's orders; any other role may only write orders whose pos_store_account_id equals the caller's pos_store_account_id (fallback id) claim, and an order with no handler (0/null) is unwritable by clerks (无权操作该单据). Pinned by PosOrderDocAccessGuardTest.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/service/AftersalesApplyService.java#L87-L87",
+          "version": "repo-lines-v1:sha256:68cb9bc67a96675056520ca7962ad11e728a8354c50c7a2a6e96cd609a4aee3e:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjhjYjliYzY3YTk2Njc1MDU2NTIwY2E3OTYyYWQxMWU3MjhhODM1NGM1MGM3YTJhNmU5NmNkNjA5YTRhZWUzZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjhjYjliYzY3YTk2Njc1MDU2NTIwY2E3OTYyYWQxMWU3MjhhODM1NGM1MGM3YTJhNmU5NmNkNjA5YTRhZWUzZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTllODY4MzdiZmViZDQ3M2RlYzgxZjIzZTc5MTEzZWM2MTc1ZmRlOGZjYjg2NGFjMzJhYmQ4YWQyNjIyN2E2ZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNjY5ZDhjOGYzMDE0NDBhNGNkN2ViOGRlNTk0MDMyMTk4MWNhMDBhNGMzMDAzMjQ1MmUyOWNkNGU3NWQxOGZhNiJ9"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/auth/PosOrderDocAccessPort.java",
+          "version": "repo-file-v1:sha256:743e94970aa27b9d4489237d22ed2592b94f4501fdffe7ae77fee6149f343d1b"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/PosJwtAuthenticationFilter.java",
+          "version": "repo-file-v1:sha256:cdff0fc9ec8ebdfc0acd47102867cbe95143e7a025c870364af051f43ae80565"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/PosJwtPathWhitelist.java",
+          "version": "repo-file-v1:sha256:bb97d20966fccb3acbfd06fd98a27b0f8fbb1df8e59f75dd827febcb974533c5"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/admin/AdminOrderCancelService.java#L83-L83",
+          "version": "repo-lines-v1:sha256:7f9bfa8eb541619bc8719fff74b531a1a7694bd4b928376688264c1efb7ee262:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiN2Y5YmZhOGViNTQxNjE5YmM4NzE5ZmZmNzRiNTMxYTFhNzY5NGJkNGI5MjgzNzY2ODgyNjRjMWVmYjdlZTI2MiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiN2Y5YmZhOGViNTQxNjE5YmM4NzE5ZmZmNzRiNTMxYTFhNzY5NGJkNGI5MjgzNzY2ODgyNjRjMWVmYjdlZTI2MiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzdiMGRjNDk3MTRmM2UzY2U5MDI5ZTA0MmYwZWM1MWMzZDgzYTIwOWYyNmEwMzYzMzY0Mjc3MjcwMDY2Zjc1OCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzE1M2EyM2RiM2Q0ZGQ0NDBmNTQ1NGE1ZTc3ZDkwNTBiYWU2MjFmZDczMTNiM2ExZmU0MjZkNTFkMTBkYjA5OSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/pos/PosOrderDocAccessGuard.java",
+          "version": "repo-file-v1:sha256:1dfbde5febc618f4c68dc711f8e7f98b4421a2a4a59ddd28a414487412dc7fbb"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/orders/service/pos/PosOrderDocAccessGuardTest.java",
+          "version": "repo-file-v1:sha256:28dd7b3dcebcaeb4d048fabbe32609234ae0d6ee8873168c2e79b6b47bc0a20a"
+        }
+      ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.7.3",
-    "at": "2026-11-04T17:09:55.577Z"
+    "by": "openwiki/0.9.0",
+    "at": "2026-11-05T17:10:02.238Z"
   }
 }

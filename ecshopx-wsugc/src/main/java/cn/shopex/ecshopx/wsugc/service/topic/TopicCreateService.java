@@ -21,6 +21,7 @@ import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.wsugc.domain.Topic;
 import cn.shopex.ecshopx.wsugc.mapper.TopicMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import org.springframework.stereotype.Service;
@@ -38,21 +39,21 @@ public class TopicCreateService {
 	public Map<String, Object> createOrUpdate(Map<String, Object> input, Map<String, Object> operatorJwt) {
 		Long requestTopicId = parseOptionalTopicId(input);
 		String topicName = requireTopicName(input);
-		Long inputCompanyIdForDup = parseNullableCompanyIdFromInput(input);
-
-		LambdaQueryWrapper<Topic> w = new LambdaQueryWrapper<>();
-		w.eq(Topic::getTopicName, topicName);
-		if (inputCompanyIdForDup == null) {
-			w.isNull(Topic::getCompanyId);
-		} else {
-			w.eq(Topic::getCompanyId, inputCompanyIdForDup);
-		}
-		if (topicMapper.selectCount(w) > 0) {
-			throw new ResourceException("同名话题已存在");
-		}
 
 		long operatorId = readLong(operatorJwt.get("operator_id"), 0L);
 		long companyId = readLong(operatorJwt.get("company_id"), 1L);
+
+		// ECX-10942：同名查重限定本租户，他租户重名不误拒
+		LambdaQueryWrapper<Topic> w = new LambdaQueryWrapper<>();
+		w.eq(Topic::getCompanyId, companyId);
+		w.eq(Topic::getTopicName, topicName);
+		List<Topic> existing = topicMapper.selectList(w);
+		if (!existing.isEmpty()) {
+			Topic first = existing.get(0);
+			if (requestTopicId == null || !first.getTopicId().equals(requestTopicId)) {
+				throw new ResourceException("同名话题已存在");
+			}
+		}
 		int now = (int) (System.currentTimeMillis() / 1000);
 
 		if (requestTopicId == null) {
@@ -73,6 +74,11 @@ public class TopicCreateService {
 		Topic loaded = topicMapper.selectById(requestTopicId);
 		if (loaded == null) {
 			throw new ResourceException("未查询到更新数据");
+		}
+		// ECX-10942：对齐同模块角标创建，拒绝改写其他公司的话题
+		Long loadedCompanyId = loaded.getCompanyId() == null ? 0L : loaded.getCompanyId();
+		if (!loadedCompanyId.equals(companyId)) {
+			throw new ResourceException("无权访问该话题");
 		}
 		loaded.setTopicName(topicName);
 		loaded.setUserId(0L);
@@ -120,28 +126,6 @@ public class TopicCreateService {
 			throw new ResourceException("话题名称不能为空");
 		}
 		return s;
-	}
-
-	private static Long parseNullableCompanyIdFromInput(Map<String, Object> input) {
-		if (!input.containsKey("company_id")) {
-			return null;
-		}
-		Object v = input.get("company_id");
-		if (v == null) {
-			return null;
-		}
-		if (v instanceof Number n) {
-			return n.longValue();
-		}
-		String s = v.toString().trim();
-		if (!StringUtils.hasText(s)) {
-			return null;
-		}
-		try {
-			return Long.parseLong(s);
-		} catch (NumberFormatException e) {
-			return null;
-		}
 	}
 
 	private static long readLong(Object v, long defaultVal) {

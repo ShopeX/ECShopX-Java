@@ -17,8 +17,10 @@
 package cn.shopex.ecshopx.wsugc.service.tag;
 
 import cn.shopex.ecshopx.common.exception.BadRequestException;
+import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.wsugc.domain.Tag;
 import cn.shopex.ecshopx.wsugc.mapper.TagMapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -62,8 +64,20 @@ public class TagVerifyService {
 				: "";
 
 		int now = (int) (System.currentTimeMillis() / 1000);
+		long companyId = readLong(operatorJwtOrEmpty.get("company_id"), 1L);
+		List<Tag> rows = tagMapper.selectList(new LambdaQueryWrapper<Tag>().in(Tag::getTagId, tagIds));
+		if (rows.size() != tagIds.stream().distinct().count()) {
+			throw new ResourceException("无权访问该标签");
+		}
+		for (Tag row : rows) {
+			Long rowCompanyId = row.getCompanyId() == null ? 0L : row.getCompanyId();
+			if (!rowCompanyId.equals(companyId)) {
+				throw new ResourceException("无权访问该标签");
+			}
+		}
 		LambdaUpdateWrapper<Tag> uw = new LambdaUpdateWrapper<>();
 		uw.in(Tag::getTagId, tagIds)
+				.eq(Tag::getCompanyId, companyId)
 				.set(Tag::getStatus, status)
 				.set(Tag::getManualRefuseReason, manual)
 				.set(Tag::getManualVerifyTime, (long) now);
@@ -110,6 +124,20 @@ public class TagVerifyService {
 			return Integer.parseInt(s);
 		} catch (NumberFormatException e) {
 			throw new BadRequestException("status参数格式无效");
+		}
+	}
+
+	private static long readLong(Object value, long defaultValue) {
+		if (value == null) {
+			return defaultValue;
+		}
+		if (value instanceof Number number) {
+			return number.longValue();
+		}
+		try {
+			return Long.parseLong(value.toString().trim());
+		} catch (NumberFormatException e) {
+			return defaultValue;
 		}
 	}
 

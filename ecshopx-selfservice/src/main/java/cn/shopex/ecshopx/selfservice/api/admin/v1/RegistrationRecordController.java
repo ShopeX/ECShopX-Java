@@ -350,8 +350,10 @@ public class RegistrationRecordController {
 					"Failed to authenticate because of bad credentials or an invalid authorization header.");
 		}
 		String mobile = jwt.get("mobile") == null ? null : String.valueOf(jwt.get("mobile"));
+		// ECX-10931：报名核销须限定当前租户
+		long companyId = parseCompanyId(jwt);
 		Map<String, Object> row =
-				registrationRecordRegistrationVerifyService.registrationVerify(cmd, mobile, locale);
+				registrationRecordRegistrationVerifyService.registrationVerify(cmd, companyId, mobile, locale);
 		Map<String, Object> data = new LinkedHashMap<>();
 		data.put("status", row);
 		return ResponseEntity.ok(ApiResult.ok(data));

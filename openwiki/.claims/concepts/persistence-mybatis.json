@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:3b3ded2758c53484701dcb3a75a918f76c97553ddad4fac6d4ccfeec46a491c5",
+  "pageVersion": "sha256:a95c870e541d0fe2ef7b46a9cb27c2ff05b67b30791d0ef78882fcc3224f9444",
   "claims": [
     {
       "id": "claim_e361b42057894e21933ebeee8e65ec0b",
@@ -20,7 +20,7 @@
         },
         {
           "resource": "repo://pom.xml#L20-L24",
-          "version": "repo-lines-v1:sha256:0ba1a9e90a360e3356758af24e8624cc00daa9722886ec6eae3cc09acecc87b2:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTM3MDRhZGI3MjhlMDAyNzA4OTljMTQxNmM3ODI1ODg0NjA5NWNmZDAyZjU0N2U3MDU2ZWI1NmIxOTIxZGE5YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjNkOGRjMzliMWNhZDI2YjgwMjcyNGUxNGM0ZDg2NzljYjMzY2RlMjNjODU0ODNiY2I5YTBlNjM0MDI1OTg4NSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjFjMWQzNmVjNmVmNjMxNjZjNjFlZDFmMDMyZWJlZDIyODA0OWZhY2ZlNTAwNTZjYjFkYmViOTkyOTYwNDJjYyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzA5YTA1OTRhMTE1OTk1YzlkZDQ4YmY5NjI0MmE4OWM4YWQxZTdlOTQ4NTllMDgxYmM5YmNlYjAxMmE5NzFiMyJ9"
+          "version": "repo-lines-v1:sha256:d7608fcc907506a2b5339a9ef0708ce7a710e354c6f7be81b22fd8378362523b:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTM3MDRhZGI3MjhlMDAyNzA4OTljMTQxNmM3ODI1ODg0NjA5NWNmZDAyZjU0N2U3MDU2ZWI1NmIxOTIxZGE5YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjNkOGRjMzliMWNhZDI2YjgwMjcyNGUxNGM0ZDg2NzljYjMzY2RlMjNjODU0ODNiY2I5YTBlNjM0MDI1OTg4NSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjFjMWQzNmVjNmVmNjMxNjZjNjFlZDFmMDMyZWJlZDIyODA0OWZhY2ZlNTAwNTZjYjFkYmViOTkyOTYwNDJjYyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzA5YTA1OTRhMTE1OTk1YzlkZDQ4YmY5NjI0MmE4OWM4YWQxZTdlOTQ4NTllMDgxYmM5YmNlYjAxMmE5NzFiMyJ9"
         }
       ]
     },
@@ -318,15 +318,19 @@
     },
     {
       "id": "claim_b9ec90e047d84f75a2bdc87839b1fdec",
-      "statement": "The same NOTPAY-guard/zero-rows-is-failure shape is repeated wherever an external system can redeliver an event: BsPayOrdersTradePaymentCallbackService.handlePaymentNotify, AdapayOrdersTradePaymentCallbackService, AdapayDepositTradeRechargeCallbackService.rechargeCallback (inside @Transactional(rollbackFor = Exception.class), checking tradeStatus SUCCESS), OfflinePaymentDoCheckService, OrdersPaymentDoPaymentService, and SupplierOfflineTradeWriteService — the persistence invariant is that state-machine transitions are conditional updates gated on the previous state and a zero-affected-rows result is an error, not a no-op.",
+      "statement": "The same NOTPAY-guard/zero-rows-is-failure shape is repeated wherever an external system can redeliver an event: BsPayOrdersTradePaymentCallbackService.handlePaymentNotify, AdapayOrdersTradePaymentCallbackService, OfflinePaymentDoCheckService, OrdersPaymentDoPaymentService, and SupplierOfflineTradeWriteService. AdapayDepositTradeRechargeCallbackService.rechargeCallback uses the strongest variant: inside @Transactional(rollbackFor = Exception.class) it first re-reads the row and throws if tradeStatus is already SUCCESS, then issues an atomic guarded LambdaUpdateWrapper (eq(depositTradeId).ne(tradeStatus, \"SUCCESS\").set(...)), and only proceeds when the update count is positive — n <= 0 throws ResourceException(\"更新已处理，不需要更新\"). The in-source comment (ECX-10915) states this conditional-update atomic preemption replaces the PHP FOR UPDATE + lock-then-check idiom, and AdapayDepositTradeRechargeCallbackServiceIdempotencyTest pins it (wrapper SQL contains trade_status, zero-row update rejects with no side effects, successful update applies effects). The persistence invariant is that state-machine transitions are conditional updates gated on the previous state and a zero-affected-rows result is an error, not a no-op.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-deposit/src/main/java/cn/shopex/ecshopx/deposit/service/AdapayDepositTradeRechargeCallbackService.java#L54-L91",
-          "version": "repo-lines-v1:sha256:1414aa4a82b06ab52d9f6e23f716597ca17c08aab05487cf1f0b5bb1e1c2dd81:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJkNzU0OGYwODFmM2Y0MjY0OTYxNzRiYjdmMTYwZjg3MDk0NDNjMWM1NmM2NmFmMzNmYjZmNmU4OTdjZjAzZjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc0NmFiNWMwNGIxOTViZTk5YWY0NTczYjg4OTFmZmM4OTExNDQ4ZWZjODg1YzE5NjBmMDY3NTI1YzM5OGMzMDIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ3ZTJhNWMwZTQ0ZTg5MjE4NGQ1NDdlNmY0ZTU3MmNhYWIxN2M2YmIxYWM5YjA0ZGZhZjYzZDkwMDIyYWQxYjgifQ"
+          "resource": "repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/deposit/service/AdapayDepositTradeRechargeCallbackServiceIdempotencyTest.java#L80-L147",
+          "version": "repo-lines-v1:sha256:378af8213e1bb28d8a06f3fc0a6088cba95fdfc769a34905fc721931f6c89c5b:eyJzZWxlY3RlZExpbmVDb3VudCI6NjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNiNDEzMGNhMmRjYzg1ZjI1ZjhjYjkyYTRhNzllZWYxNjgzMTZlZjI1YTlmMDE4OGUxMWY2M2UyNGFjOTFmYWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFlZTAyNWZjMTlmNWQwZjJkZWZiNzQyMzJlMDlmNzJlMGYxMjZiOTU2ZDQwNzllYjViNTMxNGVlZGFhODY1ODgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
         },
         {
-          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/bspay/BsPayOrdersTradePaymentCallbackService.java#L66-L107",
-          "version": "repo-lines-v1:sha256:268b050c5e9e5986a3669569ce8dce0cce261e6902a671ae51ff63133e77b343:eyJzZWxlY3RlZExpbmVDb3VudCI6NDIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAwODIwOGQxMThiZDk4Nzc1YWFjOThmMmYyZjk5YTY1MzYwMTA5ZWJhNThhOTI2MDUzODBmYTg2MmJkMGEwZWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkyY2JhMjNiMTdiMDUwY2EyMWYzZDAwNjBiNWNiOTM4YzFmZTk1MGM5ZTQzYTI2YmMzMmJkZWIzNjU1ZmQ2ZTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUxM2VlNzE1MjVlYTIyMWZiOWNlZWYxZTA4OGJkZmY5MjE2MTJiZGFmMDA1OTFhMzMyMWYwNGU3MTAwOTQ4YzkifQ"
+          "resource": "repo://ecshopx-deposit/src/main/java/cn/shopex/ecshopx/deposit/service/AdapayDepositTradeRechargeCallbackService.java#L54-L92",
+          "version": "repo-lines-v1:sha256:9e20e50e5c4bf7fc67230d4b2981f6855486c129e4fee881360b449a9ff4daf0:eyJzZWxlY3RlZExpbmVDb3VudCI6MzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJkNzU0OGYwODFmM2Y0MjY0OTYxNzRiYjdmMTYwZjg3MDk0NDNjMWM1NmM2NmFmMzNmYjZmNmU4OTdjZjAzZjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc0NmFiNWMwNGIxOTViZTk5YWY0NTczYjg4OTFmZmM4OTExNDQ4ZWZjODg1YzE5NjBmMDY3NTI1YzM5OGMzMDIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg5NWEwZDQ2M2EyODA2ZDY0Y2EyMzgyMzk3ZjJmZDlmZmU2YTAxMTNiYWVmNGRlMDcxZjA1YTFhYzI0YTY1MGYifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/bspay/BsPayOrdersTradePaymentCallbackService.java#L76-L107",
+          "version": "repo-lines-v1:sha256:b97065457ff74d527985e948b9a133ca1407c70321d248f4e08738e087d3168d:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBlZGNkODYyYTExYTE5YWFiY2Q2YWYzM2E4ODAxMGViZDE4MmJkNzJlNjZkYzBkMTRmYWE0M2I3M2EwNThiYTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUxM2VlNzE1MjVlYTIyMWZiOWNlZWYxZTA4OGJkZmY5MjE2MTJiZGFmMDA1OTFhMzMyMWYwNGU3MTAwOTQ4YzkifQ"
         },
         {
           "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/offline/OfflinePaymentDoCheckService.java#L381-L381",
@@ -340,15 +344,19 @@
     },
     {
       "id": "claim_bbc0873a99c741adacf736761a7e3f19",
-      "statement": "Cross-store writes follow a deliberate split: multi-write SQL flows run under @Transactional(rollbackFor = Exception.class) (e.g. the deposit recharge callback updating the trade row and mutating the UserDeposit balance), while Redis writes are non-transactional side effects performed after the SQL work, and dispatch/SMS publication is registered via TransactionSynchronizationManager afterCommit so it only fires on successful commit; where a method must start a transaction from inside its own bean, the codebase uses a programmatic TransactionTemplate instead of a self-invoked @Transactional.",
+      "statement": "Cross-store writes follow a deliberate split: multi-write SQL flows run under @Transactional(rollbackFor = Exception.class) (e.g. the deposit recharge callback performing the guarded DepositTrade state transition and the UserDeposit balance mutation in one transaction), while Redis writes are non-transactional side effects performed after the SQL work (shopDepositTotal, dayRechargeTotal<yyyy-MM-dd>, and the userDepositTotal_<companyId> hash refreshed by UserDepositBalanceMutationService), and SMS dispatch publication is registered via TransactionSynchronizationManager afterCommit so it only fires on successful commit (falling back to direct publication when no synchronization is active); where a method must start a transaction from inside its own bean, the codebase uses a programmatic TransactionTemplate instead of a self-invoked @Transactional (see MigrationSeedRunner's menu re-import and AftersalesReviewService.review wrapping runReviewTx in transactionTemplate.execute).",
       "evidence": [
         {
-          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MigrationSeedRunner.java#L40-L82",
-          "version": "repo-lines-v1:sha256:4bba3ce20635f95fd899efe0b786a7447d96acf98233f3c3d8c2c7be8e8f4012:eyJzZWxlY3RlZExpbmVDb3VudCI6NDMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhkNzZmMTdkY2VhYzJhN2Y0MmUxMDQ0YzVkZmMwYzQxOTA4YmFjZTY3MjUwMDM0ZWNjMmQzNmEzYzEwNzY0MGEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZmYzRlYjFiY2NjZjJiNTRhOTczZWIzNjdjNWE0NTQ3NmNkYTc2MWIyOTM3ZTQzZWMyMDE4OWJjNzk4ODcyMmUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQyYzZlYzBjZTJlMWFlOTc5M2NmZDE2Yjg0MzIyYjczMzljMzJjZGYzOGE1N2NiNmU0NTMzOTMxM2M3MTM0MjgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY1ZjlkNmMyYTk0NWIwYTkyNDg0ODI4YmM3NTgzNDdmMmJkZWY3N2U0NDY4NmEyNmQwY2MxNjc4ODRlZjZlZDIifQ"
+          "resource": "repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/service/AftersalesReviewService.java#L203-L208",
+          "version": "repo-lines-v1:sha256:f82bbde6ae1c5cf86a16d1a6f98dbd865a01f53c3135713daba72c69c5854371:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYWY4MDcwYzIyNzBmODlmMjllNTdmM2E4YzM3ZmQyMDYzZTEyMjRhZjg0M2ViNmY2YmZiYjEyNzc0NzYzMDZhMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjkxZjY0NmVjYjE0ZjNkNWZlNzhjMDgyNWQ2YTUzMDc0YzE1MTY1MTkyNWI1YjNiNTQxNGMzMTM5MzY5MTM4OSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiN2FjMTZmNTQ0NGQ0NjA5OTVlYTAzNTg5MzgyYjZjNWY2OTExODZjM2RmZjRkMmM1MTEwOGUxNDE3NTkzZmVlOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiM2Q1MGYzNjE5NGU3ODZlYjFhMjlmNTlhYWM3MmI3ZTg5NTE4ZTE0MWNlYjAwYjdmNzAxZDM1ZWVmZmQzNGMyMSJ9"
         },
         {
-          "resource": "repo://ecshopx-deposit/src/main/java/cn/shopex/ecshopx/deposit/service/AdapayDepositTradeRechargeCallbackService.java#L54-L108",
-          "version": "repo-lines-v1:sha256:63032743df6ac5b57f8e7d5cf949c0f46dbc54fff4338b25e459fdab9effbe3c:eyJzZWxlY3RlZExpbmVDb3VudCI6NTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJkNzU0OGYwODFmM2Y0MjY0OTYxNzRiYjdmMTYwZjg3MDk0NDNjMWM1NmM2NmFmMzNmYjZmNmU4OTdjZjAzZjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc0NmFiNWMwNGIxOTViZTk5YWY0NTczYjg4OTFmZmM4OTExNDQ4ZWZjODg1YzE5NjBmMDY3NTI1YzM5OGMzMDIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRjZjFkMzM1OTk1NjFjNjc4ZmQ1NjM2MGM5MGFkOWViZTlhMGVjYjkxMjVlMTQ2ZTZlYjMwZDM0ZWViNzY0YmUifQ"
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MigrationSeedRunner.java#L40-L95",
+          "version": "repo-lines-v1:sha256:f24bdb1156ab1adbc417220e7d52a964753e7b0ee94f06857269dfbdd44bf320:eyJzZWxlY3RlZExpbmVDb3VudCI6NTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhkNzZmMTdkY2VhYzJhN2Y0MmUxMDQ0YzVkZmMwYzQxOTA4YmFjZTY3MjUwMDM0ZWNjMmQzNmEzYzEwNzY0MGEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAyNDdlZjYzY2Y1NTEyYjZiYzJjZWE0YzI0N2YyODlmMDQzYjA2YjJmNGVkNmM5MDhjMDc3MDU1N2RjZDdlNTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQyYzZlYzBjZTJlMWFlOTc5M2NmZDE2Yjg0MzIyYjczMzljMzJjZGYzOGE1N2NiNmU0NTMzOTMxM2M3MTM0MjgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU1MGZkNzcwMzRhODBiYjgzYjU2YjE0MDk1NDUwMGY4ODRjZTNjYjAzZWVmYjBiYTJlMzFlY2Q2YmYyMmE3YWIifQ"
+        },
+        {
+          "resource": "repo://ecshopx-deposit/src/main/java/cn/shopex/ecshopx/deposit/service/AdapayDepositTradeRechargeCallbackService.java#L54-L122",
+          "version": "repo-lines-v1:sha256:d1bd814d6bda87e164ba13baa9d69495ada52b37f00a8e174edfd93466521357:eyJzZWxlY3RlZExpbmVDb3VudCI6NjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJkNzU0OGYwODFmM2Y0MjY0OTYxNzRiYjdmMTYwZjg3MDk0NDNjMWM1NmM2NmFmMzNmYjZmNmU4OTdjZjAzZjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNlMWRmMmI1YmYwM2RjNmFhZWJiYzg2NzdjMTU3ZjQ1YjQxZmI1ZDgxYmExY2VkNTMyNzczMDk4NTM4ZjdmOWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc0NmFiNWMwNGIxOTViZTk5YWY0NTczYjg4OTFmZmM4OTExNDQ4ZWZjODg1YzE5NjBmMDY3NTI1YzM5OGMzMDIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFmZjdlZTI3MTgyMTQ3MmFhN2I2MGVlZTU5YjgyNDNlNDdmMzMyODY3ZTMwMTZlMDAzMjBlNDRjNGY1OGRjMTcifQ"
         },
         {
           "resource": "repo://ecshopx-deposit/src/main/java/cn/shopex/ecshopx/deposit/service/UserDepositBalanceMutationService.java#L44-L73",
@@ -431,10 +439,90 @@
           "version": "repo-lines-v1:sha256:a448ba0edb16a74aaac11a0af62d6fe1d69837b2fb95cd66d18015a855fb859f:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzk5YjgzODNkOWZmNTc0Y2JlNDQxNDBhM2I1ZTE3N2I3ZTk3Yzg5NzM3M2ZhYmVjYWNjOWZmZDAwZDMyMDkyOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDg5NjQ2ZTcxM2YyNGFlOGFhOGJiM2E3OWVkMWZhNTk3ZWEwYjAwYTNmMmJkNzRiOWMxMGE0YzA4MWYzMGNiNyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDk5NmM0ZDhkNDIzZTY3NzlhOGJiNzk1YmI4Y2E3MmJlNWYzOWE1MmJiZmJjMjVkYjdkMmFhNzdiMTkwYTM1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiM2QxOTU5NzA1OWEwYzlkMDE2ZjI4YmY5MTRiMGRiM2I5Y2Y3YTdmMjRkMTkwYWMzMTI5MjczNWYwYWIzZTM5MCJ9"
         }
       ]
+    },
+    {
+      "id": "claim_5a8d87e1c0c74e74a6e8d91476c7fb4b",
+      "statement": "AftersalesDistributorScopeGuard.assertAftersalesDistributorAllowed(aftersalesDistributorId, jwtMap) enforces the operator JWT shop scope on aftersales write paths: admins (operator_type == \"admin\") bypass it; a non-admin with an empty allow-list is let through, but once the JWT carries a distributor_id scalar or distributor_ids list (entries may be numbers, strings, or maps with distributor_id/shop_id keys), the target distributor must be in that set or a ForbiddenException(\"店铺权限不足\") is thrown. Both AftersalesReviewService.review and AftersalesRefundConfirmService call it after loading the company-scoped Aftersales row and before mutating state.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/service/AftersalesDistributorScopeGuard.java#L28-L58",
+          "version": "repo-lines-v1:sha256:6294f485a597502c52993426b329f9050ee57d8dd1734a26ca8e9e7c9d9fd8b5:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJlYWNkMWE4ODczNWY0Yjg3MDM4YzVhZjhhMzIwNDM4NGMyMWQyN2U5OWE0MGYyYmVkOGRlMWRiMzgxMTQ3MDAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVmMGY1ZmNkZGFmY2I4M2ZmOWRhYjczZmFiM2Y5NGRiYzQzY2I5Yjc5NzVmMDZlODFhZWIwNmFhNmExZjViZTkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk1N2YxNzVlMWIyOTllZjhhYmViMmU4ZDE3Mzk1YTgwYjQ0NTY4MGUyZjk2YmI3NmFiOGVhNThhNWQ4NGI2NjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZmODlkZjg0MmI3ZjQwN2YwOGQ4MDEzNmZmZDhkM2Y5YzAwZGUwMGMyNjlmYWU3OGU0OWQzZjE3NDAwYzJmZDcifQ"
+        },
+        {
+          "resource": "repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/service/AftersalesRefundConfirmService.java#L170-L176",
+          "version": "repo-lines-v1:sha256:9b51b0045ea28e1ec9f8103499fccd64ebd99a1c42b699f3c6760034381d55f5:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZGM2ODllY2JiZjZlMzUwM2JmNGE3YjU1ZjVmNjQ4M2RhYTg5NzIxNWQ2Nzg5NTAzOWMxMDE5MGRhNWIyNGI0NCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMTljOTExYzk0N2JjZmYxNjIwZjYwNTE3ZWYyNDZhOTZjNjUzZmUyYWYzYTEwNWMzZDUxZWQ1NjI0ZDAwMGRlYyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiM2Y0MjU5ODNhY2I5ZmMyYWFiNWZhYmE4ZDcyYWQwNzNiNTZkN2FlZDkzZTAxNGRhN2ZiYzU5MTgwZWJjODM0MSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDMzMjg4MzE4NjNhMTA4NmZhMGUxYjdkMWE0MDEyNTUyYWZmN2Y5MzY1MzM4MzIzMjcwODc4YzYxOThjYzFkNCJ9"
+        },
+        {
+          "resource": "repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/service/AftersalesReviewService.java#L181-L196",
+          "version": "repo-lines-v1:sha256:d6a91d4d3d10cad7725d76d00addf2cb4bfbac73ea4312264fca2605ed30d9be:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjliYWY5NTk4Y2RlY2RlNGNlNGJkN2ExZWVkMWM3NWM0ZjYwNjYyZTIwNzg0MWJlOGU5ZGU4MDdkNWNmZWE3NTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI0MGEzZjllMzk2YTZjNTI3NTdkMjZmODdlNTA4NzliN2IyNWFkMjM5ZWU1YTgzMDg5NDhhNTQ4ZjZmNWFmNjYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI4ZGJmZGU2M2M3ZDQ0MDUyZWFhZjUzMTYwZmE1ODNjMjBlMjRjMmU3NGRjMjYyMDBlYWY5MjI1ODQ4Yjk2NDMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ0MGNmYTEyZGZjZWJjYTJkYWM4OWI3ZGY5ZTRjNGFhZDAxMDhmOTNjODNlYjMyMTZmNThkZjZjYTkzMDQ4ZGUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_117c3aafc2bb4d1b9193ccf8485675b9",
+      "statement": "AdapayTradeDistributorNameScopeGuard.assertAllowed(jwtMap) (ECX-10906, aligning with PHP PaymentTenantScopeGuard::assertDistributorNameFilterAllowed) blocks shop-side operators (operator_type == \"distributor\") from widening a trade list/export by passing a distributor_name filter that would override the JWT own-shop restriction; it throws ForbiddenException(\"无权筛选其他店铺\") for distributor operators and is a no-op for admins/dealers. Both AdapayTradeListQueryService and AdapayTradeExportDataService invoke it at the point where a non-empty distributor_name request parameter would otherwise be resolved into extra distributor_id filter values.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-adapay/src/main/java/cn/shopex/ecshopx/adapay/service/AdapayTradeDistributorNameScopeGuard.java#L28-L44",
+          "version": "repo-lines-v1:sha256:5f9b44a1b969e52eb4582f1f769f039da9f0a813b1cd3ca3658d8a626efdcb40:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI4N2EzM2ExNjU3Yzg1YzIwODIzMjgwY2YzNTgyYTEyYmFhNTJmY2Q1NDNjMjQwNGJkZTliNDQ3YTY0ZDY2NDYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU2ODk1NGEzMjRiMjg0Yjc5Mjc1MzhlMDgyNDBjZGFlZWIwMWZkMzRhN2ZjYjE2ZGFiMDVkMTRmYmZiOTI5OWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-adapay/src/main/java/cn/shopex/ecshopx/adapay/service/AdapayTradeExportDataService.java#L110-L121",
+          "version": "repo-lines-v1:sha256:9baacbd6ace9b907067fbdab32bdf566d9c0c35c0dc9bfc25798a0e7dc6ed89e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFjOWMwYTM2ZGYzZWJlMmEwMzE4ZjlhMjE5YjY4ZTNjNDI0Y2E0NzY4YTFjN2MxMTVkN2FiODc4OWJhNzE2NzMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNlMzI4M2ViNmE3OTczZmZmY2FlMGFhZDQ2MDBkYjFkZThiZDQxNTZhMjA3OWYzODk5NWYwNmMxZjNhMTZkOTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ1ZDU2Y2VkZmY0Y2Y4YjdmYTU1NGQwYjgwZjBmNzlmNjhhMzAwOTMyZTk4ZGVhZTc5M2NhNzkyZjBiMDRjZDIifQ"
+        },
+        {
+          "resource": "repo://ecshopx-adapay/src/main/java/cn/shopex/ecshopx/adapay/service/AdapayTradeListQueryService.java#L148-L161",
+          "version": "repo-lines-v1:sha256:0dd3395e14fcdeafb0adab9cf42452d8863669530302c071164ef7dd6602e060:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlmZTA0MDY5ZjgzY2Q0MmM3MWI3NzA1ZDkwNDUxZjgxMzMxNTE0YjgwZThlOGZlNTJmOGUxZDQ0OTkzMTAzOWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI3Mzc4ZjJhNDc0NTVhNzA2OWU5NDMyY2UyOTRjM2RhZWEyNDgxZTUzMDVkNmY1NWJjYzU5NDhjNWI2N2FjNzkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJjOGI5ZjVlYjJmYTgwMzUyZWNhMDllNTM3MTU0MGU3YjYxNDc3YTU4ZDQxYTNjMTAyMmUyNDgzZTJhNDJkYWQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_ac5cd00bee9f46d0bd6d3e65e52305e7",
+      "statement": "TrackViewNumService.addViewNum guards the effectively unauthenticated data-cube tracking endpoint: before writing any Redis bloom/hash counters it proves both monitorId and sourceId are positive numbers and already exist as rows belonging to the same companyId (monitorsMapper.selectCount(... eq(monitorId).eq(companyId)) > 0, same for sourcesMapper); unregistered or cross-tenant ids are silently dropped (ECX-10920), stopping an unauthenticated caller from enumerating ids to create unbounded Redis keys.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-data-cube/src/main/java/cn/shopex/ecshopx/datacube/service/TrackViewNumService.java#L59-L90",
+          "version": "repo-lines-v1:sha256:90aaadf59380eada6dfc36fd2556f2651fe3d202dcb7e859f37145e6c8df06e7:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJkMzQ1ZjRiMzFhNzRiNWQ5YWUzZGE0MzMwNDI2ZTI0OTJjZDIzOWUxZjVkZGY4ZWRiYzU4NmY0ZDU4ODVjODQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU4YTgyYTFhYmRkOTc5ODk0MGMzZTc0NmQyZDIyZjA0ZGIwNmM2ZDcyMzE4YjU1ZmY5Y2Q4Njg2NGM4NDJiMzgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjczMWFjYTFhNDVhZDI3YThhOGY3YTE3NzExNTY2ZjM2NmViM2E5Mjk2YTk0YWZjZmYxNDhlODc4ZDE3YjAxN2MiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM2MTZhZTA4N2FmMTRmMjQwYWE3N2I0YTM5NDE2NjQ2MGEzNDZiZDk1OThlZDNjMjJkOWZjOWNmYzgwNTAzNzkifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_a26d2135d95e4bbbb9e6c6fcea32eede",
+      "statement": "The wsugc admin services re-apply the PHP WsugcTenantScopeGuard::assertPostIdsBelongToCompany rule in Java: PostCreateService (edit path, ECX-10907), PostEditService (ECX-10919), PostDeleteService.runUpdate (ECX-10909), PostVerifyService.verify (ECX-10921), and PostSetBadgesService (ECX-10925, which additionally checks every badge row) each load the target Post rows by id, require the result count to match the requested distinct id count, and throw ResourceException(\"无权访问该笔记\") if any row's company_id differs from the operator JWT's company_id, so an id not belonging to the tenant is indistinguishable from a missing one. On the comment side, CommentVerifyService.verify rejects a non-positive company_id outright and scopes the update itself with .in(\"comment_id\", ...).eq(\"company_id\", companyId), while CommentDeleteService.deleteComments selects only rows matching both the id set and companyId and deletes just those — silent scoping rather than an exception.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-wsugc/src/main/java/cn/shopex/ecshopx/wsugc/service/comment/CommentDeleteService.java#L62-L82",
+          "version": "repo-lines-v1:sha256:c52f54db5887ff3130f3268968f30b4e10afedf75163f907f35de861777fc7bb:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwN2M5ZWViZjRhY2ZmNDdlZmM1NTIwMDAwZDJkYmRjMTBlNzA1N2Y1YmMzMTUwNGJlYTZjNGI5NDFkMjAzZWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjgzOGE0MTEzZGMwNzc3MThmODU4MDc1NTk1OGJlNGVlYzQxYTNmYzFlMjI3OTI2M2Y4N2NiMGU3YmQyYTQ0OGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBiZDA3Mzk3YjkwMzQ1NzBhMjI4OWM2YTExMTdkMmU5ZDc3MDUwOGExMGVkMWI1ODQyMjgwMzg5YjM1YzlkMDUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-wsugc/src/main/java/cn/shopex/ecshopx/wsugc/service/comment/CommentVerifyService.java#L60-L97",
+          "version": "repo-lines-v1:sha256:056e50d9dd1bb4fef0f682a357b88fb4687b0378db50bd85972f3bbfc2b0a62b:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ4NTk0MTk4OWM1MjcwZDcxYjg1ZWE1OGFhZWUxMzkyOTliMmE2NTBiYzMxNWE0ZTFlNGM1ODUxMmYwMWY3MTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1N2JkMzdkM2M1MWI1MDdiZjFmM2M2NzEzMjQ0NWQzNWI3MWQ1MGZjZjg2YzU4ODI1MTFhNDIwOTYxODk4MDgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA3OGZkOTU5YzJhYzY5ZmJjN2YzODg0NjdmODA4NDM1NGZjMmEwNDQ1MzJhMmZkNDEyMjMyZjNhMGFjNzIxNGIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI3YjY2MTU3ZjY0ZmUxM2RlNDU1ZWUzYzllMGU2OTY5YmMyNGQ4YWU0MWEyMTUyNTVmNWY1ZTM4NWNjNWQxNjQifQ"
+        },
+        {
+          "resource": "repo://ecshopx-wsugc/src/main/java/cn/shopex/ecshopx/wsugc/service/post/PostCreateService.java#L188-L198",
+          "version": "repo-lines-v1:sha256:4c740b2ba5710de34868f6bba0092546cf4215e9defb45c1a95c6c775b2a0435:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUyNmEzMWYyODQ2ZTc1N2NmYTMxNDkxNGRmZjkyNDVjMzVlOTU5MDE4NDE1ZGRiMjhjZTNlMTI2MTIyY2ZiMGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBmZjU1YzJlOThiNzI0YzI3ZTdmMGI2OTJjOGZmNDc2ZjgzYTAwOGUyZGFlZDE0MWNmM2M1OTYyYjc5Y2U3MjAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImViMzExM2IzNjA5MjdiNWUxMjA3NjJkNDdiMWVlYTIzNDYzMTQ0OTllZDBkYWRhZTNmNWQzNTJhM2NmMDIxMzciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZhNDlmZTc5Yjc2ZDI1YmU1NzE1N2Y3MzlkYzllYmJhMjJhOTZkYTNiN2QwYzJlNDE3MzZhY2M0NDMzZjllM2MifQ"
+        },
+        {
+          "resource": "repo://ecshopx-wsugc/src/main/java/cn/shopex/ecshopx/wsugc/service/post/PostDeleteService.java#L152-L168",
+          "version": "repo-lines-v1:sha256:0423e80562a0f2e7abf4a8559b2bb1d833bfdbf19a94ea505fb24ea42c898f79:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE5MTRkYzhhNWZmZDMwMGVjYTFmYWU1ZDk1NzkyZWRmNzgxY2ZmOGZjMjEyZTA1Y2E4OWRlZGVkZjU4OWU1MDUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUyYjYzYjY3MGExMjNjZDhmNDZmOTEyOWZjYWEzNWM1MmNkOWI0MmQ3Y2RkOTFhMjg0OWY2NWYwZTcxZGU3NmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImYwNzkzZGZkNjlhYjhkYzFiNDk0ZTM5YTA0ZTQyZTUxNDZkNTc2ZTk5MzcxYjRjY2UzYTI5N2Y0YzczMTVjZDEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-wsugc/src/main/java/cn/shopex/ecshopx/wsugc/service/post/PostEditService.java#L103-L113",
+          "version": "repo-lines-v1:sha256:443ac468e9d458be962c5ffefc9b81c393617e056b34102aa8b8ea9adc8f8b99:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI1MTlhZDFkOTExYmM4MTcwMWUwZTIxM2RjZDM2ODliY2EwYTEzYmQyMDg3N2M4N2EwZDc0MTIzNmYwMTExMTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjMwNGEyM2MwZTNhYWFjY2VhZDg2NjM4NDk2OGU0OWU0ZjNhNTdlYTU5ZmIwOTcxZDViOWNlNTMzMjI0Y2RhNjEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU5MGQ1YmVlNmZhZmZmMDRhZjFhODFiN2QxZjgyNGNiMzg3MDZlMGRlMDFhNzllNTEwMTg5YjMzZTUwMTIwNzYifQ"
+        },
+        {
+          "resource": "repo://ecshopx-wsugc/src/main/java/cn/shopex/ecshopx/wsugc/service/post/PostSetBadgesService.java#L75-L105",
+          "version": "repo-lines-v1:sha256:caf1eb724a4169fc1af4e2f04c47337af41cefe2f186a6566d7a6604f67a2103:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAwNGRjZDRkMGVjYWQ3ZWNkODRmMzU1NzgyMjQxMWIyZTk3MWM1MzlkOGE5NjBlZGRlMDQwNGM3M2NjOGNiZGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU2ODA2ZjE1NWM1YWMxYWUyNzIyY2EwNmYyYWM5Y2FkY2I4ODFiOTEyM2NiNjI0YTNjMTA0NzViNDQ0OWRjMmUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk4ZDBlNWRkZDI1NmUwMmJhYzM2ODYzYWUwOTZiNTZjZGQwMzdjODlkZTk4YWFjNjczZDk5OGRjNDc4MjQ1NGQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjllNGI1NWMwNmQyM2M3MjIxMzVlNDcwYjAzZTE1OTU1YzAwZmJkNjVhM2U5OGQ1OGY1YWJkOGIyNDAxNjQ4ZmYifQ"
+        },
+        {
+          "resource": "repo://ecshopx-wsugc/src/main/java/cn/shopex/ecshopx/wsugc/service/post/PostVerifyService.java#L92-L106",
+          "version": "repo-lines-v1:sha256:fee609da9cac44892ca2cbd86dbf012a6c0baa6fe057b9a654ea66e92f99d871:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE4OTNmMjFhOWU2MmM5Y2I4N2JhOWU5YTE2ODczZjA1NTAzNTZiYjA4NDY2ZWY1OTZjNWZiYjQ4NmJjZGE5MDIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY5YjQwZDE3ODRmNmZkNTQ0YjFjMzA5YTJmMjc3MTM4Y2JmMmQwOTg3OWU3YmQzOThjMTNhNjk5YzAwYTk4YzkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBmOTA2MjZlZjI5N2IyOTYzYWY0NmRmMDQwNTk5ZDVmZWQzN2Y2YjY5ZmNiYzExMGQyMmRlYjM3YzBiZDdhZjYifQ"
+        }
+      ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.7.3",
-    "at": "2026-11-04T17:09:55.577Z"
+    "by": "openwiki/0.9.0",
+    "at": "2026-11-05T17:10:02.238Z"
   }
 }

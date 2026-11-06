@@ -111,6 +111,7 @@ public class BspayTradeExportDataService {
 
 		String dn = request.getParameter("distributor_name");
 		if (dn != null && StringUtils.hasText(dn.trim()) && !"0".equals(dn.trim())) {
+			BspayTradeDistributorNameScopeGuard.assertAllowed(jwtMap);
 			List<Long> ids =
 					distributorListQueryService.listDistributorIdsByCompanyAndNameContains(companyId, dn.trim());
 			if (ids.isEmpty()) {

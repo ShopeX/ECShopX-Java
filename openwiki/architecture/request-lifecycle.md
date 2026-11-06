@@ -116,18 +116,28 @@ sources:
     resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/web/interceptor/MiddlewareWebMvcConfigurer.java
   - id: openwiki-source-cb7b1b089af43117147fa9fd
     resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/web/interceptor/ShopLogInterceptor.java
+  - id: openwiki-source-80077d2f69a839e9693e1a07
+    resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/api/front/v1/MembersController.java
   - id: openwiki-source-cc41dee55bf05e6db3079efb
     resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/h5/H5BearerJwtClaimsService.java
+  - id: openwiki-source-2425b7a1af8631937f2e830a
+    resource: repo://ecshopx-members/src/test/java/cn/shopex/ecshopx/members/api/front/v1/MembersControllerAddressBuyUserScopeTest.java
   - id: openwiki-source-7e78af38c8a63b7842f49ac8
     resource: repo://ecshopx-merchant/src/main/java/cn/shopex/ecshopx/merchant/config/security/FrontMerchantAuthInterceptor.java
   - id: openwiki-source-3faa728c05e4c966142451ad
     resource: repo://ecshopx-merchant/src/main/java/cn/shopex/ecshopx/merchant/config/security/MerchantInterceptorWebMvcConfigurer.java
   - id: openwiki-source-77e486142ae903ca0a7f6211
     resource: repo://ecshopx-merchant/src/main/java/cn/shopex/ecshopx/merchant/service/wxapp/MerchantWxappAuthAttributes.java
+  - id: openwiki-source-bfe6d6f18351fc248cd7b204
+    resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/api/front/v1/RightsController.java
   - id: openwiki-source-f2e1c65d6d39cb3db1a8a7e8
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/api/front/v1/WxappPaymentController.java
   - id: openwiki-source-847db9a10639078a376af1af
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/config/OrdersFrontV1BadRequestFieldErrorsAdvice.java
+  - id: openwiki-source-da30d999830db13c520004dd
+    resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/front/wxapp/RightsFrontWxappGetRightsCodeService.java
+  - id: openwiki-source-0e983b4fde485bf2f006c24e
+    resource: repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/orders/service/front/wxapp/RightsFrontWxappGetRightsCodeOwnershipTest.java
   - id: openwiki-source-0ec099f633b299c7da3a55f9
     resource: repo://ecshopx-salesperson/src/main/java/cn/shopex/ecshopx/salesperson/config/SalespersonWebMvcConfigurer.java
   - id: openwiki-source-e85f4b516d751504331c6cfb
@@ -136,10 +146,10 @@ sources:
     resource: repo://ecshopx-salesperson/src/main/java/cn/shopex/ecshopx/salesperson/web/QywxSalespersonAuthInterceptor.java
   - id: openwiki-source-37308fb144b4036f8384abe8
     resource: repo://ecshopx-salesperson/src/main/java/cn/shopex/ecshopx/salesperson/web/ShopSalespersonFrontRequestMerge.java
-generated: { by: "openwiki/0.7.3", at: "2026-11-04T17:09:55.577Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-05T17:10:02.238Z" }
 verified:
-  - by: openwiki/0.7.3
-    at: 2026-11-04T17:09:55.577Z
+  - by: openwiki/0.9.0
+    at: 2026-11-05T17:10:02.238Z
 ---
 
 # HTTP Request Lifecycle, Auth, and Response Conventions
@@ -358,6 +368,15 @@ The idiom reproduces PHP/Laravel's `$request->merge()` semantics: **query/form p
 
 `resolveH5Auth` in the same controller shows the second half of the idiom: identity comes from request attributes, not parameters — it prefers the wxapp session attribute, then `h5AuthClaims`, backfills `company_id` from `h5CompanyId`, then from the merged params, and only throws `UnauthorizedException` when no source produced a positive company id.
 
+### Identity-scoping: user-controlled ids must bind to the authenticated identity
+
+Because front endpoints authenticate via `h5AuthClaims` but accept arbitrary ids in the merged parameter map, the recent hardening rule is: **any user-controlled id that scopes a query or mutation must be proven to belong to the authenticated `user_id`/`company_id` before the service runs** — mirroring the PHP owner-scope guards (`MembersOwnerScopeGuard`, `GuideOrderTenantScopeGuard`). The two canonical examples, pinned by focused unit tests, are:
+
+* **Members address create/list** (`MembersController`, `@FrontAuth` on the class, ecshopx-members; ECX-10913 / ECX-10923). `createAddress` resolves the acting user through `resolveEffectiveUserIdForCreate(body, authUserId)`: the acting user is always the authenticated `user_id` from `h5AuthClaims` (via `resolveUserId(claims)`); a `buy_user_id` that points at another user is only meaningful when `promoter_user_id` loosely equals the auth user — and even then a foreign `buy_user_id` is rejected with `ResourceException("无权访问该数据")`. The address list applies the same rule through `resolveFilterUserIdForAddressList`, which always returns the auth user id (the former fall-through to `null` — an orphan-address bypass — was removed) and rejects a foreign `buy_user_id` the same way. `MembersControllerAddressBuyUserScopeTest` pins all four branches (no `buy_user_id` → self; self `buy_user_id` → self; foreign `buy_user_id` → reject; foreign promoter → treated as self).
+* **Rights write-off code minting** (`RightsController.getRightsCode` → `RightsFrontWxappGetRightsCodeService`, ecshopx-orders; ECX-10924). Before any barcode is generated, the service loads the `Rights` row by id and requires `row.company_id == auth.company_id` **and** `row.user_id == auth.user_id` — a missing row, another user's rights, or another tenant's rights all throw `ResourceException("无权访问该权益")`, with **no side effects** (no Redis write, no barcode generation). Malformed or non-positive `rights_id` values fail earlier with `BadRequestException("获取核销码出错", 422)`. `RightsFrontWxappGetRightsCodeOwnershipTest` pins each rejection path and the side-effect-free guarantee.
+
+When adding a front endpoint that takes an id (address, order, rights, coupon, …) from the request, follow this pattern: derive identity from `h5AuthClaims`/`h5CompanyId` (never from the merged params), and reject mismatches with `ResourceException`/`BadRequestException` so the envelope conventions below apply. See [Members Domain](../domains/members.md) and [Orders Domain](../domains/orders.md).
+
 ## Response and error conventions
 
 ### `ApiResult` — the standard envelope
@@ -446,3 +465,4 @@ See [Operations — Configuration](../operations/configuration.md) for the opera
 * Web-slice tests under `ecshopx-bootstrap/src/test` and Bundle test trees build standalone `MockMvc` with `setCustomArgumentResolvers(new FlexibleBodyMethodArgumentResolver(objectMapper, null))` and inject the operator JWT map via `requestAttr(OperatorJwtRequestAttributes.OPERATOR_JWT_USER_DATA, …)` — the pattern for testing a controller without booting the interceptor chain: `ShopexBindControllerWebSliceTest`, `ShopsSetWxShopsSettingWebSliceTest`, `OperatorsGetCredentialsWebSliceTest`, `AftersalesReviewEndpointMappingTest`, and `LoginControllerWxappNewLoginWebTest` (espier, asserting the merged-params hand-off to `FrontWxappNewLoginService`).
 * `ReservationFrontV1ReservationControllerCreateReservationFinishPublishWebMvcTest` (reservation) — the `/api/v1/wxapp/**` session-secured surface.
 * POS chain: `PosAuthServiceTest` (companys) — employee-number login, account/shop status rejection, claim shape; `PosJwtSessionValidatorTest` (companys) — a changed `status` / `distributor_id` / `role` invalidates an otherwise-valid POS token; `PosJwtIssuerTest` and `PosJwtPathWhitelistTest` (espier) — `token_kind=pos` issuance/invalidate round-trip and the deny-by-default path table; `DualJwtSupportTest` (common) — POS claims win over operator claims and the acting-id mapping (`pos_store_account_id` vs `operator_id`).
+* Identity-scoping hardening: `MembersControllerAddressBuyUserScopeTest` (members) — address create restricts `buy_user_id` to the authenticated user; `RightsFrontWxappGetRightsCodeOwnershipTest` (orders) — rights write-off code minting requires the rights row to belong to the auth user and tenant, with no side effects on rejection.

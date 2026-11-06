@@ -36,6 +36,10 @@ import org.springframework.util.StringUtils;
 @Service
 public class ItemsPriceStoreStatusWriteService {
 
+	/** 手动「提交审核」可推进的待审态；含历史拼写 submiting。 */
+	private static final List<String> AUDIT_STATUS_ELIGIBLE_FOR_SUBMIT =
+			List.of("submiting", "submitting", "rejected");
+
 	private final SupplierItemsAdminBatchUpdateService supplierItemsAdminBatchUpdateService;
 	private final ItemsRepository itemsRepository;
 	private final ItemCreatePromotionGuardService itemCreatePromotionGuardService;
@@ -69,7 +73,7 @@ public class ItemsPriceStoreStatusWriteService {
 				filter.setGoodsIdsOrNull(null);
 			}
 			if (plan.auditStatusFilterProcessing) {
-				filter.setAuditStatusInOrNull(List.of("submitting", "rejected"));
+				filter.setAuditStatusInOrNull(AUDIT_STATUS_ELIGIBLE_FOR_SUBMIT);
 			}
 			SupplierItemsUpdatePatch patch = toSupplierPatch(plan);
 			supplierItemsAdminBatchUpdateService.batchUpdateItems(companyId, filter, patch);
@@ -91,7 +95,7 @@ public class ItemsPriceStoreStatusWriteService {
 			priceMap.put(row.getGoodsId(), priceFenLong);
 			itemCreatePromotionGuardService.checkItemPrice(companyId, List.of(row.getGoodsId()), priceMap);
 		}
-		List<String> auditIn = plan.auditStatusFilterProcessing ? List.of("submitting", "rejected") : null;
+		List<String> auditIn = plan.auditStatusFilterProcessing ? AUDIT_STATUS_ELIGIBLE_FOR_SUBMIT : null;
 		ItemsPriceStoreStatusPatch platformPatch = toItemsPatch(plan);
 		itemsRepository.updateByItemsPriceStoreFilter(companyId, itemId, goodsId, auditIn, platformPatch);
 		if (itemId != null) {

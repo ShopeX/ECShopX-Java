@@ -49,7 +49,10 @@ public class RegistrationRecordRegistrationVerifyService {
 	}
 
 	public Map<String, Object> registrationVerify(
-			RegistrationRecordRegistrationVerifyCommand cmd, String verifyOperatorMobile, Locale locale) {
+			RegistrationRecordRegistrationVerifyCommand cmd,
+			long companyId,
+			String verifyOperatorMobile,
+			Locale locale) {
 		String key = "registrationVerify:" + Long.toString(cmd.recordId());
 		Boolean ok = companysRedisTemplate.opsForValue().setIfAbsent(key, "1", Duration.ofSeconds(3));
 		if (!Boolean.TRUE.equals(ok)) {
@@ -60,6 +63,11 @@ public class RegistrationRecordRegistrationVerifyService {
 		RegistrationRecord entity = registrationRecordMapper.selectById(cmd.recordId());
 		if (entity == null) {
 			throw new ResourceException(messageSource.getMessage("selfservice.registration_record.not_exist", null, locale));
+		}
+		// ECX-10931：对齐 PHP SelfserviceTenantScopeGuard::assertRegistrationRecordIdBelongsToCompany
+		Long recordCompanyId = entity.getCompanyId() == null ? 0L : entity.getCompanyId();
+		if (!recordCompanyId.equals(companyId)) {
+			throw new ResourceException("无权访问该报名记录");
 		}
 		if (!"passed".equals(entity.getStatus())) {
 			throw new ResourceException(

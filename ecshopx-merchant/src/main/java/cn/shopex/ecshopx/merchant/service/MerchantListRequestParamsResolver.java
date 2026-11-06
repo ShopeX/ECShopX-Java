@@ -142,9 +142,10 @@ public class MerchantListRequestParamsResolver {
 		Map<String, Object> out = new LinkedHashMap<>();
 		putSingleOrList(out, "page", request.getParameterValues("page"));
 		putSingleOrList(out, "pageSize", request.getParameterValues("pageSize"));
+		putSingleOrList(out, "page_size", request.getParameterValues("page_size"));
 		putSingleOrList(out, "merchant_name", request.getParameterValues("merchant_name"));
-		putSingleOrList(out, "legal_name", request.getParameterValues("legal_name"));
-		putSingleOrList(out, "legal_mobile", request.getParameterValues("legal_mobile"));
+		putSingleOrList(out, "contact_name", request.getParameterValues("contact_name"));
+		putSingleOrList(out, "contact_mobile", request.getParameterValues("contact_mobile"));
 		putSingleOrList(out, "country_code", request.getParameterValues("country_code"));
 		String[] ts = request.getParameterValues("time_start");
 		if (ts == null || ts.length == 0) {

@@ -48,13 +48,13 @@ public final class MerchantDataMasking {
 			if (row == null) {
 				continue;
 			}
-			Object ln = row.get("legal_name");
-			if (ln != null) {
-				row.put("legal_name", DataMasking.maskTruename(ln.toString()));
+			Object cn = row.get("contact_name");
+			if (cn != null) {
+				row.put("contact_name", DataMasking.maskTruename(cn.toString()));
 			}
-			Object lm = row.get("legal_mobile");
-			if (lm != null) {
-				row.put("legal_mobile", DataMasking.maskMobile(lm.toString()));
+			Object cm = row.get("contact_mobile");
+			if (cm != null) {
+				row.put("contact_mobile", DataMasking.maskMobile(cm.toString()));
 			}
 		}
 	}
@@ -67,11 +67,11 @@ public final class MerchantDataMasking {
 				row.put("legal_cert_id", masked);
 			}
 		}
-		Object lm = row.get("legal_mobile");
-		if (lm != null) {
-			String masked = DataMasking.maskMobile(lm.toString());
+		Object cm = row.get("contact_mobile");
+		if (cm != null) {
+			String masked = DataMasking.maskMobile(cm.toString());
 			if (masked != null) {
-				row.put("legal_mobile", masked);
+				row.put("contact_mobile", masked);
 			}
 		}
 		Object bm = row.get("bank_mobile");

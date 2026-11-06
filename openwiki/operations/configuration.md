@@ -1,7 +1,7 @@
 ---
 type: reference
 title: "Configuration and Secrets Reference"
-description: "Where runtime configuration lives in ECShopX-Java — the ecshopx-bootstrap application.properties as the single central tracked file, the spring.config.import of per-domain ymls, the env overlays (JWT_SECRET, COMMON_H5_BASE_URL, …), and the install-secrets.sh flow that injects production values."
+description: "Where runtime configuration lives in ECShopX-Java — the ecshopx-bootstrap application.properties as the single central tracked file, the spring.config.import of per-domain ymls, the env overlays (JWT_SECRET, POS_JWT_ISSUER, COMMON_H5_BASE_URL, …), per-integration properties (DigiOS, Shuyun open platform), and the install-secrets.sh flow that injects production values."
 tags: [configuration, properties, secrets, environment, deployment, storage, jwt, install]
 sources:
   - id: openwiki-source-ea70eb6c045047448e446296
@@ -34,6 +34,8 @@ sources:
     resource: repo://ecshopx-bootstrap/src/main/resources/application.properties
   - id: openwiki-source-6692dff05ebf35d2df7aeb9d
     resource: repo://ecshopx-bspay/src/main/resources/application-bspay.yml
+  - id: openwiki-source-ed7b288eb2787a6530e341f5
+    resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/auth/PosJwtRequestAttributes.java
   - id: openwiki-source-21b00e40c6fdf2ede8b63105
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/crypto/MailSettingPasswordCodec.java
   - id: openwiki-source-c4239fd10cbbee9db016ba54
@@ -52,8 +54,20 @@ sources:
     resource: repo://ecshopx-deposit/src/main/java/cn/shopex/ecshopx/deposit/service/AdapayDepositTradeRechargeCallbackService.java
   - id: openwiki-source-dc6e550003128c844e8ece4d
     resource: repo://ecshopx-deposit/src/main/java/cn/shopex/ecshopx/deposit/service/DepositWxpayRechargeUnifyService.java
+  - id: openwiki-source-f8c80eb4ce0557bebb95cc17
+    resource: repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/api/admin/v1/DigiOsCompanyConfigController.java
+  - id: openwiki-source-b736acca292b771b3827af6b
+    resource: repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/config/DigiOsProperties.java
+  - id: openwiki-source-781d7bc55a256c6826ca6731
+    resource: repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/service/DigiOsCompanyConfigAdminService.java
+  - id: openwiki-source-b5d20d175ea7c5401f6d2077
+    resource: repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/service/DigiOsConfigService.java
   - id: openwiki-source-082f8b206653637de7525f47
     resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/config/ImportFileStorageProperties.java
+  - id: openwiki-source-a1f68480771cd92413f00be5
+    resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/PosJwtAuthenticationFilter.java
+  - id: openwiki-source-da7950ab19f4690ae361bd4b
+    resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/PosJwtIssuer.java
   - id: openwiki-source-0cd823a3d81abc49a1f083c9
     resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/upgrade/UpgradeAgreementQueryService.java
   - id: openwiki-source-ff84e425d5c295446ea83b73
@@ -88,6 +102,8 @@ sources:
     resource: repo://ecshopx-popularize/src/main/java/cn/shopex/ecshopx/popularize/config/PopularizeCommonImageDefaultsProperties.java
   - id: openwiki-source-6d549e5da4278050fc21b6ef
     resource: repo://ecshopx-popularize/src/main/java/cn/shopex/ecshopx/popularize/service/PopularizeSettingSaveService.java
+  - id: openwiki-source-ac9bff6fbfacb24d146d9682
+    resource: repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/config/ShuyunOpenPlatformProperties.java
   - id: openwiki-source-92eb21d2bf0a2c41237ee143
     resource: repo://ecshopx-shuyun/src/main/resources/application-shuyun.yml
   - id: openwiki-source-8330d5527f45c831dc36ecc5
@@ -110,10 +126,10 @@ sources:
     resource: repo://ecshopx-wechat/src/main/java/cn/shopex/ecshopx/wechat/wxa/WechatOpenPlatformAuthorizerTokenService.java
   - id: openwiki-source-f1b1aacc63642e5304668821
     resource: repo://readme.md
-generated: { by: "openwiki/0.7.3", at: "2026-11-04T17:09:55.577Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-05T17:10:02.238Z" }
 verified:
-  - by: openwiki/0.7.3
-    at: 2026-11-04T17:09:55.577Z
+  - by: openwiki/0.9.0
+    at: 2026-11-05T17:10:02.238Z
 ---
 
 # Configuration and Secrets Reference
@@ -216,7 +232,7 @@ There is a second family of module-local files that are **not** imported here �
 | `spring.servlet.multipart.max-file-size` / `.max-request-size` | `50MB` / `55MB` | — | — |
 | `spring.mvc.servlet.pathmatch.use-trailing-slash-match` | `true` | — | — |
 | `langue.list[...]` / `langue.default-lang` | `zh-CN, en-CN, ar-SA, zh-TW, ja-JP, ru-RU` / `zh-CN` | — | — |
-| `xxl.job.admin.addresses` / `.accessToken` / `.executor.port` | `http://127.0.0.1:9080/xxl-job-admin` / `ecshopx-cron-dev` / `19999` | `APP_ARGS` (compose points at `http://xxl-job-admin:8080/xxl-job-admin`) | — |
+| `xxl.job.admin.addresses` / `.accessToken` / `.executor.appname` / `.executor.port` | `http://127.0.0.1:9080/xxl-job-admin` / `ecshopx-cron-dev` / `ecshopx-executor` / `19999` (plus `executor.logpath=logs/xxl-job`, `executor.logretentiondays=7`) | `APP_ARGS` (compose points at `http://xxl-job-admin:8080/xxl-job-admin`) | — |
 
 ### DataSource / Flyway / MyBatis-Plus
 
@@ -251,19 +267,21 @@ The `deposit` selector is the classic trap: with the shipped defaults (`shared` 
 | `ADMIN_LOGIN_CHECK_LEVEL` | *(empty)* | — | [Platform Services](../domains/platform-services.md) |
 | `JWT_SECRET` | *(empty in repo; generated at install)* | `JWT_SECRET` env / `APP_ARGS` | this page |
 | `JWT_TTL` / `JWT_REFRESH_TTL` | `120` / `20160` minutes | `JWT_TTL` / `JWT_REFRESH_TTL` | — |
+| `POS_JWT_ISSUER` | `ecshopx-pos` (code default; not listed in `application.properties`) | `POS_JWT_ISSUER` env / `APP_ARGS` | this page |
 | `ecshopx.h5.jwt.*` | `${JWT_SECRET}` etc. | — | — |
 | `ecshopx.merchant.wxapp.jwt.issuer/.secret-base64/.ttl-minutes` | `ecshopx` / `${JWT_SECRET}` / `60` | — | [Stores & Merchants](../domains/stores-and-merchants.md) |
 | `common.encrypt-sensitive-data` | `false` | — | — |
 | `ecshopx.mail.password.app-key` / `.cipher` | *(empty)* / `AES-256-CBC` | — | — |
 | `ecshopx.common.api-token` | *(empty)* | — | [Platform Services](../domains/platform-services.md) |
-| `openapi.debug` / `openapi.common-token` / `openapi.system-company-id` | `0` / *(empty)* / `${common.system-companys-id:1}` | — | [OpenAPI](../integrations/openapi.md) |
+| `openapi.debug` / `openapi.common-token` / `openapi.system-company-id` | `0` / *(empty)* / `${common.system-companys-id:1}` (so the effective default is `1` via `common.system-companys-id`) | — | [OpenAPI](../integrations/openapi.md) |
 
 Behaviour notes:
 
 * `ADMIN_LOGIN_CHECK_LEVEL=img_code` makes `RequiresImgCodeWhenLevelValidator` require a captcha token/`yzm` pair on admin login; any other value (including empty) skips the check.
 * `common.encrypt-sensitive-data=true` is a **hard startup failure** (`OperatorsQueryService.assertEncryptMode` throws `IllegalStateException`) — the mode is not implemented in this migration iteration.
 * `ecshopx.common.api-token` gates `GET /api/v1/operator/credential`; when the key is blank the endpoint always answers `无权访问该API,签名错误` — i.e. **empty means closed**, the safe direction.
-* `openapi.debug=1` skips signature verification on public OpenAPI paths entirely (sets auth and returns) — a debug-only bypass that must never ship as `1`.
+* `openapi.debug=1` skips signature verification on public OpenAPI paths entirely — after the required-parameter checks it calls `OpenapiAuthAttributes.setAuth(request, systemCompanyId)` and returns, without checking `timestamp` tolerance, `sign`, the developer lookup or the replay guard. The `systemCompanyId` it stamps is the `openapi.system-company-id` @Value (falling back to `common.system-companys-id`, default `1`). A debug-only bypass that must never ship as `1`.
+* `JWT_SECRET` is also the POS signing key: `PosJwtIssuer` (issues POS tokens at login, TTL = `JWT_TTL` minutes, HS512) and `PosJwtAuthenticationFilter` (verifies them) both build their HMAC key from the **Base64-decoded** bytes of `JWT_SECRET` (raw UTF-8 bytes only if the value is not valid Base64) and **fail startup with `IllegalStateException("JWT_SECRET is required")` when it is blank**. `POS_JWT_ISSUER` (default `ecshopx-pos`) is both the `iss` claim written by the issuer and one of the two markers the filter accepts — a token counts as a POS token when `token_kind=pos` **or** `iss` equals the configured issuer.
 * `ecshopx.mail.password.app-key` implements the PHP Laravel `APP_KEY` + AES-256-CBC codec for mail-setting passwords; when the key is missing, `MailSettingPasswordCodec` degrades to passing plaintext through.
 
 ### Tenant / product-model switches
@@ -361,6 +379,48 @@ Per-channel payment credentials are **not** here — they live per tenant in Red
 | `ecshopx.work-wechat.dis-workwechat-h5-base-uri` / `.dis-workwechat-h5-auth-uri` | `${DIS_WORKWECHAT_H5_BASEURI:}` / `${DIS_WORKWECHAT_H5_AUTHURI:}` | — | — |
 | `ecshopx.api.public-base-url` | *(empty)* — external API root for the kuaizhen-580 medicine sync callback URL | — | — |
 
+### DigiOS (POS 进销存 / inventory)
+
+DigiOS keys bind to `DigiOsProperties` (`@ConfigurationProperties(prefix = "ecshopx.digios")`). **None of them ship in `application.properties`** — the class defaults below are what a fresh checkout runs with, and any override goes through `APP_ARGS`/env or a user-authored overlay:
+
+| Key | Class default | Notes |
+|---|---|---|
+| `ecshopx.digios.enabled` | `false` | master switch for the outbound integration |
+| `ecshopx.digios.base-url` | `https://hobbits.ishopex.cn` | DigiOS gateway root |
+| `ecshopx.digios.client-id` / `.app-secret` | *(empty)* | platform-level credentials |
+| `ecshopx.digios.timeout-seconds` / `.connect-timeout-seconds` | `10` / `5` | HTTP timeouts |
+| `ecshopx.digios.token-path` / `.token-expire-skew-seconds` | `/gateway/token` / `120` | token endpoint and early-refresh skew |
+| `ecshopx.digios.co-code` / `.biz-model` / `.ter-cd` | `Shopex001` / `0` / `ECX` | routing/header fields |
+| `ecshopx.digios.default-op-hours` | `10:00,22:00` | store operating hours fallback |
+| `ecshopx.digios.regions-json` | `classpath:digios_regions.json` | region map (classpath or file path; the JSON ships in the digios jar) |
+| `ecshopx.digios.stock-push-max-rows` | `200` | inbound `stock_push` row cap |
+| `ecshopx.digios.store-adjustment-doc-outbound` / `.store-adjustment-doc-inbound` | `code_000008` / `code_000009` | adjustment document types |
+| `ecshopx.digios.methods.<name>` | `warehouse.upsert`→`/gateway/openapi/v1/warehouse`, `logic.upsert`→`/gateway/openapi/v1/logic`, `store.create`/`store.update`→`/gateway/openapi/v1/store`, `account.upsert`→`/gateway/openapi/v1/account`, `store.adjustment`→`/gateway/openapi/v1/inventory/store/adjustment` | method→path map; `DigiOsConfigService.resolvePath` falls back to `"/" + method.replace('.', '/')` for unmapped methods |
+
+**Per-company overrides live in the database, not in properties.** `DigiOsCompanyConfigAdminService` backs `GET/POST /api/v1/digios/company_config`, reading and writing one `digios_company_config` row per tenant (`is_enabled`, `base_url`, `client_id`→`app_key`, `app_secret`). `DigiOsConfigService.resolve(companyId)` layers that row over the properties: a row with `is_enabled=1` force-enables the integration, and non-blank `base_url` / `app_key` / `app_secret` replace the platform values, while the timeouts, token path, `co-code` and method map always come from the properties. The admin save path validates that enabling requires a base URL, Client ID and App Secret (rejecting non-`http(s)` URLs), enforces a **globally unique Client ID across tenants** (`Client ID已存在`), and keeps the stored secret when `app_secret` is omitted from the request.
+
+### Shuyun open platform
+
+`ShuyunOpenPlatformProperties` (`@ConfigurationProperties(prefix = "ecshopx.shuyun.open-platform")`) configures the Shuyun **open-api/open-client** integration, deliberately isolated from the legacy UAPI gateway (`ecshopx.thirdparty.shuyun.*`). The tracked `application-shuyun.yml` (one of the `spring.config.import` files) carries only `base-uri`, `timeout-seconds: 30`, `token-refresh-base-uri`, `fallback-gateway-access-token: ""`, `callback-identity-secret: ${SHUYUN_OPEN_PLATFORM_CALLBACK_IDENTITY_SECRET:}`, `auth-value: ${SHUYUN_OPEN_PLATFORM_AUTH_VALUE:}`, `callback-debug-log: false`, `offline-plat-id-suffix: "-off"`, `merge-dispatch-ttl-seconds: 3`; every other key below comes from the class defaults:
+
+| Key | Default | Notes |
+|---|---|---|
+| `base-uri` / `timeout-seconds` / `token-refresh-base-uri` | `http://open-api.shuyun.com` / `30` / `http://open-client.shuyun.com` | outbound bases |
+| `fallback-gateway-access-token` | *(empty = off)* | DELTA-001: no outbound token fallback when the DB has none; local debugging only |
+| `callback-identity-secret` | *(empty)* | inbound callback HMAC secret (distinct from the per-developer DB `app_secret`) |
+| `callback-sign-include-body` | `true` | ECX-10841: whether the JSON body joins the signature; both sides must agree |
+| `callback-replay-skew-seconds` / `callback-replay-ttl-seconds` | `300` / `600` | accepted clock skew and the Redis anti-replay key TTL |
+| `auth-value` | *(empty)* | cold-start `auth_value` written on token callbacks |
+| `callback-debug-log` | `false` | extra callback logging |
+| `token-callback-save-max-attempts` / `.token-callback-save-retry-base-usleep` / `.token-callback-save-retry-max-usleep` | `6` / `50000` / `800000` | retry/backoff for persisting callback tokens |
+| `offline-plat-id-suffix` | `-off` | `shop_id` suffix for offline platform |
+| `gateway-partner` | `nnormal` | `bind.push` body `partner` (PHP `gateway_partner`) |
+| `offline-benefit-issuer` | `kaquan` (`kaquan`\|`stub`) | offline benefit coupon issuer implementation |
+| `offline-benefit-member-resolve-mode` / `.offline-benefit-gateway-platform` | `numeric_user_id` / `offline` | customerId resolution and report/detail push platform |
+| `offline-benefit-report-push-max-cycles` | `3` | report/detail push retry rounds |
+| `merge-dispatch-ttl-seconds` | `3` (`0` = disabled) | merge-dispatch dedup TTL |
+| `order-class-trade-source-map.<order_class>` | `normal`→`11`, `pointsmall`→`12`, `shopadmin`→`13`, `shopguide`→`14`, `employee_purchase`→`15`, `groups`→`16`, `seckill`→`17`, `community`→`18`, `bargain`→`19`, `excard`→`20`, `drug`→`21` | order_class → trade_source mapping, overridable per entry |
+
 ### SMS scene whitelists
 
 | Key | Default | Owning page |
@@ -423,7 +483,7 @@ The compose files then thread `JWT_SECRET` twice — once as a container environ
 
 ### Secret-bearing keys to never commit
 
-`JWT_SECRET`, `ADMIN_PASSWORD`, `ecshopx.common.api-token`, `espier.shopex-usercenter.secret`, `ecshopx.storage.oss.access-key`/`.secret-key` (and the qiniu/aws/cos equivalents), `ecshopx.storage.import-file.access-key`/`.secret-key`, `ecshopx.wechat.open.component-appsecret`/`.component-verify-ticket`, `ecshopx.jushuitan.app-secret`, `ecshopx.thirdparty.prism-core.app-secret` / `prism-ishopex.app-secret` / `shuyun.app-secret`, `ecshopx.shuyun.open-platform.callback-identity-secret` / `.auth-value` / `.fallback-gateway-access-token`, `ecshopx.bspay.callback.rsa-public-key`, `ecshopx.ums.notify-md5-key`, `common.store-key`, `ecshopx.mail.password.app-key`, `ecshopx.map.amap.app-secret`, `ecshopx.operator.sms.shopex.ent-pwd`/`.secret`, `license.gateway.*` — plus `ecshopx.thirdparty.dada.*` / `.shansong.*` (Dada/Shansong delivery credentials, bound from their own properties classes).
+`JWT_SECRET`, `ADMIN_PASSWORD`, `ecshopx.common.api-token`, `espier.shopex-usercenter.secret`, `ecshopx.storage.oss.access-key`/`.secret-key` (and the qiniu/aws/cos equivalents), `ecshopx.storage.import-file.access-key`/`.secret-key`, `ecshopx.wechat.open.component-appsecret`/`.component-verify-ticket`, `ecshopx.jushuitan.app-secret`, `ecshopx.thirdparty.prism-core.app-secret` / `prism-ishopex.app-secret` / `shuyun.app-secret`, `ecshopx.shuyun.open-platform.callback-identity-secret` / `.auth-value` / `.fallback-gateway-access-token`, `ecshopx.bspay.callback.rsa-public-key`, `ecshopx.ums.notify-md5-key`, `common.store-key`, `ecshopx.mail.password.app-key`, `ecshopx.map.amap.app-secret`, `ecshopx.operator.sms.shopex.ent-pwd`/`.secret`, `license.gateway.*`, `ecshopx.digios.client-id`/`.app-secret` (and the per-tenant `digios_company_config.app_secret` column) — plus `ecshopx.thirdparty.dada.*` / `.shansong.*` (Dada/Shansong delivery credentials, bound from their own properties classes).
 
 ## Related pages
 

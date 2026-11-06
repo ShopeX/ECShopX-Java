@@ -41,7 +41,7 @@ public class FormSettingDataInfoService {
 		this.rowAssembler = rowAssembler;
 	}
 
-	public Object getDataInfo(String idRaw, String countryCode) {
+	public Object getDataInfo(String idRaw, long companyId, String countryCode) {
 		boolean falsy =
 				(idRaw == null)
 						|| (!StringUtils.hasText(idRaw.trim()))
@@ -59,7 +59,8 @@ public class FormSettingDataInfoService {
 		}
 
 		FormSetting entity = formSettingMapper.selectById(id);
-		if (entity == null) {
+		// ECX-10938：他公司或公司为空与记录不存在相同，且不读取多语言
+		if (entity == null || entity.getCompanyId() == null || !entity.getCompanyId().equals(companyId)) {
 			return Collections.emptyList();
 		}
 
@@ -67,7 +68,7 @@ public class FormSettingDataInfoService {
 
 		String langTag = resolveLangTag(countryCode);
 		List<Map<String, Object>> one = List.of(row);
-		multiLangReadService.applyFieldTitleOverrides(entity.getCompanyId(), one, langTag);
+		multiLangReadService.applyFieldTitleOverrides(companyId, one, langTag);
 
 		return row;
 	}

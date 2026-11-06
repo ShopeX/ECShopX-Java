@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:21de4d366b736082985b8f37ccee321436232f13d47a9b8b3617cf5f4d564948",
+  "pageVersion": "sha256:825fdb3957911887396e5a27684add7ffe717cfb17098e782c318fca18254841",
   "claims": [
     {
       "id": "claim_10d8ee8441894b5fa577c80a982ea348",
@@ -535,10 +535,60 @@
           "version": "repo-lines-v1:sha256:4b6c5c0902d644f7f8f24df015e907dcdd7c00799bbb88f32cbd11de873f8879:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjRlZmM0OTQxOGQyNmRjZjEyOWIyMmE2YWEyMTEwOGNlZWMzNzY3N2EzMmQwOGU5ZDVmZWUzNWRkYTY2YmI5ZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNmMwMGRjMDJiNjQ5ODQ4YTQ3NTk3YjAwYzljZjdlN2U3ZjI2MDZjMWU4ZmY0Nzc3MWY4YTIzYTFiYjliMDYwNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNWIzOWIxODk3YjNiZDkwMDZkNjRmYzk0MTQzZDFkMDFlODY2NDdjZTRiNTgzZTNjNjk2YTQ1MjYzM2E0NWFhNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjUxNzNlNDZlYTBhNWUwOGRlZjQzYWY4ZTc1MWUzNTM4ZjU5M2VmNzA4MmY5NGIxZDY1MDhkOTMzMmNiNTllZSJ9"
         }
       ]
+    },
+    {
+      "id": "claim_9b4c9f2e3e7e4523a45deb252b065930",
+      "statement": "Front endpoints that accept user-controlled ids must scope them to the authenticated identity: MembersController (ecshopx-members, @FrontAuth) resolves the acting user for address create/list exclusively from the authenticated user_id in h5AuthClaims, rejecting a foreign buy_user_id with ResourceException(\"无权访问该数据\") — resolveEffectiveUserIdForCreate only treats a truthy buy_user_id as meaningful when promoter_user_id loosely equals the auth user, and resolveFilterUserIdForAddressList always returns the auth user id with no null fall-through (the former orphan-address bypass was removed). MembersControllerAddressBuyUserScopeTest pins all four branches (no buy_user_id -> self; self buy_user_id -> self; foreign buy_user_id -> reject; foreign promoter -> treated as self).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/api/front/v1/MembersController.java#L2907-L2924",
+          "version": "repo-lines-v1:sha256:d81bb08a637a6fd25be289e263faf819ac67be05c7933d2a67e7b007c3c3ccf8:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVkOWQ4Y2EyYmNhNmJiZDE2YjU5Y2JmNTJiNDM1ZDNlNzY3NjA3MTk4NjQ1Njc0YTdjN2ZiOGMyZTA1NjA2YTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYzNzljYjJiZDVlMzM3NmE3ODgyYTI5NmI1ZTI3NDJkNzc5NTM1NTc1OWYzYjNkMGUzNzk4MTk2ZDI3NWNlMDkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY3YWJlM2M0ZjU5OWMzOGM2OWQ2ZmQyY2MzMWE2ZDVlZjE4YTZhYzg2OTVkMTY3MTAzMzBkNjlkMzMzMzFjNDgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJmZWVlNmRjYmYwYzU0MDIwMWM5OWMxNTIyOTdiZjRhZTljODEyYWVkNThiNjY5YjZiMDliOWVlYmFlNDM5YTYifQ"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/api/front/v1/MembersController.java#L2974-L2992",
+          "version": "repo-lines-v1:sha256:d61a66b916db6d414c5a5d7ee997ce7522148373bbc2f082cdc20a4f92ebce00:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM1MmJmYTc1NzFjMDBhN2ZlYzgzODc2NmNjOWI4MGY3YjdkNzZiNWJjNzE1MWI4MWEyNjg3NDVhZWM3OWY3NzUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY3Yjg3NzM4NWQyN2FmOWM3NmNkNDQ2N2I2NGQxZjM4MmY2MGFmOWFjMGFmZGY2ZjYxOWY4ZGI4MTc3ODlkOGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMyNjJmZjRhMWMxMTlmM2JmMTY1Y2QyMTViYTdiN2ZlYTg2MGY4ZjM4ZTg2YzA5ZWE1MTgwZTEyMzNiMDY0OTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/test/java/cn/shopex/ecshopx/members/api/front/v1/MembersControllerAddressBuyUserScopeTest.java",
+          "version": "repo-file-v1:sha256:26bc884db78e2639dcad85e9374d143cada05559cc3a7739034d8d1bf156321f"
+        }
+      ]
+    },
+    {
+      "id": "claim_3437ebc7179344fba5b8363c57bccea3",
+      "statement": "Rights write-off code minting (RightsController.getRightsCode -> RightsFrontWxappGetRightsCodeService, ecshopx-orders, ECX-10924) requires the Rights row to belong to both the authenticated user and tenant before minting: a missing row, another user's rights, or another company's rights all throw ResourceException(\"无权访问该权益\") with no side effects (no Redis write, no barcode generation), and malformed or non-positive rights_id values fail earlier with BadRequestException(\"获取核销码出错\", 422). RightsFrontWxappGetRightsCodeOwnershipTest pins each rejection path and the side-effect-free guarantee.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/api/front/v1/RightsController.java#L108-L126",
+          "version": "repo-lines-v1:sha256:93d47aae3d8e5d1191dcc0aa00787a7dc67fa05f5529364d45bd5486761f26fa:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNjZmM3OWQ3NmJmZmZkOTllNzlhYzllNjg3NjYxZjdjNGUxNDFkZjFlZmIyY2QyNzExYmE3MWM4ZWFlNTQyZWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAxMzViNTc0OTlhM2M0ZTEyYTA3NmM1MmNiNmRjZTY0ZTY1YmM5YjNiZTE2MTBmNjJhN2I5NDViZGI3OGM0NzQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/front/wxapp/RightsFrontWxappGetRightsCodeService.java#L49-L77",
+          "version": "repo-lines-v1:sha256:b1d8c7015e7c01841ab0f7c3a99b7edddfa2f7a3e5e30e95d2d25dcdea58b07d:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI3Y2Q1MDBmZDNlNTBhNmQ0OTU4MDlkODgzODJjZGIzYTg3N2M2YWY5Mzk1YzJiODkzODEyYzM1NTIzNDRhYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjUyZGQ0MzQ2Y2NhZGIwM2U1YjQ3OWNjYWFhYTgzMTEwNzEyNzM2M2FhNjQ3MGQxZWU5YTI5ZjUzYTA3MTU3OTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdlZTVlYTVmNjhlM2E2NzIzZDIwODQzYWIzZjJlMDFkNzY1Y2ZjYTdiOTg1YzA4ZmIxY2FhZDA5ZDkzN2VlZDIifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/orders/service/front/wxapp/RightsFrontWxappGetRightsCodeOwnershipTest.java",
+          "version": "repo-file-v1:sha256:50e9af3a33e42b12cc0e3972c5fa3618139ca898c3d5418ac35467948a701a5f"
+        }
+      ]
+    },
+    {
+      "id": "claim_9114cd32b9a34aea84a3ffe1e7bf9f6a",
+      "statement": "The identity-scoping hardening pattern for new front endpoints is: derive identity from h5AuthClaims/h5CompanyId request attributes (never from the merged parameter map), and reject id/identity mismatches with ResourceException or BadRequestException so the ApiResult/@DingoResponse envelope conventions apply — mirroring the PHP owner-scope guards MembersOwnerScopeGuard and GuideOrderTenantScopeGuard.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/api/front/v1/MembersController.java#L2907-L2924",
+          "version": "repo-lines-v1:sha256:d81bb08a637a6fd25be289e263faf819ac67be05c7933d2a67e7b007c3c3ccf8:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVkOWQ4Y2EyYmNhNmJiZDE2YjU5Y2JmNTJiNDM1ZDNlNzY3NjA3MTk4NjQ1Njc0YTdjN2ZiOGMyZTA1NjA2YTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYzNzljYjJiZDVlMzM3NmE3ODgyYTI5NmI1ZTI3NDJkNzc5NTM1NTc1OWYzYjNkMGUzNzk4MTk2ZDI3NWNlMDkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY3YWJlM2M0ZjU5OWMzOGM2OWQ2ZmQyY2MzMWE2ZDVlZjE4YTZhYzg2OTVkMTY3MTAzMzBkNjlkMzMzMzFjNDgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJmZWVlNmRjYmYwYzU0MDIwMWM5OWMxNTIyOTdiZjRhZTljODEyYWVkNThiNjY5YjZiMDliOWVlYmFlNDM5YTYifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/front/wxapp/RightsFrontWxappGetRightsCodeService.java#L49-L77",
+          "version": "repo-lines-v1:sha256:b1d8c7015e7c01841ab0f7c3a99b7edddfa2f7a3e5e30e95d2d25dcdea58b07d:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI3Y2Q1MDBmZDNlNTBhNmQ0OTU4MDlkODgzODJjZGIzYTg3N2M2YWY5Mzk1YzJiODkzODEyYzM1NTIzNDRhYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjUyZGQ0MzQ2Y2NhZGIwM2U1YjQ3OWNjYWFhYTgzMTEwNzEyNzM2M2FhNjQ3MGQxZWU5YTI5ZjUzYTA3MTU3OTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdlZTVlYTVmNjhlM2E2NzIzZDIwODQzYWIzZjJlMDFkNzY1Y2ZjYTdiOTg1YzA4ZmIxY2FhZDA5ZDkzN2VlZDIifQ"
+        }
+      ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.7.3",
-    "at": "2026-11-04T17:09:55.577Z"
+    "by": "openwiki/0.9.0",
+    "at": "2026-11-05T17:10:02.238Z"
   }
 }

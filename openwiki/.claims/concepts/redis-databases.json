@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:c1864182b02fee2d2a3d36c70745bd011302292dfbe063926cc43f8308af5a47",
+  "pageVersion": "sha256:5b47645703aed854948d886df9220631a687bad68d1cfd21c62b16739c055589",
   "claims": [
     {
       "id": "claim_42c913eebfc94dd384ba446f036982f6",
@@ -186,19 +186,23 @@
     },
     {
       "id": "claim_4bfe4caf92054cce990a611e21c74f3f",
-      "statement": "Deposit recharge writers use the shared/default DB, not the deposit DB: AdapayDepositTradeRechargeCallbackService increments shopDepositTotal and dayRechargeTotal<yyyy-MM-dd> hashes (field companyId) via sharedStringRedisTemplate inside the @Transactional callback, DepositTradeConsumeService mirrors it with decrements and dayConsumeTotal increments, and UserDepositBalanceMutationService writes the user_deposit MySQL row then refreshes the userDepositTotal_<companyId> hash (with MySQL fallback on hash miss).",
+      "statement": "Deposit recharge writers use the shared/default DB, not the deposit DB: AdapayDepositTradeRechargeCallbackService increments the shopDepositTotal and dayRechargeTotal<yyyy-MM-dd> hashes (field companyId) via sharedStringRedisTemplate inside the @Transactional rechargeCallback, and addDepositToRedis runs only after a guarded conditional MySQL update (ECX-10915: UPDATE ... WHERE trade_status != 'SUCCESS' via LambdaUpdateWrapper.ne) wins — a zero update count or an already-SUCCESS row throws and no Redis counter is touched, preventing double counting from duplicate/concurrent callbacks. DepositTradeConsumeService mirrors it with decrements and dayConsumeTotal increments on the same shared template, and UserDepositBalanceMutationService writes the user_deposit MySQL row then refreshes the userDepositTotal_<companyId> hash (with MySQL fallback on hash miss).",
       "evidence": [
         {
-          "resource": "repo://ecshopx-deposit/src/main/java/cn/shopex/ecshopx/deposit/service/AdapayDepositTradeRechargeCallbackService.java#L117-L122",
-          "version": "repo-lines-v1:sha256:ea5e889b976ac691c1ead3533b02c2dee66ce99802caeacd8852f037913abcb1:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMTY5ZTY5ZjUwYTU1NGVkYWY4NDE5MDAwYTg2NDRjZTgyMmIzNzY5MTEwYmQ0YzRjZDE3YTg1NzQ5NGViOTZhYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDUyNmUwY2FhMjA4YzBmZDdiMzRhZmE3ZWU4MjhiYWJhYmRjYmIyNjY5OGJkYWNhYTFiN2Q4NWE5ZGJkZjZiZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTljOGI4ODVjM2QxYjlkM2Y1NjU4MzRlZWNhODkyOTBmMjIyNGQzYTIyYzRlYTIxODM4OGRmNTFhNWJjOWIxNiJ9"
+          "resource": "repo://ecshopx-deposit/src/main/java/cn/shopex/ecshopx/deposit/service/AdapayDepositTradeRechargeCallbackService.java#L116-L121",
+          "version": "repo-lines-v1:sha256:5382ca68ba67cd4a6252fc69ccad047e7dafa2a02a5194ddee405aa781238c4d:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMWViNzlmMWE2OGUzYTkyNWJlMjYwMjM4Yzk5NjJkYmJjYjk1YTRmNzNiNjMwOTI1ZDBkNjkyMGNiNWY0N2QzZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTVmMDA3NGMzNWI4MjZiMGE4ODBlMmUwNGM3N2JjZDBjOTIwZjdhM2U1MjIyNTNmNmQ4N2VhM2YwNDgwOGFmNyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTY0ZTRiYzE2Y2ZkYjliMTMwZDg5ZTYwNThlN2NjZjQ0ODExZTlkZjcyNGJmOThhZGUyZjIxMjJkOWE1ZWY3MSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMTc2OWQyMTNkMTEyYjA5NThjZTFkMGIyMzZmMzNiZmExOGU5MDU1Y2Q1ZjM1MTcwYzRhYTExY2E1N2MyNDFhMyJ9"
         },
         {
-          "resource": "repo://ecshopx-deposit/src/main/java/cn/shopex/ecshopx/deposit/service/AdapayDepositTradeRechargeCallbackService.java#L54-L91",
-          "version": "repo-lines-v1:sha256:1414aa4a82b06ab52d9f6e23f716597ca17c08aab05487cf1f0b5bb1e1c2dd81:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJkNzU0OGYwODFmM2Y0MjY0OTYxNzRiYjdmMTYwZjg3MDk0NDNjMWM1NmM2NmFmMzNmYjZmNmU4OTdjZjAzZjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc0NmFiNWMwNGIxOTViZTk5YWY0NTczYjg4OTFmZmM4OTExNDQ4ZWZjODg1YzE5NjBmMDY3NTI1YzM5OGMzMDIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ3ZTJhNWMwZTQ0ZTg5MjE4NGQ1NDdlNmY0ZTU3MmNhYWIxN2M2YmIxYWM5YjA0ZGZhZjYzZDkwMDIyYWQxYjgifQ"
+          "resource": "repo://ecshopx-deposit/src/main/java/cn/shopex/ecshopx/deposit/service/AdapayDepositTradeRechargeCallbackService.java#L54-L95",
+          "version": "repo-lines-v1:sha256:4b52a9786a72656fbe3408565616edddb66535118fc4b3be5ac54233389cd0b7:eyJzZWxlY3RlZExpbmVDb3VudCI6NDIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJkNzU0OGYwODFmM2Y0MjY0OTYxNzRiYjdmMTYwZjg3MDk0NDNjMWM1NmM2NmFmMzNmYjZmNmU4OTdjZjAzZjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRkOTE3MDY0YjBlYjE3MmJjNWRhYWRkYzdhNTM1ODljZWJmOTI2YjI3ZmY2MmViMjc5OWFhM2RiODY5NzM2YmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc0NmFiNWMwNGIxOTViZTk5YWY0NTczYjg4OTFmZmM4OTExNDQ4ZWZjODg1YzE5NjBmMDY3NTI1YzM5OGMzMDIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI5ZjU5ZWFhZTE3Y2U4MmMyYTRhNjE5ODFlOGQ4M2JkNDVlNDhiZTkyODJhMTJhZTljYjQxMTE1NmYyMjNkMzMifQ"
         },
         {
-          "resource": "repo://ecshopx-deposit/src/main/java/cn/shopex/ecshopx/deposit/service/DepositTradeConsumeService.java#L93-L102",
-          "version": "repo-lines-v1:sha256:243f6330365e527eaf158cfa37ba1900630d49a26dd560d165f0713bd85cc2c1:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMzNzI0YTUxOGVjZmEyOGU0ZTJjYjY3N2Q4M2Q2MGNhMTgyMzVjYjRiMTdjYWUwYmM5MWQzYjI5ZmRiNTUwZjUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEzMGJiOTY1YzViMTQ3Yjc1NzEzMGFiZGNlN2Q0MDM3ZTliYmIyMjk5MmExNTc1MmI3YTAyMzk2OGI3NTQ1NWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjlmNTRmODVkY2JhODU2NjgwZmM4MzAzYjM1Y2E4YjRjNGIwZmNhNWU1YWM2NzMzNTFiMTUxYTVlZjhmMmY2ZWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFlNmZjYjk1YTYxZTgxMDM5ODNhMzM3YTE0ZjFhOTVmNzY5MTc0MjdmMjFkNjM3YmU2NTM1OGQyNWUzZjgzMTIifQ"
+          "resource": "repo://ecshopx-deposit/src/main/java/cn/shopex/ecshopx/deposit/service/DepositTradeConsumeService.java#L48-L52",
+          "version": "repo-lines-v1:sha256:6176bdb554c613c08983a34306a13934161dc203dd2d46c86ea8e1e8c00fc13b:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjU2YjdhZGUxNjNiYjkwZGMwMDdiMThjNzVhYzcwNGU4NmEyMjZiZTE3ZDA4YzUwMjIwMDRkODc1NDQwZWQ2NCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTNhNDM5ZWEyNTA3ZTEzOGE5ODFkYmNmNDNhMmU4NTAxYzdkYmM3NmQzY2E3YjQ4ZDIzMTgyZmMzMjZlZGQ0NSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZmU1NTUxMjgzYWYxNzI0NmY1MWE5MzA3MDk2ZjI0OWM0ZDgyODUzZTRjZDRiNGY3NGM5ZDQ3MzMxNTZmZWYzYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDQ2NGJhYmZmYmQyMTYzMTEwYmU0ZWMyNmViNWEwMDU2YjQ3ZTk1YTZjNDZiZGFlYjlmZmMxNDE3NTJhMDk4ZCJ9"
+        },
+        {
+          "resource": "repo://ecshopx-deposit/src/main/java/cn/shopex/ecshopx/deposit/service/DepositTradeConsumeService.java#L93-L100",
+          "version": "repo-lines-v1:sha256:a3c483e051a6325ed7e15b9457eaa90bd11bdf12c8f6cc4af4df10760bca0b2d:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzM3MjRhNTE4ZWNmYTI4ZTRlMmNiNjc3ZDgzZDYwY2ExODIzNWNiNGIxN2NhZTBiYzkxZDNiMjlmZGI1NTBmNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTA0ZmM4ZDkxMjgwZmIzZGI0ODllMmEwZjU2ZTEzYTQ0OTUwNDY3MTIzZDE4OTE1MmVkMDA4YWVhZDUzMzllMiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOWY1NGY4NWRjYmE4NTY2ODBmYzgzMDNiMzVjYThiNGM0YjBmY2E1ZTVhYzY3MzM1MWIxNTFhNWVmOGYyZjZlYyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTkwMzVkNTc5ZDE4Njc5YjM0YWNhOGFiOTU2YzQ2YTJiNTYzNGMyNTNjZjY2NzdmYzkwYjRmYzJkNTdjZDAzYiJ9"
         },
         {
           "resource": "repo://ecshopx-deposit/src/main/java/cn/shopex/ecshopx/deposit/service/UserDepositBalanceReadService.java#L40-L62",
@@ -254,15 +258,27 @@
     },
     {
       "id": "claim_e1964297c15f43b6b17903c79206fe29",
-      "statement": "Datacube tracking splits its Redis usage: TrackViewNumService increments datecube_tracklog:* PV/UV/member-visitor hashes through datacubeStringRedisTemplate, while UvBloomFilterService's Lua-script bloom filter (uv_bloom_filter:<monitorId>:<sourceId>) runs on sharedStringRedisTemplate, so UV dedup state and the counted hashes can be pointed at different logical DBs.",
+      "statement": "Datacube tracking splits its Redis usage: TrackViewNumService increments datecube_tracklog:viewnum:<cid>|<monitorId>:page_view|unique_visitor|member_visitor:<sourceId> hashes (field yyyyMMdd) through datacubeStringRedisTemplate, while UvBloomFilterService's Lua GETBIT/SETBIT bloom filter (uv_bloom_filter:<monitorId>:<sourceId>) runs on sharedStringRedisTemplate, so UV dedup state and the counted hashes can be pointed at different logical DBs. Because the track endpoint is @FrontNoAuth, since ECX-10920 addViewNum silently returns — before any Redis or bloom-filter call — unless monitorId and sourceId are positive numerics that exist as Monitors/Sources rows for that company (monitorsMapper/sourcesMapper selectCount > 0), an anti-enumeration guard against unbounded key creation; TrackViewNumServiceMonitorScopeTest pins that unregistered or non-numeric ids produce zero Redis interactions.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-data-cube/src/main/java/cn/shopex/ecshopx/datacube/service/TrackViewNumService.java#L38-L70",
-          "version": "repo-lines-v1:sha256:af158b2a8a83b347aa5141c4be6ab4650fb88c74732b93fd0df6e4bfed84bbb3:eyJzZWxlY3RlZExpbmVDb3VudCI6MzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhiMDk1ZjJkOTUxNWU1ZTFkMzllYmRhZDFkYWQ4YzJlOTQ4ZmU5YzBmYmU4OWM1ZmQ2MzlmZjM4ZWU5OWZkZDgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkzZWRjZDJlNTAwMTE3MzAwOWU4MDYwMTBjODExN2I0NTQyNDc2MDY5OWFjYWZkN2Q2OWNiOGE4NTUzOWMwODEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQwMzk5NDVmNzEzY2VjY2MyYTJiZTk4MWFiNWM1ZWVhMzdmOTVmOTc2OWU1NzVjZDhlZDlhOWZjYmFmZGYwNmEifQ"
+          "resource": "repo://ecshopx-data-cube/src/main/java/cn/shopex/ecshopx/datacube/api/front/v1/TrackController.java#L35-L66",
+          "version": "repo-lines-v1:sha256:fe5a6df1287c98c0a2ffe3dc9ed350e6fb9e8828b9d5c68f34fccdd4554da14b:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZkNDg5ZWVhZDIwOWFkYWE5MDcwZGNiYmNiZDViMjk3YjBjODdkNjVlOWY4NTIwMTM5YzEwZWNiNjYwMWE1MDUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI2Yzc4NzI1NzUxYmE4YTkxMjhhZDIyYTYxNjc0OWNhYWY2ZTE1Mzg0ZDA1MDY4YmZjMDVlOGUwMWIyOGY3N2YiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzNjkwNjhkZWVjY2JlMWU3ZWE2MGExOTY5ZGU4YzgzZTU4NThjZWRkZTk1YTkzZWMzMjMzYzBlNDFiNmIwYjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhlNzBkNTZhYjU2YmViMjM2YWIyYThhNzgxZWQ2MzZhZWRiYjViZDkwMGUyZWQ0MjczZDQ5OWI0NjU0ZjI3ZTgifQ"
+        },
+        {
+          "resource": "repo://ecshopx-data-cube/src/main/java/cn/shopex/ecshopx/datacube/service/TrackViewNumService.java#L37-L55",
+          "version": "repo-lines-v1:sha256:07b7d02f75722d0b9ee10b3298b28a1adc0296ced122b3d757e23d4f43ad2181:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg5Nzc4YTNjZGZiOTgzM2UyNWU0OGFlZWYyNjE2NjVkYzY1MDc2YmM4NzgzODYxOWJmYzcwYjkwNDIxYTI3Y2MiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk4YjkzMDdjOTdkNWViYWE3OGI3NDU0MjVlODhjYTc3ZjFmY2IxNTZjYzBhMTlkZmI5NzFiMmNlYzA5ZmIxMzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkzZGEzZWE3ODRkYThhMmYxNjI2ZjI4Mzk3M2Y0Njg2Y2QxY2RlMzBkMmRiZWNlNjYwMjM0NGMzMDI1OWIyMWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjczMWFjYTFhNDVhZDI3YThhOGY3YTE3NzExNTY2ZjM2NmViM2E5Mjk2YTk0YWZjZmYxNDhlODc4ZDE3YjAxN2MifQ"
+        },
+        {
+          "resource": "repo://ecshopx-data-cube/src/main/java/cn/shopex/ecshopx/datacube/service/TrackViewNumService.java#L58-L102",
+          "version": "repo-lines-v1:sha256:996e2160826790d1cb5054a9be511dd8e41c3f214769ddb6c60fdc75baa549ae:eyJzZWxlY3RlZExpbmVDb3VudCI6NDUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMxMzkyMjIwZjM0YjU2NDM1ODg1ZDQwZWE3ZjliYTFiNjI1YTFiNTExYTBjOGYzNWY0MjZlMGE2ZDI0ZWU4MGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU2ODA2ZjE1NWM1YWMxYWUyNzIyY2EwNmYyYWM5Y2FkY2I4ODFiOTEyM2NiNjI0YTNjMTA0NzViNDQ0OWRjMmUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE5OWMyODE4YzhmNjdmYmUyY2FkMDI3MzBkMGNjN2U3ZDFkYzc2MzI1OTEwZjZkMDBkYTFiMjJlZjg4ODEzNDQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIyZjJmZjVmZWVjNjBmNTg3YzhmYWU0ZTg3ZjgwOWE2NjFjZmZlZDZiNDdhYWU1ZjZkNmEyNjUzYWE4OTUyZWYifQ"
         },
         {
           "resource": "repo://ecshopx-data-cube/src/main/java/cn/shopex/ecshopx/datacube/service/UvBloomFilterService.java#L61-L84",
           "version": "repo-lines-v1:sha256:5594af2c00cf7021e32731f7489190d05d15f61d23ca235cb79b5a0694305afa:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM5YjNlZGIyYWFhN2MwMDBlYWNkZjdjNWE1N2Y2YmZjMWQ2N2Y3ZjFmYjFkMjQxZGI2ZTRhMTE1Y2ZkMjg3MWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA4MzQ0MjBjYWQ5OGM2MWVkNjNkNmNlNTg2MWZhOTM2YmMzYTc3MDNhYmExNWFkMDk5ZTEzZDhlMjAzNGNjZjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMzMDcwZTY1NWJmMmJlZWU0MzQ1MDg4MWUyZjY5OWNjNzU0ZTZiMTY5YmU1ODk2OWE0NTFhYzY4OGZiZjJjN2UifQ"
+        },
+        {
+          "resource": "repo://ecshopx-data-cube/src/test/java/cn/shopex/ecshopx/datacube/service/TrackViewNumServiceMonitorScopeTest.java#L87-L132",
+          "version": "repo-lines-v1:sha256:554745f9ccacaf83a3dc4c99b1e3a5819589fe8b595421c8085ffdda9c42635d:eyJzZWxlY3RlZExpbmVDb3VudCI6NDYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVmNTA0N2JhNGJkZTUyMzk3YTA3MmFiMjM3NTcxZjE0MDljMWQxMzEwMjdhMGQ1MDU4NjhjM2I4MzQ2YzY4NWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU3M2ZhYjhiY2Q5ODFjM2VhODQ0OTEyMWY4YmI1NzRhMDFlOTMyZmVlZTcyYWEzYTE0NDYxMTg3ZmMyZTI1ODEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
         }
       ]
     },
@@ -431,10 +447,24 @@
           "version": "repo-lines-v1:sha256:e20becc7e369cb8fad88bbe76368f51da354cf50a34888ceaea493a4811ae8d4:eyJzZWxlY3RlZExpbmVDb3VudCI6NTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU1ODIxMmQ1OGJhODRkNzA2OTUxZGM0YmJiMWZmYmQ3ODYyMDk2YjMyMTdlNGMyYTkxMTkyMzcyNjEwNDQ1NjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU1Y2MwY2JiYjRlNDc3ZjNhNTM2NmVlOWZjZTJmYzk0YzU2N2FjMjNiMDg4NTM1YWVmYmU3NGE0ZjY5MDgyZjIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZhMGQ4MTdiZmExYmFhMWVlZTRjYmIwMmM1ZThkMzg0MDJhZGIwMjAwMmVjY2NiYTFjZDdhMWI1MDA5MGYxN2IiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjViODgzMDAxMTg2NzYzZjlmZmMwMWE1OTdiYjg2NDBmYWQ5M2IzZDQ0NDk3NTg5NDMwZWUxZDlhMjFhNTZjY2MifQ"
         }
       ]
+    },
+    {
+      "id": "claim_60f4ab9873ca42c3a479a65d9f1e1c04",
+      "statement": "MultiRedisConfig declares exactly ten named template beans mapped to six logical DB selector groups: companysRedisTemplate (@Primary, ecshopx.redis.companys.database default 0) and redisTemplate over companysRedisConnectionFactory; sharedStringRedisTemplate and dispatchBusStringRedisTemplate over springDataRedisConnectionFactory (spring.data.redis.database default 0); prismRedisTemplate (ecshopx.redis.prism.database default 2); datacubeStringRedisTemplate (ecshopx.redis.datacube.database default 0); depositStringRedisTemplate (ecshopx.redis.deposit.database default 1); and members/espier/wechat templates whose database selectors fall back to spring.data.redis.database — the shipped application.properties pins shared 0, companys 0, prism 2, datacube 0, deposit 1.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MultiRedisConfig.java#L59-L233",
+          "version": "repo-lines-v1:sha256:9fe53a0ecf249e8d9e755ddd40ba7d7c9104b5bda4d57d378630d6402cfb723a:eyJzZWxlY3RlZExpbmVDb3VudCI6MTc1LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIwNDExYjJlNmMzNTMxNTJjNGMxYjY0NmE2ZGI5OTIwOTBlODMwOWRmODk3YTI1MzJmM2RkZWE0OGZiNzUzOWUzIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIxY2I0MWMwNzQ3YTMxZTBhNzVkMTUwYzQ2Mjg3NWZlMmZhMzc4YTdjNTU0NzIyNjQ5ZGFlYzI4NTIyM2FjNDA4IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI4OWU0YmFkMjFmOTQ5MWE2YmQyNDEyOTg3ZWMxNmI2ZWQxMGY4NzJlYzhmZWYyYWQ3MjZhMzU1ZDEwNGJlOTI0IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI0ZTk0OTU2YTBjYzk3YjYzNmFhZjZjY2VmOTNiMjRkYTYzYzVlNmE4OWE4MWM1OTg1YTcwYTMxMTM4NTUzYTc1In0"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L42-L57",
+          "version": "repo-lines-v1:sha256:e2f0d3f682c74097409cb8a5d0c19c4f99910fba5f46ebc1de46045f4dc9d154:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI0YWFiNjE3ZGI2NWVkMTQ5YzdiZjMzYzZmYzIyMWY4NmNmZjYyZmE5ZjMzMmIzNmMwMjQ3ZTAxMDg5ZWI0OGQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRkMGVkMWY0NGYwNzYwY2NjYWFiZjcxNmUxY2JiNmM0YWVmZWFiY2M4YjVlNDAxMzUyZWQ3NGViMWZiZTVlNWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU5NmNlMGY1MTBjMDEzMmMxYWI0ZWM0NTkzMDg2N2Y3MDI5YWUxODEwMjVhNjAxNWEwNTkwZWNlZmU2NWZjMTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNhNjg2YjYwODRlYjBiYTFmM2UyMWY3ZTYyYmEzMjAyMzEwZWQ2MzI3ZTgxMTRmNWFiYTFiMmY2N2VjNGVhMTMifQ"
+        }
+      ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.7.3",
-    "at": "2026-11-04T17:09:55.577Z"
+    "by": "openwiki/0.9.0",
+    "at": "2026-11-05T17:10:02.238Z"
   }
 }

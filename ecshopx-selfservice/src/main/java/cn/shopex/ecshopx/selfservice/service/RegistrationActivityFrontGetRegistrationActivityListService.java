@@ -79,21 +79,17 @@ public class RegistrationActivityFrontGetRegistrationActivityListService {
 			long userId,
 			int page,
 			int pageSize,
-			int status,
+			Integer statusTab,
 			String activityNameTrimmed) {
 		int now = (int) (System.currentTimeMillis() / 1000L);
 
 		LambdaQueryWrapper<RegistrationActivity> w = new LambdaQueryWrapper<>();
 		w.eq(RegistrationActivity::getCompanyId, companyId);
-		if (status == 1) {
-			w.ge(RegistrationActivity::getEndTime, now);
-		} else if (status == 2) {
-			w.le(RegistrationActivity::getEndTime, now);
-		}
+		applyFrontActivityListStatusFilter(w, statusTab, now);
 		if (StringUtils.hasText(activityNameTrimmed)) {
 			w.apply("activity_name LIKE CONCAT('%', {0}, '%')", activityNameTrimmed);
 		}
-		applyFrontActivityListOrder(w, status, now);
+		applyFrontActivityListOrder(w, statusTab, now);
 
 		long total = registrationActivityMapper.selectCount(w);
 		Page<RegistrationActivity> mpPage = new Page<>(page, pageSize, false);
@@ -262,11 +258,11 @@ public class RegistrationActivityFrontGetRegistrationActivityListService {
 	}
 
 	/**
-	 * status=0（全部活动）：进行中 → 未开始 → 已结束；组内 activity_id 降序。
-	 * 其它 status 仍按 activity_id 降序。
+	 * statusTab 为空（全部）：进行中 → 未开始 → 已结束；组内 activity_id 降序。
+	 * 0/1/2 等其它 Tab 按 activity_id 降序。
 	 */
-	static void applyFrontActivityListOrder(LambdaQueryWrapper<RegistrationActivity> w, int status, int now) {
-		String last = frontActivityListOrderByLastClause(status, now);
+	static void applyFrontActivityListOrder(LambdaQueryWrapper<RegistrationActivity> w, Integer statusTab, int now) {
+		String last = frontActivityListOrderByLastClause(statusTab, now);
 		if (last != null) {
 			w.last(last);
 		} else {
@@ -274,8 +270,8 @@ public class RegistrationActivityFrontGetRegistrationActivityListService {
 		}
 	}
 
-	static String frontActivityListOrderByLastClause(int status, int now) {
-		if (status != 0) {
+	static String frontActivityListOrderByLastClause(Integer statusTab, int now) {
+		if (statusTab != null) {
 			return null;
 		}
 		return "ORDER BY CASE WHEN start_time > "
@@ -283,6 +279,28 @@ public class RegistrationActivityFrontGetRegistrationActivityListService {
 				+ " THEN 1 WHEN end_time < "
 				+ now
 				+ " THEN 2 ELSE 0 END ASC, activity_id DESC";
+	}
+
+	/** 与列表项展示态一致：0 未开始、1 进行中、2 已结束（对齐后台 waiting/ongoing/end 条件）。 */
+	static void applyFrontActivityListStatusFilter(
+			LambdaQueryWrapper<RegistrationActivity> w, Integer statusTab, int now) {
+		if (statusTab == null) {
+			return;
+		}
+		switch (statusTab) {
+			case 0 -> w.gt(RegistrationActivity::getStartTime, now);
+			case 1 -> {
+				w.le(RegistrationActivity::getStartTime, now);
+				w.ge(RegistrationActivity::getEndTime, now);
+			}
+			case 2 -> {
+				w.le(RegistrationActivity::getStartTime, now);
+				w.le(RegistrationActivity::getEndTime, now);
+			}
+			default -> {
+				// unknown tab: no time filter
+			}
+		}
 	}
 
 	private static String formatActivityDate(Integer epochSec) {

@@ -126,7 +126,9 @@ public class EmployeeController {
 			ent = 0L;
 		}
 
-		boolean ok = employeeEmailVcodeSendService.sendEmailVcode(companyId, email == null ? "" : email, dist, ent);
+		boolean ok =
+				employeeEmailVcodeSendService.sendEmailVcode(
+						companyId, email == null ? "" : email, dist, ent, clientIp(request));
 		Map<String, Object> data = new LinkedHashMap<>();
 		data.put("status", ok);
 		return ResponseEntity.ok(ApiResult.ok(data));
@@ -544,6 +546,14 @@ public class EmployeeController {
 		} catch (NumberFormatException e) {
 			throw new ResourceException(errMsg);
 		}
+	}
+
+	private static String clientIp(HttpServletRequest request) {
+		String forwarded = request.getHeader("X-Forwarded-For");
+		if (StringUtils.hasText(forwarded)) {
+			return forwarded.split(",")[0].trim();
+		}
+		return request.getRemoteAddr() != null ? request.getRemoteAddr() : "";
 	}
 
 	private static String requireNonBlankTrimmedForResource(Object raw, String errMsg) {

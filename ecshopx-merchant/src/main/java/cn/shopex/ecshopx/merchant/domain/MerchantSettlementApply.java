@@ -25,7 +25,7 @@ import lombok.Data;
 
 /** 商户入驻申请表 */
 @Data
-@MpTable(value = "merchant_settlement_apply", comment = "商户入驻申请表", indexes = {@MpIndex(name = "idx_company_id", columns = {"company_id"}), @MpIndex(name = "idx_audit_status", columns = {"audit_status"}), @MpIndex(name = "idx_settled_type", columns = {"settled_type"}), @MpIndex(name = "idx_source", columns = {"source"})})
+@MpTable(value = "merchant_settlement_apply", comment = "商户入驻申请表", indexes = {@MpIndex(name = "idx_company_id", columns = {"company_id"}), @MpIndex(name = "idx_audit_status", columns = {"audit_status"}), @MpIndex(name = "idx_settled_type", columns = {"settled_type"}), @MpIndex(name = "idx_source", columns = {"source"})}, uniqueIndexes = {@MpIndex(name = "uk_company_user", columns = {"company_id", "user_id"})})
 public class MerchantSettlementApply {
 
     /** ID */
@@ -36,21 +36,29 @@ public class MerchantSettlementApply {
     @MpField(value = "company_id", columnType = "bigint", nullable = true, comment = "公司id")
     private Long companyId;
 
-    /** 手机号 */
+    /** 商城会员 user_id（入驻身份绑定） */
+    @MpField(value = "user_id", columnType = "bigint", nullable = true, comment = "商城会员user_id")
+    private Long userId;
+
+    /** 手机号（登录号，= contact_mobile） */
     @MpField(value = "mobile", columnType = "string", length = 255, comment = "手机号")
     private String mobile;
+
+    /** 联系人姓名 */
+    @MpField(value = "contact_name", columnType = "string", nullable = true, comment = "联系人姓名")
+    private String contactName;
 
     /** 是否同意入驻协议 */
     @MpField(value = "is_agree_agreement", columnType = "boolean", comment = "是否同意入驻协议", defaultValue = "False")
     private boolean isAgreeAgreement = false;
 
-    /** 商户类型ID */
-    @MpField(value = "merchant_type_id", columnType = "bigint", comment = "商户类型ID", defaultValue = "0")
-    private long merchantTypeId = 0L;
-
     /** 入驻类型。enterprise:企业;soletrader:个体户 */
     @MpField(value = "settled_type", columnType = "string", nullable = true, comment = "入驻类型。enterprise:企业;soletrader:个体户")
     private String settledType = "";
+
+    /** 商户类目选择 JSON */
+    @MpField(value = "main_category_selection", columnType = "text", nullable = true, comment = "商户类目选择 JSON")
+    private String mainCategorySelection;
 
     /** 商户名称 */
     @MpField(value = "merchant_name", columnType = "string", nullable = true, comment = "商户名称")
@@ -60,34 +68,17 @@ public class MerchantSettlementApply {
     @MpField(value = "social_credit_code_id", columnType = "string", nullable = true, comment = "统一社会信用代码")
     private String socialCreditCodeId;
 
-    @MpField(value = "province", columnType = "string", length = 50, nullable = true)
-    private String province;
+    /** 营业执照注册地址 */
+    @MpField(value = "license_registered_address", columnType = "string", nullable = true, comment = "营业执照注册地址")
+    private String licenseRegisteredAddress;
 
-    @MpField(value = "city", columnType = "string", length = 50, nullable = true)
-    private String city;
-
-    @MpField(value = "area", columnType = "string", length = 50, nullable = true)
-    private String area;
-
-    /** 国家行政区划编码组合，逗号隔开 */
-    @MpField(value = "regions_id", columnType = "text", nullable = true, comment = "国家行政区划编码组合，逗号隔开")
-    private String regionsId;
-
-    /** 详细地址 */
-    @MpField(value = "address", columnType = "string", nullable = true, comment = "详细地址")
-    private String address;
-
-    /** 法人姓名 */
-    @MpField(value = "legal_name", columnType = "string", length = 50, nullable = true, comment = "法人姓名")
-    private String legalName;
+    /** 营业执照法定代表人 */
+    @MpField(value = "license_legal_representative", columnType = "string", nullable = true, comment = "营业执照法定代表人")
+    private String licenseLegalRepresentative;
 
     /** 法人身份证号码 */
     @MpField(value = "legal_cert_id", columnType = "string", length = 255, nullable = true, comment = "法人身份证号码")
     private String legalCertId = "";
-
-    /** 法人手机号码 */
-    @MpField(value = "legal_mobile", columnType = "string", nullable = true, comment = "法人手机号码")
-    private String legalMobile;
 
     /**
      * 银行账户类型：1-对公；2-对私。1 对公；2 对私

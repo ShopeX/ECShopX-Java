@@ -110,7 +110,8 @@ public class OpenPlatformConfigService {
 		view.put("plat_code", row.getPlatCode());
 		view.put("app_id", row.getAppId());
 		view.put("app_secret_masked", maskSecret(row.getAppSecret()));
-		view.put("access_token", row.getAccessToken());
+		// ECX-10945：管理端详情只返回掩码，不返回 token 原文
+		view.put("access_token", maskSecret(row.getAccessToken()));
 		view.put("is_enabled", row.getIsEnabled() != null && row.getIsEnabled() == 1);
 		view.put("is_over_due", row.getIsOverDue());
 		return view;

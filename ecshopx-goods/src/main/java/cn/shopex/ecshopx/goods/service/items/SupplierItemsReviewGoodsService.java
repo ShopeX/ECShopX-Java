@@ -89,6 +89,9 @@ public class SupplierItemsReviewGoodsService
 	public void reviewGoods(Map<String, Object> params, long pathItemId) {
 		SupplierItems supplierGoods = requireSupplierItem(pathItemId);
 		long companyId = supplierGoods.getCompanyId();
+		if (companyId != toLong(params.get("company_id"))) {
+			throw new ResourceException("商品不存在或无权");
+		}
 		String auditStatus = str(params.get("audit_status"));
 		int auditDate = (int) (System.currentTimeMillis() / 1000L);
 		String auditReason = str(params.get("audit_reason"));

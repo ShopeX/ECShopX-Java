@@ -121,17 +121,13 @@ public class MerchantSettlementApplyAuditService {
 		merchant.setCompanyId(info.getCompanyId());
 		merchant.setSettlementApplyId(info.getId());
 		merchant.setMerchantName(str(info.getMerchantName()));
-		merchant.setMerchantTypeId(info.getMerchantTypeId());
+		merchant.setContactName(str(info.getContactName()));
 		merchant.setSettledType(str(info.getSettledType()));
+		merchant.setMainCategorySelection(str(info.getMainCategorySelection()));
 		merchant.setSocialCreditCodeId(str(info.getSocialCreditCodeId()));
-		merchant.setProvince(str(info.getProvince()));
-		merchant.setCity(str(info.getCity()));
-		merchant.setArea(str(info.getArea()));
-		merchant.setRegionsId(str(info.getRegionsId()));
-		merchant.setAddress(str(info.getAddress()));
-		merchant.setLegalName(str(info.getLegalName()));
+		merchant.setLicenseRegisteredAddress(str(info.getLicenseRegisteredAddress()));
+		merchant.setLicenseLegalRepresentative(str(info.getLicenseLegalRepresentative()));
 		merchant.setLegalCertId(info.getLegalCertId());
-		merchant.setLegalMobile(str(info.getLegalMobile()));
 		merchant.setEmail("");
 		merchant.setBankAcctType(str(info.getBankAcctType()));
 		merchant.setCardIdMask(str(info.getCardIdMask()));
@@ -157,11 +153,6 @@ public class MerchantSettlementApplyAuditService {
 
 		Map<String, Object> langSourceMap = new LinkedHashMap<>();
 		langSourceMap.put("merchant_name", str(info.getMerchantName()));
-		langSourceMap.put("province", str(info.getProvince()));
-		langSourceMap.put("city", str(info.getCity()));
-		langSourceMap.put("area", str(info.getArea()));
-		langSourceMap.put("address", str(info.getAddress()));
-		langSourceMap.put("legal_name", str(info.getLegalName()));
 
 		merchantOutsideLangWriteService.applyAfterInsert(
 				merchantId, info.getCompanyId(), langSourceMap, acceptLanguageHeader);

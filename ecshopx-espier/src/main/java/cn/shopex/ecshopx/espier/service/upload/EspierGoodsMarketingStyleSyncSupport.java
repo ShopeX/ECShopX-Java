@@ -49,7 +49,12 @@ public final class EspierGoodsMarketingStyleSyncSupport {
 			throws IOException {
 		final int maxItemNums = 500;
 		byte[] bytes = file.getBytes();
-		List<List<Object>> rows = EspierUploadExcelSheetReader.readFirstSheet(bytes);
+		List<List<Object>> rows;
+		try {
+			rows = EspierUploadExcelSheetReader.readFirstSheet(bytes, maxItemNums);
+		} catch (EspierUploadExcelSheetReader.SheetRowLimitException ex) {
+			throw new BadRequestException("每次最多上传" + maxItemNums + "个商品...请减少后再提交");
+		}
 		if (rows.isEmpty()) {
 			return Map.of("succ", List.of(), "invalid", List.of(), "fail", List.of());
 		}
@@ -59,9 +64,6 @@ public final class EspierGoodsMarketingStyleSyncSupport {
 		}
 		Map<Integer, String> column = EspierUploadHeaderHandle.buildColumnMap(headerCells, title);
 		List<List<Object>> dataRows = new ArrayList<>(rows.subList(1, rows.size()));
-		if (dataRows.size() > maxItemNums) {
-			throw new BadRequestException("每次最多上传" + maxItemNums + "个商品...请减少后再提交");
-		}
 		LinkedHashMap<String, Map<String, Object>> items = new LinkedHashMap<>();
 		for (List<Object> row : dataRows) {
 			if (!EspierUploadHeaderHandle.rowHasAnyValue(row)) {

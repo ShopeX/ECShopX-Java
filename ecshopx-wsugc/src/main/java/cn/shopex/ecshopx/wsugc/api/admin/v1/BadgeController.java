@@ -222,9 +222,10 @@ public class BadgeController {
 			throw new UnauthorizedException("未登录");
 		}
 		Map<String, Object> merged = mergeInputLikeFlexibleResolver(request, body);
-		Map<String, Object> data = badgeDeleteService.deleteBadges(merged);
-
+		// ECX-10929：删除角标须限定当前租户
 		long companyId = readLong(ud, "company_id", 1L);
+		Map<String, Object> data = badgeDeleteService.deleteBadges(merged, companyId);
+
 		long operatorId = readLong(ud, "operator_id", 0L);
 		Map<String, Object> logCtx = new LinkedHashMap<>();
 		logCtx.put("company_id", companyId);

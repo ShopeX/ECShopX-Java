@@ -17,7 +17,9 @@
 package cn.shopex.ecshopx.wsugc.service.topic;
 
 import cn.shopex.ecshopx.common.exception.ResourceException;
+import cn.shopex.ecshopx.wsugc.domain.Topic;
 import cn.shopex.ecshopx.wsugc.mapper.TopicMapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -40,14 +42,14 @@ public class TopicDeleteService {
 	}
 
 	@Transactional(rollbackFor = Exception.class)
-	public Map<String, Object> deleteTopics(Map<String, Object> input) {
+	public Map<String, Object> deleteTopics(Map<String, Object> input, long companyId) {
 		Object raw = input.get("topic_id");
 		if (raw == null) {
 			throw new ResourceException("topic_id参数不能为空");
 		}
 
 		List<Object> displayIds = new ArrayList<>();
-		LinkedHashSet<Long> idsToDelete = new LinkedHashSet<>();
+		LinkedHashSet<Long> idsRequested = new LinkedHashSet<>();
 
 		if (raw instanceof Collection<?> col) {
 			if (col.isEmpty()) {
@@ -55,16 +57,30 @@ public class TopicDeleteService {
 			}
 			for (Object el : col) {
 				displayIds.add(toDisplayToken(el));
-				tryAddParseableLong(idsToDelete, el);
+				tryAddParseableLong(idsRequested, el);
 			}
 		} else {
 			displayIds.add(toDisplayToken(raw));
-			tryAddParseableLong(idsToDelete, raw);
+			tryAddParseableLong(idsRequested, raw);
 		}
 
-		if (!idsToDelete.isEmpty()) {
-			topicMultiLangDeleteService.deleteMultiLangForTopics(new ArrayList<>(idsToDelete));
-			topicMapper.deleteBatchIds(idsToDelete);
+		if (!idsRequested.isEmpty()) {
+			LambdaQueryWrapper<Topic> scope = new LambdaQueryWrapper<>();
+			scope.in(Topic::getTopicId, idsRequested).eq(Topic::getCompanyId, companyId);
+			List<Topic> owned = topicMapper.selectList(scope);
+			LinkedHashSet<Long> idsToDelete = new LinkedHashSet<>();
+			if (owned != null) {
+				for (Topic row : owned) {
+					if (row != null && row.getTopicId() != null) {
+						idsToDelete.add(row.getTopicId());
+					}
+				}
+			}
+			if (!idsToDelete.isEmpty()) {
+				List<Long> scopedIds = new ArrayList<>(idsToDelete);
+				topicMultiLangDeleteService.deleteMultiLangForTopics(companyId, scopedIds);
+				topicMapper.deleteBatchIds(scopedIds);
+			}
 		}
 
 		LinkedHashMap<String, Object> out = new LinkedHashMap<>();

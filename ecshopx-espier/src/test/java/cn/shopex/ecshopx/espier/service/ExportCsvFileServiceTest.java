@@ -33,4 +33,35 @@ class ExportCsvFileServiceTest {
 		String csv = new String(content.getValue(), StandardCharsets.UTF_8);
 		assertThat(csv).contains("\"<img src=\"\"https://example.test/a.jpg\"\"><img src=\"\"https://example.test/b.jpg?tag=a,b\"\">\\path\",前台可销售");
 	}
+
+	@Test
+	void prefixesFormulaCellsWithApostrophe() {
+		FileStorageService fileStorageService = Mockito.mock(FileStorageService.class);
+		when(fileStorageService.privateDownloadUrl(eq("file"), any(), eq(3600))).thenReturn("https://example.test/export.csv");
+		ExportCsvFileService service = new ExportCsvFileService(fileStorageService);
+		LinkedHashMap<String, String> titles = new LinkedHashMap<>();
+		titles.put("name", "姓名");
+		titles.put("amount", "金额");
+		titles.put("note", "备注");
+		titles.put("phone", "手机");
+		titles.put("at", "账号");
+		titles.put("plain", "普通金额");
+
+		service.exportCsv(
+				"orders",
+				titles,
+				List.of(
+						Map.of(
+								"name", "=1+1",
+								"amount", "-12.50",
+								"note", "=a,b",
+								"phone", "+86",
+								"at", "@shop",
+								"plain", "12.50")));
+
+		ArgumentCaptor<byte[]> content = ArgumentCaptor.forClass(byte[].class);
+		Mockito.verify(fileStorageService).put(eq("file"), eq("export/csv/orders.csv"), content.capture());
+		String csv = new String(content.getValue(), StandardCharsets.UTF_8);
+		assertThat(csv).contains("'=1+1,'-12.50,\"'=a,b\",'+86,'@shop,12.50");
+	}
 }

@@ -109,11 +109,12 @@ public class GoodsKeywordsQueryService {
 	}
 
 	/**
-	 * 按主键查询关键词；未命中返回 {@code null}（由调用方转为空列表响应）。
+	 * 按当前公司和主键查询关键词；未命中、他公司或公司为空返回 {@code null}（由调用方转为空列表响应）。
 	 */
-	public Map<String, Object> getInfoById(long id) {
+	public Map<String, Object> getInfoById(long companyId, long id) {
 		Keywords row = keywordsMapper.selectById(id);
-		if (row == null) {
+		// ECX-10947：他公司或公司为空与记录不存在相同
+		if (row == null || row.getCompanyId() == null || !row.getCompanyId().equals(companyId)) {
 			return null;
 		}
 		return toRow(row);

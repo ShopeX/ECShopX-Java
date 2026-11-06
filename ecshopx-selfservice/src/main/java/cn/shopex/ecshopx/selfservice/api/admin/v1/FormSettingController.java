@@ -175,9 +175,18 @@ public class FormSettingController {
 	@Activated(routeAlias = "selfhelp.form.info")
 	@GetMapping(value = "/selfhelp/formdata/{id}", name = "获取表单元素配置项详情")
 	public ApiResult<Object> getDataInfo(
+			HttpServletRequest httpRequest,
 			@PathVariable("id") String id,
 			@RequestParam(value = "country_code", required = false) String countryCode) {
-		Object data = formSettingDataInfoService.getDataInfo(id, countryCode);
+		@SuppressWarnings("unchecked")
+		Map<String, Object> jwt =
+				(Map<String, Object>) httpRequest.getAttribute(OperatorJwtRequestAttributes.OPERATOR_JWT_USER_DATA);
+		if (jwt == null || jwt.isEmpty()) {
+			throw new UnauthorizedException(
+					"Failed to authenticate because of bad credentials or an invalid authorization header.");
+		}
+		long companyId = parseCompanyId(jwt);
+		Object data = formSettingDataInfoService.getDataInfo(id, companyId, countryCode);
 		return ApiResult.ok(data);
 	}
 

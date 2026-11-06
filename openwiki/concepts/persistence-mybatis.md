@@ -13,6 +13,18 @@ sources:
     resource: repo://docker-compose.dev.yml
   - id: openwiki-source-f11d31f9677b30a46da182df
     resource: repo://docker-lite/docker-compose.yml
+  - id: openwiki-source-89868793bbaa166df6141df4
+    resource: repo://ecshopx-adapay/src/main/java/cn/shopex/ecshopx/adapay/service/AdapayTradeDistributorNameScopeGuard.java
+  - id: openwiki-source-af31a5d48f13971561bdfe1e
+    resource: repo://ecshopx-adapay/src/main/java/cn/shopex/ecshopx/adapay/service/AdapayTradeExportDataService.java
+  - id: openwiki-source-a950b263bcd09046caa124cf
+    resource: repo://ecshopx-adapay/src/main/java/cn/shopex/ecshopx/adapay/service/AdapayTradeListQueryService.java
+  - id: openwiki-source-297b3cda29ffbb9dfa62582d
+    resource: repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/service/AftersalesDistributorScopeGuard.java
+  - id: openwiki-source-55f33a58c15e54b7abff139a
+    resource: repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/service/AftersalesRefundConfirmService.java
+  - id: openwiki-source-ba9273e9b980d61a9fa46794
+    resource: repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/service/AftersalesReviewService.java
   - id: openwiki-source-84aeb105875424c9aac7edf8
     resource: repo://ecshopx-bootstrap/pom.xml
   - id: openwiki-source-c83108e0b31507dc4b736d71
@@ -23,6 +35,8 @@ sources:
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/EcshopxApplication.java
   - id: openwiki-source-89b43138f8e75edb4615495b
     resource: repo://ecshopx-bootstrap/src/main/resources/application.properties
+  - id: openwiki-source-423c7bde5a386038c2869dcc
+    resource: repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/deposit/service/AdapayDepositTradeRechargeCallbackServiceIdempotencyTest.java
   - id: openwiki-source-f663ea8999b06349138bb3ec
     resource: repo://ecshopx-common/pom.xml
   - id: openwiki-source-e88a654b635bd67d5ca1eb04
@@ -45,6 +59,8 @@ sources:
     resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/mapper/StatisticsMapper.java
   - id: openwiki-source-4f0f33185cd8113fa7b68f2c
     resource: repo://ecshopx-data-cube/src/main/java/cn/shopex/ecshopx/datacube/mapper/StatisticsMapper.java
+  - id: openwiki-source-4f43f1207c21281b4ea687b1
+    resource: repo://ecshopx-data-cube/src/main/java/cn/shopex/ecshopx/datacube/service/TrackViewNumService.java
   - id: openwiki-source-f70b6d04e8550513ce6b3aa6
     resource: repo://ecshopx-deposit/src/main/java/cn/shopex/ecshopx/deposit/service/AdapayDepositTradeRechargeCallbackService.java
   - id: openwiki-source-e24b7d7062cbb09ffaebc355
@@ -97,14 +113,28 @@ sources:
     resource: repo://ecshopx-reservation/src/main/java/cn/shopex/ecshopx/reservation/mapper/ReservationRecordMapper.java
   - id: openwiki-source-08d673fd8e541fb98bf63a13
     resource: repo://ecshopx-reservation/src/main/resources/mapper/ReservationRecordMapper.xml
+  - id: openwiki-source-fe7b442512f9ca59d88488d6
+    resource: repo://ecshopx-wsugc/src/main/java/cn/shopex/ecshopx/wsugc/service/comment/CommentDeleteService.java
+  - id: openwiki-source-50c1e9a3f6f0317b0fbf1d65
+    resource: repo://ecshopx-wsugc/src/main/java/cn/shopex/ecshopx/wsugc/service/comment/CommentVerifyService.java
+  - id: openwiki-source-8420fcef083cb3d2f02e84db
+    resource: repo://ecshopx-wsugc/src/main/java/cn/shopex/ecshopx/wsugc/service/post/PostCreateService.java
+  - id: openwiki-source-7207e45453c13550f750f227
+    resource: repo://ecshopx-wsugc/src/main/java/cn/shopex/ecshopx/wsugc/service/post/PostDeleteService.java
+  - id: openwiki-source-87d3f26f69c90d06a85890a5
+    resource: repo://ecshopx-wsugc/src/main/java/cn/shopex/ecshopx/wsugc/service/post/PostEditService.java
+  - id: openwiki-source-060cdc13cf8407fa03bffe80
+    resource: repo://ecshopx-wsugc/src/main/java/cn/shopex/ecshopx/wsugc/service/post/PostSetBadgesService.java
+  - id: openwiki-source-e25c0387f73ec01bdb8d5a15
+    resource: repo://ecshopx-wsugc/src/main/java/cn/shopex/ecshopx/wsugc/service/post/PostVerifyService.java
   - id: openwiki-source-2355f81d7cf522f8dbdaabd4
     resource: repo://pom.xml
   - id: openwiki-source-f1b1aacc63642e5304668821
     resource: repo://readme.md
-generated: { by: "openwiki/0.7.2", at: "2026-10-23T03:04:20.471Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-05T17:10:02.238Z" }
 verified:
-  - by: openwiki/0.7.3
-    at: 2026-11-04T17:09:55.577Z
+  - by: openwiki/0.9.0
+    at: 2026-11-05T17:10:02.238Z
 ---
 
 
@@ -282,6 +312,15 @@ Many tables add `distributor_id` on top of `company_id`, and the convention is t
 * For each code it counts rows matching `eq(companyId).eq(distributorId).eq(barcode).ne(itemId, other-item)` and throws `ResourceException("条形码已经存在")` when another SKU in the same shop already owns the code.
 * The test's three cases are precisely the tenant matrix: `saveBarcode_sameShopDuplicate_throws` (duplicate in the same shop is rejected and `insert` is never called), `saveBarcode_differentShopSameCode_inserts` (the same code in a *different* shop inserts fine, with the captured row asserting `companyId`/`distributorId`/`itemId`/`barcode`), and `saveBarcode_platformPool_usesDistributorZero` (a `distributorId` of `0` flows through as the platform pool).
 
+### Beyond the wrapper: service-level scope guards
+
+Not every tenancy decision can be expressed as a `WHERE` clause, so a second layer of **explicit service-level guards** checks the caller's JWT scope against the target rows *before* the SQL is built. The current guard set:
+
+* **`AftersalesDistributorScopeGuard.assertAftersalesDistributorAllowed(aftersalesDistributorId, jwtMap)`** — ensures aftersales write paths stay within the operator's JWT shop scope. Admins (`operator_type == "admin"`) bypass it; a non-admin operator with an empty allow-list is also let through (no scope data to enforce), but once the JWT carries a `distributor_id` scalar or a `distributor_ids` list (entries may be numbers, strings, or maps with `distributor_id`/`shop_id` keys), the target distributor must be in that set or a `ForbiddenException("店铺权限不足")` is thrown. Both `AftersalesReviewService.review` and `AftersalesRefundConfirmService` call it after loading the company-scoped `Aftersales` row and before mutating state.
+* **`AdapayTradeDistributorNameScopeGuard.assertAllowed(jwtMap)`** (ECX-10906, aligning with PHP `PaymentTenantScopeGuard::assertDistributorNameFilterAllowed`) — blocks the shop-side (`operator_type == "distributor"`) from widening a trade list/export by passing a `distributor_name` filter that would override the JWT's own-shop restriction. Both `AdapayTradeListQueryService` and `AdapayTradeExportDataService` invoke it at exactly the point where a non-empty `distributor_name` request parameter would otherwise be resolved into extra `distributor_id` filter values; the guard throws `ForbiddenException("无权筛选其他店铺")` for distributor operators and is a no-op for admins/dealers.
+* **`TrackViewNumService.addViewNum` monitor/source registration check** (ECX-10920) — the data-cube tracking endpoint is effectively unauthenticated, so before writing any Redis bloom/hash counters it first proves both the `monitorId` and the `sourceId` are positive numbers **and** already exist as rows belonging to the same `companyId` (`monitorsMapper.selectCount(... eq(monitorId).eq(companyId)) > 0`, same for `sourcesMapper`); unregistered or cross-tenant ids are silently dropped. This stops an unauthenticated caller from enumerating ids to create unbounded Redis keys.
+* **wsugc post/comment company-match requirements** — the UGC admin services re-apply the PHP `WsugcTenantScopeGuard::assertPostIdsBelongToCompany` rule in Java: `PostCreateService` (edit path, ECX-10907), `PostEditService` (ECX-10919), `PostDeleteService.runUpdate` (ECX-10909), `PostVerifyService.verify` (ECX-10921), and `PostSetBadgesService` (ECX-10925, which additionally checks every badge row) each load the target `Post` rows by id, require the result count to match the requested distinct id count, and throw `ResourceException("无权访问该笔记")` if any row's `company_id` differs from the operator JWT's `company_id` — so an id that does not belong to the tenant is indistinguishable from a missing one. On the comment side, `CommentVerifyService.verify` rejects a non-positive `company_id` outright and scopes the update itself with `.in("comment_id", …).eq("company_id", companyId)`, while `CommentDeleteService.deleteComments` selects only rows matching both the id set and `companyId` and deletes just those — silent scoping rather than an exception.
+
 ## Idempotency guards: refuse updates that already happened
 
 Payment callbacks can be retried by the gateway, and two callbacks for the same trade must not both apply. The persistence-layer answer is a **guard on the current row state before the update** — a read-back, a state check, and a narrow `LambdaUpdateWrapper` that only touches the intended columns.
@@ -294,14 +333,18 @@ Payment callbacks can be retried by the gateway, and two callbacks for the same 
 4. Check the affected-row count: `if (updated <= 0) throw new ResourceException("交易单状态更新失败")` — a silent zero-row update is an error, not a no-op.
 5. Only after a successful `SUCCESS` transition fan out the trade-finish events (Jushuitan, orders, WdtErp publishers) and the membercard VIP fulfillment port.
 
-The same guard shape is repeated wherever an external system can re-deliver the same event: `BsPayOrdersTradePaymentCallbackService.handlePaymentNotify` (same `"NOTPAY"` check, same `"更新已处理，不需要更新"` message), `AdapayOrdersTradePaymentCallbackService`, `AdapayDepositTradeRechargeCallbackService.rechargeCallback` (deposits check `tradeStatus != SUCCESS` inside a `@Transactional(rollbackFor = Exception.class)` method, then update with `n <= 0` → `ResourceException`), `OfflinePaymentDoCheckService`, `OrdersPaymentDoPaymentService`, and `SupplierOfflineTradeWriteService`. The invariant to preserve when touching any of them: **state-machine transitions are conditional updates gated on the previous state, and a zero-affected-rows result is treated as failure.**
+The same guard shape is repeated wherever an external system can re-deliver the same event: `BsPayOrdersTradePaymentCallbackService.handlePaymentNotify` (same `"NOTPAY"` check, same `"更新已处理，不需要更新"` message), `AdapayOrdersTradePaymentCallbackService`, `OfflinePaymentDoCheckService`, `OrdersPaymentDoPaymentService`, and `SupplierOfflineTradeWriteService`.
+
+`AdapayDepositTradeRechargeCallbackService.rechargeCallback` (deposits) uses the strongest variant: an **atomic claim via a guarded `LambdaUpdateWrapper`**. Inside a `@Transactional(rollbackFor = Exception.class)` method it first re-reads the row and throws `"更新已处理，不需要更新"` if `tradeStatus` is already `SUCCESS`, then issues a single `UPDATE deposit_trade … WHERE deposit_trade_id = ? AND trade_status != 'SUCCESS'` (`uw.eq(DepositTrade::getDepositTradeId, …).ne(DepositTrade::getTradeStatus, "SUCCESS").set(…)`), and only proceeds to the balance mutation, Redis counters, and SMS after-commit publication when the update count is positive; `n <= 0` throws the same `"更新已处理，不需要更新"` `ResourceException`. The in-source comment (ECX-10915) says this conditional-update atomic preemption deliberately replaces the PHP `FOR UPDATE` + lock-then-check idiom, so a concurrent second callback that loses the race fails on the zero-row update instead of double-crediting. `AdapayDepositTradeRechargeCallbackServiceIdempotencyTest` pins this: the emitted wrapper's SQL segment contains `trade_status`, a zero-row update rejects without any Redis/publisher side effects, and a successful update applies the deposit effects.
+
+The invariant to preserve when touching any of these: **state-machine transitions are conditional updates gated on the previous state, and a zero-affected-rows result is treated as failure.**
 
 ## Transactions and cross-store writes
 
-Spring's `@Transactional(rollbackFor = Exception.class)` is used for multi-write flows (deposit recharge is the clearest example: trade-row update + `UserDeposit` balance mutation in one transaction, with the SMS dispatch deliberately registered as `TransactionSynchronizationManager` `afterCommit` so it only fires if the commit succeeds). Two things to keep in mind when adding persistence code:
+Spring's `@Transactional(rollbackFor = Exception.class)` is used for multi-write flows. The deposit recharge callback is the clearest example: the guarded `DepositTrade` state transition and the `UserDeposit` balance mutation run in one transaction, Redis counters (`shopDepositTotal`, `dayRechargeTotal<yyyy-MM-dd>`, and the `userDepositTotal_<companyId>` hash refreshed by `UserDepositBalanceMutationService`) are written as non-transactional side effects after the SQL work, and the SMS dispatch is deliberately registered with `TransactionSynchronizationManager` `afterCommit` so it only publishes if the commit succeeds (falling back to direct publication when no synchronization is active). Two things to keep in mind when adding persistence code:
 
-* Redis writes are **not** transactional. The deposit flow writes the new balance into the `userDepositTotal_<companyId>` hash *after* the SQL work, and the trade-sequence Redis keys in the payment callback are best-effort counters — treat them as caches/counters, not as part of the database transaction.
-* Self-invocation bypasses the proxy; where a method needs to start a transaction from inside the same bean, the codebase uses a programmatic `TransactionTemplate` instead (see `MigrationSeedRunner`'s menu re-import).
+* Redis writes are **not** transactional. The trade-sequence Redis keys in the payment callback are best-effort counters, and the deposit counters/hash above are updated only after the guarded update has already claimed the row — treat them as caches/counters, not as part of the database transaction.
+* Self-invocation bypasses the proxy; where a method needs to start a transaction from inside the same bean, the codebase uses a programmatic `TransactionTemplate` instead (see `MigrationSeedRunner`'s menu re-import and `AftersalesReviewService.review`, which wraps `runReviewTx` in `transactionTemplate.execute(…)`).
 
 ## Extension points and change checklist
 
@@ -315,7 +358,7 @@ Spring's `@Transactional(rollbackFor = Exception.class)` is used for multi-write
 | Audit columns | Either `int` `created`/`updated` set manually, or `@MpField(fill = FieldFill.INSERT/INSERT_UPDATE)` on `create_time`/`update_time`/`created_at`/`updated_at` so `MybatisPlusMetaHandler` fills them. |
 | Pagination | `mapper.selectPage(new Page<>(page, size), wrapper)` — guaranteed MySQL `LIMIT` by `PaginationInnerInterceptor(DbType.MYSQL)`; pass `false` as the third `Page` constructor argument when you will run your own `selectCount`. |
 
-Focused tests that pin these behaviors: `ItemsBarcodeRepositoryShopScopedTest` (shop-scoped uniqueness and the `distributorId = 0` platform pool), and the payment-callback probe tests (`OrdersTradePaymentCallbackServiceNormalOrderPaySuccessPublishProbeTest`, `...CanceledRefundOrderProcessLogPublishProbeTest`, `...MembercardVipFulfillTest`, `...WdtPublishOrderTest`), which mock `TradeMapper` and drive `applyTradePaymentNotify` end-to-end; note their `@BeforeAll initMybatisPlusTableMetadata()` — `TableInfoHelper.initTableInfo(new MapperBuilderAssistant(new MybatisConfiguration(), ""), Trade.class)` — which is the standard trick for making MyBatis-Plus lambda wrappers (which resolve column names from cached table metadata) work in plain Mockito tests without a database.
+Focused tests that pin these behaviors: `ItemsBarcodeRepositoryShopScopedTest` (shop-scoped uniqueness and the `distributorId = 0` platform pool); `AdapayDepositTradeRechargeCallbackServiceIdempotencyTest` (the guarded wrapper carries the `trade_status` precondition, a losing concurrent update rejects with no Redis/publisher side effects, and a winning update applies the deposit effects); the scope-guard unit tests `AftersalesDistributorScopeGuardTest` and `AdapayTradeDistributorNameScopeGuardTest`; the wsugc company-scope tests (`PostCreateServiceCompanyScopeTest`, `PostEditServiceCompanyScopeTest`, `PostDeleteServiceCompanyScopeTest`, `PostVerifyServiceCompanyScopeTest`, `PostSetBadgesServiceCompanyScopeTest`); and the payment-callback probe tests (`OrdersTradePaymentCallbackServiceNormalOrderPaySuccessPublishProbeTest`, `...CanceledRefundOrderProcessLogPublishProbeTest`, `...MembercardVipFulfillTest`, `...WdtPublishOrderTest`), which mock `TradeMapper` and drive `applyTradePaymentNotify` end-to-end. Note their shared `@BeforeAll initMybatisPlusTableMetadata()` — `TableInfoHelper.initTableInfo(new MapperBuilderAssistant(new MybatisConfiguration(), ""), Trade.class)` — which is the standard trick for making MyBatis-Plus lambda wrappers (which resolve column names from cached table metadata) work in plain Mockito tests without a database.
 
 ## See also
 

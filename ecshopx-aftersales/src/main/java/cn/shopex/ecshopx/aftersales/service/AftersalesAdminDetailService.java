@@ -21,6 +21,7 @@ import cn.shopex.ecshopx.aftersales.domain.AftersalesDetail;
 import cn.shopex.ecshopx.aftersales.domain.AftersalesRefund;
 import cn.shopex.ecshopx.aftersales.mapper.AftersalesDetailMapper;
 import cn.shopex.ecshopx.aftersales.mapper.AftersalesMapper;
+import cn.shopex.ecshopx.common.auth.DualJwtSupport;
 import cn.shopex.ecshopx.common.distribution.DistributorGetInfoSimpleByDistributorIdPort;
 import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.common.orders.port.AdminOrderDetailSalespersonLookupPort;
@@ -35,6 +36,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -114,6 +116,26 @@ public class AftersalesAdminDetailService {
 		if (a == null) {
 			throw new ResourceException("没有售后信息");
 		}
+		return buildFullDetailFromMainRow(a);
+	}
+
+	public Map<String, Object> getAftersalesDetail(
+			long companyId, String aftersalesBn, HttpServletRequest request) {
+		Aftersales a;
+		try {
+			a =
+					aftersalesMapper.selectOne(
+							new LambdaQueryWrapper<Aftersales>()
+									.eq(Aftersales::getCompanyId, companyId)
+									.apply("aftersales_bn = {0}", aftersalesBn));
+		} catch (TooManyResultsException e) {
+			throw new ResourceException("没有售后信息");
+		}
+		if (a == null) {
+			throw new ResourceException("没有售后信息");
+		}
+		AftersalesDistributorScopeGuard.assertAftersalesDistributorAllowed(
+				a.getDistributorId(), DualJwtSupport.claims(request));
 		return buildFullDetailFromMainRow(a);
 	}
 

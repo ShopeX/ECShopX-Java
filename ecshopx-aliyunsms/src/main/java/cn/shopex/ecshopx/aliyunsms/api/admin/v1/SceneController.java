@@ -191,7 +191,7 @@ public class SceneController {
 		Long pk = pkOpt.orElseThrow(
 				() -> new ResourceException(
 						"The identifier id is missing for a query of AliyunsmsBundle\\Entities\\Scene", 500));
-		Map<String, Object> body = aliyunsmsSceneDetailService.getDetail(pk);
+			Map<String, Object> body = aliyunsmsSceneDetailService.getDetail(pk, companyId);
 		return ResponseEntity.ok(ApiResult.ok(body));
 	}
 

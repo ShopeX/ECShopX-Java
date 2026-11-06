@@ -129,9 +129,27 @@ public class SupplierItemsRepository {
 	}
 
 	public List<SupplierItems> listByCompanyIdAndGoodsId(long companyId, long goodsId) {
+		return listByCompanyIdAndGoodsId(companyId, goodsId, false);
+	}
+
+	public List<SupplierItems> listByCompanyIdAndGoodsId(
+			long companyId, long goodsId, boolean priceGreaterThanZero) {
 		LambdaQueryWrapper<SupplierItems> w = new LambdaQueryWrapper<>();
 		w.eq(SupplierItems::getCompanyId, companyId).eq(SupplierItems::getGoodsId, goodsId);
+		if (priceGreaterThanZero) {
+			w.gt(SupplierItems::getPrice, 0);
+		}
 		return mapper.selectList(w);
+	}
+
+	public void updateIsGiftByCompanyAndGoodsId(long companyId, long goodsId, boolean isGift) {
+		int now = (int) (System.currentTimeMillis() / 1000L);
+		LambdaUpdateWrapper<SupplierItems> u = new LambdaUpdateWrapper<>();
+		u.eq(SupplierItems::getCompanyId, companyId)
+				.eq(SupplierItems::getGoodsId, goodsId)
+				.set(SupplierItems::getIsGift, isGift)
+				.set(SupplierItems::getUpdated, now);
+		mapper.update(null, u);
 	}
 
 	public void updateIsSyncPlatformByGoodsId(long companyId, long goodsId, int isSyncPlatform) {
@@ -155,6 +173,16 @@ public class SupplierItemsRepository {
 		w.eq(SupplierItems::getCompanyId, companyId).eq(SupplierItems::getGoodsId, goodsId).last("LIMIT 1");
 		SupplierItems row = mapper.selectOne(w);
 		return row != null && row.getIsSyncPlatform() != null && row.getIsSyncPlatform() == 1;
+	}
+
+	public int updateAuditStatusByGoodsId(long companyId, long goodsId, String auditStatus) {
+		int now = (int) (System.currentTimeMillis() / 1000L);
+		LambdaUpdateWrapper<SupplierItems> u = new LambdaUpdateWrapper<>();
+		u.eq(SupplierItems::getCompanyId, companyId)
+				.eq(SupplierItems::getGoodsId, goodsId)
+				.set(SupplierItems::getAuditStatus, auditStatus)
+				.set(SupplierItems::getUpdated, now);
+		return mapper.update(null, u);
 	}
 
 	public void updateAuditByGoodsId(long companyId, long goodsId, SupplierItemsAuditPatch patch) {
@@ -190,6 +218,35 @@ public class SupplierItemsRepository {
 				.set(SupplierItems::getTemplatesId, templatesId)
 				.set(SupplierItems::getUpdated, now);
 		mapper.update(null, u);
+	}
+
+	/** 按 default_item_id 将审核状态置为指定值（含已 approved，用于批量改运费模板后自动进审）。 */
+	public int updateAuditStatusByDefaultItemIdAndCompany(
+			long defaultItemId, long companyId, String auditStatus) {
+		int now = (int) (System.currentTimeMillis() / 1000L);
+		LambdaUpdateWrapper<SupplierItems> u = new LambdaUpdateWrapper<>();
+		u.eq(SupplierItems::getDefaultItemId, defaultItemId)
+				.eq(SupplierItems::getCompanyId, companyId)
+				.set(SupplierItems::getAuditStatus, auditStatus)
+				.set(SupplierItems::getUpdated, now);
+		return mapper.update(null, u);
+	}
+
+	/**
+	 * 按 company_id + (item_id 或 default_item_id) 更新 audit_status（含已 approved，用于批量改库存后自动进审）。
+	 */
+	public int updateAuditStatusByCompanyAndProductKey(
+			long companyId, long keyItemId, boolean keyIsDefaultItemId, String auditStatus) {
+		int now = (int) (System.currentTimeMillis() / 1000L);
+		LambdaUpdateWrapper<SupplierItems> u = new LambdaUpdateWrapper<>();
+		u.eq(SupplierItems::getCompanyId, companyId);
+		if (keyIsDefaultItemId) {
+			u.eq(SupplierItems::getDefaultItemId, keyItemId);
+		} else {
+			u.eq(SupplierItems::getItemId, keyItemId);
+		}
+		u.set(SupplierItems::getAuditStatus, auditStatus).set(SupplierItems::getUpdated, now);
+		return mapper.update(null, u);
 	}
 
 	/**

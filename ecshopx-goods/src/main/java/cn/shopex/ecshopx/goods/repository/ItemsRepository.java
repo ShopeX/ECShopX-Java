@@ -650,6 +650,20 @@ public class ItemsRepository {
 		mapper.update(null, u);
 	}
 
+	/** 按平台 item_id 批量更新 is_gift（供应商赠品双写关联池商品）。 */
+	public void updateIsGiftByCompanyAndItemIds(long companyId, Collection<Long> itemIds, boolean isGift) {
+		if (itemIds == null || itemIds.isEmpty()) {
+			return;
+		}
+		int now = (int) (System.currentTimeMillis() / 1000L);
+		LambdaUpdateWrapper<Items> u = new LambdaUpdateWrapper<>();
+		u.eq(Items::getCompanyId, companyId)
+				.in(Items::getItemId, itemIds)
+				.set(Items::getIsGift, isGift)
+				.set(Items::getUpdated, now);
+		mapper.update(null, u);
+	}
+
 	public void updateApproveStatusByCompanyAndGoodsId(long companyId, long goodsId, String approveStatus) {
 		int now = (int) (System.currentTimeMillis() / 1000L);
 		LambdaUpdateWrapper<Items> u = new LambdaUpdateWrapper<>();

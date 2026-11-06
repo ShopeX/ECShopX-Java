@@ -6,6 +6,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -50,7 +52,7 @@ class EspierUploadFileAsyncRunnerChunkDispatchTest {
 	@Test
 	void runInline_dispatchesSyncChunksWithSize500AndUpdatesLeftJobNum() throws Exception {
 		when(registry.requireHandler("chunk_probe")).thenReturn(tableHandler);
-		when(tableHandler.getHeaderTitle(1L))
+		when(tableHandler.getHeaderTitle(1L, 0L))
 				.thenReturn(new UploadHeaderTitle(Map.of("SKU", "sku_code"), Map.of()));
 
 		byte[] xlsx = buildXlsx(501);
@@ -100,7 +102,7 @@ class EspierUploadFileAsyncRunnerChunkDispatchTest {
 	@DisplayName("runAfterCommit dispatches chunks with executeSynchronously=false (queued parent path)")
 	void runAfterCommit_dispatchesAsyncChunks_executeSynchronouslyFalse() throws Exception {
 		when(registry.requireHandler("chunk_probe")).thenReturn(tableHandler);
-		when(tableHandler.getHeaderTitle(1L))
+		when(tableHandler.getHeaderTitle(1L, 0L))
 				.thenReturn(new UploadHeaderTitle(Map.of("SKU", "sku_code"), Map.of()));
 
 		byte[] xlsx = buildXlsx(501);
@@ -147,6 +149,42 @@ class EspierUploadFileAsyncRunnerChunkDispatchTest {
 		assertTrue(
 				paramsCap.getAllValues().stream()
 						.allMatch(list -> list.stream().allMatch(row -> row.containsKey("__excel_row__"))));
+	}
+
+	@Test
+	void runInline_rejectsMoreThan5000DataRows() throws Exception {
+		when(registry.requireHandler("chunk_probe")).thenReturn(tableHandler);
+
+		byte[] xlsx = buildXlsx(5001);
+		when(fileStorageService.get(eq("file"), eq("rel/over.xlsx"))).thenReturn(xlsx);
+
+		LinkedHashMap<String, Object> waitRow = new LinkedHashMap<>();
+		waitRow.put("id", 5001L);
+		waitRow.put("handle_status", "wait");
+		waitRow.put("company_id", 1L);
+		waitRow.put("operator_id", 2L);
+		waitRow.put("distributor_id", 0L);
+		waitRow.put("supplier_id", 0L);
+		waitRow.put("merchant_id", 0L);
+		waitRow.put("file_type", "chunk_probe");
+		waitRow.put("operator_type", "admin");
+		when(uploadeFileRepository.getInfoById(5001L)).thenReturn(waitRow);
+
+		EspierUploadFileAsyncRunner runner =
+				new EspierUploadFileAsyncRunner(
+						uploadeFileRepository, registry, fileStorageService, new ObjectMapper(), importDataJobDispatchPort);
+		runner.runInline(new LinkedHashMap<>(waitRow), "rel/over.xlsx", "chunk_probe");
+
+		verify(importDataJobDispatchPort, never())
+				.dispatchImportDataChunk(anyBoolean(), any(), any(), any(), anyInt(), any());
+		verify(uploadeFileRepository)
+				.updateOneBy(
+						eq(Map.of("id", 5001L)),
+						argThat(
+								m -> {
+									String message = String.valueOf(m.get("handle_message"));
+									return message.contains("头部标题或Excel解析错误") && message.contains("数据行超过上限5000");
+								}));
 	}
 
 	private static byte[] buildXlsx(int dataRows) throws Exception {

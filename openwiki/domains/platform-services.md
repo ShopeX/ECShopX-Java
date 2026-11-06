@@ -1,8 +1,8 @@
 ---
 type: domain-reference
 title: Platform Services and Supporting Bundles (espier, super-admin, theme, data-cube, shopmenu-border, tdkset, comments, wsugc, im, form, one-code, tb-items, kujiale, shopex-ai)
-description: The long tail of shared and supporting Bundles — espier as the platform capability core (pluggable file storage drivers behind ecshopx.storage.driver, Excel import chunking onto the dispatch bus, address trees, upgrade agreements, and the JWT/auth MVC interceptor stack that every admin and H5 request passes through), plus one short map of super-admin, theme, data-cube, shopmenu-border, tdkset, comments, wsugc, im, form, one-code, tb-items, kujiale and shopex-ai.
-tags: [espier, storage, upload, import, oss, qiniu, aws, cos, middleware, interceptor, jwt, super-admin, shopmenu, theme, data-cube, tdkset, comments, wsugc, ugc, im, form, one-code, kujiale, shopex-ai, xxl-job, dispatch-bus, redis]
+description: The long tail of shared and supporting Bundles — espier as the platform capability core (pluggable file storage drivers behind ecshopx.storage.driver, Excel import chunking onto the dispatch bus, address trees, upgrade agreements, the JWT/auth MVC interceptor stack plus the POS JWT filter/issuer/blacklist infrastructure that every admin, H5 and POS request passes through), plus one short map of super-admin, theme, data-cube, shopmenu-border, tdkset, comments, wsugc, im, form, one-code, tb-items, kujiale and shopex-ai.
+tags: [espier, storage, upload, import, oss, qiniu, aws, cos, middleware, interceptor, jwt, pos-jwt, super-admin, shopmenu, theme, data-cube, tdkset, comments, wsugc, ugc, im, form, one-code, kujiale, shopex-ai, selfservice, xxl-job, dispatch-bus, redis]
 sources:
   - id: openwiki-source-3eb56b4adf3ab6e2953a5319
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/EspierUploadFileJobDispatchPublisherImpl.java
@@ -24,6 +24,12 @@ sources:
     resource: repo://ecshopx-comments/src/main/java/cn/shopex/ecshopx/comments/api/front/v1/CommentsController.java
   - id: openwiki-source-437d57da050c53eec838db8f
     resource: repo://ecshopx-comments/src/main/java/cn/shopex/ecshopx/comments/service/CommentsMenuPermissionService.java
+  - id: openwiki-source-b1973ac117199117f42ee27d
+    resource: repo://ecshopx-comments/src/main/java/cn/shopex/ecshopx/comments/service/ShopCommentListService.java
+  - id: openwiki-source-c86721691b120f8a345dfe8f
+    resource: repo://ecshopx-comments/src/test/java/cn/shopex/ecshopx/comments/api/front/v1/CommentsControllerPageSizeTest.java
+  - id: openwiki-source-ed7b288eb2787a6530e341f5
+    resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/auth/PosJwtRequestAttributes.java
   - id: openwiki-source-e4be140944d745b5418e7b90
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/DatacubeDispatchJobNames.java
   - id: openwiki-source-4cece1d0dc21f12377ecd9c8
@@ -32,6 +38,8 @@ sources:
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/espier/upload/EspierImportRowSink.java
   - id: openwiki-source-0ced4eb2aefb8260715e3891
     resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/espier/PosStoreAccountEspierImportRowSink.java
+  - id: openwiki-source-48f750a8142d8a7487ac4de7
+    resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/posauth/PosJwtSessionValidator.java
   - id: openwiki-source-73028b1c849bf5bd4e87803c
     resource: repo://ecshopx-data-cube/pom.xml
   - id: openwiki-source-a21a234d49d44d9efb0c39df
@@ -70,6 +78,16 @@ sources:
     resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/dispatch/ImportDataJobHandler.java
   - id: openwiki-source-c3ce781e36cc4f90ca50966a
     resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/package-info.java
+  - id: openwiki-source-d229dab5a02385013d416e5e
+    resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/OperatorJwtCompactCodec.java
+  - id: openwiki-source-a1f68480771cd92413f00be5
+    resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/PosJwtAuthenticationFilter.java
+  - id: openwiki-source-043701b554e6049237c22c70
+    resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/PosJwtBlacklistService.java
+  - id: openwiki-source-da7950ab19f4690ae361bd4b
+    resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/PosJwtIssuer.java
+  - id: openwiki-source-a7b2be30f60d866cf32e516a
+    resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/PosJwtPathWhitelist.java
   - id: openwiki-source-bf2fde517f9689de89ec524f
     resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/address/EspierAddressTreeApplicationService.java
   - id: openwiki-source-828151c5e3e70bc9687d775b
@@ -158,8 +176,12 @@ sources:
     resource: repo://ecshopx-one-code/src/main/java/cn/shopex/ecshopx/onecode/api/admin/v1/BatchsController.java
   - id: openwiki-source-60db5e492162ed75a4070c2a
     resource: repo://ecshopx-one-code/src/main/java/cn/shopex/ecshopx/onecode/api/admin/v1/ThingsController.java
+  - id: openwiki-source-353e6249ac9a7fbaaca26d72
+    resource: repo://ecshopx-selfservice/src/main/java/cn/shopex/ecshopx/selfservice/api/admin/v1/RegistrationActivityController.java
   - id: openwiki-source-584fe968ad11d0846fbd482a
     resource: repo://ecshopx-selfservice/src/main/java/cn/shopex/ecshopx/selfservice/service/espier/SelformRegistrationRecordEspierImportRowSink.java
+  - id: openwiki-source-65f019cd65a483dce65570a2
+    resource: repo://ecshopx-selfservice/src/main/java/cn/shopex/ecshopx/selfservice/service/RegistrationActivityDataInfoService.java
   - id: openwiki-source-0b8c138b397d21f25610ab14
     resource: repo://ecshopx-shopex-ai/src/main/java/cn/shopex/ecshopx/shopexai/api/admin/v1/OutfitAnyoneController.java
   - id: openwiki-source-c4b5886962db924252db6b1c
@@ -198,14 +220,44 @@ sources:
     resource: repo://ecshopx-theme/src/main/java/cn/shopex/ecshopx/theme/service/PagesTemplateServices.java
   - id: openwiki-source-33b987f40f24cb83da8d4aaa
     resource: repo://ecshopx-wsugc/src/main/java/cn/shopex/ecshopx/wsugc/api/front/v1/PostController.java
+  - id: openwiki-source-d42745ca4252030beadf17ca
+    resource: repo://ecshopx-wsugc/src/main/java/cn/shopex/ecshopx/wsugc/service/content/UgcWxContentCheckBaseUriGuard.java
+  - id: openwiki-source-057ecd9b735f5106baa019e6
+    resource: repo://ecshopx-wsugc/src/main/java/cn/shopex/ecshopx/wsugc/service/content/UgcWxContentMediaCheckService.java
+  - id: openwiki-source-80719f4442e84adbe1b998bf
+    resource: repo://ecshopx-wsugc/src/main/java/cn/shopex/ecshopx/wsugc/service/content/UgcWxContentTextCheckService.java
+  - id: openwiki-source-8420fcef083cb3d2f02e84db
+    resource: repo://ecshopx-wsugc/src/main/java/cn/shopex/ecshopx/wsugc/service/post/PostCreateService.java
+  - id: openwiki-source-7207e45453c13550f750f227
+    resource: repo://ecshopx-wsugc/src/main/java/cn/shopex/ecshopx/wsugc/service/post/PostDeleteService.java
+  - id: openwiki-source-87d3f26f69c90d06a85890a5
+    resource: repo://ecshopx-wsugc/src/main/java/cn/shopex/ecshopx/wsugc/service/post/PostEditService.java
+  - id: openwiki-source-060cdc13cf8407fa03bffe80
+    resource: repo://ecshopx-wsugc/src/main/java/cn/shopex/ecshopx/wsugc/service/post/PostSetBadgesService.java
+  - id: openwiki-source-e25c0387f73ec01bdb8d5a15
+    resource: repo://ecshopx-wsugc/src/main/java/cn/shopex/ecshopx/wsugc/service/post/PostVerifyService.java
   - id: openwiki-source-e435db168bb15482d7923222
     resource: repo://ecshopx-wsugc/src/main/java/cn/shopex/ecshopx/wsugc/service/post/UgcPostLikeRedisService.java
+  - id: openwiki-source-b579e89a39ea05175245812a
+    resource: repo://ecshopx-wsugc/src/main/java/cn/shopex/ecshopx/wsugc/service/setting/UgcSettingSaveService.java
+  - id: openwiki-source-094d56e40b1ac1738c8b4e8f
+    resource: repo://ecshopx-wsugc/src/main/java/cn/shopex/ecshopx/wsugc/service/topic/TopicSetTopService.java
+  - id: openwiki-source-85ed35d1882889061858cfe7
+    resource: repo://ecshopx-wsugc/src/main/java/cn/shopex/ecshopx/wsugc/service/topic/TopicVerifyService.java
   - id: openwiki-source-ea37f872d8ead96576e1943d
     resource: repo://ecshopx-wsugc/src/main/java/cn/shopex/ecshopx/wsugc/service/WsugcNormalOrderPaySuccessApplyService.java
-generated: { by: "openwiki/0.7.3", at: "2026-11-04T17:09:55.577Z" }
+  - id: openwiki-source-45c53a98b1e6f4ffd9cc89a2
+    resource: repo://ecshopx-wsugc/src/test/java/cn/shopex/ecshopx/wsugc/service/post/PostCreateServiceCompanyScopeTest.java
+  - id: openwiki-source-0240a7de48923742c25dc762
+    resource: repo://ecshopx-wsugc/src/test/java/cn/shopex/ecshopx/wsugc/service/post/PostVerifyServiceCompanyScopeTest.java
+  - id: openwiki-source-08b8a8d9f4d994b6bcf0ecc6
+    resource: repo://ecshopx-wsugc/src/test/java/cn/shopex/ecshopx/wsugc/service/topic/TopicSetTopServiceScopeTest.java
+  - id: openwiki-source-f88bbfd29df85476326a0455
+    resource: repo://ecshopx-wsugc/src/test/java/cn/shopex/ecshopx/wsugc/service/topic/TopicVerifyServiceScopeTest.java
+generated: { by: "openwiki/0.9.0", at: "2026-11-05T17:10:02.238Z" }
 verified:
-  - by: openwiki/0.7.3
-    at: 2026-11-04T17:09:55.577Z
+  - by: openwiki/0.9.0
+    at: 2026-11-05T17:10:02.238Z
 ---
 
 # Platform Services and Supporting Bundles
@@ -227,7 +279,7 @@ This page covers the shared and peripheral Bundles. Most of them follow the stan
 | `service/upgrade/` | `UpgradeAgreementQueryService`, `UpgradeExecuteService`, `UpgradeRollbackService` |
 | `service/front/`, `service/offline/`, `service/printer/`, `service/config/` | wxapp upload/new-login, offline bank accounts, printers, request-field config |
 | `web/interceptor/`, `web/`, `web/advice/` | the MVC middleware chain, `ShopLoginAuditFilter`, multipart size advice |
-| `security/` | operator JWT issue/verify/blacklist, H5 blacklist, Kujiale-like filter, wxapp member session filter |
+| `security/` | operator JWT issue/verify/blacklist, the POS JWT filter/issuer/blacklist/whitelist stack, H5 blacklist, Kujiale-like filter, wxapp member session filter |
 | `api/admin/v1/`, `api/front/v1/` | address, auth, config fields, export data/log, offline bank, printer, subdistrict, upgrade, upload file/images controllers |
 | `dispatch/`, `cron/` | `EspierUploadFileJobHandler`, `ImportDataJobHandler`; `delete-error-file`, `delete-history-file` |
 | `openapi/` | image upload-token / list / save / delete port impls consumed by the openapi bundle |
@@ -347,6 +399,15 @@ Two XXL-JOB handlers keep the file store clean (both follow the [alert-and-rethr
 
 `ShopLoginAuditFilter` (`espier.web.ShopLoginAuditFilter`, a `OncePerRequestFilter`) complements the chain for exactly one path — `POST /api/v1/operator/login`: it wraps the response, and on a 200 whose body contains `data.token`, writes an `operator_name=login` operator-log entry with the request URI, remote IP and the serialized response. `EspierMultipartMaxUploadSizeExceptionAdvice` rounds out the web layer by translating multipart size-limit exceptions.
 
+### POS JWT: filter, issuer, blacklist, path whitelist
+
+Espier also hosts the POS (收银) JWT authentication stack, a servlet-filter layer that runs *upstream* of the MVC interceptors:
+
+* **`PosJwtAuthenticationFilter`** (`@Order(Ordered.HIGHEST_PRECEDENCE + 40)`, `OncePerRequestFilter`) engages only when the Bearer token parses as a POS token (`token_kind=pos` or `iss=<POS_JWT_ISSUER>`, default `ecshopx-pos`) — `shouldNotFilter` skips `POST /api/v1/pos/auth/login`, any non-Bearer request and any non-POS token. When it engages it (1) consults `PosJwtPathWhitelist` — an exact/prefix allowlist of POS-reachable routes (`/api/v1/order*`, `/api/v1/aftersales*`, `/api/v1/checkout`, cart/pending/cartdata, read-only goods/distributors/employee/address endpoints, delivery POST, writeoff, member tag/reltag…), with `/api/v1/store/pos-accounts` explicitly denied even if a prefix matches — (2) rejects blacklisted tokens, (3) verifies the signature and `exp` with `OperatorJwtCompactCodec` against the same `JWT_SECRET`-derived HMAC key, and (4) delegates to the `PosJwtSessionValidatorPort` (implemented by companys' `PosJwtSessionValidator`, ticket G-L9), which re-reads the `PosStoreAccount` row and rejects the token when the account's status, distributor or role no longer matches the claims — so disabling or transferring a POS account invalidates its tokens immediately. On success the claims are stored under the `PosJwtRequestAttributes.POS_JWT_USER_DATA` request attribute, which is exactly the attribute `AdminAuthInterceptor` short-circuits on (see the middleware table above).
+* **`PosJwtIssuer`** (implements `PosJwtIssuerPort` from `ecshopx-common`) mints tokens at POS login: it coerces claims to scalar values, stamps `token_kind=pos`, `sub`, `iss`, `jti` (random UUID), `iat`/`nbf`/`exp` (TTL = `JWT_TTL` minutes, default 120) and signs HS512 + unpadded Base64URL via `OperatorJwtCompactCodec.compactHs512Url` — the PHP `tymon/jwt-auth` shape that DigiOS and other standard JWT verifiers expect. Its `invalidate(compactJwt)` verifies the token and pushes it onto the blacklist until its own `exp`.
+* **`PosJwtBlacklistService`** (implements `PosJwtBlacklistPort`) stores the SHA-256 hex of the compact token under `pos_jwt_invalidate:<sha256>` on the **prism** Redis template (`prismRedisTemplate`), with the TTL clamped to the token's remaining lifetime — so revoked tokens disappear automatically at natural expiry.
+* **`OperatorJwtCompactCodec`** is the shared compact-JWT codec for both operator and POS tokens: two signing variants (HS256 + standard Base64 for the operator/admin SPA, HS512 + Base64URL for POS), and a `verifyAndParse` that tries the raw-segment HMAC check first and falls back to the jjwt parser, so both historical token shapes verify.
+
 ### Member-facing image upload quota
 
 `FrontWxappEspierUploadImageService` (front `UploadFileController` under `/api/v1/h5app/wxapp/espier`, `@FrontAuth`) is the H5/mini-program image upload path. Both `uploadImage` (`POST /upload`) and `getPicUploadToken` (`GET /image_upload_token`) enforce a per-user daily quota before doing any storage work: the counter lives on the **members** Redis template (`membersStringRedisTemplate`) under `uploadImageNum:<companyId>:<userId>`, is compared against `USER_UPLOAD_IMAGE_NUM` (default 10) and then incremented with an 86400-second TTL — note the counter is incremented *before* the file is validated, so a rejected upload still consumes one attempt. `uploadImage` then accepts only jpg/jpeg/png extensions (derived from the original filename, not the content type) within `EspierUploadMessages.MAX_UPLOAD_BYTES` (50 MiB), writes the bytes to the `image` disk under an Asia/Shanghai `yyyy/MM/dd` path with a `md5(yyyyMMddHHmmss)+md5(content).<ext>` object key (prefixed with `<companyId>/` only when the H5 claims carry a truthy `company_id`), and returns the public `url`. `getPicUploadToken` normalizes the requested `filetype` against file/image/videos, applies the COS filename-extension rule, and delegates to `FileStorageService.getUploadToken`. A third entry, `uploadeLocalImage` (`POST /uploadlocal`, `@FrontNoAuth`), bypasses the quota and routes to the local-only `FileStorageService.uploadImportLocalRelativePath` described above.
@@ -413,10 +474,12 @@ The company-dimension chain is representative: `CompanyDataService.scheduleInitS
 **2. Redis PV/UV/register counters on the datacube logical DB.** `TrackController` (`POST /api/v1/h5app/wxapp/track/viewnum`, `@FrontNoAuth`) is the front-end beacon; `TrackViewNumService.addViewNum` increments three day-scoped hashes per *(companyId, monitorId, sourceId)* on the **`datacubeStringRedisTemplate`** (`ecshopx.redis.datacube.database`, default 0):
 
 * `datecube_tracklog:viewnum:<companyId>|<monitorId>:page_view:<sourceId>` — always incremented (PV);
-* `...:unique_visitor:<sourceId>` — incremented only when the open id is new;
-* `...:member_visitor:<sourceId>` — incremented only when that open id resolves to a member via `MemberAccountService.getWechatSimpleUser`.
+* `...:unique_visitor:<sourceId>` — incremented only when the open id is new to the bloom filter;
+* `...:member_visitor:<sourceId>` — incremented only when that open id additionally resolves to a member via `MemberAccountService.getWechatSimpleUser`.
 
-Uniqueness is decided by `UvBloomFilterService`, a Lua-script bloom filter (`uv_bloom_filter:<monitorId>:<sourceId>`, GETBIT/SETBIT loop, 100 000 expected items at 1 % FPR) that runs on the **shared** template — so the dedup bitset lives on the shared/default DB while the counts live on the datacube DB. `MonitorsStatsService.buildStats` (behind the admin `SourcesMonitorsController`) reads the counts back with a single `HMGET` per key over the requested day range and joins them with paid-order aggregates from `NormalOrdersMapper`, and `CreateMemberSuccessRegisterNumStatsExecutionService` (wired from bootstrap's `DatacubeRegisterNumStatsCreateMemberSuccessDispatchListenerRegistrationConfig`) increments the `registernum`/`entriesnum` hashes when a member registers, optionally attaching source tags through `MemberRelTagsBatchCreateService`. See [Redis databases](../concepts/redis-databases.md) for the logical-DB map.
+Because the beacon is unauthenticated, `addViewNum` now guards the ids before touching Redis (ECX-10920, aligned with the PHP tenant-scope guard): non-positive `companyId`, blank/non-numeric `monitor_id`/`source_id`, or a monitor/source pair that is **not a registered row for that company** (`MonitorsMapper` / `SourcesMapper` `selectCount` by id + company) is silently dropped — the endpoint still returns `{"status": true}`. This prevents the public endpoint from enumerating ids and minting unbounded Redis bloom/hash keys.
+
+Uniqueness is decided by `UvBloomFilterService`, a Lua-script bloom filter (`uv_bloom_filter:<monitorId>:<sourceId>`, GETBIT/SETBIT loop sized for 100 000 expected items at 1 % FPR, CRC32 + FNV-1a double hashing) that runs on the **shared** template — so the dedup bitset lives on the shared/default DB while the counts it gates live on the datacube DB. Note the gate ordering: the member-visitor hash is only consulted inside the new-visitor branch, so `member_visitor` counts *new visitors that are members*, not all member page views. `MonitorsStatsService.buildStats` (behind the admin `SourcesMonitorsController`) reads the counts back with a single `HMGET` per key over the requested day range and joins them with paid-order aggregates from `NormalOrdersMapper`, and `CreateMemberSuccessRegisterNumStatsExecutionService` (wired from bootstrap's `DatacubeRegisterNumStatsCreateMemberSuccessDispatchListenerRegistrationConfig`) increments the `registernum`/`entriesnum` hashes when a member registers, optionally attaching source tags through `MemberRelTagsBatchCreateService`. See [Redis databases](../concepts/redis-databases.md) for the logical-DB map.
 
 ### The rest of the bundle
 
@@ -428,7 +491,9 @@ Package-info: "TDK settings domain module" (TDK 设置域模块). Two admin cont
 
 ## ecshopx-comments — shop (goods/order) comments
 
-Package-info: "comments domain module" (评论域模块). Admin `CommentsController` (`/api/v1`, `@AdminAuth @ShopLog`, `@DingoResponse(DINGO_400)`) offers `POST /comment` (create), a patch update and the list; the front `CommentsController` under `/api/v1/h5app` serves the member-facing comment surfaces. `CommentsCreateRequestGate`/`CommentsMenuPermissionService` implement the `comment.create`/`comment.update` route-alias gates, and the `ShopComment{Create,Update,List}Service` trio plus `ShopComments`/`ShopCommentsMapper` persist to the `shop_comments` table. This is the *product/order* comment domain — the community/UGC comment domain is wsugc (below).
+Package-info: "comments domain module" (评论域模块). Admin `CommentsController` (`/api/v1`, `@AdminAuth @ShopLog`, `@DingoResponse(DINGO_400)`) offers `POST /comment` (create), a patch update and the list; the front `CommentsController` under `/api/v1/h5app` (`@FrontAuth`, member-only — the claims must carry a positive `company_id` and a non-zero `user_id` or the controller throws 411-style `BadRequestException`) serves the member-facing comment surfaces (`POST /wxapp/comment`, `GET /wxapp/comments`). `CommentsCreateRequestGate`/`CommentsMenuPermissionService` implement the `comment.create`/`comment.update` route-alias gates, and the `ShopComment{Create,Update,List}Service` trio plus `ShopComments`/`ShopCommentsMapper` persist to the `shop_comments` table. This is the *product/order* comment domain — the community/UGC comment domain is wsugc (below).
+
+The front list endpoint has been hardened (ECX-10918): `parsePageSize` clamps `pageSize` to `MAX_PAGE_SIZE = 50` (the PHP `Comments MAX_PAGE_SIZE` value) instead of letting an oversized page pull the full table, defaults to 50 when absent, and rejects non-numeric or non-positive values with `BadRequestException`; `page_no`/`pageNo` get the same treatment with a default of 1. On the service side, `ShopCommentListService.list` no longer resolves member info row by row: it collects the distinct `user_id`s of the page, fetches them in one `MemberAccountService.getWechatUserInfoByUserIds` batch call and joins nickname/avatar back onto each row (throwing `ResourceException("用户信息错误")` when a commenter's account cannot be resolved) — eliminating the N+1 lookup that the 50-row cap alone would not have fixed. `CommentsControllerPageSizeTest` pins the cap, the default, the pass-through of small sizes and the rejection of invalid input.
 
 ## ecshopx-wsugc — user generated content
 
@@ -437,6 +502,17 @@ Package-info: "user generated content domain" (用户生成内容域). The commu
 Admin controllers live under `/api/v1/ugc/{post,topic,tag,badge,comment,setting/point}` (post/topic/tag moderation and verify services, badge CRUD, comment admin list/delete, point settings). Front controllers under `/api/v1/h5app` expose the member surface, e.g. `PostController`'s `POST /wxapp/ugc/post/{create,delete,share,like,favorite}` and the no-login `GET /wxapp/ugc/post/{detail,list}` — plus `CommentController`, `TopicController`, `TagController`, `FollowerController`, `MessageController` and `SettingController`.
 
 Notable behaviour: like/favourite/follower counts and comment counters are kept in Redis through `UgcPostLikeRedisService`, `UgcPostFavoriteRedisService`, `UgcCommentLikeRedisService`, `UgcCommentRedisCounterService`, `UgcFollowerRedisService` — all on the **shared** template. User-submitted text and media are screened through `UgcWxContentTextCheckService` / `UgcWxContentMediaCheckService` (WeChat content-safety, with Redis-cached results) before a post or comment becomes visible. `NormalOrderPaySuccessWsugcDispatchListener` is the bundle's dispatch-bus hook for the order-pay-success event; today `WsugcNormalOrderPaySuccessApplyService.applyAfterNormalOrderPaySuccess` is an intentional no-op placeholder that keeps a single coherent entry point for the future integration. `UgcPostPointService` connects post activity to the point bundle.
+
+**Tenant-scope hardening (company match, aligning with the PHP `WsugcTenantScopeGuard`).** Every admin mutation on another company's content is now rejected with `ResourceException`:
+
+* `PostCreateService` (edit branch, ECX-10907) and `PostEditService` (ECX-10919) reload the existing `Post` and refuse when its `company_id` differs from the operator JWT's (`无权访问该笔记`); `PostDeleteService` (ECX-10909) batch-loads the target ids and requires *every* row to exist and match the company before the `disabled=1` update.
+* `PostVerifyService` (ECX-10921) applies the same load-all-and-match check before flipping review status — and still derives the acting operator id from the JWT (falling back to the request's `user_id` only under the `local` profile), awards/deducts points via `UgcPostPointService` and writes a `refusePost` system message on rejection.
+* `PostSetBadgesService` (ECX-10925) is two-dimensional: the target posts *and* every referenced `Badge` must belong to the company (`无权访问该角标` otherwise) before the `PostBadge` rows are rewritten.
+* `TopicVerifyService` (ECX-10874) scopes the update SQL itself (`company_id = ? AND topic_id IN (...)`) and throws when fewer rows matched than requested; `TopicSetTopService` (ECX-10872) clears and re-applies `is_top`/`p_order` only within the caller's company and refuses unknown ids.
+
+The focused `*CompanyScopeTest`/`*ScopeTest` classes (`PostCreateServiceCompanyScopeTest`, `PostEditServiceCompanyScopeTest`, `PostDeleteServiceCompanyScopeTest`, `PostSetBadgesServiceCompanyScopeTest`, `PostVerifyServiceCompanyScopeTest`, `TopicVerifyServiceScopeTest`, `TopicSetTopServiceScopeTest`, plus the comment-side `CommentVerifyServiceScopeTest`/`CommentDeleteServiceScopeTest`/`FrontUgcCommentDeleteServiceScopeTest`) pin the cross-tenant rejection and the company-scoped SQL.
+
+**Content-check SSRF guard.** The per-company `contentCheck_url` setting is the base URI for the WeChat mini-program content-safety API (`/wxa/msg_sec_check`, media checks, and the `client_credential` access-token fetch), so a poisoned setting would be an SSRF/credential-exfiltration primitive. `UgcWxContentCheckBaseUriGuard.normalizeAndRequire` (invoked by both check services at call time and by `UgcSettingSaveService.requireOptional` on save) strips trailing slashes and rejects anything that is not exactly `https://api.weixin.qq.com` — no other host, no user-info, no path, no query/fragment, no non-TLS scheme (`BadRequestException: contentCheck_url 仅允许 https://api.weixin.qq.com`).
 
 ## ecshopx-im — customer-service chat configuration
 
@@ -468,3 +544,4 @@ Package-info: "Shopex AI domain module" (Shopex AI 域模块). The smallest func
 * **Cross-bundle wiring stays acyclic.** The port interfaces live in `ecshopx-common` (`EspierDispatchJobNames`, `DatacubeDispatchJobNames`, `EspierImportRowSink`) or in the consuming bundle (`KujialeDesignerWorksByItemIdPort` in goods), with the `DispatchFacade`-backed or mapper-backed impls in the owning bundle or in `ecshopx-bootstrap/config` — see [Cross-bundle communication](../architecture/cross-bundle-communication.md).
 * **Redis template discipline.** Datacube counters use `datacubeStringRedisTemplate`, the bloom filter and all UGC/IM blobs use `sharedStringRedisTemplate`, the agreement throttle uses `companysRedisTemplate`, the address tree cache uses `espierStringRedisTemplate`, and the front upload-image day quota uses `membersStringRedisTemplate` (see *Member-facing image upload quota* above) — the qualifier matters because `companysRedisTemplate` is `@Primary`.
 * **Cron handlers** in espier, theme and data-cube all follow the shared alert-and-rethrow template; the queue-feeding split (handler enqueues, bus does the work) is the norm for the statistics family, as detailed on the [XXL-JOB](../concepts/scheduling-xxljob.md) page.
+* **Cross-tenant reads degrade to "not found".** The wsugc company-match guards above throw, but the selfservice bundle takes the softer PHP-parity route for detail reads: `RegistrationActivityDataInfoService.getDataInfo` (behind admin `GET /selfhelp/registrationActivity/get`, route alias `selfhelp.registrationActivity.info`) reloads the activity, and when its `company_id` does not match the operator JWT's company it returns an empty result rather than an error (ECX-10916) — cross-tenant probing is indistinguishable from a missing id.

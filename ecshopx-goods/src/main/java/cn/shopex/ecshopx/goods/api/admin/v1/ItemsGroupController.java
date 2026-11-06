@@ -96,12 +96,18 @@ public class ItemsGroupController {
 	@Activated(routeAlias = "goods.items.get_group_items")
 	@GetMapping(value = "/get_group_items", name = "查询分组商品")
 	public ResponseEntity<ApiResult<Map<String, Object>>> getGroupItems(
+			HttpServletRequest request,
 			@RequestParam(value = "group_id", required = false) Long groupId,
 			@RequestParam(value = "page", required = false, defaultValue = "1") int page,
 			@RequestParam(value = "pageSize", required = false, defaultValue = "100") int pageSize) {
+		Object raw = request.getAttribute(OperatorJwtAuthenticationFilter.OPERATOR_JWT_USER_DATA);
+		if (!(raw instanceof Map<?, ?> ud)) {
+			throw new UnauthorizedException("未登录");
+		}
+		long companyId = AdminGoodsUploadRequestMerge.readRequiredLong(ud, "company_id");
 		int p = Math.max(1, page);
 		int ps = Math.min(Math.max(1, pageSize), 200);
-		List<Long> goodsIds = itemsGroupGetGroupItemsService.listGoodsIdsByGroupId(groupId, p, ps);
+		List<Long> goodsIds = itemsGroupGetGroupItemsService.listGoodsIdsByGroupId(companyId, groupId, p, ps);
 		Map<String, Object> data = new LinkedHashMap<>();
 		data.put("goods_id", goodsIds);
 		return ResponseEntity.ok(ApiResult.ok(data));

@@ -18,7 +18,9 @@ package cn.shopex.ecshopx.selfservice.service;
 
 import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.common.web.FlexibleHttpServletParameterMap;
+import cn.shopex.ecshopx.selfservice.domain.RegistrationActivity;
 import cn.shopex.ecshopx.selfservice.mapper.RegistrationActivityMapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import jakarta.servlet.http.HttpServletRequest;
 import java.math.BigInteger;
 import java.util.Collections;
@@ -40,12 +42,24 @@ public class RegistrationActivityDeleteService {
 	}
 
 	@Transactional(rollbackFor = Exception.class)
-	public Object deleteData(HttpServletRequest httpRequest, Map<String, Object> body) {
+	public Object deleteData(HttpServletRequest httpRequest, Map<String, Object> body, long companyId) {
 		Object raw = resolveActivityIdRaw(httpRequest, body);
 		if (isLooseFalsyActivityIdRaw(raw)) {
 			return Collections.emptyList();
 		}
 		long activityId = normalizeToActivityId(raw);
+		if (activityId <= 0L) {
+			return Collections.emptyList();
+		}
+		// ECX-10928：对齐 PHP SelfserviceTenantScopeGuard::assertRegistrationActivityIdBelongsToCompany
+		Long existing =
+				registrationActivityMapper.selectCount(
+						new LambdaQueryWrapper<RegistrationActivity>()
+								.eq(RegistrationActivity::getActivityId, activityId)
+								.eq(RegistrationActivity::getCompanyId, companyId));
+		if (existing == null || existing <= 0L) {
+			throw new ResourceException("无权访问该报名活动");
+		}
 		try {
 			registrationActivityMapper.deleteById(activityId);
 		} catch (DataIntegrityViolationException ex) {

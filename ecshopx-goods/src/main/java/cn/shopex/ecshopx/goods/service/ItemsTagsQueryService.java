@@ -60,9 +60,10 @@ public class ItemsTagsQueryService {
 		return itemIds.stream().map(String::valueOf).toList();
 	}
 
-	public Object getTagInfoByTagId(long tagId) {
+	public Object getTagInfoByTagId(long companyId, long tagId) {
 		ItemsTags entity = itemsTagsRepository.selectById(tagId);
-		if (entity == null) {
+		// ECX-10948：他公司或公司为空与记录不存在相同
+		if (entity == null || entity.getCompanyId() == null || !entity.getCompanyId().equals(companyId)) {
 			return Collections.emptyList();
 		}
 		return ItemsTagsRowMaps.toTagRowMap(entity);

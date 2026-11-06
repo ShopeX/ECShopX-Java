@@ -123,17 +123,7 @@ public class OrderInvoiceSettingService {
 					throw new cn.shopex.ecshopx.common.exception.BadRequestException(ERR_PREFIX + "运费是否开票必填");
 				}
 			}
-			case "freight_name" -> {
-				if (isFreightTwo(data.get("freight_invoice"))) {
-					if (!data.containsKey(key) || data.get(key) == null) {
-						throw new cn.shopex.ecshopx.common.exception.BadRequestException(ERR_PREFIX + "运费开票名称必填");
-					}
-					String s = String.valueOf(data.get(key)).trim();
-					if (s.isEmpty()) {
-						throw new cn.shopex.ecshopx.common.exception.BadRequestException(ERR_PREFIX + "运费开票名称必填");
-					}
-				}
-			}
+			// freight_name：管理端 tip 允许为空（开票行默认「运费」），不做必填校验
 			case "apply_type" -> validateOneOrTwo(data, key, "开票申请方式必填");
 			case "invoice_open_term" -> {
 				requirePresent(data, key, "可开票期限应为正整数");

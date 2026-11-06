@@ -36,11 +36,13 @@ public class ItemsGroupGetGroupItemsService {
 		this.itemsGroupRelItemMapper = itemsGroupRelItemMapper;
 	}
 
-	public List<Long> listGoodsIdsByGroupId(Long groupId, int page, int pageSize) {
+	public List<Long> listGoodsIdsByGroupId(long companyId, Long groupId, int page, int pageSize) {
 		Page<ItemsGroupRelItem> mpPage = new Page<>(page, pageSize);
+		// ECX-10946：只返回当前公司的关联商品；他公司或公司为空时列表为空
 		LambdaQueryWrapper<ItemsGroupRelItem> w = Wrappers.lambdaQuery(ItemsGroupRelItem.class)
 				.select(ItemsGroupRelItem::getGoodsId)
 				.eq(ItemsGroupRelItem::getGroupId, groupId)
+				.eq(ItemsGroupRelItem::getCompanyId, companyId)
 				.orderByDesc(ItemsGroupRelItem::getId);
 		itemsGroupRelItemMapper.selectPage(mpPage, w);
 		return mpPage.getRecords().stream().map(ItemsGroupRelItem::getGoodsId).toList();

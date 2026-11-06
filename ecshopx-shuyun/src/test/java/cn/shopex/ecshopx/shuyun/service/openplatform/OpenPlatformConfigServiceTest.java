@@ -1,6 +1,7 @@
 package cn.shopex.ecshopx.shuyun.service.openplatform;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
@@ -53,6 +54,25 @@ class OpenPlatformConfigServiceTest {
 		assertEquals("", view.get("access_token"));
 		assertEquals(false, view.get("is_enabled"));
 		assertEquals("", view.get("is_over_due"));
+	}
+
+	@Test
+	void getAdminView_masksStoredAccessToken() {
+		String stored = "token-value-1234";
+		CompanyShuyunOpenPlatformConfig row = new CompanyShuyunOpenPlatformConfig();
+		row.setCompanyId(9L);
+		row.setPlatCode("OFFLINE");
+		row.setAppId("app1");
+		row.setAppSecret("secret12345");
+		row.setAccessToken(stored);
+		row.setIsEnabled(1);
+		row.setIsOverDue("0");
+		when(configMapper.selectOne(any())).thenReturn(row);
+
+		Map<String, Object> view = service.getAdminView(9L);
+
+		assertEquals("****1234", view.get("access_token"));
+		assertNotEquals(stored, view.get("access_token"));
 	}
 
 	@Test

@@ -4,8 +4,8 @@ title: "Workflow: Adding a Dispatch Event, Job, or Cron Handler"
 description: Step-by-step recipe for the most common cross-cutting change in ECShopX-Java — adding a message-name constant to ecshopx-common, declaring the publisher interface, implementing it in bootstrap with the right DispatchOptions, writing the handler in the owning Bundle, registering it from a bootstrap RegistrationConfig, and pinning the wiring with a DispatchFlowTest or PublishProbeTest; plus the XXL-JOB cron-handler variant and when a cron tick should publish a bus job instead of doing the work inline.
 tags: [workflow, dispatch-bus, events, jobs, publisher, registration-config, dispatch-options, xxl-job, cron, testing, checklist]
 verified:
-  - by: openwiki/0.7.2
-    at: 2026-10-21T12:26:22.580Z
+  - by: openwiki/0.9.0
+    at: 2026-11-05T17:10:02.238Z
 sources:
   - id: openwiki-source-5532b49a7a4a389ccc73ab43
     resource: repo://docker/tables_xxl_job.sql
@@ -21,6 +21,8 @@ sources:
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/FinishOrderJobRegistrationConfig.java
   - id: openwiki-source-91823d7dc6daf2fa438acd3f
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ItemAddEventDispatchPublisherImpl.java
+  - id: openwiki-source-0315455e54e2688cacf7a480
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MembersNormalOrderPaySuccessNewCustomerDispatchListenerRegistrationConfig.java
   - id: openwiki-source-18f14ad93f3925b14089cdfa
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/NormalOrderPaySuccessDispatchPublisherImpl.java
   - id: openwiki-source-54c2942be6423a972467854a
@@ -29,6 +31,8 @@ sources:
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ReservationExpireCancelDispatchPublisherImpl.java
   - id: openwiki-source-6794b7e88ab1775f38c31571
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ShuyunOpenPlatformNormalOrderPaySuccessDispatchListenerRegistrationConfig.java
+  - id: openwiki-source-5f8f8dc234430bba81295584
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ShuyunOpenPlatformOfflineBenefitConsumePaySuccessDispatchListenerRegistrationConfig.java
   - id: openwiki-source-c8e5513d8d05bc8d0d562c36
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/WsugcNormalOrderPaySuccessDispatchListenerRegistrationConfig.java
   - id: openwiki-source-7ccfb227c3f9afcfbaaf0bc3
@@ -71,6 +75,8 @@ sources:
     resource: repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/redis/RedisDispatchListener.java
   - id: openwiki-source-2390d3481999c0547b93beca
     resource: repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/RetryPolicy.java
+  - id: openwiki-source-88ec1f3b183f82614525e4d6
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/dispatch/ItemAddEventDispatchPublisher.java
   - id: openwiki-source-d72b1aefaba3b3b4fbda25c4
     resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/account/MemberAccountService.java
   - id: openwiki-source-b7dcff664cf84bf48b27267a
@@ -97,12 +103,12 @@ sources:
     resource: repo://ecshopx-youshu/src/main/java/cn/shopex/ecshopx/youshu/dispatch/NormalOrderPaySuccessYoushuDispatchListener.java
   - id: openwiki-source-f1b1aacc63642e5304668821
     resource: repo://readme.md
-generated: { by: "openwiki/0.7.2", at: "2026-10-21T12:26:22.580Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-05T17:10:02.238Z" }
 ---
 
 # Workflow: Adding a Dispatch Event, Job, or Cron Handler
 
-Almost every feature that crosses a Bundle boundary — "order paid, notify four other domains", "admin requested an export", "time to finish shipped orders" — lands on the same six-file change. This page is the checklist for it, worked twice end to end: once for an **event** (`EVENT_NORMAL_ORDER_PAY_SUCCESS`, published by orders, consumed by youshu/shuyun/wsugc/employee-purchase) and once for a **job** (`FINISH_ORDER_JOB`, published by a cron tick, consumed by orders itself). A third variant — the XXL-JOB cron handler that often *triggers* such a job — is covered at the end.
+Almost every feature that crosses a Bundle boundary — "order paid, notify half a dozen other domains", "admin requested an export", "time to finish shipped orders" — lands on the same six-file change. This page is the checklist for it, worked twice end to end: once for an **event** (`EVENT_NORMAL_ORDER_PAY_SUCCESS`, published by orders, consumed by youshu/shuyun(×2)/wsugc/members/employee-purchase) and once for a **job** (`FINISH_ORDER_JOB`, published by a cron tick, consumed by orders itself). A third variant — the XXL-JOB cron handler that often *triggers* such a job — is covered at the end.
 
 For the *why* behind the layering (why the interface lives in `ecshopx-common` and the implementation in `ecshopx-bootstrap`), read [Cross-Bundle Ports and Wiring in Bootstrap](../architecture/cross-bundle-communication.md). For the runtime being wired, read [Dispatch Bus](../concepts/dispatch-bus.md).
 
@@ -162,7 +168,9 @@ These are `final` classes with a private constructor, one family per owning Bund
 | --- | --- | --- |
 | `event:` | `event:<csvId>:<PhpBundle>\Events\<EventClass>` when a legacy PHP event exists, else `event:<bundle>:<snake_case>` | `event:288:OrdersBundle\Events\NormalOrderPaySuccessEvent`, `event:orders:normal_order_add` |
 | `job:` | `job:<csvId>:<PhpBundle>\Jobs\<JobClass>` | `job:128:OrdersBundle\Jobs\FinishOrderJob` |
-| `listener:` | legacy PHP listener FQN (optionally `@method`), or a dotted descriptive name for Java-first listeners | `listener:WsugcBundle\Listeners\Order`, `listener:youshu.orders_normal_order_pay_success` |
+| `listener:` | legacy PHP listener FQN (optionally `@method`), or a dotted descriptive name for Java-first listeners | `listener:WsugcBundle\Listeners\Order`, `listener:HfPayBundle\Listeners\HfpayTradeRecordListener@paySuccess`, `listener:youshu.orders_normal_order_pay_success`, `listener:shuyun.open_platform.trade_sync_on_normal_order_pay_success`, `listener:digios.store_adjustment_on_normal_order_delivery`, `listener:thirdparty.order_add_push_marketing_center_on_normal_order_add` |
+
+The dotted Java-first listener names follow `<consumer-bundle>[.<sub-domain>].<action>_on_<event-snake>` — recent additions include the shuyun `trade.sync` / offline-benefit and digios store-adjustment listeners, so reuse that grammar instead of inventing a new one. Note the employee-purchase pay-success config is the one place that still inlines its listener string (`listener:employeepurchase.normal_order_pay_success_behavior_log`) rather than referencing a constant — don't copy that; add a constant.
 
 **Worked examples**
 
@@ -192,7 +200,7 @@ Two devices you may need:
 ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/<Thing>DispatchPublisher.java
 ```
 
-One method, payload as a plain `Map<String, Object>`, no bus types in the signature:
+One method, payload as a plain `Map<String, Object>`, no bus types in the signature (the map variant is the norm; a typed variant exists and is shown below):
 
 ```java
 // ecshopx-common/.../dispatch/NormalOrderPaySuccessDispatchPublisher.java
@@ -206,9 +214,9 @@ public interface FinishOrderJobDispatchPublisher {
 }
 ```
 
-`ecshopx-common` is the only module every Bundle depends on, so this is the only place a producer Bundle and an arbitrary consumer Bundle can share a contract without a new Maven edge. The producer (orders, in both worked examples) injects *only this interface* and stays ignorant of who listens. Prefer a typed signature over a raw map when the payload is fixed — `ItemAddEventDispatchPublisher.schedulePublishAfterCommit(long itemId, long companyId)` and `GenerateOutfitJobDispatchPublisher.enqueueGenerateOutfit(...)` show the typed variant, with the map built by the impl.
+`ecshopx-common` is the only module every Bundle depends on, so this is the only place a producer Bundle and an arbitrary consumer Bundle can share a contract without a new Maven edge. The producer (orders, in both worked examples) injects *only this interface* and stays ignorant of who listens. Prefer a typed signature over a raw map when the payload is fixed — `ItemAddEventDispatchPublisher.schedulePublishAfterCommit(long itemId, long companyId)` and `GenerateOutfitJobDispatchPublisher.enqueueGenerateOutfit(...)` show the typed variant, with the map built by the impl (note the typed interface itself may live in the owning Bundle — `ItemAddEventDispatchPublisher` sits in `ecshopx-goods/goods/dispatch` — while the impl stays in bootstrap).
 
-A minority of Bundles that already declare `ecshopx-dispatch` at compile scope (orders, members, companys, reservation, popularize, wsugc) may put the interface in their own `dispatch/` package instead (`members/dispatch/BindSalsepersonJobDispatchPublisher`, `shopexai` — which depends only on common — does the same). The implementation still lives in bootstrap. Use the common package unless the interface is genuinely single-consumer.
+A minority of Bundles that already declare `ecshopx-dispatch` at compile scope (orders, aftersales, chinaums-pay, members, companys, reservation, popularize, wsugc, third-party and payment) may put the interface in their own `dispatch/` package instead (`members/dispatch/BindSalsepersonJobDispatchPublisher`; `shopexai` — which depends only on common — does the same). The implementation still lives in bootstrap. Use the common package unless the interface is genuinely single-consumer.
 
 ---
 
@@ -282,7 +290,7 @@ Note the asymmetry: `mode == SYNC` forces `driverType` to `SYNC` regardless of `
 
 | Queue | Drained per poll | Intended load | Worked examples |
 | --- | --- | --- | --- |
-| `default` (also the fallback for null/blank) | 1 message | Interactive, low-latency work | youshu/shuyun/wsugc/employee-purchase pay-success listeners, `ReservationExpireCancelDispatchPublisherImpl` |
+| `default` (also the fallback for null/blank) | 1 message | Interactive, low-latency work | the six pay-success listeners (youshu, shuyun ×2, wsugc, members, employee-purchase), `ReservationExpireCancelDispatchPublisherImpl` |
 | `slow` | up to `dispatch.redis.slow.batch-size` (default 20) | Heavy batch work | `FinishOrderJobDispatchPublisherImpl`, `ConsumptionOrderJobDispatchPublisherImpl`, file exports, `OrderProcessLogDispatchListenerRegistrationConfig` |
 | `sms` | up to the same batch size | Notification traffic | `MerchantResetPasswordNoticeDispatchPublisherImpl`, aliyunsms jobs |
 
@@ -426,7 +434,7 @@ Invariants and ordering:
 * **A missing registration is silent, not an error.** An event with no listeners simply has no consumers; a job published without a handler fails only when consumed (NPE inside the runtime). Step 6 is what catches this.
 * **Ordering matters when a listener must register after another.** Add `@Order(n)` on the config class (`@Order(77)` on the trade-finish bridge, `@Order(97)` on the order-process-log listener) or `@DependsOn("youshuNormalOrderPaySuccessDispatchListenerRegistrationConfig")` (`WsugcNormalOrderPaySuccessDispatchListenerRegistrationConfig`). Registration order is the fan-out order for SYNC events.
 * **Several bus names, one handler** is legal and used: `BindSalsepersonJobRegistrationConfig` registers the same handler against job:185, job:186 and job:194; the bridge config registers the same listener on both trade-finish planes.
-* **One event, many listener configs.** `EVENT_NORMAL_ORDER_PAY_SUCCESS` currently has four (youshu, shuyun, wsugc, employee-purchase), each `async("default", null)`, each in its own config class.
+* **One event, many listener configs.** `EVENT_NORMAL_ORDER_PAY_SUCCESS` currently has six (youshu, shuyun trade-sync, shuyun offline-benefit-consume, wsugc, members new-customer, employee-purchase), each `async("default", null)`, each in its own config class.
 
 ---
 

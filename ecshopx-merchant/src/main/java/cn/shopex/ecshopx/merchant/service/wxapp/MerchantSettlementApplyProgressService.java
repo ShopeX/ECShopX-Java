@@ -19,6 +19,7 @@ package cn.shopex.ecshopx.merchant.service.wxapp;
 import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.merchant.domain.MerchantSettlementApply;
 import cn.shopex.ecshopx.merchant.mapper.MerchantSettlementApplyMapper;
+import cn.shopex.ecshopx.merchant.service.MerchantMainCategorySelectionJson;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -41,18 +42,23 @@ public class MerchantSettlementApplyProgressService {
 			throw new ResourceException("获取账号信息失败");
 		}
 		int resultStep;
-		if (StringUtils.hasText(row.getLicenseUrl())) {
+		if (!row.isDisabled()) {
 			resultStep = 4;
 			if (!row.isAgreeAgreement()) {
 				agreeAgreementService.agreeAgreementOrSwallow(row, companyId);
 			}
-		} else if (StringUtils.hasText(row.getMerchantName())) {
+		} else if (StringUtils.hasText(row.getLicenseUrl())) {
 			resultStep = 3;
-		} else if (StringUtils.hasText(row.getSettledType())) {
+		} else if (isStep1Complete(row)) {
 			resultStep = 2;
 		} else {
 			resultStep = 1;
 		}
 		return resultStep;
+	}
+
+	static boolean isStep1Complete(MerchantSettlementApply row) {
+		return StringUtils.hasText(row.getSettledType())
+				&& MerchantMainCategorySelectionJson.isNonEmptyStoredJson(row.getMainCategorySelection());
 	}
 }

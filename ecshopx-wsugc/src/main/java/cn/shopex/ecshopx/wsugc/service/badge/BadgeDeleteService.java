@@ -17,7 +17,9 @@
 package cn.shopex.ecshopx.wsugc.service.badge;
 
 import cn.shopex.ecshopx.common.exception.ResourceException;
+import cn.shopex.ecshopx.wsugc.domain.Badge;
 import cn.shopex.ecshopx.wsugc.mapper.BadgeMapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -35,7 +37,7 @@ public class BadgeDeleteService {
 		this.badgeMapper = badgeMapper;
 	}
 
-	public Map<String, Object> deleteBadges(Map<String, Object> input) {
+	public Map<String, Object> deleteBadges(Map<String, Object> input, long companyId) {
 		Object raw = input.get("badge_id");
 		if (raw == null) {
 			throw new ResourceException("badge_id参数不能为空");
@@ -58,6 +60,19 @@ public class BadgeDeleteService {
 		}
 
 		if (!idsToDelete.isEmpty()) {
+			// ECX-10929：对齐 PHP WsugcTenantScopeGuard::assertBadgeIdsBelongToCompany
+			List<Badge> rows =
+					badgeMapper.selectList(
+							new LambdaQueryWrapper<Badge>().in(Badge::getBadgeId, idsToDelete));
+			if (rows.size() != idsToDelete.size()) {
+				throw new ResourceException("无权访问该角标");
+			}
+			for (Badge row : rows) {
+				Long rowCompanyId = row.getCompanyId() == null ? 0L : row.getCompanyId();
+				if (!rowCompanyId.equals(companyId)) {
+					throw new ResourceException("无权访问该角标");
+				}
+			}
 			badgeMapper.deleteBatchIds(idsToDelete);
 		}
 

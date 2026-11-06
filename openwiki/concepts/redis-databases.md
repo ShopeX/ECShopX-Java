@@ -38,10 +38,14 @@ sources:
     resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/statistics/CompanysDashboardStatisticsService.java
   - id: openwiki-source-d92c6d18e8d95be008173828
     resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/statistics/CompanysDepositDayRechargeRedisReader.java
+  - id: openwiki-source-a21a234d49d44d9efb0c39df
+    resource: repo://ecshopx-data-cube/src/main/java/cn/shopex/ecshopx/datacube/api/front/v1/TrackController.java
   - id: openwiki-source-4f43f1207c21281b4ea687b1
     resource: repo://ecshopx-data-cube/src/main/java/cn/shopex/ecshopx/datacube/service/TrackViewNumService.java
   - id: openwiki-source-dbc3867f47f8a53f1f7d967b
     resource: repo://ecshopx-data-cube/src/main/java/cn/shopex/ecshopx/datacube/service/UvBloomFilterService.java
+  - id: openwiki-source-884a46298202c78ff773b829
+    resource: repo://ecshopx-data-cube/src/test/java/cn/shopex/ecshopx/datacube/service/TrackViewNumServiceMonitorScopeTest.java
   - id: openwiki-source-f70b6d04e8550513ce6b3aa6
     resource: repo://ecshopx-deposit/src/main/java/cn/shopex/ecshopx/deposit/service/AdapayDepositTradeRechargeCallbackService.java
   - id: openwiki-source-ce3ac94d7b4903d8f757e95a
@@ -106,10 +110,10 @@ sources:
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/settings/WxpayPaymentSettingWriter.java
   - id: openwiki-source-8d94eb289e06a9eb2bcb9a68
     resource: repo://ecshopx-third-party/src/main/java/cn/shopex/ecshopx/thirdparty/service/prism/ShopexPrismSmsSignClient.java
-generated: { by: "openwiki/0.7.3", at: "2026-11-04T17:09:55.577Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-05T17:10:02.238Z" }
 verified:
-  - by: openwiki/0.7.3
-    at: 2026-11-04T17:09:55.577Z
+  - by: openwiki/0.9.0
+    at: 2026-11-05T17:10:02.238Z
 ---
 
 # Redis Database Layout
@@ -120,7 +124,7 @@ There is no Spring Cache abstraction (`@EnableCaching`/`RedisCacheManager` appea
 
 ```mermaid
 flowchart TD
-    PAY["AdapayDepositTradeRechargeCallbackService rechargeCallback on SUCCESS"]
+    PAY["AdapayDepositTradeRechargeCallbackService rechargeCallback on SUCCESS, guarded by conditional UPDATE trade_status &lt;&gt; SUCCESS"]
     PAY -->|"sharedStringRedisTemplate HINCRBY"| DAY["dayRechargeTotal date-suffixed hash, field companyId"]
     PAY -->|"sharedStringRedisTemplate HINCRBY"| TOT["shopDepositTotal hash, field companyId"]
     PAY --> BAL["UserDepositBalanceMutationService writes user_deposit row then refreshes userDepositTotal hash"]
@@ -244,7 +248,7 @@ Prism-DB state follows the same shape but for gateway credentials rather than te
 
 Day-scoped counters are the other main Redis payload. The deposit recharge path is the canonical example and the one place the logical-DB split can bite:
 
-* **Writers.** `AdapayDepositTradeRechargeCallbackService.addDepositToRedis` (called inside the `@Transactional rechargeCallback`) increments `shopDepositTotal` and `dayRechargeTotal<yyyy-MM-dd>` hashes (field `companyId`) through the **`sharedStringRedisTemplate`**, then `UserDepositBalanceMutationService` writes the `user_deposit` MySQL row and refreshes the `userDepositTotal_<companyId>` hash (readers fall back to MySQL on a hash miss — here MySQL *is* the record and Redis the cache). `DepositTradeConsumeService` does the mirror-image decrements and increments `dayConsumeTotal<date>`. Note the Redis increments are not transaction-aware: they stay applied even if the surrounding MySQL transaction later rolls back; only the SMS dispatch is deferred to `afterCommit`.
+* **Writers.** `AdapayDepositTradeRechargeCallbackService.addDepositToRedis` (called inside the `@Transactional rechargeCallback`) increments `shopDepositTotal` and `dayRechargeTotal<yyyy-MM-dd>` hashes (field `companyId`) through the **`sharedStringRedisTemplate`**, then `UserDepositBalanceMutationService` writes the `user_deposit` MySQL row and refreshes the `userDepositTotal_<companyId>` hash (readers fall back to MySQL on a hash miss — here MySQL *is* the record and Redis the cache). Crucially, `addDepositToRedis` only runs **after the guarded status update wins**: `rechargeCallback` claims the trade row with a conditional `UPDATE ... WHERE trade_status != 'SUCCESS'` (the ECX-10915 guard, `LambdaUpdateWrapper.ne(DepositTrade::getTradeStatus, "SUCCESS")`), throws "更新已处理，不需要更新" when the update count is 0, and re-reads the row before any Redis write — so a duplicate or concurrent callback can never double-increment the counters. `DepositTradeConsumeService` does the mirror-image decrements and increments `dayConsumeTotal<date>`. Note the Redis increments are not transaction-aware: they stay applied even if the surrounding MySQL transaction later rolls back; only the SMS dispatch is deferred to `afterCommit`.
 * **Same-DB reader.** `DepositCountIndexReadService.getDepositCountIndex` (behind the admin `RechargeController`) reads `shopDepositTotal` / `dayRechargeTotal<date>` / `dayConsumeTotal<date>` through the same **shared** template, using `Asia/Shanghai` for the date.
 * **Cross-DB reader.** `CompanysDepositDayRechargeRedisReader.getRechargeTotal` reads `dayRechargeTotal<yyyy-MM-dd>` through the **`depositStringRedisTemplate`** (`ecshopx.redis.deposit.database`, default 1) to produce the operator dashboard's `real_deposit` (`CompanysDashboardStatisticsService`).
 
@@ -259,12 +263,21 @@ Other counter/ID-generator families, for orientation:
 | HfPay order/apply ids | `hfpay_order_id`, `hfpay_apply_id` counters with end-of-day TTL (`HfPayOrderApplyIdGenerator`) | companys |
 | Order numeric id | `<yyyyMMdd>` hash keyed by 90-second slot (`NormalOrderNumericIdService`) | companys |
 | Dashboard order-pay stats | `OrderPayStatistics:<type>:<companyId>:<yyyyMMdd>` hashes + `…_orderPayUser` sets (`OrderPayStatisticsRedisReader`) | companys |
-| Datacube PV/UV | `datecube_tracklog:…` hashes plus a Lua-script bloom filter (`UvBloomFilterService`, key `uv_bloom_filter:<monitorId>:<sourceId>`) on the shared DB for dedup, counts on the datacube DB (`TrackViewNumService`) | mixed |
+| Datacube PV/UV | `datecube_tracklog:…` hashes plus a Lua-script bloom filter (`UvBloomFilterService`, key `uv_bloom_filter:<monitorId>:<sourceId>`) on the shared DB for dedup, counts on the datacube DB (`TrackViewNumService` — guarded, see below) | mixed |
 | Fans-sync throttle | `syncUsersCount<yyyyMMdd>:<sha1(companyId)>` list, ≤3/day and ≥10 min apart, `EXPIREAT` end of day (`WechatFansSyncService`) | members |
 | Shopadmin deferred-order snapshot + lock | `shopadmin:deferred:<companyId>:<orderId>` JSON snapshot, `shopadmin:deferred:lock:<orderId>` lock (`ShopadminDeferredOrderCache` — see below) | shared |
 | Lock / dedupe | `lock:discount:item:<companyId>:<itemId>` (`setIfAbsent` with 6 s TTL, 3×500 ms retry, `UserDiscountExchangeItemRedisLockService`); shuyun order-sync dedupe keys via `OpenPlatformDispatchDedupeService.tryAcquire` | companys (unqualified `@Primary` in both) |
 
 One service drops below the template abstraction: `WechatMenuService` uses a raw `RedisCallback` to `SET` the wechat menu tree and verifies an inconclusive result by reading back identical bytes.
+
+### Datacube track counters: guarded by a MySQL existence check
+
+The datacube track surface is `TrackController` — a `@FrontNoAuth` endpoint at `POST /api/v1/h5app/wxapp/track/viewnum`, so `monitor_id` / `source_id` come from unauthenticated callers. Since ECX-10920, `TrackViewNumService.addViewNum` **silently drops any call whose monitor/source ids are not registered rows for that company** *before touching Redis*: non-positive `companyId`, blank or non-numeric ids return early, and both `monitorsMapper.selectCount(monitor_id = ? AND company_id = ?)` and `sourcesMapper.selectCount(source_id = ? AND company_id = ?)` must be > 0. This is an anti-enumeration guard — without it an attacker could mint unbounded `datecube_tracklog:*` hashes and `uv_bloom_filter:*` keys by spraying random ids. Only then does it split its Redis work in two:
+
+* **Counts (datacube DB).** `datacubeStringRedisTemplate.opsForHash().increment` bumps three hashes — `datecube_tracklog:viewnum:<cid>|<monitorId>:page_view:<sourceId>`, `…:unique_visitor:<sourceId>`, and `…:member_visitor:<sourceId>` (note the spelling `datecube_`) — all fielded by `yyyyMMdd`. PV increments unconditionally; UV and member-visitor only when the bloom filter judges the `open_id` new, and member-visitor additionally requires `memberAccountService.getWechatSimpleUser` to resolve the open id to a member.
+* **UV dedup (shared DB).** `UvBloomFilterService.checkAndAdd` runs a Lua GETBIT/SETBIT script against `uv_bloom_filter:<monitorId>:<sourceId>` on `sharedStringRedisTemplate` — so the dedup bitmap and the counted hashes deliberately live in different logical DBs and can be repointed independently.
+
+`TrackViewNumServiceMonitorScopeTest` pins the guard: unregistered monitor or source, or a non-numeric monitor id, must produce **zero** Redis and bloom-filter interactions; a registered pair counts PV+UV exactly once.
 
 ### Shopadmin deferred orders: snapshot plus lock on the shared DB
 
@@ -289,7 +302,7 @@ Conversely, repointing an *existing* area is a pure properties change: because e
 
 * `MultiRedisConfigLettuceFactoryTest` (bootstrap) — the only test of the wiring itself: asserts `validateConnection`, `autoReconnect` and socket `keepAlive` on a factory built by `standaloneFactory`.
 * `DispatchBusConfigTest` / `RedisDispatchDriverTest` / `RedisDispatchListenerTest` / `RedisDelayedDispatchMoverTest` (bootstrap + dispatch) — boot the dispatch graph with a **mocked** `dispatchBusStringRedisTemplate` bean and pin queue/delay/dead-list semantics.
-* `DepositTradeConsumeServiceTest`, `AdapayDepositTradeRechargeCallbackServiceSmsDispatchTest`, `OrdersTradePaymentCallbackService*Test`, `LanguageSettingRedisServiceTest`, `ShopexAdminBindServiceTest`, `OrderPickupSmsRedisVerifyServiceTest`, `WxappOrderZitiQrCodeServiceTest`, `WxappOrderPickupCodeServiceTest`, `OperatorShopFastBuyRedisServiceTest`, `ShopadminNormalOrderCreateOrchestratorNormalOrderAddDispatchPublishProbeTest`, `NormalOrderAdminCreateUserOrderServiceNormalOrderAddDispatchPublishProbeTest` — all mock `StringRedisTemplate`/`HashOperations`/`ShopadminDeferredOrderCache` and verify the counter increments, hash writes, defaults-merge, pickup-code consume-and-delete, or deferred-snapshot-save behaviour described above; none run against a real Redis.
+* `DepositTradeConsumeServiceTest`, `AdapayDepositTradeRechargeCallbackServiceSmsDispatchTest`, `OrdersTradePaymentCallbackService*Test`, `LanguageSettingRedisServiceTest`, `ShopexAdminBindServiceTest`, `OrderPickupSmsRedisVerifyServiceTest`, `WxappOrderZitiQrCodeServiceTest`, `WxappOrderPickupCodeServiceTest`, `OperatorShopFastBuyRedisServiceTest`, `TrackViewNumServiceMonitorScopeTest`, `ShopadminNormalOrderCreateOrchestratorNormalOrderAddDispatchPublishProbeTest`, `NormalOrderAdminCreateUserOrderServiceNormalOrderAddDispatchPublishProbeTest` — all mock `StringRedisTemplate`/`HashOperations`/mappers/`ShopadminDeferredOrderCache` and verify the counter increments, hash writes, defaults-merge, pickup-code consume-and-delete, track-guard early return, or deferred-snapshot-save behaviour described above; none run against a real Redis.
 
 ## Related pages
 

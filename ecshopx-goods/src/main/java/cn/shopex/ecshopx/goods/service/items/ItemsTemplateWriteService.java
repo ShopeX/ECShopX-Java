@@ -68,6 +68,8 @@ public class ItemsTemplateWriteService {
 						throw new ResourceException("没有权限修改该商品");
 					}
 					supplierItemsRepository.updateTemplatesIdByDefaultItemIdAndCompany(v, companyId, templatesId);
+					supplierItemsRepository.updateAuditStatusByDefaultItemIdAndCompany(
+							v, companyId, "processing");
 					List<Long> supplierSkuIds = rsItems.stream()
 							.map(SupplierItems::getItemId)
 							.filter(Objects::nonNull)

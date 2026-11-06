@@ -16,7 +16,11 @@
 
 package cn.shopex.ecshopx.orders.service.front.wxapp;
 
+import cn.shopex.ecshopx.common.exception.BadRequestException;
+import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.members.service.wxapp.MemberBarcodeGenerateService;
+import cn.shopex.ecshopx.orders.domain.Rights;
+import cn.shopex.ecshopx.orders.mapper.RightsMapper;
 import java.time.Duration;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -32,24 +36,54 @@ public class RightsFrontWxappGetRightsCodeService {
 
 	private final MemberBarcodeGenerateService memberBarcodeGenerateService;
 
+	private final RightsMapper rightsMapper;
+
 	public RightsFrontWxappGetRightsCodeService(
 			@Qualifier("wechatStringRedisTemplate") StringRedisTemplate wechatStringRedisTemplate,
-			MemberBarcodeGenerateService memberBarcodeGenerateService) {
+			MemberBarcodeGenerateService memberBarcodeGenerateService,
+			RightsMapper rightsMapper) {
 		this.wechatStringRedisTemplate = wechatStringRedisTemplate;
 		this.memberBarcodeGenerateService = memberBarcodeGenerateService;
+		this.rightsMapper = rightsMapper;
 	}
 
-	public Map<String, Object> getRightsCode(String rightsId) {
+	public Map<String, Object> getRightsCode(String rightsIdRaw, Map<String, Object> authClaims) {
+		// ECX-10924：对齐 PHP GuideOrderTenantScopeGuard::assertRightsBelongsToAuthUser
+		if (rightsIdRaw == null || rightsIdRaw.isBlank()) {
+			throw new BadRequestException("获取核销码出错", 422);
+		}
+		long rightsId;
+		try {
+			rightsId = Long.parseLong(rightsIdRaw.trim());
+		} catch (NumberFormatException e) {
+			throw new BadRequestException("获取核销码出错", 422);
+		}
+		if (rightsId < 1L) {
+			throw new BadRequestException("获取核销码出错", 422);
+		}
+
+		Rights r = rightsMapper.selectById(rightsId);
+		if (r == null) {
+			throw new ResourceException("无权访问该权益");
+		}
+		long authCompanyId = longVal(authClaims == null ? null : authClaims.get("company_id"));
+		long authUserId = longVal(authClaims == null ? null : authClaims.get("user_id"));
+		long rowCompanyId = r.getCompanyId() != null ? r.getCompanyId() : 0L;
+		long rowUserId = r.getUserId() != null ? r.getUserId() : 0L;
+		if (authCompanyId != rowCompanyId || authUserId <= 0L || authUserId != rowUserId) {
+			throw new ResourceException("无权访问该权益");
+		}
+
 		StringBuilder sb = new StringBuilder(16);
-		ThreadLocalRandom r = ThreadLocalRandom.current();
+		ThreadLocalRandom rnd = ThreadLocalRandom.current();
 		for (int i = 0; i < 16; i++) {
-			sb.append(r.nextInt(10));
+			sb.append(rnd.nextInt(10));
 		}
 		String code = sb.toString();
 
 		wechatStringRedisTemplate.opsForValue().set(
 				"timescardcode:" + code,
-				rightsId == null ? "" : rightsId,
+				String.valueOf(rightsId),
 				Duration.ofSeconds(60));
 
 		LinkedHashMap<String, String> urls =
@@ -61,5 +95,19 @@ public class RightsFrontWxappGetRightsCodeService {
 		body.put("code", code);
 		body.put("_ignore_data", Boolean.TRUE);
 		return body;
+	}
+
+	private static long longVal(Object v) {
+		if (v == null) {
+			return 0L;
+		}
+		if (v instanceof Number n) {
+			return n.longValue();
+		}
+		try {
+			return Long.parseLong(v.toString().trim());
+		} catch (NumberFormatException e) {
+			return 0L;
+		}
 	}
 }

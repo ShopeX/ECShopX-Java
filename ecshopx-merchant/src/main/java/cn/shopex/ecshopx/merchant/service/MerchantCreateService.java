@@ -16,13 +16,16 @@
 
 package cn.shopex.ecshopx.merchant.service;
 
+import cn.shopex.ecshopx.common.crypto.SensitiveFieldEncryptor;
 import cn.shopex.ecshopx.common.dispatch.MerchantEnterSuccessNoticeDispatchPublisher;
 import cn.shopex.ecshopx.common.exception.ResourceException;
+import cn.shopex.ecshopx.common.goods.port.MerchantSettlementMainCategoryPort;
 import cn.shopex.ecshopx.merchant.domain.Merchant;
 import cn.shopex.ecshopx.merchant.domain.MerchantSettlementApply;
 import cn.shopex.ecshopx.merchant.mapper.MerchantMapper;
 import cn.shopex.ecshopx.merchant.mapper.MerchantSettlementApplyMapper;
 import cn.shopex.ecshopx.merchant.port.MerchantMainOperatorProvisioner;
+import cn.shopex.ecshopx.merchant.port.MerchantOperatorLoginMobileOccupancyPort;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -33,46 +36,56 @@ import org.springframework.transaction.annotation.Transactional;
 public class MerchantCreateService {
 
 	private final MerchantCreateParamValidator merchantCreateParamValidator;
-	private final MerchantTypeCheckService merchantTypeCheckService;
+	private final MerchantSettlementMainCategoryPort mainCategoryPort;
 	private final MerchantSettlementApplyDuplicateCheckService merchantSettlementApplyDuplicateCheckService;
+	private final MerchantOperatorLoginMobileOccupancyPort operatorLoginMobileOccupancyPort;
 	private final MerchantSettlementApplyMapper merchantSettlementApplyMapper;
 	private final MerchantMapper merchantMapper;
 	private final MerchantOutsideLangWriteService merchantOutsideLangWriteService;
 	private final MerchantMainOperatorProvisioner merchantMainOperatorProvisioner;
 	private final MerchantEnterSuccessNoticeDispatchPublisher merchantEnterSuccessNoticePublisher;
+	private final SensitiveFieldEncryptor sensitiveFieldEncryptor;
 
 	public MerchantCreateService(
 			MerchantCreateParamValidator merchantCreateParamValidator,
-			MerchantTypeCheckService merchantTypeCheckService,
+			MerchantSettlementMainCategoryPort mainCategoryPort,
 			MerchantSettlementApplyDuplicateCheckService merchantSettlementApplyDuplicateCheckService,
+			MerchantOperatorLoginMobileOccupancyPort operatorLoginMobileOccupancyPort,
 			MerchantSettlementApplyMapper merchantSettlementApplyMapper,
 			MerchantMapper merchantMapper,
 			MerchantOutsideLangWriteService merchantOutsideLangWriteService,
 			MerchantMainOperatorProvisioner merchantMainOperatorProvisioner,
-			MerchantEnterSuccessNoticeDispatchPublisher merchantEnterSuccessNoticePublisher) {
+			MerchantEnterSuccessNoticeDispatchPublisher merchantEnterSuccessNoticePublisher,
+			SensitiveFieldEncryptor sensitiveFieldEncryptor) {
 		this.merchantCreateParamValidator = merchantCreateParamValidator;
-		this.merchantTypeCheckService = merchantTypeCheckService;
+		this.mainCategoryPort = mainCategoryPort;
 		this.merchantSettlementApplyDuplicateCheckService = merchantSettlementApplyDuplicateCheckService;
+		this.operatorLoginMobileOccupancyPort = operatorLoginMobileOccupancyPort;
 		this.merchantSettlementApplyMapper = merchantSettlementApplyMapper;
 		this.merchantMapper = merchantMapper;
 		this.merchantOutsideLangWriteService = merchantOutsideLangWriteService;
 		this.merchantMainOperatorProvisioner = merchantMainOperatorProvisioner;
 		this.merchantEnterSuccessNoticePublisher = merchantEnterSuccessNoticePublisher;
+		this.sensitiveFieldEncryptor = sensitiveFieldEncryptor;
 	}
 
 	@Transactional(rollbackFor = Exception.class)
 	public Map<String, Object> createMerchant(Map<String, Object> params, String acceptLanguageHeader) {
 		try {
-			merchantCreateParamValidator.validateAndNormalizeRegions(params);
+			merchantCreateParamValidator.validateAdminCreate(params);
 			normalizeAuditGoodsBoolean(params);
-			checkServiceLayerParams(params);
+			normalizeMobileFromContact(params);
 
 			long companyId = toLong(params.get("company_id"));
-			long merchantTypeId = toLong(params.get("merchant_type_id"));
-			merchantTypeCheckService.checkMerchantType(companyId, merchantTypeId);
+			String mainCategoryJson =
+					mainCategoryPort.validateNormalizeAndSerialize(companyId, params.get("main_category_selection"));
+			params.put("main_category_selection", mainCategoryJson);
 
 			String mobilePlain = String.valueOf(params.get("mobile")).trim();
 			merchantSettlementApplyDuplicateCheckService.assertMobileNotUsedInApply(mobilePlain);
+			operatorLoginMobileOccupancyPort.assertNotOccupiedByOtherMerchant(mobilePlain, 0L);
+
+			encryptSensitiveCreateFields(params);
 
 			Map<String, Object> applyRow = buildApplyRow(params);
 			MerchantSettlementApply apply = toSettlementApplyEntity(applyRow);
@@ -90,7 +103,8 @@ public class MerchantCreateService {
 				throw new ResourceException("提交失败，请重试");
 			}
 
-			Map<String, Object> langSource = new LinkedHashMap<>(params);
+			Map<String, Object> langSource = new LinkedHashMap<>();
+			langSource.put("merchant_name", str(params.get("merchant_name")));
 			merchantOutsideLangWriteService.applyAfterInsert(merchantId, companyId, langSource, acceptLanguageHeader);
 
 			String operatorPassword = null;
@@ -116,30 +130,38 @@ public class MerchantCreateService {
 		}
 	}
 
+	private void encryptSensitiveCreateFields(Map<String, Object> params) {
+		params.put("legal_cert_id", sensitiveFieldEncryptor.encrypt(str(params.get("legal_cert_id")).trim()));
+		params.put("card_id_mask", sensitiveFieldEncryptor.encrypt(str(params.get("card_id_mask")).trim()));
+		Object bankMobile = params.get("bank_mobile");
+		if (bankMobile != null && !str(bankMobile).isBlank()) {
+			params.put("bank_mobile", sensitiveFieldEncryptor.encrypt(str(bankMobile).trim()));
+		}
+	}
+
+	private static void normalizeMobileFromContact(Map<String, Object> params) {
+		Object cm = params.get("contact_mobile");
+		if (cm != null && !String.valueOf(cm).trim().isEmpty()) {
+			params.put("mobile", String.valueOf(cm).trim());
+		}
+	}
+
 	private static void normalizeAuditGoodsBoolean(Map<String, Object> params) {
 		String n = MerchantCreateParamNormalizer.normalizeScalarToString(params.get("audit_goods"));
 		params.put("audit_goods", !"false".equals(n));
-	}
-
-	private void checkServiceLayerParams(Map<String, Object> params) {
-		String legalMobile = String.valueOf(params.get("legal_mobile")).trim();
-		if (!MerchantCreateParamValidator.isCnMobile(legalMobile)) {
-			throw new ResourceException("手机号格式不正确，请确认后再重试");
-		}
-		String mobile = String.valueOf(params.get("mobile")).trim();
-		if (!MerchantCreateParamValidator.isCnMobile(mobile)) {
-			throw new ResourceException("生成账号的手机号格式不正确，请确认后再重试");
-		}
 	}
 
 	private static Map<String, Object> buildApplyRow(Map<String, Object> params) {
 		Map<String, Object> row = new LinkedHashMap<>(params);
 		row.remove("settled_succ_sendsms");
 		row.remove("email");
+		row.remove("contact_mobile");
 		row.put(
 				"is_agree_agreement",
 				"1".equals(MerchantCreateParamNormalizer.normalizeScalarToString(params.get("settled_succ_sendsms"))));
 		row.put("audit_status", "2");
+		row.put("source", str(params.get("source")).isEmpty() ? "admin" : str(params.get("source")));
+		row.put("disabled", false);
 		return row;
 	}
 
@@ -148,19 +170,15 @@ public class MerchantCreateService {
 		MerchantSettlementApply a = new MerchantSettlementApply();
 		a.setCompanyId(toLong(row.get("company_id")));
 		a.setMobile(str(row.get("mobile")));
+		a.setContactName(str(row.get("contact_name")));
 		a.setAgreeAgreement(booleanFromRow(row.get("is_agree_agreement")));
-		a.setMerchantTypeId(toLong(row.get("merchant_type_id")));
 		a.setSettledType(str(row.get("settled_type")));
+		a.setMainCategorySelection(str(row.get("main_category_selection")));
 		a.setMerchantName(str(row.get("merchant_name")));
 		a.setSocialCreditCodeId(str(row.get("social_credit_code_id")));
-		a.setProvince(str(row.get("province")));
-		a.setCity(str(row.get("city")));
-		a.setArea(str(row.get("area")));
-		a.setRegionsId(str(row.get("regions_id")));
-		a.setAddress(str(row.get("address")));
-		a.setLegalName(str(row.get("legal_name")));
+		a.setLicenseRegisteredAddress(str(row.get("license_registered_address")));
+		a.setLicenseLegalRepresentative(str(row.get("license_legal_representative")));
 		a.setLegalCertId(str(row.get("legal_cert_id")));
-		a.setLegalMobile(str(row.get("legal_mobile")));
 		a.setBankAcctType(str(row.get("bank_acct_type")));
 		a.setCardIdMask(str(row.get("card_id_mask")));
 		a.setBankName(str(row.get("bank_name")));
@@ -184,17 +202,13 @@ public class MerchantCreateService {
 		m.setCompanyId(companyId);
 		m.setSettlementApplyId(settlementApplyId);
 		m.setMerchantName(str(params.get("merchant_name")));
-		m.setMerchantTypeId(toLong(params.get("merchant_type_id")));
+		m.setContactName(str(params.get("contact_name")));
 		m.setSettledType(str(params.get("settled_type")));
+		m.setMainCategorySelection(str(params.get("main_category_selection")));
 		m.setSocialCreditCodeId(str(params.get("social_credit_code_id")));
-		m.setProvince(str(params.get("province")));
-		m.setCity(str(params.get("city")));
-		m.setArea(str(params.get("area")));
-		m.setRegionsId(str(params.get("regions_id")));
-		m.setAddress(str(params.get("address")));
-		m.setLegalName(str(params.get("legal_name")));
+		m.setLicenseRegisteredAddress(str(params.get("license_registered_address")));
+		m.setLicenseLegalRepresentative(str(params.get("license_legal_representative")));
 		m.setLegalCertId(str(params.get("legal_cert_id")));
-		m.setLegalMobile(str(params.get("legal_mobile")));
 		m.setEmail(str(params.get("email")));
 		m.setBankAcctType(str(params.get("bank_acct_type")));
 		m.setCardIdMask(str(params.get("card_id_mask")));

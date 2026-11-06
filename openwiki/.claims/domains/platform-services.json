@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:da5e477d57b97c6f95a0d23f38e0d65b9ed9942bf1a13d15432e05f0c6714318",
+  "pageVersion": "sha256:740ec2d1e417cc0d535ba9d098c5bb54add8ddf9b42f48f1b40ceac0fa112cbc",
   "claims": [
     {
       "id": "claim_8d9a39ff21104a5e9f8a87abb98360a9",
@@ -195,7 +195,7 @@
           "version": "repo-lines-v1:sha256:d58cee18d5998faf771481861d4ef769cc9136134516375145a1a1589857312b:eyJzZWxlY3RlZExpbmVDb3VudCI6NjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk4ZmFlNmY4M2E1MzFkY2Y0Zjc1Y2Q0M2YwYWNlYWEwOWFlMWQzZWU3ZTUzZDE4OGI5ODQ3M2M5YWExYTQ2NTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ0MzVhMDUzZjcwMThmMjgxOTEzOTFjNjFhOTZiNzQ3MWU1MTJlMGMzYTA1M2Y0Y2ZlNmZjY2Y4YjY1ZmViMTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY3MTQ2ZWJjZTI1ZjRkZWEwMWMzOWIwOTYyYmMzMGM0NTEwZWYyZTg0YmUxMGQxZTEzMWM3ZWRiNGNlNDc3MTkifQ"
         },
         {
-          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/UploadeFileRepository.java#L177-L195",
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/UploadeFileRepository.java#L180-L198",
           "version": "repo-lines-v1:sha256:964017198994e4ba86c62c529c36ab6105867e90e89f92f14a3dd3c0e15796b4:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNmZTVhMzVhN2EyM2YxMjc1NmJhOGM0NTBkZDMxNDI2NTMyNjM4MTEwZmM2Y2E5OWQ0ZjU2ZThjNmM1MzY2MjAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFiNWJmMzA0NjJjM2VjYWEyZjQ4ZjdiODU3NDQyMDZhZTdmOWM5MjRkZWYzMThkNDRlMzBlYmEwN2MzMTEwYzQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIzN2VmNjBhYTVjOTg0YjkxYTgyYzE0OTY2NTQwNGYzMTg3ZDQ5ZWYzNjQ4YzI5ZDEwYTI2YjUxYjRmN2NiOTcifQ"
         },
         {
@@ -516,7 +516,7 @@
     },
     {
       "id": "claim_6609a37fb1a64b3a8a1c305f042e4dca",
-      "statement": "data-cube's PV/UV/register counters are day-scoped Redis hashes on the datacubeStringRedisTemplate (logical DB ecshopx.redis.datacube.database, default 0): the @FrontNoAuth beacon POST /api/v1/h5app/wxapp/track/viewnum → TrackViewNumService.addViewNum increments datecube_tracklog:viewnum:<companyId>|<monitorId>:page_view:<sourceId> (always), :unique_visitor:<sourceId> (only for new open ids) and :member_visitor:<sourceId> (only when the open id resolves to a member via MemberAccountService.getWechatSimpleUser).",
+      "statement": "data-cube's PV/UV/register counters are day-scoped Redis hashes on the datacubeStringRedisTemplate (logical DB ecshopx.redis.datacube.database, default 0): the @FrontNoAuth beacon POST /api/v1/h5app/wxapp/track/viewnum → TrackViewNumService.addViewNum increments datecube_tracklog:viewnum:<companyId>|<monitorId>:page_view:<sourceId> (always), :unique_visitor:<sourceId> (only when the open id is new to the bloom filter) and :member_visitor:<sourceId> (only inside that new-visitor branch when the open id additionally resolves to a member via MemberAccountService.getWechatSimpleUser — so member_visitor counts new visitors that are members, not all member page views); before any Redis write, addViewNum silently drops the request (endpoint still returns status:true) when companyId is non-positive, monitor_id/source_id are blank or non-numeric, or the monitor/source ids are not registered Monitors/Sources rows for that company (ECX-10920, selectCount by id + companyId via MonitorsMapper/SourcesMapper), preventing the unauthenticated endpoint from enumerating ids to mint unbounded Redis keys.",
       "evidence": [
         {
           "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MultiRedisConfig.java#L84-L91",
@@ -527,8 +527,8 @@
           "version": "repo-lines-v1:sha256:cd5f5520227f5c6e91373f3c1d9af2ee42b82f62a79f4ef7022f2e8b0a3f86ed:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFmN2NjN2E3ODc3NGQzNzBkMTYzM2Y3MTAyY2M0OTY1MmJmZjNjNzdlOTkyM2JiYjZjZDYwNjc2YjAwMmNiZjAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYzOTRiOTdjMTU3ZjNhZjA0OWVhNjFkMGY2N2U2M2JiNzQxNWU2OTViZDBlMTk3NzlkNTQ0NmY2YTE1MTZmNjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBlYzgyOTYzNDgyZmRiZGNhNDFmYzhlMDNiNWQ4NjE0ZDI3MTJmNzkwNzQzMTRiMDgxYmE3ZDdmMDFhZjg1ZjcifQ"
         },
         {
-          "resource": "repo://ecshopx-data-cube/src/main/java/cn/shopex/ecshopx/datacube/service/TrackViewNumService.java#L29-L71",
-          "version": "repo-lines-v1:sha256:be0d884296b544235fa6849e617b8967f06bdc3dec735c42f293b9f31ee853e5:eyJzZWxlY3RlZExpbmVDb3VudCI6NDMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJiMzM2YzQyYjJmNTIwN2I3NzVlNTBhOGRhY2UyZDZkMTViMjZmNjFlOGNkYTJjYTRkNDNmY2U0YWU0ODQ0ZjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdkMzcwN2E5NDBhMjJmOWM3Yzg1YmZhY2E0NWJjYTExNzE2Mzc2ZWZkYzA4MjM3NTg5ZjEwNTc3Y2VlMDhkMTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+          "resource": "repo://ecshopx-data-cube/src/main/java/cn/shopex/ecshopx/datacube/service/TrackViewNumService.java#L58-L104",
+          "version": "repo-lines-v1:sha256:61b8ed20101a3e88d9ea255dd5a85917f63b157e57d464a6f1b76f6652204b71:eyJzZWxlY3RlZExpbmVDb3VudCI6NDcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMxMzkyMjIwZjM0YjU2NDM1ODg1ZDQwZWE3ZjliYTFiNjI1YTFiNTExYTBjOGYzNWY0MjZlMGE2ZDI0ZWU4MGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE5OWMyODE4YzhmNjdmYmUyY2FkMDI3MzBkMGNjN2U3ZDFkYzc2MzI1OTEwZjZkMDBkYTFiMjJlZjg4ODEzNDQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFiNzUxNDg5MWE2YWE3YjczNzU0MDkxMDI1MDc1NTI1NmZkYzdjYmY1YmM1NjNjOGY2ZWY2YTVkYzczZjhlNmIifQ"
         }
       ]
     },
@@ -728,7 +728,7 @@
     },
     {
       "id": "claim_85cf3c4b51e64846a297e24e515536a1",
-      "statement": "The supporting bundles divide their Redis usage across named StringRedisTemplate beans defined in bootstrap's MultiRedisConfig, where companysRedisTemplate is @Primary: datacube counters use datacubeStringRedisTemplate (ecshopx.redis.datacube.database, default 0), the UV bloom filter and all UGC/IM blobs use sharedStringRedisTemplate (spring.data.redis.database), the agreement throttle uses companysRedisTemplate, the address tree cache uses espierStringRedisTemplate (ecshopx.redis.espier.database), and the front upload-image day quota uses membersStringRedisTemplate — so the qualifier matters for where a key physically lands.",
+      "statement": "The supporting bundles divide their Redis usage across named StringRedisTemplate beans defined in bootstrap's MultiRedisConfig, where companysRedisTemplate is @Primary: datacube counters use datacubeStringRedisTemplate (ecshopx.redis.datacube.database, default 0), the UV bloom filter and all UGC/IM blobs use sharedStringRedisTemplate (spring.data.redis.database), the agreement throttle uses companysRedisTemplate, the address tree cache uses espierStringRedisTemplate (ecshopx.redis.espier.database), the front upload-image day quota uses membersStringRedisTemplate, and the POS JWT blacklist uses prismRedisTemplate (pos_jwt_invalidate:<sha256> keys) — so the qualifier matters for where a key physically lands.",
       "evidence": [
         {
           "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MultiRedisConfig.java#L102-L157",
@@ -739,8 +739,12 @@
           "version": "repo-lines-v1:sha256:1096fa599c3a398ad3054371a294f375537edd60a1865757c9d988bd7fde6eb3:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkwNmNlNzNkMTJkMGQyMjJhM2U4YTg5ZmI5MzJkZjQyMzk3MmI3YjQwNjM1MzRiOGYzYzkyNmYzMDNjODg5ZjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFmNmRkODcxNjg2ZWE1YjllMzM4YmUwOGU0ZWYyNzAwOTAzNDYzNTdjNTk1ZjZlOTgyYjBkMjQzYTJjNmE0MzkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU4MDJmNDU1MThlZjA3YmFlMjExZGVlZDllNTc1ODBiOGYxNGU2YTgxNzE3YzhkNDZiMGJkNGQ1YmI0MjY5ODkifQ"
         },
         {
-          "resource": "repo://ecshopx-data-cube/src/main/java/cn/shopex/ecshopx/datacube/service/TrackViewNumService.java#L38-L45",
-          "version": "repo-lines-v1:sha256:0c8e20b4fc2c3c4286d908cc0f374048d0ea371c174c89a9e775e481a2fa1a8e:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOGIwOTVmMmQ5NTE1ZTVlMWQzOWViZGFkMWRhZDhjMmU5NDhmZTljMGZiZTg5YzVmZDYzOWZmMzhlZTk5ZmRkOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTNlZGNkMmU1MDAxMTczMDA5ZTgwNjAxMGM4MTE3YjQ1NDI0NzYwNjk5YWNhZmQ3ZDY5Y2I4YTg1NTM5YzA4MSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzM5YjI5ODEzNGMyMTc3MTQyY2I2MGI4MWZkMmVlNTIwZDFjYjQ5NjU0NzUyODQ0YTVhNTc4NTc4NjIxM2M4MyJ9"
+          "resource": "repo://ecshopx-data-cube/src/main/java/cn/shopex/ecshopx/datacube/service/TrackViewNumService.java#L38-L57",
+          "version": "repo-lines-v1:sha256:fd282ff710964357a63ca2666d179fe678d43552a9da8810fa18c49a2a428c1d:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg4M2Q4OGUyZjBjNWIzMDFkMWJmYTIxYTZlYmE3MGU5MjZkMzk0YThjNThiOGMxN2U5MDMzNjc0ZjY3YTg0ODAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNhYzRiNzExNDZmOGY1ZDNjOWI4ODVkMDVkNjliNDQzYjk0ZTFmMDY2OGJmY2Q0OGEyNTQ4MmEwODE0OTdkNTgifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/PosJwtBlacklistService.java#L33-L74",
+          "version": "repo-lines-v1:sha256:892a2a4b690d4dd363114f793424a708b8a51d549a2bbed2317c8b825cd7d353:eyJzZWxlY3RlZExpbmVDb3VudCI6NDIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImMxNjE3M2ZlNmIwZjFkZWIwZTVmMmE4M2M1MTBmZDMyYmNmOTc1Y2EwOWQ0NGNlMmY2ZDA3MWMzNzllMmQ1NmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
         },
         {
           "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/address/EspierAddressTreeApplicationService.java#L44-L51",
@@ -797,10 +801,178 @@
           "version": "repo-lines-v1:sha256:3c44c30973a51d0e961fe654ad50e6e513d9b179914c23c9cd2d12029fa957bc:eyJzZWxlY3RlZExpbmVDb3VudCI6NjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRiM2E0ODVhZTE5MDRhMGI3YzlkNWRhZjhiYTRkMzM4MzY4YmQ0NmQ4ZWFjNGVhZTFhN2FkZThjMGYzMDgwOTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMwOTU4OTZhYTQ1NGQwZDc4MWE1MWM1MGFkYThlOWZjOTFiMTA4YTJmMWY2NDAyNDdmNmRkYTdhMjI1NDNkMzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk1MzYwZDkxYzY2MWU2ZjMwYjBjYTcyNWRiZWM2NDU2NTIxY2M1YWNjYTkyN2RlZWJlNjNmODE4MWM4Y2I0MWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjEwZTY1ODBhZDVkZDRjMTk0OGE4ZmJkODk1MjZjNzZmMDM5YTU4NjJlMDE4Y2UxYWY1MGY1MGE5M2Q0MDYwM2UifQ"
         }
       ]
+    },
+    {
+      "id": "claim_833300ee0b0d4066b6ffebd00fd7819f",
+      "statement": "Espier hosts the POS JWT authentication stack upstream of the MVC interceptors: PosJwtAuthenticationFilter (@Order(Ordered.HIGHEST_PRECEDENCE + 40), OncePerRequestFilter) engages only when the Bearer token verifies as a POS token (token_kind=pos or iss=<POS_JWT_ISSUER>, default ecshopx-pos), skipping POST /api/v1/pos/auth/login, non-Bearer requests and non-POS tokens via shouldNotFilter; when engaged it enforces PosJwtPathWhitelist (exact/prefix allowlist of POS-reachable routes with /api/v1/store/pos-accounts explicitly denied), rejects blacklisted tokens, verifies signature and exp with OperatorJwtCompactCodec against the JWT_SECRET-derived HMAC key, and calls PosJwtSessionValidatorPort.assertSessionStillValid before storing the claims under the PosJwtRequestAttributes.POS_JWT_USER_DATA request attribute — the exact attribute AdminAuthInterceptor short-circuits on.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/auth/PosJwtRequestAttributes.java#L20-L30",
+          "version": "repo-lines-v1:sha256:f537c0cdf99eb2a0c7833582f1e99569e8bcd11d269476db544fa48165866e88:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEwODU1MmM3MjM2M2Y3OWM4Yzk5MzllNGM0NWZkYjg0YjlkNWQzOWRlMWQxZTg4NjU4NTM2ZjhmMTBmODVkYmEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM3NzhkOTM1NmQ0ZDYyNGU3ZTFlYTRhMzg0YWNiYzhhMzk0NmFkYWViNWViMTlmZGY1ZDVmNzczYThmZjAwYTAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRlOTU3MTJiNDMwNjQ4NzhjNGJhNzBlY2M4YmVkMTMyNDhhZWY3ZWE2YTk3ZGVhNTllNWZjZTNiZThlN2QxMWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/PosJwtAuthenticationFilter.java#L40-L174",
+          "version": "repo-lines-v1:sha256:448b80c06c87a27da87555af28ef2adbca925ed4877f3120a413651ef558230b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTM1LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI2NmMyZDQ1YzhiYmM3Y2FkNDlmZDlhNjdmNmY5NTQwOGE1NjBjMWIyNzQ1OGUxOTBlYTJjN2JlMjJkNDQwNTQ5IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0MTJjYTM0NWNjZjc1YmY5YzA4MDZiY2U2OTViZThkZTgwOGI3OTk4NDI1MWE3YTU0ZDIwMmNmNjEwMWRkNDUxIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI5MTc3M2FkZDlmYWU1ZTY4ZTYwYjQ0YjdhY2E3ZTg5YjBiMjUzZjhiZjZiNmY1NmFjYzZlMzU0NzNkM2M1NmI1IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MCwiZm9sbG93aW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1In0"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/PosJwtPathWhitelist.java#L16-L110",
+          "version": "repo-lines-v1:sha256:c4faa2bb4c2079cc545c4b11edb46131007be38dc678a14a1524911d031b4b90:eyJzZWxlY3RlZExpbmVDb3VudCI6OTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM4OTQzNzg1ZmE0NWIwYTBmNGY3YjcxYzE0ZmFmMjQ4OTdjM2ViMDI1Yjc0YzllMTllNDc3ZWU3ZDAyZTU3OGIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_53fed04e61854c6cbe9a917eaa72e6a0",
+      "statement": "companys' PosJwtSessionValidator implements the PosJwtSessionValidatorPort (ticket G-L9): it re-reads the PosStoreAccount row for the token's pos_store_account_id/id claim and throws UnauthorizedException when the row is missing, not enabled, or its status, distributor_id or role no longer match the JWT claims — so disabling, transferring or re-roling a POS account invalidates its outstanding tokens immediately.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/posauth/PosJwtSessionValidator.java#L27-L88",
+          "version": "repo-lines-v1:sha256:406c9350403525c196259c46ebebfe5c370b236307febc684955255624669e93:eyJzZWxlY3RlZExpbmVDb3VudCI6NjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFlNjMzZTBjMTVmMWZmN2ZiMzMzMTAzYTIzODNlNzdiZTFhOTQ4MDdlNWIxMmQ5Mzg1NGJiOGYzMDgyOWQxNTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_27fae46d3cb64fc9b03869ef66b0c639",
+      "statement": "PosJwtIssuer (implementing ecshopx-common's PosJwtIssuerPort) mints POS tokens at login: scalar-coerced claims plus token_kind=pos, sub, iss, a random-UUID jti and iat/nbf/exp with TTL = JWT_TTL minutes (default 120), signed HS512 with unpadded Base64URL via OperatorJwtCompactCodec.compactHs512Url to match the PHP tymon/jwt-auth shape DigiOS and standard JWT verifiers expect; invalidate(compactJwt) verifies the token and blacklists it until its own exp.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/PosJwtIssuer.java#L40-L116",
+          "version": "repo-lines-v1:sha256:f924bcb6747a0773137491e1e3222e6615ce514e24b543ed233ede2825eb0c17:eyJzZWxlY3RlZExpbmVDb3VudCI6NzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU5YzBmYzM3ODRkMWIzYjYyOTczZWI3MzUwMTQyZjEzYjY2Nzg4YmE3YmRmOThiYTQ3Y2Q5NTFkNzdmMDQxYjEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVlYTllZDNiNmEwMzJhZGE4MTUwOTdjY2RjMzBmNTdhYWNlMDk1ZjBjM2E1M2VjNWRjM2RkYjFkYjEwZWY2ZTgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhlMzBlMzgwN2NiM2Y3NjI1MzI0MDI0Zjk5YWNlNzViMTIyNmE5MDdkNmEzMjBkN2NjYThkNjA1N2QxNjUxNzgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNhOWZkNjdlYTI0ZmFhNzU5YTYwNjFmMWNjMWVjZTA5NTNlODlkODI4NjA5MGY3NWFjM2JhNjcyMmU5YmZkMTAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_e144681f37f149d587c08e922d40bf76",
+      "statement": "PosJwtBlacklistService (implementing PosJwtBlacklistPort) stores the SHA-256 hex of a revoked compact token under pos_jwt_invalidate:<sha256> on the prismRedisTemplate with the TTL clamped to the token's remaining lifetime, so revoked tokens are rejected by PosJwtAuthenticationFilter and disappear automatically at natural expiry.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/PosJwtBlacklistService.java#L33-L74",
+          "version": "repo-lines-v1:sha256:892a2a4b690d4dd363114f793424a708b8a51d549a2bbed2317c8b825cd7d353:eyJzZWxlY3RlZExpbmVDb3VudCI6NDIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImMxNjE3M2ZlNmIwZjFkZWIwZTVmMmE4M2M1MTBmZDMyYmNmOTc1Y2EwOWQ0NGNlMmY2ZDA3MWMzNzllMmQ1NmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_5d8a5507b982497b87ae38376c067cbd",
+      "statement": "OperatorJwtCompactCodec is espier's shared compact-JWT codec for operator and POS tokens: compactHs256 (standard Base64, HS256) for the operator/admin SPA and compactHs512Url (Base64URL, HS512) for POS, with verifyAndParse trying a raw-segment HMAC check first and falling back to the jjwt parser so both historical token shapes verify against the JWT_SECRET-derived key (base64-decoded when possible, raw UTF-8 otherwise).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/OperatorJwtCompactCodec.java#L36-L104",
+          "version": "repo-lines-v1:sha256:2147e272f5850c4dfae4bcc1524d04a5093106f8b52851df5a0771da057a06af:eyJzZWxlY3RlZExpbmVDb3VudCI6NjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM4YjRmZTZiZmQ1MDg4Yzg3NmE2MjQ4ZGM1Y2NmYzY5NGY0ZWU4ODFhZTEyOTFkYjFjOTIyMmNkNjRmMGQ2MWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI1YjhhMTA4NWRhOGJmMGIzMmZmYjMxMjVmNGM0YzM1NjVhM2MwZjhiNjE1YzMzZjU4NTg4NmFlZTRkNTg0NTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFkNzA0NTI0ZmFmYjE4N2IxN2Y4MGUzMDg3OGU4ZTYzOGE0MWY2YTc0MDBmNzdiZjRlOWZiNWFiMjg4NjhjYzQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_563c548950ea45a4add53a6da3555dd4",
+      "statement": "The comments front endpoint is hardened (ECX-10918): the front CommentsController's parsePageSize clamps pageSize to MAX_PAGE_SIZE = 50 (the PHP Comments MAX_PAGE_SIZE), defaults to 50 when absent, and rejects non-numeric or non-positive values with BadRequestException (page_no/pageNo similarly default to 1 and reject invalid input), while ShopCommentListService.list collects the page's distinct user_ids and resolves them in one MemberAccountService.getWechatUserInfoByUserIds batch call (throwing ResourceException when a commenter cannot be resolved) instead of per-row lookups; CommentsControllerPageSizeTest pins the cap, default, pass-through and rejection behaviour.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-comments/src/main/java/cn/shopex/ecshopx/comments/api/front/v1/CommentsController.java#L213-L239",
+          "version": "repo-lines-v1:sha256:151927710f0aca3f41ec85f6d628baf6f8060314291b2487b66b76d9e133dc5c:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUyY2RiNThmYTE5MmRjN2JkYjI2MmI2Y2JiNTA5ODlmMWQ0MTA4ODA0Mjg3YjQ4ZTg1ZDMwOTI1NzM5NzM0NTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-comments/src/main/java/cn/shopex/ecshopx/comments/service/ShopCommentListService.java#L88-L114",
+          "version": "repo-lines-v1:sha256:c6bb5758898ff5cdc670eef4288653e6da02bdce997209639fd26989a53a88c8:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVkMjg0YTk1YmE2MjFlMzk0NDUxZDM5YTllODI0Zjg2MTRkNjBmY2IzZGY2YjFlNmEyMzM4OTVlZWIxZDljMTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNiMzZhNjkxOWFlNGYzZGM5ZWZiYzE2YjgzNzY4NGRjNDNkMWZlN2Y4YWJmMjM5NDc4ODE5NzdkNTZmY2U5ZGYifQ"
+        },
+        {
+          "resource": "repo://ecshopx-comments/src/test/java/cn/shopex/ecshopx/comments/api/front/v1/CommentsControllerPageSizeTest.java#L24-L59",
+          "version": "repo-lines-v1:sha256:aaa5d7c0489c9dab04b13f9ce21fdd560ae7304b4149a4e94f335cece0d7ce2c:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNkZTUxYzcxZDM0NDY3MjVjMWZkMzE1Y2I3YmFlZTM2YzhiMzViMDZlNTcyYjU4Y2Y5MGFlNjE1NjlhNzgxNWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM4MDQxNzA1OWI3NzlmMmI5YTAwNzNhMTRhNTdjYzZhYTUzMzRhNTMzM2I1ZmQ0YjM4NGQwYzhlMWRhY2UyMmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_64f594e0aace4c1a9428a33c8c183900",
+      "statement": "wsugc's admin post mutations are company-scope hardened against the PHP WsugcTenantScopeGuard: PostCreateService's edit branch (ECX-10907) and PostEditService (ECX-10919) reload the Post and throw ResourceException when its company_id differs from the operator JWT's; PostDeleteService (ECX-10909) batch-loads the target ids and requires every row to exist and match before the disabled=1 update; PostVerifyService (ECX-10921) applies the same load-all-and-match check before flipping review status; PostSetBadgesService (ECX-10925) checks both the target posts and every referenced Badge against the company before rewriting PostBadge rows; the *CompanyScopeTest classes pin the cross-tenant rejections.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-wsugc/src/main/java/cn/shopex/ecshopx/wsugc/service/post/PostCreateService.java#L188-L208",
+          "version": "repo-lines-v1:sha256:65ba68ccd51da17eeafd51b6bc016fdb7ce5f98c1dabc0f5f78ab55b4137dbcc:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUyNmEzMWYyODQ2ZTc1N2NmYTMxNDkxNGRmZjkyNDVjMzVlOTU5MDE4NDE1ZGRiMjhjZTNlMTI2MTIyY2ZiMGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImViMzExM2IzNjA5MjdiNWUxMjA3NjJkNDdiMWVlYTIzNDYzMTQ0OTllZDBkYWRhZTNmNWQzNTJhM2NmMDIxMzciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImYxYmM1MzA4ZGNhMmJjOWE0YzMxMzFjOTY1ODQyZWRhYTRhOTdkNTY1Yjg4YjI4NDY5OGM0YzE2YWM3ODNlMzQifQ"
+        },
+        {
+          "resource": "repo://ecshopx-wsugc/src/main/java/cn/shopex/ecshopx/wsugc/service/post/PostDeleteService.java#L151-L179",
+          "version": "repo-lines-v1:sha256:7b12e492d73404393a331fbdd1c9e414ce6339be05e2c6b0a759caeac3e7eb10:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2MjRkMzgxMDhlYWI3ZTk4NjA5MGY0MDY1ZGZhMzBiZGNiZTVjZDRhNWM5YTdhODM5ZTFiYWI0NDc1NTVlNjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ5NDMzM2FmNmRkYjY1YWE2YzgwN2M5MTAzYWQ1ZGYxNzQ5ZTQzNmUzMDEwM2E1YWI1NDRlY2YwOTkzNzg4NzEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJhYmJjNzVjMjEyMTM2OTUyMjMxMTA2N2E0MjYzOTI1ZmY0NGY4Njc4MWFlY2IxODIyY2E3ZjUxNmM0MWZkYTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFmYTY3MzY0NTVlOWVhNjMyNmU5OWVjNWY2MzRiMGZiZWUxNzMwMTYzYWE1OTVkOGU0YmY4MDc1Y2Y0MmRiZWUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-wsugc/src/main/java/cn/shopex/ecshopx/wsugc/service/post/PostEditService.java#L104-L117",
+          "version": "repo-lines-v1:sha256:7dbe5553427238069ed3c853ccb2a230bcc5f4128936e19c9fd182e7d6d5e842:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImExNjk3N2E0ZTEzNzgyNWM5ZjQ4NWYxYWYwNjYwMTljYWE2OTkyYzEwM2NkOWNhNzNmYWVlODY4MmNiMjA0OGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg1ODY4NTRjZDgwYWU1ZWRmM2NlMWE5NWQyN2YwNWE5ZGYyZWY4ODZmYTIwMzI1MTBlNzQ4MzJhOTAxMjI3NWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM0YTQxZDE5ZGNhODdkOTI4YjdhYjQzM2I4MmFiZjFiN2Y5MzcxYTI4NDYwZjY2YjI3OGQ1YzVjMmE0NDFhZGIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkyZGJiYmM4YWFiZmNiODMxZjhlMmNhMmZhMTI1NWRmZTJkNzM5ZWE3Y2NkMDdhMzc0ZWU3MjIyNzNmNzAxYWIifQ"
+        },
+        {
+          "resource": "repo://ecshopx-wsugc/src/main/java/cn/shopex/ecshopx/wsugc/service/post/PostSetBadgesService.java#L73-L106",
+          "version": "repo-lines-v1:sha256:729b275a0052eb818e5d1c3a563b50c0dae3ec6482c41d38d9926c85215f204e:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE4OTNmMjFhOWU2MmM5Y2I4N2JhOWU5YTE2ODczZjA1NTAzNTZiYjA4NDY2ZWY1OTZjNWZiYjQ4NmJjZGE5MDIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ5ZjkwYjI5Y2VhYjgxYzIyZWUwMWUzZjZkMDk4ODg4NTU5M2E5YWZjN2U2ODA5YTY0MWQzMGU5ZDk4YzVjMDIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBkOGE2OWNhN2I4OWNkZjczYmI0MDllZGUyZjY3MWZkMjFlMmVlYWMwMzg1NDUxOTMxOWNkZjAzNzkyMzM4MzgifQ"
+        },
+        {
+          "resource": "repo://ecshopx-wsugc/src/main/java/cn/shopex/ecshopx/wsugc/service/post/PostVerifyService.java#L92-L108",
+          "version": "repo-lines-v1:sha256:5e1998c2058345d036fc9b01e9482a79a4a5c296a99d4c20a76f7a0b72ee4021:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE4OTNmMjFhOWU2MmM5Y2I4N2JhOWU5YTE2ODczZjA1NTAzNTZiYjA4NDY2ZWY1OTZjNWZiYjQ4NmJjZGE5MDIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVmOTdkNDJmOTZkM2QxMmU5MDYwMGI1ZjdmZTk5MjQ2OWRhNzc2NDFmZTI0NmYyNWQwOTVlMzQ5NTI1MjcwODgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY5YjQwZDE3ODRmNmZkNTQ0YjFjMzA5YTJmMjc3MTM4Y2JmMmQwOTg3OWU3YmQzOThjMTNhNjk5YzAwYTk4YzkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMxNzhkNzJkM2UxOTAyMTdiYTFiNDM4ZGJhZDE1NGJkMzk5ZDYzOTk5NDE5NDM4MmNmY2JkMGJmNWEwMzU3NGEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-wsugc/src/test/java/cn/shopex/ecshopx/wsugc/service/post/PostCreateServiceCompanyScopeTest.java#L36-L44",
+          "version": "repo-lines-v1:sha256:24afd6a51f8286bc623a2abf8ed5f66a6ca48be254ec80def89dc5543c95ae6b:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjE3NDhiODYxODVlMjU1NTE5Mjk5OTgzYjViYzRlNjRiOTE4ZWQzYzhlNDg5NWNkMmQ3YTc5OWEyMmQ0OTkyZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMTM2NzgxZDVjMzM4YmJlZGQ2NDI5ZjgxNzQ1OTgyYzIwMGNhMzExZjc5ODg4NzU3ODgyYWU5NDZkODM4ODYwNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjdmZDJmMTgxZDkxYjA0MmZkMmM0MjZhY2Y0MDU0NWRjNTc3YTc0ZTFhMDE3M2Q3NTY5ZjIzMWQ3NGRiOGIyZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDk5YzE5YmIxMWM4NzMzNjU4ZTEwOGMzYmZhM2RhYWY4Yjk3NWRmZmE3NDU4NTBjMDRiNWMwYmYwMmZkMTY0OSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-wsugc/src/test/java/cn/shopex/ecshopx/wsugc/service/post/PostVerifyServiceCompanyScopeTest.java",
+          "version": "repo-file-v1:sha256:ecfd2659ee90369ff57b45e4780a33e8db63483570b614018f0fe51e561f4706"
+        }
+      ]
+    },
+    {
+      "id": "claim_3e2af07326364dd5b72fe5b04b97f1c6",
+      "statement": "wsugc's topic mutations are scoped in SQL: TopicVerifyService (ECX-10874) updates with company_id = ? AND topic_id IN (...) and throws when fewer rows matched than requested, and TopicSetTopService (ECX-10872) clears and re-applies is_top/p_order only within the caller's company, refusing unknown ids; TopicVerifyServiceScopeTest/TopicSetTopServiceScopeTest pin the company-scoped wrappers.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-wsugc/src/main/java/cn/shopex/ecshopx/wsugc/service/topic/TopicSetTopService.java#L39-L70",
+          "version": "repo-lines-v1:sha256:4efa6f9b02c3964e5d81c6dbab0f5696bc8378c697107267773775efe1a892ca:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM4MzE0MzM5MzAyOTMwNDA1M2FjMmRmNDY3NTA2ZjBiMWJhZjJhYzczZThhMjQ5NjM3YjYwYmUxYjY1NGQwZTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBkYTNmODg5ZDJjOTQ3Nzg3ZDljZGNjMGNlOWMxOTE4YTQ3Y2RlMmQ1MDY5ZWU5ZTM0ODBkMjJiZDNlYzVjMTkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZiM2E2NTIxZjFjYjc2MDVhYTk2ODZjZmQ2ZWE5YWFjYTUwOWM0M2VhNmU4ODhiYTUzYjFmYjMzNjNlMTU2N2IiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNjMjYxYjNjMmNmMWNiNjYxNGEyZDhjMjkzOTc4YjY0MGQ3YzE3YWFkNjMxYjEzNzRhZTgzYzk1NDNhNzMwM2QifQ"
+        },
+        {
+          "resource": "repo://ecshopx-wsugc/src/main/java/cn/shopex/ecshopx/wsugc/service/topic/TopicVerifyService.java#L59-L76",
+          "version": "repo-lines-v1:sha256:faca195d147e5b2514469d296037803a3b5a3fe787911974c25f111b36404777:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY4MTU5ZTYzYWY1OGVhNDRjYmExN2FkYjM0MDMwNjAxZTM5Mjk2ZTc5MTA4YjdiMzRiOWZkNDQzNjhjOTczNTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA3NjdiM2E0Yjc3YTIzZDU3MjU0Zjk5ZmY3ZGUxZGJkNDg0N2VkMjZhOTNmODJmYTliNDQyZTE1MmQ4YTZlOWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFlMDRmMGFiZWQ2M2M2OTEwN2QyNGQxMzg0YzA3ZGU3MGYwYjZmZWM5MGQ2OTk1OWY3MTEzM2U0Y2Q5MGY3ODEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-wsugc/src/test/java/cn/shopex/ecshopx/wsugc/service/topic/TopicSetTopServiceScopeTest.java",
+          "version": "repo-file-v1:sha256:ed27bfdbc0ab94f3f416183c7849c791601608effd42bcbe8c1b6dda16c861f9"
+        },
+        {
+          "resource": "repo://ecshopx-wsugc/src/test/java/cn/shopex/ecshopx/wsugc/service/topic/TopicVerifyServiceScopeTest.java#L38-L45",
+          "version": "repo-lines-v1:sha256:e8997294e99b44ba04a91c713d931770c4a54643cdfcdf889408d2e64edf12bb:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOTA0YmY1N2Q5ZmFmM2NiYmY3NmJlNTUwNGQxMzZhMjkwYjZlMjJhNjRjMjdmNDhiZjc1MTc2OWRkZjA4Y2RjYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjkzZDc5ZTY1NzlkMzZkZWE2YzQ5NjI5Nzc3MDNiNDM2YWJiYWZmOTdhYmM2OTZmNjQ4MjZkYjVmNzM1MDE0OCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzBiNTJmZjFlN2UyOWQ2NmNiNmZiNmJiYWJlOTlmMzMxOWY0NGEzNmJkZmI3NGQxYWE5M2U3MTk3ZmQwNjEwNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTNkZTk3ZWEzMDIwYTVjMDgzMjU2MDY3ZGE2NGUzYmMwODMxMjI4MjAzNThjNzQ5N2FkMGNhODkxYjZjYWI2ZCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_9a06abf6576246a3a7bc91bdff621cca",
+      "statement": "wsugc's WeChat content-check base URI is SSRF-guarded: the per-company contentCheck_url setting feeds the msg_sec_check/media-check calls and the client_credential access-token fetch, so UgcWxContentCheckBaseUriGuard.normalizeAndRequire — invoked by UgcWxContentTextCheckService/UgcWxContentMediaCheckService at call time and by UgcSettingSaveService.requireOptional on save — rejects anything that is not exactly https://api.weixin.qq.com (no other host, user-info, path, query, fragment or non-TLS scheme) with BadRequestException.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-wsugc/src/main/java/cn/shopex/ecshopx/wsugc/service/content/UgcWxContentCheckBaseUriGuard.java#L29-L84",
+          "version": "repo-lines-v1:sha256:7e417c63ab1fccdcf3dec8a286f5751f026cba4d8268980bd2e5634a4b4c1662:eyJzZWxlY3RlZExpbmVDb3VudCI6NTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgyYjgxNjNmZTUwMjE5MjhmNjA4ZDNkMGQ5ODYyZDk5MGY2M2NkZjVjM2QwOTNhN2QxYTI1MGYxN2JjMTkxOGQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVhZDE1ODM0OWNhY2ZhZTlmZjUxYzBhZmNiNDgyMmYwYThkZDA4OTU2MDNkYmUxMGE0ODBkMGE0YjQyNzNhZGQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-wsugc/src/main/java/cn/shopex/ecshopx/wsugc/service/content/UgcWxContentMediaCheckService.java#L73-L73",
+          "version": "repo-lines-v1:sha256:5f5e040cd8b24feeabf543ebcd305b26479e32c1803a61cd6c5371eac67bcd4b:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNWY1ZTA0MGNkOGIyNGZlZWFiZjU0M2ViY2QzMDViMjY0NzllMzJjMTgwM2E2MWNkNmM1MzcxZWFjNjdiY2Q0YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNWY1ZTA0MGNkOGIyNGZlZWFiZjU0M2ViY2QzMDViMjY0NzllMzJjMTgwM2E2MWNkNmM1MzcxZWFjNjdiY2Q0YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTc2MmU0ZTgyZTFjODY5M2M0NzRhY2ZhZjc2ZWE0MzMzYjFiYjdhODMzNjc5YjgwMzM5Mzk5MzkxZGY0Y2RlNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzQ2NDIwZWRhOGIwOGM3MDI3YjZjNDk2ZjViMDE5OWY4ZTY0MDI1NWQ3ZmRjOTNkY2Y5NWMxZGEyZWY5ZThjNyJ9"
+        },
+        {
+          "resource": "repo://ecshopx-wsugc/src/main/java/cn/shopex/ecshopx/wsugc/service/content/UgcWxContentTextCheckService.java#L77-L77",
+          "version": "repo-lines-v1:sha256:5f5e040cd8b24feeabf543ebcd305b26479e32c1803a61cd6c5371eac67bcd4b:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNWY1ZTA0MGNkOGIyNGZlZWFiZjU0M2ViY2QzMDViMjY0NzllMzJjMTgwM2E2MWNkNmM1MzcxZWFjNjdiY2Q0YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNWY1ZTA0MGNkOGIyNGZlZWFiZjU0M2ViY2QzMDViMjY0NzllMzJjMTgwM2E2MWNkNmM1MzcxZWFjNjdiY2Q0YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjExMDYzNWQ5YzcyOTFmMmEzMzQyNmM5MzI2Yjc1ZGMyMWQxZDYzNzM2OWY1MmM3MzI0YmZiYjdhZTliOTQyYyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTRlNjhjNjI0MmM2NWM2YjA4ZTIxNjRmZmUxZDBmYzI3NWY1NGE1YjAwYTBmOGJiNDI5NDVkMGYxYTg3ZDU0OCJ9"
+        },
+        {
+          "resource": "repo://ecshopx-wsugc/src/main/java/cn/shopex/ecshopx/wsugc/service/setting/UgcSettingSaveService.java#L58-L70",
+          "version": "repo-lines-v1:sha256:494ff8938aca444283b80992ed5dca89dcab816ecb813b5720df33df5dc1ac55:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA0Zjk4OGU1NjJkMDA5ZjU2ZmFjYjRmODRkOTI5ZDM2ZGNhOTdkODAzNzJhOGIxOTU2ZjkzMmM4NWUzMThjMDUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk4OTFhOTE3NmM4NmZmYTQ1OTNjOGY0NGFkYzE0MDc0Mjc1YmFhZGQ3OWJiOGFiMzY1ZWFlZGMyZTExZTNhMjAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUyOTk3NzhmNmRiYWI2YjEyYWQ4MDgyODFmZTA5M2UzNDU0YjFiNWE1YmQ5Y2Q2MjQwZjYwMGVmNDkyYTNlNjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI3N2QzN2RlMjRhZWM1NGUwNTMxYjMwZDc1NjRlNTRhMmU5NWVlZjA0Y2ZmMmIzYjk2ODNjZjk5ODgxMjBiYjUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b5fc992e075446de821996dc49a9afb4",
+      "statement": "selfservice's RegistrationActivityDataInfoService.getDataInfo (behind admin GET /selfhelp/registrationActivity/get, route alias selfhelp.registrationActivity.info) enforces tenancy by reading as not-found: when the RegistrationActivity row's company_id does not match the operator JWT's company it returns an empty result instead of an error (ECX-10916), making cross-tenant probing indistinguishable from a missing id.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-selfservice/src/main/java/cn/shopex/ecshopx/selfservice/api/admin/v1/RegistrationActivityController.java#L196-L212",
+          "version": "repo-lines-v1:sha256:d96b7a27038b945c2c29bc9546d86a04bfde24b91ba6734d3970c892efda75e6:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFmZjhhY2QyMzA1MWIyNDcwZjZkNmE2NWZlZjk5ZGVhNWRiOTdlNjI0MTIwYWFhNTY5ODQ0YzZlZWI2N2UxZTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVhZDRmZWRiYmVlMmFkNjE1NDAwNzg4MWIwOTJkNWY2MDExNzkyZmRhNjg0ZDZiOTIxNDg2NWRkYmFhOWU1OTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAxNTJjNGYwMTFiODcyMmRlNDdlNjdlNWI0N2YxMDZhZjcwNDE5ZmMzYjEwOGI1ODI5NGRiZjZhNWVlOGI1OWEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-selfservice/src/main/java/cn/shopex/ecshopx/selfservice/service/RegistrationActivityDataInfoService.java#L82-L98",
+          "version": "repo-lines-v1:sha256:602b53b77cfa39cd8e86c10d00467011a0b06ee30046a0131bb20ecbab7afd35:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE1NmRiZDEzMjVhMzVhZmIxYWFiZWFjMDJjMTUzNWZlM2NhNTgxNDQ5OGVkNTdhZjIxZjdlNGI5YzI5OWEzZDciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE4YWVmNGQwOTM0MDgwNzA2ZjQwZDgwNjkyZGY3NjZhZjkyMWExMWQzMDNlYjQwMjU3ZTIwMDk4YzViNzEzMjgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZmM2M2NGU1NjRhZmI2YzdlZmE5MjFmNmNjZmJhMWMyODAwZjhiMThhYzBlZGRkNTBkYjE3ZWIyMTU0YzE5YzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBkMGYzNjBmODkxNTE3Y2EzMjgzYjUwNGFhYjM2MWU4YTExNjgyZGIzZmJiMDY1OWU3NmYyOGE1OGExNjAwNDQifQ"
+        }
+      ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.7.3",
-    "at": "2026-11-04T17:09:55.577Z"
+    "by": "openwiki/0.9.0",
+    "at": "2026-11-05T17:10:02.238Z"
   }
 }

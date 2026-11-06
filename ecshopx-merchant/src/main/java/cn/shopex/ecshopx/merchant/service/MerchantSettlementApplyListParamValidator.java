@@ -52,18 +52,12 @@ public class MerchantSettlementApplyListParamValidator {
 		}
 		String auditStatus = trimOrNull(params, "audit_status");
 		String merchantName = trimOrNull(params, "merchant_name");
-		String province = trimOrNull(params, "province");
-		String city = trimOrNull(params, "city");
-		String area = trimOrNull(params, "area");
 		String settledType = trimOrNull(params, "settled_type");
 		return new MerchantSettlementApplyListQueryInput(
 				page,
 				pageSize,
 				auditStatus,
 				merchantName,
-				province,
-				city,
-				area,
 				settledType,
 				createdGte,
 				createdLte);

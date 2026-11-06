@@ -372,7 +372,7 @@ public class RegistrationActivityCreateService {
 		return langBag;
 	}
 
-	public Object restoreData(HttpServletRequest request) {
+	public Object restoreData(HttpServletRequest request, long companyId) {
 		String raw = request.getParameter("activity_id");
 		long activityId = 0L;
 		if (raw != null && !raw.trim().isEmpty()) {
@@ -388,10 +388,20 @@ public class RegistrationActivityCreateService {
 		if (activityId == 0L) {
 			return Collections.emptyList();
 		}
+		// ECX-10926：对齐 PHP SelfserviceTenantScopeGuard::assertRegistrationActivityIdBelongsToCompany
+		RegistrationActivity existing =
+				registrationActivityMapper.selectOne(
+						new LambdaQueryWrapper<RegistrationActivity>()
+								.eq(RegistrationActivity::getActivityId, activityId)
+								.eq(RegistrationActivity::getCompanyId, companyId));
+		if (existing == null) {
+			throw new ResourceException("无权访问该报名活动");
+		}
 		int endTime = (int) (Instant.now().getEpochSecond() - 3600L);
 		LambdaUpdateWrapper<RegistrationActivity> wrapper =
 				new LambdaUpdateWrapper<RegistrationActivity>()
 						.eq(RegistrationActivity::getActivityId, activityId)
+						.eq(RegistrationActivity::getCompanyId, companyId)
 						.set(RegistrationActivity::getEndTime, endTime);
 		int rows = registrationActivityMapper.update(null, wrapper);
 		Map<String, Object> out = new LinkedHashMap<>(2);

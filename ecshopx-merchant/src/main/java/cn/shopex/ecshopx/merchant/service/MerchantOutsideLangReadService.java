@@ -27,8 +27,7 @@ import org.springframework.util.StringUtils;
 @Service
 public class MerchantOutsideLangReadService {
 
-	private static final List<String> MULTI_LANG_FIELDS =
-			List.of("merchant_name", "province", "city", "area", "address", "legal_name");
+	private static final List<String> MULTI_LANG_FIELDS = List.of("merchant_name");
 
 	private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 

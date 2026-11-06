@@ -40,6 +40,9 @@ public class EspierUploadFileAsyncRunner {
 
 	private static final Logger log = LoggerFactory.getLogger(EspierUploadFileAsyncRunner.class);
 
+	/** ECX-10949：异步导入最多读取的数据行数，表头不计入。 */
+	private static final int MAX_IMPORT_DATA_ROWS = 5000;
+
 	private final UploadeFileRepository uploadeFileRepository;
 	private final EspierUploadFileHandlerRegistry registry;
 	private final FileStorageService fileStorageService;
@@ -129,7 +132,7 @@ public class EspierUploadFileAsyncRunner {
 		}
 		List<List<Object>> rows;
 		try {
-			rows = EspierUploadExcelSheetReader.readFirstSheet(bytes);
+			rows = EspierUploadExcelSheetReader.readFirstSheet(bytes, MAX_IMPORT_DATA_ROWS);
 		} catch (IOException e) {
 			headerFail(id, storagePath, table, data, e.getMessage());
 			return;

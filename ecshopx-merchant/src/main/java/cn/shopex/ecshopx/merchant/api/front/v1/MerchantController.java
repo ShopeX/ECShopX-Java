@@ -17,7 +17,7 @@
 package cn.shopex.ecshopx.merchant.api.front.v1;
 
 import cn.shopex.ecshopx.common.annotation.DingoResponse;
-import cn.shopex.ecshopx.common.annotation.FrontMerchantAuth;
+import cn.shopex.ecshopx.common.annotation.FrontAuth;
 import cn.shopex.ecshopx.common.annotation.FrontNoAuth;
 import cn.shopex.ecshopx.common.web.H5FrontAuthAttributes;
 import cn.shopex.ecshopx.common.core.domain.ApiResult;
@@ -31,6 +31,7 @@ import cn.shopex.ecshopx.common.web.locale.RequestLangTag;
 import cn.shopex.ecshopx.merchant.service.MerchantBaseSettingQueryService;
 import cn.shopex.ecshopx.merchant.service.MerchantTypeVisibleListQueryService;
 import cn.shopex.ecshopx.merchant.service.MerchantSettlementApplyDetailQueryService;
+import cn.shopex.ecshopx.merchant.service.wxapp.MerchantSettlementApplyMemberResolveService;
 import cn.shopex.ecshopx.merchant.service.wxapp.MerchantSettlementApplyProgressService;
 import cn.shopex.ecshopx.merchant.service.wxapp.MerchantWxappAuthAttributes;
 import cn.shopex.ecshopx.merchant.service.wxapp.MerchantWxappLoginService;
@@ -67,6 +68,7 @@ public class MerchantController {
 	private final MerchantWxappSettlementApplyAuditstatusService merchantWxappSettlementApplyAuditstatusService;
 	private final MerchantSettlementApplyDetailQueryService merchantSettlementApplyDetailQueryService;
 	private final MerchantSettlementApplyProgressService merchantSettlementApplyProgressService;
+	private final MerchantSettlementApplyMemberResolveService merchantSettlementApplyMemberResolveService;
 	private final MerchantTypeVisibleListQueryService merchantTypeVisibleListQueryService;
 	private final LangueProperties langueProperties;
 
@@ -78,6 +80,7 @@ public class MerchantController {
 			MerchantWxappSettlementApplyAuditstatusService merchantWxappSettlementApplyAuditstatusService,
 			MerchantSettlementApplyDetailQueryService merchantSettlementApplyDetailQueryService,
 			MerchantSettlementApplyProgressService merchantSettlementApplyProgressService,
+			MerchantSettlementApplyMemberResolveService merchantSettlementApplyMemberResolveService,
 			MerchantTypeVisibleListQueryService merchantTypeVisibleListQueryService,
 			LangueProperties langueProperties) {
 		this.merchantWxappLoginService = merchantWxappLoginService;
@@ -87,6 +90,7 @@ public class MerchantController {
 		this.merchantWxappSettlementApplyAuditstatusService = merchantWxappSettlementApplyAuditstatusService;
 		this.merchantSettlementApplyDetailQueryService = merchantSettlementApplyDetailQueryService;
 		this.merchantSettlementApplyProgressService = merchantSettlementApplyProgressService;
+		this.merchantSettlementApplyMemberResolveService = merchantSettlementApplyMemberResolveService;
 		this.merchantTypeVisibleListQueryService = merchantTypeVisibleListQueryService;
 		this.langueProperties = langueProperties;
 	}
@@ -131,13 +135,10 @@ public class MerchantController {
 		return ResponseEntity.ok(ApiResult.ok(subset));
 	}
 
-	@FrontMerchantAuth
+	@FrontAuth
 	@GetMapping(value = "/settlementapply/step", name = "商户入驻当前步骤")
 	public ResponseEntity<ApiResult<Map<String, Integer>>> getSettlementApplyStep(HttpServletRequest request) {
-		Object attr = request.getAttribute(MerchantWxappAuthAttributes.REQUEST_ATTR);
-		if (!(attr instanceof MerchantWxappAuthAttributes auth)) {
-			throw new UnauthorizedException("Unable to authenticate user.");
-		}
+		MerchantWxappAuthAttributes auth = resolveMemberSettlementAuth(request);
 		int step =
 				merchantSettlementApplyProgressService.resolveProgressStepWithSideEffects(
 						auth.companyId(), auth.accountId());
@@ -223,7 +224,7 @@ public class MerchantController {
 		}
 	}
 
-	@FrontMerchantAuth
+	@FrontAuth
 	@PostMapping(value = "/settlementapply/{step}", name = "保存商户入驻信息")
 	public ResponseEntity<Map<String, Object>> saveSettlementApply(
 			HttpServletRequest request,
@@ -236,49 +237,71 @@ public class MerchantController {
 				merged.put(e.getKey(), e.getValue());
 			}
 		}
-		Object attr = request.getAttribute(MerchantWxappAuthAttributes.REQUEST_ATTR);
-		if (!(attr instanceof MerchantWxappAuthAttributes auth)) {
-			throw new UnauthorizedException("Unable to authenticate user.");
-		}
+		MerchantWxappAuthAttributes auth = resolveMemberSettlementAuth(request);
 		merchantWxappSettlementApplySaveService.save(auth, step, merged);
 		return ResponseEntity.ok(Map.of("data", Map.of("status", true)));
 	}
 
-	@FrontMerchantAuth
+	@FrontAuth
 	@GetMapping(value = "/settlementapply/detail", name = "商户入驻详情")
 	public ResponseEntity<ApiResult<Map<String, Object>>> getSettlementApplyDetail(HttpServletRequest request) {
-		Object attr = request.getAttribute(MerchantWxappAuthAttributes.REQUEST_ATTR);
-		if (!(attr instanceof MerchantWxappAuthAttributes auth)) {
-			throw new UnauthorizedException("Unable to authenticate user.");
-		}
+		MerchantWxappAuthAttributes auth = resolveMemberSettlementAuth(request);
 		Map<String, Object> data =
 				merchantSettlementApplyDetailQueryService.getDetail(
 						auth.accountId(), RequestLangTag.current(langueProperties));
 		return ResponseEntity.ok(ApiResult.ok(data));
 	}
 
-	@FrontMerchantAuth
+	@FrontAuth
 	@GetMapping(value = "/settlementapply/auditstatus", name = "商户入驻审核结果")
 	public ResponseEntity<ApiResult<Map<String, Object>>> getSettlementApplyAuditstatus(HttpServletRequest request) {
-		Object attr = request.getAttribute(MerchantWxappAuthAttributes.REQUEST_ATTR);
-		if (!(attr instanceof MerchantWxappAuthAttributes auth)) {
-			throw new UnauthorizedException("Unable to authenticate user.");
-		}
+		MerchantWxappAuthAttributes auth = resolveMemberSettlementAuth(request);
 		Map<String, Object> data =
 				merchantWxappSettlementApplyAuditstatusService.build(
 						auth.companyId(), auth.accountId(), RequestLangTag.current(langueProperties));
 		return ResponseEntity.ok(ApiResult.ok(data));
 	}
 
-	@FrontMerchantAuth
+	@FrontAuth
 	@PostMapping(value = "/password/reset", name = "重置商户登录密码")
 	public ResponseEntity<?> resetMerchantPassword(
 			HttpServletRequest request, @FlexibleBody(required = false) Map<String, Object> body) {
-		Object attr = request.getAttribute(MerchantWxappAuthAttributes.REQUEST_ATTR);
-		if (!(attr instanceof MerchantWxappAuthAttributes auth)) {
-			throw new UnauthorizedException("Unable to authenticate user.");
-		}
+		MerchantWxappAuthAttributes auth = resolveMemberSettlementAuth(request);
 		Object data = merchantWxappPasswordResetService.reset(auth.companyId(), auth.accountId());
 		return ResponseEntity.ok(Map.of("data", data));
+	}
+
+	/** ECX-10617: settle with mall member JWT → resolve/create apply by user_id. */
+	private MerchantWxappAuthAttributes resolveMemberSettlementAuth(HttpServletRequest request) {
+		Object raw = request.getAttribute(H5FrontAuthAttributes.H5_AUTH_CLAIMS);
+		if (!(raw instanceof Map<?, ?> claimsRaw)) {
+			throw new UnauthorizedException("Unable to authenticate user.");
+		}
+		@SuppressWarnings("unchecked")
+		Map<String, Object> claims = (Map<String, Object>) claimsRaw;
+		long companyId = parsePositiveClaim(claims, "company_id");
+		long userId = parsePositiveClaim(claims, "user_id");
+		return merchantSettlementApplyMemberResolveService.resolveAuth(companyId, userId);
+	}
+
+	private static long parsePositiveClaim(Map<String, Object> claims, String key) {
+		Object o = claims.get(key);
+		if (o == null) {
+			throw new UnauthorizedException("Unable to authenticate user.");
+		}
+		try {
+			long v;
+			if (o instanceof Number n) {
+				v = n.longValue();
+			} else {
+				v = Long.parseLong(o.toString().trim());
+			}
+			if (v <= 0L) {
+				throw new UnauthorizedException("Unable to authenticate user.");
+			}
+			return v;
+		} catch (NumberFormatException e) {
+			throw new UnauthorizedException("Unable to authenticate user.");
+		}
 	}
 }

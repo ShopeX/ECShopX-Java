@@ -17,6 +17,7 @@
 package cn.shopex.ecshopx.merchant.service.wxapp;
 
 import cn.shopex.ecshopx.common.exception.ResourceException;
+import cn.shopex.ecshopx.merchant.service.MerchantCreateParamValidator;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.Collection;
 import java.util.Map;
@@ -36,7 +37,7 @@ public class MerchantWxappSettlementApplySaveParamValidator {
 	}
 
 	private void validateStep1(Map<String, Object> params) {
-		requirePositiveIntMerchantType(params.get("merchant_type_id"));
+		requireNonEmptyMainCategorySelection(params.get("main_category_selection"));
 		Object st = params.get("settled_type");
 		if (!StringUtils.hasText(scalarToString(st))) {
 			throw new ResourceException("入驻类型必填");
@@ -48,46 +49,56 @@ public class MerchantWxappSettlementApplySaveParamValidator {
 	}
 
 	private void validateStep2(Map<String, Object> params) {
+		requireNonBlank(params.get("license_registered_address"), "营业执照注册地址必填");
+		requireNonBlank(params.get("license_legal_representative"), "法定代表人必填");
 		requireNonBlank(params.get("merchant_name"), "商户名称必填");
 		requireSize18(params.get("social_credit_code_id"), "统一社会信用代码必须是18位");
-		if (!isPresentRegionsValue(params.get("regions_id"))) {
-			throw new ResourceException("区域必填");
+		requireNonBlank(params.get("contact_name"), "联系人姓名必填");
+		requireNonBlank(params.get("contact_mobile"), "联系人手机号必填");
+		String mobile = scalarToString(params.get("contact_mobile")).trim();
+		if (!MerchantCreateParamValidator.isCnMobile(mobile)) {
+			throw new ResourceException("请填写正确的手机号码");
 		}
-		if (!isPresentRegionsValue(params.get("regions"))) {
-			throw new ResourceException("区域必填");
-		}
-		requireNonBlank(params.get("address"), "详细地址必填");
-		requireNonBlank(params.get("legal_name"), "姓名必填");
 		requireSize18(params.get("legal_cert_id"), "身份证号码必须是18位");
-		requireNonBlank(params.get("legal_mobile"), "手机号码必填是11位");
-	}
-
-	private void validateStep3(Map<String, Object> params) {
 		requireNonBlank(params.get("license_url"), "营业执照必填");
 		requireNonBlank(params.get("legal_certid_front_url"), "手持身份证正面必填");
 		requireNonBlank(params.get("legal_cert_id_back_url"), "手持身份证反面必填");
+		requireNonBlank(params.get("bank_acct_type"), "银行账户类型必填");
+		requireNonBlank(params.get("card_id_mask"), "结算银行账号必填");
+		String bankAcct = scalarToString(params.get("bank_acct_type")).trim();
+		if ("1".equals(bankAcct)) {
+			requireNonBlank(params.get("bank_name"), "开户银行必填");
+		} else if ("2".equals(bankAcct)) {
+			requireNonBlank(params.get("bank_mobile"), "银行预留手机号必填");
+			String bm = scalarToString(params.get("bank_mobile")).trim();
+			if (!MerchantCreateParamValidator.isCnMobile(bm)) {
+				throw new ResourceException("银行预留手机号格式不正确，请确认后再重试");
+			}
+		} else {
+			throw new ResourceException("银行账户类型必填");
+		}
 	}
 
-	private static void requirePositiveIntMerchantType(Object v) {
+	private void validateStep3(Map<String, Object> params) {
+		Object submit = params.get("submit");
+		boolean ok = Boolean.TRUE.equals(submit)
+				|| (submit instanceof String s && "true".equalsIgnoreCase(s.trim()));
+		if (!ok) {
+			throw new ResourceException("请确认提交审核");
+		}
+	}
+
+	private static void requireNonEmptyMainCategorySelection(Object v) {
 		if (v == null) {
-			throw new ResourceException("经营范围必填");
+			throw new ResourceException("商户类目必填");
 		}
-		long id;
-		if (v instanceof Number n) {
-			id = n.longValue();
-		} else {
-			String s = String.valueOf(v).trim();
-			if (!StringUtils.hasText(s)) {
-				throw new ResourceException("经营范围必填");
-			}
-			try {
-				id = Long.parseLong(s);
-			} catch (NumberFormatException e) {
-				throw new ResourceException("经营范围必填");
-			}
+		if (v instanceof Collection<?> c && c.isEmpty()) {
+			throw new ResourceException("商户类目必填");
 		}
-		if (id < 1L) {
-			throw new ResourceException("经营范围必填");
+		if (v instanceof JsonNode n) {
+			if (n.isNull() || (n.isArray() && n.isEmpty())) {
+				throw new ResourceException("商户类目必填");
+			}
 		}
 	}
 
@@ -129,37 +140,6 @@ public class MerchantWxappSettlementApplySaveParamValidator {
 		if (s.length() != 18) {
 			throw new ResourceException(message);
 		}
-	}
-
-	private static boolean isPresentRegionsValue(Object v) {
-		if (v == null) {
-			return false;
-		}
-		if (v instanceof String s) {
-			return StringUtils.hasText(s.trim());
-		}
-		if (v instanceof Collection<?> c) {
-			return !c.isEmpty();
-		}
-		if (v instanceof Map<?, ?> m) {
-			return !m.isEmpty();
-		}
-		if (v instanceof Object[] a) {
-			return a.length > 0;
-		}
-		if (v instanceof JsonNode n) {
-			if (n.isNull() || n.isMissingNode()) {
-				return false;
-			}
-			if (n.isArray()) {
-				return n.size() > 0;
-			}
-			if (n.isTextual()) {
-				return StringUtils.hasText(n.asText().trim());
-			}
-			return true;
-		}
-		return true;
 	}
 
 	private static String scalarToString(Object v) {

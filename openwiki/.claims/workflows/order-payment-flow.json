@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:87a46ead50c648d9519816a2cc0a2541ae43ded2ccf4080ffb721d51e278c252",
+  "pageVersion": "sha256:60fd5fe259c3e998a50b0dbce7cdd489ec9cf0d031542cbbe8adfb0162fd4ff6",
   "claims": [
     {
       "id": "claim_8ebde6be55a342c6aad350bc80c8c0f5",
@@ -62,11 +62,11 @@
     },
     {
       "id": "claim_ae3ea39238224e5680d30a7551f40f1e",
-      "statement": "ecshopx-payment depends on orders/deposit only through port interfaces: AlipayNotifyOrderSidePortImpl in ecshopx-orders delegates applyTradePaymentAfterAlipay one-line to OrdersTradePaymentCallbackService.applyTradePaymentNotify, and AlipayNotifyDepositSidePortImpl in ecshopx-deposit delegates rechargeCallback to AdapayDepositTradeRechargeCallbackService — despite the 'Alipay' name these ports are the shared side entry reused by the wxpay notify facade; the orders port also exposes resolveDistributorIdForAlipayRedis which returns the trade's distributor id only when the distributor's payment_subject=1.",
+      "statement": "ecshopx-payment depends on orders/deposit only through port interfaces: AlipayNotifyOrderSidePortImpl in ecshopx-orders delegates applyTradePaymentAfterAlipay one-line to OrdersTradePaymentCallbackService.applyTradePaymentNotify, and AlipayNotifyDepositSidePortImpl in ecshopx-deposit delegates rechargeCallback to AdapayDepositTradeRechargeCallbackService (and resolves requireCompanyIdByDepositTradeId from the deposit row, throwing BadRequestException for a blank/unknown id) — despite the 'Alipay' name these ports are the shared side entry reused by the wxpay notify facade; the orders port also exposes resolveDistributorIdForAlipayRedis which returns the trade's distributor id only when the distributor's payment_subject=1.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-deposit/src/main/java/cn/shopex/ecshopx/deposit/integration/alipay/AlipayNotifyDepositSidePortImpl.java#L24-L70",
-          "version": "repo-lines-v1:sha256:4724b9ec5a7e56529d62c37a47cff8688999f4d0915319d437be68b6341b716e:eyJzZWxlY3RlZExpbmVDb3VudCI6NDcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNkZTUxYzcxZDM0NDY3MjVjMWZkMzE1Y2I3YmFlZTM2YzhiMzViMDZlNTcyYjU4Y2Y5MGFlNjE1NjlhNzgxNWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI3YTA5ZWIwODMyZjhlYmUxZjhiZDgwZWMwNDUyMWU5MDI1ZGY5MzlkY2EzN2RhMzcyMzI4Yzc5OWM4MjIyMDQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+          "resource": "repo://ecshopx-deposit/src/main/java/cn/shopex/ecshopx/deposit/integration/alipay/AlipayNotifyDepositSidePortImpl.java#L28-L70",
+          "version": "repo-lines-v1:sha256:3a6dc3c5916f4eb9a43e1704fc2d9fddd1fdbe2e3a247f426239910f286e07af:eyJzZWxlY3RlZExpbmVDb3VudCI6NDMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJiMzM2YzQyYjJmNTIwN2I3NzVlNTBhOGRhY2UyZDZkMTViMjZmNjFlOGNkYTJjYTRkNDNmY2U0YWU0ODQ0ZjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdkMzcwN2E5NDBhMjJmOWM3Yzg1YmZhY2E0NWJjYTExNzE2Mzc2ZWZkYzA4MjM3NTg5ZjEwNTc3Y2VlMDhkMTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
         },
         {
           "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/alipay/AlipayNotifyOrderSidePortImpl.java#L73-L109",
@@ -365,10 +365,34 @@
           "version": "repo-lines-v1:sha256:66e4b0393b55497b0d095e5ba4e2ffdde26795b1c9c0d0fbe86a6691cd0fd972:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJhZjRlMDI1OGY4MTViMTFhMjY0Y2MzNTI1NTViMTdmODI3ZDMyMjg3M2Y2MWJlYmU2ZjI5YTA4OWE3NGRiNTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImMyMDgwZmUwYTIxNDI5ZDI5MWRmNzk3MmNkM2FmYWU0YzdjNzc1OGI0YTYwYjAzNmI5ZGY4MjQ3YWIwOTQ5YmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkwY2FjNzE3YzhiM2Q2OTU4MDBiOGEzMjg2ZGFhMzZhZDkzOWI0ZTNiODRmMGVhNjI5NzVkMWQ5YWM5NjZjNTgifQ"
         }
       ]
+    },
+    {
+      "id": "claim_54e78d5a69e34d3095b7ced30b8ba194",
+      "statement": "AdapayDepositTradeRechargeCallbackService.rechargeCallback (ECX-10915) performs the deposit-trade status flip as a guarded conditional update that atomically takes over the row (aligned with PHP's FOR UPDATE + lock-then-check): it rejects a blank or unknown deposit_trade_id with '储值单不存在或主键无效，无法完成回调', ignores non-SUCCESS statuses entirely, throws '更新已处理，不需要更新' for an already-SUCCESS row, then runs an UPDATE carrying WHERE trade_status != 'SUCCESS' that sets trade_status/bank_type/transaction_id/pay_type/time_expire; zero affected rows throws the same already-handled '更新已处理，不需要更新', and the Redis balance credits (shopDepositTotal, user deposit total, dayRechargeTotal) and the after-commit recharge SMS job run only after the guarded update succeeds — so a concurrent or replayed double callback cannot credit the balance twice.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-deposit/src/main/java/cn/shopex/ecshopx/deposit/service/AdapayDepositTradeRechargeCallbackService.java#L120-L127",
+          "version": "repo-lines-v1:sha256:c3eb6761193c366f328672ecc641ae7bb539d7e30b2c07c5f662775093ceacaf:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjMxYzY1MmI5ZjQyMjNlYWNlY2UyZjczMGNiYTNkM2Y2ODhlNTFkZDc5MjYzY2I5YzM4ZjUxZWNiYjQ2ZDg2YyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTExMzc0MjI5Y2UzMWM3ODg4YjkyMWM5YWFjNzk5YTFjM2Y3NmQwNjg1MDAyYmI5NzI1MDBlN2IxODRiYmJkYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNTdlMzJjMzhiOGJjOGI3MWUzZTk3MTQwZTNiYWI1NjVkMWUxNjEwMGI2MmVjNTY1OWUxZDE0ODRlYTc3NmYxNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZGUzNjAyYzQxZjEwZGQ1ZGM1NmI2MjQ2MzZiOWUwNDQxNDk0ZDkyOTE1ZTk1MmNiM2I1MjkxZTQzOGRkN2MyNyJ9"
+        },
+        {
+          "resource": "repo://ecshopx-deposit/src/main/java/cn/shopex/ecshopx/deposit/service/AdapayDepositTradeRechargeCallbackService.java#L56-L102",
+          "version": "repo-lines-v1:sha256:ed0a4ef114d6afdd43f925b3b6457ae9d0ccfac9de04f9e85110d9b4d1aa8412:eyJzZWxlY3RlZExpbmVDb3VudCI6NDcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ4Mzc5NTljZTBlZmZjYzgyZDNhZTY3NjRmNWIxY2IxNjVhN2I2ZDQwMzlmYjc2YjNhZWU4ZWM3MGVkZTQwNzEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZmZDBiNzA2MmU3ZTI2OTM0NDM3MzMwOTdmOTg4MjFkZGQ0NTExNzZmNTBlNzdmM2E2N2M1ZGU2ZmU5ZDFiMTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdhMzFjMDdkNjc5MWNjMTFjNmI5NDA5Y2E5YTlhYWNmOGMwYTcxN2YxZDc4NDA4OGJlOWYwNTQ0NjY3ZTNiMjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJiOWY1ODQ0OTgyM2UzNzEzYWE0MDhkYjI1NzQyNWI4YjE1OWExMGRmMTBmZTI1OWQ1ZmNiNThkOTJkNGZkZTIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_57bd171dc6ff46f2b223479703412e22",
+      "statement": "AdapayDepositTradeRechargeCallbackServiceIdempotencyTest (bootstrap, ECX-10915) pins the deposit recharge guard: the update wrapper's SQL segment carries the trade_status guard; a takeover loss (guarded update returning 0) throws '更新已处理，不需要更新' with no addUserDepositTotal mutation, no Redis interaction and no SMS publish; and a successful first callback credits the user's deposit total exactly once (addUserDepositTotal(10,20,5000)).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/deposit/service/AdapayDepositTradeRechargeCallbackServiceIdempotencyTest.java#L40-L147",
+          "version": "repo-lines-v1:sha256:b2af14224673878df7ff980f440bfdb4ef97dd08acaf16570dc4e2a1ddcae73b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTA4LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJlNDU0ZjM5MTg0NGJkMTM0NDkxMTdkMjAyNTgyMGRlNGQ2N2I2MDNkOTQzNzQwNDI5ZjRhZDUzYzExYTljNDk3IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0MTJjYTM0NWNjZjc1YmY5YzA4MDZiY2U2OTViZThkZTgwOGI3OTk4NDI1MWE3YTU0ZDIwMmNmNjEwMWRkNDUxIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiIyNzY3M2YyZDhmN2Y1OGQ3ZGM4MWRmZTg4NTFkMzcxZjE3ZWMxOTY3YzZjOTNmZjhiZDFkNTdjMTdkMjRlZTJkIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MCwiZm9sbG93aW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1In0"
+        }
+      ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.7.3",
-    "at": "2026-11-04T17:09:55.577Z"
+    "by": "openwiki/0.9.0",
+    "at": "2026-11-05T17:10:02.238Z"
   }
 }

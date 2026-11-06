@@ -20,6 +20,8 @@ import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.goods.domain.Items;
 import cn.shopex.ecshopx.goods.repository.ItemsRepository;
 import cn.shopex.ecshopx.promotions.service.ItemCreatePromotionGuardService;
+import cn.shopex.ecshopx.supplier.domain.SupplierItems;
+import cn.shopex.ecshopx.supplier.repository.SupplierItemsRepository;
 import java.util.List;
 import java.util.Objects;
 import org.springframework.stereotype.Service;
@@ -28,19 +30,21 @@ import org.springframework.stereotype.Service;
 public class ItemsIsGiftBatchUpdateService {
 
 	private final ItemsRepository itemsRepository;
+	private final SupplierItemsRepository supplierItemsRepository;
 	private final ItemCreatePromotionGuardService itemCreatePromotionGuardService;
 
 	public ItemsIsGiftBatchUpdateService(
-			ItemsRepository itemsRepository, ItemCreatePromotionGuardService itemCreatePromotionGuardService) {
+			ItemsRepository itemsRepository,
+			SupplierItemsRepository supplierItemsRepository,
+			ItemCreatePromotionGuardService itemCreatePromotionGuardService) {
 		this.itemsRepository = itemsRepository;
+		this.supplierItemsRepository = supplierItemsRepository;
 		this.itemCreatePromotionGuardService = itemCreatePromotionGuardService;
 	}
 
 	public void batchUpdateItemGift(long companyId, String operatorType, List<Long> goodsIds, String statusRaw) {
 		String op = operatorType == null ? "" : operatorType.trim();
-		if ("supplier".equalsIgnoreCase(op)) {
-			throw new ResourceException("供应商不支持该操作");
-		}
+		boolean supplier = "supplier".equalsIgnoreCase(op);
 		if (goodsIds == null || goodsIds.isEmpty()) {
 			return;
 		}
@@ -48,8 +52,66 @@ public class ItemsIsGiftBatchUpdateService {
 			if (goodsId == null) {
 				continue;
 			}
-			updateOneGoodsGift(companyId, goodsId, statusRaw);
+			if (supplier) {
+				updateOneSupplierGoodsGift(companyId, goodsId, statusRaw);
+			} else {
+				updateOneGoodsGift(companyId, goodsId, statusRaw);
+			}
 		}
+	}
+
+	private void updateOneSupplierGoodsGift(long companyId, long goodsId, String statusRaw) {
+		if ("false".equals(statusRaw)) {
+			List<SupplierItems> listPositivePrice =
+					supplierItemsRepository.listByCompanyIdAndGoodsId(companyId, goodsId, true);
+			List<SupplierItems> listAll = supplierItemsRepository.listByCompanyIdAndGoodsId(companyId, goodsId, false);
+			if (listAll.isEmpty()) {
+				return;
+			}
+			if (listPositivePrice.size() != listAll.size()) {
+				throw new ResourceException("存在价格设置为0元的商品无法设置为非赠品，请检查后再次提交");
+			}
+			supplierItemsRepository.updateIsGiftByCompanyAndGoodsId(companyId, goodsId, false);
+			dualWriteLinkedPlatformIsGift(companyId, listAll, false);
+			supplierItemsRepository.updateAuditStatusByGoodsId(companyId, goodsId, "processing");
+			return;
+		}
+		if ("true".equals(statusRaw)) {
+			List<SupplierItems> listAll = supplierItemsRepository.listByCompanyIdAndGoodsId(companyId, goodsId, false);
+			if (listAll.isEmpty()) {
+				return;
+			}
+			List<Long> itemIds = listAll.stream()
+					.map(SupplierItems::getItemId)
+					.filter(Objects::nonNull)
+					.distinct()
+					.toList();
+			itemCreatePromotionGuardService.checkNotFinishedActivityValid(companyId, true, itemIds, List.of(goodsId));
+			supplierItemsRepository.updateIsGiftByCompanyAndGoodsId(companyId, goodsId, true);
+			dualWriteLinkedPlatformIsGift(companyId, listAll, true);
+			supplierItemsRepository.updateAuditStatusByGoodsId(companyId, goodsId, "processing");
+		}
+	}
+
+	private void dualWriteLinkedPlatformIsGift(long companyId, List<SupplierItems> supplierRows, boolean isGift) {
+		List<Long> supplierSkuIds = supplierRows.stream()
+				.map(SupplierItems::getItemId)
+				.filter(Objects::nonNull)
+				.distinct()
+				.toList();
+		if (supplierSkuIds.isEmpty()) {
+			return;
+		}
+		List<Items> linked = itemsRepository.listByCompanyIdAndSupplierItemIds(companyId, supplierSkuIds);
+		if (linked.isEmpty()) {
+			return;
+		}
+		List<Long> platformItemIds = linked.stream()
+				.map(Items::getItemId)
+				.filter(Objects::nonNull)
+				.distinct()
+				.toList();
+		itemsRepository.updateIsGiftByCompanyAndItemIds(companyId, platformItemIds, isGift);
 	}
 
 	private void updateOneGoodsGift(long companyId, long goodsId, String statusRaw) {

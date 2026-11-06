@@ -77,20 +77,15 @@ public class MerchantWxappJwtAuthenticationFilter extends OncePerRequestFilter {
 	@Override
 	protected boolean shouldNotFilter(HttpServletRequest request) {
 		String path = resolvePath(request);
-		if ("GET".equalsIgnoreCase(request.getMethod())
-				&& (AUDITSTATUS_GET_PATH.equals(path)
-						|| DETAIL_GET_PATH.equals(path)
-						|| STEP_GET_PATH.equals(path)
-						|| TYPE_LIST_GET_PATH.equals(path))) {
-			return false;
-		}
-		if (!"POST".equalsIgnoreCase(request.getMethod())) {
+		// ECX-10617: settlementapply/* and password/reset use mall member @FrontAuth, not Merchant JWT.
+		if (pathMatcher.match(SETTLEMENT_APPLY_PATTERN, path)
+				|| AUDITSTATUS_GET_PATH.equals(path)
+				|| DETAIL_GET_PATH.equals(path)
+				|| STEP_GET_PATH.equals(path)
+				|| RESET_PATH.equals(path)) {
 			return true;
 		}
-		if (RESET_PATH.equals(path)) {
-			return false;
-		}
-		if (pathMatcher.match(SETTLEMENT_APPLY_PATTERN, path)) {
+		if ("GET".equalsIgnoreCase(request.getMethod()) && TYPE_LIST_GET_PATH.equals(path)) {
 			return false;
 		}
 		return true;
