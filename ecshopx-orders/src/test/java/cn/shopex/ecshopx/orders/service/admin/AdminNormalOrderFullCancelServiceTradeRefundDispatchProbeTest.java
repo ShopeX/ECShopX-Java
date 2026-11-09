@@ -142,17 +142,6 @@ class AdminNormalOrderFullCancelServiceTradeRefundDispatchProbeTest {
 						});
 		when(normalOrdersMapper.update(any(), any())).thenReturn(1);
 		when(orderAssociationsMapper.update(any(), any())).thenReturn(1);
-		when(orderAssociationsMapper.selectOne(any()))
-				.thenAnswer(
-						inv -> {
-							OrderAssociations a = new OrderAssociations();
-							a.setCompanyId(1L);
-							a.setOrderId(200L);
-							a.setUserId(100L);
-							a.setOrderClass("normal");
-							a.setOrderStatus("CANCEL");
-							return a;
-						});
 
 		PlatformTransactionManager txMgr = mock(PlatformTransactionManager.class);
 		when(txMgr.getTransaction(any()))
@@ -215,9 +204,8 @@ class AdminNormalOrderFullCancelServiceTradeRefundDispatchProbeTest {
 
 		ArgumentCaptor<Map<String, Object>> captor =
 				ArgumentCaptor.forClass((Class<Map<String, Object>>) (Class<?>) Map.class);
-		InOrder publishOrder =
-				inOrder(thirdPartyTradeUpdateDispatchPublisher, tradeRefundDispatchPublisher, normalOrderCancelDispatchPublisher);
-		publishOrder.verify(thirdPartyTradeUpdateDispatchPublisher, times(1)).publish(anyMap());
+		verify(thirdPartyTradeUpdateDispatchPublisher, never()).publish(anyMap());
+		InOrder publishOrder = inOrder(tradeRefundDispatchPublisher, normalOrderCancelDispatchPublisher);
 		publishOrder.verify(tradeRefundDispatchPublisher, times(1)).publish(captor.capture());
 		publishOrder.verify(normalOrderCancelDispatchPublisher, times(1)).publish(anyMap());
 		Map<String, Object> published = captor.getValue();
@@ -311,17 +299,6 @@ class AdminNormalOrderFullCancelServiceTradeRefundDispatchProbeTest {
 
 		when(normalOrdersMapper.update(any(), any())).thenReturn(1);
 		when(orderAssociationsMapper.update(any(), any())).thenReturn(1);
-		when(orderAssociationsMapper.selectOne(any()))
-				.thenAnswer(
-						inv -> {
-							OrderAssociations a = new OrderAssociations();
-							a.setCompanyId(1L);
-							a.setOrderId(200L);
-							a.setUserId(100L);
-							a.setOrderClass("normal_groups");
-							a.setOrderStatus("PAYED");
-							return a;
-						});
 
 		PlatformTransactionManager txMgr = mock(PlatformTransactionManager.class);
 		when(txMgr.getTransaction(any()))
@@ -378,11 +355,10 @@ class AdminNormalOrderFullCancelServiceTradeRefundDispatchProbeTest {
 				st ->
 						svc.execute(1L, "shop", 0L, 0L, 100L, "13800000000", 200L, "reason", Map.of("other_reason", "x")));
 
+		verify(thirdPartyTradeUpdateDispatchPublisher, never()).publish(anyMap());
 		ArgumentCaptor<Map<String, Object>> captor =
 				ArgumentCaptor.forClass((Class<Map<String, Object>>) (Class<?>) Map.class);
-		InOrder afterCommitOrder =
-				inOrder(thirdPartyTradeUpdateDispatchPublisher, tradeRefundDispatchPublisher, normalOrderCancelDispatchPublisher);
-		afterCommitOrder.verify(thirdPartyTradeUpdateDispatchPublisher, times(1)).publish(anyMap());
+		InOrder afterCommitOrder = inOrder(tradeRefundDispatchPublisher, normalOrderCancelDispatchPublisher);
 		afterCommitOrder.verify(tradeRefundDispatchPublisher).publish(captor.capture());
 		afterCommitOrder.verify(normalOrderCancelDispatchPublisher, times(1)).publish(anyMap());
 		Map<String, Object> published = captor.getValue();
@@ -481,17 +457,6 @@ class AdminNormalOrderFullCancelServiceTradeRefundDispatchProbeTest {
 
 		when(normalOrdersMapper.update(any(), any())).thenReturn(1);
 		when(orderAssociationsMapper.update(any(), any())).thenReturn(1);
-		when(orderAssociationsMapper.selectOne(any()))
-				.thenAnswer(
-						inv -> {
-							OrderAssociations a = new OrderAssociations();
-							a.setCompanyId(1L);
-							a.setOrderId(200L);
-							a.setUserId(100L);
-							a.setOrderClass("normal");
-							a.setOrderStatus("PAYED");
-							return a;
-						});
 
 		PlatformTransactionManager txMgr = mock(PlatformTransactionManager.class);
 		when(txMgr.getTransaction(any()))
@@ -560,9 +525,8 @@ class AdminNormalOrderFullCancelServiceTradeRefundDispatchProbeTest {
 
 		ArgumentCaptor<Map<String, Object>> captor =
 				ArgumentCaptor.forClass((Class<Map<String, Object>>) (Class<?>) Map.class);
-		InOrder afterCommitOrder =
-				inOrder(thirdPartyTradeUpdateDispatchPublisher, tradeRefundDispatchPublisher, normalOrderCancelDispatchPublisher);
-		afterCommitOrder.verify(thirdPartyTradeUpdateDispatchPublisher, times(1)).publish(anyMap());
+		verify(thirdPartyTradeUpdateDispatchPublisher, never()).publish(anyMap());
+		InOrder afterCommitOrder = inOrder(tradeRefundDispatchPublisher, normalOrderCancelDispatchPublisher);
 		afterCommitOrder.verify(tradeRefundDispatchPublisher, times(1)).publish(captor.capture());
 		afterCommitOrder.verify(normalOrderCancelDispatchPublisher, times(1)).publish(anyMap());
 		Map<String, Object> published = captor.getValue();

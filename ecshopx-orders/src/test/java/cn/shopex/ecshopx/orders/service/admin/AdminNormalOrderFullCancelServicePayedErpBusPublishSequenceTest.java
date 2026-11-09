@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -163,18 +164,6 @@ class AdminNormalOrderFullCancelServicePayedErpBusPublishSequenceTest {
 		when(orderSuccessTradeReadPort.primarySuccessTrade(1L, 200L)).thenReturn(Optional.of(trade));
 		when(aftersalesRefundService.countReadySupplierSubCancelRefunds(1L, 200L)).thenReturn(0L);
 
-		when(orderAssociationsMapper.selectOne(any()))
-				.thenAnswer(
-						inv -> {
-							OrderAssociations a = new OrderAssociations();
-							a.setCompanyId(1L);
-							a.setOrderId(200L);
-							a.setUserId(100L);
-							a.setOrderClass("normal_groups");
-							a.setOrderStatus("PAYED");
-							return a;
-						});
-
 		Map<String, Object> res =
 				svc.execute(1L, "shop", 0L, 0L, 100L, "13800000000", 200L, "buyer reason", Map.of("other_reason", "x"));
 
@@ -193,6 +182,6 @@ class AdminNormalOrderFullCancelServicePayedErpBusPublishSequenceTest {
 		inOrder.verify(applicationEventPublisher, times(1)).publishEvent(isA(SaasErpRefundSpringEvent.class));
 		inOrder.verify(tradeRefundDispatchPublisher, times(1)).publish(anyMap());
 		inOrder.verify(normalOrderCancelDispatchPublisher, times(1)).publish(anyMap());
-		verify(thirdPartyTradeUpdateDispatchPublisher, times(1)).publish(anyMap());
+		verify(thirdPartyTradeUpdateDispatchPublisher, never()).publish(anyMap());
 	}
 }

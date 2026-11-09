@@ -78,6 +78,11 @@ public class AdminNormalOrderFullCancelService {
 	private final WdtErpTradeCancelDispatchPublisher wdtErpTradeCancelDispatchPublisher;
 	private final NormalOrderCancelDispatchPublisher normalOrderCancelDispatchPublisher;
 	private final TradeRefundDispatchPublisher tradeRefundDispatchPublisher;
+	/**
+	 * PHP {@code cancelOrder} does not emit {@code TradeUpdateEvent}. Agree-cancel republish lives on
+	 * {@code AdminOrderPassRefundService}. Kept so existing wiring stays explicit.
+	 */
+	@SuppressWarnings("unused")
 	private final ThirdPartyTradeUpdateDispatchPublisher thirdPartyTradeUpdateDispatchPublisher;
 	private final NormalOrderFullCancelItemStoreRestoreService normalOrderFullCancelItemStoreRestoreService;
 	private final NormalOrderStatusUpdateService normalOrderStatusUpdateService;
@@ -303,7 +308,6 @@ public class AdminNormalOrderFullCancelService {
 							reasonText,
 							cancelFromNorm);
 			closeNotPayOrder(companyId, orderId, supplierMode, supplierId, normalOrder);
-			maybeScheduleThirdPartyTradeUpdateAfterOrderAssociationCancel(companyId, orderId, orderStatus);
 			Map<String, Object> od = orderDataForPoints(supplierMode, normalOrder, supplierOrder, orderId);
 			pointMemberCancelOrderReturnPointsService.cancelOrderReturnBackPoints(od);
 			if (!supplierMode
@@ -354,7 +358,6 @@ public class AdminNormalOrderFullCancelService {
 				long supplierScope = supplierMode ? supplierId : 0L;
 				normalOrderStatusUpdateService.applyStatusUpdate(
 						companyId, orderId, supplierScope, null, "WAIT_PROCESS");
-				maybeScheduleThirdPartyTradeUpdateAfterOrderAssociationCancel(companyId, orderId, orderStatus);
 			}
 		}
 
@@ -460,64 +463,6 @@ public class AdminNormalOrderFullCancelService {
 			});
 		} else {
 			normalOrderCancelDispatchPublisher.publish(payload);
-		}
-	}
-
-	/**
-	 * When the pre-cancel order status is not {@code PART_PAYMENT}, schedules a third-party trade update dispatch
-	 * after {@code order_associations} writes and a re-read: {@link ThirdPartyTradeUpdateDispatchPublisher} runs on
-	 * {@code afterCommit} so external systems only observe updates once the transaction has committed.
-	 */
-	private void maybeScheduleThirdPartyTradeUpdateAfterOrderAssociationCancel(
-			long companyId, long orderId, String preCancelOrderStatus) {
-		if ("PART_PAYMENT".equalsIgnoreCase(safe(preCancelOrderStatus))) {
-			return;
-		}
-		OrderAssociations assocRow =
-				orderAssociationsMapper.selectOne(
-						new LambdaQueryWrapper<OrderAssociations>()
-								.eq(OrderAssociations::getCompanyId, companyId)
-								.eq(OrderAssociations::getOrderId, orderId)
-								.last("LIMIT 1"));
-		Map<String, Object> payload = buildThirdPartyTradeUpdatePayload(companyId, orderId, assocRow);
-		if (payload == null || payload.isEmpty()) {
-			return;
-		}
-		scheduleThirdPartyTradeUpdateDispatchAfterCommit(payload);
-	}
-
-	private Map<String, Object> buildThirdPartyTradeUpdatePayload(
-			long companyId, long orderId, OrderAssociations assocRow) {
-		if (assocRow == null) {
-			return null;
-		}
-		LinkedHashMap<String, Object> erp = new LinkedHashMap<>();
-		erp.put("company_id", companyId);
-		erp.put("order_id", String.valueOf(orderId));
-		erp.put("user_id", assocRow.getUserId() == null ? 0L : assocRow.getUserId());
-		String orderClass = safe(assocRow.getOrderClass());
-		if (!StringUtils.hasText(orderClass)) {
-			orderClass = "normal";
-		}
-		erp.put("order_class", orderClass);
-		Optional<Map<String, Object>> tradeOpt = orderSuccessTradeReadPort.primarySuccessTrade(companyId, orderId);
-		if (tradeOpt.isPresent()) {
-			erp.put("trade_id", String.valueOf(tradeOpt.get().get("trade_id")));
-		}
-		erp.put("order_status", "CANCEL");
-		return erp;
-	}
-
-	private void scheduleThirdPartyTradeUpdateDispatchAfterCommit(Map<String, Object> payload) {
-		if (TransactionSynchronizationManager.isSynchronizationActive()) {
-			TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-				@Override
-				public void afterCommit() {
-					thirdPartyTradeUpdateDispatchPublisher.publish(payload);
-				}
-			});
-		} else {
-			thirdPartyTradeUpdateDispatchPublisher.publish(payload);
 		}
 	}
 

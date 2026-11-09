@@ -16,6 +16,7 @@
 
 package cn.shopex.ecshopx.orders.service.tradefinish;
 
+import cn.shopex.ecshopx.common.dispatch.ThirdPartyTradeUpdateDispatchPublisher;
 import cn.shopex.ecshopx.orders.domain.NormalOrders;
 import cn.shopex.ecshopx.orders.domain.NormalOrdersItems;
 import cn.shopex.ecshopx.orders.domain.OrderAssociations;
@@ -35,6 +36,8 @@ import java.util.Optional;
 import java.util.Set;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 @Service
 public class OrdersTradeFinishNormalOrderPaySuccessApplyService {
@@ -55,18 +58,21 @@ public class OrdersTradeFinishNormalOrderPaySuccessApplyService {
 	private final OrderAssociationsMapper orderAssociationsMapper;
 	private final SupplierOrderMapper supplierOrderMapper;
 	private final OrderValiditySettingRedisReadService orderValiditySettingRedisReadService;
+	private final ThirdPartyTradeUpdateDispatchPublisher thirdPartyTradeUpdateDispatchPublisher;
 
 	public OrdersTradeFinishNormalOrderPaySuccessApplyService(
 			NormalOrdersMapper normalOrdersMapper,
 			NormalOrdersItemsMapper normalOrdersItemsMapper,
 			OrderAssociationsMapper orderAssociationsMapper,
 			SupplierOrderMapper supplierOrderMapper,
-			OrderValiditySettingRedisReadService orderValiditySettingRedisReadService) {
+			OrderValiditySettingRedisReadService orderValiditySettingRedisReadService,
+			ThirdPartyTradeUpdateDispatchPublisher thirdPartyTradeUpdateDispatchPublisher) {
 		this.normalOrdersMapper = normalOrdersMapper;
 		this.normalOrdersItemsMapper = normalOrdersItemsMapper;
 		this.orderAssociationsMapper = orderAssociationsMapper;
 		this.supplierOrderMapper = supplierOrderMapper;
 		this.orderValiditySettingRedisReadService = orderValiditySettingRedisReadService;
+		this.thirdPartyTradeUpdateDispatchPublisher = thirdPartyTradeUpdateDispatchPublisher;
 	}
 
 	/**
@@ -144,8 +150,36 @@ public class OrdersTradeFinishNormalOrderPaySuccessApplyService {
 		existing.setOrderStatus(targetOrderStatus);
 		existing.setPayStatus("PAYED");
 		maybeAutoCompleteShopadminOrShopscreenZiti(companyId, orderId, existing);
+		scheduleSaasErpTradeUpdateAfterCommit(companyId, orderId, existing);
 
 		return Optional.of(buildPaySuccessPayload(tradeFinishPayload, companyId, orderId));
+	}
+
+	/**
+	 * PHP {@code AbstractNormalOrder::orderStatusUpdate} fires {@code TradeUpdateEvent} whenever the new status is
+	 * not {@code PART_PAYMENT}. This path only leaves {@code NOTPAY}, so the SaasErp add is always scheduled.
+	 */
+	private void scheduleSaasErpTradeUpdateAfterCommit(long companyId, long orderId, NormalOrders order) {
+		Map<String, Object> erp = new LinkedHashMap<>();
+		erp.put("company_id", companyId);
+		erp.put("order_id", orderId);
+		if (order.getUserId() != null) {
+			erp.put("user_id", order.getUserId());
+		}
+		String orderClass = trim(order.getOrderClass());
+		erp.put("order_class", orderClass.isEmpty() ? "normal" : orderClass);
+		Runnable publish = () -> thirdPartyTradeUpdateDispatchPublisher.publish(erp);
+		if (TransactionSynchronizationManager.isSynchronizationActive()) {
+			TransactionSynchronizationManager.registerSynchronization(
+					new TransactionSynchronization() {
+						@Override
+						public void afterCommit() {
+							publish.run();
+						}
+					});
+			return;
+		}
+		publish.run();
 	}
 
 	/** 店务代客 / 大屏自提单支付成功后自动完成自提与收货。 */
