@@ -94,6 +94,8 @@ sources:
     resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/EspierUploadFileAsyncRunner.java
   - id: openwiki-source-677a38cf2fa2e7ba0a8e42a5
     resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/ExportCsvDataService.java
+  - id: openwiki-source-997cde947b231c78f96d6050
+    resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/ExportCsvFileService.java
   - id: openwiki-source-362685cd1efc48db50447d53
     resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/ExportLogService.java
   - id: openwiki-source-712ccf1473dc31af7e8ef169
@@ -106,6 +108,8 @@ sources:
     resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/upload/AbstractEspierTableUploadHandler.java
   - id: openwiki-source-3f650761ca8f1188ccdc644c
     resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/upload/EspierImportRowSinkMapConfiguration.java
+  - id: openwiki-source-6f8bde073acb1f585db6b979
+    resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/upload/EspierUploadExcelSheetReader.java
   - id: openwiki-source-7b0bd523aa9c245e226d7fc7
     resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/upload/EspierUploadFileHandlerRegistry.java
   - id: openwiki-source-d6f52e97a00a4a4862a7e366
@@ -156,6 +160,12 @@ sources:
     resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/web/ShopLoginAuditFilter.java
   - id: openwiki-source-29ba2c9c0a5c2b8fb054b794
     resource: repo://ecshopx-espier/src/test/java/cn/shopex/ecshopx/espier/service/EspierUploadFileAsyncRunnerChunkDispatchTest.java
+  - id: openwiki-source-aa9b6c4b6566d52da78581e6
+    resource: repo://ecshopx-espier/src/test/java/cn/shopex/ecshopx/espier/service/ExportCsvFileServiceTest.java
+  - id: openwiki-source-d5af79184950cc683b2f5d28
+    resource: repo://ecshopx-espier/src/test/java/cn/shopex/ecshopx/espier/service/upload/EspierGoodsMarketingStyleSyncSupportRowLimitTest.java
+  - id: openwiki-source-a671702ba5761b1e52cdaafb
+    resource: repo://ecshopx-espier/src/test/java/cn/shopex/ecshopx/espier/service/upload/EspierUploadExcelSheetReaderLimitTest.java
   - id: openwiki-source-a38b30d6b6268d4d2f64fe9a
     resource: repo://ecshopx-form/src/main/java/cn/shopex/ecshopx/form/api/admin/v1/TranscriptsController.java
   - id: openwiki-source-eb087a80cbc892a64ca5881b
@@ -180,8 +190,18 @@ sources:
     resource: repo://ecshopx-selfservice/src/main/java/cn/shopex/ecshopx/selfservice/api/admin/v1/RegistrationActivityController.java
   - id: openwiki-source-584fe968ad11d0846fbd482a
     resource: repo://ecshopx-selfservice/src/main/java/cn/shopex/ecshopx/selfservice/service/espier/SelformRegistrationRecordEspierImportRowSink.java
+  - id: openwiki-source-87dd2a81621585e8aec6221d
+    resource: repo://ecshopx-selfservice/src/main/java/cn/shopex/ecshopx/selfservice/service/FormSettingDataInfoService.java
+  - id: openwiki-source-ec22d6283ac220f21d804039
+    resource: repo://ecshopx-selfservice/src/main/java/cn/shopex/ecshopx/selfservice/service/FormTemplateCreateService.java
+  - id: openwiki-source-8ff22118041ba035472c5fcf
+    resource: repo://ecshopx-selfservice/src/main/java/cn/shopex/ecshopx/selfservice/service/FormTemplateDataInfoService.java
   - id: openwiki-source-65f019cd65a483dce65570a2
     resource: repo://ecshopx-selfservice/src/main/java/cn/shopex/ecshopx/selfservice/service/RegistrationActivityDataInfoService.java
+  - id: openwiki-source-73636c812f19842ff7f91f31
+    resource: repo://ecshopx-selfservice/src/test/java/cn/shopex/ecshopx/selfservice/service/FormSettingDataInfoServiceCompanyScopeTest.java
+  - id: openwiki-source-9a359ceb1ae7756aafae2a8c
+    resource: repo://ecshopx-selfservice/src/test/java/cn/shopex/ecshopx/selfservice/service/FormTemplateDataInfoServiceCompanyScopeTest.java
   - id: openwiki-source-0b8c138b397d21f25610ab14
     resource: repo://ecshopx-shopex-ai/src/main/java/cn/shopex/ecshopx/shopexai/api/admin/v1/OutfitAnyoneController.java
   - id: openwiki-source-c4b5886962db924252db6b1c
@@ -240,6 +260,12 @@ sources:
     resource: repo://ecshopx-wsugc/src/main/java/cn/shopex/ecshopx/wsugc/service/post/UgcPostLikeRedisService.java
   - id: openwiki-source-b579e89a39ea05175245812a
     resource: repo://ecshopx-wsugc/src/main/java/cn/shopex/ecshopx/wsugc/service/setting/UgcSettingSaveService.java
+  - id: openwiki-source-70432ef2ed0603dbf2e6ffaa
+    resource: repo://ecshopx-wsugc/src/main/java/cn/shopex/ecshopx/wsugc/service/topic/TopicCreateService.java
+  - id: openwiki-source-92aaf101516e2d92db5fa775
+    resource: repo://ecshopx-wsugc/src/main/java/cn/shopex/ecshopx/wsugc/service/topic/TopicDeleteService.java
+  - id: openwiki-source-7964f67a537b5ea8c9ce4ae1
+    resource: repo://ecshopx-wsugc/src/main/java/cn/shopex/ecshopx/wsugc/service/topic/TopicMultiLangDeleteService.java
   - id: openwiki-source-094d56e40b1ac1738c8b4e8f
     resource: repo://ecshopx-wsugc/src/main/java/cn/shopex/ecshopx/wsugc/service/topic/TopicSetTopService.java
   - id: openwiki-source-85ed35d1882889061858cfe7
@@ -250,14 +276,18 @@ sources:
     resource: repo://ecshopx-wsugc/src/test/java/cn/shopex/ecshopx/wsugc/service/post/PostCreateServiceCompanyScopeTest.java
   - id: openwiki-source-0240a7de48923742c25dc762
     resource: repo://ecshopx-wsugc/src/test/java/cn/shopex/ecshopx/wsugc/service/post/PostVerifyServiceCompanyScopeTest.java
+  - id: openwiki-source-3709d57231445894d32614dd
+    resource: repo://ecshopx-wsugc/src/test/java/cn/shopex/ecshopx/wsugc/service/topic/TopicCreateServiceCompanyScopeTest.java
+  - id: openwiki-source-5b77a8904a777dd0f6469b97
+    resource: repo://ecshopx-wsugc/src/test/java/cn/shopex/ecshopx/wsugc/service/topic/TopicDeleteServiceScopeTest.java
   - id: openwiki-source-08b8a8d9f4d994b6bcf0ecc6
     resource: repo://ecshopx-wsugc/src/test/java/cn/shopex/ecshopx/wsugc/service/topic/TopicSetTopServiceScopeTest.java
   - id: openwiki-source-f88bbfd29df85476326a0455
     resource: repo://ecshopx-wsugc/src/test/java/cn/shopex/ecshopx/wsugc/service/topic/TopicVerifyServiceScopeTest.java
-generated: { by: "openwiki/0.9.0", at: "2026-11-05T17:10:02.238Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-08T17:14:16.576Z" }
 verified:
   - by: openwiki/0.9.0
-    at: 2026-11-05T17:10:02.238Z
+    at: 2026-11-08T17:14:16.576Z
 ---
 
 # Platform Services and Supporting Bundles
@@ -374,12 +404,13 @@ Key invariants and failure semantics:
 
 * `handleUploadFile` is `@Transactional(rollbackFor = Exception.class)`; when `shouldQueue` is true the enqueue goes through `EspierUploadFileJobDispatchPublisherImpl` (bootstrap), which registers a `TransactionSynchronization.afterCommit` so a rolled-back transaction never publishes the job. The controller forces `shouldQueue=false` under the `local` Spring profile, which makes local runs go inline.
 * `EspierUploadFileStorageWriter` always writes imports to the **`file`** disk with a deterministic relative path `{file_type}/{companyId}/{uploadEpochSeconds}/{md5(fileName)}{ext}` — the same rule is exposed as `buildRelativePathForImport(...)` so the deletion cron can rebuild the path from row metadata alone.
-* `EspierUploadFileAsyncRunner` is idempotent-by-status: it re-reads the row and bails out unless `handle_status == "wait"`, then moves it to `processing` before parsing. Empty table, unreadable storage, and header/parse failures each persist a `finish` row with a `handle_message` errorlog, delete the stored file, and still invoke the handler's `handleAfterInsertInRequestThread`.
+* `EspierUploadFileAsyncRunner` is idempotent-by-status: it re-reads the row and bails out unless `handle_status == "wait"`, then moves it to `processing` before parsing. Empty table, unreadable storage, and header/parse failures each persist a `finish` row with a `handle_message` errorlog, delete the stored file, and still invoke the handler's `handleAfterInsertInRequestThread`. A workbook whose rows are all blank after the header goes through the same `finish` path with zeroed counters and no chunk dispatch.
+* The workbook is bounded before any chunk is built (ECX-10949): `EspierUploadFileAsyncRunner` reads only the first sheet through `EspierUploadExcelSheetReader.readFirstSheet(bytes, MAX_IMPORT_DATA_ROWS)` with at most **5000 data rows** (header excluded); streaming XLSX parsing throws `SheetRowLimitException("数据行超过上限5000")` at row 5001 and the runner routes it into the same `finish` + errorlog + delete + after-insert path as a header failure without dispatching a single chunk. During the read the POI zip-bomb guard `ZipSecureFile.setMaxEntrySize` is tightened to 50 MB per decompressed zip entry and restored in a `finally` afterwards. `EspierUploadExcelSheetReaderLimitTest` pins the limit and the restore, and the runner's own `runInline_rejectsMoreThan5000DataRows` pins the no-dispatch + error-message behaviour. Synchronous (non-queued) parses keep their own stricter caps — e.g. `EspierGoodsMarketingStyleSyncSupport.parseSync` still rejects more than 500 data rows with the original `每次最多上传500个商品...请减少后再提交` message (pinned by `EspierGoodsMarketingStyleSyncSupportRowLimitTest`).
 * Chunking is fixed at 500 rows per job. Chunks are dispatched with `sort = numChunks - k`, i.e. **descending** — the first chunk gets the highest sort. `UploadFileImportDataService.mergeFinishState` spins (with a 10 000-iteration cap) until the row's `left_job_num` equals its own `sort`; the chunk with `sort == left_job_num` then decrements `left_job_num` (and flips the row to `finish` when it reaches 0), so chunks merge strictly in descending sort order — the last-dispatched chunk (sort 1) merges first and the first-dispatched chunk (sort = numChunks) merges last and finishes the row. The optimistic-concurrency guard is the `where id = ? and left_job_num = ?` predicate on the update (a `ResourceException` from a lost race is retried up to `left` times).
 * Each row is processed in its own `REQUIRES_NEW` transaction (`UploadFileImportDataService`'s `rowTransactionTemplate`), so one bad row increments `errorLine` and appends an aligned error row rather than aborting the chunk.
 * `EspierUploadFileQueuedPayloadTest`, `UploadFileServiceHandleUploadFileShouldQueueBranchTest` and `EspierUploadFileAsyncRunnerChunkDispatchTest` pin these behaviours; the chunk-dispatch test asserts a 501-row workbook produces two chunks (500 + 1), `left_job_num = 2`, descending sorts `[2, 1]`, and that every dispatched row carries `__excel_row__`.
 
-The related export half (`ExportCsvDataService`, `ExportCsvFileService`, `ExportXlsxFileService`, `ExportZipFileService`, `ExportLog*` services, admin `ExportDataController`/`ExportLogController`) reads a filter blob from the `export_key:<key>` Redis entry on the **shared** template and fans out through the ~20 `EXPORT_FILE_JOB_*` variants in `EspierDispatchJobNames` — those belong to the domain bundles that own each export type.
+The related export half (`ExportCsvDataService`, `ExportCsvFileService`, `ExportXlsxFileService`, `ExportZipFileService`, `ExportLog*` services, admin `ExportDataController`/`ExportLogController`) reads a filter blob from the `export_key:<key>` Redis entry on the **shared** template and fans out through the ~20 `EXPORT_FILE_JOB_*` variants in `EspierDispatchJobNames` — those belong to the domain bundles that own each export type. `ExportCsvFileService` is the shared CSV writer used by ~40 domain export services (orders, aftersales, members, adapay/bspay/hfpay/chinaums trade data, popularize, promotions, …): it produces a UTF-8-BOM file with RFC-4180 quoting, stores it at `export/csv/<name>.csv` on the `file` disk and returns a 3600-second private download URL. Since ECX-10937 every cell written through it is formula-neutralized: a non-empty cell whose first character is `=`, `+`, `-` or `@` is prefixed with an apostrophe so Excel and WPS treat it as text — this deliberately also rewrites legitimately negative amounts such as `-12.50` to `'-12.50` — and `ExportCsvFileServiceTest` pins both the quoting and the five formula-prefix cases.
 
 Two XXL-JOB handlers keep the file store clean (both follow the [alert-and-rethrow cron template](../concepts/scheduling-xxljob.md)): `delete-error-file` → `UploadFileService.scheduleDeleteErrorFile` pages 100 rows at a time over `espier_uploadefile` rows older than 15 days whose `handle_message.errorLine` is non-zero, rebuilds each relative path with `buildRelativePathForImport` and deletes the stored workbook; and `delete-history-file` → `ExportLogService.scheduleDeleteHistoryFile`, which removes the `export/zip/<fileName>` object and the `export_log` row for finished exports older than 3 hours.
 
@@ -509,14 +540,22 @@ Notable behaviour: like/favourite/follower counts and comment counters are kept 
 * `PostVerifyService` (ECX-10921) applies the same load-all-and-match check before flipping review status — and still derives the acting operator id from the JWT (falling back to the request's `user_id` only under the `local` profile), awards/deducts points via `UgcPostPointService` and writes a `refusePost` system message on rejection.
 * `PostSetBadgesService` (ECX-10925) is two-dimensional: the target posts *and* every referenced `Badge` must belong to the company (`无权访问该角标` otherwise) before the `PostBadge` rows are rewritten.
 * `TopicVerifyService` (ECX-10874) scopes the update SQL itself (`company_id = ? AND topic_id IN (...)`) and throws when fewer rows matched than requested; `TopicSetTopService` (ECX-10872) clears and re-applies `is_top`/`p_order` only within the caller's company and refuses unknown ids.
+* `TopicCreateService` (ECX-10942) is two-sided: the same-name duplicate check is scoped to the operator's own company (so a foreign tenant's `优选` topic no longer blocks creation and the created row is always stamped with the caller's `company_id`), and the edit branch reloads the target `Topic` and throws `ResourceException("无权访问该话题")` without updating when its `company_id` differs.
+* `TopicDeleteService` (ECX-10943) takes the softer route: the `topic_id` list is filtered through `topic_id IN (...) AND company_id = ?`, only the owned subset is physically deleted (with `TopicMultiLangDeleteService` clearing the whitelisted per-locale outside tables for those ids first), and the response still reports `删除成功` echoing the full requested id list — foreign or missing ids are silently skipped rather than rejected.
 
-The focused `*CompanyScopeTest`/`*ScopeTest` classes (`PostCreateServiceCompanyScopeTest`, `PostEditServiceCompanyScopeTest`, `PostDeleteServiceCompanyScopeTest`, `PostSetBadgesServiceCompanyScopeTest`, `PostVerifyServiceCompanyScopeTest`, `TopicVerifyServiceScopeTest`, `TopicSetTopServiceScopeTest`, plus the comment-side `CommentVerifyServiceScopeTest`/`CommentDeleteServiceScopeTest`/`FrontUgcCommentDeleteServiceScopeTest`) pin the cross-tenant rejection and the company-scoped SQL.
+The focused `*CompanyScopeTest`/`*ScopeTest` classes (`PostCreateServiceCompanyScopeTest`, `PostEditServiceCompanyScopeTest`, `PostDeleteServiceCompanyScopeTest`, `PostSetBadgesServiceCompanyScopeTest`, `PostVerifyServiceCompanyScopeTest`, `TopicVerifyServiceScopeTest`, `TopicSetTopServiceScopeTest`, `TopicCreateServiceCompanyScopeTest`, `TopicDeleteServiceScopeTest`/`TopicDeleteControllerScopeTest`/`TopicMultiLangDeleteServiceScopeTest`, plus the comment-side `CommentVerifyServiceScopeTest`/`CommentDeleteServiceScopeTest`/`FrontUgcCommentDeleteServiceScopeTest`) pin the cross-tenant rejection, the company-scoped SQL and the delete-side silent-skip semantics.
 
 **Content-check SSRF guard.** The per-company `contentCheck_url` setting is the base URI for the WeChat mini-program content-safety API (`/wxa/msg_sec_check`, media checks, and the `client_credential` access-token fetch), so a poisoned setting would be an SSRF/credential-exfiltration primitive. `UgcWxContentCheckBaseUriGuard.normalizeAndRequire` (invoked by both check services at call time and by `UgcSettingSaveService.requireOptional` on save) strips trailing slashes and rejects anything that is not exactly `https://api.weixin.qq.com` — no other host, no user-info, no path, no query/fragment, no non-TLS scheme (`BadRequestException: contentCheck_url 仅允许 https://api.weixin.qq.com`).
 
 ## ecshopx-im — customer-service chat configuration
 
 Package-info: "instant messaging domain module" (即时通讯域模块). Four controllers and two services, all of them configuration rather than messaging infrastructure: admin `ImController` (`/api/v1`, `GET/POST /im/meiqia` for the company-level Meiqia config and `GET/PUT /im/meiqia/distributor/{distributor_id}` for per-store overrides) and admin `EChatController`; front `ImController` and `EChatController` under `/api/v1/h5app` (`GET /wxapp/im/meiqia`, `GET /wxapp/im/meiqia/distributor/{distributor_id}`, `GET /wxapp/im/echat`) hand the same configs to the clients. `MeiqiaConfigService` stores JSON blobs under `im:meiqia:<companyId>` and `im:meiqia:distributor:<companyId>:<distributorId>` on the shared Redis template — the store-level blob only takes effect when the company-level `is_distributor_open` flag is true, and per-channel URL defaults are patched back in on read. `EChatConfigService` does the same under `im:echat:<companyId>` with `is_open` + `echat_url` and mandatory-field validation on save. Both degrade to defaults when the blob is missing or unparsable.
+
+## ecshopx-selfservice — registration activities, form templates and form settings
+
+The self-service registration bundle: admin controllers under `/api/v1/selfhelp` (`RegistrationActivityController`, `FormTemplateController`, `FormSettingController`) plus the front-facing activity surface, all reading the operator context from the espier-set `OPERATOR_JWT_USER_DATA` attribute and taking the caller's `companyId` from the JWT (`parseCompanyId`, 422 on non-positive). `FormTemplateController` (`POST/PUT/GET /selfhelp/formtem`, `GET /selfhelp/formtem/{id}`, `POST /selfhelp/formtem/{discard,restore}/{id}`) maintains the reusable form templates through `FormTemplateCreateService` — which parses/normalizes the `content` and `key_index` JSON blobs, writes the base row and the multi-language side rows in one transaction, and scopes both the update select (`id = ? AND company_id = ?`, `ResourceException` on miss) and the discard/restore status flips (`company_id` in the update wrapper, "数据不存在" on zero affected rows — ECX-10901/10904) to the caller's company — and `FormTemplateDatalistService`; `FormSettingController` does the same for the per-element field settings under `/selfhelp/formdata`.
+
+**Cross-tenant detail reads return empty.** Following the same PHP-parity rule as `RegistrationActivityDataInfoService` (see the cross-cutting note below), `FormSettingDataInfoService.getDataInfo` (ECX-10938, behind `GET /selfhelp/formdata/{id}`, alias `selfhelp.form.info`) and `FormTemplateDataInfoService.getDataInfo` (ECX-10944, behind `GET /selfhelp/formtem/{id}`, alias `selfhelp.template.info`) treat a row whose `company_id` is null or foreign exactly like a missing id: they return an empty list *without* touching the multi-language read services, so no field-title overrides for another tenant's content ever leave the database. Blank, `"0"`, non-numeric or non-positive ids short-circuit the same way. `FormSettingDataInfoServiceCompanyScopeTest` and `FormTemplateDataInfoServiceCompanyScopeTest` pin the empty result and the never-called multi-lang read for both the foreign-company and null-company cases.
 
 ## ecshopx-form — forms and transcripts (成绩单)
 
@@ -544,4 +583,4 @@ Package-info: "Shopex AI domain module" (Shopex AI 域模块). The smallest func
 * **Cross-bundle wiring stays acyclic.** The port interfaces live in `ecshopx-common` (`EspierDispatchJobNames`, `DatacubeDispatchJobNames`, `EspierImportRowSink`) or in the consuming bundle (`KujialeDesignerWorksByItemIdPort` in goods), with the `DispatchFacade`-backed or mapper-backed impls in the owning bundle or in `ecshopx-bootstrap/config` — see [Cross-bundle communication](../architecture/cross-bundle-communication.md).
 * **Redis template discipline.** Datacube counters use `datacubeStringRedisTemplate`, the bloom filter and all UGC/IM blobs use `sharedStringRedisTemplate`, the agreement throttle uses `companysRedisTemplate`, the address tree cache uses `espierStringRedisTemplate`, and the front upload-image day quota uses `membersStringRedisTemplate` (see *Member-facing image upload quota* above) — the qualifier matters because `companysRedisTemplate` is `@Primary`.
 * **Cron handlers** in espier, theme and data-cube all follow the shared alert-and-rethrow template; the queue-feeding split (handler enqueues, bus does the work) is the norm for the statistics family, as detailed on the [XXL-JOB](../concepts/scheduling-xxljob.md) page.
-* **Cross-tenant reads degrade to "not found".** The wsugc company-match guards above throw, but the selfservice bundle takes the softer PHP-parity route for detail reads: `RegistrationActivityDataInfoService.getDataInfo` (behind admin `GET /selfhelp/registrationActivity/get`, route alias `selfhelp.registrationActivity.info`) reloads the activity, and when its `company_id` does not match the operator JWT's company it returns an empty result rather than an error (ECX-10916) — cross-tenant probing is indistinguishable from a missing id.
+* **Cross-tenant reads degrade to "not found".** The wsugc company-match guards above throw (except topic delete, which silently skips foreign ids), but the selfservice bundle takes the softer PHP-parity route for detail reads: `RegistrationActivityDataInfoService.getDataInfo` (behind admin `GET /selfhelp/registrationActivity/get`, route alias `selfhelp.registrationActivity.info`) reloads the activity, and when its `company_id` does not match the operator JWT's company it returns an empty result rather than an error (ECX-10916) — cross-tenant probing is indistinguishable from a missing id; `FormSettingDataInfoService` (ECX-10938) and `FormTemplateDataInfoService` (ECX-10944) apply the same empty-result rule to the form setting/template detail reads.

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:5b47645703aed854948d886df9220631a687bad68d1cfd21c62b16739c055589",
+  "pageVersion": "sha256:34904128f6a52400728b875e72c8b7f04541c04896fb856e08780e179c4ec1bc",
   "claims": [
     {
       "id": "claim_42c913eebfc94dd384ba446f036982f6",
@@ -461,10 +461,106 @@
           "version": "repo-lines-v1:sha256:e2f0d3f682c74097409cb8a5d0c19c4f99910fba5f46ebc1de46045f4dc9d154:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI0YWFiNjE3ZGI2NWVkMTQ5YzdiZjMzYzZmYzIyMWY4NmNmZjYyZmE5ZjMzMmIzNmMwMjQ3ZTAxMDg5ZWI0OGQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRkMGVkMWY0NGYwNzYwY2NjYWFiZjcxNmUxY2JiNmM0YWVmZWFiY2M4YjVlNDAxMzUyZWQ3NGViMWZiZTVlNWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU5NmNlMGY1MTBjMDEzMmMxYWI0ZWM0NTkzMDg2N2Y3MDI5YWUxODEwMjVhNjAxNWEwNTkwZWNlZmU2NWZjMTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNhNjg2YjYwODRlYjBiYTFmM2UyMWY3ZTYyYmEzMjAyMzEwZWQ2MzI3ZTgxMTRmNWFiYTFiMmY2N2VjNGVhMTMifQ"
         }
       ]
+    },
+    {
+      "id": "claim_8326f82ec08f4da6a364ab53a266fa36",
+      "statement": "EmployeePurchaseEmailVcodeRedisService runs on the explicitly qualified sharedStringRedisTemplate (spring.data.redis.database, default DB 0) and stores employee-purchase email verification codes at employee-purchase-email:<email> with a caller-supplied TTL (1800 s from EmployeeEmailVcodeSendService); verifyAndConsume compares the stored code and deletes the key on match, giving one-shot semantics, and EmployeeCheckService.doEmailBranch rejects a mismatch with \"验证码错误\".",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-employee-purchase/src/main/java/cn/shopex/ecshopx/employeepurchase/service/EmployeeCheckService.java#L95-L99",
+          "version": "repo-lines-v1:sha256:0f34b51cd0ac0d3e6c8a3a7d53808ab18c0294df43e7755d3a1ccc3ce7e92e3b:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYWU0YWI0YTY0MGY3ZWVlYjgwYTAxYzQzYmEzNGYyNzI5MmFjN2FjNjNkMmMzMWQwMzRmNWFlNjQyMGMzYWJkZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjRlZmM0OTQxOGQyNmRjZjEyOWIyMmE2YWEyMTEwOGNlZWMzNzY3N2EzMmQwOGU5ZDVmZWUzNWRkYTY2YmI5ZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZWE3NjZiODk1YTBhMWIwZGUwYzU4NGM2ZjM5MTM0M2U4ZjUxMzBjODAyMGFmOTRjMmI4ZmJiYTQ3ZTRjZDE1ZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZWZkZWNkOTUxMWFiNjgxNTI1Y2JhODg1ZjkyMjg4Y2U0OTE4NmU2ZTI0NjcwZDMwMTc5ZDQ4YzI2Y2E3NDdkYSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-employee-purchase/src/main/java/cn/shopex/ecshopx/employeepurchase/service/EmployeeEmailVcodeSendService.java#L107-L114",
+          "version": "repo-lines-v1:sha256:4d9b9edae67c4b8d7b6ea8d34aabb033f2d1c1a398fdbbc8e32c5ad20d7a9831:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTkwMWFhNjU4NGQ3MjljYzBhYjg5NzExM2Q4NWZhZjk3YjAwNTVjZTY3NzI1YmVjYTcyZTA0MzUzMGI3MTI1ZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNTAyZGM4OGUwMTJjYTM5YTYwNGE1Mjc0YzM1YjMyOGJmYjkxYmVmMzIxNGRjN2FkMTM4OGQ2N2ZjYzNkMmYwZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOGNlOGMzZGUwYjliMjBkNGNmNjc5MDgwMWVjNWUyMDczMWI0ZGJmYTMxODVjNWVkMWE1MGNlZTBkZWQ0ZjQ2MSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-employee-purchase/src/main/java/cn/shopex/ecshopx/employeepurchase/service/EmployeePurchaseEmailVcodeRedisService.java#L34-L98",
+          "version": "repo-lines-v1:sha256:ea6c068223050daddf34c104aaea9d42f1e166113319cc5bdb539a49978546f1:eyJzZWxlY3RlZExpbmVDb3VudCI6NjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU0YjA1ZDE4ZjVmZGM5NTM0M2FkN2I2Mzg3YzE5ZmQ1ZTY4NjA1ODNlYzM5NzdhM2MxYmFiZTU5MjMxYmM2ZDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_f03afa088252402085c5b9a4a0f6ce89",
+      "statement": "The employee-purchase email vcode send path enforces three Redis throttles on the shared DB before sending: a per-email cooldown key employee-purchase-email-cd:<companyId>:<email> with 60 s TTL checked via hasKey, a per-email daily counter employee-purchase-email-day:<companyId>:<yyyyMMdd>:<email> rejected past 5 sends, and a per-IP daily counter employee-purchase-email-ip:<companyId>:<yyyyMMdd>:<ip> rejected past 200; both daily counters use Asia/Shanghai dates and receive their 24-hour EXPIRE only when INCR returns 1, so the window is fixed rather than sliding.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-employee-purchase/src/main/java/cn/shopex/ecshopx/employeepurchase/service/EmployeeEmailVcodeSendService.java#L101-L114",
+          "version": "repo-lines-v1:sha256:2371be38c1ceb0db9022ff4c1feafbf4c15d4d6c2381b56e97ef0d0aa0ddaa75:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU3NTBlZWYxMTRkZjJiN2M3OTY1NjIyYThmZmVlMmY1MzNkYjVlZTkwYWJjOTc1MjM0ZDY5NjRjNjdiMDZlY2MiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhjZThjM2RlMGI5YjIwZDRjZjY3OTA4MDFlYzVlMjA3MzFiNGRiZmEzMTg1YzVlZDFhNTBjZWUwZGVkNGY0NjEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-employee-purchase/src/main/java/cn/shopex/ecshopx/employeepurchase/service/EmployeePurchaseEmailVcodeRedisService.java#L42-L81",
+          "version": "repo-lines-v1:sha256:b8641819fc21436bf5ef0c5dbffb302c69f05346248055fa6490bb7b84079b9e:eyJzZWxlY3RlZExpbmVDb3VudCI6NDAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM1NWQwNDI3MzMzNjY3ODU3YmU5MGI3MzI5ZTVhM2NlNGQ0YTg5YzM0YzhkMzc5ZWIxMTk3ZmZjYTM2Yzg4YWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU5NzNmOGY5MzA2YjllYjk0ZWVkNDY3NjZkMzc0YWVhYjg0OTllYmRmYTFlZmI1NGIyNDFiMTBiMWE3OTY5NzkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJjYzY3NGRlMWMyNzMwNDM0ZWIwMDMwMDllMzhkMTk2ODlmNmIwNzY2NzM5OGMwOTJlZjNjODM5NmNhNDNkYTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMwZDZjN2UxMWY4NzQ5ZjFmOWYzMTgzOWFjOGYyMGViMzIxOGM2NGJhM2QxZDZkMTNjZmM5ZjgyMzViYmU3YTkifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b826d600aac848eeafe5842042674800",
+      "statement": "PassphraseBehaviorRateLimitService (ECX-10917) protects the unauthenticated passphrase behavior-report endpoint with a fixed-window INCR counter on the shared DB under ep_behavior_rl:<companyId>:<activityId>:<enterpriseId>:<subject>, where subject prefers u<userId>, then v<visitorKey>, then ip<clientIp> (literal ipunknown when all are absent); the first increment of a window sets EXPIRE 60 s and a count over LIMIT_MAX=10 throws TooManyRequestsException, which GlobalExceptionHandler maps to HTTP 429.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/exception/GlobalExceptionHandler.java#L255-L263",
+          "version": "repo-lines-v1:sha256:ea33613b5621173ddc28b73e64fa3fffd517d23a542a0615f11d106522dd675e:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOWQ1Yzk5ZTI2MzU2ZTVkNGYzNDYwZWVkODE1NGFlYjVkMDE5ZWYxYWFkNGY5NGI5NDg5MTNhZjBlNzg3NDhhMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDFmMmJjYjZjYTE4OTY1MTY5MjRkMGFiYTQ0Nzg5NDM0OWJmMGM2ODM3ZWM5M2I0NjQ0ZDllZGU1NTY0NDc1ZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNmJjZDljOWE3ZjRjZWE2ZWY1ZDk5NjQ2ZWM3ZDg5MjY2ZGQwNTI5MTY0Mjk0ZjRhMzc1NDNhY2M0ZjQ4MjYzOSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-employee-purchase/src/main/java/cn/shopex/ecshopx/employeepurchase/service/passphrase/PassphraseBehaviorRateLimitService.java#L28-L70",
+          "version": "repo-lines-v1:sha256:f32a93a1789c34371f09ed06be5b2e39d9f30ce062267ddd0dbd05fe9a9c75a4:eyJzZWxlY3RlZExpbmVDb3VudCI6NDMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYyYmFkMDgyMGM1MWVjOGM1MTkwNGEyYTI3ZTQyNTQ5M2FhNzhhNTViOTEzZDc2ODQwY2Y3OTUzZWMxMTE1YzciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAxODBkMWJlOTlhYzNmZjg1ODhmOThkMTE5NzkyMzVhYmQ0NjZmMmFmNDdjYWZlMzBiOWFhNDg5MWUxYzFlY2QiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_606e67c2d8764f8999d316acc267cc29",
+      "statement": "PassphraseBehaviorReportService.report invokes the rate limiter before loading the activity or writing any behavior-log row, so over-limit unauthenticated reports produce zero MySQL writes; the limiter fails open because it only acts on the non-null Long returned by INCR.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-employee-purchase/src/main/java/cn/shopex/ecshopx/employeepurchase/service/passphrase/PassphraseBehaviorRateLimitService.java#L60-L69",
+          "version": "repo-lines-v1:sha256:f38e183396610faf6cf3c7ca305518cc968a3256fa1b09965bcca5487894169b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM3NmExYTk5OTk0MjMwZjQ0ZTVmZTBmNGQ2NzliYzJhNTRmMmY4MzVkNGNiYzZiNWI3MTU2NTdjMzljMmYwOWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-employee-purchase/src/main/java/cn/shopex/ecshopx/employeepurchase/service/passphrase/PassphraseBehaviorReportService.java#L65-L73",
+          "version": "repo-lines-v1:sha256:f4d17f51e36119c099608a5e5836c8060db8e9d3e7f114c24456b1f3803f2e9c:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZDcxY2Q5MDgxYTNiMDQ4ZTBkMmJjYTgzYmJiNDdhYWI1NDBkNzk4ZjMxZDlkMWMyYjI4Yzk0M2M5MGE3MWY1NCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzU5YzljMzg3MTYxMWViN2YzMWQ5YTdkY2ExMzE5NDNjNzEwOGI5NTRjYmUwYWI5NjkyZjEwMTM1NWRmMDg4MiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYWU2YjU2NmM2Mzg1OGZlZTk1ZjMzZTBkMzdiOTY5NjI0MzU4Mjc2NjU1MjMyMGZkOTM0NDljOTlhOWNlMGQ3OCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYWY4Y2NlNjM0YTRmNDU1ZjdmOTkzYzQ3ZTQxNmNkNjI1ZmJjZjZmZGJlYmUwZjViZmQ1ZWUwMzlkNmQzNmNiOSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_208b8f10aecb44e8996b3715d01db5f2",
+      "statement": "The wider employee-purchase Redis family also lives on the shared DB: PassphraseVerifiedRedisService stores verified flags at ep_passphrase_verified:<companyId>:<activityId>:<enterpriseId>:<userId> with an activity-end-derived TTL clamped to [1 h, 90 d]; PassphraseParticipateQuotaRedisService keeps remaining quota at ep:pquota:<companyId>:<activityId>:<enterpriseId> consumed atomically by a Lua GET/DECR script; EmployeePurchaseFastBuyRedisService mirrors the member fast-buy cart at employee_purchase_fastbuy:<sha1(companyId+enterpriseId+activityId+userId)> with a 600 s TTL and forced cart_id=0; EmployeePurchaseInviteRedisService tracks share-invite tickets in the employee_purchase_invite:<companyId> hash, locking a code by moving its field to <code>_.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-employee-purchase/src/main/java/cn/shopex/ecshopx/employeepurchase/service/EmployeePurchaseFastBuyRedisService.java#L37-L74",
+          "version": "repo-lines-v1:sha256:166f247ad0aac90627446e1faa4af6ea848ea4ab788d5e59d37a1d3ce446ab06:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM3N2UyYjExNDIzZTJlZWZlODczMjcyN2M2MTVmMTNkNjcyYTlhMzg0ZWFmZDlkMmZhZjNjNDJiZTkwN2JlN2MiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY4ZWUxMGI0ODkzNzgyNjVlNWM0YWI1MGY3OTIyYjc5NWUxMmIyMWJkMzM0ZjIzZTdjYjYxYzY3NzVmZjY3YjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI4YjE5YTBlMDllOTJjMzEwMjUwN2E4MTY5ODE3NjM0YjQ0ZjFiOGYzZmZhOGVkNmNhMDM4YTE5NjNhNDIxY2YifQ"
+        },
+        {
+          "resource": "repo://ecshopx-employee-purchase/src/main/java/cn/shopex/ecshopx/employeepurchase/service/EmployeePurchaseInviteRedisService.java#L28-L60",
+          "version": "repo-lines-v1:sha256:895f77988f645901d72ac7df73b64d193accd0e86a753046049ff53d39ef5deb:eyJzZWxlY3RlZExpbmVDb3VudCI6MzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNmOTU5MmEyMjYyOTZmMjdkMDdmNjBlMDAwMmU4YzgyOTg4ZTk2Zjg0YTkyNDU2ZTZhMDAyNDY3NTU2NzBhMTAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE0N2YxYTg3ZGUxYzg5NTZjYWJlNTg1MmNjN2VlYmViYTdlOTY2NWFmMDQ2OGM4ZDIxZWNkZTljM2QxNzk5NDgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImIxZGUwZjMyZjIwYTMzMzY5Njk2ODliNDM0NTAzNGNjMzNiN2MwNmEyYWNjYmNkY2NlMTk3ZmU0ZmY5MDk5Y2YifQ"
+        },
+        {
+          "resource": "repo://ecshopx-employee-purchase/src/main/java/cn/shopex/ecshopx/employeepurchase/service/passphrase/PassphraseParticipateQuotaRedisService.java#L26-L95",
+          "version": "repo-lines-v1:sha256:321219eb7ae8bd0ea60adb9408094a23c4ff08a2219e0426f12faececa97a81d:eyJzZWxlY3RlZExpbmVDb3VudCI6NzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJmZGM2YWJiZjFjMjk1Y2Y1ZGI5NzI2ZmJlZWJlNzRkZjNkMTE3OTIzMzk4MjYwNmI2NjA4NmFjMDkxMTdjMjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg0N2NiNWFlMmQxYWU1MjU5MzU1NTc1ODg1ZTE4ZDdkYTU0ZGNkMWMzNjMyMzM3Zjk2MmU3YmJlNjNiOWU0YzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-employee-purchase/src/main/java/cn/shopex/ecshopx/employeepurchase/service/passphrase/PassphraseVerifiedRedisService.java#L23-L73",
+          "version": "repo-lines-v1:sha256:cdeb5b18058c5ac7feb8805053e85655d80960d597e92ade20eb00f65191ba21:eyJzZWxlY3RlZExpbmVDb3VudCI6NTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJiMzM2YzQyYjJmNTIwN2I3NzVlNTBhOGRhY2UyZDZkMTViMjZmNjFlOGNkYTJjYTRkNDNmY2U0YWU0ODQ0ZjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQxNDgwMWUwYzc3MWYxZDljYTViZjQ1Y2ZjYzk4ZWQ5NWM4NWMxYmQ4ZGYyNzYzMDM5NDZhODhhODliNzZjMzQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_828b26e9790a4178a6d55e386102f466",
+      "statement": "EmployeePurchaseEmailVcodeRedisServiceRateLimitTest pins the 60 s cooldown TTL and the 24-hour expiry set only on the first daily increment, while PassphraseBehaviorRateLimitServiceTest pins the 10-per-60 s window, the TooManyRequestsException past the limit, and first-hit window TTL — both against mocked StringRedisTemplate/ValueOperations with no real Redis.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-employee-purchase/src/test/java/cn/shopex/ecshopx/employeepurchase/service/EmployeePurchaseEmailVcodeRedisServiceRateLimitTest.java#L33-L80",
+          "version": "repo-lines-v1:sha256:d52511245b4b06d1e8f3e4072a548d322e8bcf783283b68a153585e718829243:eyJzZWxlY3RlZExpbmVDb3VudCI6NDgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUwN2U4OWI3ZmM0ZDJiMjk1ZjNhYjA3YTE3NTVkNmU3NDc3NTMwNjNhM2UzOTE2YTUzM2U5OTk1ZGRjYWRjZDYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImViODFhZWU2M2I2ZjIwNGJkMjFlNGJjMjhlMjJiMzAyMzgzMDUxMzY2ZThjODU4ZmZlYmZjNWY1MDFiNTY1OWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM3YjYzNTgyN2ViZTMyMDBhYjQ4N2NjYTkzNThkZmI0Yzk0MDRmNWY2MjI3M2U3ZDg5YmEzM2E4NjlkZmY0NDQifQ"
+        },
+        {
+          "resource": "repo://ecshopx-employee-purchase/src/test/java/cn/shopex/ecshopx/employeepurchase/service/passphrase/PassphraseBehaviorRateLimitServiceTest.java#L33-L80",
+          "version": "repo-lines-v1:sha256:780cf9b3409e7f8a6d3e1aa3ce9d503c8c5cf1d18416b588345350067d43c167:eyJzZWxlY3RlZExpbmVDb3VudCI6NDgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM5NTNiOTNiMTI2MTllNDZhOWI5NzM5MzJmMmIzYjI1N2ZlYTE4NTFjM2U5N2U2NTlmMGQ1ZTliNjhlODU4ZDkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZiYmJlNjlhMjNkNWMxYTNjMDcyOWEzN2Y2YmUzYzE1ZDZjM2Q5ZGY0ZjZjNzQyM2JhZDFiNmM5Mzg4NTdjOWIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZlNzNmNmY0NThjZDA1M2YxODViNmIyMmU5NjA2YjM2ODJkZWZlMjZhODQzNDQ5ZjdjNDc3YWFhNzRhMjkwMDciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMxNWEwMTNkZGI0YjdiNTFkZGVkYTFjZDQ1ZGZjZGY0NzFhMTdmZmMwM2JlNmIxNjgzYzRiZjM1ODBkOTU5OGUifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.9.0",
-    "at": "2026-11-05T17:10:02.238Z"
+    "at": "2026-11-06T17:22:02.968Z"
   }
 }

@@ -11,6 +11,7 @@ import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import cn.shopex.ecshopx.common.crypto.SensitiveFieldEncryptor;
@@ -37,6 +38,8 @@ import java.time.Duration;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.ibatis.builder.MapperBuilderAssistant;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -174,18 +177,26 @@ class OrdersPaymentDoPaymentServiceWxappSyncTradeFinishPublishTest {
 
 	private final ObjectMapper objectMapper = new ObjectMapper();
 
+	private final AtomicInteger txDepth = new AtomicInteger();
+
 	private OrdersPaymentDoPaymentService service;
 
 	@BeforeEach
 	void setUp() {
+		txDepth.set(0);
 		lenient().when(hfpayPayPort.getIfAvailable()).thenReturn(null);
 		lenient().when(vipGradeMembercardTradePaidPort.getIfAvailable()).thenReturn(null);
 
 		lenient()
 				.doAnswer(
 						invocation -> {
-							TransactionCallback<?> callback = invocation.getArgument(0);
-							return callback.doInTransaction(mock(TransactionStatus.class));
+							txDepth.incrementAndGet();
+							try {
+								TransactionCallback<?> callback = invocation.getArgument(0);
+								return callback.doInTransaction(mock(TransactionStatus.class));
+							} finally {
+								txDepth.decrementAndGet();
+							}
 						})
 				.when(transactionTemplate)
 				.execute(any());
@@ -249,6 +260,8 @@ class OrdersPaymentDoPaymentServiceWxappSyncTradeFinishPublishTest {
 
 		service.doPayment(null, data, false);
 
+		verify(transactionTemplate, times(1)).execute(any());
+		verifyNoInteractions(ordersExternalPayParamBuildService);
 		verify(ordersTradeFinishDispatchPublisher, times(1)).publish(tradeRowCaptor.capture());
 		Map<String, Object> published = tradeRowCaptor.getValue();
 		assertTradeFinishBrokerageProducerKeys(published, companyId, orderLiteral, "localPay");
@@ -312,11 +325,13 @@ class OrdersPaymentDoPaymentServiceWxappSyncTradeFinishPublishTest {
 							return 1;
 						});
 		when(tradeMapper.update(any(), any())).thenReturn(1);
+		AtomicBoolean channelCalledOutsideTx = new AtomicBoolean(false);
 		when(
 						ordersExternalPayParamBuildService.buildPayParamsOrInvoke(
 								anyString(), anyLong(), anyLong(), any(), any(), any(Trade.class)))
 				.thenAnswer(
 						inv -> {
+							channelCalledOutsideTx.set(txDepth.get() == 0);
 							Map<String, Object> client = new LinkedHashMap<>();
 							client.put("pay_status", Boolean.TRUE);
 							return client;
@@ -330,6 +345,8 @@ class OrdersPaymentDoPaymentServiceWxappSyncTradeFinishPublishTest {
 
 		service.doPayment(Map.of(), data, false);
 
+		verify(transactionTemplate, times(2)).execute(any());
+		assertThat(channelCalledOutsideTx.get()).isTrue();
 		verify(ordersTradeFinishDispatchPublisher, times(1)).publish(tradeRowCaptor.capture());
 		Map<String, Object> published = tradeRowCaptor.getValue();
 		assertTradeFinishBrokerageProducerKeys(published, companyId, orderLiteral, "wxpay");
@@ -394,6 +411,8 @@ class OrdersPaymentDoPaymentServiceWxappSyncTradeFinishPublishTest {
 
 		service.doPayment(Map.of(), data, false);
 
+		verify(transactionTemplate, times(1)).execute(any());
+		verifyNoInteractions(ordersExternalPayParamBuildService);
 		verify(pointMemberAddPointService, times(1))
 				.addPointForManualAdjustment(7L, companyId, 50, false, "订单" + orderLiteral + "支付扣减积分");
 		verify(ordersTradeFinishDispatchPublisher, times(1)).publish(tradeRowCaptor.capture());
@@ -420,11 +439,13 @@ class OrdersPaymentDoPaymentServiceWxappSyncTradeFinishPublishTest {
 							return 1;
 						});
 		when(tradeMapper.update(any(), any())).thenReturn(1);
+		AtomicBoolean channelCalledOutsideTx = new AtomicBoolean(false);
 		when(
 						ordersExternalPayParamBuildService.buildPayParamsOrInvoke(
 								anyString(), anyLong(), anyLong(), any(), any(), any(Trade.class)))
 				.thenAnswer(
 						inv -> {
+							channelCalledOutsideTx.set(txDepth.get() == 0);
 							Map<String, Object> client = new LinkedHashMap<>();
 							client.put("pay_status", Boolean.TRUE);
 							return client;
@@ -439,6 +460,8 @@ class OrdersPaymentDoPaymentServiceWxappSyncTradeFinishPublishTest {
 
 		service.doPayment(Map.of(), data, false);
 
+		verify(transactionTemplate, times(2)).execute(any());
+		assertThat(channelCalledOutsideTx.get()).isTrue();
 		verify(ordersTradeFinishDispatchPublisher, times(1)).publish(tradeRowCaptor.capture());
 		Map<String, Object> published = tradeRowCaptor.getValue();
 		assertTradeFinishBrokerageProducerKeys(published, companyId, orderLiteral, "wxpay");

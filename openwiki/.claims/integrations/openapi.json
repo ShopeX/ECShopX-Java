@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:5e0ab72e6819d8dc829b7c83014231e4f27d4ddb8f3f7418c6a43cbb91e020ef",
+  "pageVersion": "sha256:8510d4deab271635e300ec6469cdba3e2b61c9f44b31fafa5ba0ab5765add12b",
   "claims": [
     {
       "id": "claim_e141deba2f1e4ba0894ebb2a18613af2",
@@ -405,10 +405,138 @@
           "version": "repo-file-v1:sha256:fc79db1e710cffa6dfc5e2ca0e9f47971690abb3ceba46572e2ad56d87ee41dd"
         }
       ]
+    },
+    {
+      "id": "claim_58fd1af2d3c94c3bb87d871b15fc4760",
+      "statement": "The v2 member tag batch endpoints (ecx.member.tagging.batch.cover POST, ecx.member.tagging.batch.update POST, ecx.member.tagged.delete DELETE) are routed by OpenapiHandlerForwardRegistry to /api/openapi/internal/v2/* handlers in MemberTagController (bean openapiV2MemberTag), which delegate through the OpenapiMemberTagBatchCoverPort / OpenapiMemberTagBatchUpdatePort / OpenapiMemberTagTaggedDeletePort interfaces (ecshopx-common) to thin port impls in ecshopx-members and on to the OpenapiThirdApiV2MemberTagBatchCoverService / OpenapiThirdApiV2MemberTagBatchUpdateService / OpenapiThirdApiV2MemberTaggedDeleteService orchestration services in ecshopx-members/members/openapi/thirdapi/v2/.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/openapi/OpenapiMemberTagBatchCoverPortImpl.java",
+          "version": "repo-file-v1:sha256:674cce22c4f698393e82cee5a6bff1ddb7bf280b116eae5c8aa76a11def95bda"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/openapi/thirdapi/v2/OpenapiThirdApiV2MemberTagBatchCoverService.java",
+          "version": "repo-file-v1:sha256:43dd8fc10e96e0f56f96e5ab688c0b61bbf00033610cd77e81672617c8d2ef39"
+        },
+        {
+          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/thirdapi/OpenapiHandlerForwardRegistry.java#L348-L375",
+          "version": "repo-lines-v1:sha256:2668c04a5b0b9d770a2f17ba1133decedf2452c1441887ea71061dde259d0cb0:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVjOWNhMTVjZDAyNDM0ZWVhZTdmNDUyMzNkYzliN2UzMzljOTIyYWVkMzYzMjg4YzllMTRmNzI3ZmIyYWQ0Y2MiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQyM2E1YzMzMTEyMTI1MDgwMWY1YTAxY2E5OTgxYmM3MDU5NzE0NjkxNzA0ODkwZTA2Y2NkMDVlYTg4ZGNiYTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRlNDY3ZmE4YmZiMTM1ODhkNmQ0Y2FlY2Q0NGNhODVmY2I4YjQ0NzhiOWFlNjQ1MjNjMDBiNjExZGI0MDRkODMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJjYjM4ZGMwOWNjNDdjYTNkNDY1ZDk2OGU2MzkxY2NlNzg5NmJjZWQ0OWFmNmZjNjA5M2Q2ZGVmZjBiODc0NDEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/thirdapi/v2/member/MemberTagController.java#L140-L202",
+          "version": "repo-lines-v1:sha256:29902e2bcf0a00c476a6f0b701a6e6c1096a103dedb3be9f14f2a37fd5295382:eyJzZWxlY3RlZExpbmVDb3VudCI6NjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIwYTc0MGJiYzJjYjBhOGQ5YWQ3YjhmMmUwOTVmYjY1ODM4MTRiOTM3MWM0MTFjMjYzOTFiNGQxMzAzYjRiZDkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjMyN2QwOTU2MGExZDQwNWU4Yzg4YWMwOGQ2NjlhYzQ0NjI0NzI5ZmQyODVlODQ3ZmYyMjNmNGE0OTY0YjIzODMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxZGUzMGE1OTEyYjJlODgyYzNlY2I3Y2FhOWI5MDY3ZTExOGI2OTJjZGU5YjE2ZGVhZDBiZWM1YjI2ZTdhODUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_7479e78c286843a89e2a2de5b8a45246",
+      "statement": "The three member tag batch services are all-or-nothing: they parse mobiles/tag_ids as JSON-array strings up front (missing -> E5001, malformed -> E5560 via OpenapiMemberTagV2FailException), require every mobile to resolve to a Members row and every tag_id to exist in MemberTags for the company (unknown -> member-not-found / E5561), and then call MemberSystemTagWriteGuard.rejectTagIds, which rejects writes to Shopex-managed system tags; any single bad input fails the whole request rather than producing per-row buckets.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/openapi/OpenapiErrorCode.java#L44-L55",
+          "version": "repo-lines-v1:sha256:f10ab9f6a7dc5d814d2b01408b6613dcd3c57923e737502426f669036fd4b2f1:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUwOTZkNWU5NDhmMTliOGVjOTBhNWU4NzkwNDcyNWZkY2U1MzA0ZTg4MzI0ZmQxMGFjMjVjNjFmYWVmZmY2YmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI5NTRhYzAwYzQ0ZjI3MWJlMDYyZThjN2UzNzMxMTdjYWZmNGFiNjMyZmNhOGQ0ZWNiZTgyYmUyMjQzMTYyNGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQzMjIxYzljYWQyNmEwMzkzOTRlNmNmMTg4ZGQ1NDUzOGRlNGFiMjhjNjU3YmRkZWVjZTJkMTdhZjFlNDNhNjEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMxNDQyYjRlNTcwMThmMDkwYzEwZjMxNTIxNWQyY2IzZmIyZWZkNzhkOWRhM2QwYjVkMGRlYjFlYzAzYjkzMTAifQ"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/openapi/thirdapi/v2/OpenapiThirdApiV2MemberTagBatchCoverService.java",
+          "version": "repo-file-v1:sha256:43dd8fc10e96e0f56f96e5ab688c0b61bbf00033610cd77e81672617c8d2ef39"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/openapi/thirdapi/v2/OpenapiThirdApiV2MemberTagBatchUpdateService.java",
+          "version": "repo-file-v1:sha256:2bcb3321cba6144d0e62cafa00dc3adc36665553396540599da33a39172b1d11"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/openapi/thirdapi/v2/OpenapiThirdApiV2MemberTaggedDeleteService.java",
+          "version": "repo-file-v1:sha256:80f18b4c854ec1746dba12070cac235bd818a9ac2b5e704801e3a32576440cb0"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/systemtag/MemberSystemTagWriteGuard.java",
+          "version": "repo-file-v1:sha256:f77147f0c589162ed0dc4313909eaf7402dcd681b2156404e54239978679356a"
+        }
+      ]
+    },
+    {
+      "id": "claim_8a4fe8dacdfe4c14899a2e7fb149e1c5",
+      "statement": "The tag batch verbs differ in mutation semantics: batch.cover calls MemberRelTagsBatchCreateService.createRelTagsByUserId per member (replacing that member's tag set with exactly the given list), batch.update calls createRelTags once for all resolved members (adding tags without removing existing ones), and tagged.delete calls userRelTagDeleteNoPush for one mobile plus a tag list; all three return {\"status\": true} on success, which OpenapiResponseBodyAdvice wraps in the standard success envelope.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/openapi/thirdapi/v2/OpenapiThirdApiV2MemberTagBatchCoverService.java",
+          "version": "repo-file-v1:sha256:43dd8fc10e96e0f56f96e5ab688c0b61bbf00033610cd77e81672617c8d2ef39"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/openapi/thirdapi/v2/OpenapiThirdApiV2MemberTagBatchUpdateService.java",
+          "version": "repo-file-v1:sha256:2bcb3321cba6144d0e62cafa00dc3adc36665553396540599da33a39172b1d11"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/openapi/thirdapi/v2/OpenapiThirdApiV2MemberTaggedDeleteService.java",
+          "version": "repo-file-v1:sha256:80f18b4c854ec1746dba12070cac235bd818a9ac2b5e704801e3a32576440cb0"
+        },
+        {
+          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/web/OpenapiResponseBodyAdvice.java",
+          "version": "repo-file-v1:sha256:252ebfb69127ac644fb0c8adffa712d6202aefd009ead7aa7cd12b30e171be78"
+        }
+      ]
+    },
+    {
+      "id": "claim_bb438a75a2764f2e851d5be9decf8758",
+      "statement": "v2 ecx.member.create is registered to /api/openapi/internal/v2/ecx.member.create and handled by MemberController (bean openapiV2Member), which merges the long parameter list via OpenapiMemberV2CreateHandlerParams and delegates through OpenapiMemberCreateDetailPort to ecshopx-members' OpenapiMemberCreateDetailPortImpl -> OpenapiThirdApiV2MemberCreateService.executeOpenapiCreateDetail; the handler also carries an inert @Activated(routeAlias = \"adapay.member.create\") annotation that performs no authorization on the openapi surface.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/openapi/OpenapiMemberCreateDetailPortImpl.java",
+          "version": "repo-file-v1:sha256:da1f29707ce41206003de4dfda761d9b40519343209201999d1c990b8a67e4b3"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/openapi/thirdapi/v2/OpenapiThirdApiV2MemberCreateService.java",
+          "version": "repo-file-v1:sha256:0702fd4452660af34cf8c594926f03672ccef7f936870e858b81b3a635c3c682"
+        },
+        {
+          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/thirdapi/OpenapiHandlerForwardRegistry.java#L71-L73",
+          "version": "repo-lines-v1:sha256:3894c7b7f8c1aa3818b13528b3eeee6be830691a41e0a6a51270bd4ecf3dfd90:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMTRjMDUxMWFkZTQzYzBkM2YzOTMxMjg3ZmJlYzQ0N2VmZTQ5ZmVlNTdkNmIxNzQ0NWQ5NmI2MTU2NGUyYzhhOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYWM0MjFmN2M0MDFjYmU4NjBkMzliZGNlNjIzOWE3ZjA3N2RhYTcxYmM3NmUwMWE2Njg3ZDI0OGVjYTllOWFlMiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYWM0NmI4M2QzM2NiODViYWRmOTM1NTFiZGVjNzA3ZmE2MTEyNTEyOThiMTMwN2QyZjhjYjJjYzA4OTM5OWUxNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMTk2ODRkNTNkOThjZjZmOTRhNzZjMzY0YjdkZDFmYTU1Y2RjMjgxYjBmNDY3ZTZkNmE4NmFjN2M2NTdjYjE5NyJ9"
+        },
+        {
+          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/thirdapi/v2/member/MemberController.java#L80-L123",
+          "version": "repo-lines-v1:sha256:2a83b680766d838eaffbd16767e62a6ca047e9cf6197168600a9529fa095cc56:eyJzZWxlY3RlZExpbmVDb3VudCI6NDQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBjM2I2MDM4ZGZkYTA2OTUwYTNjYjI0ZmFlNTc1ZTZkOWRkOGJlMzgxNDMyMTY3M2YyYTdlYjJlODdmNGY1ODUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM0NGYwZDA5YWE0ZDE0ZWJjYzBjMzg3ZjY5MmY4MDlhYTg4NWRkNWY3Yjk4ZWJmYWI1MTMwYjkzNTExMDRmMzQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcxZmE3MzNmODRjODNkYjJlOWYwYWVlZjRjMTg2OGYzYWNlZWJjMTBiOGIzOTllMDUxYzBhYTYwZTRkYTRjYTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRhZTc0NTUwMjNiNDcxZDdlYWY0OGRlYmNjNjVkNjY5OTg4MWU5ZWVjYmZlNTcyM2ZkNzQwZTZjZTQ1MjE4NTQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_ffd7eee6aba540379b254cb4caae8d6b",
+      "statement": "v2 ecx.member_info.update (PATCH) is routed to MemberController and delegated via OpenapiMemberV2UpdateDetailPort to ecshopx-members' OpenapiMemberV2UpdateDetailPortImpl -> OpenapiThirdApiV2MemberUpdateDetailService, which validates mobile/email/enum fields, re-encrypts the mobile through SensitiveFieldEncryptor, and reconciles the new-customer system tag via NewCustomerTagReconcileService.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/openapi/OpenapiMemberV2UpdateDetailPortImpl.java",
+          "version": "repo-file-v1:sha256:f97b625e46bb5e358944c9054208b1ecfbb9f652f64480a6775a80962192884e"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/openapi/thirdapi/v2/OpenapiThirdApiV2MemberUpdateDetailService.java",
+          "version": "repo-file-v1:sha256:bbec53ed06144a983da2dd6b24efd2b374682df12fd346a901a389d4d80fd817"
+        },
+        {
+          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/thirdapi/OpenapiHandlerForwardRegistry.java#L115-L120",
+          "version": "repo-lines-v1:sha256:cb97a39b182dfcd31ae1adfbe29864df1b2d4d653b2224017effb29e39604cb9:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYWM0MjFmN2M0MDFjYmU4NjBkMzliZGNlNjIzOWE3ZjA3N2RhYTcxYmM3NmUwMWE2Njg3ZDI0OGVjYTllOWFlMiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYWM0MjFmN2M0MDFjYmU4NjBkMzliZGNlNjIzOWE3ZjA3N2RhYTcxYmM3NmUwMWE2Njg3ZDI0OGVjYTllOWFlMiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjAyMGNmNzBmYWJmMTdhMGY5Y2M2NDQ3MDc3MDU5MmVmMGUyNDQ0NmE5MmY3MzUzYTZhY2M4N2JhOTJiMmQ5NyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOWFkYTIwZDVlYmVhODlmYmM4Y2IyNTRmOTM0ODlmNzhmMjVkODNjNjhjMjI4ODg0NzU5ZTk4NmU0MmVjZjA5OSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/thirdapi/v2/member/MemberController.java#L196-L200",
+          "version": "repo-lines-v1:sha256:e9e2c23f50e5c44eb0fb6008c2a4de9604b7ba49527d7ff0e748dde889b842ff:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiY2YyOWVhZjMyNzFmMDk0MjExOTU5MDYyNjI3ZjgzZjhjZGY2MjVmMGEzYzIzMGQwMmYzZjliZjY2YWIzMjM5ZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiODhmYjRmNmNlMzA5MzY5MjE3OGZjYTJkMmZiNWE5ZGI4YmVhMTVjMTZhYzRiNmM1NjBkMTE3NjRiYWI3ZjRkOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiM2E1OTI2YmI2NWJlMGMzNGQyN2RjOGJhMjg4OWUxMzc5NjcwYzk1NDZlZjgyMTQyMjg4NzU4MzgxZGRmMzJjYyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_e031f2991e9e49d2916de77782e83164",
+      "statement": "Failures in the member tag batch services travel as OpenapiMemberTagV2FailException carrying the PHP-aligned OpenapiErrorCode, so OpenapiExceptionHandler renders the exact code (E5001/E5560/E5561/...) with HTTP 200 in a fail envelope - the members-side counterpart of the order-writeoff fail-mapping pattern.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/openapi/thirdapi/v2/OpenapiThirdApiV2MemberTagBatchCoverService.java",
+          "version": "repo-file-v1:sha256:43dd8fc10e96e0f56f96e5ab688c0b61bbf00033610cd77e81672617c8d2ef39"
+        },
+        {
+          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/web/OpenapiExceptionHandler.java",
+          "version": "repo-file-v1:sha256:5a82c8be3ec1ccb9a1c7db180d4aea4eb135757f0374e22435d2aa965fc2850f"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.9.0",
-    "at": "2026-11-05T17:10:02.238Z"
+    "at": "2026-11-06T17:22:02.968Z"
   }
 }

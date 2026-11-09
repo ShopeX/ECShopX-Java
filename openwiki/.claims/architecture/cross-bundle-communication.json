@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:222bc61256a6ec3ad6906dca206e7896d3a1722187753ddf05275232e3f50bf3",
+  "pageVersion": "sha256:e775f24220dc1d17a7bbcd3ffc21ba1f34f33e1831efe3b90c9ef28cbd2a19cf",
   "claims": [
     {
       "id": "claim_99031e08043c4fcd9e0aeed337a19e0b",
@@ -44,19 +44,31 @@
     },
     {
       "id": "claim_c77401287cf649c199efd2ecaf5754d2",
-      "statement": "Cross-bundle Port contracts live in one of two homes: shared seams in ecshopx-common/port/<consumer-domain>/ (about 115 interfaces over ~26 domain subpackages such as order/, orders/, payment/, shuyun/, localdelivery/, goods/, aftersales/, members/, plus a sibling common/order/port/ for later additions), grouped by the domain that consumes them; and single-consumer contracts in the consumer bundle's own port/ package when the provider already sits downstream — e.g. orders/port/WxappCartAddPort is implemented by goods/service/cart/wxapp/WxappCartAddPortImpl (goods depends on orders; Javadoc: \"由 goods 模块实现，避免 orders→goods 依赖\"), and orders/port/OrdersMiniProgramHfpayPayPort is implemented inside orders' own hfpay sub-package.",
+      "statement": "Cross-bundle Port contracts live in one of two homes: shared seams in ecshopx-common/port/<consumer-domain>/ (~140 files over 29 domain subpackages such as order/, orders/, payment/, shuyun/, localdelivery/, goods/, aftersales/, members/, plus three top-level ports and small sibling packages like common/order/port/ for later additions such as VipGradeMembercardTradePaidPort), grouped by the domain that consumes them; and single-consumer contracts in the consumer bundle's own port/ package when the provider already sits downstream — e.g. orders/port/WxappCartAddPort is implemented by goods/service/cart/wxapp/WxappCartAddPortImpl (goods depends on orders; Javadoc: \"由 goods 模块实现，避免 orders→goods 依赖\"), and orders/port/OrdersMiniProgramHfpayPayPort is implemented inside orders' own hfpay sub-package. Newer seams have also grown thematic packages next to common/port/: common/auth/ (POS/operator JWT ports), common/openapi/ (Openapi*Port family), common/operatorcart/ (operator-cart Facades), common/payment/ (PaymentSubjectDistributorIdPort), and common/goods/port/ (MerchantSettlementMainCategoryPort).",
       "evidence": [
         {
-          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/port/shuyun/ShuyunOfflineBenefitCouponGrantPortNoOp.java",
-          "version": "repo-file-v1:sha256:3801dc6ab38fd6d1ba6e27cb5f1a16a0f094d161b6f2177959716982373afd39"
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/goods/port/MerchantSettlementMainCategoryPort.java",
+          "version": "repo-file-v1:sha256:4f74c1a71e673d81d67e357b5c7fdfdabaf66afacc9dc0007208dd2af2c99bba"
         },
         {
-          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/cart/wxapp/WxappCartAddPortImpl.java",
-          "version": "repo-file-v1:sha256:0870bfe60776aab2163a954c92290f8928860836f96de0e04a35611754f29401"
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/order/port/VipGradeMembercardTradePaidPort.java",
+          "version": "repo-file-v1:sha256:d08afd45d47bd4904e6523e4f33dcf2f0954f7177a6d1e7a12d179042c8d00cf"
         },
         {
-          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/port/WxappCartAddPort.java",
-          "version": "repo-file-v1:sha256:9f2c43a1f4ac5b9bfb3a0271c2d02d9bc9a3694471ef685f77016289ae25cc35"
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/payment/AdminPaymentSettingListPort.java",
+          "version": "repo-file-v1:sha256:48ad7eee08ea7a36503f621668d1c51a4f1899443c0a89e2a4747fa21c0bc0a6"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/payment/FrontDepositPayEnabledPort.java",
+          "version": "repo-file-v1:sha256:1fcc01c80aec82a41bd39098973e9e7f94c9a614ab4528039cc1c6ab3f5063c2"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/payment/FrontWithdrawPayTypeListPort.java",
+          "version": "repo-file-v1:sha256:0ed53fe4575f42f67a304d619b54e4ebefc913690fc6245b14f58d81c41c541d"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/payment/PaymentSubjectDistributorIdPort.java",
+          "version": "repo-file-v1:sha256:3a792949ec2c168062f5ae0a9663af065a65b3d51b299c1bc757651ce6b65bc1"
         }
       ]
     },
@@ -83,7 +95,7 @@
       "statement": "Optional Ports are consumed via Spring's ObjectProvider with getIfAvailable(): OrdersPaymentDoPaymentService injects ObjectProvider<OrdersMiniProgramHfpayPayPort> and ObjectProvider<VipGradeMembercardTradePaidPort>; for hfpay pay-type requests a missing port throws the user-facing error \"不支持支付服务，请联系商家\", while the VIP-grade membercard hook (invoked by OrdersTradePaymentCallbackService after a membercard trade is marked SUCCESS, implemented by kaquan's VipGradeMembercardTradePaidPortImpl) silently returns when absent. WxappOrderDetailPostProcessService uses the same ObjectProvider<OrderDetailEmployeePurchaseEnrichmentPort> pattern for employee-purchase enrichment.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/payment/OrdersPaymentDoPaymentService.java#L355-L370",
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/payment/OrdersPaymentDoPaymentService.java#L450-L465",
           "version": "repo-lines-v1:sha256:4ebe0c44588065bc5ac0b9ea0dfe6680fca93e690a24f74c6d09dac526195e74:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYyMWQ5M2FlZjRkYTNhZWUyODFkMTBmODY2OGM3MjJkMTIyYTdkNTg0MDAwM2E1MDdjOGM5MTVkOTUxMDY2ZGQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI3MDNjNDQ2OGYzYmZkMGRjZTA5NDEzMGUyYzkwZWE3ZTg1M2JiMGNiNzcwZTkyNzFmNzNmYWNlZjFkNDlhNWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZhOGU0OGU1ZDkxYzQyYzQ2ZWQxYjcyMTdkYmM3NDI2MTc4YjJkOTdlM2E4NTRiNzYzNzE2OWM3ZjllYzA3NzYifQ"
         },
         {
@@ -501,10 +513,162 @@
           "version": "repo-lines-v1:sha256:bf2a029ac43ba527c1beab78d25e5e1d1d4c83660fd559a013f29a69d8929cc4:eyJzZWxlY3RlZExpbmVDb3VudCI6NDYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiYTFiMWYwZDkzOTU3NDJlMjE2ZjcxYzllOTBjOGZiOWFhNmI0Mjk2YWFhNGNlN2NjMDVjOTZlYTViODdiYWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY0MjAzNjc2Y2M0YmQ1NjJjZmRhNjUyNTM0NWQxODRjOWM3NzY3MTM4YjNjMDE2ODQxNDk0N2U2NmMyNDZkZjUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjEwYTQzZWU3M2I5ZGM4YWRmMGMzZWZjNDIzYTVmNzk3OGIxYWFmNzAyNTJjNzU0NjI2ZjQ3YzU2MWNhODNiNGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFlOTUyZjIxNDA2NmFiOWMxMWU1NGY5MjkwMmNhNDM4Yzc4OGMzYTc3ODU0YTZmMzFlMjExYmVlYzlkMDg0NmUifQ"
         }
       ]
+    },
+    {
+      "id": "claim_d9d36f38b601457096a2061e6d17970b",
+      "statement": "Bootstrap's MembersCreateMemberSuccessNewCustomerDispatchListenerRegistrationConfig (@Order(26)) registers members' CreateMemberSuccessNewCustomerDispatchListener on MembersDispatchEventNames.EVENT_CREATE_MEMBER_SUCCESS as LISTENER_MEMBERS_CREATE_MEMBER_SUCCESS_NEW_CUSTOMER, async on the default queue.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MembersCreateMemberSuccessNewCustomerDispatchListenerRegistrationConfig.java#L22-L46",
+          "version": "repo-lines-v1:sha256:1a7e2ea09333b2300949a31a1de8bab14d26e18c03f5485beccebb8ac3931110:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0OGMyMzRkOTYyYWJkMTE5ZmQzOTAzZDBiNmYzZjA1NjZmMGUzNDNkMzNkZmMwZTBlZWZkNjczY2EzZTUwYTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJmNWU1ODFmMGU2ZTZlNWI1NTAyNzc3ZTMxODEyNmY4MDMzY2M3NDU5OTQ4ODMyYTNjOTk2NWYyNGNlOGFkOWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFiYjQyY2M1ODg0MmFiMjdkNjMwNmM5ZTc5OTU3NTgyNmVkZjM5OWZiZGI3Yjk1MjBhNjk1OWFkNWQxYWE4MGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQwMzk5NDVmNzEzY2VjY2MyYTJiZTk4MWFiNWM1ZWVhMzdmOTVmOTc2OWU1NzVjZDhlZDlhOWZjYmFmZGYwNmEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/MembersDispatchEventNames.java#L36-L38",
+          "version": "repo-lines-v1:sha256:e4c35b8a722a96ec6b80dad76d202c871e51b616bf1d419f02de3834f011b043:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOGNjZWY0ZDQ5ZTBiZmU4ZmNhOGRmODYyNGQzYzhjZjA4YWQzNGNhOTRiZmViYmNkOTExOWFiYjZhMjkxYjQ4YSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTY3NTA2MmRlYTk2MWYwODYyOGEwYmNmNjY3M2FjNmI5NGVkZDQzZmY3ZDc1ODk3NmZmMDhlOTc2ODAwOThhNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMTgyYmRhMjM3MTJiMmQwNWY1ZmVhNjJjNDY2MTVmMjg1NDE0ODYyNWQzNDhkZTkxZWNkNmI4OWJiNDlkYTI3OCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_48cc4e34556f4fc59a194b3a798b52cb",
+      "statement": "CreateMemberSuccessNewCustomerDispatchListener extracts company_id/user_id from the payload and calls NewCustomerTagReconcileService.reconcile with SOURCE_REGISTER; reconcile is the single idempotent decision point for the new_customer system tag — it recounts the member's effective paid orders, attaches the tag when the count is zero and detaches otherwise, skipping disabled members and seeding the tag row when the company has none.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/dispatch/CreateMemberSuccessNewCustomerDispatchListener.java#L34-L43",
+          "version": "repo-lines-v1:sha256:b0a8b78699de8964f6af7dfd53be220c80d6cd35a1f0d120b98c34e2f11d3646:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIwYjEyYzNmMDY4Y2Q0OTY0NGZlMmU3NThkNjIwOGQ2ODZmYThhYTUxZWUwZTliN2QxNGJlZDI2NDAyMmVkM2EiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAyNGQ0NDdlN2RmMjBlMzJkYjdmNzgyMzI2ODgyOWI5ZjE3Yjk4ZWYzNjQyYjJjNTAwMDI0MDRkYTBlNzQxZWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQwMzk5NDVmNzEzY2VjY2MyYTJiZTk4MWFiNWM1ZWVhMzdmOTVmOTc2OWU1NzVjZDhlZDlhOWZjYmFmZGYwNmEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/systemtag/NewCustomerTagReconcileService.java#L60-L96",
+          "version": "repo-lines-v1:sha256:59afd9bcb104501a53241f16067ae83d0394d6615ed3ca5bf88dd354464d6952:eyJzZWxlY3RlZExpbmVDb3VudCI6MzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJkZDk0YjljYmIyZWNiZjIxZWU2OWVjNjYxYjExZDFiNjNkYjRhNzBjMDQ0ZDljNDEzM2RhNDIwM2NjYWIxMWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE2YTVjYjljZDgyMDdhOTY0NGNjNTFhMTExZjkwNDQxN2JlMDdjZTk3NWQ0NmE3MDUxNTQzOWNiZDMzMjA1MzkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY3MmZmZTNmZDQ2MGQ0OGM5ZGFlMGRjOTNiZDBmMTQ5ZmFiMmU4OWRiMTQzNWJkNTMyNzcwYmM4MTk3YzMxOWIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b9a9efa4066d4606ac11330bc8e4227d",
+      "statement": "The same NewCustomerTagReconcileService.reconcile entry point is driven with different source markers by four listeners: the bus listeners NormalOrderPaySuccessNewCustomerDispatchListener (SOURCE_PAY) and NormalOrderCancelNewCustomerDispatchListener (SOURCE_CANCEL) — both falling back to resolving user_id from order_id when the payload omits it — the bus listener CreateMemberSuccessNewCustomerDispatchListener (SOURCE_REGISTER), and the Spring @Transactional(REQUIRES_NEW) @EventListener TradeRefundNewCustomerListener (SOURCE_REFUND) which only acts on refund_status=SUCCESS.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/dispatch/NormalOrderCancelNewCustomerDispatchListener.java#L40-L54",
+          "version": "repo-lines-v1:sha256:8f69d80333ee2b13c54630e4b2badd5ec2c24ad044ad44b5dac5a38de4797aa7:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwOGNjMTVkMDc1NGI2ZjIxZjcxZTBiMDNiOWRkNzg2YmM5ODgwMDNiMmI1NzU2NGM2MDUwYTgwMjI1MTdjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRjNzYyMTVhODRlMmEzNDI1NTgyNWNhZTIzMjQxZTU3OGE0Zjc0YTQ1Y2M2ZDBiNjEzNWQwOTMzOTZmMmM1ZTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU4OTM1NWMyMGJhZTVkMDkxMGI0ZmY2NzRmOTEyZDQ4YzVkNDg3ZWQxM2U1NzA0MmI0MDM1ZjQ4MTFjMjJhMmQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQwMzk5NDVmNzEzY2VjY2MyYTJiZTk4MWFiNWM1ZWVhMzdmOTVmOTc2OWU1NzVjZDhlZDlhOWZjYmFmZGYwNmEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/dispatch/NormalOrderPaySuccessNewCustomerDispatchListener.java#L40-L54",
+          "version": "repo-lines-v1:sha256:82d7d841309e44e952bef5aefc405a1239df7e03f31989728d10953f693f22cd:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwOGNjMTVkMDc1NGI2ZjIxZjcxZTBiMDNiOWRkNzg2YmM5ODgwMDNiMmI1NzU2NGM2MDUwYTgwMjI1MTdjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZjM2I0M2IxODcyM2NmMTZiNWI4OWIzYzFlOWJhYjE2NjQ0NGQ1N2MwOTg3MTRiNmI1ZWMzNzczNjI4YmZkZTciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU4OTM1NWMyMGJhZTVkMDkxMGI0ZmY2NzRmOTEyZDQ4YzVkNDg3ZWQxM2U1NzA0MmI0MDM1ZjQ4MTFjMjJhMmQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQwMzk5NDVmNzEzY2VjY2MyYTJiZTk4MWFiNWM1ZWVhMzdmOTVmOTc2OWU1NzVjZDhlZDlhOWZjYmFmZGYwNmEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/listener/TradeRefundNewCustomerListener.java#L31-L49",
+          "version": "repo-lines-v1:sha256:ed7d3c96094483227ca98e2a5ee8f1c667d749d78f22a7cf9bf6be2957a98249:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRiYzZmZGY5MzYwMDVmM2ZiOTE4ZjIwZTIwNzZhMWEwYmFjNjg0ZjNiZTFkMWQ1OTAzZGJhMDU4MzhkZjlkYzMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNhZDQwNzRhMDU3M2FhMDE4MDA5NWY3N2ZhYzJiYTJmMDViNTcyZjNhZGY4YWFjY2RkM2UxYmNjODEyNzgzMmYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_7ff3c866f7444f149bd14dfd8acb47d7",
+      "statement": "Operator creation publishes the operator-create dispatch event after commit: OperatorsCommandService registers a TransactionSynchronization whose afterCommit calls OperatorCreateEventDispatchPublisher (publishing immediately when no synchronization is active), and bootstrap's OperatorCreateEventDispatchPublisherImpl wraps the operator map as {\"entities\": ...} before publishing EVENT_OPERATOR_CREATE with DispatchOptions.eventDefaults().",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/OperatorCreateEventDispatchPublisherImpl.java#L28-L41",
+          "version": "repo-lines-v1:sha256:d5f2810519b1078405d8d87859b114564bb3df5159f878113d046b78d4c9d0f1:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMyMzAxYjg0Mzk5MWYwMWRlOGExMzZjNTVkYjdiMTYzZGNmNmIyY2FiYzY5MGYyMTk5YzhhNmNiYTY1YWNlNmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY5M2JkNmY5MjQ3ODdlZjY5OGRiYjRhMDVkMzIwYzE5NzQyYzk3NTYyN2Q4OGZjYTUxMWRkNWY5NDhmMzFjYWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcyY2Q2OWIyM2NmNzU4MDE3NjVjNDIyMDViN2VlNjgzMzIwOWI1OWMyMjhmNGU3NTNhMjU4OGUyNzA2N2RkMTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQwMzk5NDVmNzEzY2VjY2MyYTJiZTk4MWFiNWM1ZWVhMzdmOTVmOTc2OWU1NzVjZDhlZDlhOWZjYmFmZGYwNmEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/OperatorsCommandService.java#L139-L151",
+          "version": "repo-lines-v1:sha256:2a214e8712e1154e19271c2e13cc1b6013b4f17650813e2197aac714018ee8a1:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEwZGY4MWIwNDZmNTgwNjU5MzhkNDk0ZWFlMTJlNTdjMDQwMmRlZTU1NjYwZjYwZDM2MDk0NjA2OGVlYzIzYzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc5NzA2MDAwMGY4Y2NkZGZlZTc0YTJjNGRiMTI1YjQzMGJjOTE3YWM4N2NiZjAwZDRkNjg1YzVhY2FlMzZkY2MiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAzZjAxNTQzNzY4ODM5ZTkwNGM5ODVhZDBiMjM0Nzg4YmRiMGU1ZGNmMmNhZGNjMmUyOTk3ZGViMmQyNGU0YzMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_e75a8f3463544a6fad28b603914be57b",
+      "statement": "digios' OperatorCreateDigiOsAccountSyncDispatchListener unwraps the entities/company_id payload and delegates to DigiOsAccountSyncDispatchService.dispatchIfEnabled, which syncs the operator account to DigiOS only when the resolved DigiOS config is enabled and operator_type is 'staff' (distributor operators are not synced), skipping silently when the operator row cannot be loaded.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/dispatch/OperatorCreateDigiOsAccountSyncDispatchListener.java#L30-L40",
+          "version": "repo-lines-v1:sha256:42de69aaccdf9f4b193d890ba0c315df7c997e9de3728416b0808b86b5a227b6:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA5YTkyYzNjYjAxNDhmMDBlZGQzNDhhY2I5YTlhMWEyOWFjYjllMzAzYzAyMTI4YzNmZGRmOGMzZGI5OWFlODYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQxNjEwY2FiZTU1ZjBmM2YwZWZmYTkwMjIyNmRlNGZhZTdiYzMwNjBjY2I1MzU3MTg3ZDlmZGNiYjRkN2NmYjEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI4NWYwODlkMzBhNTllNjVkYjUzMWIzMzkwMzJkNmRiNDBlNWY2NTQxNWI5NzQ2MGRlMTcxOTkxYjA3MmE0MmYifQ"
+        },
+        {
+          "resource": "repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/service/DigiOsAccountSyncDispatchService.java#L46-L69",
+          "version": "repo-lines-v1:sha256:985e1871e64e5f32c5fb75e1decc13a6891ce3325b38a6e93a62636016f3ac0b:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImViNDE0MzhlNmYzMWRkMjkyODRhMWE2ZDdiYmNjYjQyM2JmMGQwNzBjNDkzMTgxZTlmODc3MjQzNDdkYTQ0YmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQzNTg1MjJkMTJmN2UzYzVlMTA0YWFiNjI5YzA4YTIxZTgyZTQxZjQ0NjVhNjAwODM0NWM4MWZhMDE0MGI1ZWYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRiOWVhNWVmNjBkMTNlZmU5YmY4ZTZlZDg0MmJiZjNhZmRhMDUzYjg5Mzk1ZTBkYTZiODUzNjJhYTFiYTlkM2UiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBkZmE0YTkzZjE4MmZlOTUwYTAwOWFlYTY4M2VlNGE1MzMyYjQwNGQ3Yzc5NjNmYTNkZDI3NGUxMjE1YjIxYzcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_70ace9f4f63f484b82fdd3a881d79b38",
+      "statement": "MembersCreateMemberSuccessDispatchPublisherImpl publishes MembersDispatchEventNames.EVENT_CREATE_MEMBER_SUCCESS (event:members:create_member_success) via DispatchFacade.publishEvent with explicit ASYNC/REDIS options and RetryPolicy.platformDefault(); the event is fanned out by bootstrap registration configs to youshu, promotions, register-point, datacube register-stats, in-app notice, Shopex-CRM sync, shuyun member.register, and the members new-customer listeners.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MembersCreateMemberSuccessDispatchPublisherImpl.java#L42-L50",
+          "version": "repo-lines-v1:sha256:74f85b78ba051bddbd7bb9c738b658db9eb1d3bf90952a9049b0c7c52f7fc43e:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjJhNTE1ZTA5OGNjMjk2MmRiNmViZGZjZTI5NjA1ZjkxNWIzMWIzYzJmNTA5ZWFmMTg1MTBjYzAwMTc4YWFmNyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzQ1YzNiNWY5ODE1NDcyZjBlZWEzOGQ1ZWNiNzYyYzliMDJhZjUyNGZhZTZhOTZkYzIyZWVmYWY0NjdkNDc1NCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNmZlZGVlOWYzMjQ1ZjExMzAxZjdhM2ZhNzg3MTcwMDgxNTRlZWNhMzY1YTQwOTczZjUzMDk2YTMzYTM3MGVlMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjIsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDAzOTk0NWY3MTNjZWNjYzJhMmJlOTgxYWI1YzVlZWEzN2Y5NWY5NzY5ZTU3NWNkOGVkOWE5ZmNiYWZkZjA2YSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/MembersDispatchEventNames.java#L19-L20",
+          "version": "repo-lines-v1:sha256:b2423578a8175b40b26c458ed10599f136022fbe6e6fbfc9117e082aae6f2a7a:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiN2UxODY5NmEwOTE3ZDczMWM3ZGFlNTgzYWQxNzI2MGZmOTk0NmZjMGY4ZWVkNDNhMmRkM2M5NThkMGYyOTQyNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMWQyM2FlN2Q3ZTExMmQ4MzIzZDI4NTFiNDI0ZDU0MTYyMzYzYjhkZTFiZWY5ZTMxZGRmZTY1NmI1ZGYyZTgwNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDNlZWU4NWJhMmRiMjhmMTUxMzQ3NjJmMmQ2MzE2MjAxOTE1ODMyZTA5YThhYzNhOGU1OTM2NzJjN2QxYjJjZCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_fad316264d324fc1ad97cc32285da12f",
+      "statement": "PaymentSubjectDistributorIdPort (common/payment/) is the newest required-bean Port: it resolves the actual payment-subject distributor id because per-distributor payment settings (wxpay/alipay merchant configs, Redis pay-type rows) are keyed by company_id + distributor_id, while a distributor flagged payment_subject=1 (independent merchant subject) keeps its own id and any other case — distributorId == 0, an unknown distributor row, or payment_subject != 1 — resolves to 0L (platform subject). The single DistributorMapper lookup is implemented by distribution's PaymentSubjectDistributorIdPortImpl and constructor-injected as a required bean (no ObjectProvider, no NoOp — silently paying against the wrong merchant subject is worse than a startup failure) by four consumers spanning both sides of the payment boundary: orders' OrdersPaymentDoPaymentService (resolves distributorIdForSetting before assertPayConfigReady and buildPayParamsOrInvoke), orders' OrdersPaymentChannelQueryService (resolves per Trade row before wxpay order-query XML and AlipayOpenapiTradeQueryService), and payment's FrontPaymentSettingReadService and StandardOnlinePayAftersalesRefundExecutor (front pay-type list and wxpay/alipay refund runners). Pinned by orders' OrdersPaymentDoPaymentServicePaymentSubjectTest and payment's FrontPaymentSettingReadServiceDepositListTest.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/payment/PaymentSubjectDistributorIdPort.java",
+          "version": "repo-file-v1:sha256:3a792949ec2c168062f5ae0a9663af065a65b3d51b299c1bc757651ce6b65bc1"
+        },
+        {
+          "resource": "repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/domain/Distributor.java#L305-L315",
+          "version": "repo-lines-v1:sha256:44b4b3e4d850129a7938bac45e5370d254d64a44716dfcc85aa9d5630861011f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA5OGZlMjMzN2VhMTRlM2RlZTBkYWU0ZmU5MTAyMTQxMDYxZmFiZTY4MTQ4MmExYjk2MmY1ZmViYzNmNjBiMmEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyOWUyYWIxZjA0MWM2NjMxYmZlMDRjZDM4ZDAyNzYyYzE2ODA3MzRkZWEzNzVlZGNlNjJjOTA1ZjQxYTUzYjYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhiMWI1YzlmYTJiZmU3NzY1NmVkOWY4N2Q0ZjZhNzFhM2JiOWZkZDg0MjFkNDBiZTJiZjBhYjQzZjRmMjUwNzkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg5NGM4OGM4OTMwNzA2MTVkMDk2ZDkzNDQ0YWY5ZGZmNmM5ZGI0ZDA5ZjcxNmY2YzI5NGE3MTdkY2JlZjJiMGMifQ"
+        },
+        {
+          "resource": "repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/integration/PaymentSubjectDistributorIdPortImpl.java",
+          "version": "repo-file-v1:sha256:167df96b45a20ad1b125a3e7bdb358bb3888c12f1eb78f6b2c720e9468dafdf6"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/payment/OrdersPaymentChannelQueryService.java#L45-L74",
+          "version": "repo-lines-v1:sha256:9a29e8713ac3bc752ed13822c1aeed27268a8bde8a59030d560a8f8723284d2f:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM3MDIxZDFjOWUyNDE1Zjk3YzQxOWIzOWIwMTQ4ZWI2Y2FlNmM4YTAxNDZjODU3ODdhNjNlMTA4ZmIwNGNlZTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIwMzM1MGFjNWJkMWFjOGU1NGYwZDU4MmFkNGVlOThmNDdlOTQxYjcyYWRmOWM3YTMyMzY2ZmI1OWVlZGNhYjIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA0MjY2YzM1MmViMmM1YTY5ZWNkNzVmMGVlZjU3MTU5YzM1NWM4OGVjYzdmMmQyNTI4YzM5YWQwN2E0OTk2MTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImIwMmFhMjI1MDdiYmYyZDM0MjQzNDQ3MTEyZWM3NTY2OTcyZGJjNDdkZThhMzE4ZDZhYThlMjE3MGFkNGNmOTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/payment/OrdersPaymentDoPaymentService.java#L148-L158",
+          "version": "repo-lines-v1:sha256:3ba83a4ceb7cd91659623941f706128428199d6c8c0fd67bac7bc2cd1d7f4410:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU2NjgxOWVkMjE1MDM0ZDdmY2U1ZDI1YWE5MmM2ZDU2ODM1MTgzYzhkMmE1NWU5NmZlOTFjOTI4ZTJmN2RhMDMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcyODA4ZDAyY2NkNDAwYzc3ZDMyNDFiYzlhODc0MGQyMzM5NTlmMmE3M2RjMjQ1MGE1ODA0Y2U3M2NlNmVkNDQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ2MTNkYzM3OTI2ZDdmOTdkOGUwZGYwNTI0ODdjMTQ0NjAzNTAxOGJkMjdjOWM1ZmYwYmRkMjM2YjVkNjAyMjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjExOTgxYzA3M2MwYjY4ZjM5MWNiNjM5OWU1OTcyZTY0MTA1MDFiYzVhZmRmMjljOGY5ZjVmZmRiNWFhMWIyNWQifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/orders/service/payment/OrdersPaymentDoPaymentServicePaymentSubjectTest.java",
+          "version": "repo-file-v1:sha256:7a1f64b07376c00b5003ce57ddcc447e046069426fbf99581bf8efa7ed223d6b"
+        },
+        {
+          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/front/FrontPaymentSettingReadService.java#L204-L210",
+          "version": "repo-lines-v1:sha256:133c1278efcf63489df78e89be88a753d58f7775a25288bff072e61de340a244:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODljOGFkMDRlZDQxNmZmZjFmYTA1ZTNkMTQ4NGZmNmY5MGNhMTkxYjlhYzZmMGU3MDc0NTQ0YzNmMThlZGVjMyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYzMwYTU1NzljZGI3MGM3ZTE4OTdiMDQwMDY5ZjhiNzQ3MjQ5ZDVjMGE1YjNjOWYxYzc1MDkyYTY4ZjUxMTM2NyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTQ2NzJlZTBlYzNlMDIxODEyYzBjZTNlZDkyOWUzNjkyY2MyOWYxYjNiNWQyMjM1MzVjOTkzZmUxMjBlNGYxMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZjliZThhMmZlYTg0NGUyZTRiYjAwMzQ0M2FhNjMxNjIxZDE1MzM3YTgyYzQ4OTIyNGU0NTY0MmE2Yjk0NmRkMyJ9"
+        },
+        {
+          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/orderrefund/StandardOnlinePayAftersalesRefundExecutor.java#L78-L99",
+          "version": "repo-lines-v1:sha256:79e343788909a6d1001b30ae1ad9d4f46a78793248931910e1cecf4b4dca1e6a:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkzNDI1NDQ1YWViZTNiMTUzZTRmN2Q2YjY2MWJhOWVmYmI1MGJjYWQwN2UwNTU4M2Y1ZDE5ODNhYzc2NzdlYmQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU5NDJkYzUxNjk2MWVmZTY1NmM1ZmJhNWUyNGM3YzY5OTMxNzEzYTM2NDUyYWFmZDg0MzBhODZkMWRiZjU2OGQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA5MWMwZDA2OGZiYWQ2Yzc1NjlkMTdjMTRhYWNiODNhMWNlMjMwYzMwYmYxZTYxNGZkN2MwNjE0MjEwMDhkMTMifQ"
+        },
+        {
+          "resource": "repo://ecshopx-payment/src/test/java/cn/shopex/ecshopx/payment/service/front/FrontPaymentSettingReadServiceDepositListTest.java",
+          "version": "repo-file-v1:sha256:c65bcdd404711c20159f756ebec17a1cb1842f4de257770dacd697fc274983c7"
+        }
+      ]
+    },
+    {
+      "id": "claim_d9329ba7b9244a58bc7641c68942ee25",
+      "statement": "MerchantSettlementMainCategoryPort (common/goods/port/) is the merchant↔goods cycle-breaker: implemented by goods' MerchantSettlementMainCategoryPortImpl (validateNormalizeAndSerialize parses and validates the main_category_selection request, normalizes to category_id + level, deduplicates, and serializes to JSON; enrichDetailCategoryFields re-reads the stored selection and writes main_category_selection, main_category_names, and main_category_resolved_level3_ids into detail rows via ItemsCategoryRepository) and consumed by merchant's settlement services (MerchantCreateService, MerchantUpdateMerchantService, MerchantDetailQueryService, MerchantSettlementApplyDetailQueryService, MerchantWxappSettlementApplySaveService). The interface Javadoc states the intent: implemented by ecshopx-goods to avoid a merchant↔goods Maven cycle.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/goods/port/MerchantSettlementMainCategoryPort.java",
+          "version": "repo-file-v1:sha256:4f74c1a71e673d81d67e357b5c7fdfdabaf66afacc9dc0007208dd2af2c99bba"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/integration/MerchantSettlementMainCategoryPortImpl.java",
+          "version": "repo-file-v1:sha256:fbc6258151923a39d98c6a02ed13d06e19a3e02ab0133fdc65b48bc364e3416f"
+        },
+        {
+          "resource": "repo://ecshopx-merchant/src/main/java/cn/shopex/ecshopx/merchant/service/MerchantCreateService.java",
+          "version": "repo-file-v1:sha256:e1653c2b70fd12041388c8478ede06507391ef1100ca7817aadec43114ea8783"
+        },
+        {
+          "resource": "repo://ecshopx-merchant/src/main/java/cn/shopex/ecshopx/merchant/service/wxapp/MerchantWxappSettlementApplySaveService.java",
+          "version": "repo-file-v1:sha256:70469f931aff72b586eec3facb9e7f946756b8f564c1b70c3314ab78e96fe61c"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.9.0",
-    "at": "2026-11-05T17:10:02.238Z"
+    "at": "2026-11-09T03:34:48.355Z"
   }
 }

@@ -1,26 +1,26 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:488ad8ab67984e5b30ec79570bb04500fe1c54ede47bc1c71e484274d8ad0ac6",
+  "pageVersion": "sha256:a2e7945243638609fadbc79687e81e90e9577b2d6db38f14f5c629af41206f37",
   "claims": [
     {
       "id": "claim_59497cc7f3f044ed96e27a805c72b37b",
-      "statement": "ECShopX-Java is one multi-module Maven reactor: the root pom.xml declares parent cn.shopex:ecshopx (version ${revision} = 5.4.7) extending spring-boot-starter-parent:3.5.12 with Java 17, lists 53 modules (four infrastructure — ecshopx-bom, ecshopx-common, ecshopx-dispatch, ecshopx-bootstrap — plus 49 business Bundles), and skips the spring-boot-maven-plugin everywhere except ecshopx-bootstrap, where it is re-enabled with mainClass cn.shopex.ecshopx.EcshopxApplication.",
+      "statement": "ECShopX-Java is one multi-module Maven reactor: the root pom.xml declares parent cn.shopex:ecshopx (version ${revision} = 5.5.0) extending spring-boot-starter-parent:3.5.12 with Java 17, lists 53 modules (four infrastructure — ecshopx-bom, ecshopx-common, ecshopx-dispatch, ecshopx-bootstrap — plus 49 business Bundles), and skips the spring-boot-maven-plugin everywhere except ecshopx-bootstrap, where it is re-enabled with mainClass cn.shopex.ecshopx.EcshopxApplication.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-bootstrap/pom.xml#L264-L274",
-          "version": "repo-lines-v1:sha256:a502ac31f05156a306e2721d66fa69f104ed4281abda5aaec0422561f98639f4:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMwYTBlMTVjNjM3NWM1NmI2ZWExNGFjMGUxZWY3M2NiNGE1NjVmZDE5ZGYxODA0ZmI0NzIxYTQ2NTc0NTczNGQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU4ZmIxYjhmZjkzYzU5ZjBjZjUzMTUzOTQ0YWJmM2Q3ZTE2ZDY3MGE2MWRkN2I2MjkwZjMxNjhmYWIyZDdlYTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjExZjUxYmUzY2M0YWE0MDZhOGVhN2EyODhkMTRkM2ZlYmVkNTAzZGFjMjJmNTk3MDAxZTMzNWNiNjM3OGY4NjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ2MmY2YjcyYmUxYjk3N2JkMGUyMWI3N2Q0YzE2ZDQ0MzAyYzA0NmE1NzJmY2M4MmMyZjRjOGJjY2I5OTBlOTYifQ"
+          "resource": "repo://ecshopx-bootstrap/pom.xml#L264-L275",
+          "version": "repo-lines-v1:sha256:39d9164cdadbbb6d98c6cddc249977c3d78b281ea0ceaea759155ac4fc3ddaa5:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMwYTBlMTVjNjM3NWM1NmI2ZWExNGFjMGUxZWY3M2NiNGE1NjVmZDE5ZGYxODA0ZmI0NzIxYTQ2NTc0NTczNGQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYyZTg0MTI0MThhMDQ0OWRjODU1ODZiYjRkYTYzNGFiYjRlY2YzZDk5YThlMDhmZDZiODI2YzQyYjgzZDZiOGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjExZjUxYmUzY2M0YWE0MDZhOGVhN2EyODhkMTRkM2ZlYmVkNTAzZGFjMjJmNTk3MDAxZTMzNWNiNjM3OGY4NjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI2ZTMyYTMwZjNmMjBiYmM4MmY1YzUzZDQ4MDg4M2RhODk0OWQwYWJhYTllZGQwNWFkMzJjZDdhYzRlMjc5ZTcifQ"
         },
         {
-          "resource": "repo://pom.xml#L358-L410",
-          "version": "repo-lines-v1:sha256:7f0dece4f89a772716226eda2351a7113e549fa7982b6de41d431f5e31a8cc5c:eyJzZWxlY3RlZExpbmVDb3VudCI6NTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJiYzI1Yjk3ZWJkMDY5ODlmZmViNTI4MDBhMjE3Njk1NTA2MjhiYmQyZjVhMmNhZWE4ZmI3MzBmZjEyYWIyZjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBjNzIzYjUyMzlmMTQwYmVlZDdlNGQ5ZDFmN2Y0YzA3YmExNzI5MTdlYmFlZGRmYTkwYjRmMGFmMDg4NzY4NzEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM3OTgxNGViZGNjNzFmOWZjYTU5NDI2YzNkNTUxNjIyZjJlNmViMmQ0NDIyNjVlMmM2NmQyYjE5YTA3YmQ4OTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNhMjEyZmZkZjcyZjE0MzlkZTc0NGE1Y2MyNjkzMTAzYjAyZmYyNGYyMzZkMGY3NzFjNGIzNTU0NDZkMTBhN2MifQ"
+          "resource": "repo://pom.xml#L366-L418",
+          "version": "repo-lines-v1:sha256:cce4edd431cc1946dd76dd60016dc650c45a692c793afaad0a3ae17920ea3a71:eyJzZWxlY3RlZExpbmVDb3VudCI6NTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxNDFjY2UwOWU5MTllN2YzYjJkMTM1Y2I4NzI5MDQzZjc4OTkwNTJmNzAwYzE1ZTNhZWZhMzU0MWJlOGI4OTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE2NWIxMGE3NTMyMWFhYzNmOTJjMmUwZjQ4ZjcxZmE0YzMzZWM0Y2M5YThlNTRhZTQ3NjA5YWI4MjY5MmM4M2UiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ5MWY0YjIxMjJlMGY5NThlYzBhYjA5MDg3ZTc3YTRhMzcyOTY2MDM1OTBmMDQ4ZTQ2NWI1NDgzYjA5YjRmOWYifQ"
         },
         {
-          "resource": "repo://pom.xml#L426-L435",
-          "version": "repo-lines-v1:sha256:ae5acb529d79b674696ca48eace8ce933c91536a4aba57b55d18eae543159423:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRlOGE3NjRmM2I1MWQ2OGE5Mzk1OWVhMGNmMWJhYjg3MTJkZDgyNmVmZGZlNzhkOGQwYTM3YzAwM2M2MDJiZmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIxZjQzMTdjYjNmNzgyOWEzNGJjYTZmYTVhYTVhMjM5YjMzOWRjMTQwMmFiNTNjNzYyOGJiMGNjNWYyYjhlOGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImYwZDNlZjRjZDg0OTBiNzA5NDY0ZjA5ZDE1ZWNjYzdmY2NjN2MxMmI1NzA4ZGRhMmQwNWIyMmU2OWMzODQ4NjgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjUyZGU5MjJiMjdhMTkwNjc1NzczNDRhZjczMmI5ZDgxMTZjY2JjNTYyMTg2NTdlNWFjM2VhYjk4NjkzODU0ZWIifQ"
+          "resource": "repo://pom.xml#L424-L433",
+          "version": "repo-lines-v1:sha256:1631a5d563be024186886b8c0c74accd3fff38e23f6f7ac82b8517740bee4614:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRjN2VjMDY2YzI1MmQyYTI4OGQ4YTdhZDAxOGVkZTI0NTAzYWUxMTlhNGE0YTBhNDgxZjRkNjdjMDg0ODMwOWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU4ZDE2ZjgxNzBmM2M0MjA3YWQ4YThjMjE5ODM2ZDA1OTJmYjgzOGRkMGNhYmQxYTI5OWNiMmRhZTE4ZTU5YTAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg4MTk2MDQxODg5NzdhMjIxYTkxODY0NjQ3NzRlZGFkYTUxMWFlNjQxMWRkNDU1M2JjMjg0ZTNkNmJiY2UwNmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjE2M2Q3MTFlZTVhZjVhZDJjYzdhMTIzNDA3NTI4ZGRiZDExNDFmZmRjYzMyYmQ1N2U2MGVmNmMyZTY2NGVmNDMifQ"
         },
         {
-          "resource": "repo://pom.xml#L9-L23",
-          "version": "repo-lines-v1:sha256:22cab9c768b5d1e5d4ebaed7078fda4552ee9692f612201a400adb8b6e35d04e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBmZGZmN2QwNTFhODljMGM2YzBjODMwMzI2Yzg1YWM2NTExMDU1OWUyZDllNDA0M2RjOGY5YmQ2ZjE5Y2I3MDgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxYjg1MzA5OGRmNWRmM2MzNzA0MWVmZjljZjgzODhhYmQ5ZWNhZDM4MmU0YmE2ZTg3OTUzYjRkMTkyN2JhNjgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE3YTg1NTYyODFmZGFjMzE3MTA5ODBlYzcyMjE5MzYxYjYwZTY0NDYzNGUzMmJjNzI1Y2ZjZTBkMDI3MDEyN2IiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUxYTBiMmFjNTJkN2ZlYmJmNjU0ZGIyNmMxZDMzNzkxODE0ZTgyNWRiOTk1NjA2NGE5MmVhZjEyYzkxMmU3ZWEifQ"
+          "resource": "repo://pom.xml#L6-L22",
+          "version": "repo-lines-v1:sha256:1999f426a0125214c447a9ea9a8f05b1b61e4c79403f46e0ce48902c0476eae8:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYyZDg2OTJjNDcwNGI5Y2Q5ZmMwN2Y5ODNhMDFjYWNlOTI2MjYzZjJjZjJkOGM0M2QzZGQ0NDc3ODQ0NmU4OWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRlZDdhZDljNTA1MTE1MTA4MmY4MDFlNDBjZTNkZjE2ZGY5MWVhOThmMzlmM2MyOTgzZDZhZjRiODc2NmEzNDUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM5OGMzN2Q5M2QwNWZkYWY1MjYxYjkwNzg3YWU2MzFjODhkMzIyMmQwZGE1YWRkZGU2NWJiMDU4ZjVlMzZhMWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRhM2VjZjYyMjdkMDFhMTJlNWE2M2UyOTVjMGJjODYyN2QyM2QyMzlhNTkxMjQ1YjFkYWJjMjY1YmVkMzQwNTgifQ"
         }
       ]
     },
@@ -355,10 +355,56 @@
           "version": "repo-lines-v1:sha256:4dc17af72d06ae96fa1fe9819f4abfe18552283f7008e8968e170ceb018a091e:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNGRjMTdhZjcyZDA2YWU5NmZhMWZlOTgxOWY0YWJmZTE4NTUyMjgzZjcwMDhlODk2OGUxNzBjZWIwMThhMDkxZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNGRjMTdhZjcyZDA2YWU5NmZhMWZlOTgxOWY0YWJmZTE4NTUyMjgzZjcwMDhlODk2OGUxNzBjZWIwMThhMDkxZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZmY4ODgzYThmNTU0N2I2YzQyNWI3NTNmOWEzMTcxYzgyZDM4MzE5NTk0NmRlNzUxOGYzY2Q4MGYyN2Q3NGM0ZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTZmOWUyNzRlM2M1ZWJiMmE5MzAxNGUxY2JlYzU2ZDNlYzBlY2NkODlkMmY3MzRiOWNmYzYzZDJhOWE0NjMyMCJ9"
         }
       ]
+    },
+    {
+      "id": "claim_d4764503f5d84c63b27b6a5719d2ad56",
+      "statement": "PaymentSubjectDistributorIdPort is a cross-Bundle port declared in ecshopx-common (package common.payment) with a single resolveActualDistributorId(companyId, distributorId) method; it is implemented by PaymentSubjectDistributorIdPortImpl in ecshopx-distribution and consumed by the ecshopx-orders payment services (OrdersPaymentDoPaymentService and OrdersPaymentChannelQueryService), making it a current example of the consumer-contract/provider-implementation wiring pattern described on the Cross-Bundle Communication page.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/payment/PaymentSubjectDistributorIdPort.java#L16-L21",
+          "version": "repo-lines-v1:sha256:b04aceea5019eba332c0e79dd29f32ebe952ed6023caf2a77f7d757d4c34dd1e:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzYwYmIzNjQ0MzUzZTgyOGZiNTk1NTdlODdmYTIyN2E0ZWM5OTUxMjM5MzM1Mjg3ZDc3NTgxOTZjODhlMzYzNCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzg5NDM3ODVmYTQ1YjBhMGY0ZjdiNzFjMTRmYWYyNDg5N2MzZWIwMjViNzRjOWUxOWU0NzdlZTdkMDJlNTc4YiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/integration/PaymentSubjectDistributorIdPortImpl.java#L23-L52",
+          "version": "repo-lines-v1:sha256:ba0e374dfdcf5ea0da47ae2dd1aa35e0e156b4f3537e56dc5dbf69c87dde5d4a:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMzNzgxMzY2ZWMzOGI3ZjAxMTJlMGEyMDEzZjgyMzIxNWMwYjcwMzE3NzEzMzUxZWQzZWEyNDdjZWU3MjBiNTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBjYTVjMjgzNWJhNzg1YzFjMGFlZjM1MGQzNjNkNjBlMTNlZmRhYjVjNThjNGViM2I1MDMwYWNhZDgyM2ZhZGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/payment/OrdersPaymentChannelQueryService.java#L47-L71",
+          "version": "repo-lines-v1:sha256:adadfaa56d378f1e487d28e952a2196aae73fa7cd3d8d17813d78e8ec5c680dc:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU4YmMxNzllMmFiZmU2ZGEyNzQ3MmUxMmU3NjU1OTc4NmY0OTVhY2IwYzcwMjM1NmY5NzBjYjgxNzk3ZmU1ZjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3MTg0NzE3MjU5NTAyNjVlMzY2NjE1Y2M2MmIwYzA2OGFkMDM0NDAzNjk4Mzk5MDRhYWI2MGUxNjA1YTllODciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFhNmRiY2YwNzE3YzY0YTVjMDU2OTJhNTZlMjYwNGMxNjdjYjRhOTU4MTM4YWVlNmQ1ZTU3M2NhNzY2YzI0ZjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU3YmMyZGNmMTBjYTNkMDZkZDRmMTczMmNkZDRmYzI5MzNhNjRmZjA2N2Y1MmFkOTVhMGNiOTRlMWUzOTYzOGYifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/payment/OrdersPaymentDoPaymentService.java#L95-L150",
+          "version": "repo-lines-v1:sha256:23afce8afd86bba3b37eb5bb683a57a4af9ced5adb471959bd95e8c1376daac0:eyJzZWxlY3RlZExpbmVDb3VudCI6NTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU4YmMxNzllMmFiZmU2ZGEyNzQ3MmUxMmU3NjU1OTc4NmY0OTVhY2IwYzcwMjM1NmY5NzBjYjgxNzk3ZmU1ZjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjljMWZjNTc5OGFjOGQ0N2VkNzYzYjUwZGI3MDcxZWFkODhmMmFmYzgyZDg5OWUzMGU2ODdhODVhMzliMWJiOWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQwZjMxNzMyNWE4Y2E1ZDZlZmVkNzg4MGI1MTRjNTAyZTY5NjY4ZjQ1MjhlYmY3MGMyNzMwNDMwZjRlNWQ5N2QiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNmZGM3YzU3MjMwZjJjODM4YTg1ZGRiYTNiNzUzMDNmMmQxZTNlMTdmMTc4OGE1N2I3YzdmMGUzMDhkZWRiNTAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_cdcbb9b477f8402db04859d0e85bbc66",
+      "statement": "PaymentSubjectDistributorIdPortImpl.resolveActualDistributorId loads the Distributor by companyId + distributorId and returns the given distributorId only when the distributor record's paymentSubject flag equals 1; it returns 0 (platform payment subject) when distributorId is 0, the distributor is missing, or paymentSubject is not 1.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/integration/PaymentSubjectDistributorIdPortImpl.java#L34-L52",
+          "version": "repo-lines-v1:sha256:5949a3d3a70658b8ebc2124ee21387fbf2387ed1bbf6df124b0c7c51bf256987:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwOGNjMTVkMDc1NGI2ZjIxZjcxZTBiMDNiOWRkNzg2YmM5ODgwMDNiMmI1NzU2NGM2MDUwYTgwMjI1MTdjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjViOWM0Y2FhNDc3N2FiN2ViYjQyMTE5ZDljZjAwMjA3YmZkOGZjMjhlMWIyMzllNDQyZGY4YTE3Mzk0OWEzN2IiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_702cf29824b149eda55ae4f0534b9275",
+      "statement": "OrdersPaymentDoPaymentService.doPayment splits payment execution into three phases — a short TX1 via TransactionTemplate that ensures the pending trade and completes local point/deposit/pos/zero-fee payments inside the same transaction, channel SDK/HTTP invocation performed outside any DB transaction, and a TX2 that persists the channel outcome — and it resolves the payment-subject distributor via PaymentSubjectDistributorIdPort before validating payment config or invoking the channel; trade-finish dispatch is published by the finalize methods only after the trade reaches SUCCESS (or the NOTPAY→SUCCESS CAS succeeds).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/payment/OrdersPaymentDoPaymentService.java#L143-L216",
+          "version": "repo-lines-v1:sha256:cc7a968bfe0ba5092f56d851d0a2bcf9cb493bef62ba4ec999e3d09d98755949:eyJzZWxlY3RlZExpbmVDb3VudCI6NzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZmZGQyN2RjYTEzOTFmZjU2NjkxMTRmNzhkYjY4MTZlOGM5YjY5ZjNkYjZkNjE4YTJkNmNjY2ZjOWRhY2JjYjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZmZWQ5MTZkNGU2OGY3ZTJiMjgwMTJjOThhMmE5NTg5NmU3ZDY0NDJmMmIzOGEzNDViOWUxNWNmZjM0NjkyN2YiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc1ZTQwNDZjYjgzMjY4ZTFjNmRjZWIzZmYxMTU1OTg5YTMxZWViZWNjMmQzMzIzZjJiOTQ0ZjM3ZGIyZTIzMTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZiODBjY2IzZWQ2NTQyYjljNmJkYjZjNGQxNjhkMTBjMmMyNjQ4NWZlODAxZDQxMjMyYmYzMTJjNGIzMWU0M2QifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/payment/OrdersPaymentDoPaymentService.java#L714-L752",
+          "version": "repo-lines-v1:sha256:cdb1e522b0bbd4ef27dd35593745fec0ab2ce38f00986a304f2762f5dc408dad:eyJzZWxlY3RlZExpbmVDb3VudCI6MzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMwYWYxOWM3MmU1ZjAzOGNjZWJmYjFkNGJkNDk4OWFkMTQ4YzI0MDMyNjRjOGRhNjUzNDZkNmE5Mzc1YWViYmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImMwNmIzMjQyOWJkNDE3ZmIxMTg0MTJjMDVjN2VmMzI5N2FlODYyZTQ5YmYzZDcwZmQ1ZmRlY2QxMjY1ZmEwNTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhiMTc2MzgyNTJiYjk5MWIwZjllODY2MDA2NmU0OWM3YTg2NDk2NmI3ZGE5ZGIyOThkZTc4ZjMxNDU1MDVkNjIifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.9.0",
-    "at": "2026-11-05T17:10:02.238Z"
+    "at": "2026-11-09T03:34:48.355Z"
   }
 }

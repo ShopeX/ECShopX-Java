@@ -1,8 +1,8 @@
 ---
 type: architecture-convention
 title: HTTP Request Lifecycle, Auth, and Response Conventions
-description: What happens to an HTTP request in the single ecshopx-bootstrap Spring application — Undertow's PHP-compatibility settings and the StorageAwareHttpFirewall, the annotation-driven auth/middleware interceptor chain (FrontAuth/FrontNoAuth/AdminAuth/FrontMerchantAuth/QywxSalespersonAuth/Activated/DataPass/ShopLog), the POS dual-JWT chain (PosJwtAuthenticationFilter, PosJwtIssuer, DualJwtSupport), FlexibleBody binding of JSON/form/multipart plus the merged-params controller idiom, locale resolution, and the ApiResult / @DingoResponse error-envelope conventions picked by GlobalExceptionHandler.
-tags: [architecture, request-lifecycle, undertow, http-firewall, interceptors, auth, jwt, pos-auth, dual-jwt, flexiblebody, locale, apiresult, dingo-response, error-handling]
+description: What happens to an HTTP request in the single ecshopx-bootstrap Spring application — Undertow's PHP-compatibility settings and the StorageAwareHttpFirewall, the annotation-driven auth/middleware interceptor chain (FrontAuth/FrontNoAuth/AdminAuth/FrontMerchantAuth/QywxSalespersonAuth/Activated/DataPass/ShopLog), the POS dual-JWT chain (PosJwtAuthenticationFilter, PosJwtIssuer, PosJwtBlacklist, PosJwtPathWhitelist, DualJwtSupport), the merchant-wxapp JWT servlet filter, the openapi signed-request auth interceptor with Redis replay guard, FlexibleBody binding of JSON/form/multipart plus the merged-params controller idiom, locale resolution, and the ApiResult / @DingoResponse error-envelope conventions picked by GlobalExceptionHandler.
+tags: [architecture, request-lifecycle, undertow, http-firewall, interceptors, auth, jwt, pos-auth, dual-jwt, merchant-wxapp-jwt, openapi-sign, replay-guard, flexiblebody, locale, apiresult, dingo-response, error-handling, cross-tenant-scope]
 sources:
   - id: openwiki-source-84aeb105875424c9aac7edf8
     resource: repo://ecshopx-bootstrap/pom.xml
@@ -48,6 +48,10 @@ sources:
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/exception/GlobalExceptionHandler.java
   - id: openwiki-source-3f17bf146b5e4b644b6a94e5
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/exception/ResourceException.java
+  - id: openwiki-source-5b44911ef0644f226b41475d
+    resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/openapi/OpenapiAuthAttributes.java
+  - id: openwiki-source-a680619c2778d63c421a49fa
+    resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/openapi/OpenapiSignSupport.java
   - id: openwiki-source-2247669a54256479e83875d3
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/web/FlexibleBody.java
   - id: openwiki-source-e7124ff1339f931e45499060
@@ -122,20 +126,42 @@ sources:
     resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/h5/H5BearerJwtClaimsService.java
   - id: openwiki-source-2425b7a1af8631937f2e830a
     resource: repo://ecshopx-members/src/test/java/cn/shopex/ecshopx/members/api/front/v1/MembersControllerAddressBuyUserScopeTest.java
+  - id: openwiki-source-4aa174a9de75c564b5ea5bdf
+    resource: repo://ecshopx-merchant/src/main/java/cn/shopex/ecshopx/merchant/config/MerchantWxappJwtProperties.java
   - id: openwiki-source-7e78af38c8a63b7842f49ac8
     resource: repo://ecshopx-merchant/src/main/java/cn/shopex/ecshopx/merchant/config/security/FrontMerchantAuthInterceptor.java
   - id: openwiki-source-3faa728c05e4c966142451ad
     resource: repo://ecshopx-merchant/src/main/java/cn/shopex/ecshopx/merchant/config/security/MerchantInterceptorWebMvcConfigurer.java
+  - id: openwiki-source-5535fc73ece87960d8767e8e
+    resource: repo://ecshopx-merchant/src/main/java/cn/shopex/ecshopx/merchant/config/security/MerchantWxappJwtAuthenticationFilter.java
   - id: openwiki-source-77e486142ae903ca0a7f6211
     resource: repo://ecshopx-merchant/src/main/java/cn/shopex/ecshopx/merchant/service/wxapp/MerchantWxappAuthAttributes.java
+  - id: openwiki-source-167baa4ee8f825cf1730b5a8
+    resource: repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/thirdapi/OpenapiRequestParamCollector.java
+  - id: openwiki-source-2a6ed641b7be57a3f7fcd6a5
+    resource: repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/web/OpenapiAuthInterceptor.java
+  - id: openwiki-source-90f352ef36e29440d99e03dd
+    resource: repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/web/OpenapiPathPatterns.java
+  - id: openwiki-source-4889f150849f66bdb3e774ab
+    resource: repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/web/OpenapiSignedRequestReplayGuard.java
+  - id: openwiki-source-c3326a09b0b53b767ed6480a
+    resource: repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/web/OpenapiWebMvcConfigurer.java
+  - id: openwiki-source-86ec1788b9f975eaacc0039f
+    resource: repo://ecshopx-openapi/src/test/java/cn/shopex/ecshopx/openapi/web/OpenapiAuthInterceptorReplayTest.java
+  - id: openwiki-source-05f1689fa8b246986a24bcd3
+    resource: repo://ecshopx-openapi/src/test/java/cn/shopex/ecshopx/openapi/web/OpenapiSignedRequestReplayGuardTest.java
   - id: openwiki-source-bfe6d6f18351fc248cd7b204
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/api/front/v1/RightsController.java
+  - id: openwiki-source-07fb8468822e1637135de269
+    resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/api/front/v1/WxappOrderController.java
   - id: openwiki-source-f2e1c65d6d39cb3db1a8a7e8
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/api/front/v1/WxappPaymentController.java
   - id: openwiki-source-847db9a10639078a376af1af
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/config/OrdersFrontV1BadRequestFieldErrorsAdvice.java
   - id: openwiki-source-da30d999830db13c520004dd
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/front/wxapp/RightsFrontWxappGetRightsCodeService.java
+  - id: openwiki-source-f08b4f8c06e4e935888e75cd
+    resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/pos/PosOrderDocAccessGuard.java
   - id: openwiki-source-0e983b4fde485bf2f006c24e
     resource: repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/orders/service/front/wxapp/RightsFrontWxappGetRightsCodeOwnershipTest.java
   - id: openwiki-source-0ec099f633b299c7da3a55f9
@@ -146,15 +172,15 @@ sources:
     resource: repo://ecshopx-salesperson/src/main/java/cn/shopex/ecshopx/salesperson/web/QywxSalespersonAuthInterceptor.java
   - id: openwiki-source-37308fb144b4036f8384abe8
     resource: repo://ecshopx-salesperson/src/main/java/cn/shopex/ecshopx/salesperson/web/ShopSalespersonFrontRequestMerge.java
-generated: { by: "openwiki/0.9.0", at: "2026-11-05T17:10:02.238Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-08T17:14:16.576Z" }
 verified:
   - by: openwiki/0.9.0
-    at: 2026-11-05T17:10:02.238Z
+    at: 2026-11-08T17:14:16.576Z
 ---
 
 # HTTP Request Lifecycle, Auth, and Response Conventions
 
-Every HTTP request enters one Spring application (`ecshopx-bootstrap` on Undertow, port 18080) and passes through a deliberately layered pipeline: servlet-container settings tuned for legacy PHP URL compatibility, a Spring Security firewall that carves out an exception for `/storage/**`, two thin security filter chains, a locale filter, the POS- and operator-JWT servlet filters, and only then the DispatcherServlet and the annotation-driven interceptor chain registered by `MiddlewareWebMvcConfigurer` (espier) plus its merchant/salesperson siblings. After the handler is chosen, `@FlexibleBody` binds JSON / form / multipart bodies, controllers merge query parameters with the body map, and both success (`ApiResult`) and failure (`@DingoResponse` legacy envelopes via `GlobalExceptionHandler`) responses follow conventions inherited from the PHP system.
+Every HTTP request enters one Spring application (`ecshopx-bootstrap` on Undertow, port 18080) and passes through a deliberately layered pipeline: servlet-container settings tuned for legacy PHP URL compatibility, a Spring Security firewall that carves out an exception for `/storage/**`, two thin security filter chains, a locale filter, the POS- and operator-JWT servlet filters plus the merchant-wxapp JWT filter, and only then the DispatcherServlet and the annotation-driven interceptor chain registered by `MiddlewareWebMvcConfigurer` (espier) plus its merchant/salesperson/openapi siblings. After the handler is chosen, `@FlexibleBody` binds JSON / form / multipart bodies, controllers merge query parameters with the body map, and both success (`ApiResult`) and failure (`@DingoResponse` legacy envelopes via `GlobalExceptionHandler`) responses follow conventions inherited from the PHP system.
 
 This page documents each stage, the annotation-to-interceptor matrix, and the response/error conventions a **new endpoint must choose between**. For where controllers live per Bundle, see [Bundle Anatomy and Layering Conventions](bundle-layering.md); for the runtime topology, see [System Overview and Runtime Topology](overview.md).
 
@@ -260,6 +286,12 @@ POS (收银台) terminals authenticate against the **same admin controllers** bu
 * **Authentication** — `PosJwtAuthenticationFilter` (espier, `@Component @Order(HIGHEST_PRECEDENCE + 40) OncePerRequestFilter`, i.e. it runs **before** the operator filter) engages only when the Bearer token *looks like* a POS token (`token_kind=pos` or the POS issuer); operator or front tokens pass through untouched. For POS tokens it enforces, in order: the `PosJwtPathWhitelist` (a deny-by-default table of POS-reachable method+path pairs — checkout, carts, order/aftersales reads, goods/member reads, write-off — with `/api/v1/store/pos-accounts/**` explicitly denied as admin-only), the POS blacklist, signature + `exp`, the POS kind/issuer check again, and `PosJwtSessionValidatorPort.assertSessionStillValid` (`PosJwtSessionValidator` in companys: the token dies immediately when the `PosStoreAccount` row's status, `distributor_id`, or `role` no longer matches the token snapshot). Success stores the claims under `PosJwtRequestAttributes.POS_JWT_USER_DATA`; every failure is a Dingo-style 401 (`{"data":{"message":…,"status_code":401}}`). `POST /api/v1/pos/auth/login` itself is anonymous.
 * **Downstream dual-JWT handling** — the operator filter and `AdminAuthInterceptor` both skip any request that already carries `POS_JWT_USER_DATA`, so a POS token satisfies `@AdminAuth` without the operator session-token checks. Shared code that needs the actor reads claims through `DualJwtSupport` (`ecshopx-common`): POS claims win when both attributes are present, `requireCompanyId` reads `company_id`, and `requireActingOperatorId` returns `pos_store_account_id` (fallback `id`) for POS sessions vs `operator_id` for operator sessions — throwing `UnauthorizedException("未登录")` when neither is usable.
 
+### The merchant-wxapp JWT servlet filter
+
+Beside the annotation-driven `@FrontMerchantAuth` interceptor, the merchant Bundle also runs a **servlet filter** — `MerchantWxappJwtAuthenticationFilter` (`ecshopx-merchant`, a `@Component OncePerRequestFilter`) — that guards the *one* merchant endpoint that is authenticated but must run before any `@FrontMerchantAuth` handler annotation applies: `GET /api/v1/h5app/wxapp/merchant/type/list` (ECX-10617). Its `shouldNotFilter` returns `true` for every path **except** that single GET, and explicitly skips the settlement-apply and password-reset surfaces (`/api/v1/h5app/wxapp/merchant/settlementapply/**`, `…/auditstatus`, `…/detail`, `…/step`, `…/password/reset`), which deliberately authenticate as a *mall member* through `@FrontAuth` instead.
+
+When it engages, it performs the same Nimbus HS256 verification as `FrontMerchantAuthInterceptor` (secret from `MerchantWxappJwtProperties.resolveSecretBytes`, issuer check, `exp`/`nbf` with leeway, positive `company_id`/`account_id`, and a `MerchantSettlementApply` row whose `company_id` matches), then stores a `MerchantWxappAuthAttributes(companyId, accountId)` under the `MerchantWxappAuthAttributes.REQUEST_ATTR` request attribute **and** installs a `UsernamePasswordAuthenticationToken` in the `SecurityContext`. Every failure writes the Dingo `401001` envelope (`{"data":{"message":"Unable to authenticate user.","code":401001,"status_code":401}}`) at HTTP 401. The older `MerchantWxappPasswordResetSecurityConfig` (a dedicated `SecurityFilterChain` for this surface) is now a deprecated empty shell — merchant H5 auth moved to `@FrontMerchantAuth` plus this filter.
+
 ### Locale resolution
 
 `CommonWebLocaleAutoConfiguration` (`ecshopx-common`, servlet web apps only) registers `CountryCodeLocaleFilter` on `/*` at order `Ordered.LOWEST_PRECEDENCE - 50` — deliberately late so Undertow has already parsed the query string (the filter also touches `getParameterMap()` first and falls back to parsing `country_code` out of the raw query string). The filter:
@@ -274,7 +306,7 @@ Downstream code reads the tag back with `RequestLangTag.current(langueProperties
 
 ### Registration and order
 
-Three `WebMvcConfigurer`s register the MVC interceptor chain; interceptors execute in registration order (explicit `.order(...)` values):
+The espier/merchant/salesperson `WebMvcConfigurer`s register the main MVC interceptor chain; interceptors execute in registration order (explicit `.order(...)` values). The openapi module registers its auth interceptor separately (see [Stage 2b](#stage-2b--the-openapi-signed-request-interceptor)).
 
 | Order | Interceptor | Registered by | Path pattern |
 |---|---|---|---|
@@ -316,6 +348,23 @@ The typical admin controller stacks them: `@DingoResponse(...) @AdminAuth @ShopL
 1. **Bearer JWT** — if an `Authorization: Bearer` token verifies (same HS256/issuer/time/required-claim/positive-`company_id` rules as `@FrontAuth`), the claims are enriched (`H5JwtUserLoginInfoEnrichService` plus a member-mobile backfill from the DB when the claim is missing) and stored as `h5AuthClaims`.
 2. **Anonymous resolution**, otherwise. In order: the `appid` query parameter or `authorizer-appid` header (wx-prefixed appids look up `WechatAuthorizerLookupMapper`, others go through `AliMiniAppCompanyIdLookupPort`); then the fixed system company (`common.system-companys-id` when not SaaS, `common.system-main-companys-id` when SaaS); then the `company_id` query parameter; then the `Origin` header domain via `CompanyDomainLookupService`. If nothing resolves, it throws `UnauthorizedException("无权访问该API,非法访问！")`, and the response envelope depends on the handler's `@DingoResponse.unauthorized()` flag (Dingo nested-`data` 401 with code `401001`/`401002` vs. plain `ApiResult.fail(401, …)`). One carve-out: `MembersController.getNoAuthDecryptPhoneNumber` is allowed through with `company_id = 0`.
 3. Anonymous requests get a synthetic anonymous claims map (`buildAnonymousAuthClaims`) stored in `h5AuthClaims`, so controllers can treat both paths uniformly.
+
+## Stage 2b — the openapi signed-request interceptor
+
+The public `/api/openapi/**` gateway authenticates with **signed requests**, not JWTs. `OpenapiWebMvcConfigurer` (ecshopx-openapi) registers `OpenapiAuthInterceptor` on `/api/openapi/**` and `/api/openapi/internal/**` (it runs alongside, and independent of, the espier chain — the operator JWT filter already skips `/api/openapi`, and `/api/openapi/**` matches no `@AdminAuth`/`@FrontAuth` surface). `OpenapiContentCachingFilter` (`@Order(HIGHEST_PRECEDENCE + 20)`, i.e. *before* the POS filter at `+40`) wraps public openapi requests in a `ContentCachingRequestWrapper` so the JSON body can be re-read for the signature merge.
+
+`OpenapiAuthInterceptor.preHandle`:
+
+1. Skips the internal prefix (`/api/openapi/internal/**`) outright, and skips any path not under the public `/api/openapi` prefix.
+2. Collects the merged parameter map via `OpenapiRequestParamCollector.collect` (query/form via `FlexibleHttpServletParameterMap.toObjectMap` **plus** the cached JSON body, with `method` defaulted from the URL tail).
+3. Requires `version`, `timestamp`, and `app_key` (missing → `VALIDATION_MISSING_PARAMS` / `E4001`).
+4. **Debug bypass** — when `openapi.debug=1`, it authenticates as the system company (`openapi.system-company-id`, defaulting to `common.system-companys-id` = `1`) and skips signature/replay checks entirely. Development switch only.
+5. Enforces a ±600 s timestamp tolerance (`VALIDATION_TIMESTAMP_ERROR` / `E4002` on drift).
+6. Requires `sign`, looks up developer credentials by `app_key` through the `OpenapiDeveloperLookupPort` (`OpenapiDeveloperLookupPortImpl` → `OpenapiDeveloperMapper`; unknown key → `VALIDATION_APPKEY_ERROR` / `E4003`), and verifies the legacy MD5 sign via `OpenapiSignSupport.signMatches` (`token + assemble(params) + token`, upper-cased hex; mismatch → `SIGN_ERROR` / `E4004`).
+7. **Replay guard (ECX-10869)** — `OpenapiSignedRequestReplayGuard.assertOnce(appKey, sign, timestamp, 600)` does a Redis `SETNX` on `openapi:auth:replay:{sha256(app_key|sign|timestamp)}` with a TTL equal to the timestamp tolerance, on the default `StringRedisTemplate`. The first sighting of a signed request passes; a replayed `app_key + sign + timestamp` within the window is rejected as `请求已失效或重复` (`VALIDATION_TIMESTAMP_ERROR` / `E4002`). A Redis failure fails *closed* (treated as a replay).
+8. On success, stores the developer's `company_id` via `OpenapiAuthAttributes.setAuth(request, companyId)` — downstream openapi controllers read it with `OpenapiAuthAttributes.requireCompanyId`, which throws `UnauthorizedException("未授权")` when absent.
+
+Every auth failure is written directly as the PHP OpenAPI envelope (`OpenapiEnvelope.fail(code, message, params)`, HTTP 200 with `{status:"fail", code, message, data}`), never reaching `GlobalExceptionHandler`. See [OpenAPI Integration](../integrations/openapi.md).
 
 ## Stage 3 — `FlexibleBody` binding and the merged-params idiom
 
@@ -375,6 +424,8 @@ Because front endpoints authenticate via `h5AuthClaims` but accept arbitrary ids
 * **Members address create/list** (`MembersController`, `@FrontAuth` on the class, ecshopx-members; ECX-10913 / ECX-10923). `createAddress` resolves the acting user through `resolveEffectiveUserIdForCreate(body, authUserId)`: the acting user is always the authenticated `user_id` from `h5AuthClaims` (via `resolveUserId(claims)`); a `buy_user_id` that points at another user is only meaningful when `promoter_user_id` loosely equals the auth user — and even then a foreign `buy_user_id` is rejected with `ResourceException("无权访问该数据")`. The address list applies the same rule through `resolveFilterUserIdForAddressList`, which always returns the auth user id (the former fall-through to `null` — an orphan-address bypass — was removed) and rejects a foreign `buy_user_id` the same way. `MembersControllerAddressBuyUserScopeTest` pins all four branches (no `buy_user_id` → self; self `buy_user_id` → self; foreign `buy_user_id` → reject; foreign promoter → treated as self).
 * **Rights write-off code minting** (`RightsController.getRightsCode` → `RightsFrontWxappGetRightsCodeService`, ecshopx-orders; ECX-10924). Before any barcode is generated, the service loads the `Rights` row by id and requires `row.company_id == auth.company_id` **and** `row.user_id == auth.user_id` — a missing row, another user's rights, or another tenant's rights all throw `ResourceException("无权访问该权益")`, with **no side effects** (no Redis write, no barcode generation). Malformed or non-positive `rights_id` values fail earlier with `BadRequestException("获取核销码出错", 422)`. `RightsFrontWxappGetRightsCodeOwnershipTest` pins each rejection path and the side-effect-free guarantee.
 
+The same rule is enforced **at the service layer** for cross-tenant scoping, so a leaked or forged id cannot traverse the `company_id` / `store` / `distributor` boundary even when the controller forgot to check: the `Activated` middleware already injects `distributor_id`/`distributorIds` into the merged params (see [`toObjectMap`](#flexiblebody-and-its-resolver)), and POS order writes are guarded by `PosOrderDocAccessGuard` (orders, implementing `common/auth/PosOrderDocAccessPort`), which requires same-store and handler-clerk ownership before a POS session may mutate an order. Front controller endpoints additionally guard ownership directly — e.g. `WxappOrderController` throws `UnauthorizedException("无权访问该API,非法访问！")` when no positive `company_id` can be resolved from the authenticated claims/attributes rather than trusting a request-supplied id.
+
 When adding a front endpoint that takes an id (address, order, rights, coupon, …) from the request, follow this pattern: derive identity from `h5AuthClaims`/`h5CompanyId` (never from the merged params), and reject mismatches with `ResourceException`/`BadRequestException` so the envelope conventions below apply. See [Members Domain](../domains/members.md) and [Orders Domain](../domains/orders.md).
 
 ## Response and error conventions
@@ -429,7 +480,7 @@ Several Bundles register `@RestControllerAdvice(basePackages = "…")` beans at 
 
 ### Envelopes written before the handler runs
 
-Auth failures never reach `GlobalExceptionHandler` — the interceptors/filters write JSON directly (see the matrix above for the exact shapes): `FrontAuthInterceptor` (401 `401001` / 403 `403001` Dingo), `FrontNoAuthInterceptor` (Dingo when `unauthorized = true`, else `ApiResult.fail(401, …)`), `AdminAuthInterceptor`, `OperatorJwtAuthenticationFilter`, and `PosJwtAuthenticationFilter` (Dingo 401 without a `code` key; the operator-side two also use `ApiResult.fail(403, …)`), `FrontMerchantAuthInterceptor` (Dingo `401001`), `QywxSalespersonAuthInterceptor` (Dingo `400001`/`401001`/`403001`), `WxappMemberSessionAuthenticationFilter` (Dingo shape but **HTTP 200**), and `EspierAgreementRateLimitInterceptor` (HTTP 429).
+Auth failures never reach `GlobalExceptionHandler` — the interceptors/filters write JSON directly (see the matrix above for the exact shapes): `FrontAuthInterceptor` (401 `401001` / 403 `403001` Dingo), `FrontNoAuthInterceptor` (Dingo when `unauthorized = true`, else `ApiResult.fail(401, …)`), `AdminAuthInterceptor`, `OperatorJwtAuthenticationFilter`, and `PosJwtAuthenticationFilter` (Dingo 401 without a `code` key; the operator-side two also use `ApiResult.fail(403, …)`), `FrontMerchantAuthInterceptor` and its servlet-filter twin `MerchantWxappJwtAuthenticationFilter` (Dingo `401001`), `QywxSalespersonAuthInterceptor` (Dingo `400001`/`401001`/`403001`), `WxappMemberSessionAuthenticationFilter` (Dingo shape but **HTTP 200**), `EspierAgreementRateLimitInterceptor` (HTTP 429), and `OpenapiAuthInterceptor` (the PHP OpenAPI envelope, HTTP 200).
 
 ### Choosing a style for a new endpoint
 
@@ -450,6 +501,8 @@ Auth failures never reach `GlobalExceptionHandler` — the interceptors/filters 
 | `POS_JWT_ISSUER` | `ecshopx-pos` | `PosJwtIssuer` `iss` claim and `PosJwtAuthenticationFilter` token-kind detection |
 | `ecshopx.h5.jwt.blacklist-grace-period-seconds` | 0 | H5 blacklist grace |
 | `ecshopx.merchant.wxapp.jwt.ttl-minutes` | 60 | Merchant JWT TTL |
+| `openapi.debug` | `0` | `OpenapiAuthInterceptor` signature/replay bypass (dev only) |
+| `openapi.system-company-id` | `common.system-companys-id` (`1`) | Company used when `openapi.debug=1` |
 | `common.system-is-saas` / `common.system-companys-id` / `common.system-main-companys-id` | `false` / `1` / empty | `FrontNoAuthInterceptor` fixed-company resolution |
 | `common.check-superadmin-permission` | `false` | `ActivatedMiddlewareService` permission check for admins |
 | `langue.list` / `langue.default-lang` | six tags / `zh-CN` | Locale resolution |
@@ -465,4 +518,5 @@ See [Operations — Configuration](../operations/configuration.md) for the opera
 * Web-slice tests under `ecshopx-bootstrap/src/test` and Bundle test trees build standalone `MockMvc` with `setCustomArgumentResolvers(new FlexibleBodyMethodArgumentResolver(objectMapper, null))` and inject the operator JWT map via `requestAttr(OperatorJwtRequestAttributes.OPERATOR_JWT_USER_DATA, …)` — the pattern for testing a controller without booting the interceptor chain: `ShopexBindControllerWebSliceTest`, `ShopsSetWxShopsSettingWebSliceTest`, `OperatorsGetCredentialsWebSliceTest`, `AftersalesReviewEndpointMappingTest`, and `LoginControllerWxappNewLoginWebTest` (espier, asserting the merged-params hand-off to `FrontWxappNewLoginService`).
 * `ReservationFrontV1ReservationControllerCreateReservationFinishPublishWebMvcTest` (reservation) — the `/api/v1/wxapp/**` session-secured surface.
 * POS chain: `PosAuthServiceTest` (companys) — employee-number login, account/shop status rejection, claim shape; `PosJwtSessionValidatorTest` (companys) — a changed `status` / `distributor_id` / `role` invalidates an otherwise-valid POS token; `PosJwtIssuerTest` and `PosJwtPathWhitelistTest` (espier) — `token_kind=pos` issuance/invalidate round-trip and the deny-by-default path table; `DualJwtSupportTest` (common) — POS claims win over operator claims and the acting-id mapping (`pos_store_account_id` vs `operator_id`).
+* OpenAPI signed requests: `OpenapiSignedRequestReplayGuardTest` and `OpenapiAuthInterceptorReplayTest` (openapi) — the first sighting of an `app_key+sign+timestamp` passes, a replay within the tolerance window is rejected, and `openapi.debug=1` bypasses both signature and replay checks.
 * Identity-scoping hardening: `MembersControllerAddressBuyUserScopeTest` (members) — address create restricts `buy_user_id` to the authenticated user; `RightsFrontWxappGetRightsCodeOwnershipTest` (orders) — rights write-off code minting requires the rights row to belong to the auth user and tenant, with no side effects on rejection.

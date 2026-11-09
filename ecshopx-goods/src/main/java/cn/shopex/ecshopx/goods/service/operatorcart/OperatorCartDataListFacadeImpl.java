@@ -24,10 +24,10 @@ import cn.shopex.ecshopx.common.operatorcart.OperatorCartSkuLoadFacade;
 import cn.shopex.ecshopx.common.operatorcart.dto.OperatorCartSkuRowDto;
 import cn.shopex.ecshopx.companys.domain.OperatorCart;
 import cn.shopex.ecshopx.companys.mapper.OperatorCartMapper;
+import cn.shopex.ecshopx.companys.service.operatorcart.OperatorCartCleanupService;
 import cn.shopex.ecshopx.companys.service.operatorcart.OperatorCartCompanyProductModelReader;
 import cn.shopex.ecshopx.goods.service.cart.salesperson.SalespersonDistributorCartFormatAndTotalService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -44,6 +44,7 @@ public class OperatorCartDataListFacadeImpl implements OperatorCartDataListFacad
 	private final OperatorCartCompanyProductModelReader productModelReader;
 	private final OperatorCartHandleValidCartService operatorCartHandleValidCartService;
 	private final SalespersonDistributorCartFormatAndTotalService salespersonDistributorCartFormatAndTotalService;
+	private final OperatorCartCleanupService operatorCartCleanupService;
 	private final LangueProperties langueProperties;
 
 	public OperatorCartDataListFacadeImpl(OperatorCartMapper operatorCartMapper,
@@ -51,12 +52,13 @@ public class OperatorCartDataListFacadeImpl implements OperatorCartDataListFacad
 			OperatorCartCompanyProductModelReader productModelReader,
 			OperatorCartHandleValidCartService operatorCartHandleValidCartService,
 			SalespersonDistributorCartFormatAndTotalService salespersonDistributorCartFormatAndTotalService,
-			LangueProperties langueProperties) {
+			OperatorCartCleanupService operatorCartCleanupService, LangueProperties langueProperties) {
 		this.operatorCartMapper = operatorCartMapper;
 		this.operatorCartSkuLoadFacade = operatorCartSkuLoadFacade;
 		this.productModelReader = productModelReader;
 		this.operatorCartHandleValidCartService = operatorCartHandleValidCartService;
 		this.salespersonDistributorCartFormatAndTotalService = salespersonDistributorCartFormatAndTotalService;
+		this.operatorCartCleanupService = operatorCartCleanupService;
 		this.langueProperties = langueProperties;
 	}
 
@@ -90,6 +92,7 @@ public class OperatorCartDataListFacadeImpl implements OperatorCartDataListFacad
 			if (isSubmit) {
 				throw new ResourceException("商品已失效");
 			}
+			operatorCartCleanupService.deleteAllRows(cartRows);
 			return emptyBody();
 		}
 
@@ -113,6 +116,7 @@ public class OperatorCartDataListFacadeImpl implements OperatorCartDataListFacad
 			if (isSubmit) {
 				throw new ResourceException("商品已失效");
 			}
+			operatorCartCleanupService.deleteAllRows(cartRows);
 			return emptyBody();
 		}
 
@@ -140,9 +144,7 @@ public class OperatorCartDataListFacadeImpl implements OperatorCartDataListFacad
 				}
 			}
 			if (!cartIds.isEmpty()) {
-				LambdaUpdateWrapper<OperatorCart> uw = new LambdaUpdateWrapper<>();
-				uw.in(OperatorCart::getCartId, cartIds).set(OperatorCart::getIsChecked, false);
-				operatorCartMapper.update(null, uw);
+				operatorCartCleanupService.deleteByCartIds(cartIds);
 			}
 		}
 

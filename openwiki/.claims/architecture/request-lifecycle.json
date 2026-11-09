@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:825fdb3957911887396e5a27684add7ffe717cfb17098e782c318fca18254841",
+  "pageVersion": "sha256:8bc7f39fe77c5f38858f79d881acaa5aa0ac2030645c71ba1691e1199ac96c01",
   "claims": [
     {
       "id": "claim_10d8ee8441894b5fa577c80a982ea348",
@@ -585,10 +585,102 @@
           "version": "repo-lines-v1:sha256:b1d8c7015e7c01841ab0f7c3a99b7edddfa2f7a3e5e30e95d2d25dcdea58b07d:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI3Y2Q1MDBmZDNlNTBhNmQ0OTU4MDlkODgzODJjZGIzYTg3N2M2YWY5Mzk1YzJiODkzODEyYzM1NTIzNDRhYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjUyZGQ0MzQ2Y2NhZGIwM2U1YjQ3OWNjYWFhYTgzMTEwNzEyNzM2M2FhNjQ3MGQxZWU5YTI5ZjUzYTA3MTU3OTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdlZTVlYTVmNjhlM2E2NzIzZDIwODQzYWIzZjJlMDFkNzY1Y2ZjYTdiOTg1YzA4ZmIxY2FhZDA5ZDkzN2VlZDIifQ"
         }
       ]
+    },
+    {
+      "id": "claim_53899ffecc5d490c81630a74d72940b4",
+      "statement": "MerchantWxappJwtAuthenticationFilter (merchant Bundle, a @Component OncePerRequestFilter registered as a servlet filter) is the servlet-filter twin of FrontMerchantAuthInterceptor for the single anonymous-by-annotation surface `GET /api/v1/h5app/wxapp/merchant/type/list`: its shouldNotFilter skips the settlementapply/** paths, the auditstatus/detail/step GET paths, and the password/reset path (ECX-10617 — those use the mall member @FrontAuth, not the merchant JWT) and only engages on GET type/list. It verifies the merchant JWT with Nimbus MACVerifier over the ecshopx.merchant.wxapp.jwt.* secret (strict Base64, zero-padded to 32 bytes), checks issuer, exp/nbf with leeway, and positive company_id/account_id claims, loads the MerchantSettlementApply row and requires its company to match, then stores a MerchantWxappAuthAttributes(companyId, accountId) record under MerchantWxappAuthAttributes.REQUEST_ATTR and sets a UsernamePasswordAuthenticationToken in the SecurityContext. Every failure writes the Dingo 401001 envelope (HTTP 401) directly.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-merchant/src/main/java/cn/shopex/ecshopx/merchant/config/MerchantWxappJwtProperties.java#L25-L81",
+          "version": "repo-lines-v1:sha256:e14e3abce43f976a680080c13ee5beeee20d444d1eac8574fc53f18a24957758:eyJzZWxlY3RlZExpbmVDb3VudCI6NTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE3NWExODBlOWRmZWM4NmEwNzZmNTU5ODExZTZlZWExMGUwNWYzMzdiOWVkZGMxYTk1NzlkY2M2MTJjMTc5ZDQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImViNDNiZGVmMTJiNWU4YjM3NjJiOWRmZjViZjY3YWE2YjIyNzIwNjgzYjAwYjhiZDUyM2I2MDQ4YjNjMTlmYmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-merchant/src/main/java/cn/shopex/ecshopx/merchant/config/security/MerchantWxappJwtAuthenticationFilter.java#L100-L160",
+          "version": "repo-lines-v1:sha256:13314291aecfe54b44df9261e1910b3e8c6161efd05a55badf3e8cb91d0a78f5:eyJzZWxlY3RlZExpbmVDb3VudCI6NjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE5YzkxMWM5NDdiY2ZmMTYyMGY2MDUxN2VmMjQ2YTk2YzY1M2ZlMmFmM2ExMDVjM2Q1MWVkNTYyNGQwMDBkZWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ5YmQ3NDExYmU5NjcyMmE0NGFiYTkwYzdjMjJiYzJkZDg1ODkwNzg0N2I1ZmVjMTkxNTUyYWU5MDA0N2MwY2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRmNWYxNDlmNGM2YWE4NGMyN2RkZWQyMzUxMDMyNGQ2OWQyNmZjOTAzM2RmMTc4MjlhOGFmOTY1Njg3NWRjYWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ5YjJlMzEzYTMyM2ViY2E3MjljMWFmYmY3YzliMTkzMTgzZTVmNjIzNzFiZjYwYTFlZjY5NTgzY2I3MDZhOTcifQ"
+        },
+        {
+          "resource": "repo://ecshopx-merchant/src/main/java/cn/shopex/ecshopx/merchant/config/security/MerchantWxappJwtAuthenticationFilter.java#L43-L100",
+          "version": "repo-lines-v1:sha256:612cd94a9f3fdaa7b3fae771f3380200eee45419da434ec761a94eee7923a0a0:eyJzZWxlY3RlZExpbmVDb3VudCI6NTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI0NzA5YjQ5Mzk4NzE4ZGY0MmY5ZDU4OWJlMDM4YjQ1Y2RlZTY5NmVhYTVhMjY4ZDQ0ZGQ3YzQ4ZWE1ZWMyMGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE5YzkxMWM5NDdiY2ZmMTYyMGY2MDUxN2VmMjQ2YTk2YzY1M2ZlMmFmM2ExMDVjM2Q1MWVkNTYyNGQwMDBkZWMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk0ZjQ2OWQ4YTAzMDYwMmExZTIwNGRmMTkzYTFmNTVmNmM5OTkwMDE3NTFjOTFhNDA4MjQwMTcwZjI3NTBkYTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkyMTM2MWNmZTFiNzYxN2JmNmQ1ZmZlMjFkZDM2MDA1OGEwZmVkZWJkNTk2ZmUyNWY3NGZlMzYwYjUzZTZjODMifQ"
+        },
+        {
+          "resource": "repo://ecshopx-merchant/src/main/java/cn/shopex/ecshopx/merchant/service/wxapp/MerchantWxappAuthAttributes.java#L17-L22",
+          "version": "repo-lines-v1:sha256:8f033c221d484488465c97cb08f6a34a2a1b4f887f912c9c9f179d6f06807410:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzFmZGMyNmNlYWJhMDM4OGI1ZmVkZGYwMmI0OTk3MDEyYWM4MGI0Mzg0NjliNzZiMThjZjkyYTExZTE5NDZhYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjk2YTA5MzE1YzVhMDU1NGQwMjU4ZjE1NzljOWE3MDJhZTZlNWVmNDUxZTUxNGRiY2NiMWRkZTFkNGUxNzE5MiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_880955b2d26d43219114ffd75f56b8df",
+      "statement": "OpenapiWebMvcConfigurer registers OpenapiAuthInterceptor on /api/openapi/** and /api/openapi/internal/**. The interceptor skips the internal prefix outright; for public paths it requires version, timestamp, and app_key, enforces a ±600s timestamp tolerance, resolves developer credentials via OpenapiDeveloperLookupPort, and verifies the legacy MD5 sign (OpenapiSignSupport: md5Upper(token + assemble(sorted params) + token)) over all params except sign, collected from the servlet parameter map plus a cached JSON body by OpenapiRequestParamCollector. On success it sets the OpenapiAuthAttributes company_id request attribute; auth failures are written directly as the PHP OpenAPI envelope OpenapiEnvelope.fail(code, message, params) with HTTP 200. Setting openapi.debug=1 bypasses signature/replay checks and authenticates as openapi.system-company-id (default common.system-companys-id=1) — a development switch only.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/openapi/OpenapiAuthAttributes.java#L20-L57",
+          "version": "repo-lines-v1:sha256:2ec345869a128d410a87cf6e4a7e69016d3cb165c7d015f9b63df8e7cde410e9:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM3MTdlNDA5MjZjMzUyZDhhNmZhZWZkMGM1NTgyZDNjNWJkMTM1YmQxYzUxZTAwOTMxZGJiYmViMTQyOTA4NDciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRiYWM0N2EzZjVlMjIwMWVhNGRmMWVhMWI1YmYxNGNlZDFmNmJlOTViMGYzOWIyZjcyNjA1NzU5YmI3ZDE4MzMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/openapi/OpenapiSignSupport.java#L24-L91",
+          "version": "repo-lines-v1:sha256:56495072dadbed0121ce2c39fab4a63f2a7ca062032b78483fb5f19fedcb5d02:eyJzZWxlY3RlZExpbmVDb3VudCI6NjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFkODYzNWMzNGRmY2NkMWJlZTE1ZjRiMTJiOTcyMGZkYWZjZTg0ZDY2Y2ZhOTE4MzhlYTg1NTRmMzc2OWQ3YjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcwZGJjNzIwYjYwMzI0MzU0N2Y2Y2JlYWRhZmU3OGM3OTQwZjZmNjUzNDNjNGVmNGI3ODY1YmQ0ZjhjNDg0ODMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/thirdapi/OpenapiRequestParamCollector.java#L38-L66",
+          "version": "repo-lines-v1:sha256:faff82ced72a2224d16cb14833362e767199954eb52f876879fc2683f7937ecf:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI3Mzk1Mjk0YjFkZDMzNDNmYzE4NjliMTE0M2JiMWJkY2JkNjc5YmM1NmE3YTFlMTA3Y2I5NzMzZGMxN2FiNGMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA5NDMyZTFlMDU5ODJjNzRhN2Y0NjVjNGI3MmI5OTk4MWYzMGY5ZGIxN2MyZDg5MTg3OWY2OGQ1NTg4OTVlNmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNhOWFmM2Q2YjU3MTM0NmU1MGYxYjQ3MzM3NzdhNDhlOGM4ODdkZWE4ZGMyNjA1ODlmOWEyMzQ4MzNiMDM4MmIifQ"
+        },
+        {
+          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/web/OpenapiAuthInterceptor.java#L41-L120",
+          "version": "repo-lines-v1:sha256:e4b112db55b9a0fc9931741d8636debe0222ff788167e5c67966f7b88293ee95:eyJzZWxlY3RlZExpbmVDb3VudCI6ODAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyN2ZmNjgzODVlNzgyYzJlOWYwZGViNDdhOGE0ODVlMWY2MGQzYjFkYTAwMWU2MjRmNDM2ZWU0MDgyNWI3ZGYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc4MTBiM2M5ZTA1NDFkMDA1ZGNmNmNhZTQ2YjJiZGU0MmFmOTk4MTAyZmUwZjg0NjQ0MWIyOTkwMmJmYTcwM2IiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkxYjcxYWM1ZGY2YjAxZjE1NTcwZjQ4ZDk2MzAzYTE2NmM2NTVkZmRiZTI1Mjg4YmNiYzUyOTcwYWRjNTU2NzkifQ"
+        },
+        {
+          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/web/OpenapiPathPatterns.java#L17-L38",
+          "version": "repo-lines-v1:sha256:309df81b2fab6d5e870ff89db93fac0d12277a56664335881321f7c212e9f7a4:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ5MzY0MGM5MmVlNDE1OTBlY2Y5ZmM3M2M4NDQ2ZmMwYWJkYTdiYmVkZWFlNWFlNjcwZjhhY2IyZTRlZTU5ZjQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY5NmEwOTMxNWM1YTA1NTRkMDI1OGYxNTc5YzlhNzAyYWU2ZTVlZjQ1MWU1MTRkYmNjYjFkZGUxZDRlMTcxOTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/web/OpenapiWebMvcConfigurer.java#L28-L36",
+          "version": "repo-lines-v1:sha256:3386f7c03f47bc0d14795439bac4d1130e5a718786bfeda96df4ebafa3767b4a:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZmZhOTg5MGJjNmJmMDQ2NWQ3NjU2N2UzNDVlMzBkMGVmMzIzNTk4ODY1ZTEwZjJiMTg0OWIwMTI0ZGFlOTkzYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTNjZGRmY2Q2NDYxODA2YmQ5Y2Y0NzVlMmNjNWYxNzRlZjgyZWZlM2Y5Zjk4NTNkMzVlZjY5NTc1MDQ4NjgxMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_e55a2520dca34ed9a2bdaedec6550fc6",
+      "statement": "Since ECX-10869 the openapi signed-request path has a Redis replay guard: after the signature verifies, OpenapiAuthInterceptor calls OpenapiSignedRequestReplayGuard.assertOnce(appKey, sign, timestamp, ttl) which SETNXs the key openapi:auth:replay:{sha256(app_key|sign|timestamp)} on the default StringRedisTemplate with a TTL equal to the 600s tolerance — the first sighting of a signed request passes and a replayed app_key+sign+timestamp within the window is rejected with code E4002 ('请求已失效或重复'); a Redis exception fails closed (returns false). OpenapiSignedRequestReplayGuardTest and OpenapiAuthInterceptorReplayTest pin the first-pass/replay-reject behavior and the openapi.debug=1 bypass.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/web/OpenapiAuthInterceptor.java#L108-L118",
+          "version": "repo-lines-v1:sha256:fef68746ca08fe5a74e29126b66cc51c19873e24924f61cb31b86eb27520852e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJmMmRiNTdkNTkzMWEyNzA2MDA5ZjNkZjk4YWU5ZWFkMmQ3MGI3MmY4OTJkNzRjYmRmM2U1ZjExYjFlM2NlMWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjlmNzAxMjMwMTc4NzVhMGY5NzdhOWE1NWM3NGJlMGEzNjJlMDJjNTM3NzA3MWQ5ZTJmODNhZmIyNGUyZmRlMzkifQ"
+        },
+        {
+          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/web/OpenapiSignedRequestReplayGuard.java#L31-L63",
+          "version": "repo-lines-v1:sha256:7ae51b52525f6b47d24aa9f23ea31058a459574fc0f80dc822f9e553af490403:eyJzZWxlY3RlZExpbmVDb3VudCI6MzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk3MmE0MjkzODJiMmUxNDcxOGUwZTM3YjA1NzBhOGExNzAyOTkxZmNkODQ5OGNkODQwNjBhOGJmNGYwNTAxN2IiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQyYjBlYWI2ZGZlZWRjMjQ4YTEzZGY2ODI4OWI4N2ZiYjBlOTUzMmI3ODZhNTEyMmVjMzI3ZTU1NzMxODlmOWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImEyOWIwNzFmYWQwYjMzNmM2YzM5NDFiMzUyZDY0MjljOGU0NTRiMDM3ZmQ3ZTZiY2Q5MWI0Y2E5ZDY3ZTNjYjAifQ"
+        },
+        {
+          "resource": "repo://ecshopx-openapi/src/test/java/cn/shopex/ecshopx/openapi/web/OpenapiAuthInterceptorReplayTest.java",
+          "version": "repo-file-v1:sha256:a0a344832259924d1dbb72b29d5a39df92f2274d334d0988980397dc35dca243"
+        },
+        {
+          "resource": "repo://ecshopx-openapi/src/test/java/cn/shopex/ecshopx/openapi/web/OpenapiSignedRequestReplayGuardTest.java",
+          "version": "repo-file-v1:sha256:fc79db1e710cffa6dfc5e2ca0e9f47971690abb3ceba46572e2ad56d87ee41dd"
+        }
+      ]
+    },
+    {
+      "id": "claim_dbd1656681cf48169447855e11742f02",
+      "statement": "Cross-tenant scoping is enforced at the service layer in addition to controller identity checks: the Activated middleware injects distributor_id/distributorIds into merged params, and POS order writes are guarded by PosOrderDocAccessGuard (orders, implementing common/auth/PosOrderDocAccessPort) which no-ops for non-POS sessions but for POS sessions requires the order's distributor_id to match the session's distributor_id and (for clerk role) the order's pos_store_account_id to match the acting account. Front controllers that cannot resolve a positive company_id from authenticated claims/attributes throw UnauthorizedException(\"无权访问该API,非法访问！\") rather than trusting a request-supplied id.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/web/FlexibleHttpServletParameterMap.java#L91-L120",
+          "version": "repo-lines-v1:sha256:364291fff0d8f44b91af3ce6dfbc394138a7801a324a9e20253cae7e11a4395a:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVkOWQ4Y2EyYmNhNmJiZDE2YjU5Y2JmNTJiNDM1ZDNlNzY3NjA3MTk4NjQ1Njc0YTdjN2ZiOGMyZTA1NjA2YTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIyZjJmZjVmZWVjNjBmNTg3YzhmYWU0ZTg3ZjgwOWE2NjFjZmZlZDZiNDdhYWU1ZjZkNmEyNjUzYWE4OTUyZWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg5MDdjZGIwNTNkNDhiMjNkMWMyNGRiMTliYjFlYWRhNDQ0Yzc5YzZmY2Y0ZmM4ZjZiMzhkMzVjMzFlYzEzYTMifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/api/front/v1/WxappOrderController.java#L1128-L1145",
+          "version": "repo-lines-v1:sha256:dd449b064a303d3daf0697c4fde5d55d14f9ea5010a36a0321efa71843b3a5cc:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg3NTY0MGUyOTI2Y2NmYjNiNWZiYjFiMTQ0ZTY4ZjY4ZmYwYjFhYmY5OWI2OWZhNmZjNjE0YjA5OWQyZmYzMjciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJmOTBkZTE4ZmMzNDBiMmU1MGJjOTg3YTk2MzIxYmIwYmUzNDFjZWZiMjVhYmMzMTA4YmUzYWIwZmExNTdkMmUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA1NTZkY2YzYmVhZWMxZDVkM2ViNDhmNzA4OWU3NzU1NTA3MzRkZjlmNTM2YzE4Mjc3NGVmNWE0YmUyYzQ5YTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjYxM2VkNmE0ZGU5N2IxZjgwMjE4NzMwMDllOGYyNjE1ZDI1YWNhZDI5ZWY4Nzg0M2I3ZDZmNmZkYTcxYjE5YWQifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/pos/PosOrderDocAccessGuard.java#L33-L83",
+          "version": "repo-lines-v1:sha256:5364f9becc2a64d70b15f4bb574a2a4f05322142f09b88a7cc2f4170722f4c26:eyJzZWxlY3RlZExpbmVDb3VudCI6NTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZjA5MjM1NjQzNjY4NDI3YTBhODYxZTM4MjI4ZDdkOTE3NWZmZTE1YTlmYzNiZWNhYTdiMzg1ZGEwNTViZDIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ4Y2ExZjY0MjRiMDMyYzExYzQxMzQ0NDAyMWM3NGM0NTY1YjRkM2FkMGZmZWM4ZjNmOTEwMTE2Zjk1OGQwNjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.9.0",
-    "at": "2026-11-05T17:10:02.238Z"
+    "at": "2026-11-08T17:14:16.576Z"
   }
 }

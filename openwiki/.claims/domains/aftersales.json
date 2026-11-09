@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:03317486baba60a390df9ed6558d7565f38b806d530f9c46974ee3da30e81b97",
+  "pageVersion": "sha256:61a4feb53e2148fc70049425d29693d92a0b0dc3fed2d0f8756b1935961d7361",
   "claims": [
     {
       "id": "claim_ff2c038ec9504e308a0b383bcde7b674",
@@ -50,11 +50,11 @@
     },
     {
       "id": "claim_639abe1607034d01ad88f3c387ae1a15",
-      "statement": "Admin REST surface: AftersalesController (@AdminAuth, /api/v1) exposes GET /aftersales (list, page/pageSize required, pageSize capped at 50, ~20 filters), GET /aftersales/logExport, GET /aftersales/{aftersales_bn}, POST /aftersales/review (batch-capable), POST /aftersales/refundCheck, GET /aftersales/financial/export, GET /aftersales/remind/detail, POST /aftersales/remind, PUT /aftersales/remark, POST /aftersales/apply, POST /aftersales/sendback (3-field whitelist). review and refundCheck share route alias aftersales.review, merge query+body into a LinkedHashMap, and keep all dispatch-bus publishing inside the services (controller Javadoc forbids direct bus/publisher calls). The sibling RefundController serves GET /refund, GET /refund/detail/{refund_bn}, GET /refund/logExport, GET /refund/offline/bank and POST /refund/offline (bank-transfer recording via AftersalesOfflineRefundSaveService).",
+      "statement": "Admin REST surface: AftersalesController (@AdminAuth, /api/v1) exposes GET /aftersales (list, page/pageSize required, pageSize capped at ADMIN_LIST_MAX_PAGE_SIZE = 100, ~20 filters), GET /aftersales/logExport, GET /aftersales/{aftersales_bn}, POST /aftersales/review (batch-capable), POST /aftersales/refundCheck, GET /aftersales/financial/export, GET /aftersales/remind/detail, POST /aftersales/remind, PUT /aftersales/remark, POST /aftersales/apply, POST /aftersales/sendback (3-field whitelist). review and refundCheck share route alias aftersales.review, merge query+body into a LinkedHashMap, and keep all dispatch-bus publishing inside the services (controller Javadoc forbids direct bus/publisher calls). The sibling RefundController serves GET /refund, GET /refund/detail/{refund_bn}, GET /refund/logExport, GET /refund/offline/bank and POST /refund/offline (bank-transfer recording via AftersalesOfflineRefundSaveService).",
       "evidence": [
         {
           "resource": "repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/api/admin/v1/AftersalesController.java",
-          "version": "repo-file-v1:sha256:ec7926eff5d47461fd18a674d58b0291c44180930bf6fb3449c6066fe36b7693"
+          "version": "repo-file-v1:sha256:f7a6696a8326a48100e3130c263c93ecc32d4158bcf30ff611dbec3f0d96cb6d"
         },
         {
           "resource": "repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/api/admin/v1/RefundController.java",
@@ -561,10 +561,94 @@
           "version": "repo-file-v1:sha256:30be551b3204b59d290161f2900814bab6252905b42178482554cc8ed8e555ca"
         }
       ]
+    },
+    {
+      "id": "claim_554b131134d242f3aa9b8469b650ef59",
+      "statement": "AftersalesDistributorScopeGuard.assertAftersalesDistributorAllowed enforces the operator JWT store scope on aftersales rows: operator_type=admin bypasses, a missing/empty JWT map throws ForbiddenException(店铺权限不足), an empty allow-set (platform-level operator) passes, and any aftersales whose distributor_id is outside the allow-list throws ForbiddenException(店铺权限不足). The allow-set is collected from the JWT distributor_id claim plus distributor_ids entries, which may be scalars or maps carrying distributor_id or shop_id, parsed via positive-long coercion.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/service/AftersalesDistributorScopeGuard.java",
+          "version": "repo-file-v1:sha256:2a50e6a7da68fef432b307677f80fbddfb8b2797fa058ef00fe2f35138de8114"
+        },
+        {
+          "resource": "repo://ecshopx-aftersales/src/test/java/cn/shopex/ecshopx/aftersales/service/AftersalesDistributorScopeGuardTest.java",
+          "version": "repo-file-v1:sha256:e975e847fd6630ec56d785becdf4b649fbcf77744f8073d602cc769b5c18a8cc"
+        }
+      ]
+    },
+    {
+      "id": "claim_7a4bd3c89fac4a838eb71bf1dac7c35e",
+      "statement": "The scope guard is wired into the admin detail and write flows: AftersalesAdminDetailService.getAftersalesDetail(companyId, aftersalesBn, request) — the path serving GET /api/v1/aftersales/{aftersales_bn} — asserts the loaded header's distributor_id against DualJwtSupport.claims(request) before building detail rows; AftersalesReviewService.review and AftersalesRefundConfirmService.assertPosOnAftersalesBn (which also calls PosOrderDocAccessPort.assertWriteAccess on the row's order) run the same guard before auditing.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/service/AftersalesAdminDetailService.java#L121-L140",
+          "version": "repo-lines-v1:sha256:9f096c4d4a316bffac9a2c441736284b4fa6d558bf8a3a7f0ad7c42542d7e213:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUwN2NkNzkzMzk3MzQ3NDA0ZGJjMmQ2OWRiOTA2MzUwM2IxYWQzMzU4MDU0NDlkMGY2ODQ4ZjYxN2Y3YmRmM2YiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk0ZmVhNzIwZDQ1Zjk4ODY2MjE1YWU4ZjU4YTMwNWEwYzU4YzdjODgxYmExN2RhMjFkMDkzMGQyMDUyYWI2ZDIifQ"
+        },
+        {
+          "resource": "repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/service/AftersalesRefundConfirmService.java#L163-L181",
+          "version": "repo-lines-v1:sha256:b1254ccf81fc2e582f94de5956605f55d2e2e6e5422214434b0d94468f62236d:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRmMjhjOTllNTBjOTYyODJhYWJmZDY0YTA1ZGQwMmM2N2I5NjQ1N2QwY2Y3OWI1MTc5ZjQ1OTEyNTQ2Njc1MjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIyZGEwZjEyMjU4YTYxYjQxMjZlYTc0Y2NiOThhMDFjNmM2ZTU0MWE1NzkxYmI4Njk0YjdiNjdkOTQzMzRlOWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJhYmJjNzVjMjEyMTM2OTUyMjMxMTA2N2E0MjYzOTI1ZmY0NGY4Njc4MWFlY2IxODIyY2E3ZjUxNmM0MWZkYTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI3NTdjNGEzMDg2ZmViZThhMjFlM2Y3NzkzYzNkZmVkMjAwMDUyZTY4MGY0NDM4NDFlYWQ4ZjEzNmRkZDRjMTMifQ"
+        },
+        {
+          "resource": "repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/service/AftersalesReviewService.java#L178-L195",
+          "version": "repo-lines-v1:sha256:db769c5a387111e429c7d5d4b7a968de2dfeb6622d9ae74dc4268beae8c92e37:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk4YjlhNzE0ZDIyNTgyYzdhMTIxZjU3MTM0Yjg2NWI3OGRjZDgyMzg2OTQ1YzA1YTc3MjIwMGEwMzY3MGJmNDIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEyZjE3MWZiNTQzY2FhNGU4MDEyOTMyNTM1NWRkODQ1OWZkOGYyYjcwNjhkZWQwYTc3ODVlNzBjZjNkZjBmNjUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM0Y2Q1NDI4NGI4MzI0YjQwMjY5NzUyZDA3OTE5ZTk5OTI1NGRiNzg4MmY5YWY5OTMzZjc4ZTdhZWUzNGRlMjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJjYWIzZmQ5NjBjOTlkNDc0ZTVhNmFmNzNiNTgyOTY4OTczZmExYzEzZGIxMWE4M2Q4ZjljMzZhOGZiZmJhNjcifQ"
+        },
+        {
+          "resource": "repo://ecshopx-aftersales/src/test/java/cn/shopex/ecshopx/aftersales/service/AftersalesAdminDetailDistributorScopeTest.java",
+          "version": "repo-file-v1:sha256:f8e053704ef0a3cd1aee51864e70a3a3dae15b8fda8eb9b0d49a38f4c4c3bfff"
+        }
+      ]
+    },
+    {
+      "id": "claim_d6002447ca9c46e3982187947d1da5e0",
+      "statement": "Admin list and export queries clamp (never silently drop) the requested distributor filter to the JWT store scope: AftersalesAdminListService — used by both GET /aftersales and GET /aftersales/logExport, which reuses the same filter builder — intersects the requested distributor_id/distributorIds with the JWT scope, substitutes the full JWT set when the request is unauthorized or the intersection is empty, and short-circuits to an empty result/export when the effective scope is empty; AftersalesRefundListService applies the same clamp to GET /refund and GET /refund/logExport, so a distributor_id condition always reaches the SQL wrapper when the JWT carries a scope.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/service/AftersalesAdminListService.java#L333-L395",
+          "version": "repo-lines-v1:sha256:f5e7e8a5ae1df3b215fb8e1b4a7d0c60f6bc5547e716afda03bba78642dedda9:eyJzZWxlY3RlZExpbmVDb3VudCI6NjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ3ZGZmNTVhMjk3ZWJmYTQ1N2Q4NmU3MjUzMGQ3NzVhYzY4MDI0M2M5Yjk2MDYxZTZlOTE1YWMwYTQ4Nzc3OWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU2ODA2ZjE1NWM1YWMxYWUyNzIyY2EwNmYyYWM5Y2FkY2I4ODFiOTEyM2NiNjI0YTNjMTA0NzViNDQ0OWRjMmUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRhZmM2NjY2ZjY3NWVhNTQ1MTAwODQ4NzRmYzAyZGNlZDZlZWJlYjFjNjE1ZGZiNzJhNWMyMGM5MDQ1YWYwYmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZiMDM4MmMyNTI5MGQ2YjQ4NWY0MzhiNWI3MzE5Y2RlMDU4NjE4OTRkNzM0ZDE3YjY4YWE0YzU4MmU2ZDkyNGEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/service/AftersalesAdminListService.java#L440-L505",
+          "version": "repo-lines-v1:sha256:c6959cbc58c639f8eb47e6c917eecbc17802188e50cb4e8e061755047892dd0f:eyJzZWxlY3RlZExpbmVDb3VudCI6NjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFlNjI1NzZkNDEwM2ZkODdmOTlmYmZiZmNhNjY5MjViMDk1MzdjZTcyNjUzNDdhYmVlZjk1MzM0YWU4YzlmYmEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIyZjJmZjVmZWVjNjBmNTg3YzhmYWU0ZTg3ZjgwOWE2NjFjZmZlZDZiNDdhYWU1ZjZkNmEyNjUzYWE4OTUyZWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjliMTAwZmExMzM0MzI3NjU2ZGI1YWQ3YjU4NDJmNjRiMWY4NDRjNDdmMzAwZDI3ZWY1MTJkMWYzOTYzYmI2OWYifQ"
+        },
+        {
+          "resource": "repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/service/AftersalesRefundListService.java#L195-L215",
+          "version": "repo-lines-v1:sha256:5dc9372484ccf9516d27bd7a6582fb2f3ac402cfb59b0c8a44ea5385d20fe8fd:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJkMGIzYWM1MTcwMjEyNTA0YjExNGQ1OTYwMGQ1YmIzZjE1ZWIwZWRhZWFkMjBlZDU5ZjUwZjhkNmQ0ZjU4MDMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQxNDkxMmRhZWM0OTk3NTQ5YTI4NDhjN2ZkZTg2M2ZhODY3MWE5OWU3NjY3NmFlODMxMmU1YmFiZmU4MDFlYjEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjgwNmFkN2NkMTU1NzIxZWE2N2ZiMzZmYWQwOGJhMTIwZmJhN2UzNmZiNWUyNDgyYTRkZDI1Y2M4ZTU4MjJmOTYifQ"
+        },
+        {
+          "resource": "repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/service/AftersalesRefundListService.java#L339-L359",
+          "version": "repo-lines-v1:sha256:3213da0fa4274e7f94dd521173712cdcd7f41f9c41bc44b38e5ffcc89fa67cfe:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJkMGIzYWM1MTcwMjEyNTA0YjExNGQ1OTYwMGQ1YmIzZjE1ZWIwZWRhZWFkMjBlZDU5ZjUwZjhkNmQ0ZjU4MDMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI1MjE3MDFjOWFjYjFkNzZjZmMxMjgyMzRjMTM4ZWEzYWMxNjM3NjlkMDIyNmExYjAxZTIzYjNiMDRkNzE4NGIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQwNDhkZDMwYjBlOWVmYTU2NGE1YjliZTVkYWU0YTA2OGMwMzc2NjdkNjRkMWRlZTI3YjFmMDViYmZhYzU1MDMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjE0ZDQzMTBkOWExMDE4Y2Q3YzQxOTExNDllYjU1NjBkNGMzOTM4OTZmZTZkZmY4OTJiNTJjZTIyZmQ4NzRjNTIifQ"
+        },
+        {
+          "resource": "repo://ecshopx-aftersales/src/test/java/cn/shopex/ecshopx/aftersales/service/AftersalesAdminListDistributorScopeTest.java",
+          "version": "repo-file-v1:sha256:c9110616deb888c88919e16fc147d459faae3490b9b2d0cb54fc70c84e8609a8"
+        },
+        {
+          "resource": "repo://ecshopx-aftersales/src/test/java/cn/shopex/ecshopx/aftersales/service/AftersalesRefundListDistributorScopeTest.java",
+          "version": "repo-file-v1:sha256:05bcb9fe7911ef25a2311e966d53674f71cbe1cc76959994d98f43e085bd4856"
+        },
+        {
+          "resource": "repo://ecshopx-aftersales/src/test/java/cn/shopex/ecshopx/aftersales/service/AftersalesRefundLogExportDistributorScopeTest.java",
+          "version": "repo-file-v1:sha256:5154b2c251394b7597ef6af0e002ff74f28454aa7e04887e9bee881a0dd780ef"
+        }
+      ]
+    },
+    {
+      "id": "claim_514c51a3fa9b44dfbc53ed2ec399409e",
+      "statement": "AftersalesRefundListService.getRefundsDetail (GET /refund/detail/{refund_bn}) enforces store scope per ECX-10922 (PHP AftersalesDistributorGate::assertOwnStoreAftersales parity): when the operator JWT carries a distributor_ids scope and the refund row's distributor_id is outside it, the detail read throws ResourceException(无权操作该售后单).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/service/AftersalesRefundListService.java#L106-L113",
+          "version": "repo-lines-v1:sha256:a9e3270d21ebc2422592866d97881c9fe9968cb83469660dd9ba184be116e647:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZmIwNGIzNjVhNTdkOWFlMjVlZjE3ZGZlZTA4YzhjNTM2Njg5ZDA0ZTYzMTk1OGIwZjI2YThiZmYxMGE5MDg0YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjRlZmM0OTQxOGQyNmRjZjEyOWIyMmE2YWEyMTEwOGNlZWMzNzY3N2EzMmQwOGU5ZDVmZWUzNWRkYTY2YmI5ZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiODNlYjcxY2U0N2IyYWZmODA2YTI5ODAzYmUzNDE2YjkyOGMyMDU1MWU2MmI5YWE2NGNiMzI4MjE3Y2RmZTJkZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZjE3ZGY2YTNjYmIwMDZmNjM4YTc3NGUyNmM2NjE5N2U0MDg5MjkwNzYyODdhZDIyYzU4M2ZhM2ExNjk1N2ViZSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-aftersales/src/test/java/cn/shopex/ecshopx/aftersales/service/AftersalesRefundDetailDistributorScopeTest.java",
+          "version": "repo-file-v1:sha256:32ae54f33fd7033eb886b8b7f31e353e885d48984cb6022c63e80202008c33d9"
+        }
+      ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.7.3",
-    "at": "2026-11-04T17:09:55.577Z"
+    "by": "openwiki/0.9.0",
+    "at": "2026-11-08T17:14:16.576Z"
   }
 }

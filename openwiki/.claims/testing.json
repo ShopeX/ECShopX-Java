@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:92cd907e8825cbe7f5919a804e94c4a2637e648030afcc54fd839f02cc824fe2",
+  "pageVersion": "sha256:d55bf6c2ade154e913d7754ebb0833a3f7bc5fa054fe4c7bbf410c1caf43e3eb",
   "claims": [
     {
       "id": "claim_3d9864ae8e5d4123b40f3da9acfcc8e6",
@@ -441,10 +441,152 @@
           "version": "repo-lines-v1:sha256:92a6269a8ca9f585174b6b08d8307b119b58392a907ebf4386652ba43e92de32:eyJzZWxlY3RlZExpbmVDb3VudCI6OTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY1YjMwOGMzNjA0ZmI4NDE3NmRjMDc0MjUxZmY3YTMwZjE5MDhjZDg5Y2Y5NzIwYWNmZDQ0ZThjNGE3ZjI0NDkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
         }
       ]
+    },
+    {
+      "id": "claim_69838d2178ab4f7f938daeae902f88a7",
+      "statement": "The cross-tenant hardening wave standardized on the *ScopeTest/*CompanyScopeTest/*DistributorScopeTest/*DistributorNameScopeTest/*ScopeGuardTest naming family as the canonical way to test scoping: *ScopeTest variants pin the guard at a scoped query or write, while *ScopeGuardTest pins a pure static guard object; the family spans adapay, aftersales, ali, bspay, comments, companys, data-cube, distribution, employee-purchase, espier, form, goods, kujiale, members, orders, promotions, salesperson, selfservice, work-wechat, wsugc, and more.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-aftersales/src/test/java/cn/shopex/ecshopx/aftersales/service/AftersalesAdminDetailDistributorScopeTest.java",
+          "version": "repo-file-v1:sha256:f8e053704ef0a3cd1aee51864e70a3a3dae15b8fda8eb9b0d49a38f4c4c3bfff"
+        },
+        {
+          "resource": "repo://ecshopx-aftersales/src/test/java/cn/shopex/ecshopx/aftersales/service/AftersalesDistributorScopeGuardTest.java",
+          "version": "repo-file-v1:sha256:e975e847fd6630ec56d785becdf4b649fbcf77744f8073d602cc769b5c18a8cc"
+        },
+        {
+          "resource": "repo://ecshopx-bspay/src/test/java/cn/shopex/ecshopx/bspay/service/BspayTradeDistributorNameScopeGuardTest.java",
+          "version": "repo-file-v1:sha256:0f8884377f69ab5abf9dc8af58cfb4231c7fb8cd9c0d575f0fc8a4c6b2205444"
+        },
+        {
+          "resource": "repo://ecshopx-wsugc/src/test/java/cn/shopex/ecshopx/wsugc/service/topic/TopicDeleteServiceScopeTest.java",
+          "version": "repo-file-v1:sha256:6e2e2ccd1e824d68745421344d57218719a9d9d6a27f397bc4ea5243610bb3e2"
+        }
+      ]
+    },
+    {
+      "id": "claim_6ef82c860f2a45189ba25b93261c29ce",
+      "statement": "*ScopeGuardTest classes test static guard objects directly with hand-built JWT maps and plain JUnit assertions (no Mockito, no Spring): AftersalesDistributorScopeGuardTest and its twin AdapayWithdrawSetDistributorScopeGuardTest pin that a distributor-operator targeting another shop throws ForbiddenException, its own shop passes, a staff allow-set is the union of the scalar distributor_id and the distributor_ids list entries (accepting distributor_id or shop_id keys, string or long values), admin passes any shop, and an empty allow-set passes any shop.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-adapay/src/test/java/cn/shopex/ecshopx/adapay/service/AdapayWithdrawSetDistributorScopeGuardTest.java",
+          "version": "repo-file-v1:sha256:a541a88a21ce58a4a5b5ded6c0b6a5773cc9441e8925e2b47c9a244043af41ce"
+        },
+        {
+          "resource": "repo://ecshopx-aftersales/src/test/java/cn/shopex/ecshopx/aftersales/service/AftersalesDistributorScopeGuardTest.java",
+          "version": "repo-file-v1:sha256:e975e847fd6630ec56d785becdf4b649fbcf77744f8073d602cc769b5c18a8cc"
+        }
+      ]
+    },
+    {
+      "id": "claim_c8acc7bd30474adfa372143c2f544697",
+      "statement": "BspayTradeDistributorNameScopeGuard rejects a JWT whose operator_type is \"distributor\" (compared case- and whitespace-insensitively via trim().toLowerCase(Locale.ROOT)) with ForbiddenException(\"无权筛选其他店铺\"), while other operator types, a missing operator_type, and a null JWT map are allowed; its test pins this matrix with no mocks.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bspay/src/main/java/cn/shopex/ecshopx/bspay/service/BspayTradeDistributorNameScopeGuard.java",
+          "version": "repo-file-v1:sha256:6174e77bea0373a5ba7f64d0101df5e244cda28786ec7e2363d143465e46dc2e"
+        },
+        {
+          "resource": "repo://ecshopx-bspay/src/test/java/cn/shopex/ecshopx/bspay/service/BspayTradeDistributorNameScopeGuardTest.java",
+          "version": "repo-file-v1:sha256:0f8884377f69ab5abf9dc8af58cfb4231c7fb8cd9c0d575f0fc8a4c6b2205444"
+        }
+      ]
+    },
+    {
+      "id": "claim_66346fef82914c89b4d21566f488bd35",
+      "statement": "AftersalesAdminDetailDistributorScopeTest (ECX-10936) drives the real AftersalesAdminDetailService against a mocked HttpServletRequest carrying the OperatorJwtRequestAttributes.OPERATOR_JWT_USER_DATA JWT: a store operator opening a foreign-store aftersales row gets ForbiddenException(\"店铺权限不足\") with never() on the detail mapper (the row's distributor_id is checked against the JWT shop set before loading details), while the own store, any shop in a multi-shop distributor_ids list, and an admin JWT pass; the companion AftersalesControllerDetailDistributorScopeTest pins that the controller hands the raw HttpServletRequest to the scoped service.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-aftersales/src/test/java/cn/shopex/ecshopx/aftersales/api/admin/v1/AftersalesControllerDetailDistributorScopeTest.java",
+          "version": "repo-file-v1:sha256:988f97640c55125a5ed8be991654073e70cbba9f904077e7605e68f947cee486"
+        },
+        {
+          "resource": "repo://ecshopx-aftersales/src/test/java/cn/shopex/ecshopx/aftersales/service/AftersalesAdminDetailDistributorScopeTest.java#L100-L159",
+          "version": "repo-lines-v1:sha256:9016914ee1daff9c43109688ce631819fe0ab46727de2bac3697d6ca22aed40c:eyJzZWxlY3RlZExpbmVDb3VudCI6NjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU4ZDNmZTQ4ZWQ4M2Y3MmMzOTZmMmNjYzc2ODEyMjE1MDVlOWIzMmJjZTg3ZTA5YzczMjllODA0MDg3ZGMxYjUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjEzYmNjZmM5M2IyNDRhZTE2OTNlNTM0MWRhMDI3MWMyOWNkMDY5ZDUzNzYxMDdkMzY1OGVmZTFiMDEwNTMxNWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_7c948cc8d180418f8d1320f33f587fe8",
+      "statement": "*DistributorNameScopeTest classes pin that a store operator must not widen scope via the distributor_name filter: BspayTradeListQueryServiceDistributorNameScopeTest (ECX-10941) and its adapay twin drive the real query service against a MockHttpServletRequest, rejecting a distributor-type JWT with ForbiddenException(\"无权筛选其他店铺\") and never() on both the distributor-name lookup and the trade mappers, proving an unfiltered query carries exactly the JWT distributor_id, and allowing admin to use the name lookup; the export twins pin the same rejection before the export-job dispatch publisher is touched.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-adapay/src/test/java/cn/shopex/ecshopx/adapay/service/AdapayTradeExportDataServiceDistributorNameScopeTest.java",
+          "version": "repo-file-v1:sha256:44ef2777bab5d91746c17bc3d91e08aa9bffb780b9d7588e2d62342576fcfe92"
+        },
+        {
+          "resource": "repo://ecshopx-adapay/src/test/java/cn/shopex/ecshopx/adapay/service/AdapayTradeListQueryServiceDistributorNameScopeTest.java",
+          "version": "repo-file-v1:sha256:99b6e2f33ebc3c26f3147c288e86ff7c7f4087d0aa48f70ef4afadbf00e44004"
+        },
+        {
+          "resource": "repo://ecshopx-bspay/src/test/java/cn/shopex/ecshopx/bspay/service/BspayTradeExportDataServiceDistributorNameScopeTest.java",
+          "version": "repo-file-v1:sha256:5b0e5e15814907f3b21856a122d9bc0a5a4861ba1118710f3051eb1a51e264b0"
+        },
+        {
+          "resource": "repo://ecshopx-bspay/src/test/java/cn/shopex/ecshopx/bspay/service/BspayTradeListQueryServiceDistributorNameScopeTest.java",
+          "version": "repo-file-v1:sha256:73390a645dacf570b5c6f44c40598b199ea8e9dbf6e9b9eb3a821c7674859766"
+        }
+      ]
+    },
+    {
+      "id": "claim_7bd4b41da4cc46e7acb91f946450b651",
+      "statement": "TopicDeleteServiceScopeTest (ECX-10943) pins the silent-intersection variant of cross-tenant scoping: a mixed topic_id batch selects only owned rows through a LambdaQueryWrapper whose SQL segment contains company_id, deletes only those ids via deleteMultiLangForTopics(companyId, ownedIds) and deleteBatchIds(ownedIds), and still returns message=\"删除成功\" echoing the requested ids; a foreign-only batch returns success with never() on both delete paths. TopicDeleteControllerScopeTest pins that the company_id comes from the trusted JWT attribute and a missing or unparsable one is rejected with UnauthorizedException(\"未登录\") before the service runs.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-wsugc/src/main/java/cn/shopex/ecshopx/wsugc/service/topic/TopicDeleteService.java",
+          "version": "repo-file-v1:sha256:c98a5306e16e5eaeb8bcc760f529a5397b33ca682c065103e6703fa40557207c"
+        },
+        {
+          "resource": "repo://ecshopx-wsugc/src/test/java/cn/shopex/ecshopx/wsugc/api/admin/v1/TopicDeleteControllerScopeTest.java",
+          "version": "repo-file-v1:sha256:389ec3d9be8114ae74c2a94d78d75507e2f105878e577b0baa6ff69b4e41334d"
+        },
+        {
+          "resource": "repo://ecshopx-wsugc/src/test/java/cn/shopex/ecshopx/wsugc/service/topic/TopicDeleteServiceScopeTest.java",
+          "version": "repo-file-v1:sha256:6e2e2ccd1e824d68745421344d57218719a9d9d6a27f397bc4ea5243610bb3e2"
+        }
+      ]
+    },
+    {
+      "id": "claim_53ac2226892542cc892eceb5d3287536",
+      "statement": "ExportCsvFileServiceTest (ECX-10937) captures the FileStorageService.put(...) byte payload and pins the CSV formula-injection defense: cells starting with =, +, -, or @ are written with a leading apostrophe (including negative amounts like -12.50), and cells containing commas or quotes are quoted with \" doubled — mirroring the production writeCsvField rule byte-for-byte.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/ExportCsvFileService.java",
+          "version": "repo-file-v1:sha256:e57bdd4adbac29daa858d82aa88bee60e4b5fd358944b99025cf6feca7d2a998"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/test/java/cn/shopex/ecshopx/espier/service/ExportCsvFileServiceTest.java",
+          "version": "repo-file-v1:sha256:ce595e9202f5ea25673888a3dd020fe13374b5674e8b42336e0a2a6cf1a3d6be"
+        }
+      ]
+    },
+    {
+      "id": "claim_10f22db827d04a6ab131f022fa9e94f1",
+      "statement": "EspierUploadExcelSheetReaderLimitTest (ECX-10949) builds a real workbook with POI XSSFWorkbook and drives EspierUploadExcelSheetReader.readFirstSheet: over-cap data rows throw the reader's SheetRowLimitException (message contains the cap; the header row is not counted), exactly-at-cap returns header plus values, and both tests snapshot ZipSecureFile.getMaxEntrySize() before and after to pin that the reader restores the JVM-global entry-size limit it temporarily tightens to MAX_DECOMPRESSED_ENTRY_BYTES (50 MB) during the read.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/upload/EspierUploadExcelSheetReader.java#L56-L75",
+          "version": "repo-lines-v1:sha256:a998387f103aa86d483a0f6d684748bee203076d3a84925258669198e5b41470:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk0ZjM3MDY5ZTFjMzI3YjI5OGRmZTM3NGE2OTJjNWFlNGE4MGQ4MjY2Y2RmZWQxNjRiNGE4MWNhOGZhNmI0NGQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE4Y2RjYTA2MTA1OWZmZDhjMmVhZmFmMzY0ZDE3MzZjMjk4ZWMwMWE4ZGNjZThmOWZiMTdiMTU1NjMwNjUyMzIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVkMGFjMjM5OWFhNTQ4ZDk0YWFiZjQ2NDRkZjliNjI0ZGFkMjkyZDY0ZDU3MjY3MzJmMDAzMDk0YTI0NWMzNGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZjZTg3ZDg5YzZlMmZiMjU0ZTQyMWRlZWFiNmU3ZWJlMzk5ZWJiOWFkZmU5Yjk5MWE5NWRkODY3MTI5NjdlNWUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/test/java/cn/shopex/ecshopx/espier/service/upload/EspierUploadExcelSheetReaderLimitTest.java",
+          "version": "repo-file-v1:sha256:4d7e92c3a092777a0b08dcd9912da9e6b7ceb0b0ebe79737ea2f27a1e5f4676b"
+        }
+      ]
+    },
+    {
+      "id": "claim_798f172c9904490f9d928a4734e985b6",
+      "statement": "EspierGoodsMarketingStyleSyncSupportRowLimitTest pins the caller-facing row-cap message: a marketing-style sync upload with more than 500 data rows surfaces BadRequestException(\"每次最多上传500个商品...请减少后再提交\").",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-espier/src/test/java/cn/shopex/ecshopx/espier/service/upload/EspierGoodsMarketingStyleSyncSupportRowLimitTest.java",
+          "version": "repo-file-v1:sha256:6a5bf3d84a18171edaa8a0a769acca5429471998b69b458b6f46b6b2455f305f"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.9.0",
-    "at": "2026-11-05T17:10:02.238Z"
+    "at": "2026-11-08T17:14:16.576Z"
   }
 }

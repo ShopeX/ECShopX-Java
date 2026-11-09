@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:87392311394a206fa338e0f89c538488a9f59c4c54bb08e8b1285177da306770",
+  "pageVersion": "sha256:49a48f6477edd4c2055514402c8b81158f50296e0fe259a9baac3497f1330272",
   "claims": [
     {
       "id": "claim_2ff2e0400aa34a0da54b075e69d8f8fe",
@@ -715,10 +715,214 @@
           "version": "repo-lines-v1:sha256:ee6112c51f0c2dce70194f7bddb62c17ac8cd25fe004b97b95407e7d959c3d50:eyJzZWxlY3RlZExpbmVDb3VudCI6NTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ4Mzc5NTljZTBlZmZjYzgyZDNhZTY3NjRmNWIxY2IxNjVhN2I2ZDQwMzlmYjc2YjNhZWU4ZWM3MGVkZTQwNzEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE5NmQ2Yjk3OGQ1OGViNWE0MTFkOTcyNzI5NDI5OWExNDY2ODc0NTYzMWMzMTQ1ZmE0MzMzZDdmMjg0Mzc0ZDQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdhMzFjMDdkNjc5MWNjMTFjNmI5NDA5Y2E5YTlhYWNmOGMwYTcxN2YxZDc4NDA4OGJlOWYwNTQ0NjY3ZTNiMjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ4YmFmZjU1M2M3NmVlOWNlMmZmOGJkM2EwOTM3NWM0N2Y2MWQ3NjNjM2UzMGNlNTUxNDRlODFiNDQ4YmNmYzEifQ"
         }
       ]
+    },
+    {
+      "id": "claim_be7c30a3e20f44ddbc69a0288e5ed624",
+      "statement": "BSPay trade list and export surfaces honor a client-supplied distributor_name filter by resolving it to distributor ids within the company, but only after BspayTradeDistributorNameScopeGuard.assertAllowed(jwtMap): a JWT with operator_type=distributor is rejected with ForbiddenException 无权筛选其他店铺 before any distributor lookup or trade query runs (ECX-10939 export / ECX-10941 list), so a shop operator can never widen bspay trade data beyond their JWT scope.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bspay/src/main/java/cn/shopex/ecshopx/bspay/service/BspayTradeDistributorNameScopeGuard.java#L24-L40",
+          "version": "repo-lines-v1:sha256:b9b92a499b96fe044bda428de57a8dd62030728b6d6a1eddfa7b47c595d5877b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY4NjZlZDdkYTY0MGU3Yzc3Yzg3ZmQyYjkyY2MyMDVkNTBhODliYTc4ZjMwNzdkNjI3OTVmZTFkYTEzMGVjMWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY2OWNkZjIwMDUyNzMyODNlYzAzZjYyYWQxMDExNmRkYzA1YjY3ZDc0NThmZDliOGQ4OWZlZTI4OTEwOTg5MGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bspay/src/main/java/cn/shopex/ecshopx/bspay/service/BspayTradeExportDataService.java#L110-L120",
+          "version": "repo-lines-v1:sha256:20741b01bd87a6f2fbc78466a5010e80e4f5d3994da060bd6d4cb163d8ce16c8:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU1MTYwZTNmNzg0ZTg4YzRhOTMyM2VkODZlYjE0NmM0MDI2NDZlMjM5ODgzNDhkY2VmMTkyYjYxY2QxMzdjZjIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjlhMGFiOTQ2NmVhMjQ4YjllMDdiOGU0ZmNiNzEwMGFmZGM3ODUzMjJhNThiOTA3OWVkNTQ4ZjliNmQ3YjgxYTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhkZDg1NzE4ODkxMjA2MmYwZjdmZmVlNjc1OTkxZjRhYjdiZTQ2MDM5ODVjMzkzM2Q5MzJkMzRhYjFhNDYyOTcifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bspay/src/main/java/cn/shopex/ecshopx/bspay/service/BspayTradeListQueryService.java#L135-L145",
+          "version": "repo-lines-v1:sha256:99063f017a1a9e5fb884a9897a9a521da241af33c05873a33c7d010a3ba1f9af:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU1MTYwZTNmNzg0ZTg4YzRhOTMyM2VkODZlYjE0NmM0MDI2NDZlMjM5ODgzNDhkY2VmMTkyYjYxY2QxMzdjZjIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ2YTY4ZThlN2JjNWFlNjNkNzM3NDEwNTcyMzgwMjNiMDdkNjRlNDBlNDZjNWU3MDM3Zjk1NWU3YmUyZWZmMDIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ4ZjJjZWRmMTk5OGJjZGI0ZjYyZTQ4ZjkzMGY1YWNiY2YwN2E1ZmU4ZmViYzY1ZDg1Y2U1ZDQwYjY5MjA0NjUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_7d5f749d1b794d19a718e6bb54306c5a",
+      "statement": "On bspay trade list/export, a distributor operator without a distributor_name filter is pinned to their JWT distributor_id (force-applied to the filter; an empty result or 导出有误,暂无数据导出 when the JWT carries no valid id), merchant operators are pinned to their resolved merchant_id, and only admin/staff operators may use the name search — the behavior locked in by BspayTradeListQueryServiceDistributorNameScopeTest and BspayTradeExportDataServiceDistributorNameScopeTest.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bspay/src/main/java/cn/shopex/ecshopx/bspay/service/BspayTradeListQueryService.java#L113-L133",
+          "version": "repo-lines-v1:sha256:9f0c096feec4e76f1ecd1064b55b4808411ddb0b2fcfef6afd3a8bc9d58927fa:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU2ODA2ZjE1NWM1YWMxYWUyNzIyY2EwNmYyYWM5Y2FkY2I4ODFiOTEyM2NiNjI0YTNjMTA0NzViNDQ0OWRjMmUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYyNzM3N2Q3YWI0Yjk0NGE1ZTA1MjAyY2U5MWU0NjMxM2I3NjYzZjUxNDIzMjJjYzIzY2ZhOGIzMjg5ODgwZmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI2MjEwZDBjNzgxYTgyNjZjNTE4ZmFmZTE2ZmVkYzY4YjE5OTNlNWFiYmE5N2U2ODEwYzA5YTEyZDczODRkMzMifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bspay/src/test/java/cn/shopex/ecshopx/bspay/service/BspayTradeExportDataServiceDistributorNameScopeTest.java#L88-L125",
+          "version": "repo-lines-v1:sha256:e6f9231ab1c0dfc0dd37e30858ca8d4fee2f71d680694bbe4856acb47f3c22e7:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZhYTA2Nzg3ZDY4Mzc0NjAxYTg4OWI2YzAzNmY2MTFiNGMyNGYzNDI0ZTc3MDgwNDg1NTQzNTU1NTYxNmFlZGEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIwNDFlNjhiYTIwNTI0MjZhY2JkYzVmNzJlZDY3NGEwNjgwNjBmZjg4NjliNTdhMmViMTdkNDQ3YWZlM2Q1YTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bspay/src/test/java/cn/shopex/ecshopx/bspay/service/BspayTradeListQueryServiceDistributorNameScopeTest.java#L61-L128",
+          "version": "repo-lines-v1:sha256:4adfaf7277f8615675847972becfc75cfc1543ef76fc387fe9eacd33fa675344:eyJzZWxlY3RlZExpbmVDb3VudCI6NjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIyYTFjNTYxZGU1NTdjOTZjNzcyNWQzNjRkMDVhMmYwNjg2NmI4MjhlZjE5ZjlhNGFiODE0YzUyOThkOGM4NDEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU3YzAwOGE5ZDcxMWMzZTJhNGM5NGRjNGIzNTNhOTljYzI5Y2E0OWMwM2YxMmM0NWM3YmZkNDA0YzBjYzlmMzciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_97bab221452945b5b26ffc6572516b23",
+      "statement": "AlipayNotifyFacade loads the notify through AlipayNotifyPaymentContextLoader, which requires passback_params (short-circuiting to a {\"data\":[]} 200 when absent), decodes the passback query string, and extracts company_id from it (throwing 缺少企业编号 when missing); the facade then proves the trade/deposit row's company matches that context company before any signature work.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/AlipayNotifyFacade.java#L70-L104",
+          "version": "repo-lines-v1:sha256:47a7f2d012e32ac18b1033459c33ec2c4e7a2cbef0b6f89caf1e0158786e8a71:eyJzZWxlY3RlZExpbmVDb3VudCI6MzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyOTE1YWQ5MDc4MjhlOTQzMGYxZTQ0OWQ2ODdhYWYzNWFkMjkzMzk0YThhYjZmYzU5M2E0ZDEzY2Q5OWI3Y2MiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjUxMjU1NDk1Mjc2YzllYjVmMTU3MDRmOWZkNjQ0OWFlNDAzOGZmN2MwZDE0ZDg0NzEzNzlhZTBhNzdhZGQ4NjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI4NDllNGQ5NzhjMzdiNWY3NzBjYWRhOTIxOTRiYmUyNDJhZWFhZDllNTc0ODJjMDcxMzVmOGU1Mjg5MTA5NjUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/AlipayNotifyPaymentContextLoader.java#L49-L97",
+          "version": "repo-lines-v1:sha256:cb12227a81fba913b74e6fbdf8f00b3b91a900b137b6306a31a28f3f162003f5:eyJzZWxlY3RlZExpbmVDb3VudCI6NDksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYwNDYwMWQ3OTM2NzNmY2E2ZTk2NjFjNThlM2FiYWY4MmUxYTRmYzIxYjI5MjNjZTUwNDQ3YWRmODVmYjY1OTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk1Njc5ZjJkNTU2NmVkYWMwNWQyYjMyMTg0M2M2MGM1ZGYxY2VmYmEyZGU5MWUzMDI2OTUwYTAwMTM4OTk1ODIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBmMzIxZTczOWVjMDVkMGU3MTNkYmU2YjA0MTFmNDE1ZDg1ZjcyNDFlMDQxNjNjOGJjYjU1NTVmZWY0MjJiZmQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_61935dd5d62549518bc5a69b113cfc20",
+      "statement": "Before verifying the alipay async notify signature, AlipayNotifyFacade runs AlipayPaymentConfigValidationService.assertAsyncNotifyConfigComplete, which fails fast with BadRequestException 支付宝信息未配置，请联系商家 when the per-company/distributor Redis alipay setting lacks any of app_id/ali_public_key/private_key; only then is the signing material loaded and AlipayAsyncNotifyVerificationService.verifySignedNotify called.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/AlipayNotifyFacade.java#L106-L120",
+          "version": "repo-lines-v1:sha256:b579e5bdba5714b143f5be8d07d095672217d73ee82bc221225ca05e2844a086:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVlNjljMTQyZjg2ZjgzZDM3MTJlOWUyMjdmM2Q1OTkyZTc0YTBjNTc0OTdlZTEyMGJkYzFmYjNlODEzYWUyNmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBkN2QwYTVjZWZjN2NkNWM0OGFhNjAyOTg4YjdlYTIyZmMxZjEwMGI0YjFmNWE1MTIzYjFmMDcxYmE0NTVjNTAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI1ZGU5MThjYWUxODhlYzYyMzVhMDI1ZTJlMWU4NzAyYmQ1NGMwZTZjMDJkMWYxYjI5MDZlYmUxNTg2NDEzMDIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIzNTRiMWVkN2M4YzAzOTRkNmZhZDIyZGNiZDJkZTk5ZGM4OTQ4YjM1ZjljNWIyZTNkNjBlZWVjMGU2OTU0YzgifQ"
+        },
+        {
+          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/AlipayPaymentConfigValidationService.java#L52-L75",
+          "version": "repo-lines-v1:sha256:79b88f12ad073c36fad8d427cc57e7417816811318fc750592a20673a71e1ce4:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzMDdkMGZlZjc0ZWI2NWEzNzE3Yzc4YzJjZmRiNDYzMTM5MzhiNTE4YmJiODFlNjlmYTI0OTUxOWUyMDQwY2YiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_001bcb727f38483a8e00b60485f2f014",
+      "statement": "PaymentSubjectDistributorIdPort is a one-method port declared in ecshopx-common (common.payment) with the signature long resolveActualDistributorId(long companyId, long distributorId), and it is implemented in ecshopx-distribution by PaymentSubjectDistributorIdPortImpl — so orders and payment depend on the common port, never on the distribution bundle.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/payment/PaymentSubjectDistributorIdPort.java",
+          "version": "repo-file-v1:sha256:3a792949ec2c168062f5ae0a9663af065a65b3d51b299c1bc757651ce6b65bc1"
+        },
+        {
+          "resource": "repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/integration/PaymentSubjectDistributorIdPortImpl.java#L27-L52",
+          "version": "repo-lines-v1:sha256:633b7c3ca4c811e38a047a5c1caea64f12ed8d4887d386b5959cc98c5fe2bd35:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBiNzFiNzE0NDJlZTE2Yzg1MGZlYThjNzM5MjRiMDM1NzQzMTQ2NmJmNDczZTE5OTVhNTdiMmFmN2Q4YTUxOWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_e152bc9f5e244155870c7b108e460ea5",
+      "statement": "The payment-subject rule as coded: Distributor.payment_subject==1 means the distributor settles under its own merchant config (the distributor-prefixed Redis bucket); PaymentSubjectDistributorIdPortImpl resolves any other case — missing distributor row, null flag, or flag != 1, including raw distributor id 0 — to distributor id 0, so platform-level wxpay/alipay config is validated and used.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/domain/Distributor.java#L311-L311",
+          "version": "repo-lines-v1:sha256:cfd901ece3d981ede49c1ef3d9deb6ce5e1d1929f0fbf7a375976ac5cf45b49e:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiY2ZkOTAxZWNlM2Q5ODFlZGU0OWMxZWYzZDlkZWI2Y2U1ZTFkMTkyOWYwZmJmN2EzNzU5NzZhYzVjZjQ1YjQ5ZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiY2ZkOTAxZWNlM2Q5ODFlZGU0OWMxZWYzZDlkZWI2Y2U1ZTFkMTkyOWYwZmJmN2EzNzU5NzZhYzVjZjQ1YjQ5ZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNGM0ZDUxZjI1ZDYwZTBmOThiMTFhMjYyMjcwYTc3ZWE4ZWNlYjI1NWYyZjRkYTJmMWZiM2IwNGFiYWMxZTg4OSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTIxNzYyYzU1ZTk4Mzg2NDU4ZTEyODBhYzhiYTc2NjA0ZmUzMDQ4OWY0ODQ2NGM1YWRiMWUyMzcwZDk0YTNkYiJ9"
+        },
+        {
+          "resource": "repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/integration/PaymentSubjectDistributorIdPortImpl.java#L34-L52",
+          "version": "repo-lines-v1:sha256:5949a3d3a70658b8ebc2124ee21387fbf2387ed1bbf6df124b0c7c51bf256987:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwOGNjMTVkMDc1NGI2ZjIxZjcxZTBiMDNiOWRkNzg2YmM5ODgwMDNiMmI1NzU2NGM2MDUwYTgwMjI1MTdjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjViOWM0Y2FhNDc3N2FiN2ViYjQyMTE5ZDljZjAwMjA3YmZkOGZjMjhlMWIyMzllNDQyZGY4YTE3Mzk0OWEzN2IiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_c76363d2fb0b48b7a38c2be1deb14331",
+      "statement": "Orders' OrdersPaymentDoPaymentService.doPayment resolves distributorIdForSetting through PaymentSubjectDistributorIdPort before any channel work, gates wxpay*/alipay* pay types via WxpayPaymentConfigValidationService.assertConfigComplete (requires app_id/merchant_id/key/cert/cert_key) or AlipayPaymentConfigValidationService.assertConfigComplete (requires app_id/ali_public_key/private_key) against the resolved bucket, and passes the same id to OrdersExternalPayParamBuildService.buildPayParamsOrInvoke so SDK params are built from the same merchant account that was validated — while the trade row still records the real request distributor_id.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/payment/OrdersExternalPayParamBuildService.java#L105-L127",
+          "version": "repo-lines-v1:sha256:bb764ba17011e00b6135ec0e701dfc295898c7fe48b03297e37caa4b443936d0:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgxZGExZDAzOTA1ODYxYTkzMzRmMWY4NDUzYTFhY2RmZDcwMGM3OGM5OGRmYzg0YjJlNDQ2MjAxOGEyNDNlYmYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQzYWQ0YmYyYWI1MDA3MjVhYTU3Mzg5YjBmMGRiZGM2ODVkOWZjNjUzYTAyMjM4MDBhMDM2OGIyNzlkZDhmNzQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRjMzAxOWE4NTRlYTM2MDc0ZDZlMzQ3YTM1MmUwOGQ1MDUxMDI5NjdmNjUwMjg4NjZlZjQwMjUxMjNmMjhkY2YifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/payment/OrdersPaymentDoPaymentService.java#L144-L158",
+          "version": "repo-lines-v1:sha256:09d464dac5ed7bafe6693dbfb5d552cd966517584a41e568d3dadadc7587565b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU0YTAzMWNlOTA2MmI4ODIxYjIxZmM1ZWI0NjdmZWJlYzAyMDAxYmUxYWRkZDNjYTZhY2VhMjlhYzhiMDZjZWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcyODA4ZDAyY2NkNDAwYzc3ZDMyNDFiYzlhODc0MGQyMzM5NTlmMmE3M2RjMjQ1MGE1ODA0Y2U3M2NlNmVkNDQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc2MGMwYjQzNjk0OTMxYzhhNGY1ZGQ0MmE0ZjY4NDMyN2Y0ZGZiMWM3MTY3OTNlZDNjMGYzY2JkYjIzYzFiNjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjExOTgxYzA3M2MwYjY4ZjM5MWNiNjM5OWU1OTcyZTY0MTA1MDFiYzVhZmRmMjljOGY5ZjVmZmRiNWFhMWIyNWQifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/payment/OrdersPaymentDoPaymentService.java#L448-L488",
+          "version": "repo-lines-v1:sha256:d4a58af3bcd0923419971ea6d932036c90f86fa494897850961248b6ded3c242:eyJzZWxlY3RlZExpbmVDb3VudCI6NDEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUxNzM3MmM1MTUzOWY5YWE1MGYyYWQ1Zjc1NGQ2YTgyMjBkNzViZWIxZmFjMGZiZDQwOWM1NTBlN2Y1ODlhYzUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU4YTQwZmVmMjA2NTE0OWZjMjVjY2Q1YWI4MjE4ZmNlODU0YzM1ZTJhMGM2MGZhNTJmMGRjZTIwNjc4ODYzZWYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIyZjJmZjVmZWVjNjBmNTg3YzhmYWU0ZTg3ZjgwOWE2NjFjZmZlZDZiNDdhYWU1ZjZkNmEyNjUzYWE4OTUyZWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg5YmE5Nzc4MGU0ZjQ4ZDZlMmVhZTc3ZTBiZmYwYWVlMDZkNjZlZTYyYWI3ZTZiZDcwYWU1ZDA0NGRmM2I2YmMifQ"
+        },
+        {
+          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/AlipayPaymentConfigValidationService.java#L46-L74",
+          "version": "repo-lines-v1:sha256:6e4c62d3ffad71b6047631f0fd6fa2d8d004db448064b95f1e97f0e75343075d:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQxZGJmNmI3YTJlYzc0MjRkNWI0MGZjMjM5MDZiYTYzNzUzYjdjNTQ5ZWFiZTcyOGEyNjZlZmNhN2M1M2Y2NzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/WxpayPaymentConfigValidationService.java#L41-L55",
+          "version": "repo-lines-v1:sha256:b87ae18f3b985b5cb414080b6680e067c3acea4eee90065e8462944a2e69efdf:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRhZWVjZmRkYjc1MDY4MzQ3NDA4MzZmNTJmNTljZmU1ZjU0YzM5YWQ5NTg1NjAzZGI3MjE1MmJhYTE2ODQ2ZDMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ5ZjNjN2NkOGJlMGRmNzhjNmU3MmMzNGU5OTY3Nzg0MzlkMjFiM2VhZGMzNGFjYjAyZjhmM2I4YTYxZDA5ZDMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_033f90f0ea994b149641e1560428f4b3",
+      "statement": "The config-completeness failure message distinguishes the resolved bucket: distributor-scoped failures throw 店铺微信/支付宝配置不完整，请先完成配置后再切换收款主体 while platform-bucket failures throw 平台微信/支付宝配置不完整，请先完成配置后再切换收款主体.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/AlipayPaymentConfigValidationService.java#L31-L49",
+          "version": "repo-lines-v1:sha256:941d3756f0fd24b1f31a1b37f1e10c6c164f4bd97524f781e2b925fefef6b1c0:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE1MDg4MTkwOGJhZGFhMDc4OTE4NThlMDI3M2NhMjI2ODU4ZDE5YTBjZjRkM2QxYWU2NjA2M2RjMzk5ZTgwZjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQxMGEzNWNkOTg3ZDM0M2Q2MzE5YTlkNWMzZDQ3YTBjYzg5MTJhZTMzODAyOTE3N2MzZDg5ZjMxZTQwNGZjZjUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg0N2NiNWFlMmQxYWU1MjU5MzU1NTc1ODg1ZTE4ZDdkYTU0ZGNkMWMzNjMyMzM3Zjk2MmU3YmJlNjNiOWU0YzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIyZjJmZjVmZWVjNjBmNTg3YzhmYWU0ZTg3ZjgwOWE2NjFjZmZlZDZiNDdhYWU1ZjZkNmEyNjUzYWE4OTUyZWYifQ"
+        },
+        {
+          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/WxpayPaymentConfigValidationService.java#L29-L30",
+          "version": "repo-lines-v1:sha256:ff80a9c7a7bdf6ef58a4aa9762ee8cfb6b75431f8ffa26ff952cdc95533d3ec4:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYmIzMzZjNDJiMmY1MjA3Yjc3NWU1MGE4ZGFjZTJkNmQxNWIyNmY2MWU4Y2RhMmNhNGQ0M2ZjZTRhZTQ4NDRmOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYzkzY2JhODFkZmM4ZmQ1OGFiOTAyMDg5YjQwMzVjODZiYzVjNWUyZDQ2ZDQxNmU5NDk0OTk0ZTYzMGVjMDFmYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDE0ODAxZTBjNzcxZjFkOWNhNWJmNDVjZmNjOThlZDk1Yzg1YzFiZDhkZjI3NjMwMzk0NmE4OGE4OWI3NmMzNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNmEwZTk0MzhhZDc1NTQ4NDUyNzllYjgyZTMyM2I3OTU5YzA3MTQ0NTYzNmNmMTJhZGM2YWQwY2VlNmI4NGNjNSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_17a288ddc6364123bcf739c915eddfa5",
+      "statement": "The resolved distributor id is consumed consistently across the payment lifecycle: OrdersPaymentChannelQueryService.query re-resolves it from the trade row before wxpay orderquery/alipay trade-query calls; payment's FrontPaymentSettingReadService resolves it in readWxpayMap/readAlipayMap/appendAlipayMini so the storefront only advertises channels whose is_open setting lives in the settling bucket; and StandardOnlinePayAftersalesRefundExecutor re-resolves it per refund before calling the wxpay secapi/alipay refund runners so money returns through the same merchant account.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/payment/OrdersPaymentChannelQueryService.java#L71-L79",
+          "version": "repo-lines-v1:sha256:33b46be8b44a656be91a076f1c36760d11df1a4d8f615fa008fdca05a9008fe1:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMjcxODQ3MTcyNTk1MDI2NWUzNjY2MTVjYzYyYjBjMDY4YWQwMzQ0MDM2OTgzOTkwNGFhYjYwZTE2MDVhOWU4NyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMmUyOGNlNWU1ODRhYjY5Y2E2YzhmOWQwZGYwMDRiMmI0MTEzYzU5YTkxZmI1ZmE2NDA3NjEzZjE4YzEyYzEyYyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTBkOGI4ODVmYzE3MTVjNzUxMTZiYTA0OTUyMGEyYTM5NjgyODM4ZjIzYmNiZDJmNGJlZTQ5YzkzNzgwMmFlOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZGE3ZDQzNzI0ZmE1MDlmMWYzNWUyMzQ3YTg5YWZhNzA1NGVmYzY5NWRiNzgzZTQ3YjQwM2ZlODU2NDQ2YzFmYSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/front/FrontPaymentSettingReadService.java#L205-L211",
+          "version": "repo-lines-v1:sha256:1ce4be60a0cab89418862149470d84568b586276323b04b4197cc3102c61940a:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMWYwNzQ5OTg0ZTE4YWEwZTg0NTc2ZmM5ZjYwZDUzNDdhMTY5NDk1ZGQ3ZmUwYmE4ZGIzY2M2NDY2MGM1YTAxMiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNGRlZjY5Zjg1OGQwYzJhZTc1MjBkMDk4ZGQ3MjlkNTE1ZWFmNjJiMjE0NzM1NWNiMzNlYWE1YWE1OTljNTlhZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTY4MjJkZWY5ODNkMTYzZDhjMmViZGRlZmZiZDIxNDFjZjQ0OWUwNzcxMzNkYTBmMTM1MjkwMDcwNjU3N2MxMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzNjNTc0Nzc3YmU3YTRkOThjN2ZhNDg1YjBlNjBiYzEyOTJlYTJmODU3NWJmMTczMGQ5ZWYwNzZmNzY0OTYwMiJ9"
+        },
+        {
+          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/front/FrontPaymentSettingReadService.java#L444-L458",
+          "version": "repo-lines-v1:sha256:00bf4c8e8fb028fdf7e862b75297ba87a0d6991c97d6c600c04f08ac129da243:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZjZTQ0YmIwYzQxNjE1ODhjNDVkMGQ1YzNiNTlmNzZmMTM4NGQyNWUxZjFkYWQ3ODgxOWE2ZDc4MDI2N2JkMzUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU0M2VhMTIyZWUwZjU2Y2FiOGJmYWRlNTZlMDk5YTIzOTRmMzNjOWFlNDM4NTk3YmMxNGQ4OGU4MDZjZDlkNTgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNhNDA5MzA0MDJkYmY2YTljOTViODYzOWRmN2I5NGFmOGI2MjE4OTFjOGMyMmNlMjdjYmZjYjIxYWRlNDM1N2UiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJjNTAyMDU2ZTI5ZjMyZjdmYzFhOTdiNDM4MmQ4MTc1YTM2MDllYzQyMDdiODE3ODg5ZDcwMWNhZGQwOTE1MTQifQ"
+        },
+        {
+          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/orderrefund/StandardOnlinePayAftersalesRefundExecutor.java#L79-L107",
+          "version": "repo-lines-v1:sha256:8cce060c5c86f1ecdbb895b24d1c0d953d116c4ad1c133c3bfd755bd259055ae:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFiNTAxNzA5MDNlYmE2YzFiZjg3YzZkMTdlYWQxOWZkMDk3NGRkZDFiZjM2MmEyZDAzM2ViNDFlNGJlZmJjYWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ3YzQwMGVmOWQyMjQxM2FlMDBlZjhhYTkxMThlZWYxMDk0OTJiM2U4Y2EzOTQyZjUxYjM4MjY5Yjc2MGMyY2MiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE4ZmU4OTY0MWQxNzg2MDgxOWY1Mjg0NTA2MzdiZTM3ODMxNjFiMGQxMWVhOWMwNzQzYmNhNDFmNDA1ZjY1ZTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQyN2M1ZWU5MTc3N2I0ZWJlYzY2Mzg4MzdkOTQ4NzkwNzViMjc3OTBmNGIwNDVjMDJlMWM1OWI3ZTQ3Yzk3ZjEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_e4444c4d2998446e9f189f20afb79c88",
+      "statement": "The wxpay/alipay notify side predates PaymentSubjectDistributorIdPort and converges on the same answer: the facades resolve distributorIdForSetting through AlipayNotifyOrderSidePort.resolveDistributorIdForAlipayRedis, whose orders-side impl reads the trade row's distributor_id and applies the identical rule against the DistributionDistributorPeek table (peek missing or paymentSubject != 1 resolves to 0).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/alipay/AlipayNotifyOrderSidePortImpl.java#L77-L103",
+          "version": "repo-lines-v1:sha256:03579cd5d8f38e86612d891dc523d16f534dcd8a2af1d29f86c4b0b5c1ff3407:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE4NDcxZWNlMmQ0ZGM0YzRjMWYzMTdjZWJhYzI3YTJiOTQ4ZjFhZjQ0YThlZDMyOTRmNmE3MDFkNjhmNDYxN2UiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRkODE2YTc0NzNmMWU3ZDM2OTBlOTJhYjNjNWZmOTZmOTY2ODcxYjM0OTFiYzU1OGI4MGVlODA3MmQ2MzM2YzMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM5MjE0YTEyZjM5MTM1YmIxMDdiOGQ1NjY3ZDQxYjg5MmM1ZmU0MGRiMjI3ZDcyYTI3YjkzNDE4NGNjNGYxZjgifQ"
+        },
+        {
+          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/integration/alipay/AlipayNotifyOrderSidePort.java#L31-L31",
+          "version": "repo-lines-v1:sha256:74cc818274ce93542e8be03a31ba3b409bec0c0d37189496c0b375e30beb33d5:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNzRjYzgxODI3NGNlOTM1NDJlOGJlMDNhMzFiYTNiNDA5YmVjMGMwZDM3MTg5NDk2YzBiMzc1ZTMwYmViMzNkNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzRjYzgxODI3NGNlOTM1NDJlOGJlMDNhMzFiYTNiNDA5YmVjMGMwZDM3MTg5NDk2YzBiMzc1ZTMwYmViMzNkNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzRiYmNmNDhkMDgzN2M4M2Q5OTk4NjU1YjJmZDZiODE1NzkzYmI0MzMwY2FjOTExZTdiYjc2Y2I2ODc0MjZlYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZmUyMDVhMzMxMjVhOWY0Nzk2NGMzYTE5OWM2OGU2MjE4OTZiNTVkMjljN2Y0MDk4OThmNjk3N2NjZGRlYTVjMSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/WxpayNotifyPaymentContextLoader.java#L91-L96",
+          "version": "repo-lines-v1:sha256:b7a1ed8943a2dbda7ff4e57de0de93858505875b2fafaefa5241eec5f102631c:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDYyNzYxNTFkODIxNGEyOGE1YzE2Y2QzMzJmNDg1MDA0NWIyOWRhYzdkMjRhNGI1MWIwOTUyYTYyMjIwMjBjNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiM2QyNzk5ZDY1ZmI1OTk0ZDUwMzUxNWMzYzNmZjMyYjdjY2Q0OTIyZTNhOWI5NDgwNWY3YjI5ZjFlOGVkZGJiZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYmM5MGI0ZmFjMWU2MTVmZjdlMjNlYmZjNmUxYTkxODU3OThlMDlmY2IzZDlhZmM2YzhlYWM0MDVjMGViYzI1YSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzQ0MjBiODA4NWY0OGZhNmJmYTUwNGRmZDIzZmU5ZjNiMjg3MWVmOTQ2MjM2NTNiZmZjMDczYjY5NGZlY2VhZCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_90ceeeaf6bf14ee7853426797f23eddd",
+      "statement": "OrdersPaymentDoPaymentServicePaymentSubjectTest proves a platform-subject order (payment_subject resolves to 0) validates config and builds wxpay params against distributor bucket 0 while the inserted trade keeps the request distributor_id, and that point payments complete in a single transaction without touching any external channel.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/orders/service/payment/OrdersPaymentDoPaymentServicePaymentSubjectTest.java#L161-L216",
+          "version": "repo-lines-v1:sha256:8c7a9f8b82a28b959f6ff1d2960d2f2c153b34c77286bb49f02708289adc2abf:eyJzZWxlY3RlZExpbmVDb3VudCI6NTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFmZTJhMzcyYzBjOWY4ZTdmMGRlZDQxZTY0NzYzMWFjZjEyNDdhYjBjYjRlYmM1YTdkODRmZmRlYTIxNmU1ZGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc2Mzg5NmEyNmNmZWY4NTI4MWJlYjNmYmVjMDdiZDZjYjUyZDFkZTM0YmJmMGZhM2U0ZmE4Y2Y5M2ZiOTI4ZTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE1NmNkZTFlNDNiZGUyNjA0M2U2NDgwNmFkOWY0ODY2NWVkODVjNjhmNjhiZjBjYTUyNjQ2MWExOWNhOGVmMDgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJhYzYxNGRjNzZjZGFlMTk5OWY5OGRlMTg0ZWM2ODMzNGJiMmFhOWI3ZjZmMWU4MjhjNzM0YzAxZmI3MTQzMTIifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/orders/service/payment/OrdersPaymentDoPaymentServicePaymentSubjectTest.java#L218-L279",
+          "version": "repo-lines-v1:sha256:beef7d214a6581ba4209addcaf156a15340d35e10e572085156f08de9b56fc9e:eyJzZWxlY3RlZExpbmVDb3VudCI6NjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3M2U3YjY1ZTBjZDZmODI4Njk0YWMyY2NkNjBhYTgzYmIxZWRkYWZlNTU0NTMzNWQxZDc2OTg1MjU3YTgxMzciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE5MjYwNmQxYTcxZThjMDgwMTExNzVkMDkxZWEwNGE0MzAyYTY2M2M3YmVjNGRjODgwNzcyMWY1Y2QxNTQ1OTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_e60f4aaba9384689afc1596c2a72d321",
+      "statement": "WxpayPaymentConfigValidationService and AlipayPaymentConfigValidationService read their settings from the companys Redis at PaymentSettingRedisKeys.wxpayRedisKey/alipayRedisKey(companyId, distributorIdForSetting), where a resolved distributorId > 0 prefixes the key with the distributor id and 0 yields the unprefixed platform key.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/AlipayPaymentConfigValidationService.java#L60-L66",
+          "version": "repo-lines-v1:sha256:72bda9a71d9d024fd571289a8e80444c0a97cb622756dea46686c6e32ee7d3f6:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjRlZmM0OTQxOGQyNmRjZjEyOWIyMmE2YWEyMTEwOGNlZWMzNzY3N2EzMmQwOGU5ZDVmZWUzNWRkYTY2YmI5ZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNmFkNjcxMGExMTQyNDdlN2E4MTBlMzM3OTMxZTgyODVjNTFhNzdmNzJmZTcwODdmNzk0NjUzODExNGY5YTJkYiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMWMzMTc5YzZhYjgyZDBmOGEzZjNiNzBkOGMzOTZhNGYzYWQzMDMzY2Y4NjI3M2E1ZmNiOTM0YzM0NjI1MWMyMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYWQwNDliMDdhNDZmY2NmZTk3MmFmNGZmYTllZTJiYzk1MzIyYWY1ZmY2NDZjNWE0YTI4NTQyNmYwYjIzYjg0MSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/WxpayPaymentConfigValidationService.java#L45-L48",
+          "version": "repo-lines-v1:sha256:79cc1606782fc74a3c0a0cbedb7eb47d6f2ef52a668e665a63eb38da7ac2b6d2:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYmM3OWQ3MjI1MTZiNTg4M2MzYzhhYjM1OWUyYjRkMTRhNzQyZDM2NjA5NTgxMDA4MGEyNWRiMDRiMWViNjQ4YSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNmFkNjcxMGExMTQyNDdlN2E4MTBlMzM3OTMxZTgyODVjNTFhNzdmNzJmZTcwODdmNzk0NjUzODExNGY5YTJkYiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDZiODJlZjRkNjllZjM3ZmEwMWY3NWY4Y2VmNjYxYjQyOWI0YWIzMmYxNTUwMDhjNTIyODk5NTU0NjhhMzg1YiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDkwMGQxNDAxYmE1OTFiYzg2MGRhMjVmYWYxZTczNDM1NGVhNDkzYjBhZDJiMjM5YzAwYzEzYThhMTNjODk3YyJ9"
+        },
+        {
+          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/support/PaymentSettingRedisKeys.java#L34-L44",
+          "version": "repo-lines-v1:sha256:b645dd73cf4dbf286506029470d05240a582398b50c7b9eaa59d87d90a2a4d21:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlmOGJhZGZlMDhlNDZmNjhhMmFlZDBhNmQyNzE3Y2Q0OTllMmY5ZmE1Mjk0YjJiNTkwMTlhMjZmMmI3ZjA0ZTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgzOTQ3ZTc3YmM5NTY3OGM3YTI1MTI0OGI1OWUxN2M5ZmNmNDNjMTNhMzhjMWQ2ZjFmZDk1NWVjZWQ2YWE2MGMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRkNzk5NjEzOWY1MzQyMzE3MGVkZmEyM2NiZGNiMDhjN2UwYThmNDU3YTkwZjRmMGVkZWI3NzM4ODYzNTQyOTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMzYmMyOTQyN2ZlNzU3ZDAyMWM0YmIzOTk1YTNjNjk4MjA5YjBiMmIwMTVkZmM5MzY3ZDM3OGU1ZTc3OGNmYTgifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.9.0",
-    "at": "2026-11-05T17:10:02.238Z"
+    "at": "2026-11-09T03:34:48.355Z"
   }
 }

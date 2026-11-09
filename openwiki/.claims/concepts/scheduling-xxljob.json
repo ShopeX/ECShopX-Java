@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:30df4adf379cc45c40a0bb342bd3eda8ed1e168bc6765e0aba56f98c14fdb9cd",
+  "pageVersion": "sha256:27e6cffe3e1135e20afa623fd0a05c840abfbc0727a5e79af72638a6aea705b1",
   "claims": [
     {
       "id": "claim_58d9f660a1904f38b19211fbd3a0b98a",
@@ -451,10 +451,108 @@
           "version": "repo-file-v1:sha256:92791e6660bf1ae2dcc773d28b58684bb4da9719c378e03de64e66b3f5329d81"
         }
       ]
+    },
+    {
+      "id": "claim_8aae7c769699490f8b8bb2cfe5627d76",
+      "statement": "There are 73 @XxlJob handler methods across 19 Bundles; the newest is ecshopx-members' ScheduleBirthdayThisMonthTagHandler with short name member-system-tag-birthday-this-month, which follows the standard template (short-name constant, parameterless execute(), cost logging, CronAlertEvent + rethrow).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/cron/ScheduleBirthdayThisMonthTagHandler.java#L30-L56",
+          "version": "repo-lines-v1:sha256:029286572e67a9e09bd21175729405bd6641410df7df06ed8ecf9684c5888b99:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNlMmYwMjU4MmE4NDU3MzMxZTIyMzExMjBiODlmODRjZGI2M2QyMGY2MWZmY2MyZjYyNjNiMTY0NWNhMDcyNDQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAyNzcyNTgzM2FiOTNlMGJmODJlMGYwMmIzMmNkZjAwYTJkYjNiMWQ5OTE2ZmVmZjJkNmY3YzA1OTU4YjJkMzMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_c5758cc85f0649b9991d9e19b259cbaa",
+      "statement": "member-system-tag-birthday-this-month has no seeded xxl_job_info row in docker/tables_xxl_job.sql (which seeds 69 jobs), so it must be registered in the admin console before it runs.",
+      "evidence": [
+        {
+          "resource": "repo://docker/tables_xxl_job.sql#L139-L218",
+          "version": "repo-lines-v1:sha256:954bac67ced883f67cc78f9fd8a471f0f1b32a5f688f5e8b9671d73602545bca:eyJzZWxlY3RlZExpbmVDb3VudCI6ODAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRmOWJlODI5MzcxZmJiOTg5YjFjMzk2Y2YxYjBmMzM4ZWMwODhmYTBmMTI4Yjg3NjIwNjY1YTg1ZTViODgxMTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI4YzUyYjQ3YzA1YTY1ZTkxZTBjNzBjOGQzZTAzYmE5NzhiN2ZiNmIxZWMxNjc4M2RiZmRlZmI0YjQyNTFmYmMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIzYmU1YTcwOTViMzMyNWE5MmM3ZGI0NjY3OGYyZWU5NDE3YmYzN2M4MzEyNWNmYzIyYjZmNjA4ZTQ0NmM5NWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/cron/ScheduleBirthdayThisMonthTagHandler.java#L33-L33",
+          "version": "repo-lines-v1:sha256:01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDNlMDk1NDk4NjEzODY0MzlmYTZiMGMwNzdhZDExN2IzMDA1NzZjN2EzY2U4YWNiNTgwZWUzYjdhZGViZmNhMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODEwYjc1NmJkYjAxNDYzMGIzODM1NGVkZmFjODg1MmQ3YThlMDVmYTkxZjc4ZDkzNjJiYjI1MTU0YjU2ODdlNyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_b59aa2520bb24a8da3a138a32e3bed8e",
+      "statement": "BirthdayThisMonthReconcileService.executeMonthly no-ops unless today is the first day of the month; otherwise it reconciles the BIRTHDAY_THIS_MONTH system tag per company in a transaction, attaching non-disabled members whose birth month matches and detaching the rest with MemberRelTagsAudit rows; a per-company RuntimeException is caught and counted, and a non-zero failure count rethrows as IllegalStateException after the loop.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/systemtag/BirthdayThisMonthReconcileService.java#L109-L244",
+          "version": "repo-lines-v1:sha256:b05919f24ab3cc7b8df622dc5ea6eeb5bf5fd757be62472c68e53815206bdaa0:eyJzZWxlY3RlZExpbmVDb3VudCI6MTM2LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIxODFhZGVjYjcxNmE0ZTdmMDBlYjhmMzUwNjA0YWI5NDFjNDMzZWI3NDIzMTFlYzIxMTA0OGE4ODcxMzVmZDFkIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0MTJjYTM0NWNjZjc1YmY5YzA4MDZiY2U2OTViZThkZTgwOGI3OTk4NDI1MWE3YTU0ZDIwMmNmNjEwMWRkNDUxIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI2MWFmOTM2ZGQ0YjMyMDc3NzE3MGM3YjA3YmU2YjZhODQ3NzkxMWIwZTc4OTY0NmUzODI5OTRjY2U3NDg2YTM2IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MCwiZm9sbG93aW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1In0"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/systemtag/BirthdayThisMonthReconcileService.java#L73-L108",
+          "version": "repo-lines-v1:sha256:e1c34d168a584ab8c7ebdb468dde366a8814fdf47767f11290938ea5d440cbfa:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE0OTljOGIwMzQwZWQxOGE4Y2Y5YjA0MWFlZjg5NmJhNzIzZjU4ZmVjMGFmMGZlMWEzMDcxNTViNzlmYmYzZGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJkNzU0OGYwODFmM2Y0MjY0OTYxNzRiYjdmMTYwZjg3MDk0NDNjMWM1NmM2NmFmMzNmYjZmNmU4OTdjZjAzZjgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU0OTc5ZmJmMzQ1NDVhMGFjYzFlMTkzNGQzYjU2YWY5MjQxNzA1YjA5OTlmZjM0NzkzZTBlODBjNDQ3MGI0M2UiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJjNGU2OWFkYTg3ZjM0YjZhNjEwMTQ3NTA3N2M1NGMxMDFiMWZmNzNmNDE4MzVjYmEyNTdhMzk2ZjgyMGJhNGQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_ffb1c17d5e6f42a995157f1be3ca7a73",
+      "statement": "The finish-orders dispatch job is consumed by orders' FinishOrderJobHandler, which forwards the payload to FinishOrderJobService.execute; that service runs the order-completion batch first and then SleepingUserTagReconcileService.executeDaily, catching a sleeping-tag RuntimeException so it never fails the bus job, while a batch failure skips the reconcile.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/dispatch/FinishOrderJobHandler.java#L20-L38",
+          "version": "repo-lines-v1:sha256:b1839ba5a73e5c2df734616b740b6dfc468b4b5bc7b5e7337bfa6b06af0aac31:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYyMDZmN2VjYzA1NTgxZmI0YTZkNDU1ZGYxNzc4OTAzNGNkMWI3YTFkODliOTg2MTZhY2FhY2M2NmE5NjZkMzAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRjYzcwZTJmNjcxN2ZhODJkMGU2ZWE4YTU0Mzk1OTkwZmE0NmM1N2I4OThlNGQ5ZmNjZjE2MWUwZTIzM2Y1OWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/finish/FinishOrderJobService.java#L24-L44",
+          "version": "repo-lines-v1:sha256:012e1d84e47fb4fb83bb1d948a325f3a48d97650743b282b9a786d8d1bb6fa81:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMzNzgxMzY2ZWMzOGI3ZjAxMTJlMGEyMDEzZjgyMzIxNWMwYjcwMzE3NzEzMzUxZWQzZWEyNDdjZWU3MjBiNTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVlYzQxYTEwNDk4MzZhZjBjOTNjNjAyYjJlNTU4MjU1YWZmZWEyYWE3NzE2ZjM1YzQ4MzkwYmNmNTlkNWNjYTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/orders/service/finish/FinishOrderJobServiceTest.java#L25-L62",
+          "version": "repo-lines-v1:sha256:d5736e6234906dba3d592b5f5fc5b2e83f3b3ef6985ece83d711668cb866c58a:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhOGZlMmEzZTdiNzYwZDI2ZGMwODRjODI5N2RjMTMzM2ZmMmJiY2JiNzJmZGY3YTM3NTRiYjViNjRhMDI2MGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVjMzc3Nzk0M2Y5NWI4N2E3NWNmMjkwZTEyMTYxMjNhNTkwNzJlYWM4NDUwYjg1ZGE5YTMzMjIzYzIyNmM5YmQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_0aa0a375613e4e8cbfc1f197d61503b5",
+      "statement": "ecshopx-promotions ships a family of four fire-and-forget merchant-notice DispatchHandlers (MerchantAuditSuccessNoticeJobHandler, MerchantAuditFailNoticeJobHandler, MerchantEnterSuccessNoticeJobHandler, MerchantResetPasswordNoticeJobHandler) that each send a scene-templated SMS via CompanySceneSmsSendPort and catch RuntimeException, logging only a warning with the mobile masked to its last four digits.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/dispatch/MerchantAuditFailNoticeJobHandler.java",
+          "version": "repo-file-v1:sha256:a21e9bbd9fec17157faa133dbc751393b2d7b6c53b2e73ac01984bdf0a2ce07c"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/dispatch/MerchantAuditSuccessNoticeJobHandler.java#L28-L67",
+          "version": "repo-lines-v1:sha256:abd08bd8e9aa51a2dcc55611df2560e2d17818a6c20337fc60b964ca051d847d:eyJzZWxlY3RlZExpbmVDb3VudCI6NDAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFhYjZmN2ZjZmRmYTMyNmFmZjgzNTNmYWFhYmUxYjMyMDYzMmYxNWEzZDMxYzMwZjQ5NTg5MWUwYzg0ZDc4ZWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcyY2Q2OWIyM2NmNzU4MDE3NjVjNDIyMDViN2VlNjgzMzIwOWI1OWMyMjhmNGU3NTNhMjU4OGUyNzA2N2RkMTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/dispatch/MerchantEnterSuccessNoticeJobHandler.java",
+          "version": "repo-file-v1:sha256:3a3f14e8fb8917a3bd1c23400eead2b8895d0e76a78de4eb81c53411ab6f953c"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/dispatch/MerchantResetPasswordNoticeJobHandler.java",
+          "version": "repo-file-v1:sha256:a114a6a16385e4ac96dc5e992acef917a3c32c42bd9c54e2f706e3c5e09d4428"
+        }
+      ]
+    },
+    {
+      "id": "claim_35137a2c1ad7494da5ea19c400e4122e",
+      "statement": "Bootstrap's FinishOrderJobDispatchFlowTest pins the finish-orders bus flow end to end: FINISH_ORDER_JOB dispatched ASYNC/REDIS to the slow queue with null delay and empty payload, and the consumer invokes FinishOrderJobService.execute with that payload.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/dispatch/FinishOrderJobDispatchFlowTest.java#L22-L72",
+          "version": "repo-lines-v1:sha256:51c93da08a95d3dfdd34b277f098ba509520bcb27e24b5907a9d460f6da9e255:eyJzZWxlY3RlZExpbmVDb3VudCI6NTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFkN2JjMjU5ZjE4YzViY2NkNTJmYTdmMWFiNjVlZjAwODYyODFiZWY2MDNiYmYzYWJlNmE3Y2Y4ZTBjMGYzZTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY4NWYzMGY4ZGZhMjA3OWRmZjAxZTZmZGRlNTdkZGYxNDYzODAyNzAyYWFjMzYzNmEzNzJkMzg3ZWJkOTdhN2MiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_e76178dcd2e64ac2b6cdfbeb6ce58241",
+      "statement": "BirthdayThisMonthReconcileServiceTest pins the birthday-tag reconcile contract: first-of-month gating (skips when not day 1), birth-month resolution preferring the explicit month field, and attach/detach of matching and mismatching members.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-members/src/test/java/cn/shopex/ecshopx/members/service/systemtag/BirthdayThisMonthReconcileServiceTest.java#L49-L108",
+          "version": "repo-lines-v1:sha256:cd8176b38eac57a055c68c78237e35d59a43b946f7ed4f721abb1ad4eacc5b2b:eyJzZWxlY3RlZExpbmVDb3VudCI6NjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ3NTViNTk1YWY1N2ZjZDE5YTE0ODkwMmJiM2I5YzdkZWFkZDljZDdmMzEzZDVlMWQ0NzM4M2M4MGJkYmEwYTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAyZWEwNzMwOGI2MDU3YTZhOTFiMmUzOTU3NzEzZDUyMGQ4ZGUxZTFlNzQzYzU0ZjQ2MDk3ZTg3NTI1NTM5ZDYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.7.3",
-    "at": "2026-11-04T17:09:55.577Z"
+    "by": "openwiki/0.9.0",
+    "at": "2026-11-06T17:22:02.968Z"
   }
 }

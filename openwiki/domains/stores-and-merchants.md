@@ -1,8 +1,8 @@
 ---
 type: domain-reference
 title: Stores, Distributors, Merchants, and Salespersons
-description: The store-side and B2B2C Bundles — companies/shops/operators and product models (ecshopx-companys), the POS store account subsystem with import/export and a DigiOS create hook, distributors as physical stores with create/update after-commit fan-out and DigiOS sync listeners (ecshopx-distribution), promoter QR codes and first-level brokerage (ecshopx-popularize), merchant onboarding with FrontMerchantAuth JWT (ecshopx-merchant), WeCom salesperson tasks and commissions (ecshopx-salesperson), plus ecshopx-selfservice, ecshopx-reservation, ecshopx-community group-buy chief write-off, and the supplier_order split out of normal orders (ecshopx-supplier).
-tags: [distributors, stores, companies, merchants, salesperson, popularize, community, supplier, dispatch-bus, payment-subject, distributor-items, onboarding, settlement, pos-store-account, digios]
+description: The store-side and B2B2C Bundles — companies/shops/operators, the POS store-account subsystem plus its POS terminal JWT auth plane (login, session invalidation, three-role permission matrix), distributors as physical stores with create/update after-commit fan-out and DigiOS sync listeners, promoter QR codes and first-level brokerage, merchant onboarding now on the mall-member @FrontAuth plane (ECX-10617), WeCom salesperson tasks and commissions, plus selfservice, reservation, community group-buy chief write-off, and the supplier_order split out of normal orders.
+tags: [distributors, stores, companies, merchants, salesperson, popularize, community, supplier, dispatch-bus, payment-subject, payment-subject-resolution, distributor-items, onboarding, settlement, pos-store-account, pos-auth, digios]
 sources:
   - id: openwiki-source-4460b2ae6ffdfa7f6511ddc1
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/CreateDistributorJobDispatchPublisherImpl.java
@@ -38,6 +38,8 @@ sources:
     resource: repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/dispatch/DistributorCreateEventSyncBusDispatchFlowTest.java
   - id: openwiki-source-8c9ccbc017d82a99f7343031
     resource: repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/dispatch/DistributorUpdateEventSyncBusDispatchFlowTest.java
+  - id: openwiki-source-ed7b288eb2787a6530e341f5
+    resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/auth/PosJwtRequestAttributes.java
   - id: openwiki-source-c0c2361e788fa42a7b16fbd2
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/CompanysDispatchEventNames.java
   - id: openwiki-source-ff3f271173ecc685e342fc54
@@ -50,6 +52,8 @@ sources:
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/MerchantDispatchJobNames.java
   - id: openwiki-source-8042ebe9fde9d02083a2cbd9
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/SalespersonDispatchJobNames.java
+  - id: openwiki-source-68b9a0e3c776f0fe8beabd26
+    resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/payment/PaymentSubjectDistributorIdPort.java
   - id: openwiki-source-e4c74586aedc9141bacf93b9
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/port/digios/PosStoreAccountDigiOsCreatePort.java
   - id: openwiki-source-9bceb1316bcda54f295cedd8
@@ -58,12 +62,18 @@ sources:
     resource: repo://ecshopx-community/src/main/java/cn/shopex/ecshopx/community/package-info.java
   - id: openwiki-source-be10fe503b04d52d483b5158
     resource: repo://ecshopx-community/src/main/java/cn/shopex/ecshopx/community/service/chief/CommunityChiefQrWriteoffService.java
+  - id: openwiki-source-4dd5e7bacc83353ba3f45b01
+    resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/api/admin/v1/EmployeeController.java
   - id: openwiki-source-9d44d60aa3db9b37155e8c0a
     resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/api/admin/v1/PosStoreAccountController.java
+  - id: openwiki-source-e8ae20ad9a0b9aab932192bb
+    resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/api/pos/v1/PosAuthController.java
   - id: openwiki-source-82792828c2a574492be2e644
     resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/domain/PosStoreAccount.java
   - id: openwiki-source-86bf8cc5e41d85dd55ca5179
     resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/package-info.java
+  - id: openwiki-source-020f4db52396938d9143adbd
+    resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/employee/EmployeeManagementListService.java
   - id: openwiki-source-0ced4eb2aefb8260715e3891
     resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/espier/PosStoreAccountEspierImportRowSink.java
   - id: openwiki-source-c6d26c34e8d6b81c0e515e09
@@ -84,6 +94,14 @@ sources:
     resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/posaccount/PosStoreAccountStatusService.java
   - id: openwiki-source-26499232cc5422538ecc24fc
     resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/posaccount/PosStoreAccountWriteService.java
+  - id: openwiki-source-80ae9d88e25e6269f15157ab
+    resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/posauth/PosAuthService.java
+  - id: openwiki-source-48f750a8142d8a7487ac4de7
+    resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/posauth/PosJwtSessionValidator.java
+  - id: openwiki-source-ff514886727d1893d8d90a82
+    resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/posauth/PosMeService.java
+  - id: openwiki-source-3412460cee966575a0bc8fea
+    resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/posauth/PosPermissionMatrix.java
   - id: openwiki-source-5f03676cc4237886d836c758
     resource: repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/dispatch/DistributorCreateDigiOsSyncDispatchListener.java
   - id: openwiki-source-5db0356764f92b4d36d49de8
@@ -94,6 +112,10 @@ sources:
     resource: repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/DispatchOptions.java
   - id: openwiki-source-260f163fd9cabc7c65a6abc5
     resource: repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/api/admin/v1/DistributorController.java
+  - id: openwiki-source-2c46dbdf9b100924e1f98150
+    resource: repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/domain/Distributor.java
+  - id: openwiki-source-d1961192a688961d2d90ccf4
+    resource: repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/integration/PaymentSubjectDistributorIdPortImpl.java
   - id: openwiki-source-813e655515e392fffe017eba
     resource: repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/openapi/thirdapi/v2/OpenapiThirdApiV2DistributorCreateService.java
   - id: openwiki-source-185d0c6ba3c09b54d8f8dd26
@@ -120,30 +142,54 @@ sources:
     resource: repo://ecshopx-distribution/src/test/java/cn/shopex/ecshopx/distribution/service/DistributorUpdateOrchestratorDistributionEditDispatchPublishProbeTest.java
   - id: openwiki-source-20bea0951bab22debabf05ca
     resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/dispatch/PosStoreAccountExportFileJobTypeHandler.java
+  - id: openwiki-source-a1f68480771cd92413f00be5
+    resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/PosJwtAuthenticationFilter.java
+  - id: openwiki-source-043701b554e6049237c22c70
+    resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/PosJwtBlacklistService.java
+  - id: openwiki-source-da7950ab19f4690ae361bd4b
+    resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/PosJwtIssuer.java
+  - id: openwiki-source-a7b2be30f60d866cf32e516a
+    resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/PosJwtPathWhitelist.java
   - id: openwiki-source-dec800e8f40f4157f34897b2
     resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/upload/EspierUploadHandlerBeans.java
   - id: openwiki-source-2ebfe908466d4b6d1e59c80c
     resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/upload/EspierUploadHeaderCatalog.java
   - id: openwiki-source-c47b0102b62dec8fc0d98f93
     resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/DistributorGoodsSyncService.java
+  - id: openwiki-source-209aaa4708096983e43434f6
+    resource: repo://ecshopx-merchant/src/main/java/cn/shopex/ecshopx/merchant/api/front/v1/MerchantController.java
   - id: openwiki-source-7e78af38c8a63b7842f49ac8
     resource: repo://ecshopx-merchant/src/main/java/cn/shopex/ecshopx/merchant/config/security/FrontMerchantAuthInterceptor.java
   - id: openwiki-source-5535fc73ece87960d8767e8e
     resource: repo://ecshopx-merchant/src/main/java/cn/shopex/ecshopx/merchant/config/security/MerchantWxappJwtAuthenticationFilter.java
+  - id: openwiki-source-61a399b9f21c30925846a901
+    resource: repo://ecshopx-merchant/src/main/java/cn/shopex/ecshopx/merchant/config/security/MerchantWxappPasswordResetSecurityConfig.java
   - id: openwiki-source-78fa646850248542c2669960
     resource: repo://ecshopx-merchant/src/main/java/cn/shopex/ecshopx/merchant/package-info.java
   - id: openwiki-source-46632ae4971ac6450ff04117
     resource: repo://ecshopx-merchant/src/main/java/cn/shopex/ecshopx/merchant/service/MerchantSettlementApplyAuditService.java
+  - id: openwiki-source-f75e34bf3e5a58eb133bcea5
+    resource: repo://ecshopx-merchant/src/main/java/cn/shopex/ecshopx/merchant/service/wxapp/MerchantSettlementApplyMemberResolveService.java
   - id: openwiki-source-465f76e0ed8d9fa273c2687e
     resource: repo://ecshopx-merchant/src/main/java/cn/shopex/ecshopx/merchant/service/wxapp/MerchantSettlementApplyProgressService.java
+  - id: openwiki-source-81a3a06d7a695cc10d7ab80e
+    resource: repo://ecshopx-merchant/src/main/java/cn/shopex/ecshopx/merchant/service/wxapp/MerchantWxappJwtIssuer.java
   - id: openwiki-source-169b78b34e418b695e3a3eb2
     resource: repo://ecshopx-merchant/src/main/java/cn/shopex/ecshopx/merchant/service/wxapp/MerchantWxappLoginService.java
+  - id: openwiki-source-5348dca7763e279119c0b66a
+    resource: repo://ecshopx-merchant/src/main/java/cn/shopex/ecshopx/merchant/service/wxapp/MerchantWxappSettlementApplySaveParamValidator.java
   - id: openwiki-source-6ffb4137d9207197034001d7
     resource: repo://ecshopx-merchant/src/main/java/cn/shopex/ecshopx/merchant/service/wxapp/MerchantWxappSettlementApplySaveService.java
   - id: openwiki-source-11c92ab35f4ce1f9788dbd95
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/front/wxapp/WxappNormalOrderCreateOrchestrator.java
+  - id: openwiki-source-7832b5e57d5d960a02d053c2
+    resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/payment/OrdersPaymentChannelQueryService.java
+  - id: openwiki-source-11504f9b8ac58d0bd088b826
+    resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/payment/OrdersPaymentDoPaymentService.java
   - id: openwiki-source-ab420cef928add1ab3268149
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/supplier/service/SupplierOrderSplitOnNormalOrderAddService.java
+  - id: openwiki-source-1dadfec169f4df087b2904a0
+    resource: repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/orders/service/payment/OrdersPaymentDoPaymentServicePaymentSubjectTest.java
   - id: openwiki-source-eac2d38af5c5bab525237449
     resource: repo://ecshopx-popularize/src/main/java/cn/shopex/ecshopx/popularize/package-info.java
   - id: openwiki-source-027ba59abcf47758829bb66e
@@ -172,10 +218,10 @@ sources:
     resource: repo://ecshopx-supplier/src/main/java/cn/shopex/ecshopx/supplier/package-info.java
   - id: openwiki-source-3619796531667b6781e35a09
     resource: repo://ecshopx-theme/src/main/java/cn/shopex/ecshopx/theme/dispatch/CreateDistributorJobHandler.java
-generated: { by: "openwiki/0.7.3", at: "2026-11-04T17:09:55.577Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-09T03:34:48.355Z" }
 verified:
-  - by: openwiki/0.7.3
-    at: 2026-11-04T17:09:55.577Z
+  - by: openwiki/0.9.0
+    at: 2026-11-09T03:34:48.355Z
 ---
 
 # Stores, Distributors, Merchants, and Salespersons
@@ -200,7 +246,7 @@ The store-side half of the goods contract also lives here conceptually: `distrib
 | `source_from` | `1` admin, `2` wxapp self-registered, `3` openapi — source-2 stores never become `is_default` |
 | `merchant_id` | owning merchant (商户) for multi-merchant malls |
 | `distribution_type` | `0` 自营 (self-operated), `1` 加盟 (franchise) |
-| `payment_subject` | `0` platform collects, `1` shop collects (HfPay ledger split) — see below |
+| `payment_subject` | `0` platform collects, `1` shop collects through its own per-shop payment config (HfPay ledger split); resolved for payment consumers via `PaymentSubjectDistributorIdPortImpl` — see below |
 | `is_open` + `rate` | HfPay split-payment switch and platform rate (basis points) |
 | `wdt_shop_no` / `wdt_shop_id` | WDT ERP shop binding (uniqueness-enforced per company) |
 | `jst_shop_id` | Jushuitan shop binding (uniqueness-enforced per company) |
@@ -240,7 +286,7 @@ A read-mostly surface for the member-facing store picker: `list`, `alllist`, `ge
 
 ### Merchant wxapp (`/api/v1/h5app/wxapp/merchant`)
 
-`MerchantController` (front): `POST /login`, `GET /basesetting` (`@FrontNoAuth`), `GET /settlementapply/step`, `POST /settlementapply/{step}` (progress resolver: none → 1, `settled_type` → 2, `merchant_name` → 3, `license_url` → 4/awaiting audit; only steps 1–3 persist — the save switch rejects anything else with `入驻信息填写步骤错误`), `GET /settlementapply/detail`, `GET /settlementapply/auditstatus`, `GET /type/list`, `POST /password/reset` — all under `@DingoResponse`, with `@FrontMerchantAuth` guarding everything except `login`/`basesetting`.
+`MerchantController` (front): `POST /login` (unauthenticated), `GET /basesetting` and `GET /type/list` (`@FrontNoAuth`), then the settlement surface — `GET /settlementapply/step`, `POST /settlementapply/{step}`, `GET /settlementapply/detail`, `GET /settlementapply/auditstatus`, `POST /password/reset` — all under `@DingoResponse`. Since ECX-10617 the settlement endpoints are guarded by `@FrontAuth` (the **mall-member** H5 JWT plane, not a merchant-specific token): the controller reads `company_id`/`user_id` from `H5FrontAuthAttributes.H5_AUTH_CLAIMS` and calls `MerchantSettlementApplyMemberResolveService.resolveAuth`, which finds or creates the apply row **by `user_id`** (first entry creates a draft: `audit_status=1`, `source=h5`, `disabled=true`, blank mobile, rejected when platform settlement is closed with `平台不支持商户入驻`). The progress resolver (`MerchantSettlementApplyProgressService`) is now a 4-state machine off `disabled`/`license_url`/step-1 completeness: `disabled=false` → 4 (submitted/awaiting audit, agreeing the agreement as a side effect), `license_url` set → 3, step 1 complete (`settled_type` + non-empty `main_category_selection` JSON) → 2, else 1. The save service (`MerchantWxappSettlementApplySaveService`) rejects any step ahead of the resolver (`入驻信息填写步骤错误`) and its validator accepts only steps 1–3 — see the merchant lifecycle section below.
 
 ### Salesperson WeCom wxapp
 
@@ -329,7 +375,17 @@ Pinned by `DistributorUpdateOrchestratorDistributionEditDispatchPublishProbeTest
 
 `PUT /distributor/{id}/payment-subject` parses `payment_subject` through a **sealed interface** `PaymentSubjectParse` with three outcomes: `Valid(0|1)`, `Invalid` (returns Dingo-style `payment_subject参数错误，只能为0（平台）或1（店铺）` with status 422), and `SqlBug` — the case where a legacy PHP/MySQL write would have failed with `SQLSTATE[HY000]: General error: 1366 Incorrect integer value: '' for column 'payment_subject'`, which the Java port deliberately reproduces (HTTP 200 with Dingo `message`/`status_code` 500 in the body, matching the old client contract).
 
-The service behind it, `DistributorPaymentSubjectService.setPaymentSubject`, refuses to switch while the store has unfinished refunds (`有未完成的退款单，不允许切换收款主体`), and switching **to** shop-subject (`1`) requires at least one open payment channel (WeChat Pay or Alipay) *and* complete per-shop channel configuration for each open channel; switching to platform (`0`) instead validates the platform (distributor 0) channel config. The `PaymentSubjectDistributorIdPortImpl` in this bundle exposes the current subject to the payment and orders bundles through a common port.
+The service behind it, `DistributorPaymentSubjectService.setPaymentSubject`, refuses to switch while the store has unfinished refunds (`有未完成的退款单，不允许切换收款主体`), and switching **to** shop-subject (`1`) requires at least one open payment channel (WeChat Pay or Alipay) *and* complete per-shop channel configuration for each open channel; switching to platform (`0`) instead validates the platform (distributor 0) channel config.
+
+### The `payment_subject` flag and the resolution port
+
+`payment_subject` (`smallint`, default `0`, comment `收款主体，0=平台，1=店铺`) on the `distribution_distributor` row is the switch for **distributor-level payment settlement**: `0` means the store settles through the platform's merchant accounts, `1` means the store collects through its **own** per-shop payment configuration. The write side above guards the flag; the read side is the common-bundle port `PaymentSubjectDistributorIdPort` (`ecshopx-common/payment`, one method `long resolveActualDistributorId(long companyId, long distributorId)`), implemented in this bundle by `PaymentSubjectDistributorIdPortImpl`. The implementation is deliberately flag-only:
+
+* `distributorId == 0` short-circuits to `0` — no row lookup at all.
+* Otherwise it runs a `LIMIT 1` lookup on `DistributorMapper` scoped by `(company_id, distributor_id)`; a **missing row returns `0`**, so a stale or deleted store id can never resurrect shop-level settlement.
+* Only when the row exists **and** `paymentSubject == 1` (null-safe comparison) does it return the distributor id unchanged; every other flag value collapses to `0`.
+
+Every consumer therefore sees either the platform bucket (`0`) or the one self-settling store id — the resolved id selects which payment-setting bucket, config validation, and gateway credentials a trade settles through, and the orders/payment bundles depend only on the common port, never on the distribution bundle. This page owns the data-model and write-guard perspective; the consumption flow (do-payment, channel query, refunds, front channel list) belongs to [Order Payment Flow](../workflows/order-payment-flow.md) and [Payments Domain](payments.md), and the orders-side contract is pinned by `OrdersPaymentDoPaymentServicePaymentSubjectTest`.
 
 ## POS store accounts (ecshopx-companys)
 
@@ -351,8 +407,7 @@ There is no operator-chosen password. `PosStoreAccountPasswordGenerator` builds 
 
 ### Create: DigiOS pre-sync, insert, after-commit event
 
-<!-- openwiki: mermaid parse failed and this diagram was converted to a text fence so it does not break rendering. Fix the diagram source and restore the mermaid fence. Parser error: Parse error on line 13: ...adRequest on failure W->>DB: insert Expecting '()', 'SOLID_OPEN_ARROW', 'DOTTED_OPEN_ARROW', 'SOLID_ARROW', 'SOLID_ARROW_TOP', 'SOLID_ARROW_BOTTOM', 'STICK_ARROW_TOP', 'STICK_ARROW_BOTTOM', 'SOLID_ARROW_TOP_DOTTED', 'SOLID_ARROW_BOTTOM_DOTTED', 'STICK_ARROW_TOP_DOTTED', 'STICK_ARROW_BOTTOM_DOTTED', 'SOLID_ARROW_TOP_REVERSE', 'SOLID_ARROW_BOTTOM_REVERSE', 'STICK_ARROW_TOP -->
-```text
+```mermaid
 sequenceDiagram
     participant OP as operator
     participant C as PosStoreAccountController
@@ -364,13 +419,16 @@ sequenceDiagram
     OP->>C: POST /api/v1/store/pos-accounts
     C->>W: create(jwt, body)
     W->>W: scope + rules + employee_no uniqueness
-    W->>DG: ensureSyncedOnCreate(companyId, employeeNo, ...)
-    DG-->>W: no-op when DigiOS disabled; BadRequest on failure
+    W->>DG: ensureSyncedOnCreate(companyId, employeeNo, name, mobile, email)
+    DG-->>W: no-op when DigiOS disabled
+    DG-->>W: BadRequest on failure
     W->>DB: insert row with encrypted generated password
     Note over W,BUS: afterCommit
-    W->>BUS: event:companys:pos_store_account_create (SYNC)
+    W->>BUS: event companys pos_store_account_create (SYNC)
     C-->>OP: public row + plaintext password
 ```
+
+Caption: POS store-account creation — the DigiOS upsert gate runs before the local insert, and the create event is only published after commit.
 
 `PosStoreAccountWriteService.create` runs the common-port hook **`PosStoreAccountDigiOsCreatePort.ensureSyncedOnCreate` before the local insert**: when the company's DigiOS integration is enabled, the `@Primary` implementation in `ecshopx-digios` upserts the account over the gateway (`account.upsert`, mobile mandatory) and any failure aborts the local create with `DigiOS同步失败：…`; when disabled (or running without the digios bundle) the `PosStoreAccountDigiOsCreatePortNoOp` default makes it a pass-through. The import path applies the same gate to both inserts and updates. After a successful insert, `event:companys:pos_store_account_create` (`{id, company_id, employee_no}`) is published **after commit** — immediately when no transaction synchronization is active — through `PosStoreAccountCreateEventDispatchPublisherImpl` in bootstrap. (`CompanysDispatchEventNames` reserves `listener:digios.account_sync_on_pos_store_account_create` for this event.)
 
@@ -381,24 +439,38 @@ sequenceDiagram
 
 `PosStoreAccountQueryService.mapOrderInfoByIds` is the cross-bundle read: order list/detail code batches in POS handler info (`id`, `employee_no`, `name`, `mobile`, `role`, `distributor_id`, `status` — never the password) as the order-side `pos_store_account_info` object.
 
+### POS terminal auth: login, JWT session, permission matrix (ECX-10532)
+
+The POS store accounts above double as the **login identities of the POS terminal** through a dedicated auth plane, distinct from the operator JWT and member sessions:
+
+* **Login.** `POST /api/v1/pos/auth/login` (`PosAuthController` → `PosAuthService.login`, no auth annotation — the filter whitelists it) takes `employee_no` + `password`, loads the account by globally-unique `employee_no` (multiple rows → `账号数据异常，请联系管理员`), decrypts `password_cipher` via `SensitiveFieldEncryptor.decryptAlways` for a **plaintext comparison** (any failure path throws the same `账号或密码错误`), then enforces account status (`disabled` → `账号已禁用`, `resigned` → `账号已离职`) and the shop's `is_valid` — `true/false/1/0` log in, `closed` → `门店已闭店，无法登录`, `delete` → `门店已撤店，无法登录`. On success it returns the token plus the account snapshot.
+* **The JWT.** `PosJwtIssuer` (in `ecshopx-espier`, behind the common `PosJwtIssuerPort`) signs an **HS512** compact token keyed from `JWT_SECRET` (Base64-decoded when possible, UTF-8 bytes otherwise) with `sub = pos_store_account id`, `iss = POS_JWT_ISSUER` (default `ecshopx-pos`), `jti`/`iat`/`nbf`/`exp` (`JWT_TTL` minutes, default 120), and claims `token_kind=pos` (so POS and operator tokens are **not interchangeable**), `id`/`pos_store_account_id`, `employee_no`, `employee_id` (same value as `employee_no`, doubling as the DigiOS `acc`), `name`, `role`, `company_id`, `distributor_id`, `status`.
+* **The guard.** `PosJwtAuthenticationFilter` (espier, `@Order(HIGHEST_PRECEDENCE + 40)`) engages only when the Bearer token *looks like* a POS token (`token_kind=pos` or the POS issuer) — anything else falls through to the operator/member planes. It then enforces **`PosJwtPathWhitelist`**: exact auth paths plus prefix families (`/api/v1/order*`, `/api/v1/aftersales*`, `/api/v1/checkout*`, `/api/v1/operator/cart*`, `/api/v1/writeoff/*`, …) and a set of exact GETs (goods list/onsale, `/api/v1/distributors`, member search/tags, logistics, `/api/v1/account/management*` read-only, coupons, address tree), an exact POST `/api/v1/delivery`, and POST `/api/v1/qr_writeoff`; `/api/v1/store/pos-accounts*` is **explicitly denied** (POS sessions can never administer accounts). After the whitelist it checks the **Redis blacklist** (`PosJwtBlacklistService`, key `pos_jwt_invalidate:{sha256(token)}` in the prism Redis with TTL = remaining token lifetime — this is what `POST /api/v1/pos/auth/logout` writes via `PosJwtIssuer.invalidate`), verifies exp, and runs the **live session validator**.
+* **Session invalidation (G-L9).** `PosJwtSessionValidator.assertSessionStillValid` reloads the `pos_store_account` row and 401s (`登录验证错误`) unless the row exists, is `enabled`, and the token's `status`, `distributor_id`, and `role` still match — so **disable, resign, shop transfer, or role change kills outstanding tokens immediately** without waiting for expiry.
+* **Permissions.** `GET /api/v1/pos/auth/me` (`PosMeService`) reloads the account (must still be `enabled`) and returns the profile plus `shop_code`/`shop_name` and the fixed three-role matrix from `PosPermissionMatrix` (ECX-10173): eight codes (`cashier`, `refund`, `day_close`, `shift_handover`, `member_query`, `stock_check`, `report`, `store_setting`); `store_manager` gets all, `supervisor` gets all but `store_setting`, `clerk` only `cashier`/`shift_handover`/`member_query`, and the document policy is `view=store_all` with `operate=store_all` vs `own_only` for clerks. The orders bundle enforces the write side through `PosOrderDocAccessGuard` (POS sessions write only their own store's documents, clerks only their own) and `PosOrderBinder` (stamps `pos_store_account_id` as the order handler; `DualJwtSupport.requireActingOperatorId` resolves the acting id for cart/checkout from POS or operator JWT, POS preferred).
+
+### Employee management list honors shop_name (ECX-10728)
+
+`GET /api/v1/account/management` (`EmployeeController.getListData` → `EmployeeManagementListService.getListData`) — the employee-account list, readable by operator **and POS** JWTs (`DualJwtSupport`, with `pos_store_account_id` filling the `operator_id` slot for cashier read-only use) — now accepts **`shop_name`** in addition to `shop_code`: `applyShopNameFilter` resolves matching `distribution_distributor` ids by name (`listDistributorIdsByCompanyAndNameLike`) and intersects them with any already-scoped `distributor_ids`; no match (or an intersection with the earlier `shop_code` scope that is empty) forces `operator_ids=[-1]`, i.e. an empty result page rather than an unfiltered leak.
+
 ## Merchants: apply → audit → account
 
 ```mermaid
 sequenceDiagram
-    participant M as merchant wxapp user
+    participant M as mall member wxapp user
     participant MC as MerchantController front
-    participant L as MerchantWxappLoginService
-    participant F as Jwt filter plus interceptor
+    participant R as MerchantSettlementApplyMemberResolveService
+    participant F as FrontAuth member JWT plane
     participant A as admin audit endpoint
     participant AS as MerchantSettlementApplyAuditService
     participant MO as Merchant row plus main operator
     participant J as notice jobs
 
-    M->>MC: POST merchant login with mobile and vcode and company_id
-    MC->>L: find or create settlement apply
-    L-->>M: HS256 JWT sub merchantaccount_id
+    M->>MC: GET settlementapply step (mall member JWT)
+    MC->>R: resolveAuth(company_id, user_id)
+    R-->>M: find or create apply row by user_id
     M->>MC: POST settlementapply steps 1 to 3
-    F->>F: verify signature issuer exp nbf, reload apply row
+    F->>F: member JWT verified, apply row reloaded per request
     A->>AS: POST merchant settlement apply audit
     AS->>AS: only audit_status 1 rows
     alt audit passes
@@ -409,11 +481,12 @@ sequenceDiagram
     end
 ```
 
-Caption: the merchant settlement lifecycle — wxapp self-service apply under a dedicated JWT plane, then a single admin audit that materializes the merchant and its main operator.
+Caption: the merchant settlement lifecycle — self-service apply now rides the mall-member `@FrontAuth` plane (ECX-10617), then a single admin audit materializes the merchant and its main operator.
 
-* **Apply.** `merchant_settlement_apply` rows carry `audit_status` `1` (pending) / `2` (passed) / `3` (refused) and `source` admin/h5. Login with mobile + SMS vcode + `company_id` finds or creates the apply row and issues an HS256 JWT (`MerchantWxappJwtIssuer`, subject `merchantaccount_{id}`, claims `account_id`/`company_id`/`mobile`, `operator_type=user`, iss/nbf/exp from `MerchantWxappJwtProperties`).
-* **The JWT plane.** Two parallel guards authenticate `@FrontMerchantAuth` endpoints: the servlet-level `MerchantWxappJwtAuthenticationFilter` (covers `POST settlementapply/**`, `POST password/reset`, and four specific GETs: step/detail/auditstatus/type-list) and the MVC `FrontMerchantAuthInterceptor` (annotation-driven, same verification logic). Both verify the HS256 signature, issuer, and exp/nbf claims (with `leewaySeconds`) and then **reload the `merchant_settlement_apply` row** so a deleted apply invalidates an unexpired token; a *refused* apply stays authenticated on purpose — step 3 re-submission resets `audit_status` from refused back to pending. This is a *separate* auth plane from both the operator JWT (admin) and the member session (wxapp), which is why merchant onboarding can happen before any operator exists.
-* **Audit.** Only `audit_status=1` rows are auditable. Success materializes the `merchant` row (mirroring apply fields + `settlement_apply_id`), its multi-language shards, and the **main operator** — provisioned through `CompanysMerchantMainOperatorProvisioner` in `ecshopx-companys` (operator_type `merchant`, `is_merchant_main`, encrypted mobile, bcrypt 6-digit password or none) — then enqueues `job:1 AuditSuccessNotice`. Failure enqueues `job:2`. Jobs 3/4 cover enter-success and password-reset notices.
+* **Apply.** `merchant_settlement_apply` rows carry `audit_status` `1` (pending) / `2` (passed) / `3` (refused) and `source` admin/h5. The current entry is member-driven: any `@FrontAuth` settlement endpoint resolves the apply **by `user_id`** via `MerchantSettlementApplyMemberResolveService` (see the entrypoint section above). The legacy `MerchantWxappLoginService.loginWxapp` (mobile + SMS vcode + `company_id`) still exists and still finds-or-creates the apply row **by `(company_id, mobile)`** (new row: `audit_status=1`, `source=h5`, `disabled=true`), then issues a dedicated HS256 JWT via `MerchantWxappJwtIssuer` (subject `merchantaccount_{id}`, claims `account_id`/`company_id`/`mobile`, `operator_type=user`, iss/nbf/exp from `MerchantWxappJwtProperties`).
+* **Save / progress semantics.** `MerchantWxappSettlementApplySaveService.save` refuses edits once `audit_status=2` (`入驻申请已经审核通过，不能再修改`), refuses when platform settlement is closed (`该平台现不支持商户入驻，请核实后再试`), and rejects a step ahead of the resolver's current step. Step 1 persists `settled_type` (validated against the platform's allowed list) + the normalized `main_category_selection` JSON; step 2 persists merchant identity/address/bank fields with **PII encrypted** (`legal_cert_id`, `card_id_mask`, `bank_mobile` via `SensitiveFieldEncryptor`), a social-credit-code/contact-mobile duplicate check, and an operator-login-mobile occupancy check; step 3 is the final submit (`submit=true` required) — it sets `disabled=false`, and if the apply was **refused** (`audit_status=3`) it resets `audit_status` back to `1` (pending). While an apply is still pending, re-saving steps 1/2 re-marks it `disabled=true` (draft again).
+* **The legacy merchant JWT plane.** The `MerchantWxappJwtAuthenticationFilter` (servlet) now **skips** all settlement endpoints — its `shouldNotFilter` (annotated ECX-10617) returns true for `settlementapply/**` and `password/reset` because those moved to the mall-member `@FrontAuth` plane; it only still guards `GET /api/v1/h5app/wxapp/merchant/type/list`. The annotation-driven `FrontMerchantAuthInterceptor` (registered on `/api/**`) still verifies the dedicated HS256 merchant JWT for any endpoint annotated `@FrontMerchantAuth`: HS256 signature, issuer, exp/nbf with `leewaySeconds`, then a **reload of the `merchant_settlement_apply` row** (deleted row invalidates an unexpired token). The `MerchantWxappPasswordResetSecurityConfig` is now a deprecated empty shell — the dedicated SecurityFilterChain is gone.
+* **Audit.** Only `audit_status=1` rows are auditable. Success (`audit_status=2`) materializes the `merchant` row (mirroring apply fields + `settlement_apply_id`, `audit_goods`, `settled_succ_sendsms="1"`, `disabled=false`), its multi-language shards (via `MerchantOutsideLangWriteService`), and the **main operator** — provisioned through `CompanysMerchantMainOperatorProvisioner` in `ecshopx-companys` (operator_type `merchant`, `is_merchant_main`, encrypted mobile, bcrypt 6-digit password or none) — then enqueues `job:1 AuditSuccessNotice`. Failure (`audit_status=3`) enqueues `job:2 AuditFailNotice`. The apply row is then updated with the outcome, the `audit_goods` flag, an optional `audit_memo`, and `updated`. Jobs 3/4 cover enter-success and password-reset notices.
 
 ## Salespersons: WeCom session auth and task lifecycle
 
@@ -561,11 +634,14 @@ Caption: the store-side tables — the distributor as the join point between com
 * **Company scoping everywhere.** Every distributor/merchant/promoter/salesperson query is `company_id`-bounded; duplicate-name checks and ERP bindings are per company.
 * **Soft delete only.** `is_valid` flips to `"delete"`; update wrappers always add `.ne(is_valid, "delete")`.
 * **Money is fen** (`brokerage_fee`, supplier order sums, `rate` in basis points); the payment-subject legacy 1366 error must be preserved byte-for-byte.
+* **`payment_subject` resolution is fail-safe toward the platform.** `PaymentSubjectDistributorIdPortImpl` returns the distributor id only when the persisted row exists and its flag is exactly `1`; a zero id, a missing row, or any other flag value resolves to `0` (platform settlement), so no consumer ever points a trade at a per-shop payment config the store does not actually own.
 * **Singletons and defaults.** One `distributor_self` per company; at most the first non-wxapp store is auto-default; update re-defaults when none exists.
 * **Audit-disable cascade.** `is_audit_goods` true→false must auto-approve pending shop items, or they become invisible to buyers.
 * **Resign is one-way.** A `resigned` POS store account can never return to enabled/disabled, and resigned accounts reject role change, shop transfer, and password reset; `employee_no` is globally unique (case-insensitive), so reusing a resigned employee number means importing onto the same row.
 * **DigiOS gates creation, never silently diverges.** When a company's DigiOS config is enabled, POS account create/import fails closed on `account.upsert` errors (the local row is not written); when disabled the port is a no-op. Distributor profile sync is instead listener-driven off event:263/264 and skips silently when disabled.
 * **POS plaintext passwords are transient.** They exist only in the create/reset responses and the super-admin-only CSV export; at rest they are `SensitiveFieldEncryptor` ciphertext.
+* **POS tokens are revocable and scoped.** Logout blacklists the token in prism Redis (`pos_jwt_invalidate:{sha256}`, TTL = remaining lifetime); `PosJwtSessionValidator` reloads the account per request so disable/resign/transfer/role-change 401 immediately; and `PosJwtPathWhitelist` caps POS tokens to the cashier/order surface — `/api/v1/store/pos-accounts*` is explicitly denied even to a valid POS session.
+* **Merchant settlement is member-scoped.** Since ECX-10617 the wxapp settlement surface resolves the apply by mall-member `user_id`, and an apply with `audit_status=2` (passed) is immutable; a refused (`3`) apply is re-opened only by a step-3 re-submit (`disabled=false`, `audit_status` back to `1`).
 * **Idempotent brokerage and supplier split.** Both are guarded by existence checks on (company, order[, supplier]) so listener retries cannot double-count.
 * **Salesperson identity comes from the DB, not the session.** Redis supplies the session, the DB row is authoritative for `salesperson_id` and distributor binding; a type mismatch between the two is a hard reject.
 * **Chief write-off ownership.** Only the chief who opened the group can write off, and only before completion/cancel-pending states — the delegation to `orderZitiWriteoffForChief` keeps order-state transitions in one place.
@@ -575,7 +651,7 @@ Caption: the store-side tables — the distributor as the join point between com
 * **React to store lifecycle** — register a listener in a bootstrap `*RegistrationConfig` against `event:263`/`264`/`281`/`289`/`282`/`290`; distribution services need no change ([Cross-Bundle Communication](../architecture/cross-bundle-communication.md)).
 * **New store-side setting** — extend the `Distributor` entity, add the column to `DistributorUpdateService.COLUMN_KEYS` with its setter case, and mirror any coercion in the two param normalizers; gate/validator layers stay untouched.
 * **New per-shop goods behavior** — extend `distributor_items` consumers; the sync itself stays in the goods bundle (`DistributorGoodsSyncService`, `job:62`).
-* **New merchant onboarding step** — add to `MerchantWxappSettlementApplySaveService` and the `MerchantSettlementApplyProgressService` resolver; the JWT plane (issuer + filter + interceptor) needs no change.
+* **New merchant onboarding step** — add to `MerchantWxappSettlementApplySaveService` and the `MerchantSettlementApplyProgressService` resolver; since ECX-10617 the settlement endpoints ride the shared `@FrontAuth` member plane, so no merchant-specific JWT change is needed.
 * **New guide task type** — task types are data-driven in the task tables; job:45/46/138 planes are unchanged.
 * **New local-delivery courier** — the Dada/Shansong clients behind `LocalDeliveryShopCreateClient` are the pattern.
 * **React to POS account creation** — register a listener against `event:companys:pos_store_account_create`; to block creation on an external precondition instead, provide another `PosStoreAccountDigiOsCreatePort` (the digios `@Primary` bean is the template).
@@ -590,20 +666,23 @@ The dispatch-flow tests are the executable spec for the ordering claims above:
 * `DistributionAddEventMarketingCenterAndYoushuFanOutDispatchFlowTest`, `DistributionAddHfpayEnterapplyEvent289AsyncBusDispatchFlowTest`, `DistributionAddEventDispatchPublisherImplDualPublishFacadeProbeTest` — the dual 281/289 publish and its fan-out.
 * `DistributorUpdateEventSyncBusDispatchFlowTest`, `DistributorCreateEventSyncBusDispatchFlowTest`, `DistributionEditEventMarketingCenterAndYoushuFanOutDispatchFlowTest`, `DistributionEditHfpayEnterapplyEvent290AsyncBusDispatchFlowTest` — update-plane ordering and event:263/264 SYNC semantics.
 * `CreateDistributorJobDispatchFlowTest` — job:63 slow-queue envelope and `PagesTemplateNewDistributorFacade` delegation.
+* `OrdersPaymentDoPaymentServicePaymentSubjectTest` (ecshopx-orders) — the payment flow calls `PaymentSubjectDistributorIdPort` once per do-payment and uses the resolved id (0 for platform, the store id only for `payment_subject=1`) for payment-config validation; the resolution rules themselves live in this bundle's `PaymentSubjectDistributorIdPortImpl`.
 * `MerchantAuditSuccessNoticeJobDispatchFlowTest`, `MerchantAuditFailNoticeJobDispatchFlowTest`, `MerchantEnterSuccessNoticeJobDispatchFlowTest`, `MerchantResetPasswordNoticeJobDispatchFlowTest` — the four merchant notice jobs (jobs 1–4) and their publishers.
 * `SalespersonTaskJobDispatchFlowTest`, `SalespersonRelationshipContinuityJobDispatchFlowTest`, `SalespersonItemsShelvesJobDispatchFlowTest` — jobs 45/46/138 wiring. (The `WxappSalespersonSessionAuthService` auth cross-check itself has no dedicated test; its contract is pinned by the interceptor's usage.)
 * `NormalOrderAddEventAsyncFanOutSupplierAndYoushuDispatchFlowTest`, `NormalOrderAddOrderAddPushMarketingCenterDispatchFlowTest`, `OrdersSupplierOrderSplitOnNormalOrderAddDispatchListenerDispatchConsumerRuntimeTest` — supplier split listener plane and fan-out order.
 * `TradeFinishCountBrokerage*DispatchFlowTests`, `TradeFinishCountBrokerageUpgradePromoterGradeEnqueueTest` — idempotent first-level brokerage and grade-upgrade enqueue.
 * `DistributorGoodsSyncServiceAddDistributorItemsDispatchTest`, `ItemsUpdateOrchestratorDistributorSyncTest` — the goods→store catalog contract (in [Goods Domain](goods.md)).
 * `PosStoreAccountWriteServiceTest`, `PosStoreAccountImportServiceTest`, `PosStoreAccountStatusServiceTest`, `PosStoreAccountPasswordServiceTest`, `PosStoreAccountPasswordGeneratorTest`, `PosStoreAccountRulesTest`, `PosStoreAccountQueryServiceTest`, `PosStoreAccountExportServiceTest` (ecshopx-companys) — the POS account scope, rules, resign-one-way lifecycle, password generation/encryption, DigiOS fail-closed gate, and CSV row shape; `PosStoreAccountDigiOsCreatePortImplTest` (ecshopx-digios) pins the gateway upsert/error mapping.
+* POS auth plane: `PosAuthServiceTest`, `PosJwtSessionValidatorTest`, `PosMeServiceTest`, `PosPermissionMatrixTest` (ecshopx-companys) — login status/shop gates, live-session invalidation, the `/me` profile + matrix; `PosJwtIssuerTest`, `PosJwtPathWhitelistTest`, `DualJwtSupportTest` (ecshopx-espier/common) — token shape/HS512, the path whitelist, and POS-vs-operator claim resolution; `PosOrderBinderTest` (ecshopx-orders) pins the order handler stamping.
 
 ## Related pages
 
 * [Goods Domain](goods.md) — the other half of `distributor_items`: auto-sync fan-out, `job:62`, price/store overrides.
 * [Orders Domain](orders.md) — normal order create (which calls the supplier split), ziti write-off, cancel/restore.
+* [Payments Domain](payments.md) and [Order Payment Flow](../workflows/order-payment-flow.md) — the consumer side of `PaymentSubjectDistributorIdPort`: which payment-setting bucket and gateway credentials a trade settles through.
 * [Marketing Domain](marketing.md) — distributor scoping of coupon issue and activity goods; salesperson shelves jobs 138–149.
 * [Dispatch Bus](../concepts/dispatch-bus.md) — the SYNC/ASYNC, queue, and fan-out semantics under every event and job here.
 * [Cross-Bundle Communication](../architecture/cross-bundle-communication.md) — the publisher-in-common / listener-in-bootstrap split all these flows follow.
-* [Request Lifecycle](../architecture/request-lifecycle.md) — the operator-JWT vs wxapp-session vs FrontMerchantAuth planes.
+* [Request Lifecycle](../architecture/request-lifecycle.md) — the operator-JWT vs wxapp-session vs POS JWT planes, plus the mall-member `@FrontAuth` plane merchant settlement now rides.
 * [Redis Databases](../concepts/redis-databases.md) — the wechat/shared Redis split behind `frontSession3rd:` sessions and ziti QR codes.
 * [Third-Party Integrations](../integrations/third-party.md) — the receiving side of the DigiOS flows referenced here (distributor profile/warehouse sync on event:263/264, `account.upsert` for POS accounts and staff operators), alongside OME, Shuyun, WDT, and Jushuitan.

@@ -1,8 +1,8 @@
 ---
 type: "Reference"
 title: "Redis Database Layout"
-description: "How ECShopX-Java splits one Redis instance into logical databases via hand-built LettuceConnectionFactory beans in MultiRedisConfig, which @Qualifier template holds sessions, carts, captcha/SMS codes, pickup QR codes, goods-arrival subscriptions, operator fast-buy state, tenant settings, counters, snapshots and locks, and the per-environment DB-index selectors."
-tags: [redis, lettuce, configuration, infrastructure]
+description: "How ECShopX-Java splits one Redis instance into logical databases via hand-built LettuceConnectionFactory beans in MultiRedisConfig, which @Qualifier template holds sessions, carts, captcha/SMS/email verification codes, rate-limit counters, pickup QR codes, goods-arrival subscriptions, operator fast-buy state, tenant settings, counters, snapshots and locks, and the per-environment DB-index selectors."
+tags: [redis, lettuce, configuration, infrastructure, rate-limiting]
 sources:
   - id: openwiki-source-ea70eb6c045047448e446296
     resource: repo://.gitignore
@@ -24,6 +24,8 @@ sources:
     resource: repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/config/MultiRedisConfigLettuceFactoryTest.java
   - id: openwiki-source-3c24e841f1f38b4ce2719eab
     resource: repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/deposit/service/DepositTradeConsumeServiceTest.java
+  - id: openwiki-source-5ca885ed4fd631f49af8a1bb
+    resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/exception/GlobalExceptionHandler.java
   - id: openwiki-source-3fe260ad41b93a3fc9fce4f7
     resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/activation/CompanysActivationService.java
   - id: openwiki-source-fb11e56e003a1604d7d9ab7a
@@ -64,6 +66,28 @@ sources:
     resource: repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/service/DistributionConfigSetService.java
   - id: openwiki-source-fd55eff7bff7c983ee9cb64d
     resource: repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/service/OrderValidityPlatformSettingReadService.java
+  - id: openwiki-source-4d0a40d0dc591329dda52269
+    resource: repo://ecshopx-employee-purchase/src/main/java/cn/shopex/ecshopx/employeepurchase/service/EmployeeCheckService.java
+  - id: openwiki-source-f0a6e3e0d7924e38a56ccdf3
+    resource: repo://ecshopx-employee-purchase/src/main/java/cn/shopex/ecshopx/employeepurchase/service/EmployeeEmailVcodeSendService.java
+  - id: openwiki-source-95ca2c1f3bca2781bfd50251
+    resource: repo://ecshopx-employee-purchase/src/main/java/cn/shopex/ecshopx/employeepurchase/service/EmployeePurchaseEmailVcodeRedisService.java
+  - id: openwiki-source-0364fc040aa68c73f52c5e07
+    resource: repo://ecshopx-employee-purchase/src/main/java/cn/shopex/ecshopx/employeepurchase/service/EmployeePurchaseFastBuyRedisService.java
+  - id: openwiki-source-3614afa13c14cf3f968b2481
+    resource: repo://ecshopx-employee-purchase/src/main/java/cn/shopex/ecshopx/employeepurchase/service/EmployeePurchaseInviteRedisService.java
+  - id: openwiki-source-260cdcaec3b50ad844788e49
+    resource: repo://ecshopx-employee-purchase/src/main/java/cn/shopex/ecshopx/employeepurchase/service/passphrase/PassphraseBehaviorRateLimitService.java
+  - id: openwiki-source-11b76db20b7d8f82c0883ded
+    resource: repo://ecshopx-employee-purchase/src/main/java/cn/shopex/ecshopx/employeepurchase/service/passphrase/PassphraseBehaviorReportService.java
+  - id: openwiki-source-c2729e93ea3152c526088aba
+    resource: repo://ecshopx-employee-purchase/src/main/java/cn/shopex/ecshopx/employeepurchase/service/passphrase/PassphraseParticipateQuotaRedisService.java
+  - id: openwiki-source-8247edb1b05f19e649b32b1f
+    resource: repo://ecshopx-employee-purchase/src/main/java/cn/shopex/ecshopx/employeepurchase/service/passphrase/PassphraseVerifiedRedisService.java
+  - id: openwiki-source-28052dbbadd8918d0495bd20
+    resource: repo://ecshopx-employee-purchase/src/test/java/cn/shopex/ecshopx/employeepurchase/service/EmployeePurchaseEmailVcodeRedisServiceRateLimitTest.java
+  - id: openwiki-source-7642f736070a1c1a43185355
+    resource: repo://ecshopx-employee-purchase/src/test/java/cn/shopex/ecshopx/employeepurchase/service/passphrase/PassphraseBehaviorRateLimitServiceTest.java
   - id: openwiki-source-fde2d214766049b8bb873842
     resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/H5JwtBlacklistService.java
   - id: openwiki-source-ce05afe5361cff08cf36de3d
@@ -110,10 +134,10 @@ sources:
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/settings/WxpayPaymentSettingWriter.java
   - id: openwiki-source-8d94eb289e06a9eb2bcb9a68
     resource: repo://ecshopx-third-party/src/main/java/cn/shopex/ecshopx/thirdparty/service/prism/ShopexPrismSmsSignClient.java
-generated: { by: "openwiki/0.9.0", at: "2026-11-05T17:10:02.238Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-06T17:22:02.968Z" }
 verified:
   - by: openwiki/0.9.0
-    at: 2026-11-05T17:10:02.238Z
+    at: 2026-11-06T17:22:02.968Z
 ---
 
 # Redis Database Layout
@@ -155,7 +179,7 @@ Because user-defined `@Bean` methods are registered before auto-configuration co
 |---|---|---|---|---|
 | `companysRedisTemplate` (**`@Primary`**) | `companysRedisConnectionFactory` | `ecshopx.redis.companys.database` | 0 | Company/shop settings, payment-channel settings, `LanguageSettingRedisService`, ERP/Jushuitan settings, operator captcha/SMS codes (`admin-<type>:<token>`, `operator-sms:verify:*`, `admin-forget:*`), admin pickup codes (`admin-pickupcode:*`), operator fast-buy cart (`shop_fastbuy:*`), ID generators — the default for *unqualified* `StringRedisTemplate` injection |
 | `redisTemplate` (`RedisTemplate<Object, Object>`) | `companysRedisConnectionFactory` | same as above | 0 | Declared but has no injection sites; all business code uses `StringRedisTemplate` |
-| `sharedStringRedisTemplate` | `springDataRedisConnectionFactory` | `spring.data.redis.database` | 0 | Wxapp sessions (`session3rd:*`), member fast-buy cart (`fastbuy:*`) and plus-buy cart keys, pickup QR-code mapping (`orderziticode:*`), goods-arrival subscribe hashes (`arrivalNoticeSub:*`), deposit counters, trade-no sequences, UGC, shopadmin deferred-order snapshots (`shopadmin:deferred:*`) |
+| `sharedStringRedisTemplate` | `springDataRedisConnectionFactory` | `spring.data.redis.database` | 0 | Wxapp sessions (`session3rd:*`), member fast-buy cart (`fastbuy:*`) and plus-buy cart keys, pickup QR-code mapping (`orderziticode:*`), goods-arrival subscribe hashes (`arrivalNoticeSub:*`), deposit counters, trade-no sequences, UGC, shopadmin deferred-order snapshots (`shopadmin:deferred:*`), employee-purchase email vcodes/throttles (`employee-purchase-email*:*`), passphrase rate limiting (`ep_behavior_rl:*`) and verified flags (`ep_passphrase_verified:*`), participation quota (`ep:pquota:*`), employee fast-buy (`employee_purchase_fastbuy:*`) and invite tickets (`employee_purchase_invite:*`) |
 | `dispatchBusStringRedisTemplate` | `springDataRedisConnectionFactory` | `spring.data.redis.database` | 0 | Dispatch-bus queues (`dispatch:*`) |
 | `prismRedisTemplate` | `prismRedisConnectionFactory` | `ecshopx.redis.prism.database` | 2 | H5/operator JWT blacklists, Prism gateway OAuth tokens, activation black-token cache, SaaS-cert bind/licensing state |
 | `datacubeStringRedisTemplate` | `datacubeRedisConnectionFactory` | `ecshopx.redis.datacube.database` | 0 | `datecube_tracklog:*` PV/UV/register hashes |
@@ -201,6 +225,7 @@ Short-lived interactive state — the kind the legacy PHP stack kept in specific
 * **Wxapp sessions (shared DB).** `WxappMemberAuthService.resolveSession` reads `session3rd:<token>` (JSON with `open_id`/`union_id`/`session_key`) through `sharedStringRedisTemplate`; a miss *or* corrupt JSON throws `UnauthorizedException`, so flushing the shared DB logs every mini-program user out.
 * **Member SMS codes (members DB).** `MemberSmsVerificationCodeDeliveryService` writes `member-<type>:company<companyId>:<mobile>` (TTL 300 s) through `membersStringRedisTemplate` and rate-limits sends with a `yzmsend:<companyId>:<yyyyMMdd>:<type>:<mobile>` counter (TTL 24 h, cap `common.sms-send-limit`, default 5). The merchant-wxapp-login variant intentionally bypasses the members template and uses the shared DB instead (see `MerchantWxappLoginSmsVcodeAdapterConfig` above) to stay in the same logical DB as the legacy members store.
 * **Operator captcha and SMS codes (companys DB).** `OperatorsImageVcodeService` issues 4-character image captchas under `admin-<type>:<token>` (TTL 300 s, case-insensitive one-shot verify that deletes the key). `OperatorSmsVerifyService` stores `operator-sms:verify:<type>:<mobile>` (TTL 180 s) and forget-password codes under `admin-forget:<mobile>` (TTL 300 s). All are written and consumed through `companysRedisTemplate` — the `@Primary` default, which matters because these services qualify explicitly anyway.
+* **Employee-purchase email codes and send throttles (shared DB).** `EmployeePurchaseEmailVcodeRedisService` — explicitly `@Qualifier("sharedStringRedisTemplate")`, unlike the operator codes above — owns the email-verification state for the employee-purchase "员工身份校验" flow. `storeVcodeWithTtl` writes the 6-digit code to `employee-purchase-email:<email>` (the caller, `EmployeeEmailVcodeSendService`, passes a 1800 s TTL), and `EmployeeCheckService.doEmailBranch` verifies it through `verifyAndConsume`, which compares and deletes on a match (one-shot semantics, "验证码错误" on mismatch). Around that, the send path enforces three throttles that all live on the same shared template: a per-email cooldown `employee-purchase-email-cd:<companyId>:<email>` (TTL 60 s, checked with `hasKey` *before* the daily counters are incremented), a per-email daily counter `employee-purchase-email-day:<companyId>:<yyyyMMdd>:<email>` (Asia/Shanghai date; incremented on every send attempt and rejected past 5), and a per-IP daily counter `employee-purchase-email-ip:<companyId>:<yyyyMMdd>:<ip>` (rejected past 200, only when a non-blank client IP is present). Both daily keys get their 24-hour `EXPIRE` set only when `INCR` returns 1, so the window resets at the key's expiry rather than sliding; the email address used in the cooldown/day keys is lower-cased first, but the vcode key itself uses the trimmed, original-case address.
 
 ## Carts and fast-buy state
 
@@ -221,6 +246,16 @@ So the verify path reads the companys DB first and falls back to the shared DB �
 ## Goods-arrival subscriptions: Redis mirrors MySQL
 
 `WxappGoodsArrivalNoticeSubscribeService` keeps two stores in lockstep: the durable `subscribe_notice` MySQL rows (`sub_status` `NO` → `SUCCESS`, via `SubscribeNoticeMapper`) and a Redis hash that answers the mini-program's "已订阅" UI flag without hitting MySQL. Keys come from `GoodsArrivalNoticeSubscribeRedisKeys.hashKey`: `arrivalNoticeSub:<companyId>:<itemId>[:<distributorId>]` for source `wechat`, and `arrivalNoticeSub:<source>:<companyId>:<itemId>[:<distributorId>]` otherwise. Hash fields are `userId`, values a JSON blob `{open_id, wxa_appid}`. Subscribing toggles *both* stores (existing row → delete row and hash field; new → insert row and put hash field), and `GoodsArrivalSubscribeMatchService.markSuccess` deletes the hash fields for matched rows after the arrival notification is sent, so the detail page stops showing "已订阅到货通知". All Redis access goes through `sharedStringRedisTemplate`.
+
+## Rate limiting on the shared DB: passphrase behavior reports
+
+The employee-purchase passphrase surface exposes an **unauthenticated** behavior-report endpoint (scan / passphrase-verify events), so `PassphraseBehaviorReportService.report` calls `PassphraseBehaviorRateLimitService.assertAllowed` (ECX-10917, "未认证行为上报限流（防刷库）") *before* loading the activity or writing any behavior-log row. The limiter is a fixed-window INCR counter on the shared DB, explicitly qualified `@Qualifier("sharedStringRedisTemplate")`:
+
+* **Key shape.** `ep_behavior_rl:<companyId>:<activityId>:<enterpriseId>:<subject>`, where `<subject>` picks the strongest identity available: `u<userId>` when a positive user id is present, else `v<visitorKey>` when the visitor key has text, else `ip<clientIp>` (falling back to the literal `ipunknown` bucket when even the IP is blank).
+* **Window and limit.** The first increment of a window (`INCR` returns 1) sets `EXPIRE 60` seconds; any report whose count exceeds `LIMIT_MAX = 10` inside the window throws `TooManyRequestsException("操作过于频繁，请稍后再试")`, which `GlobalExceptionHandler` maps to HTTP 429. The constants are package-private `static final` fields — tuning them is a code change, not a property override.
+* **Fail-open on Redis errors.** Because the counter is read from the `Long` returned by `increment` and a `null` result (or a swallowed connection failure at the template layer) simply skips both the expiry-set and the limit check, a Redis outage throttles nothing — it turns the limiter off while behavior-log writes continue to hit MySQL.
+
+The wider employee-purchase family follows the same shared-DB pattern and is worth knowing for key-planning purposes: `PassphraseVerifiedRedisService` keeps "口令已验证" flags at `ep_passphrase_verified:<companyId>:<activityId>:<enterpriseId>:<userId>` with an activity-end-derived TTL clamped to `[1 h, 90 d]`, `PassphraseParticipateQuotaRedisService` keeps remaining participation quota at `ep:pquota:<companyId>:<activityId>:<enterpriseId>` consumed atomically by a Lua GET/DECR script, `EmployeePurchaseFastBuyRedisService` mirrors the member fast-buy cart at `employee_purchase_fastbuy:<sha1(companyId+enterpriseId+activityId+userId)>` (600 s, `cart_id` forced to 0), and `EmployeePurchaseInviteRedisService` tracks share-invite tickets in the `employee_purchase_invite:<companyId>` hash (locking a code moves its field to `<code>_` rather than deleting the hash).
 
 ## Redis as the settings store
 
@@ -302,7 +337,7 @@ Conversely, repointing an *existing* area is a pure properties change: because e
 
 * `MultiRedisConfigLettuceFactoryTest` (bootstrap) — the only test of the wiring itself: asserts `validateConnection`, `autoReconnect` and socket `keepAlive` on a factory built by `standaloneFactory`.
 * `DispatchBusConfigTest` / `RedisDispatchDriverTest` / `RedisDispatchListenerTest` / `RedisDelayedDispatchMoverTest` (bootstrap + dispatch) — boot the dispatch graph with a **mocked** `dispatchBusStringRedisTemplate` bean and pin queue/delay/dead-list semantics.
-* `DepositTradeConsumeServiceTest`, `AdapayDepositTradeRechargeCallbackServiceSmsDispatchTest`, `OrdersTradePaymentCallbackService*Test`, `LanguageSettingRedisServiceTest`, `ShopexAdminBindServiceTest`, `OrderPickupSmsRedisVerifyServiceTest`, `WxappOrderZitiQrCodeServiceTest`, `WxappOrderPickupCodeServiceTest`, `OperatorShopFastBuyRedisServiceTest`, `TrackViewNumServiceMonitorScopeTest`, `ShopadminNormalOrderCreateOrchestratorNormalOrderAddDispatchPublishProbeTest`, `NormalOrderAdminCreateUserOrderServiceNormalOrderAddDispatchPublishProbeTest` — all mock `StringRedisTemplate`/`HashOperations`/mappers/`ShopadminDeferredOrderCache` and verify the counter increments, hash writes, defaults-merge, pickup-code consume-and-delete, track-guard early return, or deferred-snapshot-save behaviour described above; none run against a real Redis.
+* `DepositTradeConsumeServiceTest`, `AdapayDepositTradeRechargeCallbackServiceSmsDispatchTest`, `OrdersTradePaymentCallbackService*Test`, `LanguageSettingRedisServiceTest`, `ShopexAdminBindServiceTest`, `OrderPickupSmsRedisVerifyServiceTest`, `WxappOrderZitiQrCodeServiceTest`, `WxappOrderPickupCodeServiceTest`, `OperatorShopFastBuyRedisServiceTest`, `TrackViewNumServiceMonitorScopeTest`, `ShopadminNormalOrderCreateOrchestratorNormalOrderAddDispatchPublishProbeTest`, `NormalOrderAdminCreateUserOrderServiceNormalOrderAddDispatchPublishProbeTest`, `EmployeePurchaseEmailVcodeRedisServiceRateLimitTest` (pins the 60 s cooldown TTL and the 24-hour expiry set only on the first daily increment), `EmployeeEmailVcodeSendServiceRateLimitTest`, `PassphraseBehaviorRateLimitServiceTest` (pins the 10-per-60 s window, the 429 exception past the limit, and the subject fallback order) — all mock `StringRedisTemplate`/`HashOperations`/mappers/`ShopadminDeferredOrderCache` and verify the counter increments, hash writes, defaults-merge, pickup-code consume-and-delete, track-guard early return, rate-limit windows, or deferred-snapshot-save behaviour described above; none run against a real Redis.
 
 ## Related pages
 

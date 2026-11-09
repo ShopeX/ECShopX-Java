@@ -116,12 +116,20 @@ sources:
     resource: repo://ecshopx-kaquan/src/main/java/cn/shopex/ecshopx/kaquan/service/discount/DiscountStandardCardUpdateService.java
   - id: openwiki-source-e9470908afa2b3bf2cce7ea4
     resource: repo://ecshopx-kaquan/src/main/java/cn/shopex/ecshopx/kaquan/service/discount/TradeFinishConsumeCardBusService.java
+  - id: openwiki-source-58e9c159cb62e788ec0f7174
+    resource: repo://ecshopx-kaquan/src/main/java/cn/shopex/ecshopx/kaquan/service/discount/UserDiscountConsumCardService.java
+  - id: openwiki-source-72e0e81b20227af4c3f8f9ec
+    resource: repo://ecshopx-kaquan/src/main/java/cn/shopex/ecshopx/kaquan/service/discount/UserDiscountReceiveCardService.java
   - id: openwiki-source-d05d7c15e8545be0471b5a68
     resource: repo://ecshopx-kaquan/src/main/java/cn/shopex/ecshopx/kaquan/service/UserDiscountService.java
   - id: openwiki-source-eca7387e6358e9c492cffeb4
     resource: repo://ecshopx-kaquan/src/main/java/cn/shopex/ecshopx/kaquan/service/vipgrade/VipGradeOrderBuyCreateService.java
   - id: openwiki-source-ac4c1b8b8eaa16b2be638ab8
     resource: repo://ecshopx-kaquan/src/main/java/cn/shopex/ecshopx/kaquan/service/vipgrade/VipGradeSalePaidCompletionService.java
+  - id: openwiki-source-464714fd93184b34e896c6e2
+    resource: repo://ecshopx-kaquan/src/test/java/cn/shopex/ecshopx/kaquan/service/discount/UserDiscountConsumCardServiceRedeemLockTest.java
+  - id: openwiki-source-18eb84839691a1b04713667c
+    resource: repo://ecshopx-kaquan/src/test/java/cn/shopex/ecshopx/kaquan/service/discount/UserDiscountReceiveCardServiceStockLockTest.java
   - id: openwiki-source-71f800dcbe73d59f7d04af1d
     resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/systemtag/MemberAudienceTagValidator.java
   - id: openwiki-source-e2cfac4ae8d1079dfdd55c73
@@ -162,10 +170,14 @@ sources:
     resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/api/admin/v1/TurntableController.java
   - id: openwiki-source-eee63a7d10372e0144434031
     resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/api/admin/v1/WxaTemplateController.java
+  - id: openwiki-source-f7999c8f669e8d0e2e14cba2
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/api/front/v1/UserBargainsController.java
   - id: openwiki-source-f7feb94299e3e14865e969f3
     resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/cron/ScheduleRecoverTurntableProcessingHandler.java
   - id: openwiki-source-0559d8763d47656cd944494a
     resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/cron/ScheduleTriggerPromotionActivityHandler.java
+  - id: openwiki-source-e7c75493b8d3c0dc1b7b7d7c
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/dispatch/BargainFinishSendSmsNoticeJobHandler.java
   - id: openwiki-source-6972b63582a06ac4a868925a
     resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/dispatch/CreateMemberSuccessPromotionsDispatchListener.java
   - id: openwiki-source-df603f2ed74d09e522744a76
@@ -206,6 +218,10 @@ sources:
     resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/listener/MarketingActivityCommittedEventListener.java
   - id: openwiki-source-2516926a786abff86c30eeae
     resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/schedule/ScheduleFirePromotionActivityConsumer.java
+  - id: openwiki-source-93d353c6d74a61a40c4c3944
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/bargain/UserBargainCreateBargainLogService.java
+  - id: openwiki-source-1ac2c0a71995cd4692c4e837
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/bargain/UserBargainCreateUserBargainService.java
   - id: openwiki-source-85d2a029de21b47f91ec9f00
     resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/event/SeckillActivityEndCommittedEventListener.java
   - id: openwiki-source-a882b5ab0346ea9c26b469f3
@@ -220,6 +236,10 @@ sources:
     resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/MarketingActivityDeleteService.java
   - id: openwiki-source-cb2b7addb001cd6797084578
     resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/MarketingActivityPostCommitJobsService.java
+  - id: openwiki-source-ae51f93730a6461308576ba6
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/PackagePromotionCancelService.java
+  - id: openwiki-source-651361cdae3ee0d7fb74d79c
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/PackagePromotionCreateService.java
   - id: openwiki-source-12fbf2be249ea7817b375e1d
     resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/PromotionActivityService.java
   - id: openwiki-source-331fde026c76ecf64a993f84
@@ -246,6 +266,12 @@ sources:
     resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/WxaTemplateOpenService.java
   - id: openwiki-source-05513e2397d8e5cb461cab9f
     resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/util/SeckillShopIdCsvParser.java
+  - id: openwiki-source-35e6be1d7d75de4c71a83141
+    resource: repo://ecshopx-promotions/src/test/java/cn/shopex/ecshopx/promotions/api/front/v1/UserBargainsBargainLogIdentityTest.java
+  - id: openwiki-source-ebefcdeba85d2986fab4cb54
+    resource: repo://ecshopx-promotions/src/test/java/cn/shopex/ecshopx/promotions/service/bargain/UserBargainCreateBargainLogServiceBargainSmsDispatchTest.java
+  - id: openwiki-source-63729b07e117d4ad66ebe4b5
+    resource: repo://ecshopx-promotions/src/test/java/cn/shopex/ecshopx/promotions/service/bargain/UserBargainCreateUserBargainServiceCompanyScopeTest.java
   - id: openwiki-source-2262dd89c0e1ac3ffeeeca1e
     resource: repo://ecshopx-promotions/src/test/java/cn/shopex/ecshopx/promotions/service/export/TurntableLuckyDrawLogExportAsyncServiceTest.java
   - id: openwiki-source-b740e1f970ca53dc433d2aab
@@ -266,10 +292,10 @@ sources:
     resource: repo://ecshopx-youshu/src/main/java/cn/shopex/ecshopx/youshu/dispatch/YoushuCouponAddDispatchListener.java
   - id: openwiki-source-85bb1daa315e1ca3fb4a215d
     resource: repo://ecshopx-youshu/src/main/java/cn/shopex/ecshopx/youshu/service/YoushuCouponAddSrDataSyncService.java
-generated: { by: "openwiki/0.9.0", at: "2026-11-05T17:10:02.238Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-08T17:14:16.576Z" }
 verified:
   - by: openwiki/0.9.0
-    at: 2026-11-05T17:10:02.238Z
+    at: 2026-11-09T03:34:48.355Z
 ---
 
 # Marketing and Loyalty Domains
@@ -282,7 +308,7 @@ The bundles meet the order domain at two places documented on the order-payment-
 
 ### What it owns
 
-The `marketing_activity` table (`MarketingActivity`, 满减满折 full-reduction / full-discount rules with `discount_config` JSON, `marketing_type`, `use_bound` scope, `begin_time`/`end_time`, `status`) plus its item/gift/category satellites; the automated member-marketing `promotion_activity` table (`PromotionActivity`) for the five schedule types — `member_birthday`, `member_anniversary`, `member_day`, `member_upgrade`, `member_vip_upgrade`; seckill activities (`SeckillActivityCreateService`, guarded by `MarketingActivityCrossPromotionGuardService`); group-buying (`PromotionGroupsActivityCreateService`, `PromotionGroupsTeamService`); turntable lucky-draw (`TurntableScheduleService`, `TurntableDrawRecoverService`); bargain (`UserBargainCreateBargainLogService`); specific-crowd discounts; package promotions; member sign-in; SMS templates (`SmsController`, `AliTemplateController`, `WxaTemplateController`). It also owns the **WXA notice-template catalog** — `promotions_notice_template` (`WxaNoticeTemplate`: `template_name`, `scenes_name`, `template_id`, `content`, `is_open`, `send_time_desc`) seeded from the 13 scene definitions in `WxaTemplateSceneDefinitions` — and therefore the central WXA subscribe sender described below, which every other bundle's member-notify port funnels into.
+The `marketing_activity` table (`MarketingActivity`, 满减满折 full-reduction / full-discount rules with `discount_config` JSON, `marketing_type`, `use_bound` scope, `begin_time`/`end_time`, `status`) plus its item/gift/category satellites; the automated member-marketing `promotion_activity` table (`PromotionActivity`) for the five schedule types — `member_birthday`, `member_anniversary`, `member_day`, `member_upgrade`, `member_vip_upgrade`; seckill activities (`SeckillActivityCreateService`, guarded by `MarketingActivityCrossPromotionGuardService`); group-buying (`PromotionGroupsActivityCreateService`, `PromotionGroupsTeamService`); turntable lucky-draw (`TurntableScheduleService`, `TurntableDrawRecoverService`); bargain (`UserBargainCreateUserBargainService`, `UserBargainCreateBargainLogService`); specific-crowd discounts; package promotions; member sign-in; SMS templates (`SmsController`, `AliTemplateController`, `WxaTemplateController`). It also owns the **WXA notice-template catalog** — `promotions_notice_template` (`WxaNoticeTemplate`: `template_name`, `scenes_name`, `template_id`, `content`, `is_open`, `send_time_desc`) seeded from the 13 scene definitions in `WxaTemplateSceneDefinitions` — and therefore the central WXA subscribe sender described below, which every other bundle's member-notify port funnels into.
 
 ### Admin/front REST
 
@@ -290,7 +316,7 @@ The `marketing_activity` table (`MarketingActivity`, 满减满折 full-reduction
 
 ### The create/update pipeline and its post-commit fan-out
 
-`MarketingActivityCreatePersistenceService.createInTransaction` is the reference flow for every marketing-activity write: inside one `@Transactional`, it inserts the row (with the crowd pair resolved by `applyMemberCrowdFields` for the full-crowd types), writes multi-language shards, inserts `use_bound=2` category rows, writes item/gift rels, publishes `job:143:…SavePromotionItemTag` through `SavePromotionItemTagJobDispatchPublisher`, then registers a `TransactionSynchronization.afterCommit` that (a) publishes the salesperson item-shelves dispatch job (`SalespersonItemsShelvesJobDispatchPublisher`) and (b) fires the Spring `MarketingActivityCommittedEvent`. `MarketingActivityCommittedEventListener` consumes it with `@Async @EventListener` and re-dispatches the shelves/tag jobs through `MarketingActivityPostCommitJobsService` (the event carries the `dispatchSalespersonItemsShelves` flag; group-done and seckill-end call the same service with activity types `group` / `seckill` / `limited_time_sale`). The physical delete branch of `MarketingActivityDeleteService` (only `status=waiting` activities may be hard-deleted) mirrors the same after-commit shelves+event pair.
+`MarketingActivityCreatePersistenceService.createInTransaction` is the reference flow for every marketing-activity write: inside one `@Transactional`, it inserts the row (with the crowd pair resolved by `applyMemberCrowdFields` for the full-crowd types), writes multi-language shards, inserts `use_bound=2` category rows, writes item/gift rels, publishes `job:143:…SavePromotionItemTag` through `SavePromotionItemTagJobDispatchPublisher`, then registers a `TransactionSynchronization.afterCommit` that (a) publishes the salesperson item-shelves dispatch job (`SalespersonItemsShelvesJobDispatchPublisher`) and (b) fires the Spring `MarketingActivityCommittedEvent`. `MarketingActivityCommittedEventListener` consumes it with `@Async @EventListener` and re-dispatches the shelves/tag jobs through `MarketingActivityPostCommitJobsService` (the event carries the `dispatchSalespersonItemsShelves` flag; group-done and seckill-end call the same service with activity types `group` / `seckill` / `limited_time_sale`). The physical delete branch of `MarketingActivityDeleteService` (only `status=waiting` activities may be hard-deleted) mirrors the same after-commit shelves+event pair. Package promotions follow the same discipline: `PackagePromotionCreateService` (create and update) and `PackagePromotionCancelService` each publish `SalespersonItemsShelvesJobDispatchPublisher.publish(companyId, packageId, "package")` from an `afterCommit` hook (immediate when no synchronization is active), so the salesperson item-shelves view never sees an uncommitted or rolled-back package promotion.
 
 ### Seckill create/update and the cross-promotion conflict guard
 
@@ -327,6 +353,14 @@ After the guard passes, persistence writes the `seckill_activity` row (with the 
 One visibility invariant ties the three log surfaces together: **only `SUCCESS` and `GRANT_FAILED` draw rows are visible** — `TurntableDrawStatus.VISIBLE_IN_DRAW_LOG` deliberately excludes `PROCESSING` and `COST_FAILED` — and the same status filter is applied by the admin log list, the C-side member draw log and the CSV export, so an operator never exports a row a member cannot see. `TurntableLuckyDrawLogListService` additionally scopes every count and page query by `(company_id, act_id)` and skips pagination entirely when the count is zero, and `TurntableLogCountService` runs its four aggregate counts (total / distinct users / non-thanks wins / distinct winners) with the same company+activity pair — both pinned by their `ScopeTest`s against a foreign `act_id`.
 
 The export leg runs through the shared export-file dispatch job. `GET /down_lucky_draw/export` calls `TurntableLuckyDrawLogExportService.exportLog`, which validates the `activity_id`, resolves `supplier_id` from the operator row (0 for non-supplier operators) and enqueues `job:159:EspierBundle\Jobs\ExportFileJob` via `LuckyDrawLogExportFileJobDispatchPublisher` with `type=export_luckdraw_log` and a `filter` of `{activity_id, datapass_block}` (the `x-datapass-block` request header) — ASYNC/REDIS on the **slow** queue in production, SYNC under the `local` profile. On the consume side, bootstrap's `EspierExportFileJobDispatchHandler` fans the job out to per-type `ExportFileJobTypeHandler` delegates keyed by `exportType()` (duplicate or unknown types are a startup failure / warn-and-ack respectively); promotions' `LuckyDrawLogExportFileJobTypeHandler` rebuilds a `LuckyDrawLogExportJobContext` and hands it to `LuckyDrawLogExportFileJobHandler` → `TurntableLuckyDrawLogExportAsyncService.runExport`. The worker pages the visible log rows 100 at a time, batch-resolves member summaries (`user_card_code`, `mobile`) per page through `MemberAccountService.listMemberSummariesByUserIds`, maps prize types to Chinese labels (优惠券 / 券包 / 积分 / 谢谢惠顾), formats `created` as `yyyy-MM-dd HH:mm:ss` Asia/Shanghai, uploads through `ExportCsvFileService.exportCsv` and records the finished file (`export_luckdraw_log`) via `ExportLogCreateService.createFinishLog` — an empty result set or an upload without a URL is a silent no-op (logged at debug), and the export writes no per-member side effects.
+
+### Bargain enroll and help — company scope, claims identity and the finish-SMS dispatch
+
+The member-facing bargain surface is `UserBargainsController` (base `/api/v1/h5app/wxapp/promotion`, `@FrontNoAuth` on the class with `@FrontAuth` on the mutating routes): `POST /userbargain` (参与砍价 enroll), `GET /userbargain` (detail), `POST /bargainlog` (砍价助力 help) and `GET /bargainfriendwxappcode` (share mini-program code). All four resolve `company_id` from the `H5_COMPANY_ID` request attribute (`parseCompanyIdFromRequest` — a missing, unparsable or non-positive value is `无权访问该API,非法访问！`), and the two POST routes take the member identity exclusively from the `H5_AUTH_CLAIMS` JWT map: `POST /userbargain` derives `userId` / `woa_appid` / `wxapp_appid` from claims, and `POST /bargainlog` runs `bindHelperIdentityFromClaims` (ECX-10876), which overwrites any request-supplied `open_id` / `nickname` / `headimgurl` with the claims values so a helper cannot be impersonated through the body.
+
+`UserBargainCreateUserBargainService.createUserBargain` is the enroll leg. The bargain-activity lookup carries **both** `bargain_id` and `company_id` (ECX-10934): an activity owned by another company — or one whose company is null — fails the query exactly as if the id did not exist, surfacing `bargain_id为<id>的砍价活动不存在！`, so an enroll can never create a `user_bargains` row against a foreign tenant's activity. The window gates follow (`activity_ended_expect_next_participation` / `activity_not_started_please_wait`), then an existing `(company_id, user_id, bargain_id)` row short-circuits as a replayed enroll. A fresh enroll parses the promotion's `people_range` JSON (`min`/`max`, both positive with `max >= min`, otherwise `people_range_invalid`), draws the cut count uniformly in the range, splits `mkt_price - price` into `cutprice_range` slots (`getRandPriceNum`, floor `-(total/num)/2` per cut), and inserts the `user_bargains` row (`is_ordered=false`, `cutdown_amount=0`); a `DataIntegrityViolationException` on the insert or a vanished row on reload reuses the same not-exist message.
+
+`UserBargainCreateBargainLogService.createBargainLog` (`@Transactional` class level) is the help leg: it validates `bargain_id` / target `user_id` / `open_id`, applies one random cut from the owner's remaining slots, and updates the `user_bargains` row scoped by `(company_id, user_id, bargain_id)` — any update that does not hit exactly one row (or violates the constraint) throws `bargain_activity_completed_cannot_help`. When that help drives the running total to the floor (`mkt_price - price - cutdown_amount <= 0` on an unordered bargain), it publishes `job:135:PromotionsBundle\Jobs\BargainFinishSendSmsNotice` through `BargainFinishSendSmsNoticeJobDispatchPublisher` from an `afterCommit` hook (immediate when no synchronization is active), carrying `company_id`, the owner's user id, an `item_name`/`price` snapshot, the promotion end time and the locale. `BargainFinishSendSmsNoticeJobHandler` resolves the owner mobile (`MemberAccountService.resolveMemberMobileForH5Context`), formats `pay_money` in yuan and `end_time` as `yyyy-MM-dd HH:mm`, and sends the `bargainFinish_notice` templated SMS — a null end time or empty mobile is a debug-logged skip and a send failure is logged, not rethrown. `UserBargainCreateUserBargainServiceCompanyScopeTest` pins the ECX-10934 contract (foreign-company and null-company activities reject without any `user_bargains` insert; own-company enrolls insert) and `UserBargainsBargainLogIdentityTest` pins the ECX-10876 claims binding (unauthenticated is rejected, body identity is overwritten).
 
 `MarketingActivityCrossPromotionGuardService` is the single conflict authority for the whole activity family, not just seckill: `checkActivityValidByMarketing` (marketing create/update), `checkActivityValidByGroup`, `checkActivityValidByBargain`, `checkActivityValidByLimit`, `checkActivityValidByPackage`, the `member_preference` pair (`在相同时段内，同一个商品只能参加一个活动`) and the seckill item-search pair. Every check shares the window convention `overlapStart = max(start_time, now)` — windows that have already ended never conflict — and the `use_bound` axis (0 whole store, 1 items, 2 categories, 3 tags, 4 brands) selects which overlap test applies; the marketing-overlap check additionally mutexes on `source_id` equality or shop-id intersection and throws `相同时间内不能重复<promotion_tag>活动:<marketing_name>`, skipping the row being edited via `marketing_id`. Each entry point also scopes which seckill families it conflicts with: group and bargain writes set `seckill_type=["normal","limited_time_sale"]`, marketing writes the same except `member_preference` (normal only), while **limit and package writes set `seckill_type=["normal"]`** — purchase-limit and package promotions never collide with limited-time sales in either direction. The admin item search `GET /api/v1/promotions/seckillactivity/search/items` (`SeckillActivitySearchItemsService`) runs the same guard per candidate item with the same CSV-parsed shop ids, catches the `ResourceException` and splits rows into `validItems` / `invalidItems`, passing `exclude_seckill_id` — or `marketing_id` when a `marketing_type` filter is present — so items already bound to the edited activity stay selectable.
 
@@ -371,6 +405,8 @@ The two *upgrade* types arrive from member-grade transitions instead of the scan
 * **`member_upgrade`** — the orders side (`MemberConsumptionOnNormalOrderFinishService.updateMemberConsumptionIfNotPointPay`) accumulates a member's total consumption after order finish, walks the membercard grade thresholds from the top, promotes `members.grade_id`, and after commit publishes `publishMemberUpgradeAfterOrderConsumption`, which the bootstrap impl dispatches as `job:187:…FirePromotionsActivity` (same handler as `job:5`, distinct bus message name). Skipped when pay type is `point`, when the OEM-Shuyun flag is set, or when DM CRM integration is open.
 
 Both land in `FirePromotionsActivityJobHandler` → `PromotionActivityFireService.fire(companyId, memberInfo, activityType)` → `actionPromotionActivity` per matching activity. Failures inside the handler are logged and swallowed (the job message is not retried).
+
+The coupon receive that `actionPromotionActivity` (and the turntable, sign-in and give surfaces) funnels into — kaquan's `UserDiscountReceiveCardService.receiveCard`, `@Transactional(READ_COMMITTED)` — runs at READ COMMITTED with the `discount_cards` row itself as the serialization point: the card is loaded `FOR UPDATE` before the expiry/stock and per-user get-limit checks run (ECX-10897), so concurrent receives against the same card cannot both pass the quantity gate and oversell it. The matching consume side, `UserDiscountConsumCardService`, applies the used-state update with a conditional `status IN (1,4)` wrapper and treats a zero-row update as failure rather than logging a success (ECX-10899) — the same atomic-claim idiom as the deposit recharge conditional update, so two concurrent consumes of one coupon cannot both report success.
 
 ### Cron handlers (all follow the alert-and-rethrow template)
 
@@ -626,6 +662,8 @@ The order-side quota consumption is deliberately **after commit** and idempotent
 
 * **Member-crowd targeting applies only to the full-crowd marketing types and `limited_time_sale`** — `applyMemberCrowdFields` persists `member_tag_ids`/`member_tag_mode` only for `full_minus`/`full_discount`/`full_gift` marketing and `limited_time_sale` seckills (empty list normalizes to `"[]"` + null mode); write-time validation via `MemberAudienceTagValidator` rejects unknown or other-shop tags (`标签不存在或不可用`) while `tag_kind=system` tags skip the shop check; at runtime an empty id list matches everyone, a guest never matches a non-empty list, `include` needs any held tag and `exclude` inverts it (`MemberCrowdMatcherTest` pins the contract).
 * **Coupon events are strictly after-commit.** All five bus names (283–287) are published from `TransactionSynchronization.afterCommit`, so listeners never see uncommitted cards. The DM webhook create path reuses `createKaquan` and therefore inherits the same guarantee (pinned by `DmCardTemplateMessageNotifyKaquanAdapterCouponAddDispatchProbeTest`).
+* **Bargain enroll is company-scoped and bargain identity is claims-bound** — the enroll leg loads the activity by `(bargain_id, company_id)` (ECX-10934), so a foreign or company-less activity is indistinguishable from a missing one (`bargain_id为<id>的砍价活动不存在！`) and no `user_bargains` row is written; `POST /bargainlog` derives `open_id`/`nickname`/`headimgurl` only from the login claims (ECX-10876), never from the request body; and the bargain-finish SMS (`job:135`) is published only after the help transaction commits.
+* **Coupon receive and consume serialize on the card row, not on retry** — `UserDiscountReceiveCardService` locks the `discount_cards` row `FOR UPDATE` under READ COMMITTED before the stock and per-user limit checks (ECX-10897), and `UserDiscountConsumCardService` consumes with a conditional `status IN (1,4)` update where a zero-row hit is a failure, never a logged success (ECX-10899).
 * **Trade-finish coupon consumption never runs for point or deposit pay** — the guard exists both in the listener and the bus service (pinned by `TradeFinishConsumeCardEventSyncDispatchFlowTest`).
 * **Deposit recharge is idempotent per trade row, under concurrency too** — the pre-check throws `更新已处理，不需要更新` before any Redis mutation when the row is already SUCCESS, and the update itself is conditioned `.ne(trade_status,"SUCCESS")` (ECX-10915) so a concurrent double-credit loses the race and throws the same error instead of crediting twice; the callback answers the channel `SUCCESS` even for already-handled trades.
 * **Turntable log visibility is one contract across list, count and export** — `TurntableDrawStatus.VISIBLE_IN_DRAW_LOG` (`SUCCESS`/`GRANT_FAILED` only) is shared by the admin log list, the C-side member log and the CSV export, and every turntable log query is scoped by `(company_id, act_id)`, so a foreign activity id yields zero rows instead of another company's data.
@@ -671,6 +709,8 @@ The order-side quota consumption is deliberately **after commit** and idempotent
 * `ScheduleRecoverTurntableProcessingHandlerTest`, `ScheduleClearTurntableTimesOverHandler` tests — turntable recovery and Redis-key cleanup behavior (code-side, independent of the missing console job).
 * `TurntableLogCountServiceScopeTest` / `TurntableLuckyDrawLogListServiceScopeTest` — every turntable log query carries `(company_id, act_id)`: a foreign `act_id` returns zero/empty without paging, and the page query keeps the company filter.
 * `TurntableLuckyDrawLogExportAsyncServiceTest` — the export's status filter equals `VISIBLE_IN_DRAW_LOG` (`SUCCESS`/`GRANT_FAILED`, never `PROCESSING`/`COST_FAILED`) and the scope is company+activity; `TurntableLuckyDrawLogExportServiceDispatchTest` — exactly one publisher enqueue with `supplier_id=0` for a non-supplier operator; `LuckyDrawLogExportFileJobDispatchFlowTest` (bootstrap) — `job:159` on the slow queue (SYNC under `local`), payload shape and the router→`runExport` context hand-off.
+* `UserBargainCreateUserBargainServiceCompanyScopeTest` — ECX-10934: a foreign-company or null-company bargain activity rejects with the same not-exist message and never inserts a `user_bargains` row, while an own-company enroll inserts; `UserBargainsBargainLogIdentityTest` — ECX-10876: unauthenticated help is `UnauthorizedException` and body-supplied helper identity is overwritten by the claims; `UserBargainCreateBargainLogServiceBargainSmsDispatchTest` — the floor-reaching help publishes the bargain-finish SMS job after commit.
+* `UserDiscountReceiveCardServiceStockLockTest` (kaquan) — ECX-10897: the card row is locked before the stock check, and a full stock inserts nothing; `UserDiscountConsumCardServiceRedeemLockTest` — ECX-10899: the conditional consume update must hit a redeemable status, and a miss records no success.
 
 ## Related pages
 

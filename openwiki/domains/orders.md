@@ -32,8 +32,14 @@ sources:
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/OrdersDispatchEventNames.java
   - id: openwiki-source-5ecb22a008c7475c40eec372
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/OrdersDispatchJobNames.java
+  - id: openwiki-source-e3f608a3254de204f775497c
+    resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/OrdersTradeFinishDispatchPublisher.java
   - id: openwiki-source-4863090110282765e669140c
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/order/OrderTypeSlugMapper.java
+  - id: openwiki-source-68b9a0e3c776f0fe8beabd26
+    resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/payment/PaymentSubjectDistributorIdPort.java
+  - id: openwiki-source-d1961192a688961d2d90ccf4
+    resource: repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/integration/PaymentSubjectDistributorIdPortImpl.java
   - id: openwiki-source-77ed351f057e456baa8b5b11
     resource: repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/service/DistributorPlatformStoreBuyGateService.java
   - id: openwiki-source-6b736dfa4c0754defee19eb0
@@ -148,6 +154,8 @@ sources:
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/orderlog/OrderProcessLogBusService.java
   - id: openwiki-source-623ecfb6b4a37473cdb9935b
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/payment/OrdersExternalPayParamBuildService.java
+  - id: openwiki-source-7832b5e57d5d960a02d053c2
+    resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/payment/OrdersPaymentChannelQueryService.java
   - id: openwiki-source-11504f9b8ac58d0bd088b826
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/payment/OrdersPaymentDoPaymentService.java
   - id: openwiki-source-2a5af3193c4467af90799bc6
@@ -178,6 +186,10 @@ sources:
     resource: repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/orders/service/normal/shopadmin/NormalOrderAdminCreateUserOrderServiceNormalOrderAddDispatchPublishProbeTest.java
   - id: openwiki-source-42b59755b5fcb0f2909b92e8
     resource: repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/orders/service/normal/shopadmin/ShopadminNormalOrderCreateOrchestratorNormalOrderAddDispatchPublishProbeTest.java
+  - id: openwiki-source-1dadfec169f4df087b2904a0
+    resource: repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/orders/service/payment/OrdersPaymentDoPaymentServicePaymentSubjectTest.java
+  - id: openwiki-source-1e0309e2b800473aab8b0e9e
+    resource: repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/orders/service/payment/OrdersPaymentDoPaymentServiceWxappSyncTradeFinishPublishTest.java
   - id: openwiki-source-e1a3872ac3208de5388c4a15
     resource: repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/orders/service/pos/PosOrderDocAccessGuardTest.java
   - id: openwiki-source-791cd7b9c29e1613315c4aab
@@ -190,10 +202,10 @@ sources:
     resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/wxapp/WxappSeckillItemTicketService.java
   - id: openwiki-source-8533324b29578695d2393415
     resource: repo://ecshopx-promotions/src/test/java/cn/shopex/ecshopx/promotions/service/systemtag/MemberCrowdMatcherTest.java
-generated: { by: "openwiki/0.9.0", at: "2026-11-05T17:10:02.238Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-09T03:34:48.355Z" }
 verified:
   - by: openwiki/0.9.0
-    at: 2026-11-05T17:10:02.238Z
+    at: 2026-11-09T03:34:48.355Z
 ---
 
 # Orders Domain (ecshopx-orders)
@@ -436,13 +448,15 @@ The param builder fixes the shopadmin semantics: `promotion=normal`, `order_sour
 
 `POST /payment` (`WxappPaymentService.payment`) is the pay-an-existing-order surface. Guards: order must exist in `orders_associations`; `supplier_order` type is rejected ("暂不支持该订单类型的支付"); `order_status` must be `NOTPAY` or `PART_PAYMENT` ("当前订单不需要支付"); the effective order type must be payment-bundle supported; an order whose cash total is 0 with points > 0 is forced to `pay_type=point`; prescription orders must have an approved prescription (`OrderPrescriptionPaymentGuardService`); deposit requires a logged-in member card, alipaymini requires the alipay user id. `GET /payment/config` (`doPayment`, wxpay/hfpay/deposit only) is the QR-scan surface: with an `order_id` it pays an existing NOTPAY/PART_PAYMENT order, without one it builds a store-consumption trade (`trade_source_type=order_pay`) from distributor/shop + amount.
 
-`OrdersPaymentDoPaymentService.doPayment` is the shared core both call (and the one the deferred path charges through):
+`OrdersPaymentDoPaymentService.doPayment` is the shared core both call (and the one the deferred path charges through). It is deliberately split into **three phases** so no external channel SDK or HTTP call ever runs while a database transaction is open: TX1 (`preparePaymentInTx`) finds-or-inserts the NOTPAY trade and completes the purely local pay types in the same short transaction; the channel invocation then happens outside any transaction; and TX2 (`persistExternalPaymentInTx`) persists the channel outcome and finalizes synchronously-paid trades. `OrdersPaymentDoPaymentServicePaymentSubjectTest` pins this split — it counts `transactionTemplate.execute` invocations (1 for a local `point` payment, 2 for a `wxpayh5` payment) and asserts the mocked channel builder ran at transaction depth 0.
 
-* **Config gate** — per pay_type: wxpay/alipay validation services, hfpay port, bspay Redis setting (`bspaySetting:{sha1(companyId)}` in companys Redis), adapay Redis setting (`adaPaySetting:` in shared Redis), everything else passes.
-* **Cache reuse** — for adapay/bspay, if a NOTPAY trade for the same company+order+pay_type+pay_fee+(pay_channel) already carries `payment_params`, the stored client payload is decoded and returned instead of creating a new channel order.
-* **Trade insert** — `insertPendingTrade` reuses an open NOTPAY trade or inserts one with `trade_state=NOTPAY`, encrypted mobile, dealer/merchant ids resolved from the distributor, and currency conversion for wxpay/alipay/hfpay: when a fee rate is supplied (or the company's default currency rate), `pay_fee`/`total_fee` are stored converted and the original amounts go to `cur_pay_fee` etc.
-* **Channel branches** — zero-fee orders (non-prescription) finalize immediately as `localPay`; `point` deducts member points *unless* `trade_source_type=normal_pointsmall` (pointsmall already deducted at create — pinned against double-deduction); `prepaid_point` (employee-purchase prepaid quota, deducted at create) and `pos` and `deposit` (via `DepositTradeConsumeService.consume`) finalize synchronously; `bspay`/`adapay` call the membercard SDK services and persist `bspay_req_date`/`inital_request`/`transaction_id` plus the client params; `wxpay*`/`alipay*`/`hfpay`/`offline_pay`/`paypal`/`doumen_intl` delegate to `OrdersExternalPayParamBuildService` (which invokes the channel SDK or returns a pending state — `wxpaypos` micropay and `alipaypos` barcode return `pay_status=true` synchronously when the channel confirms). Any other pay_type throws "无此类型支付".
-* **`finalizeTradeSuccess`** — the CAS NOTPAY→SUCCESS update (also `finalizeTradeSuccessAfterChannelQuery` when a channel-order query confirms success), assigning `trade_no`, then `maybeFulfillVipGradeMembercardSale` (membercard trades) and `publishTradeFinishEvent` (the `OrdersTradeFinishDispatchPublisher` bean, which is `OrdersTradeFinishAfterCommitDispatchPublisher` registered `@Primary` in bootstrap for `event:291:OrdersBundle\Events\TradeFinishEvent` — it publishes after commit when a transaction is active). Already-`SUCCESS` trades re-publish idempotently.
+* **Input normalization** — `pay_type` is lowercased (`Locale.ROOT`) and written back into `data` before anything reads it. The payment-subject distributor id is then resolved once: `PaymentSubjectDistributorIdPort.resolveActualDistributorId(companyId, distributorId)` (interface in `ecshopx-common/payment`, implemented in **ecshopx-distribution** `integration/PaymentSubjectDistributorIdPortImpl` — see [Stores & Merchants / distribution](stores-and-merchants.md)) keeps the distributor id only when that distributor row carries `payment_subject=1` (it collects payment itself) and returns 0 otherwise — platform-held payment subject — and also 0 when the distributor id is 0 or the row is missing. The resolved `distributorIdForSetting` is used **only** for payment-config validation and channel config lookup; the trade row still records the original `distributor_id`.
+* **Config gate** — per pay_type against `distributorIdForSetting`: wxpay/alipay validation services (`assertConfigComplete`), the hfpay port, the bspay Redis setting (`bspaySetting:{sha1(companyId)}` in companys Redis), the adapay Redis setting (`adaPaySetting:{sha1(companyId)}` in shared Redis); `point`/`prepaid_point`/`deposit`/`pos`/`offline_pay`/`paypal`/`doumen_intl` skip validation entirely, and an unknown pay type fails here with "无此类型支付".
+* **Cache reuse** — for adapay/bspay only, supplier `sub_orders` are loaded into `data` first, then if a NOTPAY trade for the same company+order+pay_type+pay_fee+(pay_channel) already carries `payment_params`, the stored client payload is decoded and returned without touching the channel again.
+* **TX1 — `preparePaymentInTx`** — `findOpenTradeWithoutParams` reuses a matching open NOTPAY trade, else `insertPendingTrade` inserts one (encrypted mobile, dealer/merchant ids resolved from the distributor peek, shop-code-prefixed `trade_id`, and currency conversion for wxpay/alipay/hfpay: when a fee rate is supplied or the company's default currency rate applies, `pay_fee`/`total_fee` are stored converted and the original amounts go to `cur_pay_fee` etc.). Before inserting, a zero-cash order with `point_amount > 0` whose pay type is not `point`/`deposit` is rewritten to `pay_type=point` with `pay_fee=point_amount` (source comment: 现金应付 0 且存在积分抵扣：按纯积分支付建单，避免落 localPay). The local pay types then complete entirely inside TX1 and return `pay_status=true` with `trade_info`: zero-fee non-prescription trades finalize as `localPay`; `point` deducts member points *unless* `trade_source_type=normal_pointsmall` (积分商城已在创建时扣 order.point；此处仅完结交易，避免纯积分自动支付双扣); `prepaid_point` (employee-purchase prepaid quota, deducted at create — 禁止微信通道) and `pos` finalize directly; `deposit` runs `DepositTradeConsumeService.consume` then finalizes. Only the external pay types (`bspay`, `adapay`, `wxpay*`, `alipay*`, `hfpay`, `offline_pay`, `paypal`, `doumen_intl`) fall through as `pendingExternal`; anything else throws "无此类型支付".
+* **Channel invocation (no DB transaction)** — `bspay`/`adapay` call the membercard SDK `createPayment` services with the Redis merchant config; the `wxpay*`/`alipay*`/`hfpay`/`offline_pay`/`paypal`/`doumen_intl` family delegates to `OrdersExternalPayParamBuildService.buildPayParamsOrInvoke(payType, companyId, distributorIdForSetting, …)`. The synchronous barcode channels live there: `wxpaypos` sends a WeChat V2 micropay (requires `auth_code`, 缺少付款码 otherwise) and returns `pay_status=true` with `transaction_id` when the channel confirms; `alipaypos` calls `tradePayBarcodeFaceToFace` and maps code `10000` to `pay_status=true`/`status=SUCCESS`, `10003` to `USERPAYING` (pending), invalid-barcode sub-codes to `BadRequest` and anything else to `ResourceException`.
+* **TX2 — `persistExternalPaymentInTx`** — persists the bspay (`bspay_req_date`/`inital_request`/`transaction_id`) and adapay (`inital_request`/`transaction_id`) outcomes, calls `finalizeTradeSuccess` only when the client result carries `pay_status=true` (which is why micropay/barcode confirmations settle in-process while async channels stay NOTPAY until the notify or the query path), and always `savePaymentParams` — the JSON client payload that the adapay/bspay replay cache above reads back.
+* **`finalizeTradeSuccess`** — re-reads the trade: an already-`SUCCESS` row re-publishes the trade-finish event idempotently and returns; a non-`NOTPAY` row returns silently. Otherwise it assigns the `MMdd-seq` `trade_no` from Redis — the shared Redis template hash `h_trade_no_{companyId}_{distributorId}_{MMdd}` maps order id → sequence (a re-read wins over a new increment, so the same order keeps one sequence) fed by the counter `c_trade_no_*`, both with 86400 s expiry — then CAS-updates `WHERE trade_id=? AND trade_state='NOTPAY'` to `SUCCESS` with `time_expire` (and `pay_type=localPay` on the zero-fee override), throws 交易单状态更新失败 on a lost race, re-reads, fulfils `maybeFulfillVipGradeMembercardSale` for `trade_source_type=membercard`, and publishes the **snake_case trade row** through `OrdersTradeFinishDispatchPublisher` (the `OrdersTradeFinishAfterCommitDispatchPublisher` `@Primary` bean in bootstrap for `event:291:OrdersBundle\Events\TradeFinishEvent` — after-commit when a transaction is active). `finalizeTradeSuccessAfterChannelQuery` is the same flow for the channel-order-query path, additionally stamping `transaction_id`. The publish row carries every gate key the downstream listeners filter on — `company_id`/`order_id`/`pay_type` for brokerage, item-sales and work-wechat notify, `user_id`/`shop_id`/`distributor_id` for member-link, `pay_fee`/`discount_fee` for the printer, `trade_source_type` (e.g. `normal_groups`) for groups and fapiao — pinned by `OrdersPaymentDoPaymentServiceWxappSyncTradeFinishPublishTest` across the zero-fee wxpay, point, groups and sync-success wxpay paths.
 
 ```mermaid
 sequenceDiagram
@@ -456,22 +470,29 @@ sequenceDiagram
     C->>W: POST /payment with order_id and pay_type
     W->>W: guards, order bundle, point-only forcing, prescription guard
     W->>D: doPayment auth data
-    D->>T: reuse cached NOTPAY trade with payment_params if channel-keyed
-    D->>T: insertPendingTrade NOTPAY with currency conversion
-    alt localPay, point, prepaid_point, deposit, pos
-        D->>D: settle internally, finalizeTradeSuccess
-    else bspay or adapay
-        D->>CH: membercard SDK createPayment
-        D->>T: persist outcome and client params
-    else wxpay, alipay, hfpay, offline_pay, paypal, doumen_intl
-        D->>CH: buildPayParamsOrInvoke
-        D->>T: savePaymentParams
+    D->>D: lowercase pay_type, resolve payment-subject distributor id
+    D->>T: reuse cached NOTPAY trade with payment_params for adapay or bspay
+    rect rgb(240, 248, 255)
+        note over D,T: TX1 preparePaymentInTx
+        D->>T: find-or-insert NOTPAY trade with currency conversion
+        alt localPay, point, prepaid_point, deposit, pos
+            D->>T: finalizeTradeSuccess CAS NOTPAY to SUCCESS
+        end
     end
-    D->>P: after commit publish event 291 trade finish
+    alt bspay or adapay
+        D->>CH: membercard SDK createPayment outside any transaction
+    else wxpay, alipay, hfpay, offline_pay, paypal, doumen_intl
+        D->>CH: buildPayParamsOrInvoke outside any transaction
+    end
+    rect rgb(240, 255, 240)
+        note over D,T: TX2 persistExternalPaymentInTx
+        D->>T: persist channel outcome, finalize when pay_status true, save payment_params
+    end
+    D->>P: publish event 291 trade finish with snake_case trade row
     P-->>W: client pay params with trade_info
 ```
 
-Caption: the payment core — order/payment guards, trade reuse-or-insert, per-channel branching, and the after-commit trade-finish publish that unlocks the pay-success bridge.
+Caption: the payment core — order/payment guards and the payment-subject resolution up front, TX1 find-or-insert with in-transaction completion for local pay types, channel invocation outside any DB transaction, TX2 outcome persistence, and the trade-finish publish that unlocks the pay-success bridge.
 
 ## Trade-finish fan-out and the pay-success bridge
 
@@ -601,7 +622,8 @@ Handlers live in `dispatch/`; registration in bootstrap `*RegistrationConfig` cl
 ## Invariants and failure semantics
 
 * **Money is fen (int).** All fee fields are integer fen; currency-converted trades keep the original amount in `cur_pay_fee` and the converted one in `pay_fee`.
-* **Idempotency via NOTPAY guards.** The notify path (`applyTradePaymentNotify`) re-reads and throws on any trade that is not `NOTPAY`; the internal finalize path is CAS-guarded (`WHERE trade_state = 'NOTPAY'`) and re-publishes idempotently on an already-SUCCESS trade — repeated callbacks either see "更新已处理" or affect zero rows. The pay-success bridge's `order_status='NOTPAY'` guard likewise prevents double pay-success events; auto-cancel and confirm-receipt batches guard their status transitions the same way; the deferred refund path CAS-guards `SUCCESS→REFUND`.
+* **Idempotency via NOTPAY guards.** The notify path (`applyTradePaymentNotify`) re-reads and throws on any trade that is not `NOTPAY`; the internal finalize path is CAS-guarded (`WHERE trade_id=? AND trade_state='NOTPAY'`, 交易单状态更新失败 on a lost race) and re-publishes idempotently on an already-SUCCESS trade — repeated callbacks either see "更新已处理" or affect zero rows. The finalize-time `trade_no` is stable per order because the `h_trade_no_*` hash value for the order id wins over a fresh counter increment.
+* **No external call inside a DB transaction.** `doPayment` keeps channel SDK/HTTP invocations between TX1 (`preparePaymentInTx`) and TX2 (`persistExternalPaymentInTx`), so a slow or failing channel never holds row locks on `trade`; local pay types never leave TX1 at all. The pay-success bridge's `order_status='NOTPAY'` guard likewise prevents double pay-success events; auto-cancel and confirm-receipt batches guard their status transitions the same way; the deferred refund path CAS-guards `SUCCESS→REFUND`.
 * **Trade reuse.** `doPayment` never stacks pending trades for the same payment intent: an open NOTPAY trade (channel-keyed for adapay/bspay/offline_pay/paypal) is reused, and a cached `payment_params` payload short-circuits channel re-invocation.
 * **Post-commit dispatch.** Trade-finish, normal-order-cancel, and OPL publishes are registered as `afterCommit` synchronizations and run inline when no transaction is active — listeners always observe committed state.
 * **Point deduction happens exactly once.** Pointsmall orders deduct at create; `normal_pointsmall` trades do not deduct again at payment; zero-cash mixed orders are forced to `pay_type=point` rather than `localPay`.
@@ -623,6 +645,8 @@ Handlers live in `dispatch/`; registration in bootstrap `*RegistrationConfig` cl
 * `ShopadminNormalOrderCreateOrchestratorNormalOrderAddDispatchPublishProbeTest` / `NormalOrderAdminCreateUserOrderServiceNormalOrderAddDispatchPublishProbeTest` — pin the deferred create: only `preparePricingSnapshot` + `saveWaitPay`, no persistence and no `normal_order_add` on create.
 * `OrderCreatePersistencePortImplShopIdAlignPhpTest` — PHP parity of `persistOrder`: preassigned `order_id` reuse without calling `generate`, `shop_id` from orderData (never `distributor_id`) on order/item/association rows, freight point fields, company-default currency fallback, item spec desc.
 * `OrderCreatePostCommitPortImplNormalOrderCreateUserOrderOrderProcessLogDispatchPublishProbeTest` + `OrderCreatePostCommitPortImplSendPayRemindTest` — the 订单创建 OPL envelope (operator_id from orderData user_id, full params map, excard remarks variant) and the pay-remind payload for the shopadmin create path.
+* `OrdersPaymentDoPaymentServicePaymentSubjectTest` — payment-subject resolution feeds `distributorIdForSetting=0` into pay-config validation and the channel builder while the trade keeps the original distributor id; the TX1/TX2 transaction split (one `transactionTemplate.execute` for local `point`, two for `wxpayh5`) with the channel invocation asserted at transaction depth 0.
+* `OrdersPaymentDoPaymentServiceWxappSyncTradeFinishPublishTest` — the publish-on-success contract: exactly one snake_case trade-row publish on the zero-fee wxpay (`pay_type` stamped `localPay`), point, `normal_groups` and sync-success wxpay paths, carrying the brokerage/item-sales, member-link, printer, fapiao, customs and work-wechat gate keys, plus the zero-cash-with-points rewrite to `pay_type=point`.
 * `OrdersTradeFinishNormalOrderPaySuccessApplyServiceTest` — NOTPAY→PAYED transition, supplier sync, empty-Optional on non-normal source types.
 * `OrderDeliverySuccessNotifyWechatServiceTest` — the `orderDeliverySucc` payload envelope: recipient lookup short-circuit, order-title fallback for `item_name`, per-item `sep` payload preferring `item_name`/`logi_name`.
 * `WxappUpdateCartCheckStatusServiceTest` — the local check-status mutation: one UPDATE with `cart_id IN`, the single-id overload delegating to the batch, empty list skipping the write.

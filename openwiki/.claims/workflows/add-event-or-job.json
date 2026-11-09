@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:d0609cffa3be80afbd4746ec45a198263e53987e4bd49768b12fe59f3be66690",
+  "pageVersion": "sha256:9a783c75e45e274cbf8210af2e4fce82ce821a76500433bb425cadad6573bcec",
   "claims": [
     {
       "id": "claim_76729765035c42478dea741f33d9430e",
@@ -407,10 +407,124 @@
           "version": "repo-lines-v1:sha256:a836762b4347abae046010847c6a5d46bf08bd87383f2c8fdd4b0f0fd26f8189:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjc2NDYwZjg3NDgwNjQwMGI4OGU1N2ZlYTZlNTkyYTNkODljYTBkMTQ3NzBhYTgxNWIxY2E3MzEzMWJlZjkxMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSJ9"
         }
       ]
+    },
+    {
+      "id": "claim_e45ebdc71b1a40bdb81303e828f825b4",
+      "statement": "The bspay WITHDRAW_JOB (job:93:BsPayBundle\\Jobs\\WithdrawJob in BsPayBundleDispatchJobNames) is produced by WithdrawJobDispatchPublisherImpl in bootstrap config: a typed enqueueWithdrawJob(long applyId, long companyId) interface declared in ecshopx-common whose impl builds an apply_id/company_id LinkedHashMap and calls dispatchFacade.dispatchJob with DispatchOptions ASYNC/REDIS/queue \"default\"/null delay/RetryPolicy.platformDefault, and it carries no @Profile(\"!test-cron\") guard because its only trigger is the admin audit-approve path in WithdrawController, not a cron tick.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/WithdrawJobDispatchPublisherImpl.java#L38-L52",
+          "version": "repo-lines-v1:sha256:53f2e0aefa724f4b7bbad90235b8d3d547b7716a5af2849fa54fa23ab0cc235c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwOGNjMTVkMDc1NGI2ZjIxZjcxZTBiMDNiOWRkNzg2YmM5ODgwMDNiMmI1NzU2NGM2MDUwYTgwMjI1MTdjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE0ZGJiNjE0NzA1MDU0NGY0NDhmYjk2ZmIxZmNkMmYyODE3MjQxY2ZkZGYxNTVjM2M4MzRjZTA3YjM4YTljMTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bspay/src/main/java/cn/shopex/ecshopx/bspay/api/admin/v1/WithdrawController.java#L391-L391",
+          "version": "repo-lines-v1:sha256:8518fce326b630610fabfb1bc8666d17636ae0f341bfbc6adac738d53291400d:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODUxOGZjZTMyNmI2MzA2MTBmYWJmYjFiYzg2NjZkMTc2MzZhZTBmMzQxYmZiYzZhZGFjNzM4ZDUzMjkxNDAwZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiODUxOGZjZTMyNmI2MzA2MTBmYWJmYjFiYzg2NjZkMTc2MzZhZTBmMzQxYmZiYzZhZGFjNzM4ZDUzMjkxNDAwZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNzg3YTNmMTUxNTI5ZDAxYjQ5NTQ4ODhiNzBmNzc2MzcwNTUwOGUyNTU1MzZhNDY2OWRlYWU2ZjBhMzJhYzEyNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOTZhNmM0NGYxODg2ODY0OTFmZjA2MWVkNzYwMmNjY2RjMzZhMGQxMDA4MmYyOGYxMzIxMTNkOWY2NTA1NDkxMCJ9"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/BsPayBundleDispatchJobNames.java#L21-L21",
+          "version": "repo-lines-v1:sha256:d3b07231821125dc0133a0548b8756d22b0a264bab060590165eae1f572e2c09:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZDNiMDcyMzE4MjExMjVkYzAxMzNhMDU0OGI4NzU2ZDIyYjBhMjY0YmFiMDYwNTkwMTY1ZWFlMWY1NzJlMmMwOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZDNiMDcyMzE4MjExMjVkYzAxMzNhMDU0OGI4NzU2ZDIyYjBhMjY0YmFiMDYwNTkwMTY1ZWFlMWY1NzJlMmMwOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjU4ZDU4NDgzYmU2MjBiODRmYjU2OWVmY2VjYzZiN2RiNjI2NDEyMjY2ODgyNjllMWVmZWJjNmJmM2VlYjIzZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMWRkODhlZTE4Y2MxODk5YTIyMmIxOTZlNjE5OWY3ODc4MGMxNDkzMjNlYmJiMWM2NTRhOWE3ZDRhZWJlNTBlYSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/WithdrawJobDispatchPublisher.java#L21-L21",
+          "version": "repo-lines-v1:sha256:b1ae30f64adba0244faa81de4bf69bfa9d3ed11aa55863d6a3632f16b66bb624:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjFhZTMwZjY0YWRiYTAyNDRmYWE4MWRlNGJmNjliZmE5ZDNlZDExYWE1NTg2M2Q2YTM2MzJmMTZiNjZiYjYyNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYjFhZTMwZjY0YWRiYTAyNDRmYWE4MWRlNGJmNjliZmE5ZDNlZDExYWE1NTg2M2Q2YTM2MzJmMTZiNjZiYjYyNCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOWRkMzRjOWY5M2YxOWM2YTY3MmRhNTc5M2VhOGNiMzBiMDA3Y2FkZDAyZDdiMThlOTdmNTVhN2M5MWQ1ODBjYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_c7d2b8826a5e4bfea8eac2891d25f004",
+      "statement": "WithdrawJobHandler in ecshopx-bspay strictly validates the job payload — throwing BadRequestException(\"apply_id required\")/(\"company_id required\") unless both values arrive as Number — then delegates to WithdrawApplyService.executeHuifuWithdraw(applyId, companyId), and it is registered for the WITHDRAW_JOB message name by WithdrawJobRegistrationConfig's @PostConstruct registerJob call in bootstrap.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/WithdrawJobRegistrationConfig.java#L35-L39",
+          "version": "repo-lines-v1:sha256:8d007d4acbd66dbcaa540b1b97f587d2c1e303320531d037caf0c03ddd5c797c:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMjdkNWVkOTcxOTZjNjBjYzYxZDMxNDQ1ZWYyNTA0ZGExYzVlOWEyODNhMDk5ZTE3YzAyMjFlNTI1MTVmY2I4NCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-bspay/src/main/java/cn/shopex/ecshopx/bspay/dispatch/WithdrawJobHandler.java#L29-L47",
+          "version": "repo-lines-v1:sha256:b33b238030a365c3273389dbf54da06ce65bbea2acadac0ff7f73656be595aa0:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNlZDRkN2NhZGI2ZjY0OGQyYjdkMGE0YjZmZjA3ZTM4MDJjOWYwNDdhNGY0MTE5OTVmZmMxYTY4MTgzODUzYjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_76288bcc9749489a92e1d30f6ee117e3",
+      "statement": "WithdrawJobDispatchFlowTest is the newest job-shaped DispatchFlowTest: it wires the real WithdrawJobHandler around a mocked WithdrawApplyService into an InMemoryDispatchRegistry, publishes via a DispatchFacade whose REDIS driver is a list-collector, asserts the captured DispatchMessage is a JOB on queue \"default\" with null delay and the apply_id/company_id payload, and feeds the message through a real DispatchConsumerRuntime to verify executeHuifuWithdraw(123L, 55L).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/dispatch/WithdrawJobDispatchFlowTest.java#L25-L67",
+          "version": "repo-lines-v1:sha256:b322b76da8f1a9e35a306e9c9eb071e487d0bf75564745825c2f7440e05ce7b4:eyJzZWxlY3RlZExpbmVDb3VudCI6NDMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIzMGFhYmMyYWE2NjE4ODI2MmQzODFkYmFlY2JiZDM1ZjQ1OGZjNjYzYWQ2ZDQwM2YwZmQzYjJlYmNhZjg2MjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdmODJjYzQ2MGY0Yjk0YjlmYjdmMzVmOTA5Y2U1YTdiZTU2MWZiZGNkMzA2NWMyM2ZkNWUzMDcyNTA2YWY4MTAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_655e822eb5344e9bb45a4b10517ec54c",
+      "statement": "MembersCreateMemberSuccessNewCustomerDispatchListenerRegistrationConfig is an @Order(26) bootstrap @Configuration whose @PostConstruct registers CreateMemberSuccessNewCustomerDispatchListener as listener:members.create_member_success_new_customer on MembersDispatchEventNames.EVENT_CREATE_MEMBER_SUCCESS (event:members:create_member_success) with ListenerDispatchOptions.async(\"default\", null).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MembersCreateMemberSuccessNewCustomerDispatchListenerRegistrationConfig.java#L29-L47",
+          "version": "repo-lines-v1:sha256:6d030cc741bb9bb31754b20cdda8af65d1203fb43944b436bf9713ed8c93aa81:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE4ZDcxMjQyMmYyNTMzMjdjNGRkNzUxYzc4OTk2MzhmYzQ5NGMzMGI0Zjk2ZGFjNjMwN2M2ZDg4NzE3MDIxNTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAyNGE3ZjE5NTc0OGE3MWYxMGQ5YjM0YjI4ODY0OTIxMzcxZTNkM2NjYWM0MDQ1ZDcyYTlkMmZkZmU4OGFhNWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/MembersDispatchEventNames.java#L21-L34",
+          "version": "repo-lines-v1:sha256:14cbeed417c15dff20d5ac75d747a8aa310fd5d7ffb43d7c33d5b07553ea639f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4ODlhYmUxZmQ0NjgxMTk0Y2Q4ZmEzNmY5MmRlODJjNzc0MjMzZDIxNjg2ZjU0NTRhZmIwMTM5NzQxYTlhNGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFhMTg5NjE5MGIwMjVmZDhkMTUwZjg0MjExOTlmYjA0NDk2ZDhmMzkwMmQwNjNkY2Y3NjVlYzA0YzRlYjQ2MTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY2MzMzZTliY2JjNmEyOTdjZjhiNDQ3YmFhYzNiOGVjYTk5Y2RlMzRmMWY4MWRkNDJhZmEyZTgzYjhiZDVlYmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjYzMGQ2NDBlNDAyMjJlMTZhMGFiODFmZDExMTA3OTQ2MjRmMDFhZDRiMjFmMDM2MzIzYzBiMmU0YWY4MWE5MzAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_ae0b9e1182474641b9d266604bbdf511",
+      "statement": "EVENT_CREATE_MEMBER_SUCCESS (event:members:create_member_success) is the second large fan-out plane: nine bootstrap RegistrationConfigs register listeners for it (youshu, shopex-crm, members notice, members new-customer, register-point, datacube register-num, two promotions configs, shuyun open-platform) across the default and slow lanes.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/DatacubeRegisterNumStatsCreateMemberSuccessDispatchListenerRegistrationConfig.java#L43-L43",
+          "version": "repo-lines-v1:sha256:51b10f56edfcc1f25cc7281cec74e59c348df30b0e3fd8d5c1df327042a2450b:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTFiMTBmNTZlZGZjYzFmMjVjYzcyODFjZWM3NGU1OWMzNDhkZjMwYjBlM2ZkOGQ1YzFkZjMyNzA0MmEyNDUwYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTFiMTBmNTZlZGZjYzFmMjVjYzcyODFjZWM3NGU1OWMzNDhkZjMwYjBlM2ZkOGQ1YzFkZjMyNzA0MmEyNDUwYiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNWM0ZTQ0NDRiMWMzMzE3ZGQzNjY3ZjA3OGJlYmEzODcwOTQ4ZGViNTkxY2U3ZTVjMTU3MjNjZmU2ZjE2MTMwNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzUyZTQ2MTNlNmY3MTgxZTk0YTNlZmM1YjNjZGQ5NDI3ZDMxZGIxZjJmOGRjYzU4YmYzNzJlMzgwM2EwZmQ1NSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MembersCreateMemberSuccessNewCustomerDispatchListenerRegistrationConfig.java#L41-L47",
+          "version": "repo-lines-v1:sha256:021c071844e342595202893ddc5f03807d10531d8900c2f69b2a884ed5f84008:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzdjY2FjNzM2Y2ZiMDVlZjI1MzMwYzVkZTlmMmFjYTNjY2ZjOGMxZmE2NTQwODdiZDc3MWFjMDY5NTM4M2I1ZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiM2U3MWYxOWIzZmRlODU1ZWM4MTM0YWE1NjQzNGFiMjZhNjZjZmNiNTZiZWZmMzFhZDE2MDQ5ZTYxNjgxM2Q2YyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ShuyunOpenPlatformCreateMemberSuccessDispatchListenerRegistrationConfig.java#L43-L43",
+          "version": "repo-lines-v1:sha256:51b10f56edfcc1f25cc7281cec74e59c348df30b0e3fd8d5c1df327042a2450b:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTFiMTBmNTZlZGZjYzFmMjVjYzcyODFjZWM3NGU1OWMzNDhkZjMwYjBlM2ZkOGQ1YzFkZjMyNzA0MmEyNDUwYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTFiMTBmNTZlZGZjYzFmMjVjYzcyODFjZWM3NGU1OWMzNDhkZjMwYjBlM2ZkOGQ1YzFkZjMyNzA0MmEyNDUwYiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzhkNGZjMmZmMzlhMzc4YzdlZTMwZTAxYmI4YTgyNWIzZDQ5YTk3ODY3YWFiMmIxODgwNzdiNTU1Y2IzZGQwMyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzQ5MDZmMTkxMjgzZTNlZTkyMmFhYzZiMGYzNmQ1N2EzNGE4MWVhMjBjMTI5ZmQzODI5Njc4NTI0MWEzNmUxNCJ9"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/YoushuCreateMemberSuccessDispatchListenerRegistrationConfig.java#L44-L44",
+          "version": "repo-lines-v1:sha256:51b10f56edfcc1f25cc7281cec74e59c348df30b0e3fd8d5c1df327042a2450b:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTFiMTBmNTZlZGZjYzFmMjVjYzcyODFjZWM3NGU1OWMzNDhkZjMwYjBlM2ZkOGQ1YzFkZjMyNzA0MmEyNDUwYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTFiMTBmNTZlZGZjYzFmMjVjYzcyODFjZWM3NGU1OWMzNDhkZjMwYjBlM2ZkOGQ1YzFkZjMyNzA0MmEyNDUwYiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjFmOWNmYTUxNjY1MTEwNDNjMzBmMDM1OThjN2FlNmMzYWE2OTJjMGEwMzAzZjVlMmZhODlkNzEzMTEyZDg2NCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYzE4ZDZmODA5OGU5Njk1YTM1MThjM2NmODc2ZWM3Y2QzMmI2YjkzM2Q4MGIzNDgyMjhiMmFiN2VlYTkzMzgzMyJ9"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/MembersDispatchEventNames.java#L21-L21",
+          "version": "repo-lines-v1:sha256:f889abe1fd4681194cd8fa36f92de82c774233d21686f5454afb0139741a9a4e:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjg4OWFiZTFmZDQ2ODExOTRjZDhmYTM2ZjkyZGU4MmM3NzQyMzNkMjE2ODZmNTQ1NGFmYjAxMzk3NDFhOWE0ZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjg4OWFiZTFmZDQ2ODExOTRjZDhmYTM2ZjkyZGU4MmM3NzQyMzNkMjE2ODZmNTQ1NGFmYjAxMzk3NDFhOWE0ZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjYzMzNlOWJjYmM2YTI5N2NmOGI0NDdiYWFjM2I4ZWNhOTljZGUzNGYxZjgxZGQ0MmFmYTJlODNiOGJkNWViYyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiY2MxMmVlYzRmMGRiMDczMWY2NTJmOTI0OGQwNmQ1OTc3OWQ0NzBiMWU1MWFmMjM1ZTA4ZmM5NDU2NzNjZGU5NCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_cd2c4cfed5054c6cb1b45be3109cbaeb",
+      "statement": "CreateMemberSuccessNewCustomerDispatchListener is a best-effort enrichment listener that silently returns when company_id/user_id extract to <= 0 and otherwise calls NewCustomerTagReconcileService.reconcile(companyId, userId, MemberSystemTagCodes.SOURCE_REGISTER); its plain Mockito unit test pins both the reconcile call for valid ids and no interaction for invalid ids.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/dispatch/CreateMemberSuccessNewCustomerDispatchListener.java#L36-L44",
+          "version": "repo-lines-v1:sha256:6a0e9d4f2966f178e5e1d32382477683291a19038a406fcec149ff9448832ac1:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjA4Y2MxNWQwNzU0YjZmMjFmNzFlMGIwM2I5ZGQ3ODZiYzk4ODAwM2IyYjU3NTY0YzYwNTBhODAyMjUxN2M1ZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNTg4ZjU0NjM5MGJkMDY3ODU2ZmI3ZDY0MmI2ZDkxZjFkODVlYTY3NjYzMmI5NzhhNWJjMzAzYWQ4MzcyYmVhMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/test/java/cn/shopex/ecshopx/members/dispatch/CreateMemberSuccessNewCustomerDispatchListenerTest.java#L22-L34",
+          "version": "repo-lines-v1:sha256:8082093ae97c8e8c11927eb34116648130a257f7f8d1fd89e102052f8aac74b7:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIxNGU4ZDFlMTJlMDdmZTE2NjRiMTM0NTJkZjcwNTRhNDczODVkMDFjMmQzODY1YWUwOTc0NTM0YjdjMThjNTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFjMDBlZTA4MDIwMzkxNTBmMmU5ZTdlZTY2NTg1ZmZmMTFhMDQ4NWU4ZGFhYTI0YWZhOTBlOTFkMzEyNTZkZDQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_3b57367f21884eb48988a930e939929e",
+      "statement": "DigiOsNormalOrderDeliveryAdjustmentDispatchListenerRegistrationConfig is an @Order(80) bootstrap config registering NormalOrderDeliveryDigiOsStoreAdjustmentDispatchListener as listener:digios.store_adjustment_on_normal_order_delivery on OrdersDispatchEventNames.EVENT_NORMAL_ORDER_DELIVERY with ListenerDispatchOptions.async(\"default\", null) — the newest example of the dotted Java-first <consumer-bundle>[.<sub-domain>].<action>_on_<event-snake> listener-name grammar.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/DigiOsNormalOrderDeliveryAdjustmentDispatchListenerRegistrationConfig.java#L28-L48",
+          "version": "repo-lines-v1:sha256:a4ad176a5cd4c28dd79ddd66ff576e15aab0f00e0addd9e094387e20d1f25b54:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVkNzNhYTc4ZDZkMDc5Njc2ZTliMDM0NjM3NmE0ZmNhOWMyMjkwZDhhY2E3MzY3NzEwYTE5ZDlhODk3ZGE1ODciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA0ZGJiZDc3MzEwZDFmZGUxYzBkOWJiMGEwOTMxNTI3YTg4MzU2YzIzMGFlNmVhZDRmMTdmMmNlYTY0ZTg3ZTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/OrdersDispatchEventNames.java#L106-L108",
+          "version": "repo-lines-v1:sha256:c62b70ee6f7339a75e7c25e5f38d474f1dc34a5c21d8eabc86ab610a7dcf8051:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTg4MzEzNzdmY2Y0ZTFlYjAxZDIyMDNjODIzYmY1ODE0OWFhNGY5OTM0NWNhNmM5M2ZiZDc2MjI1OTgyYTk0YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOWExYjJlYmYzOTM5MTdiNGM1YTMyNWE5ZTIxYjY1ZGFhM2I0ZDVmZTYyYmZkNzBkMmM1NmYwMDY4YzY3N2M1ZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDAwZjU3YjIzYzJkMmZjMDEzNjEzMDZiMzViYjNhM2M5NTU3ODczYzRmY2U1MDFlYTNkOWFkY2E2ZDAzOGUxMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMTFmNmExMTM4NDVmZTY2NDVkODdlNmJiZGJmNmJkMzE1NTkwNjY5YWFhNzc4NjNiNjYzMmM1MTI0NDQ0YTI3OSJ9"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.9.0",
-    "at": "2026-11-05T17:10:02.238Z"
+    "at": "2026-11-08T17:14:16.576Z"
   }
 }

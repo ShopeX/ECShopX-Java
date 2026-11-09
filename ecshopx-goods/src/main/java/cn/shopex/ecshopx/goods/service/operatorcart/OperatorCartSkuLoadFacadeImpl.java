@@ -75,7 +75,7 @@ public class OperatorCartSkuLoadFacadeImpl implements OperatorCartSkuLoadFacade 
 		for (Long id : itemIds) {
 			Items it = byId.get(id);
 			if (it == null) {
-				throw new ResourceException("商品已失效");
+				continue;
 			}
 			OperatorCartSkuRowDto dto = new OperatorCartSkuRowDto();
 			dto.setItemId(id);

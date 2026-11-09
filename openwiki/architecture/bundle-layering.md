@@ -1,16 +1,20 @@
 ---
 type: architecture-convention
 title: Bundle Anatomy and Layering Conventions
-description: The internal package structure of one business Bundle (api/service/domain/mapper/integration/dispatch/cron/port/config/repository) and the rules that decide where new code goes, using ecshopx-orders as the worked example and cross-checked against goods, members, and kaquan.
-tags: [architecture, bundle, layering, controllers, services, mappers, ports, dispatch, cron, maven]
+description: The internal package structure of one business Bundle (api/service/domain/mapper/integration/client/auth/gateway/dispatch/cron/port/config/repository) and the dependency-boundary rules that decide where new code goes — one domain per Maven module, Ports through ecshopx-common, assembly only in ecshopx-bootstrap — using ecshopx-orders as the worked example and cross-checked against goods, members, kaquan, digios, shuyun, and companys.
+tags: [architecture, bundle, layering, controllers, services, mappers, ports, dispatch, cron, maven, dependency-boundaries]
 verified:
-  - by: openwiki/0.7.2
-    at: 2026-10-21T12:26:22.580Z
+  - by: openwiki/0.9.0
+    at: 2026-11-08T17:14:16.576Z
 sources:
   - id: openwiki-source-84aeb105875424c9aac7edf8
     resource: repo://ecshopx-bootstrap/pom.xml
   - id: openwiki-source-4c185fba9cdc269f8331cbb0
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/bootstrap/order/CompanyPassportUidByCompanyIdPortAdapter.java
+  - id: openwiki-source-b9efedc29ed060e05f8a7583
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/DigiOsAftersalesReturnAdjustmentDispatchPublisherImpl.java
+  - id: openwiki-source-1adeed0e9d51f13c65d98eb6
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/DigiOsDistributorCreateDispatchListenerRegistrationConfig.java
   - id: openwiki-source-c83108e0b31507dc4b736d71
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/DispatchBusConfig.java
   - id: openwiki-source-225eace12759f1e8a45e5306
@@ -25,14 +29,42 @@ sources:
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/EcshopxApplication.java
   - id: openwiki-source-89b43138f8e75edb4615495b
     resource: repo://ecshopx-bootstrap/src/main/resources/application.properties
+  - id: openwiki-source-edac2d50792508faa99e2b5d
+    resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/auth/PosJwtIssuerPort.java
   - id: openwiki-source-809e54f4e38e5137797c41dd
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/FinishOrderJobDispatchPublisher.java
   - id: openwiki-source-2c4a54ebc839a0b89bdbcdf0
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/mybatis/FqcnMapperBeanNameGenerator.java
   - id: openwiki-source-6b0e6cf65040aaf8048f1d89
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/mybatis/metadata/MpTable.java
+  - id: openwiki-source-e4c74586aedc9141bacf93b9
+    resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/port/digios/PosStoreAccountDigiOsCreatePort.java
+  - id: openwiki-source-9bceb1316bcda54f295cedd8
+    resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/port/digios/PosStoreAccountDigiOsCreatePortNoOp.java
   - id: openwiki-source-1e55df8a8ff6fe394fcbba4b
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/port/order/JushuitanSettingReadPort.java
+  - id: openwiki-source-e8ae20ad9a0b9aab932192bb
+    resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/api/pos/v1/PosAuthController.java
+  - id: openwiki-source-26499232cc5422538ecc24fc
+    resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/posaccount/PosStoreAccountWriteService.java
+  - id: openwiki-source-80ae9d88e25e6269f15157ab
+    resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/posauth/PosAuthService.java
+  - id: openwiki-source-48f750a8142d8a7487ac4de7
+    resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/posauth/PosJwtSessionValidator.java
+  - id: openwiki-source-cdfd94d337360d4511576824
+    resource: repo://ecshopx-companys/src/test/java/cn/shopex/ecshopx/companys/service/posauth/PosAuthServiceTest.java
+  - id: openwiki-source-27d0d0b9eb5f333a0fcbcf84
+    resource: repo://ecshopx-digios/pom.xml
+  - id: openwiki-source-408cf03e9d042472e7119cc7
+    resource: repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/client/DigiOsGatewayClient.java
+  - id: openwiki-source-9d090d5f3129b51586d0d33f
+    resource: repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/dispatch/OperatorCreateDigiOsAccountSyncDispatchListener.java
+  - id: openwiki-source-372a9d2838d9f167f6d06757
+    resource: repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/openapi/OpenapiDigiOsProductStockPushPortImpl.java
+  - id: openwiki-source-5db0356764f92b4d36d49de8
+    resource: repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/port/PosStoreAccountDigiOsCreatePortImpl.java
+  - id: openwiki-source-b5d20d175ea7c5401f6d2077
+    resource: repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/service/DigiOsConfigService.java
   - id: openwiki-source-260f163fd9cabc7c65a6abc5
     resource: repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/api/admin/v1/DistributorController.java
   - id: openwiki-source-172b2a52ae139f0209f376ad
@@ -41,6 +73,10 @@ sources:
     resource: repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/service/DistributorCreateParamValidator.java
   - id: openwiki-source-c755f75ce29c46640f247e1a
     resource: repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/service/DistributorCreateRequestGate.java
+  - id: openwiki-source-a1f68480771cd92413f00be5
+    resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/PosJwtAuthenticationFilter.java
+  - id: openwiki-source-da7950ab19f4690ae361bd4b
+    resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/PosJwtIssuer.java
   - id: openwiki-source-418a764976cc07a563f09f07
     resource: repo://ecshopx-goods/pom.xml
   - id: openwiki-source-d9ade624e0049278a0727013
@@ -103,18 +139,28 @@ sources:
     resource: repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/orders/cron/ScheduleFinishOrdersHandlerTest.java
   - id: openwiki-source-4c7a3bc700c378ccd65c4327
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/api/open/WxpayNotifyController.java
+  - id: openwiki-source-f2d696d26fcf3f2b4a65b284
+    resource: repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/api/callback/v1/ShuyunOpenPlatformTokenCallbackController.java
+  - id: openwiki-source-a24f036c8d0eb888d3b5c8c3
+    resource: repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/auth/InboundSignedCallbackPreparer.java
+  - id: openwiki-source-db6d92a621671e3911720f38
+    resource: repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/auth/InboundSignedPrepareMode.java
+  - id: openwiki-source-ac9bff6fbfacb24d146d9682
+    resource: repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/config/ShuyunOpenPlatformProperties.java
+  - id: openwiki-source-763c7cb79e6a33efb6d3b768
+    resource: repo://ecshopx-shuyun/src/test/java/cn/shopex/ecshopx/shuyun/auth/InboundSignedCallbackPreparerAuthTest.java
   - id: openwiki-source-f1b1aacc63642e5304668821
     resource: repo://readme.md
-generated: { by: "openwiki/0.7.2", at: "2026-10-21T12:26:22.580Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-08T17:14:16.576Z" }
 ---
 
 # Bundle Anatomy and Layering Conventions
 
-ECShopX-Java is a multi-module Maven build in which **one business domain = one Bundle = one Maven module**. The root `pom.xml` lists every Bundle as a `<module>`, and each Bundle's POM declares its own peer dependencies. This page documents what a single Bundle looks like on the inside — which packages exist, what each one owns, and the rules a change must follow so that new code lands in the right place.
+ECShopX-Java is a multi-module Maven build in which **one business domain = one Bundle = one Maven module**. The root `pom.xml` lists every Bundle as a `<module>`, and each Bundle's POM declares its own peer dependencies. This page documents what a single Bundle looks like on the inside — which packages exist, what each one owns, and the dependency-boundary rules a change must follow so that new code lands in the right place.
 
-The worked example throughout is **`ecshopx-orders`** (the largest Bundle: orders, cart, logistics, and settlement — see its `package-info.java`, "订单、购物车、物流与结算域"), with every convention cross-checked against **`ecshopx-goods`** (商品域), **`ecshopx-members`** (会员与账户域), and **`ecshopx-kaquan`** (卡券域).
+The worked example throughout is **`ecshopx-orders`** (the largest Bundle: orders, cart, logistics, and settlement — see its `package-info.java`, "订单、购物车、物流与结算域"), with every convention cross-checked against **`ecshopx-goods`** (商品域), **`ecshopx-members`** (会员与账户域), and **`ecshopx-kaquan`** (卡券域). Three newer Bundles extend the skeleton and are covered in their own sections: **`ecshopx-digios`** (DigiOS POS direct integration — outbound gateway client, inbound stock push, store/account/adjustment sync), **`ecshopx-shuyun`** (数云对接域： legacy UAPI plus the open-platform open-api — see its `package-info.java`), and the **POS auth** layering inside **`ecshopx-companys`**.
 
-For the *cross-Bundle* half of the story (who implements whose Ports, and how the dispatch bus moves messages between Bundles), see [Cross-Bundle Communication](cross-bundle-communication.md). For the HTTP request path that reaches these controllers, see [Request Lifecycle](request-lifecycle.md). For MyBatis specifics, see [Persistence — MyBatis](../concepts/persistence-mybatis.md).
+For the *cross-Bundle* half of the story (who implements whose Ports, and how the dispatch bus moves messages between Bundles), see [Cross-Bundle Communication](cross-bundle-communication.md). For the system-level module map, see [Architecture Overview](overview.md); for the bus itself see [Dispatch Bus](../concepts/dispatch-bus.md), and for the external systems these Bundles talk to see [Third-Party Integrations](../integrations/third-party.md). For the HTTP request path that reaches these controllers, see [Request Lifecycle](request-lifecycle.md). For MyBatis specifics, see [Persistence — MyBatis](../concepts/persistence-mybatis.md).
 
 ## The standard package layout
 
@@ -124,28 +170,34 @@ Every business Bundle roots its code at `cn.shopex.ecshopx.<domain>` and mirrors
 |---|---|---|
 | `api/admin/v1` | Operator-console (admin) HTTP controllers, `@AdminAuth` | `orders/api/admin/v1/OrderController.java` |
 | `api/front/v1` | Buyer-facing (H5 / Mini Program) HTTP controllers, `@FrontAuth`/`@FrontNoAuth` | `orders/api/front/v1/WxappPaymentController.java` |
+| `api/pos/v1` | POS-terminal HTTP controllers authenticated by POS JWT (`token_kind=pos`) | `companys/api/pos/v1/PosAuthController.java` |
+| `api/callback/v1` | Third-party signed callbacks that need HMAC verification, not admin/front auth | `shuyun/api/callback/v1/ShuyunOpenPlatformTokenCallbackController.java` |
 | `api/open` | Unauthenticated/legacy callback endpoints | `payment/api/open/WxpayNotifyController.java`, `wechat/api/open/` |
 | `service` | Business logic; often split into orchestrator + request-gate + param-validator | `orders/service/front/wxapp/WxappPaymentService.java` |
 | `domain` | MyBatis-Plus entity classes (one per table) | `orders/domain/NormalOrders.java` |
 | `mapper` | Mapper interfaces (`@Mapper`, extend `BaseMapper<T>`); XML lives in `resources/mapper/` | `orders/mapper/NormalOrdersMapper.java` |
 | `integration` | Implementations of *other Bundles'* Ports | `orders/integration/JushuitanSettingReadPortImpl.java` |
+| `client` / `gateway` | Outbound HTTP client for one external system (token, retries, payload logging) | `digios/client/DigiOsGatewayClient.java`, `shuyun/gateway/ShuyunOpenGatewayClient.java` |
+| `auth` | Inbound signature verification / tenant resolution for third-party callbacks | `shuyun/auth/InboundSignedCallbackPreparer.java` |
 | `dispatch` | Dispatch-bus job handlers (`DispatchHandler`) and event listeners (`DispatchListener`) | `orders/dispatch/FinishOrderJobHandler.java` |
 | `cron` | XXL-JOB handlers, named `Schedule*Handler` | `orders/cron/ScheduleFinishOrdersHandler.java` |
-| `port` | Port interfaces this Bundle owns and other Bundles implement | `orders/port/WxappCartAddPort.java` |
-| `config` | Bundle-local Spring configuration and controller advice | `orders/config/OrdersAdminV1ExceptionAdvice.java` |
+| `port` | Port interfaces this Bundle owns, and/or its `@Primary` implementations of `common` Ports | `orders/port/WxappCartAddPort.java`, `digios/port/PosStoreAccountDigiOsCreatePortImpl.java` |
+| `config` | Bundle-local Spring configuration, `@ConfigurationProperties`, controller advice | `orders/config/OrdersAdminV1ExceptionAdvice.java`, `digios/config/DigiOsProperties.java` |
 | `repository` | Optional query/write helpers layered on top of mappers | `orders/repository/CategoryTaxRateRepository.java` |
 | `openapi` | Implementations of `Openapi*Port` interfaces consumed by the ecshopx-openapi gateway | `orders/openapi/OpenapiOrderListPortImpl.java` |
 | `event` / `listener` | Spring application events and `@TransactionalEventListener` beans | `orders/event/PaySuccessSpringEvent.java`, `orders/listener/` |
-| `support`, `dto`, `util`, `web` | Pure helpers shared inside the Bundle | `kaquan/util/`, `goods/web/DatapassBlockResolver.java` |
+| `support`, `dto`, `util`, `web` | Pure helpers shared inside the Bundle | `kaquan/util/`, `goods/web/DatapassBlockResolver.java`, `digios/support/DigiOsMessageId.java` |
 
-Not every Bundle carries every package — `kaquan` has no `repository/`, and `members` has no `cron/` — but when a package exists it always means the same thing. **When you add code, the package choice is decided by the role the code plays, not by convenience.**
+Not every Bundle carries every package — `kaquan` has no `repository/`, `members` has no `cron/`, and only third-party-facing Bundles grow `client/`, `gateway/`, or `auth/` — but when a package exists it always means the same thing. **When you add code, the package choice is decided by the role the code plays, not by convenience.**
 
-## Controllers: `api/admin/v1`, `api/front/v1`, `api/open`
+## Controllers: `api/admin/v1`, `api/front/v1`, `api/pos/v1`, `api/callback/v1`, `api/open`
 
-### The three-way API split
+### The API surfaces
 
-* **`api/admin/v1`** — the operator console. Controllers are annotated `@AdminAuth` (processed by `AdminAuthInterceptor`, see `common/annotation/AdminAuth.java`) plus usually `@ShopLog`. Their base `@RequestMapping` is `/api/v1` or `/api/v1/<domain>` (e.g. `orders` admin `OrderController` maps `/api/v1` with routes like `/orders` and `/order/{order_id}`; `goods` admin `ItemsController` maps `/api/v1/goods`; `kaquan` and `members` admin controllers map `/api/v1` with entity routes such as `/member`, `/members`).
+* **`api/admin/v1`** — the operator console. Controllers are annotated `@AdminAuth` (processed by `AdminAuthInterceptor`, see `common/annotation/AdminAuth.java`) plus usually `@ShopLog`. Their base `@RequestMapping` is `/api/v1` or `/api/v1/<domain>` (e.g. `orders` admin `OrderController` maps `/api/v1` with routes like `/orders` and `/order/{order_id}`; `goods` admin `ItemsController` maps `/api/v1/goods`; `digios` admin `DigiOsCompanyConfigController` maps `/api/v1/digios/company_config`; `kaquan` and `members` admin controllers map `/api/v1` with entity routes such as `/member`, `/members`).
 * **`api/front/v1`** — the buyer channel (H5 and Mini Program). Controllers carry `@FrontAuth` or `@FrontNoAuth` on the class or on individual methods (`common/annotation/FrontAuth.java`). Their base path is always under `/api/v1/h5app`, with Mini Program endpoints further namespaced by `wxapp` (e.g. `WxappPaymentController` maps `/api/v1/h5app/wxapp`; `kaquan` front `DiscountCardController` maps `/api/v1/h5app`; `goods` front `ItemsController` maps `/api/v1/h5app/wxapp/goods`).
+* **`api/pos/v1`** — the POS-terminal channel. Controllers are annotated with neither `@AdminAuth` nor `@FrontAuth`; authentication is the POS JWT Bearer token, verified upstream by `espier/security/PosJwtAuthenticationFilter`, which only engages when the token carries `token_kind=pos` (issuer `POS_JWT_ISSUER`, default `ecshopx-pos`) and then populates the `PosJwtRequestAttributes.POS_JWT_USER_DATA` request attribute. `companys/api/pos/v1/PosAuthController` maps `/api/v1/pos/auth` with `login` (unauthenticated entry — employee number + password), `logout` (blacklists the presented token), and `me` (role/permission read from the request attribute).
+* **`api/callback/v1`** — signed third-party callbacks that must verify an HMAC signature and resolve the tenant *before* any business code runs; they cannot use admin/front/POS auth because the caller is the vendor's server. `shuyun` keeps its open-platform callbacks here (`ShuyunOpenPlatformTokenCallbackController`, `ShuyunOpenPlatformLoyaltyGradeCallbackController`, `ShuyunOfflineBenefitCallbackController`), each delegating verification to the Bundle's `auth/` package (below) and returning the vendor's exact expected response shape (`{code,msg,data}` for Shuyun, *not* the `ApiResult` envelope).
 * **`api/open`** — unauthenticated, externally-driven endpoints that must not go through either interceptor: WeChat Pay asynchronous notifications (`payment/api/open/WxpayNotifyController` at `/wechatAuth/wxpay/notify`), WeChat Open Platform callbacks, and legacy PHP URL-compatibility routes such as `GET /wechatAuth/wxapp/qrcode.png`.
 
 The public Open API is **not** served from business-Bundle `api/` packages at all. It lives in the dedicated `ecshopx-openapi` module under `openapi/thirdapi/v1` and `openapi/thirdapi/v2`, whose controllers map `/api/openapi/internal/v1|v2` with method-style route names like `/ecx.order.list`, plus a catch-all gateway controller at `/api/openapi`. Business Bundles contribute behaviour through `openapi/` adapters (see below).
@@ -158,7 +210,7 @@ Because the application is one Spring context that scans `cn.shopex.ecshopx.**`,
 <domain><Surface>V1<Entity>          // e.g. ordersFrontV1WxappPayment, goodsAdminV1Items, kaquanDiscountCardFrontV1
 ```
 
-Concretely, from the four Bundles cross-checked:
+Concretely, from the cross-checked Bundles:
 
 | Controller | Bean name |
 |---|---|
@@ -171,14 +223,19 @@ Concretely, from the four Bundles cross-checked:
 | `kaquan` admin `VipGradeController` | `kaquanVipGradeAdminV1` |
 | `kaquan` front `DiscountCardController` | `kaquanDiscountCardFrontV1` |
 | `openapi` v2 orders `OrderController` | `openapiV2Order` |
+| `digios` admin `DigiOsCompanyConfigController` | `digiosAdminV1CompanyConfig` |
+| `companys` POS `PosAuthController` | `companysPosV1PosAuth` |
+| `shuyun` token callback | `shuyunOpenPlatformTokenCallbackV1` |
 
 The same need is met for **mappers** not by manual names but by `FqcnMapperBeanNameGenerator`, which the bootstrap main class installs on `@MapperScan` so that two `UserDiscountMapper`-alike interfaces across Bundles get fully-qualified bean names instead of colliding on the short default (see `common/mybatis/FqcnMapperBeanNameGenerator.java` and `EcshopxApplication`).
 
-**Where a new endpoint goes:** pick `api/admin/v1` for operator-console endpoints, `api/front/v1` for buyer endpoints, `api/open` for callback/legacy-URL endpoints, and give the controller an explicit `@RestController("...")` bean name that starts with the Bundle's domain prefix.
+**Where a new endpoint goes:** pick `api/admin/v1` for operator-console endpoints, `api/front/v1` for buyer endpoints, `api/pos/v1` for POS-terminal endpoints, `api/callback/v1` for vendor-signed callbacks, `api/open` for unsigned callback/legacy-URL endpoints, and give the controller an explicit `@RestController("...")` bean name that starts with the Bundle's domain prefix.
 
 ### Controller behaviour conventions
 
 Controllers in this codebase are deliberately thin on HTTP concerns but thick on *parameter merging*: they merge query-string parameters and a flexible request body into a single `Map<String, Object>` using `FlexibleHttpServletParameterMap.toObjectMap(request)` plus `@FlexibleBody`, then hand the merged map plus the resolved auth claims to a service. `@DingoResponse` on the class (or method) selects the legacy-PHP-compatible error envelope (`data.message` / `data.status_code`) that `GlobalExceptionHandler` produces, with per-class choices of `ResourceStyle` and `BadRequestStyle`. `@Activated(routeAlias = "...")` marks endpoints that additionally need activation/menu/shop permission checks. The `@XxlJob` handlers in `cron/` (below) share the same handler-short-name convention.
+
+Callback controllers are the exception to parameter merging: they must read the **raw body** (`StreamUtils.copyToString(request.getInputStream(), ...)`) because the signature covers the exact bytes, so `shuyun`'s callback controllers pass the raw string to the `auth/` preparer instead of using `@FlexibleBody`.
 
 Bundle-scoped `@RestControllerAdvice` classes are scoped by `basePackages` or `assignableTypes` to that Bundle's API surface — e.g. `orders/config/OrdersAdminV1ExceptionAdvice.java` applies only to `cn.shopex.ecshopx.orders.api.admin.v1` (and lives in `config/`), while `kaquan` keeps its `DiscountCardControllerExceptionAdvice` next to the affected controllers in `api/admin/v1/`, scoped by `assignableTypes`. Both placements occur; what matters is the tight scoping, not the exact directory.
 
@@ -224,7 +281,11 @@ Write-path call chain for `POST /api/v1/distributor`, showing where each respons
 
 Not every write path needs all three parts — simple list endpoints call a single service — but when they do, **the split is by responsibility**: gate = auth/permission, validator = shape, orchestrator = transaction + ordering. Read-side services are usually named for what they return (`WxappOrderDetailService`, `AdminOrderListService`, `StatementsService`), and pure helpers are suffixed `Support` (`WxappOrderDetailTradePrefixSupport`, `StatementTimeWindowCalculator` lives one package up in `statement/`).
 
-**Where new service code goes:** under `service/`, in a channel subpackage when the behaviour is channel-specific (`service/admin`, `service/front/wxapp`, `service/normal`, …), as a `RequestGate` for pre-auth/permission gating, as a static `ParamValidator` for pure field validation, and as an `Orchestrator` when the flow spans several services and must own the transaction.
+### Auth/session services: `service/posauth` in `companys`
+
+Credential-checking flows also live under `service/`, grouped in an `*auth` subpackage. The POS terminal login (ECX-10532) is the reference: `companys/service/posauth/PosAuthService.login(employeeNo, password)` re-reads the `PosStoreAccount` row through its own Bundle's mapper, decrypts the stored password cipher via `common/crypto/SensitiveFieldEncryptor`, rejects `disabled`/`resigned` accounts and accounts whose shop `is_valid` is `closed`/`delete` (enabled/disabled and legacy `1`/`0` are allowed), builds the claim map (`token_kind=pos`, `employee_id` aliased to the employee number for DigiOS compatibility), and delegates token issuance to the **`common/auth/PosJwtIssuerPort`** — implemented not by companys but by `espier/security/PosJwtIssuer` (HS512, TTL from `JWT_TTL`, issuer from `POS_JWT_ISSUER`), with logout blacklisting through the sibling `common/auth/PosJwtBlacklistPort` (`espier/security/PosJwtBlacklistService`). The same subpackage holds `PosMeService` (role/permission read from JWT claims), `PosJwtSessionValidator` (implements `common/auth/PosJwtSessionValidatorPort`; re-reads the account row so a disabled/resigned/transferred account's old POS tokens die immediately — consumed per-request by the espier filter), `PosAuthMessages` (i18n error strings), and `PosPermissionMatrix`. **Rule: the Bundle that owns the credential table owns the login *decision*; JWT mechanics stay behind `common/auth` Ports implemented by the security Bundle (`espier`).**
+
+**Where new service code goes:** under `service/`, in a channel subpackage when the behaviour is channel-specific (`service/admin`, `service/front/wxapp`, `service/normal`, `service/posauth`, …), as a `RequestGate` for pre-auth/permission gating, as a static `ParamValidator` for pure field validation, and as an `Orchestrator` when the flow spans several services and must own the transaction.
 
 ## `domain`, `mapper`, and `repository`
 
@@ -234,15 +295,28 @@ Not every write path needs all three parts — simple list endpoints call a sing
 
 The bootstrap scans mappers with `@MapperScan(basePackages = "cn.shopex.ecshopx.**.mapper", nameGenerator = FqcnMapperBeanNameGenerator.class, sqlSessionFactoryRef = "sqlSessionFactory", lazyInitialization = "true")`, and mapper XML is picked up globally via `mybatis-plus.mapper-locations=classpath*:mapper/**/*.xml` in `application.properties`. **A new mapper interface must therefore live in a `mapper` package and its XML under `src/main/resources/mapper/` — anything else is not scanned.**
 
+Note the sharp edge this creates for naming inside `service/`: classes like `digios/service/DigiOsAccountMapper` and `DigiOsRegionMapper` are *payload mappers* (POJO ↔ wire-map translators), not MyBatis mappers — they are plain `@Service`-less helpers and are unaffected by `@MapperScan` because they do not live in a `**.mapper` package. Keep MyBatis interfaces in `mapper/` and wire-mapping helpers anywhere else.
+
 ## `port` vs `integration` — the two halves of cross-Bundle coupling
 
 This is the most important structural rule in the codebase, and the reason circular dependencies are avoided:
 
 * **`port`** contains interfaces that *this Bundle* owns and *other Bundles* implement. The consumer Bundle declares what it needs; the provider Bundle supplies the implementation. Example: `orders/port/WxappCartAddPort.java` is documented as "H5 小程序加购编排端口（由 goods 模块实现，避免 orders→goods 依赖）" — "implemented by the goods module, to avoid an orders→goods dependency". Its implementation is `goods/service/cart/wxapp/WxappCartAddPortImpl.java`, and it is injected directly by `orders/api/front/v1/CartController` and `orders/service/front/wxapp/WxappUpdateCartNumService`.
 * **`integration`** contains implementations of Ports owned by *other* Bundles. `orders/integration/JushuitanSettingReadPortImpl.java` implements `common/port/order/JushuitanSettingReadPort` by delegating to the orders-local `OrdersErpSettingRedisReadService`; that same Port is consumed by `aftersales` and `system-link` without depending on `ecshopx-orders`.
-* Most cross-Bundle Port *interfaces* live in **`ecshopx-common`** under `common/port/<domain>/` (e.g. `common/port/order/JushuitanSettingReadPort.java`) and are grouped by consumer domain rather than by provider. The `openapi/` package inside a business Bundle serves the same role for the public Open API: `orders/openapi/OpenapiOrderListPortImpl.java` implements `common/openapi/OpenapiOrderListPort` so that the `ecshopx-openapi` v1 controller can call it without depending on `ecshopx-orders` directly.
+* Most cross-Bundle Port *interfaces* live in **`ecshopx-common`** under `common/port/<domain>/` (e.g. `common/port/order/JushuitanSettingReadPort.java`, `common/port/digios/PosStoreAccountDigiOsCreatePort.java`) or `common/auth/` for security contracts (`PosJwtIssuerPort`, `PosJwtBlacklistPort`, `PosJwtSessionValidatorPort`, `PosJwtRequestAttributes`), and are grouped by consumer domain rather than by provider. The `openapi/` package inside a business Bundle serves the same role for the public Open API: `orders/openapi/OpenapiOrderListPortImpl.java` implements `common/openapi/OpenapiOrderListPort` so that the `ecshopx-openapi` v1 controller can call it without depending on `ecshopx-orders` directly.
+* **NoOp default + `@Primary` override** is the standard shape when a Port has an optional provider: `common/port/digios/PosStoreAccountDigiOsCreatePortNoOp` is a `@Component` no-op so the consumer (`companys`' `PosStoreAccountWriteService`) always has a bean to inject, while `digios/port/PosStoreAccountDigiOsCreatePortImpl` is the `@Primary @Component` real implementation that wins whenever `ecshopx-digios` is on the classpath. The consumer Bundle therefore never needs a Maven dependency on the provider Bundle at all.
 
-**Where a new Port goes:** if other Bundles need something this Bundle owns, declare the interface in this Bundle's `port/` package (or in `common/port/...` when it is a shared contract) and let the provider Bundle implement it in its own `integration/` or `service/` package. Never make Bundle A depend on Bundle B merely to call one method — extract a Port instead. The bootstrap wires any remaining adapters that would otherwise create cycles (see `bootstrap/.../bootstrap/order/CompanyPassportUidByCompanyIdPortAdapter.java`).
+**Where a new Port goes:** if other Bundles need something this Bundle owns, declare the interface in this Bundle's `port/` package (or in `common/port/...` when it is a shared contract) and let the provider Bundle implement it in its own `integration/`, `port/`, or `service/` package. Never make Bundle A depend on Bundle B merely to call one method — extract a Port instead, and add a NoOp default in `common` when the provider is optional. The bootstrap wires any remaining adapters that would otherwise create cycles (see `bootstrap/.../bootstrap/order/CompanyPassportUidByCompanyIdPortAdapter.java`).
+
+## `client` / `gateway` / `auth` — the third-party integration layers
+
+Bundles that own a vendor integration add up to three extra packages:
+
+* **`client/` or `gateway/`** — the outbound HTTP client. There is exactly one per external system per Bundle, and it owns base-URL/auth-header assembly, timeouts, retry, and payload logging. `digios/client/DigiOsGatewayClient` is the reference: it builds its own `RestTemplate` (5 s connect / 30 s read, deliberately not reusing other `RestTemplate` beans — and a package-private constructor lets tests inject a mock), resolves per-company config through `DigiOsConfigService` (properties `ecshopx.digios.*` overlaid by the `DigiOsCompanyConfig` DB row per `company_id`, edited via the Bundle's own admin controller), fetches a Redis-cached access token from `DigiOsTokenService`, signs each call with `X-Auth-Client` / `X-Auth-Token` / `X-Message-Id`, writes every attempt — including 4xx/5xx — to the `digios_api_log` table via `DigiOsApiLogService`, and transparently clears the token cache and retries **once** on a token-unauthorized response. `shuyun/gateway/ShuyunOpenGatewayClient` plays the same role for the Shuyun open-api. When the integration is disabled or the config incomplete, the client returns a failed result instead of throwing, so callers degrade quietly.
+* **`auth/`** — inbound signature verification and tenant resolution, when the vendor calls *us*. `shuyun/auth/InboundSignedCallbackPreparer` is the reference: `prepare(request, rawBody, mode)` parses the JSON body (TOKEN mode also accepts a top-level list), resolves the tenant config by `appId` (query first, then body) or by `platCode` / shadow `benefitId` fallback, verifies the callback HMAC through `CallbackSignatureVerifier` using the configured `callbackIdentitySecret` (from `ShuyunOpenPlatformProperties`, prefix `ecshopx.shuyun.open-platform` — distinct from the per-tenant DB `app_secret`), then enforces freshness/once-only through `InboundSignedCallbackReplayGuard` (Redis keys with configurable skew/TTL). The `InboundSignedPrepareMode` enum (TOKEN / LOYALTY_MEMBER_GRADE_CHANGE / OFFLINE_BENEFIT) selects the error-body dialect each vendor endpoint expects, and the result type `InboundPrepareResult` is either `Ok(PreparedInboundCallback{companyId, body})` or `Err(ResponseEntity)` so controllers stay two lines long.
+* **`config/`** — `@ConfigurationProperties` for the vendor (see next section) plus `@EnableConfigurationProperties` glue (`digios/config/DigiOsConfiguration`, `shuyun/config/ShuyunOpenPlatformConfiguration`).
+
+**Where new integration code goes:** outbound call machinery in `client/` (or `gateway/`), inbound signature/tenant gating in `auth/`, vendor settings in `config/` as `@ConfigurationProperties`, per-company DB overrides as a `domain` entity + admin controller, and every sync reaction to other Bundles' events as a `dispatch/` listener (next section). Wire-level payload shape translation belongs in `service/` helpers (`DigiOsAccountMapper`, `DigiOsStoreProfileMapper`, …), not in the client.
 
 ## `dispatch` and `cron`: the two async entry points
 
@@ -251,17 +325,21 @@ Business Bundles expose two kinds of background work, and they are **not interch
 * **`dispatch/`** contains beans for the cross-Bundle dispatch bus provided by `ecshopx-dispatch`. There are two shapes:
   * `*JobHandler implements DispatchHandler` — a named job. `orders/dispatch/FinishOrderJobHandler` implements `handle(Map<String,Object> payload)` and delegates to `FinishOrderJobService`. Job handlers are looked up by message name in the `DispatchRegistry`.
   * `*DispatchListener implements DispatchListener` — an event listener. `orders/dispatch/UpdateItemSalesDispatchListener` implements `onEvent(payload)` and is registered against specific event names such as `OrdersDispatchEventNames.EVENT_TRADE_FINISH`.
-  * Publisher-side interfaces live in `ecshopx-common` (`common/dispatch/FinishOrderJobDispatchPublisher`, `OrdersTradeFinishDispatchPublisher`, `DistributionAddEventDispatchPublisher`, …) so a Bundle can *publish* without depending on the bus implementation or on the consumer. **The producer side never registers handlers with the registry directly.**
+  * Publisher-side interfaces live in `ecshopx-common` (`common/dispatch/FinishOrderJobDispatchPublisher`, `OrdersTradeFinishDispatchPublisher`, `DistributionAddEventDispatchPublisher`, `DigiOsAftersalesReturnAdjustmentDispatchPublisher`, `PosStoreAccountCreateEventDispatchPublisher`, …) so a Bundle can *publish* without depending on the bus implementation or on the consumer. **The producer side never registers handlers with the registry directly.**
   * Registration is **not** done with annotations. The bootstrap module contains explicit `*RegistrationConfig` `@Configuration` classes (e.g. `bootstrap/.../config/RefundByOrderUpdateOrderStatusJobRegistrationConfig.java` calls `dispatchRegistry.registerJob(...)` in `@PostConstruct`, and `UpdateItemSalesDispatchListenerRegistrationConfig` calls `registerEventListener(...)` with a `@Order` value that controls bean-initialization order). A Bundle that owns a new job handler must therefore add a matching registration config in `ecshopx-bootstrap`.
-  * Payload conventions: `payload == null` is normalized to `Map.of()` by the handler itself (`FinishOrderJobHandler`), and after-commit publication is done either via `TransactionSynchronizationManager` inside the orchestrator (as `DistributorCreateOrchestrator` does) or via a dedicated `*AfterCommitDispatchPublisher` wrapper (as `orders/dispatch/OrdersTradeFinishAfterCommitDispatchPublisher` does for `OrdersTradeFinishDispatchPublisher`).
-* **`cron/`** contains XXL-JOB handlers named `Schedule*Handler`. Every handler is a `@Component` with a `@XxlJob("<short-name>")` method, a short-name constant (`HANDLER_SHORT` in orders, `HANDLER_SHORT_NAME` in kaquan), timing/log lines in the `[cron][<name>] done/failed, cost=...ms` shape, and — critically — a **failure path that publishes a `CronAlertEvent` and rethrows**, so that XXL-JOB marks the run as failed. `orders/cron/ScheduleFinishOrdersHandler` is the canonical example; `kaquan/cron/ScheduleCancelExpiredCardHandler` and the whole `orders/cron/Schedule*Handler` family (18 handlers) follow it exactly. Cron handlers delegate to a service (`NormalOrderCronService.scheduleFinishOrders()`, `UserDiscountService.scheduleCancelExCard()`); they contain no business logic of their own.
+  * **Listeners may live in a different Bundle than the event's owner.** All five `digios/dispatch/*DispatchListener` classes react to events owned by `distribution`, `orders`/`aftersales`, and `companys` (distributor create/update, order-delivery store adjustment, aftersales return adjustment, operator create), and `shuyun/dispatch/` carries twelve more of the same shape (member register, shop sync, product sync, trade/refund sync, offline-benefit consume). Each has its own bootstrap registration config (`DigiOsDistributorCreateDispatchListenerRegistrationConfig` binds `DistributionDispatchEventNames.EVENT_DISTRIBUTOR_CREATE` with `ListenerDispatchOptions.async("default", null)` at `@Order(79)`, and so on). This is how an integration Bundle bolts onto existing domains without those domains knowing it exists.
+  * Publisher *implementations* for events a Bundle doesn't consume itself also live in the bootstrap: `DigiOsAftersalesReturnAdjustmentDispatchPublisherImpl` (in `ecshopx-bootstrap`, implementing the `common` interface) publishes `DigiOsDispatchEventNames.EVENT_AFTERSALES_RETURN_ADJUSTMENT` via `DispatchFacade` with `DispatchMode.ASYNC` + `DispatchDriverType.REDIS` + `RetryPolicy.platformDefault()`.
+  * Payload conventions: `payload == null` is normalized to `Map.of()` by the handler itself (`FinishOrderJobHandler`), and after-commit publication is done either via `TransactionSynchronizationManager` inside the orchestrator (as `DistributorCreateOrchestrator` and `companys`' `PosStoreAccountWriteService.scheduleCreateDispatch` do) or via a dedicated `*AfterCommitDispatchPublisher` wrapper (as `orders/dispatch/OrdersTradeFinishAfterCommitDispatchPublisher` does for `OrdersTradeFinishDispatchPublisher`).
+* **`cron/`** contains XXL-JOB handlers named `Schedule*Handler`. Every handler is a `@Component` with a `@XxlJob("<short-name>")` method, a short-name constant (`HANDLER_SHORT` in orders, `HANDLER_SHORT_NAME` in kaquan), timing/log lines in the `[cron][<name>] done/failed, cost=...ms` shape, and — critically — a **failure path that publishes a `CronAlertEvent` and rethrows**, so that XXL-JOB marks the run as failed. `orders/cron/ScheduleFinishOrdersHandler` is the canonical example; `kaquan/cron/ScheduleCancelExpiredCardHandler` and the whole `orders/cron/Schedule*Handler` family (18 handlers) follow it exactly. Cron handlers delegate to a service (`NormalOrderCronService.scheduleFinishOrders()`, `UserDiscountService.scheduleCancelExCard()`); they contain no business logic of their own. Simple periodic refresh that needs no ops console, alerting, or manual trigger may instead be a plain `@Scheduled` bean in `config/` (e.g. `shuyun/config/TokenRefreshScheduler`).
 * **`listener/` + `event/`** is the third, lighter async mechanism: plain Spring `ApplicationEvent`s (`PaySuccessSpringEvent`, `NormalOrderCancelSpringEvent`) consumed by `@TransactionalEventListener(phase = AFTER_COMMIT)` beans such as `orders/listener/OrderProcessLogSpringEventListener`. Use this for intra-Bundle, after-commit work that does not need retry or cross-Bundle fan-out.
 
 **Where new async code goes:** a bus job or event handler goes in `dispatch/` (plus a bootstrap registration config); a scheduled task goes in `cron/` as `Schedule<Thing>Handler`; a transactional after-commit side effect stays inside the Bundle in `listener/` with its event in `event/`.
 
 ## `config` and module-local configuration
 
-`config/` holds Spring `@Configuration`/`@Component` beans that are local to the Bundle: scheduling enablement (`orders/config/OrdersSchedulingConfig` with `@EnableScheduling`), executor config, and the API-surface-scoped `@RestControllerAdvice` classes described above.
+`config/` holds Spring `@Configuration`/`@Component` beans that are local to the Bundle: scheduling enablement (`orders/config/OrdersSchedulingConfig` with `@EnableScheduling`), executor config, `@ConfigurationProperties` records for vendor settings (`digios/config/DigiOsProperties` on prefix `ecshopx.digios`, `shuyun/config/ShuyunOpenPlatformProperties` on prefix `ecshopx.shuyun.open-platform`, each with an `@EnableConfigurationProperties` holder), and the API-surface-scoped `@RestControllerAdvice` classes described above.
+
+The split between properties files and DB rows is deliberate: `DigiOsProperties` carries global defaults (base URL, timeouts, method→path map) while `DigiOsConfigService.resolve(companyId)` overlays the per-company `DigiOsCompanyConfig` row (enable flag, base URL, app key/secret) — and the `shuyun` properties similarly keep the *callback identity secret* in configuration while per-tenant `appId`/`app_secret` rows live in `company_shuyun_open_platform_config`. **Secrets and per-tenant values go to DB rows; mechanical defaults and feature flags go to `@ConfigurationProperties`.**
 
 Module-local YAML lives at `src/main/resources/application-<module>.yml` (e.g. `application-orders.yml`, currently a placeholder documenting the optional profile import) and is wired in through `spring.config.import=optional:classpath:application-*.yml` in `ecshopx-bootstrap`'s `application.properties`. The `cron/testcfg/CronTestMockConfig` class (annotated `@Profile("test-cron")`) is the pattern for swapping side-effect beans (Redis writes, third-party calls, bus publishes) for No-op implementations during cron-diff testing — note that it lives in **`src/main`**, not `src/test`, because the profile is activated at runtime by the migration orchestrator.
 
@@ -269,24 +347,32 @@ Module-local YAML lives at `src/main/resources/application-<module>.yml` (e.g. `
 
 The dependency rules are:
 
-* **Every business Bundle depends on `ecshopx-common`.** Most also depend on **`ecshopx-dispatch`** (orders, members, aftersales, payment, reservation, companys, third-party, wsugc, chinaums-pay, popularize all declare it; goods and kaquan currently do not, and rely on `ecshopx-common`'s publisher interfaces only).
+* **Every business Bundle depends on `ecshopx-common`.** Most also depend on **`ecshopx-dispatch`** (orders, members, aftersales, payment, reservation, companys, third-party, wsugc, chinaums-pay, popularize all declare it; goods, kaquan, digios, and shuyun currently do not — digios consumes bus events purely through the `DispatchListener` interface from `common/dispatch` plus bootstrap registration configs).
 * **A Bundle declares only the curated set of peer Bundles it actually needs.** `ecshopx-orders/pom.xml` is the reference: beyond `ecshopx-common` and `ecshopx-dispatch` it lists `ecshopx-work-wechat`, `ecshopx-third-party`, `ecshopx-supplier`, `ecshopx-reservation`, `ecshopx-espier`, `ecshopx-members`, `ecshopx-companys`, `ecshopx-point`, `ecshopx-aftersales`, `ecshopx-payment`, `ecshopx-chinaums-pay`, `ecshopx-deposit`, `ecshopx-hfpay`, `ecshopx-popularize`, and `ecshopx-super-admin`, plus the technical dependencies it needs directly (`mybatis-plus-spring-boot3-starter`, `xxl-job-core` 2.5.0, `weixin-java-pay`, `spring-boot-starter-data-redis`, `spring-boot-starter-mail`).
 * **Peer selection is deliberately asymmetric.** `ecshopx-goods` depends on `ecshopx-orders` (so goods can implement the cart Ports that orders owns), while `ecshopx-orders` does **not** depend on `ecshopx-goods` — the cart flow is inverted through `orders/port/WxappCartAddPort`. Similarly `ecshopx-kaquan` depends on `ecshopx-orders`, and `ecshopx-openapi` depends only on `ecshopx-common`, reaching Bundles through their `openapi/` Port adapters. Before adding a new peer dependency, check whether a Port inversion would keep the graph acyclic.
+* **How a new Bundle wires in — the `ecshopx-digios` recipe.** `ecshopx-digios/pom.xml` declares only `ecshopx-common` plus the two peers whose read models it genuinely extends (`ecshopx-goods`, `ecshopx-distribution`) and the technical starters; it declares **no** dependency on `companys`, `orders`, `aftersales`, or `espier`, yet it reacts to all of them:
+  1. *Inbound sync triggers* arrive as dispatch events: the listeners live in `digios/dispatch/`, and the `DigiOs*RegistrationConfig` classes in `ecshopx-bootstrap` bind them to event names owned by other Bundles.
+  2. *Synchronous hooks into another Bundle's write path* go through a `common` Port with a NoOp default: `PosStoreAccountWriteService` (companys) calls `PosStoreAccountDigiOsCreatePort.ensureSyncedOnCreate(...)` before inserting, and digios' `@Primary` impl throws `BadRequestException` on DigiOS failure so the local create is blocked — with `PosStoreAccountDigiOsCreatePortNoOp` standing in when digios is absent.
+  3. *Outbound capability exposure* goes through `common/openapi`: `digios/openapi/OpenapiDigiOsProductStockPushPortImpl` implements `OpenapiDigiOsProductStockPushPort` so the openapi gateway can accept DigiOS stock pushes without a digios dependency.
+  4. *Assembly* happens only in `ecshopx-bootstrap/pom.xml`, which adds `ecshopx-digios` (and every other Bundle, including `ecshopx-shuyun`) to the dependency list; no Bundle ever adds another Bundle just to reach one of its beans.
 * **`ecshopx-bootstrap` depends on everything** and is the only Spring Boot executable (`spring-boot-maven-plugin` with `mainClass cn.shopex.ecshopx.EcshopxApplication`). It also carries the Flyway migrations, the global `application.properties`, the `DispatchBusConfig` that instantiates `DispatchRegistry`/`DispatchFacade`/`RedisDispatchDriver`, the multi-Redis configuration, and every `*RegistrationConfig` described above. **Business Bundles only expose capabilities; the bootstrap wires them together.**
 
 ## Conventions cross-checked across Bundles
 
-| Convention | orders | goods | members | kaquan |
-|---|---|---|---|---|
-| `api/admin/v1` + `@AdminAuth` | yes | yes | yes | yes |
-| `api/front/v1` + `@FrontAuth`/`@FrontNoAuth` under `/api/v1/h5app` | yes | yes | yes | yes |
-| Named `@RestController("<prefix>...V1...")` | yes | yes | yes | yes |
-| `domain` + `mapper` (+ XML in `resources/mapper`) | yes | yes | yes | yes |
-| `integration` implementing foreign Ports | yes | yes | yes | yes |
-| `dispatch` handlers/listeners | yes | yes | yes | yes |
-| `cron` `Schedule*Handler` | yes | only testcfg mock | no | yes |
-| `port` owned interfaces | yes | no | no (only a `service/export/port` subpackage) | no |
-| `repository` layer | yes | yes | no | no || `openapi/` adapters for the public API | yes | yes | yes | yes |
+| Convention | orders | goods | members | kaquan | digios | shuyun |
+|---|---|---|---|---|---|---|
+| `api/admin/v1` + `@AdminAuth` | yes | yes | yes | yes | yes | yes |
+| `api/front/v1` + `@FrontAuth`/`@FrontNoAuth` under `/api/v1/h5app` | yes | yes | yes | yes | no | no |
+| `api/callback/v1` signed callbacks | no | no | no | no | no | yes |
+| Named `@RestController("<prefix>...V1...")` | yes | yes | yes | yes | yes | yes |
+| `domain` + `mapper` (+ XML in `resources/mapper`) | yes | yes | yes | yes | yes | yes |
+| `integration` implementing foreign Ports | yes | yes | yes | yes | no (uses `port/` + `openapi/`) | no |
+| `dispatch` handlers/listeners | yes | yes | yes | yes | yes (listeners only) | yes |
+| `client`/`gateway` + `auth` third-party layers | no | no | no | no | yes (`client/`) | yes (`gateway/` + `auth/`) |
+| `cron` `Schedule*Handler` | yes | only testcfg mock | no | yes | no | no (`@Scheduled` in `config/`) |
+| `port` owned interfaces / `@Primary` impls | yes | no | no (only a `service/export/port` subpackage) | no | yes (`@Primary` impl of a `common` Port) | no |
+| `repository` layer | yes | yes | no | no | no | no |
+| `openapi/` adapters for the public API | yes | yes | yes | yes | yes | no |
 
 ## Focused tests that pin these conventions
 
@@ -294,6 +380,8 @@ Tests live in each Bundle's `src/test/java` and mirror the main package structur
 
 * `orders` cron-handler tests (`orders/cron/ScheduleFinishOrdersHandlerTest.java`) pin the alert-and-rethrow contract: `execute_ok_noAlert` asserts the INFO log contains the handler short name and return count and that no `CronAlertEvent` is published; `execute_failure_publishesAlertAndRethrows` captures the `CronAlertEvent` and asserts its `handlerShortName` equals `"finish-orders"` plus the ERROR log shape. Equivalent tests exist for all 18 `orders` cron handlers.
 * Dispatch-handler tests (`orders/dispatch/FinishOrderJobHandlerTest.java`) pin the null-payload-to-empty-map normalization and the delegation to the service; consumer-runtime tests (`...DispatchConsumerRuntimeTest`) exercise the ack/retry/fail-recording path.
+* The shuyun inbound-verification contract is pinned by `shuyun/auth/InboundSignedCallbackPreparerAuthTest`, `...TokenModeTest`, `CallbackSignatureVerifierTest`, and `InboundSignedCallbackReplayGuardTest` — e.g. `prepare_whenSignatureInvalid_doesNotTouchReplayGuard` proves verification order (signature first, replay guard only after a valid signature) and the token-mode tests pin the PHP-compatible `{code,msg,data}` error dialect.
+* `companys/service/posauth/PosAuthServiceTest` pins the POS login rejection matrix (bad credentials, disabled/resigned account, closed/deleted shop) and the claim-map shape, mocking the `PosJwtIssuerPort` boundary; `digios/port/PosStoreAccountDigiOsCreatePortImplTest` pins the no-op-when-disabled and throw-`BadRequestException`-on-failure contract of the `@Primary` Port override.
 * WebMvc slice tests in other Bundles (e.g. `reservation/.../ReservationAdminV1ReservationControllerCreateFinishPublishWebMvcTest`) verify that a controller in `api/admin/v1` produces the annotated `@Activated`/dispatch behaviour.
 * The naming conventions are enforced less by tests than by compilation and startup: a missing `@RestController` bean name collides only at runtime, and a mapper outside `**.mapper` simply is not scanned — both failures appear as Spring context startup errors, which is why the readme instructs contributors to "follow the repository's existing package structure and layering conventions (`controller` / `service` / `mapper` / `integration` / `port`)".
 
@@ -303,18 +391,23 @@ Tests live in each Bundle's `src/test/java` and mirror the main package structur
 |---|---|---|
 | Operator-console endpoint | `<bundle>/api/admin/v1/` | `@AdminAuth`, `@ShopLog`, `@DingoResponse`, explicit `@RestController` bean name, `/api/v1...` mapping |
 | Buyer (H5/wxapp) endpoint | `<bundle>/api/front/v1/` | `@FrontAuth`/`@FrontNoAuth`, base `/api/v1/h5app[/wxapp]` |
+| POS-terminal endpoint | `<bundle>/api/pos/v1/` | No auth annotation; read claims from `PosJwtRequestAttributes.POS_JWT_USER_DATA`, issue/blacklist tokens via `common/auth/PosJwtIssuerPort` |
+| Vendor-signed callback | `<bundle>/api/callback/v1/` + `<bundle>/auth/` preparer | Read the raw body; verify signature → replay guard → tenant; return the vendor's response shape |
 | Unauthenticated callback / legacy URL | `<bundle>/api/open/` | No auth annotations; raw response body if needed |
 | Business logic for one endpoint | `<bundle>/service/[channel]/` | One service per operation, named after what it does |
 | Permission/activation gating | `<bundle>/service/<Entity><Action>RequestGate` | Throws before any business code runs |
 | Field validation | `<bundle>/service/` or `validation/` as a static `ParamValidator` | Stateless, no Spring beans |
 | Multi-step transactional flow | `<bundle>/service/<Entity><Action>Orchestrator` | Owns `@Transactional` and after-commit dispatch order |
+| Outbound third-party HTTP | `<bundle>/client/` or `gateway/` (one client per vendor) | Own RestTemplate, token cache, per-company config resolve, API-call logging |
+| Vendor settings | `<bundle>/config/` `@ConfigurationProperties` (+ DB entity for per-company overrides) | Secrets/per-tenant values in DB rows, not properties |
 | New table / columns | `<bundle>/domain/` entity + Flyway migration in `ecshopx-bootstrap` | Annotate with `@MpTable`/`@MpId`/`@MpField`, run `bin/make-migration` |
 | Custom SQL | `<bundle>/mapper/<X>Mapper.java` + `<bundle>/src/main/resources/mapper/<X>Mapper.xml` | Mapper package name is mandatory for scanning |
 | Query composition over mappers | `<bundle>/repository/` | `@Repository`, optional layer |
 | Implement another Bundle's Port | `<bundle>/integration/` (or `openapi/` for the public API) | Never make the consumer depend on you |
-| Own a Port others implement | `<bundle>/port/` (or `common/port/<domain>/`) | Document the intended implementer in the Javadoc |
+| Optional provider for a `common` Port | `<bundle>/port/` as `@Primary`, plus a NoOp default in `common` | Consumer keeps zero Maven deps on the provider |
+| Own a Port others implement | `<bundle>/port/` (or `common/port/<domain>/` / `common/auth/`) | Document the intended implementer in the Javadoc |
 | Dispatch-bus job | `<bundle>/dispatch/<X>JobHandler` + registration config in `ecshopx-bootstrap` | `implements DispatchHandler`; publisher interface in `ecshopx-common` |
-| Dispatch event listener | `<bundle>/dispatch/<X>DispatchListener` + registration config | `implements DispatchListener`; register per event name |
-| Scheduled task | `<bundle>/cron/Schedule<Thing>Handler` | `@XxlJob`, `CronAlertEvent` + rethrow on failure |
+| Dispatch event listener | `<bundle>/dispatch/<X>DispatchListener` + registration config | `implements DispatchListener`; register per event name; listener may live in a different Bundle than the event owner |
+| Scheduled task | `<bundle>/cron/Schedule<Thing>Handler` | `@XxlJob`, `CronAlertEvent` + rethrow on failure; plain `@Scheduled` in `config/` for trivial refresh loops |
 | Intra-Bundle after-commit hook | `<bundle>/event/` + `<bundle>/listener/` | `@TransactionalEventListener(AFTER_COMMIT)` |
 | Bundle-scoped exception mapping | `<bundle>/config/` as `@RestControllerAdvice(basePackages=...)`, or beside the controllers scoped by `assignableTypes` | Scope it to your API package |

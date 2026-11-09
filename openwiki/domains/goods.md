@@ -44,6 +44,10 @@ sources:
     resource: repo://ecshopx-goods/pom.xml
   - id: openwiki-source-d9ade624e0049278a0727013
     resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/api/admin/v1/ItemsController.java
+  - id: openwiki-source-97fedf7e99d48cc8679f5ba0
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/api/admin/v1/ItemsGroupController.java
+  - id: openwiki-source-c56638a6f4ae4f5088a0b14b
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/api/admin/v1/ItemsTagsController.java
   - id: openwiki-source-243422ced17769fe49ddc64b
     resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/api/front/v1/ItemsController.java
   - id: openwiki-source-ad916be12b605c2e4737848c
@@ -120,12 +124,20 @@ sources:
     resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/ItemsCategoryFrontDisplayResolver.java
   - id: openwiki-source-b71185b19624d50635cb481a
     resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/ItemsCategorySaveService.java
+  - id: openwiki-source-b9201082cbd1f6125524734a
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/ItemsGroupGetGroupItemsService.java
+  - id: openwiki-source-776a970930510c2275a6ec4d
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/ItemsTagsQueryService.java
   - id: openwiki-source-0cc8325ac8d9b948a0f4af61
     resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/jushuitan/JushuitanInventoryPersistService.java
   - id: openwiki-source-5dba78181b63a301c92640e4
     resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/jushuitan/JushuitanQueryInventoryOrchestratorService.java
   - id: openwiki-source-e4f469cdebd293c5f098c798
     resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/jushuitan/JushuitanUploadItemsOrchestratorService.java
+  - id: openwiki-source-da65b6a7f6df1c5c256663e5
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/keywords/GoodsKeywordsQueryService.java
+  - id: openwiki-source-cd9cb6b079ca1b66f254e1eb
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/keywords/GoodsKeywordsWriteService.java
   - id: openwiki-source-78f76a52c291312bf7fb5c68
     resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/ome/OmeItemsFromOmePagedSyncRunner.java
   - id: openwiki-source-6d42ce597e8782d354259630
@@ -158,6 +170,10 @@ sources:
     resource: repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/repository/ItemsBarcodeRepositoryShopScopedTest.java
   - id: openwiki-source-014d47f4cf11f2ca9adf5c7a
     resource: repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/service/items/InventoryDeductTargetResolverTest.java
+  - id: openwiki-source-2bf1ba61082f6ce058dff2b1
+    resource: repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/service/items/ItemsBatchUpdateStoreOrchestratorScopeTest.java
+  - id: openwiki-source-f8c4ff033990df6b01dcbe82
+    resource: repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/service/items/ItemsBatchUpdateStoreOrchestratorSupplierAuditTest.java
   - id: openwiki-source-11063aa1b259c6be4917558c
     resource: repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/service/items/ItemsUpdateOrchestratorDistributorSyncTest.java
   - id: openwiki-source-e01da6476a3e75c45d854ba1
@@ -168,6 +184,14 @@ sources:
     resource: repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/service/items/SupplierItemsReviewGoodsServiceShopBarcodeDualWriteTest.java
   - id: openwiki-source-25ad5756a543273d2d6431c2
     resource: repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/service/ItemsCategoryFrontDisplayResolverTest.java
+  - id: openwiki-source-79efd8ae53e68c86bc5176b2
+    resource: repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/service/ItemsGroupGetGroupItemsServiceCompanyScopeTest.java
+  - id: openwiki-source-affd691d2fa8ad5b9788f690
+    resource: repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/service/ItemsTagsQueryServiceCompanyScopeTest.java
+  - id: openwiki-source-757aaf6b8b030ef7934937ba
+    resource: repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/service/keywords/GoodsKeywordsQueryServiceCompanyScopeTest.java
+  - id: openwiki-source-465d4f371609d2b1579b034e
+    resource: repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/service/keywords/GoodsKeywordsWriteServiceCompanyScopeTest.java
   - id: openwiki-source-d88124982cafc993afc38e41
     resource: repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/service/order/normal/OrderCheckoutFullGiftServiceItemOrderTest.java
   - id: openwiki-source-441578cb812cdd5a2db8995d
@@ -184,12 +208,16 @@ sources:
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/shopadmin/ShopadminNormalOrderCreateOrchestrator.java
   - id: openwiki-source-6bee7c44879ca7bd01cdede7
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/shopadmin/ShopadminNormalOrderCreateTransactionalRunner.java
+  - id: openwiki-source-16e29be3e3318eda98c7aa9f
+    resource: repo://ecshopx-supplier/src/main/java/cn/shopex/ecshopx/supplier/repository/SupplierItemsRepository.java
   - id: openwiki-source-8d15062ef9d8156f9a51625c
     resource: repo://ecshopx-supplier/src/main/java/cn/shopex/ecshopx/supplier/service/SupplierItemBatchSyncToPoolService.java
-generated: { by: "openwiki/0.7.3", at: "2026-11-04T17:09:55.577Z" }
+  - id: openwiki-source-04b4e069925a03b744d9bb2f
+    resource: repo://ecshopx-theme/src/main/java/cn/shopex/ecshopx/theme/service/PagesTemplateWidgetItemsService.java
+generated: { by: "openwiki/0.9.0", at: "2026-11-08T17:14:16.576Z" }
 verified:
-  - by: openwiki/0.7.3
-    at: 2026-11-04T17:09:55.577Z
+  - by: openwiki/0.9.0
+    at: 2026-11-08T17:14:16.576Z
 ---
 
 # Goods Domain (ecshopx-goods)
@@ -312,9 +340,9 @@ Caption: the item create flow — permission gating, supplier-vs-platform routin
 * **Audit** — `PUT /audit/items` → `ItemsAuditUpdateService.auditItems` writes `audit_status`/`audit_reason` by a `goods_id` clause that accepts null/single/list semantics.
 * **Delete** — `ItemsDeleteOrchestrator.delete` routes by `operator_type`. `PlatformItemsDeleteService.deleteCore` verifies the row and the queried `distributor_id` match, expands multi-spec to all sibling SKUs (by `default_item_id`), deletes per SKU the `items` row + Redis `item_store` key + attribute rows, then rel-cats (default SKU), services rel-type, `distributor_items`, member prices and barcodes, and publishes `ItemDeleteEvent` **after commit** (payload: `item_id`, `company_id`, `del_ids`, full `item_info` snapshot).
 * **Supplier-linked sync.** When a supplier edits its master data, `SupplierItemsAddService.syncPlatformIfNeeded` propagates a PHP-whitelist field patch — `store`, `pics`, `other_product_materials`, `approve_status`, `item_name`, optional `cost_price` (yuan→fen, non-negative only)/`start_num`, and an audit reset (`audit_reason=""`, `audit_date=NULL`) when the edit carries `submiting`/`submitting`/`processing` — to every `items` row linked by `supplier_item_id` and refreshes each linked Redis store. It is skipped unless the goods' `supplier_items.is_sync_platform` flag is on (`isSyncPlatformEnabledForGoods`), and the surrounding `addItemsTransactional` resets that flag to `0` afterwards, so the platform pool owns the rows until the next explicit `syncToPool`. Pinned by `SupplierItemsAddServiceSyncPlatformIfNeededTest`.
-* **Supplier review and sync are split.** `SupplierItemsReviewGoodsService` implements three common interfaces the **supplier bundle** drives: `SupplierItemsReviewGoodsExecutor.reviewGoods` (called from `SupplierItemBatchReviewService`, and by `ItemsUpdateOrchestrator` when a platform operator audits a supplier good) now only writes `audit_status`/`audit_reason`/`audit_date` across the supplier `goods_id` — even an `approved` verdict no longer syncs rows into the platform pool. Pool copies happen exclusively through the explicit `SupplierItemsSyncToPoolExecutor.syncToPool` (driven by the supplier bundle's `SupplierItemBatchSyncToPoolService`), which requires the row to already be `approved` (`仅审核通过的商品可同步到商品池`), inserts/updates one pool `items` row per supplier SKU (with item-store seeding and pool-scope barcodes), deletes vanished SKUs, stamps `is_sync_platform=1`, and — under the `platform` product model — re-syncs every shop that previously copied the goods. `SupplierItemsSyncToShopExecutor.syncToShop` is likewise restricted to `platform` product-model companies, requires `approved`, and writes shop-scoped `items` rows plus dual-written shop barcode rows (`SupplierItemsReviewGoodsServiceAuditSyncSplitTest`, `SupplierItemsReviewGoodsServiceShopBarcodeDualWriteTest`).
+* **Supplier review and sync are split.** `SupplierItemsReviewGoodsService` implements three common interfaces the **supplier bundle** drives: `SupplierItemsReviewGoodsExecutor.reviewGoods` (called from `SupplierItemBatchReviewService`, and by `ItemsUpdateOrchestrator` when a platform operator audits a supplier good) now only writes `audit_status`/`audit_reason`/`audit_date` across the supplier `goods_id` — even an `approved` verdict no longer syncs rows into the platform pool. All three entrypoints first verify the supplier row belongs to the caller's company and reject foreign rows with `商品不存在或无权`. Pool copies happen exclusively through the explicit `SupplierItemsSyncToPoolExecutor.syncToPool` (driven by the supplier bundle's `SupplierItemBatchSyncToPoolService`), which requires the row to already be `approved` (`仅审核通过的商品可同步到商品池`), inserts/updates one pool `items` row per supplier SKU (with item-store seeding and pool-scope barcodes), deletes vanished SKUs, stamps `is_sync_platform=1`, and — under the `platform` product model — re-syncs every shop that previously copied the goods. `SupplierItemsSyncToShopExecutor.syncToShop` is likewise restricted to `platform` product-model companies, requires `approved`, and writes shop-scoped `items` rows plus dual-written shop barcode rows (`SupplierItemsReviewGoodsServiceAuditSyncSplitTest`, `SupplierItemsReviewGoodsServiceShopBarcodeDualWriteTest`).
 * **Batch status** — `PUT /itemstatusupdate` expands a truthy `query` filter into distinct `goods_id`s, then `GoodsItemsBatchApproveStatusService.updateItemsStatus`: `onsale` rejects supplier-controlled goods (`供应商商品不可售`) and prescription drugs unless the pharma-industry setting is on and their audit is not pending (`instock` skips those checks — deliberate); each goods gets `updateApproveStatusByCompanyAndGoodsId` plus an enqueue of the batch-status event through `job:74` (slow queue). The `job:74` handler republishes `EVENT_ITEM_BATCH_EDIT_STATUS`, whose listeners are the third-party marketing-center push **and** the goods-bundle's own `ItemsApproveStatusSyncDispatchListener`, which cascades the status to `distributor_items`.
-* **Batch store** — `PUT /itemstoreupdate` → `ItemsBatchUpdateStoreOrchestrator.batchUpdate`. The controller resolves `operator_type` from the JWT but overrides it to `supplier` when the merged request carries `operate_source=supplier`, so the orchestrator only branches on the effective operator type: supplier writes go to `supplier_items` rows (`updateStoreByCompanyAndProductKey`, keyed by item id or goods-group id via `treatItemIdAsDefaultItemId`) plus each row's `supplier_item_store` Redis key; platform writes go to `items` — all sibling SKUs by `default_item_id` with every sibling's Redis `item_store` refreshed when the row id is treated as the default, otherwise the single item's row and key only.
+* **Batch store** — `PUT /itemstoreupdate` → `ItemsBatchUpdateStoreOrchestrator.batchUpdate`. The controller resolves `operator_type` from the JWT but overrides it to `supplier` when the merged request carries `operate_source=supplier`, so the orchestrator only branches on the effective operator type: supplier writes go to `supplier_items` rows (`updateStoreByCompanyAndProductKey`, keyed by item id or goods-group id via `treatItemIdAsDefaultItemId`) **and simultaneously reset their `audit_status` to `processing`** (`updateAuditStatusByCompanyAndProductKey` — a store touch re-queues the supplier goods for review, per the repository Javadoc 批量改库存后自动进审; pinned by `ItemsBatchUpdateStoreOrchestratorSupplierAuditTest`), plus each row's `supplier_item_store` Redis key; platform writes go to `items` — all sibling SKUs by `default_item_id` with every sibling's Redis `item_store` refreshed when the row id is treated as the default, otherwise a company-scoped single-row update whose Redis key is only seeded when the update actually hit (`ItemsBatchUpdateStoreOrchestratorScopeTest`).
 
 ## Inventory: three pools, one resolver
 
@@ -458,6 +486,14 @@ Front display decisions live in `ItemsCategoryFrontDisplayResolver` (ECX-9537): 
 
 `ItemsMultiLangWriteService` mirrors PHP `MultiLangService` for module `items`: `item_name`/`brief`/`intro` are upserted into per-language shard tables `item_multi_lang_mod_lang_*` (via `ItemLangShardJdbc`). Create writes all three fields (empty string when absent); update writes only fields present in params. The language tag resolves from merged request params, then query/Accept-Language through `RequestCountryCode`, defaulting to `LangueProperties.defaultLang`. Front list/detail services apply the shard rows back onto response rows.
 
+## Tags, keywords, goods groups
+
+Three small catalog surfaces were hardened to never leak or hand over another tenant's rows — foreign-company (and company-less) rows behave exactly like missing ones:
+
+* **Tags** (ECX-10948) — `ItemsTagsQueryService.getTagInfoByTagId` (admin `GET /goods/tag/{tag_id}`) returns an empty list when the loaded row is missing, belongs to another company, or has a null `company_id`, instead of echoing the foreign tag (`ItemsTagsQueryServiceCompanyScopeTest`).
+* **Keywords** (ECX-10947) — `GoodsKeywordsQueryService.getInfoById` (admin `GET /goods/keywordsDetail`) returns `null` under the same conditions, and the controller turns that into an empty-list response. The write side was hardened earlier (ECX-10889): `GoodsKeywordsWriteService.addKeywords` refuses to update an id owned by another company with `记录不存在`, so a foreign keyword row can never be overwritten or re-taken (`GoodsKeywordsWriteServiceCompanyScopeTest`).
+* **Goods groups** (ECX-10946) — `ItemsGroupGetGroupItemsService.listGoodsIdsByGroupId` (admin `GET /goods/get_group_items`, route `goods.items.get_group_items`) always filters the `items_group_rel_item` page by `company_id` (plus `group_id`), so foreign or company-less relations page back empty (`ItemsGroupGetGroupItemsServiceCompanyScopeTest`). The theme bundle's page-widget `items_group` data source uses a separate cross-tenant `listAllGoodsIdsByGroupId` whose own widget query stays company-scoped downstream in `WxappGoodsItemsListQueryOrchestrator`.
+
 ## Wxapp item list orchestration
 
 `GET /api/v1/h5app/wxapp/goods/items` (`WxappGoodsItemsListServiceImpl`) and `/shopitems` share one orchestration layer, `WxappGoodsItemsListQueryOrchestrator`, with four entrypoints — `querySkuItemsList` (full SKU pull, no paging), `querySalespersonSkuItemsList` (same plus `goodsSort` ordering), `queryItemListData` (default-goods pages, page size clamped to 50) and `queryShopItemListData` (no clamp). Every entrypoint follows the same pipeline:
@@ -555,7 +591,7 @@ Barcodes deserve their own note: `ItemsBarcodeRepository.saveBarcode` deletes th
 ## Invariants and failure semantics
 
 * **Oversell guard is Redis-first.** Every deduct is an `INCRBY -num` with a compensating rollback when the result would go negative; the DB write-back of the new store happens only on success. Order create turns a `false` into `商品库存不足`. Operator fast-buy adds an earlier, UI-level guard on top: shop stock present → `当前商品门店有库存，请从收银加购`; cloud stock short → `库存不足`.
-* **Company + shop scoping everywhere.** Items, barcodes, categories and cart/promotion scope queries are all `(company_id, distributor_id…)`-bounded; the create gate refuses operators touching a distributor they do not own; the operator-cart SKU resolver refuses cross-shop items with `无效商品`.
+* **Company + shop scoping everywhere.** Items, barcodes, categories and cart/promotion scope queries are all `(company_id, distributor_id…)`-bounded; the create gate refuses operators touching a distributor they do not own; the operator-cart SKU resolver refuses cross-shop items with `无效商品`. Tag/keyword detail lookups and group-item relation pages treat foreign-company or company-less rows as missing (ECX-10946/47/48), and keyword writes refuse to take over another tenant's row (`记录不存在`).
 * **The fast-buy bucket is a single line per (company, operator, distributor).** A new item replaces the previous one unless `accumulate=true` and the item matches; the bucket TTL is 600 seconds, and checkout revalidates gate + stock before reading it.
 * **Money is fen.** All write paths convert yuan input to integer fen (`moneyToFen` in `NormalItemTypeHandler`, `moneyFen` in supplier add) before persistence.
 * **Post-commit only after real commit.** `ItemAddEvent`, `ItemDeleteEvent` and the category-add event are registered as `TransactionSynchronization.afterCommit` (or run immediately when no synchronization is active, e.g. in tests). `ItemCreateEvent` is the intentional in-transaction exception.
@@ -592,6 +628,8 @@ Barcodes deserve their own note: `ItemsBarcodeRepository.saveBarcode` deletes th
 * `WxappScanCodeAddCartServiceDistributorBarcodeTest` — shop-scoped barcode resolution.
 * `PlatformItemsAddServiceItemCreatePublishUpdateParamsWireTest` — `ItemCreateEvent` published exactly once, `ItemAddEvent` scheduled per SKU.
 * `PlatformItemsDeleteServiceItemDeleteEventPublishProbeTest`, `ItemsUpdateOrchestratorDistributorSyncTest`, `SupplierItemsAddServiceSyncPlatformIfNeededTest`, `SupplierItemsReviewGoodsService*Test` — delete/update/supplier flows and event wiring.
+* `ItemsBatchUpdateStoreOrchestratorSupplierAuditTest` / `…ScopeTest` — supplier batch store also stamps `audit_status=processing`; the single-item platform path only seeds Redis when the company-scoped update hits.
+* `ItemsTagsQueryServiceCompanyScopeTest`, `GoodsKeywordsQueryServiceCompanyScopeTest`, `GoodsKeywordsWriteServiceCompanyScopeTest`, `ItemsGroupGetGroupItemsServiceCompanyScopeTest` — the ECX-10946/47/48 (and ECX-10889) tenant-isolation pins for tag detail, keyword detail/write and group-item pages.
 * `DistributorGoodsSyncServiceAddDistributorItemsDispatchTest` — auto-sync fan-out and job enqueue.
 * `ItemsCategorySaveServiceApiConvergenceDispatchTest`, `ItemsCategoryFrontDisplayResolverTest` — category save dispatch + front display rules.
 * `ItemsMultiLangWriteServiceTest`, `ItemsApproveStatusSyncServiceTest`, `ItemsMedicineServiceUpdateItemMedicineDataDispatchTest` — multi-lang, status cascade, medicine dispatch.

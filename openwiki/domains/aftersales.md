@@ -40,6 +40,10 @@ sources:
     resource: repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/port/AftersalesApplyAsyncPort.java
   - id: openwiki-source-1b49107fc9cfdb499cba6515
     resource: repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/port/AftersalesRefundAsyncPort.java
+  - id: openwiki-source-5bbe8d86eeb556e63192094e
+    resource: repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/service/AftersalesAdminDetailService.java
+  - id: openwiki-source-26ab558d7b478afa213dffef
+    resource: repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/service/AftersalesAdminListService.java
   - id: openwiki-source-29e1532e158f91dc0fe74d9d
     resource: repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/service/AftersalesApplyCheckApplyService.java
   - id: openwiki-source-c066f2746b91cc63158d9dc7
@@ -56,6 +60,8 @@ sources:
     resource: repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/service/AftersalesRefundConfirmService.java
   - id: openwiki-source-42ea5712d3bf3bc43f05cdce
     resource: repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/service/AftersalesRefundJobService.java
+  - id: openwiki-source-bfba5b3f3fbe91c68e8c2560
+    resource: repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/service/AftersalesRefundListService.java
   - id: openwiki-source-4657857a3602f5d323587f17
     resource: repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/service/AftersalesRefundService.java
   - id: openwiki-source-6426d9a7c11b1906d87d3581
@@ -72,6 +78,10 @@ sources:
     resource: repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/wdterp/WdtErpTradeAfterSaleBusPayloadBuilder.java
   - id: openwiki-source-8bb0891f24bcb5a2907fbd69
     resource: repo://ecshopx-aftersales/src/test/java/cn/shopex/ecshopx/aftersales/integration/AftersalesApplyAsyncPortImplOrderRefundCompletePublishTest.java
+  - id: openwiki-source-9d80f75c487824bcc13ad0bb
+    resource: repo://ecshopx-aftersales/src/test/java/cn/shopex/ecshopx/aftersales/service/AftersalesAdminDetailDistributorScopeTest.java
+  - id: openwiki-source-255da158aa59d5c43ce2d5f6
+    resource: repo://ecshopx-aftersales/src/test/java/cn/shopex/ecshopx/aftersales/service/AftersalesAdminListDistributorScopeTest.java
   - id: openwiki-source-e5032d95a293c21edead6615
     resource: repo://ecshopx-aftersales/src/test/java/cn/shopex/ecshopx/aftersales/service/AftersalesApplyCheckApplyServiceFreightTest.java
   - id: openwiki-source-27207657fe4512cbb01e861b
@@ -84,6 +94,12 @@ sources:
     resource: repo://ecshopx-aftersales/src/test/java/cn/shopex/ecshopx/aftersales/service/AftersalesDistributorScopeGuardTest.java
   - id: openwiki-source-c509612a72c10854e84061a8
     resource: repo://ecshopx-aftersales/src/test/java/cn/shopex/ecshopx/aftersales/service/AftersalesRefundConfirmServiceScopeTest.java
+  - id: openwiki-source-f7e83ffe45148f1ee5df35e5
+    resource: repo://ecshopx-aftersales/src/test/java/cn/shopex/ecshopx/aftersales/service/AftersalesRefundDetailDistributorScopeTest.java
+  - id: openwiki-source-32f8e9527cad9c094a5ec0db
+    resource: repo://ecshopx-aftersales/src/test/java/cn/shopex/ecshopx/aftersales/service/AftersalesRefundListDistributorScopeTest.java
+  - id: openwiki-source-97c89a01de81cceb97001ab4
+    resource: repo://ecshopx-aftersales/src/test/java/cn/shopex/ecshopx/aftersales/service/AftersalesRefundLogExportDistributorScopeTest.java
   - id: openwiki-source-b96f9e557a2a9ed83a784d28
     resource: repo://ecshopx-aftersales/src/test/java/cn/shopex/ecshopx/aftersales/service/AftersalesRefuseWxaNotifyServiceTest.java
   - id: openwiki-source-27c91fd6e6f88641bcdd967b
@@ -134,10 +150,10 @@ sources:
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/orderrefund/StandardOnlinePayAftersalesRefundExecutor.java
   - id: openwiki-source-98c73d78d3aa799fe0ab640f
     resource: repo://ecshopx-system-link/src/main/java/cn/shopex/ecshopx/systemlink/service/jushuitan/JushuitanTradeAftersalesNotificationProcessor.java
-generated: { by: "openwiki/0.7.3", at: "2026-11-04T17:09:55.577Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-08T17:14:16.576Z" }
 verified:
-  - by: openwiki/0.7.3
-    at: 2026-11-04T17:09:55.577Z
+  - by: openwiki/0.9.0
+    at: 2026-11-08T17:14:16.576Z
 ---
 
 # Aftersales Domain (ecshopx-aftersales)
@@ -217,7 +233,7 @@ Caption: the `aftersales_status` + `progress` dual state machine. Transitions ar
 
 | route | service | purpose |
 | --- | --- | --- |
-| `GET /aftersales` | `AftersalesAdminListService` | paginated list, `pageSize` capped at 50, ~20 filters |
+| `GET /aftersales` | `AftersalesAdminListService` | paginated list (`page`/`pageSize` required, `pageSize` capped at 100), ~20 filters |
 | `GET /aftersales/logExport` | `AftersalesAdminLogExportService` | async export |
 | `GET /aftersales/{aftersales_bn}` | `AftersalesAdminDetailService` | detail |
 | `POST /aftersales/review` | `AftersalesReviewService` | approve/reject (batch-capable) |
@@ -229,6 +245,14 @@ Caption: the `aftersales_status` + `progress` dual state machine. Transitions ar
 | `POST /aftersales/sendback` | `AftersalesSendbackService` | admin records return logistics (3-field whitelist) |
 
 Both mutation endpoints merge query-string and body into one `LinkedHashMap` and keep all dispatch publishing in the services — the controller Javadoc explicitly forbids touching the dispatch bus here. `review` and `refundCheck` share the route alias `aftersales.review`. The sibling `RefundController` (same bundle) serves `GET /refund`, `GET /refund/detail/{refund_bn}`, `GET /refund/logExport`, `GET /refund/offline/bank` and `POST /refund/offline` (bank-transfer recording via `AftersalesOfflineRefundSaveService`).
+
+### Store-scope (distributor) enforcement on admin read and audit paths (ECX-10936)
+
+Admin aftersales surfaces must stay inside the operator JWT's store scope, resolved from POS-preferred `DualJwtSupport.claims` (JWT `distributor_id` single shop plus `distributor_ids` entries, which may be scalars or maps carrying `distributor_id`/`shop_id`):
+
+* **Row-level guard — `AftersalesDistributorScopeGuard.assertAftersalesDistributorAllowed`**: `operator_type=admin` bypasses; a missing JWT map throws; an empty allow-set (platform-level operator) passes; anything else outside the allow-list throws `ForbiddenException("店铺权限不足")`. It is wired into `AftersalesReviewService.review` and `AftersalesRefundConfirmService.assertPosOnAftersalesBn` (plus `PosOrderDocAccessPort.assertWriteAccess` on the order) on the write side, and into `AftersalesAdminDetailService.getAftersalesDetail(companyId, bn, request)` — the admin `GET /aftersales/{aftersales_bn}` path — where the check runs before any detail rows are loaded.
+* **List-scope clamping**: `AftersalesAdminListService` (list **and** `/aftersales/logExport`, which reuses the same filter builder) intersects the requested `distributor_id`/`distributorIds` filter with the JWT scope; an unauthorized or empty intersection is **clamped** to the JWT store set (never silently dropped to an unscoped query), and an empty effective scope short-circuits to an empty result/export. `AftersalesRefundListService` applies the same clamp to `GET /refund` and `GET /refund/logExport`; when the JWT carries a scope, a `distributor_id` condition always reaches the SQL wrapper.
+* **Refund detail**: `AftersalesRefundListService.getRefundsDetail` (`GET /refund/detail/{refund_bn}`, ECX-10922, PHP `AftersalesDistributorGate::assertOwnStoreAftersales` parity) throws `ResourceException("无权操作该售后单")` when the refund row's `distributor_id` falls outside the JWT scope.
 
 ### Front wxapp (`/api/v1/h5app`)
 
@@ -522,6 +546,8 @@ Caption: the four aftersales tables. `orders_normal_orders.left_aftersales_num` 
 * `AftersalesShopPartialCancelAutoApproveOnlyRefundPostCommitJobsProbeTest`, `...CreateServiceTradeRefundDispatchProbeTest`, `...WdtErpAfterSalePublishProbeTest` — partial-cancel post-commit fan-out.
 * `AftersalesServiceCloseAftersales*ProbeTest`, `...ScheduleAutoRefuseTest`, `...ScheduleDoneAftersalesTest` — close/auto-refuse/done semantics.
 * `AftersalesDistributorScopeGuardTest` + `AftersalesRefundConfirmServiceScopeTest` — the operator-JWT distributor scope guard on write paths (admin bypasses, empty allow-list passes, mismatch → `ForbiddenException 店铺权限不足`).
+* `AftersalesAdminDetailDistributorScopeTest` (ECX-10936) — admin detail rejects a foreign-store aftersales with `ForbiddenException` before loading detail rows, and allows own-store/multi-store operators.
+* `AftersalesAdminListDistributorScopeTest`, `AftersalesRefundListDistributorScopeTest`, `AftersalesRefundDetailDistributorScopeTest`, `AftersalesRefundLogExportDistributorScopeTest` — JWT store-scope clamping on the admin aftersales list, refund list, refund detail (`无权操作该售后单`), and refund log-export filter.
 * `AftersalesApplyAsyncPortImplOrderRefundCompletePublishTest` — the apply-side port publishes `OrderRefundComplete` only for `ONLY_REFUND` or goods-returned commands.
 * Cron handler tests under `cron/` use the `test-cron` profile with `CronTestMockConfig` (Noop dispatch publishers and ports — including a Noop `AftersalesAutoRefuseWxaTemplatePort` overriding the real WXA sender), keeping XXL-Job entrypoints testable without Redis.
 

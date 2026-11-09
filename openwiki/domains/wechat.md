@@ -1,8 +1,8 @@
 ---
 type: domain-reference
 title: WeChat Ecosystem (ecshopx-wechat, ecshopx-work-wechat)
-description: The WeChat integration bundles — ecshopx-wechat covers the Open Platform callback at /wechatAuth/callback (subscribe/fans/tag + wx-shops audit events into the dispatch bus), the dual-mode authorizer token service, mini-program publish/audit orchestration with wxa-template fallbacks, the wxjava HTTP clients (qrcode, url link, jscode2session, live broadcast), official-account fans/tag services, and the legacy /wechatAuth/wxapp qrcode route; ecshopx-work-wechat covers WeCom callbacks, notice textcard/miniprogram messages, and the DIS work-wechat H5 base URIs. It also covers the wxa subscribe-message send seams — common port interfaces with promotions adapters in front of the scene-based sender, and the wechat-owned card-used port with bootstrap/NoOp implementations.
-tags: [wechat, wxapp, wxa, open-platform, work-wechat, wecom, fans, tags, mini-program, publish, audit, callback, dispatch-bus, redis, qrcode, mendian, live-broadcast, subscribe-template]
+description: The WeChat integration bundles — ecshopx-wechat covers the Open Platform callback at /wechatAuth/callback (subscribe/fans/tag + wx-shops audit events into the dispatch bus), the dual-mode authorizer token service, mini-program publish/audit orchestration with wxa-template fallbacks, the wxjava HTTP clients (qrcode, url link, jscode2session, live broadcast), official-account fans/tag services, and the legacy /wechatAuth/wxapp qrcode route; ecshopx-work-wechat covers WeCom callbacks, notice textcard/miniprogram messages, the company-scoped domain-verification file store, and the DIS work-wechat H5 base URIs. It also covers the wxa subscribe-message send seams — common port interfaces with promotions adapters in front of the scene-based sender, and the wechat-owned card-used port with bootstrap/NoOp implementations.
+tags: [wechat, wxapp, wxa, open-platform, work-wechat, wecom, fans, tags, mini-program, publish, audit, callback, dispatch-bus, redis, qrcode, mendian, live-broadcast, subscribe-template, verify-domain, wxjava]
 sources:
   - id: openwiki-source-536a5d1091caa531200ea6b9
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/bootstrap/wechat/WxappCommonSettingFacadeImpl.java
@@ -52,6 +52,8 @@ sources:
     resource: repo://ecshopx-third-party/src/main/java/cn/shopex/ecshopx/thirdparty/service/workwechat/WorkWechatAccessTokenHttpService.java
   - id: openwiki-source-863889c8d41f0479d334cf0f
     resource: repo://ecshopx-third-party/src/main/java/cn/shopex/ecshopx/thirdparty/service/workwechat/WorkWechatCorpMessageSendHttpService.java
+  - id: openwiki-source-d815d709e167c6a76fc4f5b6
+    resource: repo://ecshopx-wechat/pom.xml
   - id: openwiki-source-0faf211cd4710387baf9c288
     resource: repo://ecshopx-wechat/src/main/java/cn/shopex/ecshopx/wechat/api/open/WechatOpenPlatformMessageCallbackController.java
   - id: openwiki-source-4a45b8522d5a5e9782931f61
@@ -104,10 +106,16 @@ sources:
     resource: repo://ecshopx-wechat/src/test/java/cn/shopex/ecshopx/wechat/api/open/WechatOpenPlatformMessageCallbackControllerSubscribeDispatchTest.java
   - id: openwiki-source-b778b3e36daed387d2502f20
     resource: repo://ecshopx-wechat/src/test/java/cn/shopex/ecshopx/wechat/service/WxappLegacyQrcodePngServiceTest.java
+  - id: openwiki-source-958b6bc0e4c181c9c7d8f1ff
+    resource: repo://ecshopx-work-wechat/pom.xml
   - id: openwiki-source-36a28db2a17a5651fa4ccd71
     resource: repo://ecshopx-work-wechat/src/main/java/cn/shopex/ecshopx/workwechat/api/admin/v1/WorkWechatCallbackController.java
+  - id: openwiki-source-6825e6615e8a2346a707e4a2
+    resource: repo://ecshopx-work-wechat/src/main/java/cn/shopex/ecshopx/workwechat/api/admin/v1/WorkWechatController.java
   - id: openwiki-source-7907a4f52d3d1e5f3cc5c8c2
     resource: repo://ecshopx-work-wechat/src/main/java/cn/shopex/ecshopx/workwechat/config/WorkWechatModuleProperties.java
+  - id: openwiki-source-89c9a7546079be33f7a24866
+    resource: repo://ecshopx-work-wechat/src/main/java/cn/shopex/ecshopx/workwechat/domain/WorkWechatVerifyDomainFile.java
   - id: openwiki-source-2474e877f515fd8197c6a9db
     resource: repo://ecshopx-work-wechat/src/main/java/cn/shopex/ecshopx/workwechat/service/WorkWechatAppNotifyService.java
   - id: openwiki-source-0d69b65b71cacd565ddd0b65
@@ -116,21 +124,29 @@ sources:
     resource: repo://ecshopx-work-wechat/src/main/java/cn/shopex/ecshopx/workwechat/service/WorkWechatCustomerNotifyService.java
   - id: openwiki-source-fd540f053f6ae4686aceefc2
     resource: repo://ecshopx-work-wechat/src/main/java/cn/shopex/ecshopx/workwechat/service/WorkWechatMessageTemplateService.java
+  - id: openwiki-source-07e494d41068f27b67bdd387
+    resource: repo://ecshopx-work-wechat/src/main/java/cn/shopex/ecshopx/workwechat/service/WorkWechatVerifyDomainFileQueryService.java
+  - id: openwiki-source-d733bd45f32a6260a66d0605
+    resource: repo://ecshopx-work-wechat/src/main/java/cn/shopex/ecshopx/workwechat/service/WorkWechatVerifyDomainFileService.java
   - id: openwiki-source-b02f6b5b5f92f5685b89fe76
     resource: repo://ecshopx-work-wechat/src/main/java/cn/shopex/ecshopx/workwechat/service/WorkWechatWaitingDeliveryNoticeService.java
   - id: openwiki-source-d5751e76baf64b52dce278e6
     resource: repo://ecshopx-work-wechat/src/test/java/cn/shopex/ecshopx/workwechat/service/WorkWechatConfigServiceCorpIdScopeTest.java
-generated: { by: "openwiki/0.7.3", at: "2026-11-04T17:09:55.577Z" }
+  - id: openwiki-source-19d2b0be785f41a69b8d89b4
+    resource: repo://ecshopx-work-wechat/src/test/java/cn/shopex/ecshopx/workwechat/service/WorkWechatVerifyDomainFileServiceCompanyScopeTest.java
+  - id: openwiki-source-2355f81d7cf522f8dbdaabd4
+    resource: repo://pom.xml
+generated: { by: "openwiki/0.9.0", at: "2026-11-06T17:22:02.968Z" }
 verified:
-  - by: openwiki/0.7.3
-    at: 2026-11-04T17:09:55.577Z
+  - by: openwiki/0.9.0
+    at: 2026-11-06T17:22:02.968Z
 ---
 
 # WeChat Ecosystem (ecshopx-wechat, ecshopx-work-wechat)
 
 Two Bundles carry all WeChat surface area. **`ecshopx-wechat`** (微信与小程序对接域, see `ecshopx-wechat/src/main/java/cn/shopex/ecshopx/wechat/package-info.java`) is the consumer WeChat bundle: the WeChat Open Platform third-party component (callback, auth-code binding, authorizer access tokens), mini-program publish/audit/release, official-account (mp) fans/tag/menus/materials, Mendian (门店/wx-shops) API client, and the WxJava thin HTTP clients that every other bundle reaches through ports. **`ecshopx-work-wechat`** (企业微信对接域, see `ecshopx-work-wechat/src/main/java/cn/shopex/ecshopx/workwechat/package-info.java`) is the WeCom (企业微信) bundle: encrypted callbacks for customer-contact and address-book events, work-wechat config storage in Redis, and the order/aftersale/salesperson notice senders that push textcard and miniprogram_notice messages to corp users.
 
-Maven boundaries are narrow and deliberate: `ecshopx-wechat` declares `ecshopx-common`, `ecshopx-super-admin` (the `wxapp_template` mapper), `ecshopx-merchant`, `ecshopx-third-party` plus the WxJava SDKs `weixin-java-miniapp`, `weixin-java-open`, `weixin-java-mp` (`ecshopx-wechat/pom.xml`); `ecshopx-work-wechat` declares only `ecshopx-common`, `ecshopx-third-party` and `weixin-java-cp` (`ecshopx-work-wechat/pom.xml`). Everything downstream consumes them through ports in `ecshopx-common` — see [Cross-Bundle Communication](../architecture/cross-bundle-communication.md).
+Maven boundaries are narrow and deliberate: `ecshopx-wechat` declares `ecshopx-common`, `ecshopx-super-admin` (the `wxapp_template` mapper), `ecshopx-merchant`, `ecshopx-third-party` plus the WxJava SDKs `weixin-java-miniapp`, `weixin-java-open`, `weixin-java-mp` (`ecshopx-wechat/pom.xml`); `ecshopx-work-wechat` declares only `ecshopx-common`, `ecshopx-third-party` and `weixin-java-cp` (`ecshopx-work-wechat/pom.xml`). The WxJava (`com.github.binarywang:weixin-java-*`) version is pinned once at the root POM to `4.7.6-20250628.205748` via the `wxjava.version` property and `dependencyManagement`, so the miniapp/open/mp/cp/pay artifacts in every module resolve to the same release. Everything downstream consumes the two bundles through ports in `ecshopx-common` — see [Cross-Bundle Communication](../architecture/cross-bundle-communication.md).
 
 ## The `/wechatAuth/*` external path space
 
@@ -307,6 +323,10 @@ All three share the same shape: load config by corpid, build `WXBizMsgCrypt(toke
 ### Config in Redis (three lookup keys)
 
 `WorkWechatConfigService` stores each tenant's WeCom config as JSON under three keys, all written together by `saveWorkWechatConfig`: `workwechat:config:<sha1(companyId)>` (company-keyed), `workwechat:configcropid:<corpid>` (corpid-keyed, how callbacks resolve a company from the URL), and `workwechat:configappid:<appid>` (appid → companyId). The JSON carries `corpid`, `show` (whether work-wechat login is offered; `assertShowAllowsOrdinaryLogin` gates the ordinary login route), `company_id`, and `agents.{app,customer,report,dianwu}` (each with token/aes_key/secret/agent_id/appid as applicable). The corpid and appid lookup keys are **corp-id/appid scoped, not silently overwritten**: before writing, the save checks the existing `configcropid` value's `company_id` and the `configappid` value and rejects with `ResourceException` (`该企业微信corpid已被其他企业使用` / `该企业微信appid已被其他企业使用`) when either index is owned by a different company; a re-save by the same company overwrites, and changing the corpid deletes the previous `configcropid` key only when it belongs to this company. Reads are lenient for display (`getViewConfig` returns an empty default structure) but strict for callbacks (`loadParsedWorkWechatConfigByCorpid` throws `您还没有配置企业微信信息！` on a missing corpid key). `WorkWechatConfigServiceCorpIdScopeTest` pins the four isolation cases (foreign corpid reject without writing any index, foreign appid reject, same-company re-save overwrite, corpid change deleting only the self-owned old key). On every read, `complementDianwuH5IfPresent` injects the 店务/dianwu agent's `h5_url` (`baseUri + ?company_id=<id>`) and `h5_host` from `WorkWechatModuleProperties.getDisWorkwechatH5BaseUri` — the `ecshopx.work-wechat.dis-workwechat-h5-base-uri` property (env `DIS_WORKWECHAT_H5_BASEURI`), with `dis-workwechat-h5-auth-uri` (`DIS_WORKWECHAT_H5_AUTHURI`) as its OAuth-callback counterpart. These URIs are what distribution/salesperson H5 pages link back to, so they are the operational surface for the DIS work-wechat H5 deployment.
+
+### Domain-verification files (可信域名校验文件), company-scoped
+
+WeCom trusted-domain setup requires hosting a `WW_verify_<random>.txt` challenge file at the domain root. The admin route `POST /api/v1/workwechat/domain/verify` (route alias `workwechat.domain.verify`, `WorkWechatController`) accepts the upload: it requires a `.txt` extension, at most 5,000 bytes, and a filename matching `^([a-zA-Z0-9_]{10,50})\.txt$`, then stores the stem + UTF-8 contents through `WorkWechatVerifyDomainFileService.saveVerifyInfo` in the `work_wechat_verify_domain_file` table (unique index on `name`). The store is **company-scoped**: if the same verify-file name already exists and its row belongs to another company, the save is rejected with `ResourceException("验证文件名已被占用")` and neither an update nor an insert happens — one tenant cannot hijack or overwrite another tenant's challenge file. Re-saving a name owned by the same company refreshes contents/operator/timestamps in place without changing `company_id`; a new name inserts. On every config read, `attachConfig` enriches the dianwu agent with `verify_file_name` — the latest uploaded stem for this company (by `created`, via `WorkWechatVerifyDomainFileQueryService.findLatestVerifyFileBaseName`) suffixed with `.txt`, empty when none — so the operator UI shows which file must be hosted at the dianwu H5 domain. The three isolation branches are pinned by `WorkWechatVerifyDomainFileServiceCompanyScopeTest`.
 
 ### Notice senders (dispatch jobs → WeCom messages)
 

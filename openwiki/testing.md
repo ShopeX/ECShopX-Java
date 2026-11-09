@@ -1,21 +1,33 @@
 ---
 type: testing-conventions
 title: Testing Conventions and Verification
-description: How ECShopX-Java verifies changes — per-Bundle plain JUnit 5 unit tests with mocked persistence, the DispatchFlow / PublishProbe / BusProbe / Delegation / WebSlice / ScopeTest / CompanyScopeTest / OwnershipTest / IdempotencyTest / ReplayGuardTest / TableContractTest naming taxonomy that pins dispatch publishing, AFTER_COMMIT timing, tenant/ownership scoping, idempotency and replay guards, and entity table metadata, the narrowest mvnw commands per change type, and the suite's coverage boundaries.
-tags: [testing, junit, mockito, dispatch, probes, webslice, scopetest, ownership, idempotency, replayguard, tablecontract, mockmvc, maven, verification]
+description: How ECShopX-Java verifies changes — per-Bundle plain JUnit 5 unit tests with mocked persistence, the DispatchFlow / PublishProbe / BusProbe / Delegation / WebSlice / ScopeTest / CompanyScopeTest / DistributorScopeTest / DistributorNameScopeTest / ScopeGuardTest / OwnershipTest / IdempotencyTest / ReplayGuardTest / TableContractTest naming taxonomy that pins dispatch publishing, AFTER_COMMIT timing, tenant/ownership/distributor-name scoping, idempotency and replay guards, CSV formula-injection defense, Excel row caps, and entity table metadata, the narrowest mvnw commands per change type, and the suite's coverage boundaries.
+tags: [testing, junit, mockito, dispatch, probes, webslice, scopetest, scopeguard, distributorname, ownership, idempotency, replayguard, tablecontract, csvformula, excellimit, mockmvc, maven, verification]
 sources:
   - id: openwiki-source-8037e2358a2c4f9b2c722a11
     resource: repo://AGENTS.md
   - id: openwiki-source-f317ee207e1653d2033c81a4
     resource: repo://CONTRIBUTING.md
+  - id: openwiki-source-686a3ac1964dd2bf0af6321e
+    resource: repo://ecshopx-adapay/src/test/java/cn/shopex/ecshopx/adapay/service/AdapayTradeExportDataServiceDistributorNameScopeTest.java
+  - id: openwiki-source-444a0ea5086466eb775bed79
+    resource: repo://ecshopx-adapay/src/test/java/cn/shopex/ecshopx/adapay/service/AdapayTradeListQueryServiceDistributorNameScopeTest.java
+  - id: openwiki-source-aed98623f7a2956d8e5ba4d0
+    resource: repo://ecshopx-adapay/src/test/java/cn/shopex/ecshopx/adapay/service/AdapayWithdrawSetDistributorScopeGuardTest.java
   - id: openwiki-source-f65305d9a421b2a567b92a7b
     resource: repo://ecshopx-aftersales/src/test/java/cn/shopex/ecshopx/aftersales/api/admin/v1/AftersalesControllerAdminSendbackDelegationTest.java
+  - id: openwiki-source-1578865126e5041f80a0c083
+    resource: repo://ecshopx-aftersales/src/test/java/cn/shopex/ecshopx/aftersales/api/admin/v1/AftersalesControllerDetailDistributorScopeTest.java
   - id: openwiki-source-8b4af10a586a7a6764ad750c
     resource: repo://ecshopx-aftersales/src/test/java/cn/shopex/ecshopx/aftersales/service/AftersalesAdminApplyOrderProcessLogDispatchPublishProbeTest.java
+  - id: openwiki-source-9d80f75c487824bcc13ad0bb
+    resource: repo://ecshopx-aftersales/src/test/java/cn/shopex/ecshopx/aftersales/service/AftersalesAdminDetailDistributorScopeTest.java
   - id: openwiki-source-e5032d95a293c21edead6615
     resource: repo://ecshopx-aftersales/src/test/java/cn/shopex/ecshopx/aftersales/service/AftersalesApplyCheckApplyServiceFreightTest.java
   - id: openwiki-source-7dd053095170d5ad4fe73bfc
     resource: repo://ecshopx-aftersales/src/test/java/cn/shopex/ecshopx/aftersales/service/AftersalesApplyCheckApplyServiceTopLevelRefundTest.java
+  - id: openwiki-source-f77cb10f98b7f331a53764f3
+    resource: repo://ecshopx-aftersales/src/test/java/cn/shopex/ecshopx/aftersales/service/AftersalesDistributorScopeGuardTest.java
   - id: openwiki-source-32f8e9527cad9c094a5ec0db
     resource: repo://ecshopx-aftersales/src/test/java/cn/shopex/ecshopx/aftersales/service/AftersalesRefundListDistributorScopeTest.java
   - id: openwiki-source-97c89a01de81cceb97001ab4
@@ -48,6 +60,14 @@ sources:
     resource: repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/dispatch/redis/RedisDispatchDriverTest.java
   - id: openwiki-source-609b6f5d2dab35545395d32b
     resource: repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/EcshopxApplicationTests.java
+  - id: openwiki-source-37aab463708a3c624c0cbf7c
+    resource: repo://ecshopx-bspay/src/main/java/cn/shopex/ecshopx/bspay/service/BspayTradeDistributorNameScopeGuard.java
+  - id: openwiki-source-0cecb952309b0eaa9e7e878d
+    resource: repo://ecshopx-bspay/src/test/java/cn/shopex/ecshopx/bspay/service/BspayTradeDistributorNameScopeGuardTest.java
+  - id: openwiki-source-cec5f8a0833d352d13fdf72a
+    resource: repo://ecshopx-bspay/src/test/java/cn/shopex/ecshopx/bspay/service/BspayTradeExportDataServiceDistributorNameScopeTest.java
+  - id: openwiki-source-00e76876ce646c1cc4f78559
+    resource: repo://ecshopx-bspay/src/test/java/cn/shopex/ecshopx/bspay/service/BspayTradeListQueryServiceDistributorNameScopeTest.java
   - id: openwiki-source-cd6cc8d5555c16228030dee3
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/mybatis/metadata/MpMetadataAnnotationHandler.java
   - id: openwiki-source-e7124ff1339f931e45499060
@@ -60,6 +80,16 @@ sources:
     resource: repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/integration/OrderProcessLogPublishPortImpl.java
   - id: openwiki-source-bcc5391c60f8a5033bd2cf22
     resource: repo://ecshopx-employee-purchase/src/test/java/cn/shopex/ecshopx/employeepurchase/service/EmployeePurchaseActivityItemWriteServiceCompanyScopeTest.java
+  - id: openwiki-source-997cde947b231c78f96d6050
+    resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/ExportCsvFileService.java
+  - id: openwiki-source-6f8bde073acb1f585db6b979
+    resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/upload/EspierUploadExcelSheetReader.java
+  - id: openwiki-source-aa9b6c4b6566d52da78581e6
+    resource: repo://ecshopx-espier/src/test/java/cn/shopex/ecshopx/espier/service/ExportCsvFileServiceTest.java
+  - id: openwiki-source-d5af79184950cc683b2f5d28
+    resource: repo://ecshopx-espier/src/test/java/cn/shopex/ecshopx/espier/service/upload/EspierGoodsMarketingStyleSyncSupportRowLimitTest.java
+  - id: openwiki-source-a671702ba5761b1e52cdaafb
+    resource: repo://ecshopx-espier/src/test/java/cn/shopex/ecshopx/espier/service/upload/EspierUploadExcelSheetReaderLimitTest.java
   - id: openwiki-source-4c1a598ea111a3cf1912ad1e
     resource: repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/service/ItemsProfitSaveServiceScopeTest.java
   - id: openwiki-source-fdde77b5e0fe122a5896b993
@@ -114,8 +144,14 @@ sources:
     resource: repo://ecshopx-shuyun/src/test/java/cn/shopex/ecshopx/shuyun/auth/InboundSignedCallbackReplayGuardTest.java
   - id: openwiki-source-19d2b0be785f41a69b8d89b4
     resource: repo://ecshopx-work-wechat/src/test/java/cn/shopex/ecshopx/workwechat/service/WorkWechatVerifyDomainFileServiceCompanyScopeTest.java
+  - id: openwiki-source-92aaf101516e2d92db5fa775
+    resource: repo://ecshopx-wsugc/src/main/java/cn/shopex/ecshopx/wsugc/service/topic/TopicDeleteService.java
+  - id: openwiki-source-a166364657743cc42e784549
+    resource: repo://ecshopx-wsugc/src/test/java/cn/shopex/ecshopx/wsugc/api/admin/v1/TopicDeleteControllerScopeTest.java
   - id: openwiki-source-0240a7de48923742c25dc762
     resource: repo://ecshopx-wsugc/src/test/java/cn/shopex/ecshopx/wsugc/service/post/PostVerifyServiceCompanyScopeTest.java
+  - id: openwiki-source-5b77a8904a777dd0f6469b97
+    resource: repo://ecshopx-wsugc/src/test/java/cn/shopex/ecshopx/wsugc/service/topic/TopicDeleteServiceScopeTest.java
   - id: openwiki-source-5a780646d86a0aaa3f978db0
     resource: repo://ecshopx-youshu/src/test/java/cn/shopex/ecshopx/youshu/dispatch/CouponDeleteYoushuDispatchListenerDispatchConsumerRuntimeTest.java
   - id: openwiki-source-2355f81d7cf522f8dbdaabd4
@@ -124,8 +160,8 @@ sources:
     resource: repo://readme.md
 verified:
   - by: openwiki/0.9.0
-    at: 2026-11-05T17:10:02.238Z
-generated: { by: "openwiki/0.9.0", at: "2026-11-05T17:10:02.238Z" }
+    at: 2026-11-08T17:14:16.576Z
+generated: { by: "openwiki/0.9.0", at: "2026-11-08T17:14:16.576Z" }
 ---
 
 # Testing Conventions and Verification
@@ -156,7 +192,8 @@ Suffixes are load-bearing: the suffix tells you which layer a test pins and whic
 | `*AfterCommitTest` | `ecshopx-bootstrap/src/test/.../config/` | The AFTER_COMMIT wrapper itself: zero facade interactions inside the transaction, exactly one publish with the exact options after commit, immediate publish with no active transaction. |
 | `*EventAsyncConsumeTest` | `ecshopx-orders/src/test/.../orders/integration/` (~50 classes) | Consume-side envelope: hand-construct a `DispatchMessage` carrying the real listener name and queue, register the real listener on an `InMemoryDispatchRegistry`, and drive `DispatchConsumerRuntime.consume(msg, 1)` to prove the listener's underlying service (`OrderProcessLogBusService.persistEntitiesMap`, …) runs once with the payload. |
 | `*DispatchConsumerRuntimeTest` | Consuming bundles (`ecshopx-youshu`, `ecshopx-hfpay`, `ecshopx-reservation`) | Same consume-side shape as above, named after the runtime: the listener is registered with its production `ListenerDispatchOptions` and the runtime is proven to reach the real downstream service. |
-| `*ScopeTest` / `*CompanyScopeTest` / `*OwnershipTest` / `*IdempotencyTest` / `*ReplayGuardTest` | Service packages across nearly every bundle (see the hardening families below) | Tenant-scoping, ownership, idempotency, and replay-safety guards added by the security-hardening window — see the dedicated section below. |
+| `*ScopeTest` / `*CompanyScopeTest` / `*DistributorScopeTest` / `*DistributorNameScopeTest` / `*ScopeGuardTest` | Service packages across nearly every bundle (see the hardening families below) | **The canonical way to test scoping** since the cross-tenant hardening wave: tenant-scoping guards pinned either at the scoped query/write (`*ScopeTest`) or at a static guard object (`*ScopeGuardTest`), including the `distributor_name` scope-override guards (`*DistributorNameScopeTest` / `*DistributorNameScopeGuardTest`) — see the dedicated section below. |
+| `*OwnershipTest` / `*IdempotencyTest` / `*ReplayGuardTest` | Front-endpoint and callback packages | Self-service ownership, callback idempotency, and replay-safety guards added by the same hardening window — see the dedicated section below. |
 | `*TableContractTest` | Bundle `domain` packages (currently `ecshopx-companys`: `PosStoreAccountTableContractTest`) | Entity-to-schema metadata contract: reflects on the entity's `@MpTable` annotation (ecshopx-common's MyBatis-Plus metadata extension carrying index definitions) and asserts the table name plus exact unique-index name/columns — e.g. `pos_store_account` must expose exactly `uk_employee_no(employee_no)` — and, when the local Flyway `db/migration` directory is present, that the incremental SQL keeps the same index. |
 | `*EnqueueTest`, `*ChainTest`, `*ProbeTest` (bare) | Various bundles | Local variants of the publish probe for non-dispatch side effects (SMS enqueues, reservation notice chains, orchestrator fan-out). |
 
@@ -190,13 +227,21 @@ The same fake-transaction idiom pins a **dispatch publish after commit** in a no
 
 The security-hardening window (ECX-108xx/109xx tickets) added a broad family of plain-Mockito tests that pin **authorization and exactly-once invariants** rather than dispatch behavior. They reuse the standard harness (real service constructed with `new`, mocked mappers/Redis/ports, `@BeforeAll TableInfoHelper.initTableInfo` when lambda wrappers are built) but the assertion target is a guard, not a publish tuple. Class Javadoc cites the ticket — e.g. `/** ECX-10886：退款列表未授权 distributor_id 须收束到 JWT 门店，不得去掉门店条件。 */`.
 
-**`*ScopeTest` / `*CompanyScopeTest` — tenant scoping.** These now span `ecshopx-adapay`, `ecshopx-aftersales`, `ecshopx-ali`, `ecshopx-bspay`, `ecshopx-comments`, `ecshopx-companys`, `ecshopx-data-cube`, `ecshopx-distribution`, `ecshopx-employee-purchase`, `ecshopx-espier`, `ecshopx-form`, `ecshopx-goods`, `ecshopx-kujiale`, `ecshopx-members`, `ecshopx-orders`, `ecshopx-promotions`, `ecshopx-salesperson`, `ecshopx-selfservice`, `ecshopx-work-wechat`, `ecshopx-wsugc`, and more. Three assertion shapes recur:
+**`*ScopeTest` / `*CompanyScopeTest` / `*DistributorScopeTest` / `*DistributorNameScopeTest` / `*ScopeGuardTest` — tenant scoping, the canonical pattern.** The cross-tenant hardening wave standardized on this naming family: `*ScopeTest` (plus the `*CompanyScopeTest` / `*DistributorScopeTest` / `*DistributorNameScopeTest` variants that name the scoped dimension) pins a guard where a scoped query or write happens, and `*ScopeGuardTest` pins a pure static guard object. These now span `ecshopx-adapay`, `ecshopx-aftersales`, `ecshopx-ali`, `ecshopx-bspay`, `ecshopx-comments`, `ecshopx-companys`, `ecshopx-data-cube`, `ecshopx-distribution`, `ecshopx-employee-purchase`, `ecshopx-espier`, `ecshopx-form`, `ecshopx-goods`, `ecshopx-kujiale`, `ecshopx-members`, `ecshopx-orders`, `ecshopx-promotions`, `ecshopx-salesperson`, `ecshopx-selfservice`, `ecshopx-work-wechat`, `ecshopx-wsugc`, and more. Three assertion shapes recur:
 
 * **SQL-segment scoping** — capture the MyBatis-Plus wrapper and assert the query carries the tenant predicate. `EmployeePurchaseActivityItemWriteServiceCompanyScopeTest` captures the `selectOne` wrapper and asserts `getSqlSegment()` contains `company_id`, then uses a `thenAnswer` that returns a foreign-company row **only when the wrapper lacks the `company_id` clause** to prove a correctly-scoped query never sees it — followed by `never()` verifications on every write path (`insertIgnoreActivityItems`, `insertIgnoreActivityGoods`, the Redis `store`).
 * **JWT/activated-shop clamping** — a caller-supplied `distributor_id` outside the operator's JWT scope is narrowed, never dropped. `AftersalesRefundListDistributorScopeTest` builds a JWT with `distributor_ids` `[10, 20]`, feeds an unauthorized `distributorIdRaw="99"` (or an empty activated-shop intersection), and captures the `selectCount` wrapper to assert its params contain `10L, 20L`; the authorized `"10"` case pins that exactly `10L` (not `20L`) is bound. `AftersalesRefundLogExportDistributorScopeTest` pins the same clamp on the export-filter map (`filter.get("distributor_id")` is `[10, 20]` for an unauthorized input, `10L` for an authorized one).
 * **Cross-tenant write rejection** — `WorkWechatVerifyDomainFileServiceCompanyScopeTest` proves a same-name row owned by another company makes `saveVerifyInfo` throw `ResourceException("验证文件名已被占用")` with `never()` on `updateById`/`insert`, and that the own-company update carries the unchanged `company_id` (100L) in the captured entity.
 
 The form bundle shows a **pure-function scope** variant: `UserTranscriptListCompanyScopeTest` calls the static `UserTranscriptListCompanyScope.apply(filters, 100L)` directly and asserts client-supplied `company_id` keys (including `company_id|neq`, `company_id|in`) are stripped and the JWT company is forced — no mocks at all.
+
+**`*ScopeGuardTest` — pure static guard objects.** Where the hardened rule lives in a static guard class, the test calls it directly with hand-built JWT maps and plain JUnit assertions — no Mockito, no Spring. `AftersalesDistributorScopeGuardTest` and its twin `AdapayWithdrawSetDistributorScopeGuardTest` pin the whole matrix: a `distributor`-operator JWT targeting another shop throws `ForbiddenException`, its own shop passes, a `staff` JWT's allow-set is the union of the scalar `distributor_id` and every entry of the `distributor_ids` list (accepting both `distributor_id` and `shop_id` keys, string or long values), `admin` passes any shop, and an empty allow-set passes any shop. `BspayTradeDistributorNameScopeGuardTest` (with its adapay twin) pins the operator-type gate of the `distributor_name` filter: a `" Distributor "` operator type is rejected case- and whitespace-insensitively, while `admin`/`merchant`/`staff`/`dealer`, a missing type, and a `null` JWT map are all allowed.
+
+**`*DistributorScopeTest` — row-level distributor authorization.** `AftersalesAdminDetailDistributorScopeTest` (ECX-10936) drives the real `AftersalesAdminDetailService` (constructed with a dozen mocked ports/mappers, `@BeforeAll TableInfoHelper` for the `Aftersales`/`AftersalesDetail` entities) against a mocked `HttpServletRequest` whose `OperatorJwtRequestAttributes.OPERATOR_JWT_USER_DATA` attribute carries the JWT: a store operator opening a foreign-store aftersales row gets `ForbiddenException("店铺权限不足")` with `never()` on the detail mapper (the row's `distributor_id` is checked against the JWT shop set *before* loading details), while the own store, any shop in a multi-shop `distributor_ids` list, and an `admin` JWT all pass. `AftersalesControllerDetailDistributorScopeTest` pins the controller half — it must hand the raw `HttpServletRequest` to the scoped service (`verify(detailService).getAftersalesDetail(same(100L), same("555001"), same(request))`).
+
+**`*DistributorNameScopeTest` — `distributor_name` filter may not widen store scope.** A store operator must not turn a shop-name filter into a cross-shop query or export. `BspayTradeListQueryServiceDistributorNameScopeTest` (ECX-10941, with the `AdapayTradeListQueryServiceDistributorNameScopeTest` twin under ECX-10908) drives the real query service against a `MockHttpServletRequest` with `distributor_name` set: a `distributor`-type JWT is rejected with `ForbiddenException("无权筛选其他店铺")` and `never()` on both the distributor-name lookup and the trade mappers; without the filter the captured query filter carries exactly the JWT `distributor_id`; an `admin` may use the name lookup. The export twins (`BspayTradeExportDataServiceDistributorNameScopeTest`, `AdapayTradeExportDataServiceDistributorNameScopeTest`) pin the same rejection **before the export job dispatch publisher is touched** (`never()` on `exportPublisher`), closing the async-export side channel — the pure `*DistributorNameScopeGuardTest` classes pin the guard's operator-type matrix in isolation.
+
+**Silent-intersection batch delete.** `TopicDeleteServiceScopeTest` (ECX-10943) pins the non-throwing variant of cross-tenant scoping: a mixed `topic_id` batch `[10, 99]` selects only owned rows through a captured `LambdaQueryWrapper` whose `getSqlSegment()` contains `company_id`, deletes only those ids (`deleteMultiLangForTopics(eq(100L), eq(List.of(10L)))`, `deleteBatchIds(eq(List.of(10L)))`), and still returns the PHP-parity response `message="删除成功"` echoing the requested ids; a foreign-only batch returns success with `never()` on both delete paths. The controller-side companion `TopicDeleteControllerScopeTest` pins that the `company_id` comes from the trusted JWT attribute — a missing or unparsable one is rejected with `UnauthorizedException("未登录")` before the service runs.
 
 **`*OwnershipTest` — front-endpoint self-service ownership.** Front (C-end) endpoints must prove the requested resource belongs to the authenticated member, with **no side effects on rejection**.
 
@@ -210,6 +255,11 @@ The form bundle shows a **pure-function scope** variant: `UserTranscriptListComp
 
 * `OpenapiSignedRequestReplayGuardTest` (openapi) — `assertOnce(appKey, sign, timestamp, ttl)`: first acquire returns `true` and the captured key starts with `openapi:auth:replay:`; an already-seen key returns `false`; a missing `app_key`/`sign`/`timestamp` returns `false`; and a Redis exception is **fail-closed** (`false`).
 * `InboundSignedCallbackReplayGuardTest` (shuyun) — `assertFreshAndOnce(sign, time, skewSeconds, ttlSeconds, nowMsSupplier)`: an injectable clock pins the freshness window (a timestamp >300 s old is rejected), the first-acquire key starts with `shuyun:cb:replay:`, an already-seen key is rejected, and a missing timestamp is rejected. The production guard scales 10-digit seconds-epoch to milliseconds and keys on `sha256(sign|time)`.
+
+**CSV formula injection and Excel row caps — the espier export/upload guards.** The hardening wave also pinned two file-format defenses in `ecshopx-espier`:
+
+* `ExportCsvFileServiceTest` (ECX-10937) mocks `FileStorageService`, captures the `put(...)` byte payload, and asserts the CSV text: cells starting with `=`, `+`, `-`, or `@` are written with a leading apostrophe (`'=1+1,'-12.50,"'=a,b",'+86,'@shop`) so spreadsheet applications treat them as text — including negative amounts like `-12.50` — while cells containing commas or quotes are quoted with `"` doubled. The tests mirror the production `writeCsvField` rule exactly, so a regression that exports formula cells unescaped fails byte-for-byte.
+* `EspierUploadExcelSheetReaderLimitTest` (ECX-10949) builds a real workbook in memory with POI's `XSSFWorkbook`, then drives `EspierUploadExcelSheetReader.readFirstSheet(bytes, maxDataRows)`: 5001 data rows against a 5000 cap throws the reader's own `SheetRowLimitException` (message contains the cap; the header row is not counted), and exactly-at-cap returns header + values. Both tests snapshot `ZipSecureFile.getMaxEntrySize()` before and after, pinning that the reader restores the JVM-global entry-size limit it temporarily tightens to `MAX_DECOMPRESSED_ENTRY_BYTES` (50 MB) during the read — the anti-zip-bomb clamp must not leak across calls. The companion `EspierGoodsMarketingStyleSyncSupportRowLimitTest` pins the caller-facing message: >500 data rows surface as `BadRequestException("每次最多上传500个商品...请减少后再提交")`.
 
 ### Scope probes: the original `*ScopeTest` shapes
 
@@ -312,7 +362,11 @@ Map that to the taxonomy:
 | Shopadmin deferred create (no publish at create) | `./mvnw -pl ecshopx-orders test -Dtest=ShopadminNormalOrderCreateOrchestratorNormalOrderAddDispatchPublishProbeTest,NormalOrderAdminCreateUserOrderServiceNormalOrderAddDispatchPublishProbeTest` |
 | Order-persist field alignment with PHP `_formatOrderData` | `./mvnw -pl ecshopx-orders test -Dtest=OrderCreatePersistencePortImplShopIdAlignPhpTest` (and `-pl ecshopx-goods ...OrderCreateFormatDataPortImplShopIdAlignPhpTest` for the format side) |
 | Seckill shop-overlap relaxation / guard wiring | `./mvnw -pl ecshopx-promotions test -Dtest=SeckillActivityCreateServiceLimitedTimeSaleShopOverlapTest` |
-| Distributor/company scoping of a service | `./mvnw -pl ecshopx-<bundle> test -Dtest=<Service>ScopeTest` / `<Service>CompanyScopeTest` (e.g. `ItemsProfitSaveServiceScopeTest`, `OrderExportFilterAssemblerDistributorScopeTest`, `AftersalesRefundListDistributorScopeTest`, `PostVerifyServiceCompanyScopeTest`) |
+| Distributor/company scoping of a service | `./mvnw -pl ecshopx-<bundle> test -Dtest=<Service>ScopeTest` / `<Service>CompanyScopeTest` / `<Service>DistributorScopeTest` (e.g. `ItemsProfitSaveServiceScopeTest`, `OrderExportFilterAssemblerDistributorScopeTest`, `AftersalesRefundListDistributorScopeTest`, `AftersalesAdminDetailDistributorScopeTest`, `PostVerifyServiceCompanyScopeTest`, `TopicDeleteServiceScopeTest`) |
+| Static scoping guard object | `./mvnw -pl ecshopx-<bundle> test -Dtest=<Guard>ScopeGuardTest` (e.g. `AftersalesDistributorScopeGuardTest`, `AdapayWithdrawSetDistributorScopeGuardTest`) |
+| `distributor_name` filter scope override | `./mvnw -pl ecshopx-bspay test -Dtest=BspayTrade*DistributorNameScope*Test` (and `-pl ecshopx-adapay ...AdapayTrade*DistributorNameScope*Test`) |
+| CSV export formula escaping | `./mvnw -pl ecshopx-espier test -Dtest=ExportCsvFileServiceTest` |
+| Excel upload row caps / entry-size restore | `./mvnw -pl ecshopx-espier test -Dtest=EspierUploadExcelSheetReaderLimitTest,EspierGoodsMarketingStyleSyncSupportRowLimitTest` |
 | Front-endpoint ownership of a resource | `./mvnw -pl ecshopx-<bundle> test -Dtest=<Endpoint>OwnershipTest` (e.g. `RightsFrontWxappGetRightsCodeOwnershipTest`) |
 | Callback idempotency / atomic takeover | `./mvnw -pl ecshopx-bootstrap test -Dtest=AdapayDepositTradeRechargeCallbackServiceIdempotencyTest` |
 | Signed-request / signed-callback replay guard | `./mvnw -pl ecshopx-openapi test -Dtest=OpenapiSignedRequestReplayGuardTest` / `./mvnw -pl ecshopx-shuyun test -Dtest=InboundSignedCallbackReplayGuardTest` |
@@ -332,7 +386,7 @@ Production code also documents its own re-verification commands: `WxappOrderCont
 
 ## What the suite does and does not cover
 
-**Covered well:** dispatch publish tuples and AFTER_COMMIT timing; fan-out planning (per-listener queue/delay, parent-delay precedence — `DispatchFanOutPlannerTest`); consume envelopes and listener wiring; controller→service delegation and the HTTP envelope; tenant scoping of writes, reads, exports, and cross-tenant batch rejects (`*ScopeTest` / `*CompanyScopeTest`); front-endpoint self-service ownership (`*OwnershipTest`); callback idempotency / atomic takeover (`*IdempotencyTest`); signed-request and signed-callback replay guards (`*ReplayGuardTest`); pure business rules (aftersales freight/refund validation, limits, codecs, CSV export flattening); entity table/unique-index metadata (`*TableContractTest`); MyBatis-Plus wrapper construction (via mocked mappers + `TableInfoHelper`); the bus drivers' behaviors against mocked Redis/Rabbit templates (`RedisDispatchDriverTest`, `RedisDelayedDispatchMoverTest`, `RabbitDispatchDriverTest`, …).
+**Covered well:** dispatch publish tuples and AFTER_COMMIT timing; fan-out planning (per-listener queue/delay, parent-delay precedence — `DispatchFanOutPlannerTest`); consume envelopes and listener wiring; controller→service delegation and the HTTP envelope; tenant scoping of writes, reads, exports, cross-tenant batch rejects, `distributor_name` filter overrides, and row-level distributor authorization (`*ScopeTest` / `*CompanyScopeTest` / `*DistributorScopeTest` / `*DistributorNameScopeTest` / `*ScopeGuardTest`); front-endpoint self-service ownership (`*OwnershipTest`); callback idempotency / atomic takeover (`*IdempotencyTest`); signed-request and signed-callback replay guards (`*ReplayGuardTest`); CSV formula-injection escaping and Excel upload row caps (`ExportCsvFileServiceTest`, `EspierUploadExcelSheetReaderLimitTest`); pure business rules (aftersales freight/refund validation, limits, codecs, CSV export flattening); entity table/unique-index metadata (`*TableContractTest`); MyBatis-Plus wrapper construction (via mocked mappers + `TableInfoHelper`); the bus drivers' behaviors against mocked Redis/Rabbit templates (`RedisDispatchDriverTest`, `RedisDelayedDispatchMoverTest`, `RabbitDispatchDriverTest`, …).
 
 **Not covered by the automated suite — verify by other means:**
 
@@ -362,6 +416,15 @@ Practical consequences: a green `./mvnw -pl <module> test` proves your units, bu
 | `ItemsProfitSaveServiceScopeTest` | Write-side scope probe: a foreign `item_id` makes the whole save throw with `never()` on every repository write; the owned-item update carries the company id in scope |
 | `OrderExportFilterAssemblerDistributorScopeTest` | Read-side scope probe: distributor accounts get `distributor_id` forced from the activated shop or JWT `distributor_ids` (request parameters cannot override); admin accounts get no forced scope |
 | `AftersalesRefundListDistributorScopeTest` | JWT/activated-shop clamping: an unauthorized `distributorIdRaw` or an empty activated-shop intersection is narrowed to the JWT `distributor_ids` (`10, 20`) in the captured `selectCount` wrapper; an authorized id keeps exactly that shop |
+| `AftersalesAdminDetailDistributorScopeTest` | Row-level distributor authorization: a foreign-store aftersales row throws `ForbiddenException("店铺权限不足")` before the detail mapper runs; own store, any shop in the JWT `distributor_ids` list, and `admin` pass |
+| `AftersalesDistributorScopeGuardTest`, `AdapayWithdrawSetDistributorScopeGuardTest` | Static scope-guard matrix: `distributor` operator is confined to its JWT shop, `staff` allow-set is the union of scalar `distributor_id` and `distributor_ids` entries (`distributor_id` or `shop_id` keys), `admin` and empty allow-set pass |
+| `BspayTradeDistributorNameScopeGuardTest`, `AdapayTradeDistributorNameScopeGuardTest` | `distributor_name` filter gate: `distributor`-type operators rejected case/whitespace-insensitively; other types, missing type, and `null` JWT allowed |
+| `BspayTradeListQueryServiceDistributorNameScopeTest`, `AdapayTradeListQueryServiceDistributorNameScopeTest` | `distributor_name` scope override: a store operator using the filter is rejected before the name lookup or trade query runs; without the filter the query carries exactly the JWT `distributor_id` |
+| `BspayTradeExportDataServiceDistributorNameScopeTest`, `AdapayTradeExportDataServiceDistributorNameScopeTest` | The same guard on exports: rejection happens before the export-job dispatch publisher is touched |
+| `TopicDeleteServiceScopeTest` | Silent-intersection batch delete: a mixed `topic_id` batch deletes only own-company rows (wrapper carries `company_id`) and still reports `删除成功`; a foreign-only batch reports success with zero deletes |
+| `ExportCsvFileServiceTest` | CSV formula-injection defense: cells starting with `=`, `+`, `-`, `@` are apostrophe-prefixed (including negative amounts); comma/quote cells are quoted with `"` doubled — pinned against the captured storage `put(...)` bytes |
+| `EspierUploadExcelSheetReaderLimitTest` | Excel row caps: over-cap data rows throw `SheetRowLimitException` (header not counted); at-cap succeeds; the JVM-global `ZipSecureFile` max-entry-size is restored after both paths |
+| `EspierGoodsMarketingStyleSyncSupportRowLimitTest` | Caller-facing row-cap message: >500 data rows → `BadRequestException("每次最多上传500个商品...请减少后再提交")` |
 | `AftersalesRefundLogExportDistributorScopeTest` | The same clamp on the export-filter map: unauthorized input → `distributor_id=[10, 20]`, authorized input → `distributor_id=10` |
 | `EmployeePurchaseActivityItemWriteServiceCompanyScopeTest` | SQL-segment scoping: the activity `selectOne` wrapper carries `company_id`; a foreign-company activity is rejected with `never()` on every insert and the Redis `store` |
 | `WorkWechatVerifyDomainFileServiceCompanyScopeTest` | Cross-tenant name guard: a same-name row owned by another company throws with zero writes; the own-company update keeps the original `company_id` |

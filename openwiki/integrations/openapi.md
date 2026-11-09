@@ -2,7 +2,7 @@
 type: integration
 title: OpenAPI Gateway (ecshopx-openapi)
 description: How the public Open API surface works — the /api/openapi vs /api/openapi/internal path split, MD5 sign verification in OpenapiAuthInterceptor, the forward-registry dispatch into per-domain internal controllers, the PHP-compatible response envelope and error codes, and the openapi_developer credential lifecycle including the app_secret salt.
-tags: [openapi, gateway, sign-auth, ports, thirdparty, interceptors, credentials, digios]
+tags: [openapi, gateway, sign-auth, ports, thirdparty, interceptors, credentials, digios, member-tags]
 sources:
   - id: openwiki-source-89b43138f8e75edb4615495b
     resource: repo://ecshopx-bootstrap/src/main/resources/application.properties
@@ -36,6 +36,24 @@ sources:
     resource: repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/service/DigiOsStockPushService.java
   - id: openwiki-source-ecc705da626fec47a869310b
     resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/OperatorJwtAuthenticationFilter.java
+  - id: openwiki-source-588b61460dc5a0d42388d3a5
+    resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/openapi/OpenapiMemberCreateDetailPortImpl.java
+  - id: openwiki-source-47f4281f688e7f8022df6332
+    resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/openapi/OpenapiMemberTagBatchCoverPortImpl.java
+  - id: openwiki-source-4f83cac13108c232ba9d5e65
+    resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/openapi/OpenapiMemberV2UpdateDetailPortImpl.java
+  - id: openwiki-source-051da4693cc00ccb536685c2
+    resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/openapi/thirdapi/v2/OpenapiThirdApiV2MemberCreateService.java
+  - id: openwiki-source-56662236a3bde1678faabe4d
+    resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/openapi/thirdapi/v2/OpenapiThirdApiV2MemberTagBatchCoverService.java
+  - id: openwiki-source-59212edd4b49c0cbf52d5f44
+    resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/openapi/thirdapi/v2/OpenapiThirdApiV2MemberTagBatchUpdateService.java
+  - id: openwiki-source-99f0f102c92c7efc6dc06623
+    resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/openapi/thirdapi/v2/OpenapiThirdApiV2MemberTaggedDeleteService.java
+  - id: openwiki-source-f8206bef2adeb06ffb083478
+    resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/openapi/thirdapi/v2/OpenapiThirdApiV2MemberUpdateDetailService.java
+  - id: openwiki-source-a204a89b1ce5a22cd0a0fe06
+    resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/systemtag/MemberSystemTagWriteGuard.java
   - id: openwiki-source-d81b1c0223076d39ef879541
     resource: repo://ecshopx-openapi/pom.xml
   - id: openwiki-source-3672b4f21dc3794b872b7d57
@@ -56,6 +74,10 @@ sources:
     resource: repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/thirdapi/OpenapiRequestParamCollector.java
   - id: openwiki-source-a3bf0cb63921c01a187b0409
     resource: repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/thirdapi/v1/DigiOsStockController.java
+  - id: openwiki-source-c38c9f33b0936c219687fa9b
+    resource: repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/thirdapi/v2/member/MemberController.java
+  - id: openwiki-source-7249d8e6eb959b1f77e5a7ae
+    resource: repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/thirdapi/v2/member/MemberTagController.java
   - id: openwiki-source-9d1de23698f8058e91ebfbc9
     resource: repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/thirdapi/v2/orders/OrderController.java
   - id: openwiki-source-2a6ed641b7be57a3f7fcd6a5
@@ -94,10 +116,10 @@ sources:
     resource: repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/openapi/thirdapi/v2/orders/OpenapiThirdApiV2OrderWriteoffServiceFailMappingTest.java
   - id: openwiki-source-68528e8fae60f39cf40a5d5e
     resource: repo://ecshopx-third-party/src/main/java/cn/shopex/ecshopx/thirdparty/service/marketingcenter/MarketingCenterOpenApiSignedFormClient.java
-generated: { by: "openwiki/0.9.0", at: "2026-11-05T17:10:02.238Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-06T17:22:02.968Z" }
 verified:
   - by: openwiki/0.9.0
-    at: 2026-11-05T17:10:02.238Z
+    at: 2026-11-06T17:22:02.968Z
 ---
 
 # OpenAPI Gateway (ecshopx-openapi)
@@ -361,7 +383,24 @@ sequenceDiagram
 
 ### The dormant `@Activated` annotations
 
-`ecx.order.writeoff` (and `ecx.aftersales.get`, and v2 `ecx.member.create`) carry `@Activated(routeAlias = "…")` — the annotation that on admin endpoints drives menu-permission checks through `ActivatedInterceptor` → `ActivatedMiddlewareService`. On the openapi surface it is **inert**: `ActivatedMiddlewareService.handle` returns immediately when the operator-JWT map is `null`, and nothing ever sets `OPERATOR_JWT_USER_DATA` for `/api/openapi` paths (`OperatorJwtAuthenticationFilter` skips the prefix; `AdminAuthInterceptor` requires `@AdminAuth`). So `order.writeoff.set` is *not* a permission gate here — the alias is PHP-parity scaffolding. Do not rely on it for authorization, and do not "fix" it by making the openapi surface require an operator JWT.
+`ecx.order.writeoff` (and `ecx.aftersales.get`, and v2 `ecx.member.create`) carry `@Activated(routeAlias = "…")` — the annotation that on admin endpoints drives menu-permission checks through `ActivatedInterceptor` → `ActivatedMiddlewareService`. On the openapi surface it is **inert**: `ActivatedMiddlewareService.handle` returns immediately when the operator-JWT map is `null`, and nothing ever sets `OPERATOR_JWT_USER_DATA` for `/api/openapi` paths (`OperatorJwtAuthenticationFilter` skips the prefix; `AdminAuthInterceptor` requires `@AdminAuth`). So `order.writeoff.set` (and v2 member create's `adapay.member.create`) are *not* permission gates here — the aliases are PHP-parity scaffolding. Do not rely on them for authorization, and do not "fix" them by making the openapi surface require an operator JWT.
+
+## Worked example: the member v2 surface (create/update + tag batch)
+
+The v2 member routes are the largest domain block in the registry and the clearest illustration of the same four-layer template on the members side. `MemberController` / `MemberTagController` / `MemberTagCategoryController` (`thirdapi/v2/member/`, beans `openapiV2Member`, `openapiV2MemberTag`, …) own the internal `/api/openapi/internal/v2/ecx.member*` mappings; every handler resolves `companyId` via `requireCompanyId(request)`, merges `@RequestParam` with `@FlexibleBody` through `OpenapiRequestParams`, and calls one of the `OpenapiMember*Port` interfaces from `ecshopx-common`. The provider Bundle implements them in `ecshopx-members/members/openapi/*PortImpl.java` as thin delegates to the orchestration services in `ecshopx-members/members/openapi/thirdapi/v2/` — again recreating the PHP `OpenapiBundle` thirdapi class names inside the owning Bundle:
+
+* `ecx.member.create` (v2) → `OpenapiMemberCreateDetailPortImpl` → `OpenapiThirdApiV2MemberCreateService.executeOpenapiCreateDetail`, which inserts `Members`/`MembersInfo`, allocates a card code, applies `tag_names`/`tag_ids`, writes the operate log, and publishes salesperson/work-wechat side effects.
+* `ecx.member_info.update` (v2, PATCH) → `OpenapiMemberV2UpdateDetailPortImpl` → `OpenapiThirdApiV2MemberUpdateDetailService`, a partial update that validates mobile/email/enum fields, re-encrypts the mobile via `SensitiveFieldEncryptor`, and reconciles the "new customer" system tag (`NewCustomerTagReconcileService`).
+* The tag batch trio — `ecx.member.tagging.batch.cover` (POST), `ecx.member.tagging.batch.update` (POST), `ecx.member.tagged.delete` (DELETE) → `OpenapiMemberTagBatchCoverPortImpl` / `…BatchUpdatePortImpl` / `…TaggedDeletePortImpl` → `OpenapiThirdApiV2MemberTagBatchCoverService` / `…BatchUpdateService` / `…TaggedDeleteService`.
+
+The three tag services share one contract, and it is deliberately *all-or-nothing* — unlike the DigiOS stock push:
+
+* **Strict input validation up front.** `mobiles` and `tag_ids` are JSON-array strings; a missing value, a malformed array, or a nested array/object element throws `OpenapiMemberTagV2FailException` with `E5001` (missing) or `E5560` (format) before anything is written.
+* **Every reference must resolve.** Each mobile must exist in `Members` for the company (else the member-not-found fail), and each `tag_id` must exist in `MemberTags` (loose long/string matching, else `E5561` tag-not-found). A single unknown input fails the whole request — there are no per-row buckets.
+* **System tags are write-protected.** After resolving the tag ids, all three services call `MemberSystemTagWriteGuard.rejectTagIds(companyId, tagIds)`, which rejects attempts to mutate Shopex-managed system tags through the Open API — the same guard the admin member-tag surface uses.
+* **The mutation semantics differ per verb.** Cover (`batch.cover`) calls `createRelTagsByUserId` per member — replacing that member's tag set with exactly the given list; update (`batch.update`) calls `createRelTags` once for all members — adding tags without removing existing ones; delete (`tagged.delete`) calls `userRelTagDeleteNoPush` for one mobile + tag list. On success all three return `{"status": true}`, which the advice wraps in the standard success envelope.
+
+Failures travel as `OpenapiMemberTagV2FailException` carrying the PHP-aligned `OpenapiErrorCode`, so `OpenapiExceptionHandler` renders the exact `E5001`/`E5560`/`E5561`/… envelope — the members-side counterpart of the writeoff fail-mapping pattern. The members-domain context is in [Members Domain](../domains/members.md).
 
 ## Worked example: the DigiOS stock push endpoint (v1)
 
@@ -430,7 +469,7 @@ Module-local `ecshopx-openapi/src/main/resources/application-openapi.yml` is an 
 1. **Port** — declare (or reuse) the interface in `ecshopx-common/openapi/`; keep it one cohesive operation, `companyId` first.
 2. **Provider** — implement it in the owning Bundle's `openapi/` package, delegating to a bundle-local service; mirror the PHP class name under `cn.shopex.ecshopx.openapi.thirdapi.vN.<domain>` if a PHP twin exists. Throw the domain's `Openapi*V2FailException` with the PHP `OpenapiErrorCode` on failure.
 3. **Handler** — add the method to the right controller in `ecshopx-openapi` `thirdapi/v1|v2/<domain>/`: `@OpenapiResponse` on the class, explicit `@RestController("openapiVn<Entity>")` bean name, `@RequestMapping("/api/openapi/internal/vN")`, `@PostMapping/@GetMapping(value = "/ecx.<method>", name = "…")`, `@RequestParam(required = false) String` + `@FlexibleBody` merged via `OpenapiRequestParams`, `requireCompanyId(request)` for tenancy. Return a `Map`/`List` (the advice wraps it) or an explicit `OpenapiEnvelope`.
-4. **Route** — add `register("<version>", "<VERB>", "ecx.<method>", "/api/openapi/internal/vN/ecx.<method>")` to the `OpenapiHandlerForwardRegistry` constructor. Nothing else makes the method reachable.
+4. **Route** — add `register("<version>", "<VERB>", "ecx.<method>", "/api/openapi/internal/vN/ecx.<method>")` to the `OpenapiHandlerForwardRegistry` constructor. Nothing else makes the method reachable — this is the step that maps the public call onto the per-Bundle thirdapi v2 services (e.g. the member create/update and tag batch cover/update/delete flow above).
 5. **Tests** — a registry test pinning the forward path (`OpenapiHandlerForwardRegistryTest` pattern) and a controller test pinning the delegation (`OrderControllerWriteoffTest` pattern); for migrated flows, a fail-mapping test pinning the error codes (`OpenapiThirdApiV2OrderWriteoffServiceFailMappingTest` pattern).
 6. **Do not** edit any CSV (`openapi_list.csv` is gone; `OpenapiMethodRegistry` is vestigial), do not add `@DingoResponse`, and do not expect `@Activated` to authorize anything on this surface.
 

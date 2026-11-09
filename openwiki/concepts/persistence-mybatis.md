@@ -35,8 +35,20 @@ sources:
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/EcshopxApplication.java
   - id: openwiki-source-89b43138f8e75edb4615495b
     resource: repo://ecshopx-bootstrap/src/main/resources/application.properties
+  - id: openwiki-source-7da966560f7d6d78b1ec3c97
+    resource: repo://ecshopx-bootstrap/src/main/resources/db/migration/README.md
+  - id: openwiki-source-ed1e2ce5fcfefbaf52c68d75
+    resource: repo://ecshopx-bootstrap/src/main/resources/db/migration/V00000000000007.sql
   - id: openwiki-source-423c7bde5a386038c2869dcc
     resource: repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/deposit/service/AdapayDepositTradeRechargeCallbackServiceIdempotencyTest.java
+  - id: openwiki-source-37aab463708a3c624c0cbf7c
+    resource: repo://ecshopx-bspay/src/main/java/cn/shopex/ecshopx/bspay/service/BspayTradeDistributorNameScopeGuard.java
+  - id: openwiki-source-759a1d3eb485506bc534a870
+    resource: repo://ecshopx-bspay/src/main/java/cn/shopex/ecshopx/bspay/service/BspayTradeExportDataService.java
+  - id: openwiki-source-a40f7d82f8cf21457275d711
+    resource: repo://ecshopx-bspay/src/main/java/cn/shopex/ecshopx/bspay/service/BspayTradeListQueryService.java
+  - id: openwiki-source-0cecb952309b0eaa9e7e878d
+    resource: repo://ecshopx-bspay/src/test/java/cn/shopex/ecshopx/bspay/service/BspayTradeDistributorNameScopeGuardTest.java
   - id: openwiki-source-f663ea8999b06349138bb3ec
     resource: repo://ecshopx-common/pom.xml
   - id: openwiki-source-e88a654b635bd67d5ca1eb04
@@ -71,6 +83,18 @@ sources:
     resource: repo://ecshopx-dispatch/src/main/resources/mapper/FailedJobMapper.xml
   - id: openwiki-source-a4b4b933fb46d0534f63e8d5
     resource: repo://ecshopx-employee-purchase/src/main/java/cn/shopex/ecshopx/employeepurchase/mapper/CartMapper.java
+  - id: openwiki-source-828151c5e3e70bc9687d775b
+    resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/EspierUploadFileAsyncRunner.java
+  - id: openwiki-source-997cde947b231c78f96d6050
+    resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/ExportCsvFileService.java
+  - id: openwiki-source-8cb3e36ae9787da35f592afe
+    resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/upload/EspierGoodsMarketingStyleSyncSupport.java
+  - id: openwiki-source-6f8bde073acb1f585db6b979
+    resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/upload/EspierUploadExcelSheetReader.java
+  - id: openwiki-source-aa9b6c4b6566d52da78581e6
+    resource: repo://ecshopx-espier/src/test/java/cn/shopex/ecshopx/espier/service/ExportCsvFileServiceTest.java
+  - id: openwiki-source-a671702ba5761b1e52cdaafb
+    resource: repo://ecshopx-espier/src/test/java/cn/shopex/ecshopx/espier/service/upload/EspierUploadExcelSheetReaderLimitTest.java
   - id: openwiki-source-01821970f4286272eb638c65
     resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/api/front/v1/CategoryController.java
   - id: openwiki-source-ff17b12a6aaf7a27b98ae93c
@@ -131,10 +155,10 @@ sources:
     resource: repo://pom.xml
   - id: openwiki-source-f1b1aacc63642e5304668821
     resource: repo://readme.md
-generated: { by: "openwiki/0.9.0", at: "2026-11-05T17:10:02.238Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-08T17:14:16.576Z" }
 verified:
   - by: openwiki/0.9.0
-    at: 2026-11-05T17:10:02.238Z
+    at: 2026-11-08T17:14:16.576Z
 ---
 
 
@@ -245,9 +269,11 @@ The same file carries the connection and migration wiring that backs the mappers
 | `spring.datasource.username` / `.password` | `ecshopx` / `ecshopx` | Dev credentials, matching the compose stacks' `MYSQL_USER`/`MYSQL_PASSWORD`. |
 | `spring.datasource.driver-class-name` | `com.mysql.cj.jdbc.Driver` | |
 | `spring.flyway.enabled` | `true` | Migrations run **at application startup**; the compose stacks re-assert `--spring.flyway.enabled=true` in `APP_ARGS`. |
-| `spring.flyway.locations` | `classpath:db/migration` | Classpath-wide: every Bundle ships a `db/migration` directory (all `.gitkeep`-only placeholders), but only `ecshopx-bootstrap/src/main/resources/db/migration` holds real SQL (`V00000000000001.sql`, `V00000000000002.sql`) — so schema evolution is centralized in bootstrap in practice. |
+| `spring.flyway.locations` | `classpath:db/migration` | Classpath-wide: every Bundle ships a `db/migration` directory (all `.gitkeep`-only placeholders), but only `ecshopx-bootstrap/src/main/resources/db/migration` holds real SQL (`V00000000000001.sql` … `V00000000000007.sql` at the time of writing) — so schema evolution is centralized in bootstrap in practice. |
 | `spring.flyway.baseline-on-migrate` / `.baseline-version` | `true` / `0` | Existing databases imported from `docker/ecshopx.sql` are baselined at version 0 instead of re-running historical SQL. |
 | `spring.flyway.encoding` | `UTF-8` | The migration files contain Chinese comments. |
+
+The newest migration, `V00000000000007.sql` (release `5.5.0`), extends the merchant onboarding tables: it adds `contact_name`, `main_category_selection`, `license_registered_address`, and `license_legal_representative` to `merchant`, adds `user_id` plus the same contact columns to `merchant_settlement_apply`, and enforces a unique key `uk_company_user` on `(company_id, user_id)` in `merchant_settlement_apply` — the tenant key is part of the uniqueness constraint even in DDL.
 
 ## Domain entities: the schema source of truth
 
@@ -318,8 +344,16 @@ Not every tenancy decision can be expressed as a `WHERE` clause, so a second lay
 
 * **`AftersalesDistributorScopeGuard.assertAftersalesDistributorAllowed(aftersalesDistributorId, jwtMap)`** — ensures aftersales write paths stay within the operator's JWT shop scope. Admins (`operator_type == "admin"`) bypass it; a non-admin operator with an empty allow-list is also let through (no scope data to enforce), but once the JWT carries a `distributor_id` scalar or a `distributor_ids` list (entries may be numbers, strings, or maps with `distributor_id`/`shop_id` keys), the target distributor must be in that set or a `ForbiddenException("店铺权限不足")` is thrown. Both `AftersalesReviewService.review` and `AftersalesRefundConfirmService` call it after loading the company-scoped `Aftersales` row and before mutating state.
 * **`AdapayTradeDistributorNameScopeGuard.assertAllowed(jwtMap)`** (ECX-10906, aligning with PHP `PaymentTenantScopeGuard::assertDistributorNameFilterAllowed`) — blocks the shop-side (`operator_type == "distributor"`) from widening a trade list/export by passing a `distributor_name` filter that would override the JWT's own-shop restriction. Both `AdapayTradeListQueryService` and `AdapayTradeExportDataService` invoke it at exactly the point where a non-empty `distributor_name` request parameter would otherwise be resolved into extra `distributor_id` filter values; the guard throws `ForbiddenException("无权筛选其他店铺")` for distributor operators and is a no-op for admins/dealers.
+* **`BspayTradeDistributorNameScopeGuard.assertAllowed(jwtMap)`** (ECX-10939) — the same invariant for the bspay channel: a distributor-scoped operator may not pass a `distributor_name` parameter to widen trade list or export queries beyond their own shop. `BspayTradeListQueryService` and `BspayTradeExportDataService` call it at the identical junction — right after the JWT-derived distributor/merchant/supplier filter is applied and before a non-empty `distributor_name` request parameter is resolved into additional `distributor_id` values; a distributor operator gets `ForbiddenException("无权筛选其他店铺")`, while admin, merchant, supplier, and missing/blank `operator_type` are no-ops.
 * **`TrackViewNumService.addViewNum` monitor/source registration check** (ECX-10920) — the data-cube tracking endpoint is effectively unauthenticated, so before writing any Redis bloom/hash counters it first proves both the `monitorId` and the `sourceId` are positive numbers **and** already exist as rows belonging to the same `companyId` (`monitorsMapper.selectCount(... eq(monitorId).eq(companyId)) > 0`, same for `sourcesMapper`); unregistered or cross-tenant ids are silently dropped. This stops an unauthenticated caller from enumerating ids to create unbounded Redis keys.
 * **wsugc post/comment company-match requirements** — the UGC admin services re-apply the PHP `WsugcTenantScopeGuard::assertPostIdsBelongToCompany` rule in Java: `PostCreateService` (edit path, ECX-10907), `PostEditService` (ECX-10919), `PostDeleteService.runUpdate` (ECX-10909), `PostVerifyService.verify` (ECX-10921), and `PostSetBadgesService` (ECX-10925, which additionally checks every badge row) each load the target `Post` rows by id, require the result count to match the requested distinct id count, and throw `ResourceException("无权访问该笔记")` if any row's `company_id` differs from the operator JWT's `company_id` — so an id that does not belong to the tenant is indistinguishable from a missing one. On the comment side, `CommentVerifyService.verify` rejects a non-positive `company_id` outright and scopes the update itself with `.in("comment_id", …).eq("company_id", companyId)`, while `CommentDeleteService.deleteComments` selects only rows matching both the id set and `companyId` and deletes just those — silent scoping rather than an exception.
+
+### Hardened import/export surfaces: CSV formula injection and Excel row caps
+
+The cross-tenant wave also hardened the two directions of the file bridge between the browser and the database:
+
+* **CSV formula neutralization (ECX-10937).** `ExportCsvFileService.writeCsvField` prefixes any cell whose first character is `=`, `+`, `-`, or `@` with a leading apostrophe, so a spreadsheet application opens the value as text instead of evaluating it as a formula. The in-source comment notes the `-` case covers amounts exported with a leading minus sign. The apostrophe is prepended *before* the usual quoting rules run, so a value like `=a,b` is quoted as `"'=a,b"` while `-12.50` stays unquoted as `'-12.50`. Because `ExportCsvFileService` is the shared writer used by every CSV export service (adapay, aftersales, bspay, chinaums, employee-purchase, goods, popularize, and the espier POS export handler), the neutralization applies uniformly across all queue-driven CSV downloads.
+* **Excel row caps and zip-bomb guard (ECX-10949).** `EspierUploadExcelSheetReader.readFirstSheet` stops reading after a caller-supplied maximum of *data* rows (the header row is not counted) and throws `SheetRowLimitException` ("数据行超过上限" + max) when the file exceeds it. While reading it also tightens Apache POI's `ZipSecureFile.setMaxEntrySize` to `MAX_DECOMPRESSED_ENTRY_BYTES = 50 MB` and restores the previous value in a `finally` block, so a crafted `.xlsx` cannot exhaust memory through a hugely inflated zip entry. It reads zip-format files through the streaming `XSSFReader`/`XSSFSheetXMLHandler` SAX pipeline and falls back to `WorkbookFactory` for non-zip input; both paths enforce the same cap. The two callers are `EspierUploadFileAsyncRunner` (`MAX_IMPORT_DATA_ROWS = 5000`, generic async imports) and `EspierGoodsMarketingStyleSyncSupport` (`maxItemNums = 500`, marketing-style sync, which converts the limit into `BadRequestException("每次最多上传500个商品...请减少后再提交")`). `EspierUploadExcelSheetReaderLimitTest` pins the behavior: 5001 rows against a 5000 cap throws and the entry-size limit is restored, and exactly 2 rows against a cap of 2 parses fully.
 
 ## Idempotency guards: refuse updates that already happened
 
@@ -357,8 +391,10 @@ Spring's `@Transactional(rollbackFor = Exception.class)` is used for multi-write
 | A query several services share | A thin `@Repository` class that owns the `LambdaQueryWrapper` logic (e.g. `ItemsBarcodeRepository`, `ItemsRepository`). |
 | Audit columns | Either `int` `created`/`updated` set manually, or `@MpField(fill = FieldFill.INSERT/INSERT_UPDATE)` on `create_time`/`update_time`/`created_at`/`updated_at` so `MybatisPlusMetaHandler` fills them. |
 | Pagination | `mapper.selectPage(new Page<>(page, size), wrapper)` — guaranteed MySQL `LIMIT` by `PaginationInnerInterceptor(DbType.MYSQL)`; pass `false` as the third `Page` constructor argument when you will run your own `selectCount`. |
+| A CSV export of user-controlled text | Route through `ExportCsvFileService` (or replicate its `=`/`+`/`-`/`@` apostrophe-prefix rule) so spreadsheet formula injection is neutralized. |
+| An Excel upload entrypoint | Read via `EspierUploadExcelSheetReader.readFirstSheet(bytes, maxDataRows)` with a domain-appropriate cap; the header row is free, and the decompressed-entry size limit is tightened and restored for you. |
 
-Focused tests that pin these behaviors: `ItemsBarcodeRepositoryShopScopedTest` (shop-scoped uniqueness and the `distributorId = 0` platform pool); `AdapayDepositTradeRechargeCallbackServiceIdempotencyTest` (the guarded wrapper carries the `trade_status` precondition, a losing concurrent update rejects with no Redis/publisher side effects, and a winning update applies the deposit effects); the scope-guard unit tests `AftersalesDistributorScopeGuardTest` and `AdapayTradeDistributorNameScopeGuardTest`; the wsugc company-scope tests (`PostCreateServiceCompanyScopeTest`, `PostEditServiceCompanyScopeTest`, `PostDeleteServiceCompanyScopeTest`, `PostVerifyServiceCompanyScopeTest`, `PostSetBadgesServiceCompanyScopeTest`); and the payment-callback probe tests (`OrdersTradePaymentCallbackServiceNormalOrderPaySuccessPublishProbeTest`, `...CanceledRefundOrderProcessLogPublishProbeTest`, `...MembercardVipFulfillTest`, `...WdtPublishOrderTest`), which mock `TradeMapper` and drive `applyTradePaymentNotify` end-to-end. Note their shared `@BeforeAll initMybatisPlusTableMetadata()` — `TableInfoHelper.initTableInfo(new MapperBuilderAssistant(new MybatisConfiguration(), ""), Trade.class)` — which is the standard trick for making MyBatis-Plus lambda wrappers (which resolve column names from cached table metadata) work in plain Mockito tests without a database.
+Focused tests that pin these behaviors: `ItemsBarcodeRepositoryShopScopedTest` (shop-scoped uniqueness and the `distributorId = 0` platform pool); `AdapayDepositTradeRechargeCallbackServiceIdempotencyTest` (the guarded wrapper carries the `trade_status` precondition, a losing concurrent update rejects with no Redis/publisher side effects, and a winning update applies the deposit effects); the scope-guard unit tests `AftersalesDistributorScopeGuardTest` and `AdapayTradeDistributorNameScopeGuardTest`; the wsugc company-scope tests (`PostCreateServiceCompanyScopeTest`, `PostEditServiceCompanyScopeTest`, `PostDeleteServiceCompanyScopeTest`, `PostVerifyServiceCompanyScopeTest`, `PostSetBadgesServiceCompanyScopeTest`); the import/export hardening tests `EspierUploadExcelSheetReaderLimitTest` (row cap throws and entry-size limit is restored), `EspierGoodsMarketingStyleSyncSupportRowLimitTest` (the 500-row rejection text), and `ExportCsvFileServiceTest` (formula-cell apostrophe prefixing and quoting interaction); and the payment-callback probe tests (`OrdersTradePaymentCallbackServiceNormalOrderPaySuccessPublishProbeTest`, `...CanceledRefundOrderProcessLogPublishProbeTest`, `...MembercardVipFulfillTest`, `...WdtPublishOrderTest`), which mock `TradeMapper` and drive `applyTradePaymentNotify` end-to-end. Note their shared `@BeforeAll initMybatisPlusTableMetadata()` — `TableInfoHelper.initTableInfo(new MapperBuilderAssistant(new MybatisConfiguration(), ""), Trade.class)` — which is the standard trick for making MyBatis-Plus lambda wrappers (which resolve column names from cached table metadata) work in plain Mockito tests without a database.
 
 ## See also
 

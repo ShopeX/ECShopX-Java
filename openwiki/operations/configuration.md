@@ -4,6 +4,16 @@ title: "Configuration and Secrets Reference"
 description: "Where runtime configuration lives in ECShopX-Java — the ecshopx-bootstrap application.properties as the single central tracked file, the spring.config.import of per-domain ymls, the env overlays (JWT_SECRET, POS_JWT_ISSUER, COMMON_H5_BASE_URL, …), per-integration properties (DigiOS, Shuyun open platform), and the install-secrets.sh flow that injects production values."
 tags: [configuration, properties, secrets, environment, deployment, storage, jwt, install]
 sources:
+  - id: openwiki-src-bootstrap-wxacard
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/WxaCardUsedTemplateSendPortImpl.java
+  - id: openwiki-src-common-langue
+    resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/config/LangueProperties.java
+  - id: openwiki-src-orders-deliverynoop
+    resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/integration/notify/OrderDeliverySuccessNotifyNoOp.java
+  - id: openwiki-src-shopmenuborder-props
+    resource: repo://ecshopx-shopmenu-border/src/main/java/cn/shopex/ecshopx/shopmenuborder/config/ShopmenuAuditLogProperties.java
+  - id: openwiki-src-shopmenuborder-yml
+    resource: repo://ecshopx-shopmenu-border/src/main/resources/application-shopmenu-border.yml
   - id: openwiki-source-ea70eb6c045047448e446296
     resource: repo://.gitignore
   - id: openwiki-source-7d78e4d7cb28579f5500ea6c
@@ -94,6 +104,8 @@ sources:
     resource: repo://ecshopx-merchant/src/main/java/cn/shopex/ecshopx/merchant/config/MerchantWxappJwtProperties.java
   - id: openwiki-source-2a6ed641b7be57a3f7fcd6a5
     resource: repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/web/OpenapiAuthInterceptor.java
+  - id: openwiki-source-189b7866f8db73ca77451821
+    resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/integration/notify/OrderDeliverySuccessNotifyWechatService.java
   - id: openwiki-source-0bfae3187b4a720c922e07fc
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/config/DoumenIntlProperties.java
   - id: openwiki-source-f4f2fc3f040de90a6b782487
@@ -122,14 +134,16 @@ sources:
     resource: repo://ecshopx-wechat/src/main/java/cn/shopex/ecshopx/wechat/service/wxa/WxaGetTemplateListService.java
   - id: openwiki-source-b5c239720e69f72c25093375
     resource: repo://ecshopx-wechat/src/main/java/cn/shopex/ecshopx/wechat/service/wxa/WxaSubscribeMessageTemplateAdminNoOp.java
+  - id: openwiki-source-c871343763df1a82a0493867
+    resource: repo://ecshopx-wechat/src/main/java/cn/shopex/ecshopx/wechat/service/WxaCardUsedTemplateSendNoOp.java
   - id: openwiki-source-5f14ee2332fb78ffbf092786
     resource: repo://ecshopx-wechat/src/main/java/cn/shopex/ecshopx/wechat/wxa/WechatOpenPlatformAuthorizerTokenService.java
   - id: openwiki-source-f1b1aacc63642e5304668821
     resource: repo://readme.md
-generated: { by: "openwiki/0.9.0", at: "2026-11-05T17:10:02.238Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-06T17:22:02.968Z" }
 verified:
   - by: openwiki/0.9.0
-    at: 2026-11-05T17:10:02.238Z
+    at: 2026-11-06T17:22:02.968Z
 ---
 
 # Configuration and Secrets Reference
@@ -216,6 +230,8 @@ Each of these is an opt-in, module-local override file that a Bundle ships on it
 
 All are declared `optional:` so a missing file never fails startup. The `spring.config.import` list is also where a new domain-local yml joins — for instance the commented-out `# spring.config.import=optional:classpath:application-aftersales.yml`.
 
+A fifth module-local profile, `ecshopx-shopmenu-border/src/main/resources/application-shopmenu-border.yml` (`langue.*` + `shopmenu.is-show-audit-log-path: logs/shopmenu_is_show_hidden.log`, bound by `ShopmenuAuditLogProperties` with the same default path), is **not** on the `spring.config.import` list — its header says it is optionally importable, but nothing currently imports it, so its `shopmenu` value only applies if an operator adds it to the import list; otherwise the class default governs. (Its `langue` block would shadow the central `langue.*` keys if ever imported.)
+
 There is a second family of module-local files that are **not** imported here — Bundles that own a `<module>/src/main/resources/application.properties` (companys: `license.gateway.*` + `ecshopx.companys.item-start-num.weak-string-equals-mode`; kujiale: `ecshopx.kujiale.cities-json.insecure-tls`; espier: `espier.upgrade.storage-root`) or a module-local `application-local.properties` (hfpay: `ecshopx.hfpay.storage-root`, `bg-ret-url`, `ecshopx.filesystem.import-image-public-base` — that file **is** tracked, unlike bootstrap's). Those are *jar-internal defaults*: because the bootstrap `application.properties` is what actually lands in the `Environment`, the jar-internal copies act as documentation of each module's keys unless an operator re-declares them in the central file or via `APP_ARGS`.
 
 ## Reference table, grouped by subsystem
@@ -233,6 +249,8 @@ There is a second family of module-local files that are **not** imported here �
 | `spring.mvc.servlet.pathmatch.use-trailing-slash-match` | `true` | — | — |
 | `langue.list[...]` / `langue.default-lang` | `zh-CN, en-CN, ar-SA, zh-TW, ja-JP, ru-RU` / `zh-CN` | — | — |
 | `xxl.job.admin.addresses` / `.accessToken` / `.executor.appname` / `.executor.port` | `http://127.0.0.1:9080/xxl-job-admin` / `ecshopx-cron-dev` / `ecshopx-executor` / `19999` (plus `executor.logpath=logs/xxl-job`, `executor.logretentiondays=7`) | `APP_ARGS` (compose points at `http://xxl-job-admin:8080/xxl-job-admin`) | — |
+
+`langue.*` binds to `LangueProperties` (`@ConfigurationProperties(prefix = "langue")`), which validates at startup (`@PostConstruct`) that `default-lang` is non-blank and a member of `list` — a misconfigured pair is a hard `IllegalStateException`, not a silent fallback.
 
 ### DataSource / Flyway / MyBatis-Plus
 
@@ -351,6 +369,8 @@ Two behaviour notes:
 | `ecshopx.hfpay.bg-ret-url` / `.storage-root` / `.cfcalog-config` | only in the hfpay jar's `application-local.properties` (tracked) | — | — |
 | `ecshopx.filesystem.import-image-public-base` | only in the hfpay jar's `application-local.properties` (tracked) | — | — |
 | `ecshopx.orders.app-pay-type-desc-json` | *(empty = no mapping)* | — | — |
+| `ecshopx.orders.delivery-success-notify.enabled` | `true` (sends the `orderDeliverySucc` mini-program subscribe message on shipment; `false` swaps in `OrderDeliverySuccessNotifyNoOp`) | — | — |
+| `ecshopx.wechat.wxa-card-template-send.enabled` | `true` (coupon receive / registration-result scenes via `WxaCardUsedTemplateSendPort`; `false` selects the NoOp; `cardUsedSucc` is skipped either way) | — | [WeChat](../domains/wechat.md) |
 
 Per-channel payment credentials are **not** here — they live per tenant in Redis (`wxPaymentSetting:<sha1(companyId)>` etc.). This file only carries the *platform-level* notify URLs and channel toggles.
 

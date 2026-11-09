@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:682aff7bf33ba5ed0cefa23e7c5b7bd25d5ff64619cb71d3381cfac6aa4d7932",
+  "pageVersion": "sha256:04b920a6ef776aa9492bde5b8adc34f10e6677b4faa8d1b882a87b019c572132",
   "claims": [
     {
       "id": "claim_9752d7d3781543a9b36be65942a23176",
@@ -669,10 +669,72 @@
           "version": "repo-lines-v1:sha256:015ebb71c8264d86c72a76534bdbafafe2206c9b74d146190cdf68680944841b:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYmI3NGE3OTQ5NzBiMjJmYjFmODIzMzk0NjhkYTkwZmRlNWE2ZTRjNzk2MGY0OGY5NDQ5Nzc3NGZlMTdiM2ViOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYTFkMGFiYTBhYTIzOTk4ZmU4NTAxYjEzMDAxOTMwMTlhNWNiNGRhNjIxZDU0Mjk2MWU5N2I3MDhiMGUxZWNkYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZWIwZGFiMjgxMjY2ZjQxNTVjNDQxNmQyMzIwYmNiODQ5NzA1ZGYyNjY5YjVmMmUxYTgyNzE4MWQ5M2Q3Y2JjMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjRmNjMyMmE3ZTA2ZTkxODkyMTY1MGEzODU2ZGNkYzYzMTkwYjUwMGExOTI2OGQwY2NkODY5NTQxNmQ4MDM5MCJ9"
         }
       ]
+    },
+    {
+      "id": "claim_481e9abcbf354cfeba5bf1674ae4ef22",
+      "statement": "A fifth module-local profile, ecshopx-shopmenu-border/src/main/resources/application-shopmenu-border.yml (langue.* plus shopmenu.is-show-audit-log-path=logs/shopmenu_is_show_hidden.log), is NOT on the spring.config.import list — its header marks it as optionally importable but nothing imports it, so the shopmenu value applies only if an operator adds it to the import list; otherwise ShopmenuAuditLogProperties' class default (the same path) governs.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L128-L130",
+          "version": "repo-lines-v1:sha256:a7b4e2f8183919846d0e9457982c6410b975885787862859bf265a7d4e93a516:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMjI4ZTFlNWZlMTY3ZDhlODQwYThmYzMxOTNmZjMxMjUyMjJjMjk3MjJlMmNjNDU5OGQyMTlkODlkZjQyNjUzOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMGM1OWUwNWVhN2MwMDY5MDMxZmRlZTFmZWI3YTE1MTdiMThhOGEzOTdkNTc3ZmQ3MDc5ZGRkYmU1YzNmOGVlNiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZGFhMWQ5YWIwMWU2YTJiODc1YzEwODUwNzMxNGNhNzQ4MzcyZDM5OTllZWZjMjI4NmEyNmI3YmRkOTE3YjE1ZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNGZmMDBkYTFkNmUzMWRiOWY2YWYwMzIxMjhmNGFjMjBhMTg4NWFhNTAwNWY3MDQ4NDdlNWI4YzliNzFmZjk2NSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-shopmenu-border/src/main/java/cn/shopex/ecshopx/shopmenuborder/config/ShopmenuAuditLogProperties.java#L20-L34",
+          "version": "repo-lines-v1:sha256:87e3ea4607dea07211e7d48f349228fce9e4a7873e2b656ecb44a6f79b95fc68:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI2MDViODBlYzUwM2QzOWEzMDdiYWExYTEzYjBjZDI5NjQwNTA1Zjg3NDBhNGFiYmE1NmFjNTIzOWYyZWQyZDkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-shopmenu-border/src/main/resources/application-shopmenu-border.yml#L1-L12",
+          "version": "repo-lines-v1:sha256:b3619c17de421157ec1f1385a5b358f0038c808f40d8602c933abccef003f715:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA3ZmM0YjgyOTExMDBiMjFkMGIxNDkwYTJmNmFhOGU0ZDRmMjJiMTM2ZDIxMDJjOGUxY2MxNTYwNWE2ZDgzN2UiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI5YWJmZGYzMDMyZjRkYTY1MGVmYjMwM2E2ZmFlMWE5MGE1ZWNkOTljMDZlODExZTUwZDJmYjQyNmQ0YzJmZTgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_9d12ee71824146dea76a4efbb46da370",
+      "statement": "Two enabled-by-default notification toggles ship in application.properties: ecshopx.orders.delivery-success-notify.enabled=true registers OrderDeliverySuccessNotifyWechatService (sends the orderDeliverySucc mini-program subscribe message on shipment) while false swaps in OrderDeliverySuccessNotifyNoOp, and ecshopx.wechat.wxa-card-template-send.enabled=true registers WxaCardUsedTemplateSendPortImpl (coupon receive / registration result scenes; cardUsedSucc is always skipped) while false selects WxaCardUsedTemplateSendNoOp.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/WxaCardUsedTemplateSendPortImpl.java#L37-L41",
+          "version": "repo-lines-v1:sha256:296a5549667d49f4c4b3bcc5eb91e6e0ccb36aa42f556a97a456fc233bfa9e88:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjhmYTFlOWY0NDk0OWZhODlhM2I0MmIwNDkyZGRiZGZmYTJlYjc2NDg0OGQzNTc3OGM5ZmI1M2MyMDdlYmRiZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiODg4OTc3ODRjN2MwODI3NGFiZWNmZDliYmMwZmMzZWYwMjI1Nzg0NmJhMWVjOWM3MTZkMjcxZTg3MWRhMGU4ZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTgyYTcyZDk2YTFmMjc3ZDRmYTA0Y2Y2OWNkODdiYjE2MDUyY2Y4Mzg5OTBjZDEzN2RiY2IyNTRhODFiMDlmZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTFjMzlhYzk2ZTBlMzk2OGFlMTY1M2EwZDI4Yjg4MmM0YWZjZTg2YzkxZmE5YTE4YWUwOGY3MjJmNjg3MDIyNCJ9"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L240-L244",
+          "version": "repo-lines-v1:sha256:e14c7925a62bbbcc877b0599596835835641c6f2beb4dd514ebaa05582500116:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTZjYjI3OGZhZmI3MWE3ZWE4NjkwNDRlNzE1MmMzNDg1NDExOGRmNDFjNWM4MGVhMjlkMGNjMjY1ZGZkY2E1ZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDhjNDM1MjY3MmE2YjE4OTFmMDNmMDE5MjQwMWZkNTU1YTk0NWFlOGIwM2VmOTZhOGY2OTRhM2I5MDllOTQyOCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjUyNGQ1YmQxOTgwOTgwMjk4NDE1NzMzMTdjNGFiOGYxZTllNTgwZDFlODAxM2M1YzZhMGZiZTZiNjdjYzljYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODNhMDZhZDczNmRkZGIzYmNjNTZjZTg0NzcwNWY0Mzc5MGU5MjM2NWUyZWY3MzZlYTQyZDZmMDU1NTllZmQ3NSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/integration/notify/OrderDeliverySuccessNotifyNoOp.java#L23-L33",
+          "version": "repo-lines-v1:sha256:fa6582fced1f0dc2bcc6922b471b0766f9c3fed55be7ee1daba6fb2e68a1a09e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjczMzY0ZjVlZmMyMDUyNmQwNjcwOGYzZGIzYTVlMGM2NDk1ZTNkYjRmYWY2MzY0ZDBjMjAyMTU4M2ZjOTFiMTkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA4MmUzMzRlY2FhY2IyZmQ0YWI1YTQwZWJlYmYwNzdlMGNlOGYxZmEyNTVjNmJmYWM3ODU1NWI3ZWE2ZDdiZjQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/integration/notify/OrderDeliverySuccessNotifyWechatService.java#L38-L42",
+          "version": "repo-lines-v1:sha256:34bbfaa86c0402764d676dbfcdbf167f41203760cb6c663a6caf5051149a1485:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDRjZDY1YzBhZmY1NDYxNWM5YTNmMzEzY2ZhMWZiMDNhMWNmYjAyOTdhNDE4NzViZWM4NjQwNWE4MjBlNDU5MSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYTU5MGQ5OWI0ZGFlM2JhNTliNmFjMTY2YTI0YTBlMWQ0YjVjMjMxOGY1N2NkZmVlNmU2ODk4MzJiMWNiNjAzNyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjQwMTk2OTE1NGU5ZDE0OGUzOTA0ODI2ZmIzZTUxODA2ZmYxMWNkZjc4ODY0ZmU3MmExMjk5NzlhM2Y5YTMyNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZjc4ZWRhMmUwODk4NTdiYWRmNjhhNWJmMWUwMzQxNDc3ZjAyZmRjZjk0MzRjNzc5ZTgxNTI0ZjUwMmRjMjMxNCJ9"
+        },
+        {
+          "resource": "repo://ecshopx-wechat/src/main/java/cn/shopex/ecshopx/wechat/service/WxaCardUsedTemplateSendNoOp.java#L23-L33",
+          "version": "repo-lines-v1:sha256:aec4bef2fd3853c9ee765ced8ff0a4965b794fe0efb7b71b3e4ca0d1828527d4:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJiMzM2YzQyYjJmNTIwN2I3NzVlNTBhOGRhY2UyZDZkMTViMjZmNjFlOGNkYTJjYTRkNDNmY2U0YWU0ODQ0ZjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA4MmUzMzRlY2FhY2IyZmQ0YWI1YTQwZWJlYmYwNzdlMGNlOGYxZmEyNTVjNmJmYWM3ODU1NWI3ZWE2ZDdiZjQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b8d9e5bb43a64081887edb0f48535f6f",
+      "statement": "langue.* binds to LangueProperties (@ConfigurationProperties prefix langue), which validates at startup via @PostConstruct that default-lang is non-blank and is a member of langue.list, throwing IllegalStateException otherwise — so a misconfigured language pair is a hard startup failure rather than a silent fallback to zh-CN.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L230-L237",
+          "version": "repo-lines-v1:sha256:68cd95d5283cf1c9510b6daa2f0f14aeede3c6b193ca2ad058083bb2acda479f:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjU2OGM3NWE4ZTAwZDlkODQ2ODBjMjY1ZWY5ZmI5YmE1M2E4MjIyOGJlOTVhZjM3MmVkZGQyYjE4N2NkOTc5MCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNTdkMzc3NWVjNWIxY2U3YWQxMGU3YmMwMTViMTJmOWVhZWVlOGYzMWQ4MThlNzc5YTFlZmU5NzkyMjdiM2FkYyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMmJiNjliY2M3MzMxYjJmNzdjNmUyNjI2ZGRiZDU0ZjU2OWZjZGZkZmEzNTI5ZTMyOTViNTJlZDdlMjIxNDk1MiJ9"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/config/LangueProperties.java#L26-L33",
+          "version": "repo-lines-v1:sha256:8703035c025b2b0915c82be7932e73d7424e9713bb534dc73a761005ec47002f:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTVjYzE3MzQ2NmFlYjEwM2NjMTQ1OWFlMGI0YjJmZWM3ZGQxZjRlZDkzZWFkYjY5NjdhZGMyNDg5YTMxYmY3MSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZWUyOWJjNzk5YTg3NTQ3MGY0MTNlYTI4ZWI1OTA2N2M0MThhNzQxODVmYzExODRjMWM5MTk2MTMyYmMwMDlmZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDg4NzVjOTk4YWY1OTVjZGFlYzMxYTZmZWI4NDc5YzRjYjRmOTUxYzMwZmU2ZjEwYjI4ZjMyMDE1YTBmOGQ4MiJ9"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/config/LangueProperties.java#L80-L95",
+          "version": "repo-lines-v1:sha256:ea45d5f37cfbe38fc8c3880bd74e091a954eb57d866f26d8f8866ceabc4931d5:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE1YjY3ZGI3N2ZlYWQ3MDkzMWFhYjM4YjVhOTIyMzE2NjM5NGQzNTZiZTkzMzI1ZTdiMmFjMTZkMWQ5MTFmMWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.9.0",
-    "at": "2026-11-05T17:10:02.238Z"
+    "at": "2026-11-06T17:22:02.968Z"
   }
 }

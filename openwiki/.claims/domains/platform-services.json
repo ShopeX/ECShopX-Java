@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:740ec2d1e417cc0d535ba9d098c5bb54add8ddf9b42f48f1b40ceac0fa112cbc",
+  "pageVersion": "sha256:fd9ec1de8e92c67b5dd8eb92bab2b2fab66ae34d0c267a41723be8c6f49644ef",
   "claims": [
     {
       "id": "claim_8d9a39ff21104a5e9f8a87abb98360a9",
@@ -184,7 +184,7 @@
       "evidence": [
         {
           "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/EspierUploadFileAsyncRunner.java#L186-L201",
-          "version": "repo-lines-v1:sha256:7a675acb3e136b0dfd70fc8f1c16afb67643e4c7ec55f7628f7720c6596b2ed0:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgwZDA3MmJmZDk3Y2EzNDBkMzgzYzVhMDI3YmJiYmM3ZWU3NzNiNWFlNmEzZWVhMzRmZTlhNmQ0MWQ2YTc1N2QiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg3YzliMTgwZGQ5NzVmZjRjNzAzYjNkM2NmYTMzNGUyZjVhNmRkMGU2ZDZmOTI5YWY4OGJiODQxNTQ3NWIzYWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjEyMWVmOWQ0YjcyZjQyYWUyNTgwMzRlNzlkYjQwNWZhZTZhOThiNjAwNTBlOGVjNzA0ZDE5MmIyNDM0MzNmYzUifQ"
+          "version": "repo-lines-v1:sha256:88e6fe0956cb987ed64e4c774f041c4155c2c9eed02d38e8c1cdd1698c31d1db:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRhZTU0ZDJlNTdjMzA3Nzc1NDkwYjBjMjhkM2I1MDQzMjc0NWQ0YTExZTg1YTQ5ZWNmNTc0MjZhMTliMzJkNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRhNGYzYTljNzVhMWIyYjJiYzVmODA1MjUzZjA2ZjBlM2E3MTFiYmNjODI1MDM4N2JhNGM3MjhiNjE1YjMyMWIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQyOGQ1YzcwYjc5NjhjYTNlNDUzNDZmYWQ0NWM5MzAyYzk3ZWM4YmVjMjA4NTg5NmM0MmE0ZWUzYjJkNGQ1YmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFjYzRmZWY3OGRkZDg4Y2UyNDAxYzY4YmVkMDdlNWQ1ODI0ZWY3MTYxOWNjMzM2NWU4NjhhZGJkNjc5OThlZmEifQ"
         },
         {
           "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/UploadFileImportDataService.java#L152-L231",
@@ -199,8 +199,8 @@
           "version": "repo-lines-v1:sha256:964017198994e4ba86c62c529c36ab6105867e90e89f92f14a3dd3c0e15796b4:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNmZTVhMzVhN2EyM2YxMjc1NmJhOGM0NTBkZDMxNDI2NTMyNjM4MTEwZmM2Y2E5OWQ0ZjU2ZThjNmM1MzY2MjAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFiNWJmMzA0NjJjM2VjYWEyZjQ4ZjdiODU3NDQyMDZhZTdmOWM5MjRkZWYzMThkNDRlMzBlYmEwN2MzMTEwYzQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIzN2VmNjBhYTVjOTg0YjkxYTgyYzE0OTY2NTQwNGYzMTg3ZDQ5ZWYzNjQ4YzI5ZDEwYTI2YjUxYjRmN2NiOTcifQ"
         },
         {
-          "resource": "repo://ecshopx-espier/src/test/java/cn/shopex/ecshopx/espier/service/EspierUploadFileAsyncRunnerChunkDispatchTest.java#L99-L150",
-          "version": "repo-lines-v1:sha256:0b499287453a7b8463ba4a2db1944d18f96088de8200c393a41daef1258ca0f9:eyJzZWxlY3RlZExpbmVDb3VudCI6NTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiYTFiMWYwZDkzOTU3NDJlMjE2ZjcxYzllOTBjOGZiOWFhNmI0Mjk2YWFhNGNlN2NjMDVjOTZlYTViODdiYWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIyNDUxZmU3NDY0MWJmZmQ0MDY0NzhkM2JmMGRkYmE0NTlhNzVhOWRkOTUwMmYzZmZiODg2ZGIxOTM2NGJjNGYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE1NTMwNjU5MmViNzk0MWIzZjhjYTE1NWZjZjY1ZTEyYTM0ZTYwMzBjN2I0ODA5YjZiYzliNDZkMTBkZmViYmIifQ"
+          "resource": "repo://ecshopx-espier/src/test/java/cn/shopex/ecshopx/espier/service/EspierUploadFileAsyncRunnerChunkDispatchTest.java#L52-L146",
+          "version": "repo-lines-v1:sha256:68b46067fcb1f28c5c38aa118547ba59924683bc7782421a3b749440d5dde9a7:eyJzZWxlY3RlZExpbmVDb3VudCI6OTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiYTFiMWYwZDkzOTU3NDJlMjE2ZjcxYzllOTBjOGZiOWFhNmI0Mjk2YWFhNGNlN2NjMDVjOTZlYTViODdiYWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg1ZDFkYmMxMjZlMjMyOTcwYTFkMTlmMTM4Yjc0YzJlYWVlZTQxN2NlNzA4ZWZhMzZlYThjYjc2MzRjYjg1NTAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZmZmEzNDAwMTQ2YTFmNjI5ZTEzZTJlN2Y0MDRiYzkxNWZkYThmMmE2MmY4NDIwOWY3OWIyM2QxZGEwMjU3OWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI0MmRmNzEwM2IwNjRjZjIyMDcyMjdhYjJmM2RjNDAzMjgwODQyODc4ZWFjMmY5OTA5YzgxN2ZlMWM4NTRiZjUifQ"
         }
       ]
     },
@@ -209,16 +209,16 @@
       "statement": "EspierUploadFileAsyncRunner is idempotent-by-status: it re-reads the espier_uploadefile row and bails unless handle_status equals wait, then sets processing before parsing; empty-table, storage-read and header/parse failures each persist a finish row with a handle_message errorlog, delete the stored file, and still invoke the handler's handleAfterInsertInRequestThread.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/EspierUploadFileAsyncRunner.java#L218-L265",
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/EspierUploadFileAsyncRunner.java#L221-L268",
           "version": "repo-lines-v1:sha256:6af177ab64814bc731658d974a484c7b3532de2c71d14ec4d49bbcd44a8ee8e2:eyJzZWxlY3RlZExpbmVDb3VudCI6NDgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE1MWVkZjYwODNmZTY4MWQwZjdmYzQxNTk4Y2I5MTIwYzM4NDNjMzk0OGY2YjkwYWEwN2ZjZTBkMTFlNzkwM2EiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIyZjJmZjVmZWVjNjBmNTg3YzhmYWU0ZTg3ZjgwOWE2NjFjZmZlZDZiNDdhYWU1ZjZkNmEyNjUzYWE4OTUyZWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjlkZjVmMDE2ZjNkMWYyYmMzNjQ1MzUwM2ZkZjMxNGUyZDRhMTA1YjdlYjIyNTg0YmI0YzEwY2I5NTM2NTc1YzkifQ"
         },
         {
-          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/EspierUploadFileAsyncRunner.java#L280-L372",
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/EspierUploadFileAsyncRunner.java#L283-L375",
           "version": "repo-lines-v1:sha256:27a7f86b69aef8a24549a3cc88c834935a90d5e19b14d43aea74050f8a918b41:eyJzZWxlY3RlZExpbmVDb3VudCI6OTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE2MDQ2NTc4MWJhOWEyZDFkNmRmZDM2ZTNmN2ViYmFiMjUzZDM4ZjNkZjczNDM2YzE0MjNlZWQ0MmY5MmJjODkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJhYmJjNzVjMjEyMTM2OTUyMjMxMTA2N2E0MjYzOTI1ZmY0NGY4Njc4MWFlY2IxODIyY2E3ZjUxNmM0MWZkYTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU3MDkyNGNmZGU5Mjk0YWE3NGE3MTkxMWFkOTljZjU2OWRhYzNhNDgwYjk2OWMxOGMyY2Q3ZTM3NGVkNGZkYzkifQ"
         },
         {
-          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/EspierUploadFileAsyncRunner.java#L62-L140",
-          "version": "repo-lines-v1:sha256:9e4fb7129ac53b961c3bb62c70fca5a7c88506448f4831699a474d8834698686:eyJzZWxlY3RlZExpbmVDb3VudCI6NzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIwMzNlNDU1NjUzMzQ1MzhlMzczOTdjMTBjMDQwYjJmNjI5NmE0OTAzMTVhZjJkOWUxOTQxOGU0MDBmODRkYTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcxZDJkZWExNDQwMTQ3Y2U2ZGM2NjI1ZjFmMTljNDkxZWYxZTZkYTQyYzdlMjkzOTZlZTRhMTU0OTAzMjc5YmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ4M2EyMGRhMjRlOTI5YzE4OTUyMTFmZjJiOGQwY2Y4ZjE5Y2I2ZTkwZGZlMGVkZmU3NTg2MjBmYjQ0YWExODIifQ"
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/EspierUploadFileAsyncRunner.java#L65-L143",
+          "version": "repo-lines-v1:sha256:0d3310642bc5d3461577923b413cc14838b4542e79d274710a7f22812802a4a2:eyJzZWxlY3RlZExpbmVDb3VudCI6NzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIwMzNlNDU1NjUzMzQ1MzhlMzczOTdjMTBjMDQwYjJmNjI5NmE0OTAzMTVhZjJkOWUxOTQxOGU0MDBmODRkYTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcxZDJkZWExNDQwMTQ3Y2U2ZGM2NjI1ZjFmMTljNDkxZWYxZTZkYTQyYzdlMjkzOTZlZTRhMTU0OTAzMjc5YmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ4M2EyMGRhMjRlOTI5YzE4OTUyMTFmZjJiOGQwY2Y4ZjE5Y2I2ZTkwZGZlMGVkZmU3NTg2MjBmYjQ0YWExODIifQ"
         }
       ]
     },
@@ -969,10 +969,140 @@
           "version": "repo-lines-v1:sha256:602b53b77cfa39cd8e86c10d00467011a0b06ee30046a0131bb20ecbab7afd35:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE1NmRiZDEzMjVhMzVhZmIxYWFiZWFjMDJjMTUzNWZlM2NhNTgxNDQ5OGVkNTdhZjIxZjdlNGI5YzI5OWEzZDciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE4YWVmNGQwOTM0MDgwNzA2ZjQwZDgwNjkyZGY3NjZhZjkyMWExMWQzMDNlYjQwMjU3ZTIwMDk4YzViNzEzMjgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZmM2M2NGU1NjRhZmI2YzdlZmE5MjFmNmNjZmJhMWMyODAwZjhiMThhYzBlZGRkNTBkYjE3ZWIyMTU0YzE5YzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBkMGYzNjBmODkxNTE3Y2EzMjgzYjUwNGFhYjM2MWU4YTExNjgyZGIzZmJiMDY1OWU3NmYyOGE1OGExNjAwNDQifQ"
         }
       ]
+    },
+    {
+      "id": "claim_d5878f6e901f4cc29f5764c067e11a8a",
+      "statement": "ECX-10949 bounds the asynchronous Excel import: EspierUploadFileAsyncRunner reads only the first sheet via EspierUploadExcelSheetReader.readFirstSheet(bytes, MAX_IMPORT_DATA_ROWS=5000) with the header excluded from the count; exceeding 5000 data rows throws SheetRowLimitException(\"数据行超过上限5000\") mid-stream and the runner routes it into the same finish-row + errorlog handle_message + storage delete + handleAfterInsertInRequestThread path as a header failure without dispatching any ImportDataJob chunk, while during the read POI's ZipSecureFile.setMaxEntrySize is tightened to 50 MB per decompressed entry (MAX_DECOMPRESSED_ENTRY_BYTES) and restored in a finally block.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/EspierUploadFileAsyncRunner.java#L139-L144",
+          "version": "repo-lines-v1:sha256:515c1157c4a05cebe8adc05ca472ba8107b56ad8f6915c19925b6f8735f3ad2a:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjRlZmM0OTQxOGQyNmRjZjEyOWIyMmE2YWEyMTEwOGNlZWMzNzY3N2EzMmQwOGU5ZDVmZWUzNWRkYTY2YmI5ZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOGY1ZGM4MDNjMTAzMDcyOTRlODNlMGZiZWY2ZjJjMGFkYmQ4YTU3OWQ2NjAyMzJmZjc0ZjMxZGUxNzllMzA0MiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYWRkZWRiMTJhM2UzZGVjZWQyMzFjNjM2YjNmNDA5MjkxN2UyZWJkOGJhOWVhZjlkOGJkNmZjODAyMjBhMWZmNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYzI1OGUxYzA4M2NiZWJhOWJkOWE2YmE0YzNjMDY4ZjI4YzU2Mzc3OWQyYzBkZmJmZmMyMjRmMWE0OTI1YjUwYyJ9"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/EspierUploadFileAsyncRunner.java#L40-L44",
+          "version": "repo-lines-v1:sha256:6d89157efe69e4b0df1b246ddc879e470e32aab6dfc7ff9f198e69bd5aeba7de:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDJlZjk0ZmJhYmI1ZGRiNWYxM2Q3NTk4OGJlZTZmYjNjN2MyODMyYzgzOTUzYmNlMjUzNWQxYjExNDhmZGEwMiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzMzMWE2MjFhYWFkNDEyZWM4NDVmOTlhZjYzMjE5ZDRjMmE1MDY3MjgwZGRkNjBkOGMyMzBkYTJkNmUxYmRlNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNjdkNGRlYzgwN2M5ODQ4ODAwMzYzZDhiY2FiYWI3MzQ1NDk2YzM2MzEwZWZlOTJjNmNmYmExMDVhOWZhNDc5OCJ9"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/upload/EspierUploadExcelSheetReader.java#L156-L225",
+          "version": "repo-lines-v1:sha256:16e4b5b7fb2e1715b9909e4da39834b5893ab8994635b7929782a64d152b54a4:eyJzZWxlY3RlZExpbmVDb3VudCI6NzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk3NGM5OTBkZGUwNzQ0ODc3ZGNjNjBmMTE5ZWY1OTIyMjA1NTgyYjA0NTEyNTM0MzVmZTUyMGQ0MWJlOThiYzQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ0NGQ1NThmZGNjMjM3NGU0OTc5YzRlYTk5MTcyNmM1OTNhMDQzNjVjNGZmNTY3ZmFkNTNjODMwM2NhMTMyM2YiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU5MTljMGM5YmJiYjUwMzM2Y2M2ZDFmYjRmZWI2NzkxMmYwNGM1NTkzNjgxYWYwMmI4OWEzY2E5MGI1ZThiYzYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjYxNTU1ZTBiNjU3NWQ0YWFmMmVhMTcwOTI1YWZmNTI5MDQ3MmZmMWU3YmZlM2QwODEzMGY1MGQ0NWZkZjU3ZTQifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/upload/EspierUploadExcelSheetReader.java#L46-L72",
+          "version": "repo-lines-v1:sha256:ea5c382e0e487dce8c3f1125ea726a5a994fab8d77958e75ee7746f092d3f698:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImEzYjg1NTA1YmI0NGFlN2E4MzNmZDhmZGViNTljNTRmY2NkZTFhNzkyNTdjNDk2ODI3NmFhNjkzNTFlZWNmY2IiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjUzNjdlYWRjOGY2ODMxYjM2YTNkN2I1NTU3MjE1ZGE4ZDViNzVkYTdlN2U2MzVlZTkxYjA5NmU1NWQyYWVhZDcifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/test/java/cn/shopex/ecshopx/espier/service/EspierUploadFileAsyncRunnerChunkDispatchTest.java#L149-L178",
+          "version": "repo-lines-v1:sha256:66b03c5937837535206cfec2ea2db130fc38f70068328debf496d63f63028dc0:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQwMzI0ZTQ0MWM0ZTc1MjA1MTYyZjJmNTk0NWE4OGI4MzVhNzFlMDg5Zjk1ZWJiN2E4MDRkZThhNDJjM2Q0NzIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY3OGVmMzdiOGQ4MTM4YWY3YTJlODJhN2ZhNTM4YTMxZWQ3ZDViNWQwOGE1OGM1NmZmYmY5ZTM4MDQyZDVmMjUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE4ODljODdmZmJlNzIzNzI3ODJlMmI1ZDg2ODM0NWM4NWI4NWIxYjczYjAxZmQ0M2VhNTFjZjczZjEyNTk3NDEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxYTc5ZDE3OTYyOTgzMWM1MGNmZGZkYzkyZTY4OGYzMmYwYjExYTAxOWEyMjZhODM2NjlmZmM0YjExODJlZmUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/test/java/cn/shopex/ecshopx/espier/service/upload/EspierUploadExcelSheetReaderLimitTest.java#L24-L51",
+          "version": "repo-lines-v1:sha256:a7b4346d20b5d07801efea7e69b0592f64c8f3082098dd747af6e2378bda9334:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVkZmQ4ZTFlN2NmODQ1ZjBhNDkyMmY3NWFmYjUxN2I0N2NkZDhjNDZjZGU4Nzk3MzBjMzE2YjU3NDBjYWUzYWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUxM2U4YWNiMmJiMDIwMmM5MTQzMDE5ZTgwYzU2NDQ0NDk5NzRmM2IyMGY1ZTUzYWY0Y2EyZWViZTUyYzE5NGYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjgxOWVlM2ZkOThhNTgwMDUyMmYyYWVjMmQxZTRhNjQ5OWUwMTQ1ZDYyZTI2M2RmNDk2Y2EyMWIwMzhhNmNmOGYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImVkZmUxZGVmYjk4YTgyNzg3MzBhNTEzNDFiZDg0OWZkZTRlNWNlMTRiNjQ4MmZjZDYxOGRiMGE0MzAxZDg0NjMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_f33063ac85ca4e05b43ff81996c2751e",
+      "statement": "ECX-10937 neutralizes spreadsheet-formula injection in exports: ExportCsvFileService — the shared CSV writer used by roughly 40 domain export services, writing UTF-8-BOM files to export/csv/<name>.csv on the file disk with a 3600-second private download URL — prefixes every non-empty cell whose first character is =, +, - or @ with an apostrophe so Excel/WPS treat it as text, a rule that deliberately also rewrites negative amounts such as -12.50 to '-12.50; ExportCsvFileServiceTest pins both the RFC-4180 quoting and the five formula-prefix/negative-amount cases.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/ExportCsvFileService.java#L106-L133",
+          "version": "repo-lines-v1:sha256:6fe5da3728c3b436823f02061da82476803feabdc605bed75d0d0fbfa9ad20c6:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRlNjE3OGViOTNmNjQ2NWRmYjI2YjRjNzgxOWI1NDY2YWJlYjk4MmJiZTAzZTU4YTA4NzEwNjAzZTlkNWE5N2UiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/ExportCsvFileService.java#L45-L76",
+          "version": "repo-lines-v1:sha256:8c1f1205336cdd1b3fcd12e54073f10c0e7f3571a429da22ec9986b660f469d0:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVkOWQ4Y2EyYmNhNmJiZDE2YjU5Y2JmNTJiNDM1ZDNlNzY3NjA3MTk4NjQ1Njc0YTdjN2ZiOGMyZTA1NjA2YTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI0ZTI0YjE5ZmQ4ODQxZDU1ZWFlYjI0MDljY2M2MWM2ZTBjYTEzNDFkY2FkNmZhZDhkOGIwMTcyNGY3YjkxNGIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU4YjA4NTJiMjA5YTgzODQxZmM1NDllODM1MmM2YjRkNGZkMDE2MzNlZjJmYTI5NDUyMmYwM2NjMmEwYWYyNGYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQyMzYzYjQ2OTEyMzdjNTRlZjA4ZGZjMzIzMmM0NTA5YjI3MGQxZTA3MTFiMjE2OTRiY2ZjZTRhNmQ4Y2RlNTkifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/test/java/cn/shopex/ecshopx/espier/service/ExportCsvFileServiceTest.java#L42-L67",
+          "version": "repo-lines-v1:sha256:22a3d12ef7091e25989f13cf223a5ba504de7c9764b67e764668add613955213:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhjN2Y0MTE2MjVhZDI2NjZkYzVmNTlhZGU1YTE3NzBhNGQ2NzQ5NTM5M2JhYTcwNGI1NjRhYmQ3ZTBlNTRjMTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU5OTExZmM0Y2VkN2MyOWY3MmJjOTI3YTMyOThmY2M3MTNlOTBhODg4NTU0ODJhZDFmMGQzNjE5NzQ4MTJlYTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_3b6e7854700543fbb81875eafe82cf28",
+      "statement": "ECX-10942 company-scopes wsugc topic create/edit: TopicCreateService.createOrUpdate limits the same-name duplicate query to the operator JWT's company (a foreign tenant's same-named topic no longer blocks creation and the new row is always stamped with the caller's company_id), and the edit branch reloads the target Topic and throws ResourceException(\"无权访问该话题\") without updating when its company_id differs.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-wsugc/src/main/java/cn/shopex/ecshopx/wsugc/service/topic/TopicCreateService.java#L49-L91",
+          "version": "repo-lines-v1:sha256:7ef0f77f5220ed3bcb464191e0b41495efc25478a3609f871698dc292664539f:eyJzZWxlY3RlZExpbmVDb3VudCI6NDMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRmNTg0YTIyMjRiZWFlOWNjZjY0M2YwODhlNmM3YjU5ZGM1MjcxNGRiYmI1NGI5YzNmY2E4ZjRkMWY0MjZmMTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcyYzUzNTYzMGI3Mjk0NTdkMTIwM2U2MDFkNDBiMzJjYjBmMzZjNzg0MjZlM2E5MWZjN2ExZDNmMTllZWYxMDMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRkN2NkMzhiMWQ3YjY3NDkzYmMyZjI1ZTNjNmUxOGE0Y2NkYjYzYzdlNmFjMTg0MTMwYzJhYjA0NWVmYmEwZGIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI1N2Q0MDY0YjM0MGY2MTJmMTc5M2I3NTQyN2E5NmJiZmU2NGI0ZWZjZmQwOTIzMjMwN2NhYTJjYTc3NGI1ZDQifQ"
+        },
+        {
+          "resource": "repo://ecshopx-wsugc/src/test/java/cn/shopex/ecshopx/wsugc/service/topic/TopicCreateServiceCompanyScopeTest.java#L46-L130",
+          "version": "repo-lines-v1:sha256:e6b322c98c3b6a9323209777dcfd827951d924f4d3debd9512588a128a1eb3fd:eyJzZWxlY3RlZExpbmVDb3VudCI6ODUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU5Y2QxODM0MzM1YWJmYTYzMGIwN2IzZGQyNjZiNWM5YTkxNDBiZTU1OGU1OTRiZTMwZTI1NmNkNTNjZDQyNmMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYyNzM0ZTVjN2JlOGFiOTA4OGViZjcyMGI0YWU2YjU0ZTc0ZDU4N2QzNTA4NDVhMTlmOTRjZDY1N2RiMzliMTkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRlMjQxNWNiOGE0ZDFiMTdlM2M0YTBiMTAwOTMxYTNkNTczMWEwZWY3ZWUyMDEzNDdlZDk3MTQ3NTU0NjBkOGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY1N2U3ZTdhZGJiY2M1NGQxZDE0NGNlM2YwZjNkNzAzZmI2ZDZmN2VmZWEyMDRhNmFkZmFmNDM2NThiNjcxOTMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_1d7eb34b45d9499d9eb131966aae205d",
+      "statement": "ECX-10943 company-scopes wsugc topic deletion with silent-skip semantics: TopicDeleteService.deleteTopics filters the requested topic_id list through topic_id IN (...) AND company_id = ?, physically deletes only the owned subset (TopicMultiLangDeleteService first clears the whitelisted per-locale outside language tables for those ids), and still responds 删除成功 echoing the full requested id list — foreign or missing ids are skipped rather than rejected.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-wsugc/src/main/java/cn/shopex/ecshopx/wsugc/service/topic/TopicDeleteService.java#L44-L93",
+          "version": "repo-lines-v1:sha256:2793020babaff56e821cdaed59cc149a36627aa30bd710f8f5026846c10e2a21:eyJzZWxlY3RlZExpbmVDb3VudCI6NTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJkNzU0OGYwODFmM2Y0MjY0OTYxNzRiYjdmMTYwZjg3MDk0NDNjMWM1NmM2NmFmMzNmYjZmNmU4OTdjZjAzZjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM3NDY0OTUyODg4ZWQ4ODBjMjEzZTU3MGZhMzE1M2EyZTYyMGY5OGM3NzczNmQyNzhjZGI3NWUyMzEwNGE5ZDUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZiM2E2NTIxZjFjYjc2MDVhYTk2ODZjZmQ2ZWE5YWFjYTUwOWM0M2VhNmU4ODhiYTUzYjFmYjMzNjNlMTU2N2IiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImYyNTFjYzkxNjVkY2VmYzExOWI5M2YxM2E3NDkzYjNkYjgxYTA2NjJhODZlNDI4MWZhOWZmMDk4YWY1NjdiMTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-wsugc/src/main/java/cn/shopex/ecshopx/wsugc/service/topic/TopicMultiLangDeleteService.java#L57-L79",
+          "version": "repo-lines-v1:sha256:3188c659553595d76942c9904faca3bf4c9977981d0a53b92ed028ab044c0571:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA0MTU0NDNhZWEwNWFiNDMzZDJiZTkwY2I5YjE4YWFmMGU5NWM5Nzg4MGVmODg0ODNiMzAwNzQzZTQ4YThlNzgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYxYWY5MzZkZDRiMzIwNzc3MTcwYzdiMDdiZTZiNmE4NDc3OTExYjBlNzg5NjQ2ZTM4Mjk5NGNjZTc0ODZhMzYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-wsugc/src/test/java/cn/shopex/ecshopx/wsugc/service/topic/TopicDeleteServiceScopeTest.java#L60-L99",
+          "version": "repo-lines-v1:sha256:4f5d85bd600f063f56e248315c3c2c38b4cccc0e4a151c6a2fed55c307e8eecb:eyJzZWxlY3RlZExpbmVDb3VudCI6NDAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFiNWQxNjI3NzNjNTNhNjQ2ODRmMDZlZTFmMGQ2NWY3MmYzNzdkZTNjNjYzMzI5YjA0NDQyMTFmODQ0NzAwZWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNmNzkyOWU5ZGU2ODMwMDRkNGQyYzM5ZWVjNGIzZDlhZjVhNGNjN2Y3MzFhMzQzNTk1ZTRkNzhhYTY3Yjk2OTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_1c0d56f00d054b4eb029d6d02f3a1a34",
+      "statement": "ECX-10938/10944 make selfservice form detail reads tenant-safe by degrading cross-tenant probes to 'not found': FormSettingDataInfoService.getDataInfo (behind admin GET /selfhelp/formdata/{id}, alias selfhelp.form.info) and FormTemplateDataInfoService.getDataInfo (behind GET /selfhelp/formtem/{id}, alias selfhelp.template.info) return an empty list when the loaded row's company_id is null or differs from the operator JWT's company — without invoking the multi-language read services — and blank, \"0\", non-numeric or non-positive ids short-circuit the same way.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-selfservice/src/main/java/cn/shopex/ecshopx/selfservice/service/FormSettingDataInfoService.java#L42-L70",
+          "version": "repo-lines-v1:sha256:8d7ce327e857dc3dad5c242f73e081447c2287882e103b2f9f9d93e001b09984:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNkOTljOGM0N2FjMjEyN2Q3YjFhMGQ5NmMxYTQ0YjJmOGE2ZDgxMjA5OTFkZTM5MzM0YjI4OGY4YzJkY2M1MDYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNiYjljZDBkZDkyYTY2ZWJiODM1MjM0ZmIzOGQzOGQxYTk2ODM3ZTk2OWIwMjZmM2IyYzJkMmViMjY1YzZlOTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg3YzkyYzE3MmJhODU4MDRkZDdmM2IwZjZlNmI3NDVlZjZkN2U1ODA4NWQ4YTM5ZTc5OTk0YzYyZTU0OGJkMmUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-selfservice/src/main/java/cn/shopex/ecshopx/selfservice/service/FormTemplateDataInfoService.java#L40-L68",
+          "version": "repo-lines-v1:sha256:f0d16ede66a23d561ad797d44a1ad48aed84d9dcc4f41dc5be495e9418a8c55d:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE4YjMzNmQxZDc1ZTlhM2YzMDdjNWExMDgzYzQ2NDAzMTgxZWU3YmZjNzlmMzhmNzA4YmIyOTU4ZDMyMmNjOTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIzMDk3ZTI1Zjg3OWVlMTEzYWFlNDEyZjFjOTljZGQ1NmJhZjcyYjAxNGE1NzM2MjVjOTY2MjQ5MDdjNTJhZGMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIyYzEzMDYxZjg5Njg0ZTJhNDljNWEwNDQ2MjA1NTBhY2VlM2U2MzkwOWJlOWQ1NmZlOWJkZWRkZTNiZjllY2UiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc1YWRhYTY4Mjk3YzYyNmNlNWQ5N2MzMzdlYTQxZDU5YjUyOTFhNGNjMGQ3ZjMxMDc3OTk2N2FiODk2ZThhODkifQ"
+        },
+        {
+          "resource": "repo://ecshopx-selfservice/src/test/java/cn/shopex/ecshopx/selfservice/service/FormSettingDataInfoServiceCompanyScopeTest.java",
+          "version": "repo-file-v1:sha256:5a2f5ff3191735d4374c41924905be443c3caea8c3b1a2bdb226ea43fa3242a3"
+        },
+        {
+          "resource": "repo://ecshopx-selfservice/src/test/java/cn/shopex/ecshopx/selfservice/service/FormTemplateDataInfoServiceCompanyScopeTest.java#L63-L98",
+          "version": "repo-lines-v1:sha256:af23aa0ebdad7edf9b4cb2d910a6bfd98415471ad9a0043d8c8c269284f7ac3e:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM1MzUxNGU3OWEyMTU3ZmU3ZWZkYmQ2NjJiYjA5ZTE1YWExZWQ2NzM1YmI2NjljODkzOTRmYjc3MTdiN2Q4MWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIyNWYyMDFkMGFkMWZkOWMwZDUzNDBmZjVkMmQyNTgyMjNmMzQwZGMyNTYwMzQ0NGVlY2QwNGZkN2M4NGY5ZjgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d5045c1fe3704776baceb155d81fb7b3",
+      "statement": "Selfservice form-template writes are company-scoped: FormTemplateCreateService normalizes the content/key_index JSON and writes the base FormTemplate row plus multi-language side rows in one transaction, and both the update path (select by id = ? AND company_id = ?, ResourceException on miss) and the discard/restore status flips (ECX-10901/10904: company_id in the LambdaUpdateWrapper, \"数据不存在\" on zero affected rows) refuse to touch another tenant's template.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-selfservice/src/main/java/cn/shopex/ecshopx/selfservice/service/FormTemplateCreateService.java#L222-L258",
+          "version": "repo-lines-v1:sha256:9ab783c5a0d6e474560efcb95bece64a02997a3ba695696a5f2875eeacde6a7e:eyJzZWxlY3RlZExpbmVDb3VudCI6MzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIwOWFlODkyOTdiNTY4YWMxMTczOWZmMTVhMGE2ZDBlZjNmZjUzYWU3Zjc0Y2Q5MTQ5MjU1YTU5MjNiMThmN2QiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg4NDM1NDllY2NhZGFmN2NkODFhYTdlZjg2ZTg0ZDI0Y2YxNTI4YWQ3MDcxY2FkMWEzMDliZTc5ZmExZTIzNmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFjYTA3ZDVlNmI1MDA5ZTczYzRlZmE3NzllNWFiN2ZhMjViNmY2OWEzNTg3MzI1NDgxNGQzNTliMzJlMWQ3MzMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA3NDVmMzY3N2FlNTJkZjZiYTRmMDNjOWUwNWJiYzI4Mjk2MzM2N2E0NzQ5Y2FmZjViYmQ3Nzg5ZWM3YTk5YTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-selfservice/src/main/java/cn/shopex/ecshopx/selfservice/service/FormTemplateCreateService.java#L336-L387",
+          "version": "repo-lines-v1:sha256:40af42f9aefd7351891bf7f754f02d162190f47a18854d2bb2565c79a33e6840:eyJzZWxlY3RlZExpbmVDb3VudCI6NTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJjZGRjZTExMmU1YmRmYTlhNjUxYjAyZWRlMmU4MTk3OTM5ZTlkYTNmZDQ1ZGNlZjIwNjEzMTA0ODM1MjNkZWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJjZmZjOGUyMzA0NThlZGU4MzI1YWZmNTZmMTJlNjVkMTE4YjZiNDI5OTJlYzU4MTJiNTc3ZmNiOTE1ZmVhNjQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImYxMTQ2NWUxYmE0M2UxZTA3Yzg4ODdhMzk4MGVhZWQ2YzYzN2QxNGQ3ZDM5YTY0OWRlNDg3MTBiODkxODY2NzgifQ"
+        },
+        {
+          "resource": "repo://ecshopx-selfservice/src/main/java/cn/shopex/ecshopx/selfservice/service/FormTemplateCreateService.java#L61-L167",
+          "version": "repo-lines-v1:sha256:822451adecd1c7424046adcd387d809c6ef67b61dd5b4dd728603b31bc95f7b5:eyJzZWxlY3RlZExpbmVDb3VudCI6MTA3LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJiZDc1NDhmMDgxZjNmNDI2NDk2MTc0YmI3ZjE2MGY4NzA5NDQzYzFjNTZjNjZhZjMzZmI2ZjZlODk3Y2YwM2Y4IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJhMTMyNmQ3NzY5YmY1YTAzNzhlN2NiMGU0ODk0MDI1ODZiZWU5MzU4NDlmNDI0MjcyYTRlNjRlMGFjNjIxYjhmIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJlNmQ1NTEyM2QxZThjNzYwOTUwNzg3NTQxZjdjMmE5NDE3ZDBhYjEyMGU4Nzk1ZDg3Nzg4NGRlMmQ4MjQ5NTI0IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI2MWFmOTM2ZGQ0YjMyMDc3NzE3MGM3YjA3YmU2YjZhODQ3NzkxMWIwZTc4OTY0NmUzODI5OTRjY2U3NDg2YTM2In0"
+        }
+      ]
+    },
+    {
+      "id": "claim_dd0d134f31b24bc7be3b439614a58678",
+      "statement": "Synchronous (non-queued) Excel parses keep their own stricter row caps alongside the 5000-row async cap: EspierGoodsMarketingStyleSyncSupport.parseSync rejects more than 500 data rows with the original BadRequestException(\"每次最多上传500个商品...请减少后再提交\") message, pinned by EspierGoodsMarketingStyleSyncSupportRowLimitTest.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-espier/src/test/java/cn/shopex/ecshopx/espier/service/upload/EspierGoodsMarketingStyleSyncSupportRowLimitTest.java#L28-L48",
+          "version": "repo-lines-v1:sha256:60ebc5141eda370ec1f1d7e9ab3c01d3004ee47292846d10a95a2780464abac6:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRiOTU1Y2NkNjAxY2U2MWYzMTkzZGI0NmVlN2QxMDM3MTgwNTUxMWIxMzZmYzBmOTNlMmI5N2IwMjI4Y2E0NTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVmYzhjZjlkZWI3ZmRhNjczNDhmYTVmMDI0NGFlNTlhNmY3MWI1ZjNiMTQxM2U1OWEyOGYwZDcxY2I3YmFiNTAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjlkNDdiNGFlMzk4NmE0ZDFjNWE5MDlhMzMxNzE1NjliNWYyMzViNWMwYzBlODc5NjJhOGVhM2U1ZTIyMzY2NTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRmMmI0NjgwNDM5ZDQwYTUxZmEwNzFkNGI5OTUxZjBkZTRlOGFkMTc2MzY1OGU0YzZlMmEwYmFkMjM5ODVmM2EifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.9.0",
-    "at": "2026-11-05T17:10:02.238Z"
+    "at": "2026-11-08T17:14:16.576Z"
   }
 }

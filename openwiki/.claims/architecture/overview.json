@@ -1,18 +1,22 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:ef2a38a27bf169029b171139bda5220728c31bceb3f2dc53abed02bf9ae18fe1",
+  "pageVersion": "sha256:e3d751d09d64c8b6589ebfd04765578701456f1a493620e3717e4710c1264ff5",
   "claims": [
     {
       "id": "claim_f8125c36eada410396ebd177c71a5a4f",
-      "statement": "The repository is a single multi-module Maven reactor: root pom.xml declares parent cn.shopex:ecshopx with version ${revision}=5.4.7 (Java 17) under spring-boot-starter-parent:3.5.12, with 53 modules total — four infrastructure modules (ecshopx-bom, ecshopx-common, ecshopx-dispatch, ecshopx-bootstrap) and 49 business Bundles — each also pinned in dependencyManagement.",
+      "statement": "The repository is a single multi-module Maven reactor: root pom.xml declares parent cn.shopex:ecshopx with version ${revision}=5.5.0 (Java 17) under spring-boot-starter-parent:3.5.12, with 53 modules total — four infrastructure modules (ecshopx-bom, ecshopx-common, ecshopx-dispatch, ecshopx-bootstrap) and 49 business Bundles including ecshopx-digios, ecshopx-openapi, and ecshopx-shuyun — each also pinned in dependencyManagement, and ecshopx-bootstrap's POM declares all 49 business Bundles.",
       "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/pom.xml",
+          "version": "repo-file-v1:sha256:7eeea16f0127993b54ba91f2a6f9978368dc28dfe27288480254aaa6ea2c0fb6"
+        },
+        {
+          "resource": "repo://pom.xml#L12-L29",
+          "version": "repo-lines-v1:sha256:d465bab693463b7962e2a7a5a40ee388b69e8eda6713b4f8f3fcc99b60db4355:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhiZGY5NDQzNjg2NmE5Y2ZjYTBhYzNkNjIzMDc3ZWQwNzIxOGQ1NDFhMTQ5ZjliMDM4Y2U0MjcxYzYxNjM1ZDMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM4MGFjMjJmMDg0YjYwNjY1M2IwZGVmNzIyMmQyZTU5OTk4Mzk5NTUxMTYxN2VmZGU1MTQ1NTY2ZTAyNTY3MjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU5ZGFhYTVkNDZkZmViYWViODdmYWViMTFhMDE0Yjg0MWFlZmI0OTA3ZGE4NmMwNzU5MjAyMWU4NzRhYzE5OGUifQ"
+        },
         {
           "resource": "repo://pom.xml#L367-L421",
           "version": "repo-lines-v1:sha256:327a2784226bb0ac6afac0848c456af37c28ec80a95527993b4c6f710e093998:eyJzZWxlY3RlZExpbmVDb3VudCI6NTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk1OTE5OTljNTNjMWFmMzUyZDk5YWQyNzljNTU5NGRiOTBhMmQ0NzdhMDE2NDA2OTNmZGE3ZWM1M2UzNzNlMTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI0NWEzNDAxYjEwNTIwOGY0ZmViZWZjMDYyNTljNzNhMzY3MGFiZTVkNzQzYWJjMDEzNzkxYWZmMjMxNzc4MGYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk2ODE0Mjc1NWJiMTdjZDVmYzAzZDE5YjQ1N2FjYmMzMGZlN2MyNGU2N2I5OTJmMmUxZjNlMDI0ZjhiZTZkYTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ0NDM4MDBmZTUyNGFlZjQ4ZGU2MTE3MjhmMTY5NGVhZDAwMWYyZjQyNGI3OWY4NTU3ZmZiYTFmOTMxZDFiYmYifQ"
-        },
-        {
-          "resource": "repo://pom.xml#L6-L29",
-          "version": "repo-lines-v1:sha256:c8fcc34b0f165c9c46a24aea3f8487cb8012601c727a76e0912eba7f2df788e3:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYyZDg2OTJjNDcwNGI5Y2Q5ZmMwN2Y5ODNhMDFjYWNlOTI2MjYzZjJjZjJkOGM0M2QzZGQ0NDc3ODQ0NmU4OWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhiZGY5NDQzNjg2NmE5Y2ZjYTBhYzNkNjIzMDc3ZWQwNzIxOGQ1NDFhMTQ5ZjliMDM4Y2U0MjcxYzYxNjM1ZDMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM5OGMzN2Q5M2QwNWZkYWY1MjYxYjkwNzg3YWU2MzFjODhkMzIyMmQwZGE1YWRkZGU2NWJiMDU4ZjVlMzZhMWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU5ZGFhYTVkNDZkZmViYWViODdmYWViMTFhMDE0Yjg0MWFlZmI0OTA3ZGE4NmMwNzU5MjAyMWU4NzRhYzE5OGUifQ"
         }
       ]
     },
@@ -142,19 +146,27 @@
     },
     {
       "id": "claim_8a81f135f1eb4ebe83ac15c10a1944d4",
-      "statement": "MigrationSeedRunner (ApplicationRunner in bootstrap) aligns seed data with the PHP EspierBundle UpdateMenuListener: it imports logistics companies only when the logistics table is empty (failure logs but does not block startup), and when common.use-system-menu=true atomically deletes and re-imports all company_id=0 system menus from six role-based JSON seed files under classpath:seed/menu/ (platform, it, shop, dealer, merchant, supplier) inside a programmatic TransactionTemplate transaction.",
+      "statement": "After Flyway, MigrationSeedRunner (ApplicationRunner in bootstrap) aligns seed data with the PHP EspierBundle UpdateMenuListener: it imports logistics companies only when the logistics table is empty (failure logs but does not block startup), and when common.use-system-menu=true it atomically deletes all company_id=0 system menus and their menu-type relations, then re-imports six role-based JSON seed files under classpath:seed/menu/ (platform, it, shop, dealer, merchant, supplier) in fixed order via ShopMenuUploadService.uploadMenus, inside a programmatic TransactionTemplate transaction so a proxied @Transactional cannot be bypassed by the self-call.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MigrationSeedRunner.java#L56-L62",
-          "version": "repo-lines-v1:sha256:8eed057d2549e597ffbdfc0ff09427d567c344271cef5bec28b0e1a411b6c901:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTNhMjA2YzQ3MmFlZWFiYmQ1NGUyYzU3MGVjNjc4OGZlMjIwOTVjMTljOWNiNjcwZTU5YjY3OTA0ZjRkMjMzOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMTA3ZTYxY2UxNTU0Y2IzYjk3Nzg0NDVhMWQ0YzYzODEzNDFhODMwNTkxODcxZjc0YjljNjAyZTc5NTQ3OGQ1OSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTA5ZTE1OTYwYzVjNDUxOTEyNzdiOTM5YmU5NzU3ODA5M2JjZDgyNjM3OGFmYjY0OTYxZmNlYjc0YjkwY2U1MCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYzAxNDNkYWM1Nzc5MDZkMTJhZmVjNWFiYTFlOGI3N2I3ZmVmYWQxMTY2MWI2NjUxZDRhNzJiYWZiNmI5MWU2ZCJ9"
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MigrationSeedRunner.java#L130-L157",
+          "version": "repo-lines-v1:sha256:0f59c5d27a4c1dfd2131fdf5a749f631b50545ce81fe723c9c76b4db96712f51:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQxZjkyZDczNThlZDBmODU4MTQ5MDY5MDNiOGRlYTVkODliMGU3YTE1NjljMmM5YTkwZjg4MjcxM2JmOWZhY2YiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRmYWFjOWM2MWQzMmJlYzJjM2VmNDM3YWUwZmZhMDhhNGE4ZDM3N2ZiZGI0M2QwNWZlMTgxODA1ZjA0YTkwODIifQ"
         },
         {
-          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L96-L97",
-          "version": "repo-lines-v1:sha256:aeae886d409eabba7579c647f3be341d602c51ef846e347c91864e1de97e7446:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYWQzNjY2MGU5MTc5NzA2OTdiYjQ5MDM4YmY4NDg1OWI2MDE3ODY2ZmU1NWUwMWNjMjA3MWZlOTQwNGNmMWUzYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjVmZjI3NjYzM2E0YzgyMzEwOGU0NjFjNzI0NDIwYWEzYTQ2ODNkODdhYmViYjk1YjZkZjE2MzVlYzE3YWUyMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNGU4MTViMjBiNDA4NDYyNWYyZWZiMTA5ZGE3OWY4ZjgwMDAxNTBmOGJhOThiNzliYmMyYzhiYzY3YzBjOTQ5OCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMmZiODdhZjg5YmM0ZGMxMDZhNjc5NGVjY2IzMGYxN2NhOWI1NjQxNGI5ZmRiNTViYzUwN2EyZWM5MGM4NGM4NyJ9"
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MigrationSeedRunner.java#L52-L62",
+          "version": "repo-lines-v1:sha256:79a016db3a2d4182b59e7cf5d5ae58182dccfa4eb463881e54b7281b16d20884:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjliNDAwOWNjMTk1YjE0ZjE3Yzc0YmQyNTgxODRhNWQxYjg0MzNmZTRiZGQ4YjQxNDJmMjVkZjZmNzEzZjExMWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEwN2U2MWNlMTU1NGNiM2I5Nzc4NDQ1YTFkNGM2MzgxMzQxYTgzMDU5MTg3MWY3NGI5YzYwMmU3OTU0NzhkNTkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY3MzRkNWNiMjQ5NGI3MGU1NzYwMWE2Y2VlODEwMDMyZDRkZDAyY2MzOWY3NTJmZGFjYzAwZDgwMzdmZjMzMWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMwMTQzZGFjNTc3OTA2ZDEyYWZlYzVhYmExZThiNzdiN2ZlZmFkMTE2NjFiNjY1MWQ0YTcyYmFmYjZiOTFlNmQifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L96-L96",
+          "version": "repo-lines-v1:sha256:ad36660e917970697bb49038bf84859b6017866fe55e01cc2071fe9404cf1e3a:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYWQzNjY2MGU5MTc5NzA2OTdiYjQ5MDM4YmY4NDg1OWI2MDE3ODY2ZmU1NWUwMWNjMjA3MWZlOTQwNGNmMWUzYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYWQzNjY2MGU5MTc5NzA2OTdiYjQ5MDM4YmY4NDg1OWI2MDE3ODY2ZmU1NWUwMWNjMjA3MWZlOTQwNGNmMWUzYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNGU4MTViMjBiNDA4NDYyNWYyZWZiMTA5ZGE3OWY4ZjgwMDAxNTBmOGJhOThiNzliYmMyYzhiYzY3YzBjOTQ5OCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDZjZGQ3NmZhODljZWNlMzk5ZTAzMmRmY2NlZGJjY2M0MWFhZDI0ZjdmOWUwY2IwZWQwN2FkODg0N2FhYWZhOCJ9"
         },
         {
           "resource": "repo://ecshopx-bootstrap/src/main/resources/seed/menu/platform_menu.json",
-          "version": "repo-file-v1:sha256:a002a9b0d07e54345d9657828dbe480f9850d1c10caa5a6b1fd39dd1a865b7d9"
+          "version": "repo-file-v1:sha256:a5370977171671a30f7c4e051b16d39886c5c08587b0fe207b82212169c0016b"
+        },
+        {
+          "resource": "repo://ecshopx-shopmenu-border/src/main/java/cn/shopex/ecshopx/shopmenuborder/service/ShopMenuUploadService.java#L82-L88",
+          "version": "repo-lines-v1:sha256:c9f982a4464f95e851d4575e458e97241eaace3488c5394c3bc5cac9187c2b9d:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOGNjYmZkMWIwY2Y1YTA0NmM0MTBmNDI4NjMyZWI1NDdiYjIzNTIyYzUxNTY3MmVmOWMxNzNiMjA4MTQyZTMzNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjM5MTQ5OTNhNzY1YTQ1MzM4YTJiMTg2YjU3YzVhZGFjNTc0MTkyYTUyOGE1MDEzYzc5MjdhN2E0OTMxNjBlOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZmUzOTFlMjEyZGE4ZDcyNzFkNmU3MDkxMGFjNmM5NTA1ODhlZjc3YTI3YmViMzM5OTlkOTY2MWU5ZDgyNmQzYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMjJmMmZmNWZlZWM2MGY1ODdjOGZhZTRlODdmODA5YTY2MWNmZmVkNmI0N2FhZTVmNmQ2YTI2NTNhYTg5NTJlZiJ9"
         }
       ]
     },
@@ -463,10 +475,110 @@
           "version": "repo-lines-v1:sha256:b60ad69d7d2fe18f2ce781f5641544135de422526a3e9a2964c4dbf9c9912ef5:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYxZmRlZmQ2MTViMzA0OGY4N2E3NTNmZWJjNjc2ZTYzNWRhZDdkYmQ4MmZmNDIzMDEzNjJjZmI0ODlmNmUzMTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjljZjgxYTEyM2YzMmQzNTQ0ZjRiMTZhODdlYmVlNDA3NGNlMGU0YTkyZjk2MzZjOGFhNTU0NWI3YTg3NWQ4N2EiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
         }
       ]
+    },
+    {
+      "id": "claim_ccfd2627ca96445b9c94d1b0262813ea",
+      "statement": "Each seed menu file (e.g. platform_menu.json) is a JSON array of rows whose version groups a menu generation, menu_type names the menu types the row belongs to, and name_lang carries per-locale names (zh-CN, en-CN, ar-SA, zh-TW, ja-JP, ru-RU); ShopMenuUploadService.uploadMenus (@Transactional per file) first deletes existing company_id=0 rows of the incoming versions including their shop_menu_rel_type rows and name_lang translations written through companys' CommonLangModWriteService, then re-inserts rows with fresh sequential shopmenu_ids, remaps file-local pid values to the new parent ids, rebuilds menu-type relations, re-writes translations, and rejects rows missing alias_name.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/seed/menu/platform_menu.json#L1-L50",
+          "version": "repo-lines-v1:sha256:4cccb904723a53a7d97dae80f1481f2380f32bfc9a88af8a9a28e9ee293282ed:eyJzZWxlY3RlZExpbmVDb3VudCI6NTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk1ZDJiMTkzNDkzMTY5MTY2OWNjMzVhODc2MTk1MTgwMTUzMzYyMTNkZGEwYTYwZmUxYjA5ZjliOGUzZTk5M2QiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRhNGRhOTJlYjE3MTA2NjFmODhjNDlhYzQ4ZTBkNWY2YWNhNjMyYmU5YWUzYTg5Mjc3MWMyMDZkZGFmMjg4MDEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZiYTE1MDM1ZDBlYThlZTBkMmY5MTFkYmU0Mzc4Y2NlNzMzODk4YmMxYmZkODAyMWJiNTE3YWEzZmJlYzFkM2UifQ"
+        },
+        {
+          "resource": "repo://ecshopx-shopmenu-border/src/main/java/cn/shopex/ecshopx/shopmenuborder/service/ShopMenuUploadService.java#L99-L260",
+          "version": "repo-lines-v1:sha256:db5f18a588a6b47cd90db5809fe15e97daa00de98432789f7814999a7889f5b4:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYyLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJhYzVkMzNlZTI3MDYzNjBjZjhlNjJmODk5MjgwNzZkNjE3YjVmNjRhMjlkNDE4YWY0N2JmMWJjM2JkZGI3MWJhIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI2N2NkYTgyZGE2MDYyMzhlMDVlNjIzOTk1NjljNWVlMDM5OTM0MTk2NDhhZTVkNDNhMmJmOGNkNjM0N2Y4MjYzIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI4MmMzZWZjNjZmZTQ0MmMwNzA1MDgwNWU4ZGZkMDM4ZTYxZTcyMmI3OGZjNDE3MDcxM2FkMjBjZTQwZWVmMmE3IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI5OGJmYjQ4ZmMxZWEyMzIyMGNhMTZmOGE1MzI3MTZlOTI1MzQyY2I1ZTdhYzFjMTgyMjBjMWRiNTE3YzY2YzRmIn0"
+        }
+      ]
+    },
+    {
+      "id": "claim_979d160348b544568c0bf8f6effaf701",
+      "statement": "The current Flyway schema head is V00000000000007.sql (release 5.5.0): it adds merchant-settlement onboarding fields (contact_name, main_category_selection JSON, license_registered_address, license_legal_representative) to merchant, adds those plus user_id to merchant_settlement_apply, and adds a uk_company_user (company_id, user_id) unique key so each member can file at most one settlement application per company.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/db/migration/V00000000000007.sql#L1-L20",
+          "version": "repo-lines-v1:sha256:a77677165428dd8385909331ae94eeddea84519d1a36df02f8f0ecac7ed9aea0:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAwNmRlMmY3MTZiYmMyMDQzODRkNTBlMjcyNjQ1NzY1MjM1MTc0YjdmZDhlMjU1ZTFhMjJiOGFlYTNhZGEwNDAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1Nzk0NWRiZDViOGY0MDJkZDFhMTA3Nzk5Yjg5NWNhNmUwZjUxNzk1ZTgwNmRlMDQ5ZDI5MzJhNGQwYjQ2NTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_de5ab620c885470590f656664a8cc157",
+      "statement": "ecshopx-openapi guards the /api/openapi/** public gateway: OpenapiWebMvcConfigurer registers OpenapiAuthInterceptor on the public and internal path patterns; the interceptor skips /api/openapi/internal paths, requires version/timestamp/app_key, enforces a ±600 s timestamp tolerance, verifies the sign via OpenapiSignSupport against OpenapiDeveloperLookupPort credentials, and then calls OpenapiSignedRequestReplayGuard.assertOnce, which SETNXs openapi:auth:replay:{sha256(app_key|sign|timestamp)} on the default StringRedisTemplate with a 600 s TTL — a replayed app_key+sign+timestamp within the window is rejected; openapi.debug=1 bypasses signature and replay checks as the system company.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/web/OpenapiAuthInterceptor.java#L66-L125",
+          "version": "repo-lines-v1:sha256:b56e2040c2ead965b3dac66033c696168bc6db816c57a697f60832147044252a:eyJzZWxlY3RlZExpbmVDb3VudCI6NjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE5ZWFkMGY1OWFiZjBlNDE5NzViMmIzMjA5NGZmMTYwNTBkNGI0YmZhMTY0Mzg2NzkxODJhZGZkMzYxYmFhNmEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVhMzAzNDAzODMyOTM0ZjEzNTM3MWNkZjdiZTg3NTY5MGQ5NDAyM2VjMGY2MmY1MDAzYjJmNmViZmU2MzNmMTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhiNWM1NjMzYTRlYTRlODNjOWRlY2Y2MjhkYzA2YTcyOGY0MTE3YzdhNDVmMTUwNzk2YTJiOGEyNjYwNjJjOTQifQ"
+        },
+        {
+          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/web/OpenapiPathPatterns.java#L22-L37",
+          "version": "repo-lines-v1:sha256:be8bd6f4b104375f7123c7169a42a9ceb99806d6f3e0b3eae090c82c653c3641:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY2OTg5MWY0OGFiNTljNWRiYTgwYmMwN2ZmNWExMWZiMzZkY2JjNjIyMTViMzBiZjlhMmMxZWMxYjU4ZmU2YzQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY5Njg5OWZiY2RmYzI1YTBjM2Q5MzA1NjNhNGE3ZjcyZjdlMDE2ZWJhYWQ5M2ZlNjZhODA4MWFkMWY0NzEzYWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/web/OpenapiSignedRequestReplayGuard.java#L29-L60",
+          "version": "repo-lines-v1:sha256:5b0505380570bb742277918baa57c0e584caececc72e0a560a105e9c4ae95c13:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxZTQ5NDZlZTQzMjFlZDAyYjE3Y2JkZWQ1ZGJhMWM4N2UzZDgyNTk3ZDZlYmI0YjMzYTNmMmUzMjU3YTZlYzgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3YzdiMDk4ZTllODA4MjIxZjEzNDhkNTFiZjI5MGY3YmI2NTQzZDkzNzhlYWQ1NWVlNTNhODNkMzliNmRiOWIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkyZTEyMzdmMmMxNzM4NGIwZWNjNDRkMTJlMGI5ZGI1YTExNDhlM2Q3Yzc3Y2IyNzUzMzhlYzEzZGFhODk2OGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZhZDY5NjlhZTZhMWVkZmVlZTY2OTUzZGI5ZjAwODY0ZmNmOWFmNWJmOWYxMDJiYWQ2ZjBjOWVjNGQ0ZTkwNjUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/web/OpenapiWebMvcConfigurer.java#L32-L36",
+          "version": "repo-lines-v1:sha256:2b8637aec24d2a3071b1c86e610d7b16b4287310d66647b23595419c5afefcbd:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjA4Y2MxNWQwNzU0YjZmMjFmNzFlMGIwM2I5ZGQ3ODZiYzk4ODAwM2IyYjU3NTY0YzYwNTBhODAyMjUxN2M1ZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDc5YmRkZGI4NjIyMWFmZGQ2YjJmZTBmMGIwY2Q1ZjE1MDgxNDU5Y2EyM2E0ZjM3YzI0YzAyYmNhYjU5NzZkNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_e86b67a756424ce8a939ffe740e05af4",
+      "statement": "ecshopx-digios (DigiOS POS direct integration, declared in its POM description rather than a package-info.java) is bidirectional on the dispatch bus: it consumes companys/distribution events via the bootstrap DigiOs*DispatchListenerRegistrationConfig wiring and also publishes its own store adjustments — DigiOsAftersalesReturnAdjustmentDispatchPublisherImpl plus the DigiOsAftersalesReturnAdjustment and DigiOsNormalOrderDeliveryAdjustment listener registrations let DigiOS originate aftersales-return and order-delivery stock adjustments.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/DigiOsAftersalesReturnAdjustmentDispatchListenerRegistrationConfig.java",
+          "version": "repo-file-v1:sha256:0b5714e99eb412c30ff81b0e66f222b673170714ba76635f9b2f65dbe2b9d8d3"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/DigiOsAftersalesReturnAdjustmentDispatchPublisherImpl.java",
+          "version": "repo-file-v1:sha256:d865e64d829fe3906c048caefbb03398a65aa1f8db2af12f45866d37be68eb1d"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/DigiOsNormalOrderDeliveryAdjustmentDispatchListenerRegistrationConfig.java",
+          "version": "repo-file-v1:sha256:4dd68036eef51dec7a8eb3470855111cecc6354ef3b70ea79d5882245e9cf83a"
+        },
+        {
+          "resource": "repo://ecshopx-digios/pom.xml#L10-L12",
+          "version": "repo-lines-v1:sha256:65e767ae6389295ecc84c45380c5be6adf3df83eb09ac674828ef80e01cddb87:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMTgzMzMyOTg4ZWI5ZDc1YjllM2JjZjg0ZjJkZGEzZWY1NzE3OWU0MjE4ZGRlY2Y4ZmVkYjE3YWQwYmUzNjdjZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYzUzMTA4MzAzYzNkOTI3MTk0ZTMzOTExN2Q3ODUxNGYyMjIzN2RmMzcxMDhjNjBjNWQ0MDRjOWU0YWI1OTlhNCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNzQ1ZTE4YTFiM2VhMTAxZjY1MzNkODViYmNmM2FiNDExYzZkM2MxODcxYWExYzBkZTQ4ODhmNTE4MjVhOGVjNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDgyNTNhZmUxYzIyNTAyMGY2MzJmNTI3NzI2OTBhYmY3YmZiMjI4MmU4OWI1NzkzMTQyNzhlNjBmNzdmNmNmYyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_63ac7400745e42828283928cd0e84619",
+      "statement": "ecshopx-shuyun is the Shuyun (数云) CRM integration Bundle covering the legacy UAPI and the open-platform open-api; bootstrap subscribes 12 ShuyunOpenPlatform*DispatchListenerRegistrationConfig listeners (member create, distributor create/update, order pay/delivery/confirm/cancel, refund finish, offline benefit consume, item-store product sync) to their bus events.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ShuyunOpenPlatformCreateMemberSuccessDispatchListenerRegistrationConfig.java",
+          "version": "repo-file-v1:sha256:71340c56b39c2bb7ae49c73ece833139ac96c742ba63e5e90b109de2d0754622"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ShuyunOpenPlatformNormalOrderPaySuccessDispatchListenerRegistrationConfig.java",
+          "version": "repo-file-v1:sha256:b371a8d6bbcd4afc42e307be88791525dc36a7824f2034cc91fd6bdf0f7ccada"
+        },
+        {
+          "resource": "repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/package-info.java#L15-L22",
+          "version": "repo-lines-v1:sha256:2c164bba8033bf4474aae680e66c24e0d2e7b9fe3f3d5ec8e36f1022729024a6:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOTcyYTQyOTM4MmIyZTE0NzE4ZTBlMzdiMDU3MGE4YTE3MDI5OTFmY2Q4NDk4Y2Q4NDA2MGE4YmY0ZjA1MDE3YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTcyYTQyOTM4MmIyZTE0NzE4ZTBlMzdiMDU3MGE4YTE3MDI5OTFmY2Q4NDk4Y2Q4NDA2MGE4YmY0ZjA1MDE3YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjRkNDZhYTEzZWUzMGE4MGUwZjQyM2NiNjUyMmQxZDE1ZDkyYjZkMTBiNDVlZjRhODRjYjA1OWJkZDFhNjdmZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNGFlOGFjNTgwM2MwYjBiM2FmYzlhZTA3NzY0YWQ0ZTkzMTkxYjdmNmNjOTE4YmVlMWJkNjM5ZTQ5ZmM1OTVlMCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_dc68111f484749d4a2fb907f995a0ce4",
+      "statement": "OpenapiSignedRequestReplayGuardTest and OpenapiAuthInterceptorReplayTest pin the OpenAPI replay-guard semantics: the first sighting of an app_key+sign+timestamp passes and an identical replay within the TTL window is rejected.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-openapi/src/test/java/cn/shopex/ecshopx/openapi/web/OpenapiAuthInterceptorReplayTest.java",
+          "version": "repo-file-v1:sha256:a0a344832259924d1dbb72b29d5a39df92f2274d334d0988980397dc35dca243"
+        },
+        {
+          "resource": "repo://ecshopx-openapi/src/test/java/cn/shopex/ecshopx/openapi/web/OpenapiSignedRequestReplayGuardTest.java",
+          "version": "repo-file-v1:sha256:fc79db1e710cffa6dfc5e2ca0e9f47971690abb3ceba46572e2ad56d87ee41dd"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.9.0",
-    "at": "2026-11-05T17:10:02.238Z"
+    "at": "2026-11-08T17:14:16.576Z"
   }
 }

@@ -1,11 +1,11 @@
 ---
 type: architecture-convention
 title: Cross-Bundle Ports and Wiring in Bootstrap
-description: The five mechanisms Bundles use to talk to each other without circular Maven dependencies — common/bundle-owned Ports (including auth, openapi, operatorcart, and digios seams), dispatch publisher interfaces in ecshopx-common, the dispatch bus with bootstrap registration configs, Spring transactional events, and bootstrap-hosted cycle-breaking adapters — plus a decision table for choosing between them.
+description: The five mechanisms Bundles use to talk to each other without circular Maven dependencies — common/bundle-owned Ports (including auth, openapi, operatorcart, common.payment, common.goods.port, and digios seams), dispatch publisher interfaces in ecshopx-common (operator/POS-store-account create, withdraw job, member create-success with the new-customer tag listeners), the dispatch bus with bootstrap registration configs, Spring transactional events, and bootstrap-hosted cycle-breaking adapters — plus a decision table for choosing between them.
 tags: [architecture, ports, dispatch, wiring, bootstrap, dependency-inversion, events, objectprovider]
 verified:
   - by: openwiki/0.9.0
-    at: 2026-11-05T17:10:02.238Z
+    at: 2026-11-09T03:34:48.355Z
 sources:
   - id: openwiki-source-c468812f5ebcfefdc20facd4
     resource: repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/integration/AftersalesRefundAsyncPortImpl.java
@@ -25,6 +25,10 @@ sources:
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/DispatchBusConfig.java
   - id: openwiki-source-0388cb94d8b3aa21ae7dd1cf
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/EmployeePurchaseNormalOrderPaySuccessDispatchListenerRegistrationConfig.java
+  - id: openwiki-source-1b5abe9a617b898225d1c6dd
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MembersCreateMemberSuccessDispatchPublisherImpl.java
+  - id: openwiki-source-4079f3bdff589d9fa360eb2e
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MembersCreateMemberSuccessNewCustomerDispatchListenerRegistrationConfig.java
   - id: openwiki-source-9ce82340fe6f5be0bfcfe0a7
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MembersNormalOrderCancelNewCustomerDispatchListenerRegistrationConfig.java
   - id: openwiki-source-0315455e54e2688cacf7a480
@@ -75,14 +79,28 @@ sources:
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/auth/PosOrderDocAccessPort.java
   - id: openwiki-source-c0c2361e788fa42a7b16fbd2
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/CompanysDispatchEventNames.java
+  - id: openwiki-source-6b2ede0314feff760dc5d597
+    resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/MembersDispatchEventNames.java
   - id: openwiki-source-530534467bf456ef7af1917f
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/NormalOrderPaySuccessDispatchPublisher.java
   - id: openwiki-source-27bfcace5400d2804562fba2
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/OrdersDispatchEventNames.java
+  - id: openwiki-source-a4f17bebff6cb29da2449ca3
+    resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/goods/port/MerchantSettlementMainCategoryPort.java
   - id: openwiki-source-9802d0f36a5d467899742577
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/openapi/OpenapiDigiOsProductStockPushPort.java
   - id: openwiki-source-d2e629eca2098384037994b3
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/operatorcart/OperatorCartDataListFacade.java
+  - id: openwiki-source-e2308aa6cf6baf618cac8762
+    resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/order/port/VipGradeMembercardTradePaidPort.java
+  - id: openwiki-source-278c358c0b8a29885f72b7e0
+    resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/payment/AdminPaymentSettingListPort.java
+  - id: openwiki-source-8bce084075a4942baec6f3ad
+    resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/payment/FrontDepositPayEnabledPort.java
+  - id: openwiki-source-73d1fcab22812e023f63c1e4
+    resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/payment/FrontWithdrawPayTypeListPort.java
+  - id: openwiki-source-68b9a0e3c776f0fe8beabd26
+    resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/payment/PaymentSubjectDistributorIdPort.java
   - id: openwiki-source-e4c74586aedc9141bacf93b9
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/port/digios/PosStoreAccountDigiOsCreatePort.java
   - id: openwiki-source-9bceb1316bcda54f295cedd8
@@ -93,14 +111,20 @@ sources:
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/service/salesperson/SalespersonCartDataListFacade.java
   - id: openwiki-source-ba105787fc5bdef6f49508f5
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/wechat/WxappCommonSettingFacade.java
+  - id: openwiki-source-8e287cf718eb8e65c0b3a126
+    resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/OperatorsCommandService.java
   - id: openwiki-source-48f750a8142d8a7487ac4de7
     resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/posauth/PosJwtSessionValidator.java
   - id: openwiki-source-c9890b49121b99230c30246e
     resource: repo://ecshopx-deposit/src/main/java/cn/shopex/ecshopx/deposit/integration/alipay/AlipayNotifyDepositSidePortImpl.java
+  - id: openwiki-source-9d090d5f3129b51586d0d33f
+    resource: repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/dispatch/OperatorCreateDigiOsAccountSyncDispatchListener.java
   - id: openwiki-source-372a9d2838d9f167f6d06757
     resource: repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/openapi/OpenapiDigiOsProductStockPushPortImpl.java
   - id: openwiki-source-5db0356764f92b4d36d49de8
     resource: repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/port/PosStoreAccountDigiOsCreatePortImpl.java
+  - id: openwiki-source-e9f9f63899f0eb4e022505cf
+    resource: repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/service/DigiOsAccountSyncDispatchService.java
   - id: openwiki-source-a550e1d77a0ca4d6e88b0ca6
     resource: repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/DispatchConsumerRuntime.java
   - id: openwiki-source-a1462091af0ac6e453fae382
@@ -125,28 +149,46 @@ sources:
     resource: repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/RetryPolicy.java
   - id: openwiki-source-23904875a4cada0750e03100
     resource: repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/SyncDispatchDriver.java
+  - id: openwiki-source-2c46dbdf9b100924e1f98150
+    resource: repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/domain/Distributor.java
+  - id: openwiki-source-d1961192a688961d2d90ccf4
+    resource: repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/integration/PaymentSubjectDistributorIdPortImpl.java
   - id: openwiki-source-da7950ab19f4690ae361bd4b
     resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/PosJwtIssuer.java
+  - id: openwiki-source-9f266349f47ad8d7fd5f3772
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/integration/MerchantSettlementMainCategoryPortImpl.java
   - id: openwiki-source-4d8bba4ffcdaa167ab08732c
     resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/cart/salesperson/SalespersonCartDataListService.java
-  - id: openwiki-source-cccea56ead2aaf5463693ac8
-    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/cart/wxapp/WxappCartAddPortImpl.java
   - id: openwiki-source-08ff5f6cd6e732ced25d5918
     resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/operatorcart/OperatorCartDataListFacadeImpl.java
   - id: openwiki-source-d16187f094f7ac681cbd6749
     resource: repo://ecshopx-kaquan/src/main/java/cn/shopex/ecshopx/kaquan/integration/shuyun/ShuyunOfflineBenefitKaquanCouponGrantAdapter.java
+  - id: openwiki-source-d1ae183c81bdc1fdae2f0ac4
+    resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/dispatch/CreateMemberSuccessNewCustomerDispatchListener.java
+  - id: openwiki-source-d332b3afaea16086bf6d2dd6
+    resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/dispatch/NormalOrderCancelNewCustomerDispatchListener.java
+  - id: openwiki-source-07dc9354b98cdbc7dac4f2d1
+    resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/dispatch/NormalOrderPaySuccessNewCustomerDispatchListener.java
+  - id: openwiki-source-37f8235b20fdd10827bbdef2
+    resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/listener/TradeRefundNewCustomerListener.java
+  - id: openwiki-source-7681fec725fb0dff41f89dce
+    resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/systemtag/NewCustomerTagReconcileService.java
+  - id: openwiki-source-518f3db2d4e28b41fb508ea6
+    resource: repo://ecshopx-merchant/src/main/java/cn/shopex/ecshopx/merchant/service/MerchantCreateService.java
+  - id: openwiki-source-6ffb4137d9207197034001d7
+    resource: repo://ecshopx-merchant/src/main/java/cn/shopex/ecshopx/merchant/service/wxapp/MerchantWxappSettlementApplySaveService.java
   - id: openwiki-source-48ad2faabde51a9f74198a8b
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/dispatch/OrdersTradeFinishAfterCommitDispatchPublisher.java
   - id: openwiki-source-2578fa97e7cd4e074c6dff42
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/dispatch/OrdersTradeFinishNormalOrderPaySuccessBridgeDispatchListener.java
   - id: openwiki-source-46a47b89a6fc2819309e8cb8
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/listener/OrderProcessLogSpringEventListener.java
-  - id: openwiki-source-c373fb3679cbc370cfb68a26
-    resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/port/WxappCartAddPort.java
   - id: openwiki-source-0f82b454b43d90e72507a58c
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/alipay/AlipayNotifyOrderSidePortImpl.java
   - id: openwiki-source-c14d6c977de3295693941849
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/offline/OfflinePaymentDoCheckService.java
+  - id: openwiki-source-7832b5e57d5d960a02d053c2
+    resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/payment/OrdersPaymentChannelQueryService.java
   - id: openwiki-source-11504f9b8ac58d0bd088b826
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/payment/OrdersPaymentDoPaymentService.java
   - id: openwiki-source-ff50bf9d82f8a9d1db0a8c21
@@ -155,6 +197,8 @@ sources:
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/pos/PosOrderDocAccessGuard.java
   - id: openwiki-source-dd0cf007b604a1e0642dc0ee
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/refund/AftersalesRefundDoRefundService.java
+  - id: openwiki-source-1dadfec169f4df087b2904a0
+    resource: repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/orders/service/payment/OrdersPaymentDoPaymentServicePaymentSubjectTest.java
   - id: openwiki-source-8c69e7dfe69ee3ac9984cd76
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/api/admin/v1/PaymentNotifyController.java
   - id: openwiki-source-10a7d29ae462a0fff0cbfcfe
@@ -163,13 +207,19 @@ sources:
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/integration/alipay/AlipayNotifyOrderSidePort.java
   - id: openwiki-source-fc41d8fb1ed3fb46beacafec
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/AlipayNotifyFacade.java
+  - id: openwiki-source-4ac568ccd29169fa2fd1ca52
+    resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/front/FrontPaymentSettingReadService.java
+  - id: openwiki-source-8cc7a715e1ed4483161801d0
+    resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/orderrefund/StandardOnlinePayAftersalesRefundExecutor.java
   - id: openwiki-source-2553f68c9c88a576ee35a13c
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/WxpayNotifyPaymentContextLoader.java
+  - id: openwiki-source-4e894973103cb2b9f5810685
+    resource: repo://ecshopx-payment/src/test/java/cn/shopex/ecshopx/payment/service/front/FrontPaymentSettingReadServiceDepositListTest.java
   - id: openwiki-source-e6fcfe513ee4482e7e1f8020
     resource: repo://ecshopx-reservation/src/test/java/cn/shopex/ecshopx/reservation/dispatch/ReservationRemindSendWxaTemplateDeferJobDispatchHandlerDispatchConsumerRuntimeTest.java
   - id: openwiki-source-56e3a2f4dec976d672048023
     resource: repo://ecshopx-salesperson/src/main/java/cn/shopex/ecshopx/salesperson/api/front/v1/SalespersonCartController.java
-generated: { by: "openwiki/0.9.0", at: "2026-11-05T17:10:02.238Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-09T03:34:48.355Z" }
 ---
 
 # Cross-Bundle Ports and Wiring in Bootstrap
@@ -195,7 +245,7 @@ The overarching rule: **the consumer owns the contract, the provider supplies th
 
 Two contract homes exist by design:
 
-* **`common/port/<consumer-domain>/`** (~120 interfaces across `order/`, `orders/`, `payment/`, `shuyun/`, `localdelivery/`, `goods/`, `aftersales/`, `members/`, `digios/`, … — 26 domain subpackages plus three top-level ports, and a small sibling `common/order/port/` for later additions like `VipGradeMembercardTradePaidPort`) for shared seams, grouped by the domain that *consumes* them. Example: `common/port/order/JushuitanSettingReadPort` is implemented by `orders/integration/JushuitanSettingReadPortImpl` (delegating to the orders-local `OrdersErpSettingRedisReadService`) so `aftersales` and `system-link` can read Jushuitan ERP settings without depending on `ecshopx-orders`. Newer seams have also grown their own thematic packages next to `common/port/` instead of forcing everything into it: `common/auth/` (POS/operator/H5 JWT issuer, blacklist, and session-validation ports — implemented by `ecshopx-espier`'s security components and by the data-owning Bundles: espier's `PosJwtIssuer` implements `PosJwtIssuerPort` and its `invalidate` routes through `PosJwtBlacklistPort` ← `PosJwtBlacklistService`; companys' `PosJwtSessionValidator` implements `PosJwtSessionValidatorPort`, re-checking JWT snapshots against the latest store-account status/distributor/role; orders' `PosOrderDocAccessGuard` implements `PosOrderDocAccessPort`, enforcing same-store + handler-clerk write rules for POS sessions so aftersales can guard order writes without an orders dependency), `common/openapi/` (the large `Openapi*Port` family the `ecshopx-openapi` inbound API delegates into owning Bundles, e.g. `OpenapiDigiOsProductStockPushPort` implemented by `ecshopx-digios`), and `common/operatorcart/` (the operator-cart orchestration Facades implemented by goods and consumed by companys' `OperatorCartController`).
+* **`common/port/<consumer-domain>/`** (~140 files over 29 domain subpackages — `order/`, `orders/`, `payment/`, `shuyun/`, `localdelivery/`, `goods/`, `aftersales/`, `members/`, `digios/`, … — plus three top-level ports, and small sibling packages for later additions like `common/order/port/` with `VipGradeMembercardTradePaidPort`) for shared seams, grouped by the domain that *consumes* them. Example: `common/port/order/JushuitanSettingReadPort` is implemented by `orders/integration/JushuitanSettingReadPortImpl` (delegating to the orders-local `OrdersErpSettingRedisReadService`) so `aftersales` and `system-link` can read Jushuitan ERP settings without depending on `ecshopx-orders`. Newer seams have also grown their own thematic packages next to `common/port/` instead of forcing everything into it: `common/auth/` (POS/operator/H5 JWT issuer, blacklist, and session-validation ports — implemented by `ecshopx-espier`'s security components and by the data-owning Bundles: espier's `PosJwtIssuer` implements `PosJwtIssuerPort` and its `invalidate` routes through `PosJwtBlacklistPort` ← `PosJwtBlacklistService`; companys' `PosJwtSessionValidator` implements `PosJwtSessionValidatorPort`, re-checking JWT snapshots against the latest store-account status/distributor/role; orders' `PosOrderDocAccessGuard` implements `PosOrderDocAccessPort`, enforcing same-store + handler-clerk write rules for POS sessions so aftersales can guard order writes without an orders dependency), `common/openapi/` (the large `Openapi*Port` family the `ecshopx-openapi` inbound API delegates into owning Bundles, e.g. `OpenapiDigiOsProductStockPushPort` implemented by `ecshopx-digios`), `common/operatorcart/` (the operator-cart orchestration Facades implemented by goods and consumed by companys' `OperatorCartController`), and `common/payment/` (payment-facing read-side ports — the newest of which, `PaymentSubjectDistributorIdPort`, is the worked example in Mechanism 1 below).
 * **`<provider-adjacent-bundle>/port/`** for single-consumer contracts where the *provider* already sits downstream of the consumer. Example: `orders/port/WxappCartAddPort` is implemented by `goods/service/cart/wxapp/WxappCartAddPortImpl`; its Javadoc says "由 goods 模块实现，避免 orders→goods 依赖" (implemented by goods, to avoid an orders→goods dependency). Goods depends on orders, so goods can see the interface and orders injects it — no common-package detour needed.
 
 ## Mechanism 1: Ports and dependency inversion (sync, request-scoped)
@@ -261,20 +311,37 @@ sequenceDiagram
 
 Alipay async notify crossing the payment → orders / payment → deposit boundary through Ports owned by payment; payment's POM contains neither `ecshopx-orders` nor `ecshopx-deposit`.
 
+```java
+// ecshopx-common/.../payment/PaymentSubjectDistributorIdPort.java
+public interface PaymentSubjectDistributorIdPort {
+    long resolveActualDistributorId(long companyId, long distributorId);
+}
+```
+
+Payment settings (wxpay/alipay merchant configs, Redis-cached pay-type rows) are keyed by `company_id + distributor_id`, but a distributor may declare a platform payment subject (`payment_subject = 平台`) — meaning it has no merchant config of its own and must use the platform-level (`distributor_id = 0`) settings. That per-distributor flag lives in distribution's `distributor` table (`payment_subject` column), which orders and payment cannot read without a cycle. So `common/payment/PaymentSubjectDistributorIdPort` declares the seam, and `distribution/integration/PaymentSubjectDistributorIdPortImpl` implements it with a single `DistributorMapper` lookup: `distributorId == 0` (already platform), an unknown distributor row, or `payment_subject != 1` all resolve to `0L` (fall back to the platform payment subject); only a distributor row explicitly flagged `payment_subject == 1` (independent merchant subject) keeps its own id.
+
+Unlike the optional Ports below, this one is a **required bean** — constructor-injected directly, no `ObjectProvider`, no NoOp fallback — because distribution is always deployed and silently paying against the wrong merchant subject is worse than failing fast. Its current consumers span both sides of the payment boundary:
+
+* `orders/service/payment/OrdersPaymentDoPaymentService.doPayment` resolves the setting distributor id up front (`distributorIdForSetting`) and passes it to `assertPayConfigReady` and `OrdersExternalPayParamBuildService.buildPayParamsOrInvoke`, so wxpay/alipay client params are built with the platform merchant config when the distributor settles through the platform.
+* `orders/service/payment/OrdersPaymentChannelQueryService.query` resolves it per `Trade` row before building the wxpay order-query XML or calling `AlipayOpenapiTradeQueryService` — the same trade's settings must be read from the same subject that took the payment.
+* payment's own `front/FrontPaymentSettingReadService` (front pay-type list — e.g. `appendAlipayMini` reads the Redis alipay row under the resolved id) and `orderrefund/StandardOnlinePayAftersalesRefundExecutor` (wxpay/alipay refund runners receive the resolved id so refunds debit the same merchant subject that was charged).
+
+The seam is pinned by `orders/service/payment/OrdersPaymentDoPaymentServicePaymentSubjectTest` (`payment_subject=平台` → config validation uses `distributor_id=0`) and `FrontPaymentSettingReadServiceDepositListTest` on the payment side. The same merchant↔goods inversion shape, one domain over: `common/goods/port/MerchantSettlementMainCategoryPort` is implemented by `goods/integration/MerchantSettlementMainCategoryPortImpl` (validate/normalize/serialize `main_category_selection`, enrich detail rows with names and level-3 ids over `ItemsCategoryRepository`) and consumed by merchant's settlement apply/detail services — its Javadoc states the goal plainly: "由 ecshopx-goods 实现，避免 merchant↔goods Maven 环" (implemented by goods, to avoid a merchant↔goods Maven cycle).
+
 A second flavor of Port lives in the Facade family. `common/service/salesperson/SalespersonCartDataListFacade` is the cart-list orchestration entry for the salesperson (导购) channel; its Javadoc states the implementation lives in the goods domain so the controller can inject the interface and avoid a module cycle. `goods/service/cart/salesperson/SalespersonCartDataListService` implements it (composing the salesperson cart repository — which goods can see because salesperson is upstream of goods — plus goods-local SKU-load/format services), and `salesperson/api/front/v1/SalespersonCartController` injects the Facade. The same shape repeats for the operator (店务) cart: `common/operatorcart/OperatorCartDataListFacade` (plus `OperatorCartFastBuyFacade`, `OperatorCartScanBarcodeFacade`, `OperatorCartSkuLoadFacade`) is implemented by `goods/service/operatorcart/OperatorCartDataListFacadeImpl` and consumed by companys' `OperatorCartController`, keeping cart orchestration in goods while companys owns the admin endpoint. Same shape, different naming: `*Port` for narrow contracts, `*Facade` for an orchestration entry point.
 
 ### Optional Ports: `ObjectProvider` and NoOp defaults
 
 Some Ports are genuinely optional — the implementing Bundle may or may not provide a bean, and the consumer must degrade gracefully:
 
-* **`ObjectProvider<T>.getIfAvailable()`** — used when the Port has at most one natural implementation and absence is a supported state. `OrdersPaymentDoPaymentService` injects `ObjectProvider<OrdersMiniProgramHfpayPayPort>` and `ObjectProvider<VipGradeMembercardTradePaidPort>`; for hfpay pay-type requests it calls `getIfAvailable()` and throws "不支持支付服务，请联系商家" when null, while the membercard hook silently returns. `WxappOrderDetailPostProcessService` does the same with `ObjectProvider<OrderDetailEmployeePurchaseEnrichmentPort>` to enrich order details only when the employee-purchase module contributes a bean. This keeps the port contract in common while the wiring stays optional at runtime.
+* **`ObjectProvider<T>.getIfAvailable()`** — used when the Port has at most one natural implementation and absence is a supported state. `OrdersPaymentDoPaymentService` injects `ObjectProvider<OrdersMiniProgramHfpayPayPort>` and `ObjectProvider<VipGradeMembercardTradePaidPort>`; for hfpay pay-type requests it calls `getIfAvailable()` and throws "不支持支付服务，请联系商家" when null, while the membercard hook silently returns. `WxappOrderDetailPostProcessService` does the same with `ObjectProvider<OrderDetailEmployeePurchaseEnrichmentPort>` to enrich order details only when the employee-purchase module contributes a bean. This keeps the port contract in common while the wiring stays optional at runtime. Contrast `PaymentSubjectDistributorIdPort` in the same class: it is constructor-injected as a **required bean** — distribution is always on the runtime classpath, and resolving a payment subject against the wrong merchant id silently would be worse than a startup failure — which is why no `ObjectProvider` or NoOp variant exists for it.
 * **NoOp default + `@Primary` provider adapter** — used when absence must fail loudly or the Port must always resolve. `common/port/shuyun/ShuyunOfflineBenefitCouponGrantPortNoOp` is a `@Component` that throws "数云线下权益发券未接入卡券模块" (Shuyun offline benefit coupon grant not connected to the coupon module); when `ecshopx-kaquan` is on the classpath, its `@Primary ShuyunOfflineBenefitKaquanCouponGrantAdapter` (delegating to `UserDiscountReceiveCardService.receiveCard`) wins injection. Every `ShuyunOpenPlatform*Port` in that package follows the same pair-of-files pattern. The newer `common/port/digios/PosStoreAccountDigiOsCreatePort` uses the softer variant: its NoOp is a *silent* pass-through (a POS store-account create succeeds locally when DigiOS is absent), while `ecshopx-digios`'s `@Primary PosStoreAccountDigiOsCreatePortImpl` pushes an `account.upsert` to the DigiOS gateway and throws when the push fails. `@Profile`-scoped NoOps do the same for the `test-cron` migration-diff profile (e.g. `NoopAftersalesRefundJobSideEffects` behind `@Profile("noop-aftersales-refund-job-side-effects")`, and the large `CronTestMockConfig` families that replace dispatch publishers and Redis-writing ports during stage-4 snapshot comparison).
 
 ## Mechanism 2: dispatch publisher interfaces (async, fire-and-forget)
 
 Ports solve "consumer calls provider". The opposite problem — "producer announces something happened, and any number of downstream Bundles may care" — is solved by the dispatch bus (see [Dispatch Bus](../concepts/dispatch-bus.md) for the component's own anatomy), and the seam that keeps producers decoupled from it is the **publisher interface**.
 
-`ecshopx-common` holds ~130 `*DispatchPublisher` interfaces — the bulk (~125) in `common/dispatch/` alongside the `*DispatchEventNames` / `*DispatchJobNames` constants (newer entries include `PosStoreAccountCreateEventDispatchPublisher`, `OperatorCreateEventDispatchPublisher`, `WithdrawJobDispatchPublisher`, and `DigiOsAftersalesReturnAdjustmentDispatchPublisher`), plus domain-specific ones in `common/kaquan/port/` and `common/promotions/port/`. A few Bundles also declare publisher interfaces locally (e.g. `companys/service/posaccount/PosStoreAccountExportDispatchPublisher`, `members/dispatch/AdminMemberExportFileJobDispatchPublisher`) whose impls still live in bootstrap. Each is one method wide:
+`ecshopx-common` holds ~130 `*DispatchPublisher` interfaces — the bulk (119) in `common/dispatch/` alongside the `*DispatchEventNames` / `*DispatchJobNames` constants (newer entries include `PosStoreAccountCreateEventDispatchPublisher`, `OperatorCreateEventDispatchPublisher`, `WithdrawJobDispatchPublisher`, and `DigiOsAftersalesReturnAdjustmentDispatchPublisher`), plus domain-specific ones in `common/kaquan/port/` and `common/promotions/port/`. A few Bundles also declare publisher interfaces locally (e.g. `companys/service/posaccount/PosStoreAccountExportDispatchPublisher`, `members/dispatch/AdminMemberExportFileJobDispatchPublisher`) whose impls still live in bootstrap. Each is one method wide:
 
 ```java
 // ecshopx-common/.../dispatch/NormalOrderPaySuccessDispatchPublisher.java
@@ -316,13 +383,14 @@ The newest publisher/listener pairs follow the same recipe; the current bootstra
 
 | Producer side (injects common interface) | Bootstrap impl → bus name | Consumer side (registered in bootstrap) |
 |---|---|---|
-| `companys/service/OperatorsCommandService` publishes after-commit on operator creation | `OperatorCreateEventDispatchPublisherImpl` → `CompanysDispatchEventNames.EVENT_OPERATOR_CREATE` (`event:CompanysBundle\Events\OperatorCreateEvent`) | digios' `OperatorCreateDigiOsAccountSyncDispatchListener` as `LISTENER_DIGIOS_ACCOUNT_SYNC_ON_OPERATOR_CREATE`, async `default` queue, `@Order(81)` in `DigiOsOperatorCreateDispatchListenerRegistrationConfig` |
+| `companys/service/OperatorsCommandService` publishes after-commit on operator creation (a `TransactionSynchronization` whose `afterCommit` calls the publisher) | `OperatorCreateEventDispatchPublisherImpl` wraps the operator map as `{"entities": ...}` and publishes → `CompanysDispatchEventNames.EVENT_OPERATOR_CREATE` (`event:CompanysBundle\Events\OperatorCreateEvent`) | digios' `OperatorCreateDigiOsAccountSyncDispatchListener` as `LISTENER_DIGIOS_ACCOUNT_SYNC_ON_OPERATOR_CREATE`, async `default` queue, `@Order(81)` in `DigiOsOperatorCreateDispatchListenerRegistrationConfig`; the listener unwraps `entities`/`company_id` and hands `operator_id`/`operator_type` to `DigiOsAccountSyncDispatchService.dispatchIfEnabled`, which syncs only `operator_type=staff` and only when the DigiOS config is enabled |
 | `companys/service/posaccount/PosStoreAccountWriteService` + `PosStoreAccountImportService` publish after-commit on POS store-account creation | `PosStoreAccountCreateEventDispatchPublisherImpl` → `EVENT_POS_STORE_ACCOUNT_CREATE` (`event:companys:pos_store_account_create`) | listener constant `LISTENER_DIGIOS_ACCOUNT_SYNC_ON_POS_STORE_ACCOUNT_CREATE` exists in `CompanysDispatchEventNames`, but **no registration config references it yet** — the event is currently published with zero subscribers (the synchronous `PosStoreAccountDigiOsCreatePort` upsert covers DigiOS today) |
 | `companys` POS store-account admin export (`PosStoreAccountExportService`) | `PosStoreAccountExportDispatchPublisherImpl` → `dispatchJob` onto `EspierDispatchJobNames.EXPORT_FILE_JOB` (`job:10:EspierBundle\Jobs\ExportFileJob`), `slow` queue | the generic espier export-file job handler (companys' publisher interface lives in the companys Bundle, impl still in bootstrap) |
-| `bspay/api/admin/v1/WithdrawController` enqueue on withdraw approval | `WithdrawJobDispatchPublisherImpl` → `dispatchJob` onto `BsPayBundleDispatchJobNames.WITHDRAW_JOB` (`job:93:BsPayBundle\Jobs\WithdrawJob`), `default` queue | bspay's own `WithdrawJobHandler` (validates `apply_id`/`company_id`, calls `WithdrawApplyService.executeHuifuWithdraw`), registered by `WithdrawJobRegistrationConfig` |
+| `bspay/api/admin/v1/WithdrawController` enqueue on withdraw approval | `WithdrawJobDispatchPublisherImpl` → `dispatchJob` onto `BsPayBundleDispatchJobNames.WITHDRAW_JOB` (`job:93:BsPayBundle\Jobs\WithdrawJob`), `default` queue, explicit `ASYNC/REDIS/platformDefault()` options and payload keys `apply_id`/`company_id` | bspay's own `WithdrawJobHandler` (validates `apply_id`/`company_id`, calls `WithdrawApplyService.executeHuifuWithdraw`), registered by `WithdrawJobRegistrationConfig` |
 | `aftersales/integration/AftersalesRefundAsyncPortImpl.scheduleDigiOsStoreAdjustmentOnAftersalesReturn` (invoked from the merchant send-back confirm flow) | `DigiOsAftersalesReturnAdjustmentDispatchPublisherImpl` → `DigiOsDispatchEventNames.EVENT_AFTERSALES_RETURN_ADJUSTMENT` (`event:digios:aftersales_return_adjustment`), silently skips when either id < 1 | digios' `DigiOsAftersalesReturnStoreAdjustmentDispatchListener` as `LISTENER_DIGIOS_STORE_ADJUSTMENT_ON_AFTERSALES_RETURN`, async `default`, `@Order(81)` in `DigiOsAftersalesReturnAdjustmentDispatchListenerRegistrationConfig`; a `NoopDigiOsAftersalesReturnAdjustmentDispatchPublisher` exists under `common/cron/mock/` for the cron-test profile |
+| members' account services publish after a member is created (register / H5 post / admin create / import paths) | `MembersCreateMemberSuccessDispatchPublisherImpl` → `MembersDispatchEventNames.EVENT_CREATE_MEMBER_SUCCESS` (`event:members:create_member_success`), explicit `ASYNC/REDIS/platformDefault()` | members' own `CreateMemberSuccessNewCustomerDispatchListener` as `LISTENER_MEMBERS_CREATE_MEMBER_SUCCESS_NEW_CUSTOMER`, async `default`, `@Order(26)` in `MembersCreateMemberSuccessNewCustomerDispatchListenerRegistrationConfig` (alongside youshu/promotions/register-point/datacube/notice/Shopex-CRM/shuyun listeners on the same event — see below) |
 
-All five wrap `DispatchFacade` with async Redis options (`DispatchOptions.eventDefaults()` or explicit `ASYNC/REDIS/platformDefault()` retry) — none of the producer Bundles mentions the consumer in its POM, and none of the consumers' listeners registers itself.
+All wrap `DispatchFacade` with async Redis options (`DispatchOptions.eventDefaults()` or explicit `ASYNC/REDIS/platformDefault()` retry) — none of the producer Bundles mentions the consumer in its POM, and none of the consumers' listeners registers itself.
 
 ### Event and listener naming
 
@@ -339,6 +407,8 @@ The constants live in `common/dispatch/*DispatchEventNames.java` per domain (`Or
 * **`EVENT_NORMAL_ORDER_CANCEL` listeners.** `LISTENER_YOUSHU_ORDERS_NORMAL_ORDER_CANCEL`, `LISTENER_MEMBERS_NORMAL_ORDER_CANCEL_NEW_CUSTOMER` (`@DependsOn("youshuNormalOrderCancelDispatchListenerRegistrationConfig")`), `LISTENER_SHUYUN_OPEN_PLATFORM_TRADE_SYNC_ON_NORMAL_ORDER_CANCEL`, and `LISTENER_SHUYUN_OPEN_PLATFORM_OFFLINE_BENEFIT_CONSUME_ON_NORMAL_ORDER_CANCEL` (result.push.v2 NOT_USED).
 * **`EVENT_NORMAL_ORDER_DELIVERY` listeners.** `LISTENER_YOUSHU_ORDERS_NORMAL_ORDER_DELIVERY`, `LISTENER_THIRDPARTY_ORDER_DELIVERY_PUSH_MARKETING_CENTER_ON_NORMAL_ORDER_DELIVERY`, `LISTENER_THIRDPARTY_ORDER_DELIVERY_PUSH_DM_CRM_ON_NORMAL_ORDER_DELIVERY`, `LISTENER_SHUYUN_OPEN_PLATFORM_TRADE_SYNC_ON_NORMAL_ORDER_DELIVERY`, and `LISTENER_DIGIOS_STORE_ADJUSTMENT_ON_NORMAL_ORDER_DELIVERY` (digios store-adjustment outbound, `@Order(80)` in `DigiOsNormalOrderDeliveryAdjustmentDispatchListenerRegistrationConfig`).
 * **Other planes.** `EVENT_NORMAL_ORDER_ADD` carries the supplier/youshu/marketing-center listeners (`LISTENER_YOUSHU_ORDERS_NORMAL_ORDER_ADD`, `LISTENER_THIRDPARTY_ORDER_ADD_PUSH_MARKETING_CENTER_ON_NORMAL_ORDER_ADD`); `EVENT_NORMAL_ORDER_CONFIRM_RECEIPT` carries youshu, marketing-center, Shopex-CRM and shuyun trade.sync listeners; `EVENT_TRADE_FINISH`/CSV292 carry the ~20-listener cascade described below, including the sync bridge `LISTENER_ORDERS_TRADE_FINISH_NORMAL_ORDER_PAY_SUCCESS_BRIDGE` and `LISTENER_HFPAY_TRADE_RECORD_TRADE_FINISH_PAY_SUCCESS` (legacy FQN `HfPayBundle\Listeners\HfpayTradeRecordListener@paySuccess`).
+
+`MembersDispatchEventNames.EVENT_CREATE_MEMBER_SUCCESS` (`event:members:create_member_success`) is the other heavily-subscribed plane: member-creation paths (wxapp bind, H5 post, admin create, local auto-register, import) publish through `MembersCreateMemberSuccessDispatchPublisherImpl`, and bootstrap fans it out to the youshu, promotions (register-promotion + send-membercard), register-point, datacube register-stats, in-app notice, Shopex-CRM sync, shuyun member.register, and members' own new-customer listeners. The newest of these, `CreateMemberSuccessNewCustomerDispatchListener` (`LISTENER_MEMBERS_CREATE_MEMBER_SUCCESS_NEW_CUSTOMER`, async `default`, `@Order(26)`), belongs to the members **new-customer system-tag** family: it extracts `company_id`/`user_id` from the payload and calls `NewCustomerTagReconcileService.reconcile(..., SOURCE_REGISTER)`. `reconcile` is the single, idempotent decision point for the `new_customer` tag — it recounts the member's *effective paid orders* and attaches the tag when that count is zero, detaches it otherwise (skipping disabled members), seeding the tag row if the company has none yet. The same entry point is driven with different source markers from three other listeners — the bus listeners `NormalOrderPaySuccessNewCustomerDispatchListener` (`SOURCE_PAY`) and `NormalOrderCancelNewCustomerDispatchListener` (`SOURCE_CANCEL`), both of which fall back to resolving `user_id` from `order_id` when the payload omits it, and the Spring listener `TradeRefundNewCustomerListener` (`SOURCE_REFUND`, a `@Transactional(REQUIRES_NEW)` `@EventListener` on `TradeRefundSpringEvent` that only acts on `refund_status=SUCCESS`). Four listeners, one reconcile service, all wired by bootstrap registration configs.
 
 ## Mechanism 3: the dispatch bus (registration, transport, delivery, failure)
 
@@ -440,6 +510,7 @@ The test of "should this adapter live in bootstrap?" is: *can any single Bundle 
 | Consumer needs one provider's data/behaviour synchronously; provider is a different Bundle | **Port in common** | `ecshopx-common/port/<consumer-domain>/` | Provider Bundle's `integration/` (or `service/`) | E.g. `JushuitanSettingReadPort` ← orders impl, consumed by aftersales/system-link. Group by consumer domain. |
 | Same, but only one consumer and the provider already sits downstream of it | **Bundle-owned port** | Consumer Bundle's `port/` | Provider Bundle's `integration/` or `service/` | E.g. `orders/port/WxappCartAddPort` ← `goods/.../WxappCartAddPortImpl`. Document the intended implementer in the Javadoc. |
 | Multi-step orchestration entry point consumed across Bundles | **Facade** | `ecshopx-common/service/<domain>/` (or a thematic package like `common/operatorcart/`) | Owning (provider-adjacent) Bundle | E.g. `SalespersonCartDataListFacade` ← goods impl, injected by salesperson controller; `OperatorCartDataListFacade` ← goods impl, injected by companys controller. |
+| Same as a common port, but the contract sits in a thematic domain package | **Thematic-package Port** | `ecshopx-common/<domain>/` (e.g. `payment/`, `goods/port/`, `order/port/`) | Provider Bundle's `integration/` | E.g. `common/payment/PaymentSubjectDistributorIdPort` ← `distribution/integration/PaymentSubjectDistributorIdPortImpl`; `common/goods/port/MerchantSettlementMainCategoryPort` ← `goods/integration/MerchantSettlementMainCategoryPortImpl` consumed by merchant's settlement services. |
 | Cross-cutting security concern (token issue/blacklist/session) shared by several Bundles | **Auth port** | `ecshopx-common/auth/` | Security-owning Bundle (`ecshopx-espier/security`), or the data-owning Bundle | E.g. `PosJwtIssuerPort` ← espier's `PosJwtIssuer`, `PosJwtBlacklistPort` ← espier's `PosJwtBlacklistService`, `PosJwtSessionValidatorPort` ← companys' `PosJwtSessionValidator` (consumed by espier's POS auth filter), `PosOrderDocAccessPort` ← orders' `PosOrderDocAccessGuard` (consumed by aftersales' apply/refund-confirm services). |
 | Inbound open-API method delegated into a domain Bundle | **Openapi port** | `ecshopx-common/openapi/` | Domain Bundle (`integration/` or `openapi/`) | E.g. `OpenapiDigiOsProductStockPushPort` (`ecx.digios.product.stock_push`) ← digios impl; openapi module routes by method name. |
 | Something happened; 0..N Bundles may react asynchronously; retry/queues wanted | **Dispatch event** | `*DispatchPublisher` + `*DispatchEventNames` in `ecshopx-common/dispatch` | Publisher impl in `ecshopx-bootstrap/config`; listener in each consumer Bundle's `dispatch/`; registration config in bootstrap | Producers never depend on consumers. Event names aligned with legacy PHP CSV ids (event:288, event:291/292). |
@@ -447,6 +518,7 @@ The test of "should this adapter live in bootstrap?" is: *can any single Bundle 
 | Must run inside the current call stack / same transaction boundary | **SYNC dispatch event** | Same as dispatch event | Listener registered with `ListenerDispatchOptions.syncDefaults()` | E.g. the trade-finish → pay-success bridge listener. |
 | Intra-Bundle after-commit side effect; no retry, no cross-Bundle fan-out | **Spring event** | Bundle's `event/` package (or `ecshopx-common/event/` for cross-cutting payloads) | Bundle's `listener/`, `@TransactionalEventListener(AFTER_COMMIT)` | E.g. `OrderProcessLogSpringEvent`. Don't use the bus for this. |
 | Provider may be absent at runtime | **Optional Port** | common port | Provider Bundle; consumer injects `ObjectProvider<T>` and `getIfAvailable()` | E.g. hfpay pay port, VIP membercard port, employee-purchase enrichment. |
+| Provider is always deployed; absence must fail at startup | **Required Port** | common port (or thematic package) | Provider Bundle; consumer constructor-injects the interface directly | E.g. `common/payment/PaymentSubjectDistributorIdPort` ← distribution's `PaymentSubjectDistributorIdPortImpl`, consumed by orders' `OrdersPaymentDoPaymentService`/`OrdersPaymentChannelQueryService` and payment's `FrontPaymentSettingReadService`/`StandardOnlinePayAftersalesRefundExecutor`. |
 | Provider absent should fail with a clear message | **NoOp default + `@Primary` adapter** | common port + `*NoOp` next to it | NoOp `@Component` in common; real `@Primary` adapter in provider Bundle | The `common/port/shuyun/ShuyunOpenPlatform*Port` family. |
 | Implementation needs beans from several Bundles / any placement creates a cycle | **Bootstrap adapter** | Common port or consumer Bundle interface | `ecshopx-bootstrap` (`bootstrap/<domain>/` or `config/`) | E.g. `DistributorInfoQueryHandlerImpl`, `WxappCommonSettingFacadeImpl`, `TradeFinishPaymentSuccShopNameAdapter`. |
 | Replacement of side-effect beans during migration diff testing | **`@Profile` NoOp** | Same contract | Bundle `cron/testcfg/CronTestMockConfig` or `@Profile` NoOp in `integration/` | `test-cron` profile swaps publishers/Redis ports for No-ops. |

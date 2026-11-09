@@ -16,8 +16,14 @@ sources:
     resource: repo://ecshopx-bootstrap/pom.xml
   - id: openwiki-source-e7cc7316dd2ab59d048ac799
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/AsyncExecutorConfig.java
+  - id: openwiki-source-63a9376edbf2e27b60bd70b7
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/DigiOsAftersalesReturnAdjustmentDispatchListenerRegistrationConfig.java
+  - id: openwiki-source-b9efedc29ed060e05f8a7583
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/DigiOsAftersalesReturnAdjustmentDispatchPublisherImpl.java
   - id: openwiki-source-1adeed0e9d51f13c65d98eb6
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/DigiOsDistributorCreateDispatchListenerRegistrationConfig.java
+  - id: openwiki-source-214f4a43a8dbc13e5179d2dc
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/DigiOsNormalOrderDeliveryAdjustmentDispatchListenerRegistrationConfig.java
   - id: openwiki-source-893123407cdb2a42fed65796
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/DigiOsOperatorCreateDispatchListenerRegistrationConfig.java
   - id: openwiki-source-c83108e0b31507dc4b736d71
@@ -32,6 +38,10 @@ sources:
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MultiRedisConfig.java
   - id: openwiki-source-f3b71eb9d6873d40cbc6bb31
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/PosStoreAccountCreateEventDispatchPublisherImpl.java
+  - id: openwiki-source-ebbcd0aeec7940f4f0465f31
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ShuyunOpenPlatformCreateMemberSuccessDispatchListenerRegistrationConfig.java
+  - id: openwiki-source-6794b7e88ab1775f38c31571
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ShuyunOpenPlatformNormalOrderPaySuccessDispatchListenerRegistrationConfig.java
   - id: openwiki-source-919f62d871898539e11d1107
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/StrictHttpFirewallConfig.java
   - id: openwiki-source-ee9e1dcff5d604ff92225a67
@@ -46,6 +56,8 @@ sources:
     resource: repo://ecshopx-bootstrap/src/main/resources/db/migration/V00000000000001.sql
   - id: openwiki-source-306979beecba6167a958ddc4
     resource: repo://ecshopx-bootstrap/src/main/resources/db/migration/V00000000000006.sql
+  - id: openwiki-source-ed1e2ce5fcfefbaf52c68d75
+    resource: repo://ecshopx-bootstrap/src/main/resources/db/migration/V00000000000007.sql
   - id: openwiki-source-27abacbd20fe67d63b27d863
     resource: repo://ecshopx-bootstrap/src/main/resources/seed/menu/platform_menu.json
   - id: openwiki-source-edac2d50792508faa99e2b5d
@@ -82,12 +94,26 @@ sources:
     resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/storage/StorageWebMvcConfigurer.java
   - id: openwiki-source-9cf33b4716411b029c0c6147
     resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/package-info.java
+  - id: openwiki-source-2a6ed641b7be57a3f7fcd6a5
+    resource: repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/web/OpenapiAuthInterceptor.java
+  - id: openwiki-source-90f352ef36e29440d99e03dd
+    resource: repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/web/OpenapiPathPatterns.java
+  - id: openwiki-source-4889f150849f66bdb3e774ab
+    resource: repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/web/OpenapiSignedRequestReplayGuard.java
+  - id: openwiki-source-c3326a09b0b53b767ed6480a
+    resource: repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/web/OpenapiWebMvcConfigurer.java
+  - id: openwiki-source-86ec1788b9f975eaacc0039f
+    resource: repo://ecshopx-openapi/src/test/java/cn/shopex/ecshopx/openapi/web/OpenapiAuthInterceptorReplayTest.java
+  - id: openwiki-source-05f1689fa8b246986a24bcd3
+    resource: repo://ecshopx-openapi/src/test/java/cn/shopex/ecshopx/openapi/web/OpenapiSignedRequestReplayGuardTest.java
   - id: openwiki-source-18a40afbe2f8cf1c732efd6f
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/cron/ScheduleFinishOrdersHandler.java
   - id: openwiki-source-a911baf6f19f0480e6a5726f
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/package-info.java
   - id: openwiki-source-4c7a3bc700c378ccd65c4327
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/api/open/WxpayNotifyController.java
+  - id: openwiki-source-6af025b4a30ccc1921cecad2
+    resource: repo://ecshopx-shopmenu-border/src/main/java/cn/shopex/ecshopx/shopmenuborder/service/ShopMenuUploadService.java
   - id: openwiki-source-360776dc08765b4b83e96cfb
     resource: repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/package-info.java
   - id: openwiki-source-fa3bf25fcd64c709a6ccaa9b
@@ -100,15 +126,15 @@ sources:
     resource: repo://pom.xml
   - id: openwiki-source-f1b1aacc63642e5304668821
     resource: repo://readme.md
-generated: { by: "openwiki/0.9.0", at: "2026-11-05T17:10:02.238Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-08T17:14:16.576Z" }
 verified:
   - by: openwiki/0.9.0
-    at: 2026-11-05T17:10:02.238Z
+    at: 2026-11-08T17:14:16.576Z
 ---
 
 # System Overview and Runtime Topology
 
-ECShopX-Java is the Java server-side implementation of the ECShopX commerce system, rewritten from the legacy PHP codebase with aligned business semantics and one-to-one mapped configuration keys. The whole repository is a single **multi-module Maven reactor**: the root `pom.xml` declares the parent project `cn.shopex:ecshopx` (version `${revision}` = `5.4.7`, CI-friendly, Java 17, MyBatis-Plus 3.5.16, jjwt 0.12.6) under `spring-boot-starter-parent:3.5.12`, and lists every module as a `<module>`. The reactor has 53 modules: exactly four infrastructure modules plus 49 business "Bundles":
+ECShopX-Java is the Java server-side implementation of the ECShopX commerce system, rewritten from the legacy PHP codebase with aligned business semantics and one-to-one mapped configuration keys. The whole repository is a single **multi-module Maven reactor**: the root `pom.xml` declares the parent project `cn.shopex:ecshopx` (version `${revision}` = `5.5.0`, CI-friendly, Java 17, MyBatis-Plus 3.5.16, jjwt 0.12.6) under `spring-boot-starter-parent:3.5.12`, and lists every module as a `<module>`. The reactor has 53 modules: exactly four infrastructure modules plus 49 business "Bundles", and every Bundle is also pinned in the parent `dependencyManagement` so Bundle POMs never declare versions:
 
 * **`ecshopx-bom`** — a `pom`-packaging bill-of-materials module that imports `spring-boot-dependencies:3.5.12` and pins MyBatis-Plus / Lombok versions.
 * **`ecshopx-common`** — shared cross-cutting code with **no** Shopex peer dependencies (only Spring Boot starters, MyBatis-Plus, Lombok): unified response body, exception hierarchy, pagination, audit base classes, annotations, the `common/auth` JWT ports (`OperatorJwtIssuerPort`, `PosJwtIssuerPort`, `PosJwtSessionValidatorPort`, blacklist ports), and the ~150 `common/dispatch` interfaces (dispatch job/event names + publisher ports) that keep cross-Bundle wiring acyclic.
@@ -213,23 +239,27 @@ The three externally meaningful URL spaces are:
 
 In Docker deployments an OpenResty/nginx front (port 80) routes `/api/`, `/storage/`, and `/wechatAuth/` to the Java process on `127.0.0.1:18080` inside the same container, keeping the URL spaces identical to the PHP deployment.
 
+The `/api/openapi/**` gateway adds a security layer distinct from both the operator/H5 JWT families and the `/wechatAuth` callbacks. `OpenapiWebMvcConfigurer` (in `ecshopx-openapi`) registers `OpenapiAuthInterceptor` on `/api/openapi/**` and `/api/openapi/internal/**`; the interceptor skips the internal prefix outright, and for public paths it requires `version`, `timestamp`, and `app_key`, enforces a ±600 s timestamp tolerance, looks up developer credentials through the `OpenapiDeveloperLookupPort` port in `ecshopx-common`, and verifies the legacy sign via `OpenapiSignSupport`. Since ECX-10869 it then calls `OpenapiSignedRequestReplayGuard.assertOnce(appKey, sign, timestamp, ttl)`, which `SETNX`s `openapi:auth:replay:{sha256(app_key|sign|timestamp)}` on the default `StringRedisTemplate` with a TTL equal to the 600 s tolerance — the first sighting of a signed request passes, a replayed `app_key + sign + timestamp` within the window is rejected as `请求已失效或重复`. Setting `openapi.debug=1` bypasses signature and replay checks and authenticates as the system company — a development switch only.
+
 ### POS terminal authentication: a fourth token family
 
 Alongside the admin/operator and H5 JWT families, POS cash-register terminals get their own auth surface, added for the ECX-10532 POS login flow. The HTTP entry is `PosAuthController` (`ecshopx-companys`, `api/pos/v1`, base path `/api/v1/pos/auth`) with three endpoints: `POST /login` (employee number + password → POS JWT), `POST /logout` (blacklists the presented token), and `GET /me` (role/permission snapshot from the request attribute the filter installed).
 
 * **Issuing.** `PosAuthService` (companys `service/posauth`) looks up the `pos_store_account` row by employee number, decrypts the stored password cipher through `SensitiveFieldEncryptor`, and rejects disabled/resigned accounts and accounts whose shop no longer allows login; on success it builds claims and delegates to the **`PosJwtIssuerPort`** interface in `ecshopx-common/auth`. The implementation, `PosJwtIssuer` in `ecshopx-espier/security`, signs an HS512 compact JWT keyed from `JWT_SECRET` with `token_kind=pos`, issuer `POS_JWT_ISSUER` (default `ecshopx-pos`), a random `jti`, and TTL from `JWT_TTL` minutes; `invalidate()` (logout) stores the token hash in Redis until its `exp` via `PosJwtBlacklistService` (keys `pos_jwt_invalidate:<sha256>` on the **prism** Redis template, DB 2 by default).
 * **Enforcement.** `PosJwtAuthenticationFilter` (espier `security`, `@Order(HIGHEST_PRECEDENCE + 40)`) is a `OncePerRequestFilter` that *only* engages when the `Authorization: Bearer` token looks like a POS token (`token_kind=pos` or the POS issuer) — every other request, including admin and H5 JWTs, passes through untouched, and `POST /api/v1/pos/auth/login` is always skipped. For POS tokens it enforces `PosJwtPathWhitelist` (auth endpoints, `/api/v1/order*`, `/api/v1/aftersales`, `/api/v1/checkout`, operator cart paths, goods read, members/tag read, logistics read, delivery/write-off POSTs, and an explicit deny on `/api/v1/store/pos-accounts`), rejects blacklisted or expired tokens, then calls **`PosJwtSessionValidatorPort`**. The implementation, `PosJwtSessionValidator` in companys `service/posauth`, re-reads the `pos_store_account` row and invalidates the token immediately when the account was disabled, resigned, reassigned to another store, or re-roled (spec rule G-L9). On success the claims map is attached to the request as `POS_JWT_USER_DATA`, which the controller's `/me` and `/logout` handlers read.
-* **Account provisioning → DigiOS.** When a POS store account is created, companys publishes through `PosStoreAccountCreateEventDispatchPublisher` (another `ecshopx-common` port); bootstrap's `PosStoreAccountCreateEventDispatchPublisherImpl` emits `event:companys:pos_store_account_create` (`CompanysDispatchEventNames.EVENT_POS_STORE_ACCOUNT_CREATE`) so downstream listeners can sync the account to DigiOS POS. This follows the same pattern as the five existing `DigiOs*DispatchListenerRegistrationConfig` classes in bootstrap config, which register the `ecshopx-digios` sync listeners (`OperatorCreateDigiOsAccountSyncDispatchListener`, `DistributorCreate/UpdateDigiOsSyncDispatchListener`, and the delivery/aftersales store-adjustment listeners) against their respective `DistributionDispatchEventNames`/`CompanysDispatchEventNames` events on the `default` queue.
+* **Account provisioning → DigiOS.** When a POS store account is created, companys publishes through `PosStoreAccountCreateEventDispatchPublisher` (another `ecshopx-common` port); bootstrap's `PosStoreAccountCreateEventDispatchPublisherImpl` emits `event:companys:pos_store_account_create` (`CompanysDispatchEventNames.EVENT_POS_STORE_ACCOUNT_CREATE`) so downstream listeners can sync the account to DigiOS POS. This follows the same pattern as the existing `DigiOs*DispatchListenerRegistrationConfig` classes in bootstrap config, which register the `ecshopx-digios` sync listeners (operator create, distributor create/update, and the delivery/aftersales store-adjustment listeners) against their respective `DistributionDispatchEventNames`/`CompanysDispatchEventNames` events on the `default` queue.
 
 ### MySQL persistence
 
 A single MySQL database `ecshopx` (JDBC URL pinned to `utf8mb4` and `serverTimezone=Asia/Shanghai`) is accessed through **MyBatis-Plus 3.5.16** with `map-underscore-to-camel-case` enabled. All persistence is mapper-based: `@Mapper` interfaces extending `BaseMapper<T>` per Bundle, with XML in each Bundle's `resources/mapper/`, aggregated by `mybatis-plus.mapper-locations=classpath*:mapper/**/*.xml`.
 
-Schema evolution is **Flyway**, enabled at startup (`spring.flyway.enabled=true`, `locations=classpath:db/migration`, `baseline-on-migrate=true`, `baseline-version=0`). The baseline behavior matters operationally: existing databases imported from `docker/ecshopx.sql` (the legacy business schema + demo data) are baselined at version 0 rather than replaying history. Migration files live only in `ecshopx-bootstrap/src/main/resources/db/migration` (currently `V00000000000001.sql` through `V00000000000006.sql`); `bin/make-migration` generates new files in `VyyyyMMddHHmmss__description.sql` format by diffing the live schema against MyBatis-Plus `@TableName`/`@TableId`/`@TableField` annotations (see the repository readme for the caveats — generated SQL must be reviewed for types, defaults, NULLability, and indexes; DROPs are only emitted with `--allow-drop`).
+Schema evolution is **Flyway**, enabled at startup (`spring.flyway.enabled=true`, `locations=classpath:db/migration`, `baseline-on-migrate=true`, `baseline-version=0`). The baseline behavior matters operationally: existing databases imported from `docker/ecshopx.sql` (the legacy business schema + demo data) are baselined at version 0 rather than replaying history. Migration files live only in `ecshopx-bootstrap/src/main/resources/db/migration` (currently `V00000000000001.sql` through `V00000000000007.sql`); `bin/make-migration` generates new files in `VyyyyMMddHHmmss__description.sql` format by diffing the live schema against MyBatis-Plus `@TableName`/`@TableId`/`@TableField` annotations (see the repository readme for the caveats — generated SQL must be reviewed for types, defaults, NULLability, and indexes; DROPs are only emitted with `--allow-drop`).
 
-The current schema head is **`V00000000000006.sql`** (release 5.4.7, member-tag governance plus member-tag promotion targeting): it creates `members_rel_tags_audit` (an attach/detach audit trail with `source`, `rule_version`, `reason`, `event_id`, indexed on `company_id,user_id,tag_id`), adds `source` / `rule_version` / `effective_at` / `updated_at` to `members_rel_tags`, adds `tag_code` / `tag_kind` (`manual`|`system`) / `rule_version` plus a `uk_company_tag_code` unique key to `members_tags`, and adds `member_tag_ids` (JSON) / `member_tag_mode` (`include`|`exclude`) to both `promotions_marketing_activity` and `promotions_seckill_activity`.
+The current schema head is **`V00000000000007.sql`** (release 5.5.0): it adds merchant-settlement onboarding fields — `contact_name`, `main_category_selection` (JSON), `license_registered_address`, and `license_legal_representative` on `merchant`, plus those plus `user_id` on `merchant_settlement_apply`, which also gains a `uk_company_user (company_id, user_id)` unique key so each member can file at most one settlement application per company. The previous head, `V00000000000006.sql` (release 5.4.7, member-tag governance plus member-tag promotion targeting), created `members_rel_tags_audit` (an attach/detach audit trail with `source`, `rule_version`, `reason`, `event_id`, indexed on `company_id,user_id,tag_id`), added `source` / `rule_version` / `effective_at` / `updated_at` to `members_rel_tags`, added `tag_code` / `tag_kind` (`manual`|`system`) / `rule_version` plus a `uk_company_tag_code` unique key to `members_tags`, and added `member_tag_ids` (JSON) / `member_tag_mode` (`include`|`exclude`) to both `promotions_marketing_activity` and `promotions_seckill_activity`.
 
 After Flyway completes, `MigrationSeedRunner` (an `ApplicationRunner` in bootstrap) aligns seed data with the PHP `EspierBundle\Listeners\UpdateMenuListener`: it imports logistics companies only when the `logistics` table is empty (failure logs but does not block startup), and — when `common.use-system-menu=true` (the default in `application.properties`) — atomically deletes all `company_id=0` system menus (and their menu-type relations), then re-imports six role-based JSON seed files under `classpath:seed/menu/` — `platform_menu.json`, `it_menu.json`, `shop_menu.json`, `dealer_menu.json`, `merchant_menu.json`, and `supplier_menu.json` — in a fixed order, inside a programmatic `TransactionTemplate` transaction (a proxied `@Transactional` would be bypassed by the self-call, and half-filled menus must roll back together).
+
+Each seed file is a JSON array of menu rows whose `version` groups a menu generation, `menu_type` names the menu types the row belongs to, and `name_lang` carries per-locale names (currently `zh-CN`, `en-CN`, `ar-SA`, `zh-TW`, `ja-JP`, `ru-RU`). `ShopMenuUploadService.uploadMenus` (in `ecshopx-shopmenu-border`, `@Transactional(rollbackFor = Exception.class)` per file) first deletes existing `company_id=0` rows matching the incoming versions — including their `shop_menu_rel_type` rows and `name_lang` translations written through companys' `CommonLangModWriteService` — then re-inserts rows with fresh sequential `shopmenu_id`s, remaps each file-local `pid` to the new parent id, rebuilds the menu-type relations, and re-writes the translations; rows missing `alias_name` are rejected.
 
 ### Redis: one instance, many logical databases
 
@@ -341,12 +371,18 @@ Every business Bundle declares its domain in a Chinese `package-info.java` at it
 | `ecshopx-kujiale` | 酷家乐域模块 |
 | `ecshopx-tb-items` | 外部商品同步等业务域 |
 | `ecshopx-third-party` | 第三方对接域模块 |
-| `ecshopx-digios` | DigiOS POS 直连集成（店铺/账号/库存同步）域 |
+| `ecshopx-digios` | DigiOS POS direct integration (declared in its POM description) |
 | `ecshopx-openapi` | OpenAPI 设置域模块 |
 | `ecshopx-espier` | 平台通用能力（上传、地址、升级等）域 |
 | `ecshopx-theme` | 装修、模板与页面配置域 |
 | `ecshopx-tdkset` | TDK 设置域模块 |
 | `ecshopx-data-cube` | 数据魔方与统计分析域 |
+
+Three of these Bundles carry the newest cross-system surface and are worth locating on the map:
+
+* **`ecshopx-digios`** — DigiOS POS direct integration (店铺/账号/库存同步): it consumes companys/distribution/orders events through the bootstrap `DigiOs*DispatchListenerRegistrationConfig` wiring, and it *publishes* store adjustments of its own — bootstrap's `DigiOsAftersalesReturnAdjustmentDispatchPublisherImpl` plus the `DigiOsAftersalesReturnAdjustmentDispatchListenerRegistrationConfig` / `DigiOsNormalOrderDeliveryAdjustmentDispatchListenerRegistrationConfig` registrations let DigiOS originate aftersales-return and order-delivery stock adjustments onto the bus.
+* **`ecshopx-openapi`** — the `/api/openapi/**` public gateway for third-party developers, including the Redis replay guard described above.
+* **`ecshopx-shuyun`** — 数云 (Shuyun) CRM integration in two flavors: the legacy UAPI and the open-platform `open-api`; bootstrap subscribes ~12 `ShuyunOpenPlatform*DispatchListenerRegistrationConfig` listeners (member create, distributor create/update, order pay/delivery/confirm/cancel, refund finish, offline benefit consume, item-store product sync) to their bus events.
 
 Adding a Bundle means: create the module rooted at `cn.shopex.ecshopx.<domain>` with a `package-info.java` stating the domain (the newest Bundle, `ecshopx-digios`, is the current exception — it declares its domain only in its POM description), add it to the parent `<modules>` and `dependencyManagement`, add the dependency to `ecshopx-bootstrap`, and (for async work) a bootstrap `*RegistrationConfig` plus the `*DispatchPublisher` interface in `ecshopx-common`.
 
@@ -355,7 +391,7 @@ Adding a Bundle means: create the module rooted at `cn.shopex.ecshopx.<domain>` 
 `ecshopx-bootstrap` is where the cross-Bundle edges are wired precisely because it depends on everything. Its `config/` package contains, alongside `DispatchBusConfig`/`MultiRedisConfig`/`XxlJobConfig`:
 
 * ~160 `*DispatchPublisherImpl` components that implement `ecshopx-common` publisher interfaces by calling `DispatchFacade` with the correct mode/driver/queue/delay/retry tuple (e.g. `FinishOrderJobDispatchPublisherImpl` → ASYNC/REDIS/`slow`; `AliTemplateMsgSendDispatchPublisherImpl` resolves a per-company send delay from Redis before publishing to `default`; `PosStoreAccountCreateEventDispatchPublisherImpl` emits `event:companys:pos_store_account_create` when a POS store account is created).
-* ~200 `*RegistrationConfig` classes that call `dispatchRegistry.registerJob(...)` / `registerEventListener(...)` in `@PostConstruct`, wiring producers to consumers without either side naming the other. This includes the five `DigiOs*DispatchListenerRegistrationConfig` classes that subscribe the `ecshopx-digios` sync listeners (operator create, distributor create/update, and the delivery/aftersales store-adjustment listeners) to their distribution/companys events on the `default` queue.
+* ~200 `*RegistrationConfig` classes that call `dispatchRegistry.registerJob(...)` / `registerEventListener(...)` in `@PostConstruct`, wiring producers to consumers without either side naming the other. This includes the `DigiOs*DispatchListenerRegistrationConfig` classes that subscribe the `ecshopx-digios` sync listeners (operator create, distributor create/update, and the delivery/aftersales store-adjustment listeners) to their distribution/companys events on the `default` queue, and the ~12 `ShuyunOpenPlatform*DispatchListenerRegistrationConfig` classes doing the same for the Shuyun open-platform sync listeners.
 * A handful of `bootstrap/<domain>/` adapters (`WxappCommonSettingFacadeImpl`, `HfpayPopularizeCashWithdrawalMerchantPaymentService`, `OmeDistributorShopStructPortImpl`, …) that implement one Bundle's Port by composing several other Bundles' beans — the last resort when even Port inversion cannot break a cycle.
 * `AsyncExecutorConfig` (`@EnableAsync`) with ~15 named `ThreadPoolTaskExecutor` beans for per-concern `@Async` work (OME sync, jushuitan upload, exports, `dispatchBusInternalExecutor`).
 
@@ -363,7 +399,7 @@ Adding a Bundle means: create the module rooted at `cn.shopex.ecshopx.<domain>` 
 
 Three supported paths share the same runtime topology (see [Deployment](../operations/deployment.md) and [Platform Services](../domains/platform-services.md) for details):
 
-* **Full development** — `./dev-setup.sh` / `bash install.sh --full` → `docker-compose.dev.yml`: `mysql` (8.0, imports `docker/tables_xxl_job.sql` then `docker/ecshopx.sql`), `redis` (7-alpine, password `redispassword`, AOF), `xxl-job-admin` (2.5.0, `xxl_job` DB in the same MySQL), and `ecshopx-app` (built from `docker/Dockerfile.app`, a Maven builder stage plus a Temurin-17/Node-20/OpenResty runtime base). The app container exposes 80 (nginx, host-routed admin/H5/PC), 18080 (Java direct), and 19999 (executor); business parameters are injected via `APP_ARGS` in Spring Boot CLI style, preserving case-sensitive properties like `xxl.job.accessToken`. `dev-setup.sh` additionally clones and builds the three sibling frontends (`ECShopX-Java_Admin`, `ECShopX-Java_Mobile`, `ECShopX-Java_Web`).
+* **Full development** — `./dev-setup.sh` / `bash install.sh --full` → `docker-compose.dev.yml`: `mysql` (8.0, imports `docker/tables_xxl_job.sql` then `docker/ecshopx.sql`), `redis` (7-alpine, password `redispassword`, AOF), `xxl-job-admin` (2.5.0, `xxl_job` DB in the same MySQL), and `ecshopx-app` (built from `docker/Dockerfile.app`, a Maven builder stage plus a Temurin-17/Node/OpenResty runtime base). The app container exposes 80 (nginx, host-routed admin/H5/PC), 18080 (Java direct), and 19999 (executor); business parameters are injected via `APP_ARGS` in Spring Boot CLI style, preserving case-sensitive properties like `xxl.job.accessToken`. `dev-setup.sh` additionally clones and builds the three sibling frontends (`ECShopX-Java_Admin`, `ECShopX-Java_Mobile`, `ECShopX-Java_Web`).
 * **Lite offline** — `docker-lite/deploy.sh` / `bash install.sh --lite` → `docker-lite/docker-compose.yml`: same four services but the `ecshopx-app` image is prebuilt and the release archive bind-mounts `docker-lite/app/ecshopx-bootstrap.jar` as `app.jar`.
 * **Self-hosted jar** — build and run the executable jar (`./mvnw -pl ecshopx-bootstrap -am package`, then `java -jar … --spring.profiles.active=local`), overriding datasource/Redis/XXL properties; Flyway migrates on startup against the existing schema. Local overrides come from environment variables, CLI-style arguments (`--spring.datasource.url=…`, `--spring.config.additional-location=file:./config/`, as the readme's Method B shows), or an external config location — **not** from a shipped sample: `ecshopx-bootstrap/src/main/resources/application-local.properties` is git-ignored (`.gitignore` line 7) and absent from fresh checkouts, so the readme's claim that the project "already includes" it is drift.
 
@@ -378,4 +414,5 @@ Ports to keep free: `18080` (app HTTP), `19999` (XXL executor), `9080` or `8080`
 * `MultiRedisConfigLettuceFactoryTest` — asserts each Lettuce factory has `validateConnection`, TCP keepalive, and autoReconnect.
 * `StorageUnicodeHttpFirewallTest` — `/storage/**` with Chinese/mojibake filenames passes the firewall while non-storage Chinese paths are rejected.
 * `MigrationSeedRunnerTest` — seed/menu re-import behavior after startup.
+* `OpenapiSignedRequestReplayGuardTest` / `OpenapiAuthInterceptorReplayTest` — the OpenAPI replay guard: first sighting of an `app_key + sign + timestamp` passes, the identical replay within the TTL window is rejected.
 * The ~200 `*DispatchFlowTest` classes under `ecshopx-bootstrap/src/test` — per-message integration probes that publish through the real `DispatchFacade` and consume through `DispatchConsumerRuntime`, one per job/event (e.g. `FinishOrderJobDispatchFlowTest` verifies `FINISH_ORDER_JOB` lands on the `slow` queue and the consumer invokes `FinishOrderJobService`).

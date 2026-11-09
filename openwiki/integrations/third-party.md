@@ -1,7 +1,7 @@
 ---
 type: integration
 title: Third-Party Integrations (ERP, CRM, Analytics, Cross-border, DigiOS)
-description: How ECShopX pushes and pulls with external systems — the trade-finish fan-out into Jushuitan, WdtErp, OME, Marketing Center, DmCrm, SaasErp, Shuyun, Youshu, Ali and customs; the ecshopx-digios DigiOS direct-connect stack (token-cached gateway client, store/account sync, stock adjustment and inbound stock push, API log); the per-tenant settings model in Redis/DB; and the http-enabled / NoOp gating that makes an unconfigured integration silently skip instead of failing the request.
+description: How ECShopX pushes and pulls with external systems — the trade-finish fan-out into Jushuitan, WdtErp, OME, Marketing Center, DmCrm, SaasErp, Shuyun, Youshu, Ali and customs; the ecshopx-digios DigiOS direct-connect stack (token-cached gateway client, store/account sync, stock adjustment and inbound stock push, API log); the per-tenant settings model in Redis/DB; the Shuyun admin config surface that masks the stored access token (ECX-10945); and the http-enabled / NoOp gating that makes an unconfigured integration silently skip instead of failing the request.
 tags: [thirdparty, integration, erp, crm, dispatch, redis-settings, xxljob, crossborder, digios]
 sources:
   - id: openwiki-source-e3ef9e434fef572806710742
@@ -124,6 +124,8 @@ sources:
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/offline/OfflinePaymentDoCheckService.java
   - id: openwiki-source-ff50bf9d82f8a9d1db0a8c21
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/payment/OrdersTradePaymentCallbackService.java
+  - id: openwiki-source-dab39b4fc46414902dfef75f
+    resource: repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/api/admin/v1/ShuyunOpenPlatformConfigController.java
   - id: openwiki-source-87afda796a946a40671f5332
     resource: repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/api/callback/v1/ShuyunOfflineBenefitCallbackController.java
   - id: openwiki-source-f2d696d26fcf3f2b4a65b284
@@ -144,6 +146,10 @@ sources:
     resource: repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/gateway/ShuyunOpenGatewayClient.java
   - id: openwiki-source-360776dc08765b4b83e96cfb
     resource: repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/package-info.java
+  - id: openwiki-source-1f5dcc44fe8af5ae99100ae6
+    resource: repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/service/openplatform/OpenPlatformConfigService.java
+  - id: openwiki-source-5fa85271d55023bb8158457e
+    resource: repo://ecshopx-shuyun/src/test/java/cn/shopex/ecshopx/shuyun/service/openplatform/OpenPlatformConfigServiceTest.java
   - id: openwiki-source-cc20893ef5acacbcfd5bcffc
     resource: repo://ecshopx-system-link/src/main/java/cn/shopex/ecshopx/systemlink/jushuitan/JushuitanOpenApiClient.java
   - id: openwiki-source-ce3b602bc761e2ed052bdb0e
@@ -172,10 +178,10 @@ sources:
     resource: repo://ecshopx-youshu/src/main/java/cn/shopex/ecshopx/youshu/integration/YoushuOpenApiSignSupport.java
   - id: openwiki-source-9b2d13f1c467ba70b358feb5
     resource: repo://ecshopx-youshu/src/main/java/cn/shopex/ecshopx/youshu/package-info.java
-generated: { by: "openwiki/0.9.0", at: "2026-11-05T17:10:02.238Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-08T17:14:16.576Z" }
 verified:
   - by: openwiki/0.9.0
-    at: 2026-11-05T17:10:02.238Z
+    at: 2026-11-08T17:14:16.576Z
 ---
 
 # Third-Party Integrations (ERP, CRM, Analytics, Cross-border, DigiOS)
@@ -451,7 +457,7 @@ Member create/update success and order confirm-receipt sync to Shopex CRM. The s
 * **POS create gate (throws on purpose)** — the *synchronous* port `PosStoreAccountDigiOsCreatePort` (common interface, `@Primary` impl in digios, NoOp fallback in common) is called by `PosStoreAccountWriteService`/`PosStoreAccountImportService` **before the local row is inserted**. When DigiOS is enabled it requires a mobile and upserts first; any failure throws `BadRequestException("DigiOS同步失败：…")`, so local POS account creation is blocked when the remote account cannot be created (ECX-10668). When disabled the port no-ops.
 * **Store stock adjustments** — `event:orders:normal_order_delivery` (`@Order 80`) and the dedicated `event:digios:aftersales_return_adjustment` plane feed `DigiOsStoreAdjustmentSyncService`. The aftersales plane is published ASYNC+REDIS by `DigiOsAftersalesReturnAdjustmentDispatchPublisherImpl` in bootstrap, called from `AftersalesMerchantSendbackConfirmService` (in `ecshopx-aftersales`) after commit when the merchant confirms a REFUND_GOODS send-back; `ecshopx-common` also carries a `NoopDigiOsAftersalesReturnAdjustmentDispatchPublisher` in its mock package as a no-op fallback for contexts where the dispatch bus is absent. `DigiOsStoreAdjustmentLineResolver` reads order/aftersales rows directly via `JdbcTemplate`: delivery resolves the order's distributor → `shop_code`, takes the latest `orders_delivery` and its items; aftersales only fires for `aftersales_type=REFUND_GOODS` and uses `refunded_num` (falling back to `num`). Details are chunked by `stockPushMaxRows` and each chunk PUTs `store.adjustment` with `nm` = order id / aftersales bn, `docTypCd` `code_000008` (delivery, outbound) or `code_000009` (return, inbound), and `logWhCd` = shop_code. Unresolvable lines or a disabled config skip silently.
 
-### Inbound stock push
+### Inbound stock push (ECX-10443)
 
 DigiOS also calls **into** the shop: the [OpenAPI gateway](openapi.md) method `ecx.digios.product.stock_push` (`POST /api/openapi/internal/v1/ecx.digios.product.stock_push`, `DigiOsStockController` in `ecshopx-openapi`) delegates through the `OpenapiDigiOsProductStockPushPort` (common interface, impl in digios) to `DigiOsStockPushService`. It parses/validates `sku_list` (capped at `stockPushMaxRows`), resolves each `sku_id` to an item by `item_bn` and each `shop_code` to a distributor, then applies the stock through the same `NormalGoodsStoreImportRowService.applyRow` used by CSV store imports. Unknown skus collect into `not_find_sku`, per-row failures into `update_error`, and the whole call is written to `digios_api_log` as an `in` entry with the standard `E0000` envelope returned.
 
@@ -484,6 +490,12 @@ Shuyun has **two independent stacks** — the Javadoc of `ecshopx-shuyun`'s pack
 The action vocabulary (`ShuyunOpenPlatformGatewayActions`) maps one-to-one onto business listeners: `shuyun.base.trade.sync` (order pay/delivery/confirm/cancel/refinish re-push), `shuyun.base.refund.sync`, `shuyun.base.shop.batch.register` (distributor create/update), `shuyun.base.product.sync` + `shuyun.base.product.category.sync` (item store update), the `shuyun.loyalty.member.*` family (register/modify/unbind/point.change/point.changelog.search, `shuyun.loyalty.enhance.*`), `shuyun.private.bind.push`, and the offline-benefit pushes `shuyun.offline.benefit.send.report.push.v2` / `send.result.detail.push.v2` / `result.push.v2`.
 
 Tokens are refreshed daily by `TokenRefreshScheduler` — `@Scheduled(cron = "0 15 4 * * ?")`, aligned with the PHP `dailyAt('4:15')` — against `token-refresh-base-uri` (default `http://open-client.shuyun.com`), with Shuyun calling back to store the new token. The `fallbackGatewayAccessToken` (DELTA-001) is deliberately empty by default: with no DB token and no fallback, outbound calls are refused rather than sent unsigned. Other `ShuyunOpenPlatformProperties` defaults: `offlinePlatIdSuffix=-off` (offline shops get suffixed shop ids), `gatewayPartner=nnormal` (`bind.push` body partner), `offlineBenefitIssuer=kaquan` (offline benefits are issued as kaquan coupons), and the `orderClassTradeSourceMap` normal=11 … drug=21 mapping that translates internal order classes into Shuyun trade sources.
+
+### Admin config and token masking (ECX-10945)
+
+The per-company open-platform row is administered through `ShuyunOpenPlatformConfigController` — `@AdminAuth` + `@ShopLog` routes `GET/PUT /api/v1/shuyun/open-platform/config` (aliases `shuyun.open_platform.config.get/put`) — backed by `OpenPlatformConfigService`. The **admin view never exposes the stored access token**: `getAdminView` returns `access_token` only as `maskSecret(...)` — `""` when empty, `****` when ≤4 chars, otherwise `****` + the last 4 characters — alongside `app_secret_masked`, while `app_id`, `is_enabled`, `is_over_due` and `plat_code` (`OFFLINE`) come through in plain; when no row exists a default shell view (empty credentials, `plat_code=OFFLINE`, `is_enabled=false`) is returned so the form still renders (ECX-10945).
+
+The write side is deliberately patch-shaped. `saveFromAdmin` classifies the input and gates each shape differently: an **access-token-only patch** (`access_token` + `enabled`/`is_enabled` only) requires an existing row with `app_id`/`app_secret`; a **sync-enable-only patch** requires an existing row; a **credential bootstrap patch** (`app_id`/`app_secret`, optionally `enabled`) creates the row (with `is_enabled=0`, `plat_code=OFFLINE`, and `auth_value` backfilled from `ecshopx.shuyun.open-platform.auth-value` when empty); anything else requires the row to exist. Setting a non-empty `access_token` clears `is_over_due` to `0`; an explicit empty one nulls the stored token. Enabling sync (`enabled`/`is_enabled` true) is refused with `ResourceException` unless a non-expired access token is present ("须先获取有效 access_token 后再开启数云同步" / "access_token 已过期，请先刷新 token 后再开启数云同步").
 
 ### Inbound signed callbacks
 
@@ -562,7 +574,7 @@ The **customs declaration itself lives in orders**, not in this module: `TradeFi
 | `crm.crm-sync` | (empty, commented) | non-empty ⇒ member create/update triggers the single-member sync |
 | `ecshopx.map.amap.track-base-uri` / `app-key` / `app-secret` | `https://tsapi.amap.com` / (empty) | AMap logistics tracking client |
 
-Per-tenant state (Redis, `companysRedisTemplate` unless noted): `JushuitanSetting:{sha1(companyId)}`, `WdtErpSetting:{sha1(companyId)}`, `ShopexerpSetting:{sha1(companyId)}`, `DmCrmSetting:{sha1(companyId)}`, `damo_token:{companyId}`, `aliopen_template_library:{companyId}:{scenesName}`, `digios:token:{companyId}:{clientId}` (on `sharedStringRedisTemplate`, plus its `:lock` key), and the Shuyun replay-guard keys `shuyun:cb:replay:{sha256(sign|requestTime)}` (on the default `StringRedisTemplate`). DB tables: `company_shuyun_open_platform_config` (unique on `auth_value`, `company_id`, `app_id`), `youshu_setting`, `openapi_developer` (external_* fields feed Marketing Center), `custom_declare_order_result`, `digios_company_config` (per-company DigiOS override, unique `company_id`/`app_key`), `digios_store_mapping` (distributor → DigiOS store id), `digios_api_log` (all DigiOS traffic, `in` and `out`). See [Redis Databases](../concepts/redis-databases.md) for the template split.
+Per-tenant state (Redis, `companysRedisTemplate` unless noted): `JushuitanSetting:{sha1(companyId)}`, `WdtErpSetting:{sha1(companyId)}`, `ShopexerpSetting:{sha1(companyId)}`, `DmCrmSetting:{sha1(companyId)}`, `damo_token:{companyId}`, `aliopen_template_library:{companyId}:{scenesName}`, `digios:token:{companyId}:{clientId}` (on `sharedStringRedisTemplate`, plus its `:lock` key), and the Shuyun replay-guard keys `shuyun:cb:replay:{sha256(sign|requestTime)}` (on the default `StringRedisTemplate`). DB tables: `company_shuyun_open_platform_config` (unique on `auth_value`, `company_id`, `app_id`; the admin view masks its `access_token`, ECX-10945), `youshu_setting`, `openapi_developer` (external_* fields feed Marketing Center), `custom_declare_order_result`, `digios_company_config` (per-company DigiOS override, unique `company_id`/`app_key`), `digios_store_mapping` (distributor → DigiOS store id), `digios_api_log` (all DigiOS traffic, `in` and `out`). See [Redis Databases](../concepts/redis-databases.md) for the template split.
 
 ## Adding an integration — checklist
 
@@ -583,7 +595,7 @@ Per-tenant state (Redis, `companysRedisTemplate` unless noted): `JushuitanSettin
 * `ScheduleSyncInventoryHandlerTest`, `ScheduleSyncLogisticsHandlerTest`, `WdtErpSyncServiceTest`, `WdtErpSyncServiceScheduleSyncInventoryTest` (systemlink) — the `WdtErpSetting:*` iteration and `sync-wdt-*` handlers.
 * `DmCrmTradeFinishOrchestratorServiceTest`, `TradeRefundFinishDmCrmProcessorTest`, `OrderDeliveryDmCrmOnNormalOrderDeliveryProcessorTest` (third-party) — point + sync orchestration and its swallow-everything semantics.
 * The `*PushMarketingCenterProcessorTest` family (third-party) — per-event marketing-center pushes; `PrismOAuthServicePasswordGrantTest` — the Prism password grant.
-* `TokenCallbackServiceTest`, `CallbackSignatureVerifierTest`, `TradeSyncServiceMappingTest`, `TradeSyncDispatchServiceTest`, `OpenPlatformConfigServiceTest`, `OfflineBenefitKaquanIssuerTest`, `MemberRegisterServiceTest`, `ProductSyncServiceValidationTest`, `RefundPayloadHelpersTest`, `PointChangePayloadBuilderTest` (shuyun) — the open-platform stack including the order-class→trade-source map.
+* `TokenCallbackServiceTest`, `CallbackSignatureVerifierTest`, `InboundSignedCallbackReplayGuardTest`, `TradeSyncServiceMappingTest`, `TradeSyncDispatchServiceTest`, `OpenPlatformConfigServiceTest` (including the `getAdminView` masking assertions for ECX-10945), `OfflineBenefitKaquanIssuerTest`, `MemberRegisterServiceTest`, `ProductSyncServiceValidationTest`, `RefundPayloadHelpersTest`, `PointChangePayloadBuilderTest` (shuyun) — the open-platform stack including the order-class→trade-source map.
 * Youshu listener tests and their `*DispatchConsumerRuntimeTest` variants, plus `YoushuTaskServiceTest`, `YoushuMemberCreateSuccessSyncServiceTest`, `YoushuNormalOrderAddSrDataSyncServiceTest`, `YoushuNormalOrderCancelSrDataSyncServiceTest`, and the three cron handler tests — the analytics push surface.
 * `ItemStoreUpdatedAliTemplateBusDispatchFlowTest`, `AliTemplateMsgSendJobDispatchFlowTest` (bootstrap) — `event:258` fan-out and the delayed template send.
 * `OfflinePaymentDoCheckTradeFinishCustomDeclareOrderPublishTest` (orders) — the CSV-292 offline plane carrying the customs listener; `OrdersTradePaymentCallbackServiceNormalOrderPaySuccessPublishProbeTest` — the bridge publish after payment success.

@@ -600,6 +600,13 @@ public class MemberAccountService {
 		}
 		long salespersonIdForEvent = longParam(ext.get("salesperson_id"));
 
+		adminMemberCreatePromoterSideEffectPort.createForNewMember(companyId, userId, mobilePlain, gradeId);
+		adminMemberCreateDistributorUserSideEffectPort.createData(
+				companyId, userId, distributorIdForEvent, salespersonIdForEvent, inviterId);
+		if (distributorIdForEvent > 0L) {
+			insertShopRelMemberIfAbsent(companyId, userId, distributorIdForEvent);
+		}
+
 		Map<String, Object> eventData = new LinkedHashMap<>();
 		eventData.put("user_id", userId);
 		eventData.put("company_id", companyId);

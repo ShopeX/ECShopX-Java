@@ -4,7 +4,7 @@ title: "Dispatch Bus (ecshopx-dispatch)"
 openwiki_generated: true
 verified:
   - by: openwiki/0.9.0
-    at: 2026-11-05T17:10:02.238Z
+    at: 2026-11-08T17:14:16.576Z
 sources:
   - id: openwiki-source-ce9ef3189183acc63c92fa79
     resource: repo://docker/ecshopx.sql
@@ -16,6 +16,8 @@ sources:
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/DigiOsAftersalesReturnAdjustmentDispatchPublisherImpl.java
   - id: openwiki-source-214f4a43a8dbc13e5179d2dc
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/DigiOsNormalOrderDeliveryAdjustmentDispatchListenerRegistrationConfig.java
+  - id: openwiki-source-893123407cdb2a42fed65796
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/DigiOsOperatorCreateDispatchListenerRegistrationConfig.java
   - id: openwiki-source-c83108e0b31507dc4b736d71
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/DispatchBusConfig.java
   - id: openwiki-source-9a85049b1f77681fcfd3609f
@@ -32,6 +34,8 @@ sources:
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MultiRedisConfig.java
   - id: openwiki-source-8f62fc1ab15555cc55c1f17e
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/NormalOrderConfirmReceiptInvoiceDispatchListenerRegistrationConfig.java
+  - id: openwiki-source-016cf74d94a4742fa4b94ebf
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/OperatorCreateEventDispatchPublisherImpl.java
   - id: openwiki-source-54c2942be6423a972467854a
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/OrdersTradeFinishNormalOrderPaySuccessBridgeDispatchListenerRegistrationConfig.java
   - id: openwiki-source-f3b71eb9d6873d40cbc6bb31
@@ -92,12 +96,18 @@ sources:
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/OrdersDispatchEventNames.java
   - id: openwiki-source-8042ebe9fde9d02083a2cbd9
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/SalespersonDispatchJobNames.java
+  - id: openwiki-source-8e287cf718eb8e65c0b3a126
+    resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/OperatorsCommandService.java
   - id: openwiki-source-792083b23cdeaf7abd48e3e0
     resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/posaccount/PosStoreAccountExportDispatchPublisher.java
   - id: openwiki-source-26499232cc5422538ecc24fc
     resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/posaccount/PosStoreAccountWriteService.java
   - id: openwiki-source-cb98e234fa12c37f6d742969
     resource: repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/dispatch/NormalOrderDeliveryDigiOsStoreAdjustmentDispatchListener.java
+  - id: openwiki-source-9d090d5f3129b51586d0d33f
+    resource: repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/dispatch/OperatorCreateDigiOsAccountSyncDispatchListener.java
+  - id: openwiki-source-e9f9f63899f0eb4e022505cf
+    resource: repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/service/DigiOsAccountSyncDispatchService.java
   - id: openwiki-source-0ad27f4e93791adb62a51b56
     resource: repo://ecshopx-dispatch/pom.xml
   - id: openwiki-source-b453000d833fff1821ceec7b
@@ -150,7 +160,7 @@ sources:
     resource: repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/dispatch/NormalOrderPaySuccessShuyunTradeSyncDispatchListener.java
   - id: openwiki-source-b37de949b02bec36f06a1bcc
     resource: repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/service/openplatform/OfflineBenefitConsumePushService.java
-generated: { by: "openwiki/0.9.0", at: "2026-11-05T17:10:02.238Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-08T17:14:16.576Z" }
 ---
 
 
@@ -345,7 +355,7 @@ Two assembly facts that bite people:
 
 All message-name constants live in `ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/` as `final` classes with private constructors, one family per Bundle: `OrdersDispatchEventNames` / `OrdersDispatchJobNames`, `GoodsDispatchEventNames` / `GoodsBundleDispatchJobNames`, `DistributionDispatchEventNames` / `SalespersonDispatchJobNames`, `BsPayBundleDispatchJobNames`, `MerchantDispatchJobNames`, `EspierDispatchJobNames`, `CompanysDispatchEventNames`, `DigiOsDispatchEventNames`, and so on. Three prefixes:
 
-* **`event:`** — `event:<csvId>:<PhpBundle>\\Events\\<EventClass>` for names aligned with the legacy PHP CSV inventory (e.g. `event:288:OrdersBundle\\Events\\NormalOrderPaySuccessEvent`, `event:271:GoodsBundle\\Events\\ItemAddEvent`), or the shorter `event:<bundle>:<snake_case>` form for planes that never existed in PHP (e.g. `event:orders:normal_order_add`).
+* **`event:`** — `event:<csvId>:<PhpBundle>\\Events\\<EventClass>` for names aligned with the legacy PHP CSV inventory (e.g. `event:288:OrdersBundle\\Events\\NormalOrderPaySuccessEvent`, `event:271:GoodsBundle\\Events\\ItemAddEvent`), or the shorter `event:<bundle>:<snake_case>` form for planes that never existed in PHP (e.g. `event:orders:normal_order_add`). A third variant keeps the bare PHP event FQN with no CSV id when the PHP row had none to migrate — `CompanysDispatchEventNames.EVENT_OPERATOR_CREATE` is `event:CompanysBundle\\Events\\OperatorCreateEvent`.
 * **`job:`** — `job:<csvId>:<PhpBundle>\\Jobs\\<JobClass>` (e.g. `job:128:OrdersBundle\\Jobs\\FinishOrderJob`).
 * **`listener:`** — either the legacy PHP listener FQN, optionally with `@method` (e.g. `listener:HfPayBundle\\Listeners\\HfpayTradeRecordListener@paySuccess`, `listener:WsugcBundle\\Listeners\\Order`), or a dotted descriptive name for Java-first listeners (e.g. `listener:youshu.orders_normal_order_add`, `listener:thirdparty.item_add_push_marketing_center`).
 
@@ -379,6 +389,7 @@ The pattern "publisher interface in `ecshopx-common`, `@Component` implementatio
 
 * **BsPay withdraw job** — `WithdrawJobDispatchPublisher` (`ecshopx-common`) with `WithdrawJobDispatchPublisherImpl` in bootstrap publishing `BsPayBundleDispatchJobNames.WITHDRAW_JOB` (`job:93:BsPayBundle\Jobs\WithdrawJob`) as ASYNC / REDIS / `default` queue / platform-default retry, payload `apply_id` + `company_id`. `WithdrawController` (bspay admin API) enqueues it only after an `auditWithdraw` call returns `action == "approve"`. The handler, `WithdrawJobHandler` in `ecshopx-bspay/dispatch`, validates that both payload keys are `Number`s (throwing `BadRequestException` otherwise) and calls `WithdrawApplyService.executeHuifuWithdraw(applyId, companyId)`; `WithdrawJobRegistrationConfig` registers it. `WithdrawJobDispatchFlowTest` pins the whole path from facade enqueue to handler invocation.
 * **DigiOS aftersales return adjustment event** — `DigiOsAftersalesReturnAdjustmentDispatchPublisher` (`ecshopx-common`, aligned with PHP `DigiOsStoreAdjustmentSyncDispatch::dispatchOnAftersalesReturnIfEnabled`) with `DigiOsAftersalesReturnAdjustmentDispatchPublisherImpl` in bootstrap publishing `DigiOsDispatchEventNames.EVENT_AFTERSALES_RETURN_ADJUSTMENT` (`event:digios:aftersales_return_adjustment`) as ASYNC / REDIS / null queue / platform-default retry; ids below 1 are silently dropped instead of being published. The caller is `AftersalesRefundAsyncPortImpl.scheduleDigiOsStoreAdjustmentOnAftersalesReturn` in `ecshopx-aftersales`, and `NoopDigiOsAftersalesReturnAdjustmentDispatchPublisher` in `ecshopx-common/cron/mock` exists for wiring contexts that must satisfy the dependency without touching the bus. The single listener `digios.store_adjustment_on_aftersales_return` (`DigiOsAftersalesReturnStoreAdjustmentDispatchListener` in `ecshopx-digios`) is registered by `DigiOsAftersalesReturnAdjustmentDispatchListenerRegistrationConfig` (`@Order(81)`, `async("default", null)`) and delegates to `DigiOsStoreAdjustmentSyncDispatchService.dispatchOnAftersalesReturn`.
+* **Operator create event** — `OperatorCreateEventDispatchPublisher` (`ecshopx-common`) with `OperatorCreateEventDispatchPublisherImpl` in bootstrap publishing `CompanysDispatchEventNames.EVENT_OPERATOR_CREATE` (`event:CompanysBundle\Events\OperatorCreateEvent`, the bare-PHP-FQN variant) with `DispatchOptions.eventDefaults()` — **SYNC**, in-process. `OperatorsCommandService` in `ecshopx-companys` calls it after inserting the operator row, but never inside the transaction: `scheduleOperatorCreateDispatch` registers an `afterCommit` synchronization when one is active and publishes immediately otherwise, so the SYNC facade call itself fires post-commit. Its single listener is `digios.account_sync_on_operator_create` (`OperatorCreateDigiOsAccountSyncDispatchListener` in `ecshopx-digios`), registered by `DigiOsOperatorCreateDispatchListenerRegistrationConfig` (`@Order(81)`, `async("default", null)`), which extracts `operator_id` / `operator_type` (preferring the nested `entities` map, falling back to the payload root) and delegates to `DigiOsAccountSyncDispatchService.dispatchIfEnabled` — the service only syncs operators whose type is `staff` (distributor operators are deliberately excluded) and only when DigiOS integration is enabled for the company.
 * **POS store account create event** — `PosStoreAccountCreateEventDispatchPublisher` (`ecshopx-common`) with `PosStoreAccountCreateEventDispatchPublisherImpl` in bootstrap publishing `CompanysDispatchEventNames.EVENT_POS_STORE_ACCOUNT_CREATE` (`event:companys:pos_store_account_create`) with `DispatchOptions.eventDefaults()` — i.e. **SYNC**, in-transaction, in-process. `PosStoreAccountWriteService` and `PosStoreAccountImportService` in `ecshopx-companys` call it. The constants file already names `listener:digios.account_sync_on_pos_store_account_create`, but nothing registers that listener yet, so the event is currently published with zero subscribers.
 * **POS store account export** — `PosStoreAccountExportDispatchPublisher` (defined in `ecshopx-companys`'s own `service/posaccount` package, an exception to the interface-in-common rule) with `PosStoreAccountExportDispatchPublisherImpl` in bootstrap dispatching `EspierDispatchJobNames.EXPORT_FILE_JOB` (`job:10:EspierBundle\Jobs\ExportFileJob`) as ASYNC / REDIS / `slow` queue — one of the ~20 CSV ids that all funnel into `EspierExportFileJobDispatchHandler`.
 * **Merchant notice jobs** — `MerchantDispatchJobNames` defines `job:1..4:MerchantBundle\Jobs\...` for `MerchantAuditSuccessNotice`, `MerchantAuditFailNotice`, `MerchantEnterSuccessNotice` and `MerchantResetPasswordNotice`. Each has a `*DispatchPublisherImpl` in bootstrap publishing ASYNC / REDIS / `sms` queue with `company_id` + `mobile` (+ `password` where applicable), and a handler in `ecshopx-promotions/dispatch` that calls `CompanySceneSmsSendPort.sendSceneTemplatedSms` with the matching scene key. The handlers deliberately **catch `RuntimeException` from the SMS gateway, log the masked mobile tail, and return normally** — a failing notice is acked, never retried and never recorded as a failed job, which is a conscious at-most-once choice for notification traffic given the consumption semantics above.

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:9ff49524c1740656b5f0bfb7045f012b1a120f46f89f7dd01c78e69f1e1de698",
+  "pageVersion": "sha256:601cd6ee0dcc99ec9fcb833f4056067c091ef4cd2fab48d3ab757b60aaf7a39c",
   "claims": [
     {
       "id": "claim_a430e315735a4af5adc3a18089a3897e",
@@ -499,10 +499,46 @@
           "version": "repo-lines-v1:sha256:a789cfa0791d381b3e6723e569dbfc080c4d27e15ecc90ebde2bb8835b884bdb:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFlY2ZiOTQwNTRlNDY5NDgyNmFiNjFlY2MxN2Q4MWQzNTViMDA1NmRiNjA3MWY2NDY0M2VhNDFlMTg3ZWI0MzEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ0NTIxYTAwYTU3NmI2MWZhZDUwYmE4ZTZhNDdlMDFlYTNjNzg0OWI1YzZhNTExNTEzZDgyYWJmYzE5MGUwODkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRhZTBjYzM1YjEwMDU3NDE0N2RkNDcwMTdkODUyZmNkNWNlMDQxY2M2NGE0ZTNiYmJhZDZhZWE1NDc1MzNiMDYifQ"
         }
       ]
+    },
+    {
+      "id": "claim_c65c1df10d9648b589749f1bc919ec4f",
+      "statement": "The operator-create plane is a SYNC event with an after-commit publication trigger: OperatorCreateEventDispatchPublisherImpl (bootstrap) publishes CompanysDispatchEventNames.EVENT_OPERATOR_CREATE — named event:CompanysBundle\\Events\\OperatorCreateEvent, the bare PHP event FQN without a CSV id — with DispatchOptions.eventDefaults(); the caller OperatorsCommandService.scheduleOperatorCreateDispatch in ecshopx-companys defers the publish to TransactionSynchronization.afterCommit when a transaction is active and publishes immediately otherwise; and DigiOsOperatorCreateDispatchListenerRegistrationConfig (@Order(81)) registers the single listener digios.account_sync_on_operator_create with ListenerDispatchOptions.async(\"default\", null).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/DigiOsOperatorCreateDispatchListenerRegistrationConfig.java#L26-L47",
+          "version": "repo-lines-v1:sha256:d557421db43c4cb522dee1a2b9f0d986a4861fb4ef428c173dc676f4ec848ff4:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJhOWQ1OWZmMTgwNjIzYzMzODc3YjYzNWNmZjc2MzE0M2VhZmNmNDBkOWRiNzBmMGFiNjVjMTlhMmE2OGMzNDAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/OperatorCreateEventDispatchPublisherImpl.java#L27-L42",
+          "version": "repo-lines-v1:sha256:41ea62a4431013943df3b2089622256e229474a19b07d91386ad7fe176da5412:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4ZmExZTlmNDQ5NDlmYTg5YTNiNDJiMDQ5MmRkYmRmZmEyZWI3NjQ4NDhkMzU3NzhjOWZiNTNjMjA3ZWJkYmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk3OGQ3NWRjMzgwY2YzNzJiNmQ5OWNkNjUxYTRhMzJhMzJlZGFkYTU3OGEzZTc4Nzg4YzM0M2Q1NGJhNmVlYTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/CompanysDispatchEventNames.java#L21-L29",
+          "version": "repo-lines-v1:sha256:ba47112d0e314e5f26a13a989e7d19f60ec4cc82f087064337c9e2cd1552eb3c:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjMwYTc4ZDJiYmY2Y2U0ZTg1YmQ5NzU1ZmYzNWFjYzZlYjIyMDFhZTk2MmZjNjcxMDFiNjczN2YzMDYxNTIwZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTU2MzkxYWY3YmM3N2IyMTgzNDljYWM3ZmIwNjQzYWZhZjVlNTg1OWU3YjU3NzE3ZDc0MWIyZmJlNmRlNjEwNiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMWMzZGIwNGUxNzNhNzVkMWViZmFmYjVhYWEwODg1YTEwNWRjMDRhYmMyN2MyOWVkZWE0NjU3NzhjODQ2OGU1OCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjBmY2FlYjM5YWIxZWM0YjgxODAyNmYxOWZkNmVmMjUyNTdhOTA2YmEwY2JiYjliY2NmN2ViNDZmN2RjOGIyZSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/OperatorsCommandService.java#L135-L152",
+          "version": "repo-lines-v1:sha256:24a1eb53776f5169706c519ba5a5dc1bdc3a4eb34d90a315f4bec4f1a2dc145c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU2M2EwMmYzY2RiMTNlZmMyZDVjM2U2YzIwNDJlY2EwYmUyN2QxMTI3YWIyOTZhZGIxMjM2ZGFmZTBhODIxNmMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY5MWY2NDZlY2IxNGYzZDVmZTc4YzA4MjVkNmE1MzA3NGMxNTE2NTE5MjViNWIzYjU0MTRjMzEzOTM2OTEzODkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNmOTgyNWVkZTE0MjRiYjAyYjI2ZDFjYzg2NTkyNjJjMDcwZDYzOGFiNzc3YzlkODMzZDZlNmIwY2U3NThmYTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE0ZjA3MmI1ZmIxZjI4NDgyMDRkMjEwYjUzMWFmNDIzNmJhZTAwMzQxMDEwOGQyODU0NDNkM2E2MjdlMmU4ZDEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_91ee1287c49b4948afa48aa4c26ba28a",
+      "statement": "OperatorCreateDigiOsAccountSyncDispatchListener (ecshopx-digios) extracts operator_id and operator_type preferring the nested entities map and falling back to the payload root, then delegates to DigiOsAccountSyncDispatchService.dispatchIfEnabled, which syncs the operator to DigiOS only when the company has DigiOS integration enabled, ids are positive, the operator row loads, and the operator type is staff — distributor-type operators are deliberately excluded (SYNC_OPERATOR_TYPES = Set.of(\"staff\")).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/dispatch/OperatorCreateDigiOsAccountSyncDispatchListener.java#L25-L68",
+          "version": "repo-lines-v1:sha256:ad02fe86b2d01612e7ba2a0c66aa49ab1435be3b2ac2717f17de23f9d3d326a9:eyJzZWxlY3RlZExpbmVDb3VudCI6NDQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJlZjRkOWE0MzhiMDU4NTBjMjczYTA5ZmNhOTg4Zjk0NDBiZjQyYmU2MGFmOTM5MzhhZjg4YjgyZWFkNmE1MjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVjNDQzYjIwMWZlMmM3MzgxMmY0NTMwZGMyZjkxOTM3ZTZlNzA5OGMyZTg1NjUxYWI2Yjg4ZjE5MGVlOTQ2NjEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcyY2Q2OWIyM2NmNzU4MDE3NjVjNDIyMDViN2VlNjgzMzIwOWI1OWMyMjhmNGU3NTNhMjU4OGUyNzA2N2RkMTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQwMzk5NDVmNzEzY2VjY2MyYTJiZTk4MWFiNWM1ZWVhMzdmOTVmOTc2OWU1NzVjZDhlZDlhOWZjYmFmZGYwNmEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/service/DigiOsAccountSyncDispatchService.java#L31-L66",
+          "version": "repo-lines-v1:sha256:39b5eac4b09f3548d02472458b7a509d9b657836a28400f4ca41dfdc4ada04ac:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhmZDgxYWYzYjAyNDZmZjU2NTk4OGU1MDQ2ZDM2MGRhZGM3MjRjZWQ1NmU3NGI4N2Q2ODJjNzJlODI3MDEwMDUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc4M2EzNzUxMmZhN2JmOGJlOGE0MzE1ZDhmMDFhZTg0MDc1MWM3YTRkNzg3ZWY3Y2I4ODliODllYTVhZWNlZTciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcwYzk5ZTJiMjlkMTc5NTBiNTc3ZTdjOWI1YWZlMGRkNTAxY2MxMjkwZjVjYzJmMTdlMGQ0YzliYjRlMmQ2ODkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM0M2YwYWE4YTNmZTM2OGY5NWQ0YzdmZDc5ZjU4YWZjMzAzNWE0ZDFkOGM5ZWYwNzhjMGVlMDE3YjEzMTFjYjkifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.9.0",
-    "at": "2026-11-05T17:10:02.238Z"
+    "at": "2026-11-08T17:14:16.576Z"
   }
 }

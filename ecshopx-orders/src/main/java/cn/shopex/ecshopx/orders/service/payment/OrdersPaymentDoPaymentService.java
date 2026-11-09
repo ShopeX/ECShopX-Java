@@ -170,31 +170,57 @@ public class OrdersPaymentDoPaymentService {
 			}
 		}
 
+		// TX1: ensure pending trade; complete local payments entirely inside this short transaction.
+		PaymentPrepareResult prepared =
+				transactionTemplate.execute(
+						status ->
+								preparePaymentInTx(
+										authInfo,
+										data,
+										payType,
+										companyId,
+										orderId,
+										distributorId,
+										payFee,
+										payChannel,
+										tradeSourceType));
+		if (prepared == null) {
+			throw new ResourceException("支付失败");
+		}
+		if (prepared.completed()) {
+			return prepared.completedResult();
+		}
+
+		// Outside any DB transaction: call payment channel SDKs / HTTP.
+		ExternalChannelResult channelResult =
+				invokeExternalChannel(
+						authInfo,
+						data,
+						prepared.payType(),
+						companyId,
+						orderId,
+						distributorIdForSetting,
+						prepared.payFee(),
+						payChannel,
+						tradeSourceType,
+						prepared.trade());
+
+		// TX2: persist channel outcome and finalize when already paid (e.g. micropay / barcode).
 		return transactionTemplate.execute(
-				status ->
-						executeInTransaction(
-								authInfo,
-								data,
-								payType,
-								companyId,
-								orderId,
-								orderIdLong,
-								distributorId,
-								distributorIdForSetting,
-								payFee,
-								payChannel,
-								tradeSourceType));
+				status -> persistExternalPaymentInTx(prepared.trade(), orderId, tradeSourceType, channelResult));
 	}
 
-	private Map<String, Object> executeInTransaction(
+	/**
+	 * Ensures a NOTPAY trade exists. If the path is local-only (point / deposit / pos / zero-fee), completes payment
+	 * in the same transaction and returns {@link PaymentPrepareResult#completed()}.
+	 */
+	private PaymentPrepareResult preparePaymentInTx(
 			Map<String, Object> authInfo,
 			Map<String, Object> data,
 			String payType,
 			long companyId,
 			String orderId,
-			long orderIdLong,
 			long distributorId,
-			long distributorIdForSetting,
 			int payFee,
 			String payChannel,
 			String tradeSourceType) {
@@ -221,7 +247,7 @@ public class OrdersPaymentDoPaymentService {
 			Map<String, Object> out = new LinkedHashMap<>();
 			out.put("pay_status", true);
 			out.put("trade_info", buildTradeInfoMap(orderId, trade.getTradeId(), tradeSourceType));
-			return out;
+			return PaymentPrepareResult.completed(out);
 		}
 
 		if ("point".equals(payType)) {
@@ -239,7 +265,7 @@ public class OrdersPaymentDoPaymentService {
 			Map<String, Object> out = new LinkedHashMap<>();
 			out.put("pay_status", true);
 			out.put("trade_info", buildTradeInfoMap(orderId, trade.getTradeId(), tradeSourceType));
-			return out;
+			return PaymentPrepareResult.completed(out);
 		}
 
 		if ("prepaid_point".equals(payType)) {
@@ -248,7 +274,7 @@ public class OrdersPaymentDoPaymentService {
 			Map<String, Object> out = new LinkedHashMap<>();
 			out.put("pay_status", true);
 			out.put("trade_info", buildTradeInfoMap(orderId, trade.getTradeId(), tradeSourceType));
-			return out;
+			return PaymentPrepareResult.completed(out);
 		}
 
 		if ("deposit".equals(payType)) {
@@ -267,7 +293,7 @@ public class OrdersPaymentDoPaymentService {
 			Map<String, Object> out = new LinkedHashMap<>();
 			out.put("pay_status", true);
 			out.put("trade_info", buildTradeInfoMap(orderId, trade.getTradeId(), tradeSourceType));
-			return out;
+			return PaymentPrepareResult.completed(out);
 		}
 
 		if ("pos".equals(payType)) {
@@ -276,9 +302,35 @@ public class OrdersPaymentDoPaymentService {
 			out.put("money", String.valueOf(payFee));
 			out.put("pay_status", true);
 			out.put("trade_info", buildTradeInfoMap(orderId, trade.getTradeId(), tradeSourceType));
-			return out;
+			return PaymentPrepareResult.completed(out);
 		}
 
+		if ("bspay".equals(payType)
+				|| "adapay".equals(payType)
+				|| payType.startsWith("wxpay")
+				|| payType.startsWith("alipay")
+				|| "hfpay".equals(payType)
+				|| "offline_pay".equals(payType)
+				|| "paypal".equals(payType)
+				|| "doumen_intl".equals(payType)) {
+			return PaymentPrepareResult.pendingExternal(trade, payType, payFee);
+		}
+
+		throw new BadRequestException("无此类型支付");
+	}
+
+	/** Invokes payment channel SDKs with no open DB transaction. */
+	private ExternalChannelResult invokeExternalChannel(
+			Map<String, Object> authInfo,
+			Map<String, Object> data,
+			String payType,
+			long companyId,
+			String orderId,
+			long distributorIdForSetting,
+			int payFee,
+			String payChannel,
+			String tradeSourceType,
+			Trade trade) {
 		if ("bspay".equals(payType)) {
 			Map<String, Object> merchantCfg = requireBspaySettingMap(companyId);
 			String body = str(data.get("body"));
@@ -303,11 +355,9 @@ public class OrdersPaymentDoPaymentService {
 							remark,
 							source,
 							false);
-			persistBspayAfterCreate(trade.getTradeId(), outcome);
 			Map<String, Object> client = new LinkedHashMap<>(outcome.clientPaymentParams());
 			client.put("trade_info", buildTradeInfoMap(orderId, trade.getTradeId(), tradeSourceType));
-			savePaymentParams(trade.getTradeId(), client);
-			return client;
+			return ExternalChannelResult.bspay(client, outcome);
 		}
 
 		if ("adapay".equals(payType)) {
@@ -321,11 +371,9 @@ public class OrdersPaymentDoPaymentService {
 			MembercardAdapayPaymentSdkService.AdapayMembercardOutcome outcome =
 					membercardAdapayPaymentSdkService.createPayment(
 							companyId, merchantCfg, trade.getTradeId(), payChannel, payFee, openId, title, desc, tradeSourceType);
-			persistAdapayAfterCreate(trade.getTradeId(), outcome);
 			Map<String, Object> client = new LinkedHashMap<>(outcome.clientPaymentParams());
 			client.put("trade_info", buildTradeInfoMap(orderId, trade.getTradeId(), tradeSourceType));
-			savePaymentParams(trade.getTradeId(), client);
-			return client;
+			return ExternalChannelResult.adapay(client, outcome);
 		}
 
 		if (payType.startsWith("wxpay")
@@ -337,17 +385,64 @@ public class OrdersPaymentDoPaymentService {
 			Map<String, Object> client =
 					ordersExternalPayParamBuildService.buildPayParamsOrInvoke(
 							payType, companyId, distributorIdForSetting, authInfo, data, trade);
-			if (Boolean.TRUE.equals(client.get("pay_status"))) {
-				finalizeTradeSuccess(trade);
-			}
 			if (!client.containsKey("trade_info")) {
 				client.put("trade_info", buildTradeInfoMap(orderId, trade.getTradeId(), tradeSourceType));
 			}
-			savePaymentParams(trade.getTradeId(), client);
-			return client;
+			return ExternalChannelResult.generic(client);
 		}
 
 		throw new BadRequestException("无此类型支付");
+	}
+
+	private Map<String, Object> persistExternalPaymentInTx(
+			Trade trade, String orderId, String tradeSourceType, ExternalChannelResult channelResult) {
+		Map<String, Object> client = channelResult.client();
+		if (channelResult.bspayOutcome() != null) {
+			persistBspayAfterCreate(trade.getTradeId(), channelResult.bspayOutcome());
+		}
+		if (channelResult.adapayOutcome() != null) {
+			persistAdapayAfterCreate(trade.getTradeId(), channelResult.adapayOutcome());
+		}
+		if (Boolean.TRUE.equals(client.get("pay_status"))) {
+			finalizeTradeSuccess(trade);
+		}
+		if (!client.containsKey("trade_info")) {
+			client.put("trade_info", buildTradeInfoMap(orderId, trade.getTradeId(), tradeSourceType));
+		}
+		savePaymentParams(trade.getTradeId(), client);
+		return client;
+	}
+
+	private record PaymentPrepareResult(
+			boolean completed, Map<String, Object> completedResult, Trade trade, String payType, int payFee) {
+
+		static PaymentPrepareResult completed(Map<String, Object> result) {
+			return new PaymentPrepareResult(true, result, null, null, 0);
+		}
+
+		static PaymentPrepareResult pendingExternal(Trade trade, String payType, int payFee) {
+			return new PaymentPrepareResult(false, null, trade, payType, payFee);
+		}
+	}
+
+	private record ExternalChannelResult(
+			Map<String, Object> client,
+			MembercardBsPayPaymentSdkService.BsPayMembercardOutcome bspayOutcome,
+			MembercardAdapayPaymentSdkService.AdapayMembercardOutcome adapayOutcome) {
+
+		static ExternalChannelResult generic(Map<String, Object> client) {
+			return new ExternalChannelResult(client, null, null);
+		}
+
+		static ExternalChannelResult bspay(
+				Map<String, Object> client, MembercardBsPayPaymentSdkService.BsPayMembercardOutcome outcome) {
+			return new ExternalChannelResult(client, outcome, null);
+		}
+
+		static ExternalChannelResult adapay(
+				Map<String, Object> client, MembercardAdapayPaymentSdkService.AdapayMembercardOutcome outcome) {
+			return new ExternalChannelResult(client, null, outcome);
+		}
 	}
 
 	private void assertPayConfigReady(String payType, long companyId, long distributorId) {

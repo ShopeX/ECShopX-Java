@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:c563cd11baf5f63d8d5bdc327bc3c33aa60dfda98f3f958ac68e9faad548270b",
+  "pageVersion": "sha256:2140bdf94d9d1884ed5e76c94e555df6c1256ad9d71c8cb1142b3f3a9cfd2c47",
   "claims": [
     {
       "id": "claim_1f618faf51234a25a7a90fd65c384347",
@@ -645,10 +645,50 @@
           "version": "repo-file-v1:sha256:ce6d7aa1918a89a1f4d089f84ca8f7793734347b24e2c59b74e5544055e8f91c"
         }
       ]
+    },
+    {
+      "id": "claim_b487451670a742c9ab0229d3aa0c1978",
+      "statement": "The Shuyun open-platform admin config surface (ShuyunOpenPlatformConfigController, @AdminAuth GET/PUT /api/v1/shuyun/open-platform/config, aliases shuyun.open_platform.config.get/put) never exposes the stored access token: OpenPlatformConfigService.getAdminView returns access_token only masked by maskSecret (empty string when empty, \"****\" when <=4 chars, otherwise \"****\" plus the last 4 characters), alongside a masked app_secret_masked and a default shell view (empty credentials, plat_code=OFFLINE, is_enabled=false) when no config row exists (ECX-10945).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/api/admin/v1/ShuyunOpenPlatformConfigController.java#L38-L75",
+          "version": "repo-lines-v1:sha256:1e93798b9367ca2e02428266d5c3eee5483dda5a1b69323b0eb6fbee7e07deea:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNjZGNkNjZiYTQ0OWI5ZDY0YmMxZGJiMzc2MjgxZjJhM2Y0NWE0ZTE1OGM2MDZiOTJiZmJkMjA0YjFlOGZkOTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU1NGMxMDIzZTMxMGM4ZjE5YWUxOGM1MjYxYTYzNGRlNzk0ZGI4Y2Q1Njc1N2Y2OGQwZDMzZjZhMWY2YzQ3M2EiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY1NWE5Nzg2NGY5NjBhY2ZmZThmOTdkMTE1YmMzNDY0YmY2M2EzZDcyNzE5NWRlYzJiNjUzNDJiZTNkOTkyY2QifQ"
+        },
+        {
+          "resource": "repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/service/openplatform/OpenPlatformConfigService.java#L274-L284",
+          "version": "repo-lines-v1:sha256:3a4e2470facb00c732e0a1cc3fe3c129eeeaf489091a5adbe05b02fbde0d11dd:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM5OWI0ZDZlODIyMWUzY2Q5ZmI5MWY1MzA3Yzc4NTkyNmZlZDlhYzJjZGM2NWQ3ODc3ZTEyOGFkMzcyMzA5YTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFiOGU4NTVjMDdkNjlhNjFlMjUwMDU4YTY0NzIwYTZkMzI3NDgyNWYxOTQyOTdhNGU2NGIxNzM3NzNkODM1Y2EifQ"
+        },
+        {
+          "resource": "repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/service/openplatform/OpenPlatformConfigService.java#L95-L122",
+          "version": "repo-lines-v1:sha256:81f1bbd132a83413ea7461934a09b70f96736c78594d1639df814600e243dcb5:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ0MmE4YzUyM2VjZGI1MzU5ZWQ1NTA5YzQ0MzRkNDIzZWEyMWU4Mzg3OTM2NzI1N2I4NjA3ZjAzNTIwNmQzYzkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkwYTFjMjIxYTk2ZGJhMTJiYzY0OGE2NTFkMzQ4M2ZkZjkzYzVmZWM2YjEzNWYyYTQyYjQxYTJkMTc3NGVlMzMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE0MDUwNDU1M2E4YzgyYTI2NjM4ZWUzNjM4NjhiMjcwMmY1NDk1MDIxNzI1N2U5MDcyMTNhNWMwMzg1ZTUwMjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjUyMzNkZWIyZmRhZjM1MjNlN2VkN2UxNzM3ODBiNTRkOTUxMDYwYTdjNWMyYWE3OTIxYWFjNzVlM2NhMTlkOTAifQ"
+        },
+        {
+          "resource": "repo://ecshopx-shuyun/src/test/java/cn/shopex/ecshopx/shuyun/service/openplatform/OpenPlatformConfigServiceTest.java#L40-L78",
+          "version": "repo-lines-v1:sha256:3bba49a9cf5d7984fa5e923bb753a5d5c8dc8ba6a7c027073cd240a09e6128b2:eyJzZWxlY3RlZExpbmVDb3VudCI6MzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZhZTZkNGNjZjA0MWUzY2MxNWZmMGFhOTYyMzRmNGMxY2E2YmQ2ODA5ZGFjMGE3NmYyODYwOWRjODRmZjdkNjQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiYTFiMWYwZDkzOTU3NDJlMjE2ZjcxYzllOTBjOGZiOWFhNmI0Mjk2YWFhNGNlN2NjMDVjOTZlYTViODdiYWYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFlOTUyZjIxNDA2NmFiOWMxMWU1NGY5MjkwMmNhNDM4Yzc4OGMzYTc3ODU0YTZmMzFlMjExYmVlYzlkMDg0NmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZkNWIzOTFlNWVmYzk5YTNhM2U1YzhhYzEyZjRjMzg4MTQ3YTg1NGRmZTAwYTkzMjExZWFmM2RlOTk0YThmNGEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_945bee91c4d54268ae59671f94747879",
+      "statement": "OpenPlatformConfigService.saveFromAdmin classifies admin input into patch shapes with different gates: an access-token-only patch requires an existing row holding app_id/app_secret; a sync-enable-only patch requires an existing row; a credential-bootstrap patch (app_id/app_secret) creates the row with is_enabled=0, plat_code=OFFLINE and auth_value backfilled from ecshopx.shuyun.open-platform.auth-value when empty; any other shape requires an existing row. Setting a non-empty access_token clears is_over_due to \"0\" while an explicit empty one nulls the stored token, and enabling sync is refused with ResourceException unless a non-expired access token is present.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/service/openplatform/OpenPlatformConfigService.java#L124-L208",
+          "version": "repo-lines-v1:sha256:427eecac3038edd1b0f4ccd1e3bbd0cef8486ea26933e9adf694cbd1e106c575:eyJzZWxlY3RlZExpbmVDb3VudCI6ODUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhkNGU0N2RjYjg1ODVjMDUwNTZhOWNiOTEyZGI3YTQ0ZDZhNDhlNDc4YmZlN2JkY2EyYzYzMzRkMzgzNjQ5ZGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc5MWJhOGJkN2M4MGFiNjI0M2QyZDZiMGRjMjUxMTA5MmI4ZjA3NzlmZWVlNDM2OTdjNmMwZDcxMGU1ZWRkYjMifQ"
+        },
+        {
+          "resource": "repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/service/openplatform/OpenPlatformConfigService.java#L220-L232",
+          "version": "repo-lines-v1:sha256:6283117c26ec8b8d6a376c2a9b08274d8cf62fd09897f0f382b89595d2b97bd3:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE0NjU4NWQ2MGY3OTI1MDQ4YmVmZDhhZDExYzJmZGY4YjdlMzA0YWM4NDAyNWQxMjg1NWEyMWJkNWYyZTNhZjQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZkNGE1OTY1YzMyZTM0ZjczMGU2YWYzZjE5Yzc2Njk2NDczNDIwOTg5NDNjYjIxOWRiNDcwZDZhNWRhZjA3ODUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM1ZGZiYjc0YmZmMDVhZjZmOTAxNDQ0ZjhlYWQxYWQxNGJhMGMzNzk3OTY0NDE4NTg2NmE4ZmExOTFmOGQ4OGQifQ"
+        },
+        {
+          "resource": "repo://ecshopx-shuyun/src/test/java/cn/shopex/ecshopx/shuyun/service/openplatform/OpenPlatformConfigServiceTest.java#L80-L108",
+          "version": "repo-lines-v1:sha256:6f863959e2cd428877d3388f33e1799e595fe7a17ea86815b40907cd19c354c6:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMxYjExNzQxNDAwOGU1ZWE1ZWZmY2IwODQ0MTQ3MTc4NWRjMDUyY2E2NDk3MmU5ZmJhZWNlM2FkZTY3NjA0NWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJmZTZhNGM4MDEwOTc1YTkxYzg0ZWUxYzViYjI2ODgzNWJkZDk5MDZiZWQxOWNlZjk1NTY3ZTRkYzc5MjQ4NWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.9.0",
-    "at": "2026-11-05T17:10:02.238Z"
+    "at": "2026-11-08T17:14:16.576Z"
   }
 }

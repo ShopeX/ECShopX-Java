@@ -1,8 +1,8 @@
 ---
 type: domain-reference
 title: Payments and Channels
-description: The payment stack — ecshopx-payment settings/notify facades plus the channel bundles hfpay, adapay, bspay, and chinaums-pay — covering the notify endpoints and signature verification, the order-side vs deposit-side port inversion, channel refund executors, merchant withdrawals, and the XXL-Job retry loops.
-tags: [payments, hfpay, adapay, bspay, chinaums, wxpay, alipay, doumen-intl, notify, refund, withdraw, dispatch-bus, xxl-job, redis]
+description: The payment stack — ecshopx-payment settings/notify facades plus the channel bundles hfpay, adapay, bspay, and chinaums-pay — covering the notify endpoints and signature verification, the payment-subject (distributor-level merchant config) resolution contract, the order-side vs deposit-side port inversion, channel refund executors, merchant withdrawals, and the XXL-Job retry loops.
+tags: [payments, hfpay, adapay, bspay, chinaums, wxpay, alipay, doumen-intl, payment-subject, notify, refund, withdraw, dispatch-bus, xxl-job, redis]
 sources:
   - id: openwiki-source-f0779693ebca8a2fc42508b5
     resource: repo://ecshopx-adapay/src/main/java/cn/shopex/ecshopx/adapay/api/admin/v1/CallBackController.java
@@ -58,12 +58,22 @@ sources:
     resource: repo://ecshopx-bspay/src/main/java/cn/shopex/ecshopx/bspay/api/admin/v1/WithdrawController.java
   - id: openwiki-source-9cec63ff30d61ff6b8bbb144
     resource: repo://ecshopx-bspay/src/main/java/cn/shopex/ecshopx/bspay/dispatch/WithdrawJobHandler.java
+  - id: openwiki-source-37aab463708a3c624c0cbf7c
+    resource: repo://ecshopx-bspay/src/main/java/cn/shopex/ecshopx/bspay/service/BspayTradeDistributorNameScopeGuard.java
+  - id: openwiki-source-759a1d3eb485506bc534a870
+    resource: repo://ecshopx-bspay/src/main/java/cn/shopex/ecshopx/bspay/service/BspayTradeExportDataService.java
+  - id: openwiki-source-a40f7d82f8cf21457275d711
+    resource: repo://ecshopx-bspay/src/main/java/cn/shopex/ecshopx/bspay/service/BspayTradeListQueryService.java
   - id: openwiki-source-a9b3d42f20ee6b6123efdad3
     resource: repo://ecshopx-bspay/src/main/java/cn/shopex/ecshopx/bspay/service/callback/BsPayCallbackOrchestratorService.java
   - id: openwiki-source-a0b51191377165d69cd19b59
     resource: repo://ecshopx-bspay/src/main/java/cn/shopex/ecshopx/bspay/service/WithdrawApplyService.java
   - id: openwiki-source-6a9bce1272417c93a3d34e17
     resource: repo://ecshopx-bspay/src/main/java/cn/shopex/ecshopx/bspay/service/WithdrawHuifuWithdrawTransactionalService.java
+  - id: openwiki-source-cec5f8a0833d352d13fdf72a
+    resource: repo://ecshopx-bspay/src/test/java/cn/shopex/ecshopx/bspay/service/BspayTradeExportDataServiceDistributorNameScopeTest.java
+  - id: openwiki-source-00e76876ce646c1cc4f78559
+    resource: repo://ecshopx-bspay/src/test/java/cn/shopex/ecshopx/bspay/service/BspayTradeListQueryServiceDistributorNameScopeTest.java
   - id: openwiki-source-240bbb49a13e52e65298ab63
     resource: repo://ecshopx-bspay/src/test/java/cn/shopex/ecshopx/bspay/service/WithdrawApplyServiceAuditScopeTest.java
   - id: openwiki-source-8de6634005b73f56ceb39757
@@ -82,6 +92,8 @@ sources:
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/HfpayDispatchEventNames.java
   - id: openwiki-source-ab72bd482510bb3bca15def9
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/WithdrawJobDispatchPublisher.java
+  - id: openwiki-source-68b9a0e3c776f0fe8beabd26
+    resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/payment/PaymentSubjectDistributorIdPort.java
   - id: openwiki-source-a8612ba4174612f85a50345a
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/port/payment/AdaPayPaymentConfirmRetryPort.java
   - id: openwiki-source-242275da3cf46b315f92aa81
@@ -94,6 +106,10 @@ sources:
     resource: repo://ecshopx-deposit/src/main/java/cn/shopex/ecshopx/deposit/integration/alipay/AlipayNotifyDepositSidePortImpl.java
   - id: openwiki-source-f70b6d04e8550513ce6b3aa6
     resource: repo://ecshopx-deposit/src/main/java/cn/shopex/ecshopx/deposit/service/AdapayDepositTradeRechargeCallbackService.java
+  - id: openwiki-source-2c46dbdf9b100924e1f98150
+    resource: repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/domain/Distributor.java
+  - id: openwiki-source-d1961192a688961d2d90ccf4
+    resource: repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/integration/PaymentSubjectDistributorIdPortImpl.java
   - id: openwiki-source-ecc705da626fec47a869310b
     resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/OperatorJwtAuthenticationFilter.java
   - id: openwiki-source-ea69608f9a94a609652b6617
@@ -126,10 +142,18 @@ sources:
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/bspay/BsPayOrdersTradePaymentCallbackService.java
   - id: openwiki-source-8da35df47376946a9e485f31
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/MerchantPaymentTradeQueryService.java
+  - id: openwiki-source-623ecfb6b4a37473cdb9935b
+    resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/payment/OrdersExternalPayParamBuildService.java
+  - id: openwiki-source-7832b5e57d5d960a02d053c2
+    resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/payment/OrdersPaymentChannelQueryService.java
+  - id: openwiki-source-11504f9b8ac58d0bd088b826
+    resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/payment/OrdersPaymentDoPaymentService.java
   - id: openwiki-source-707d140d2f41dd803e87ea73
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/refund/OrdersRefundPaymentDispatchService.java
   - id: openwiki-source-c268620ee804c7ab541cdce7
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/wxpay/WxpayNotifyCompanyIdPortImpl.java
+  - id: openwiki-source-1dadfec169f4df087b2904a0
+    resource: repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/orders/service/payment/OrdersPaymentDoPaymentServicePaymentSubjectTest.java
   - id: openwiki-source-bc9f37bdec0515d8e6ec2ca8
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/api/admin/v1/PaymentController.java
   - id: openwiki-source-8c69e7dfe69ee3ac9984cd76
@@ -168,12 +192,18 @@ sources:
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/AlipayH5SyncReturnService.java
   - id: openwiki-source-fc41d8fb1ed3fb46beacafec
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/AlipayNotifyFacade.java
+  - id: openwiki-source-44c42192a41742b2edb67e6b
+    resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/AlipayNotifyPaymentContextLoader.java
+  - id: openwiki-source-aa7828341fef670e794e9d62
+    resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/AlipayPaymentConfigValidationService.java
   - id: openwiki-source-a119bdf135fa6b12d8b0f6a3
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/ChinaumsNotifyFacade.java
   - id: openwiki-source-1f30db3ef9ee7a8a6b8fc907
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/DoumenIntlNotifyFacade.java
   - id: openwiki-source-c44d7605a1d1650caa01cb58
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/DoumenIntlTokenRefreshScheduler.java
+  - id: openwiki-source-4ac568ccd29169fa2fd1ca52
+    resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/front/FrontPaymentSettingReadService.java
   - id: openwiki-source-a03bf98f742e0148fbe2281e
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/orderrefund/AlipayTradeAftersalesRefundRunner.java
   - id: openwiki-source-5b190cf2f6259a6611df6972
@@ -194,21 +224,23 @@ sources:
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/WxpayNotifyFacade.java
   - id: openwiki-source-2553f68c9c88a576ee35a13c
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/WxpayNotifyPaymentContextLoader.java
+  - id: openwiki-source-84f8cd25ebcbd75c25e4b431
+    resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/WxpayPaymentConfigValidationService.java
   - id: openwiki-source-3107263592075967c375914d
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/support/DoumenIntlSignature.java
   - id: openwiki-source-52e932983e89ca8caa2df791
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/support/DoumenIntlStatusMapper.java
   - id: openwiki-source-c95fb5887e03d45919d723b1
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/support/PaymentSettingRedisKeys.java
-generated: { by: "openwiki/0.9.0", at: "2026-11-05T17:10:02.238Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-09T03:34:48.355Z" }
 verified:
   - by: openwiki/0.9.0
-    at: 2026-11-05T17:10:02.238Z
+    at: 2026-11-09T03:34:48.355Z
 ---
 
 # Payments and Channels
 
-Five bundles make up the payment stack. **`ecshopx-payment`** (支付配置与通道域, `payment/package-info.java`) is the hub: it owns the admin payment-setting API, the Redis-stored channel configuration, the wechat/alipay/chinaums/doumen-intl **notify facades**, and the membercard SDK pay services. The four **channel bundles** implement the gateways: **`ecshopx-hfpay`** (汇付支付域, Huifu chinapnr ACOU), **`ecshopx-adapay`** (AdaPay 域模块, Huifu Adapay), **`ecshopx-bspay`** (汇付斗拱支付域, Huifu BSPay/斗拱), and **`ecshopx-chinaums-pay`** (银联商务支付域, China UnionPay Merchant Services). None of them owns the trade: the `Trade` row and its `NOTPAY`-guard live in **ecshopx-orders** (see [Orders Domain](orders.md)); deposit recharge state lives in **ecshopx-deposit**. The payment bundles reach both through **port interfaces they define themselves and orders/deposit implement** — the same inversion pattern as the cart ports ([Cross-Bundle Communication](../architecture/cross-bundle-communication.md)). Money is fen everywhere; only the HfPay ACOU payloads convert to yuan strings at the wire boundary.
+Five bundles make up the payment stack. **`ecshopx-payment`** (支付配置与通道域, `payment/package-info.java`) is the hub: it owns the admin payment-setting API, the Redis-stored channel configuration, the wechat/alipay/chinaums/doumen-intl **notify facades**, and the membercard SDK pay services. The four **channel bundles** implement the gateways: **`ecshopx-hfpay`** (汇付支付域, Huifu chinapnr ACOU), **`ecshopx-adapay`** (AdaPay 域模块, Huifu Adapay), **`ecshopx-bspay`** (汇付斗拱支付域, Huifu BSPay/斗拱), and **`ecshopx-chinaums-pay`** (银联商务支付域, China UnionPay Merchant Services). None of them owns the trade: the `Trade` row and its `NOTPAY`-guard live in **ecshopx-orders** (see [Orders Domain](orders.md)); deposit recharge state lives in **ecshopx-deposit**. The payment bundles reach both through **port interfaces they define themselves and orders/deposit implement** — the same inversion pattern as the cart ports ([Cross-Bundle Communication](../architecture/cross-bundle-communication.md)). Money is fen everywhere; only the HfPay ACOU payloads convert to yuan strings at the wire boundary. A single `payment_subject` flag on the distributor row decides whether a store settles through the platform merchant accounts or its own — the resolution contract is `PaymentSubjectDistributorIdPort` in ecshopx-common (see the payment-subject section below).
 
 ## The notify surfaces
 
@@ -262,7 +294,7 @@ Routing is one field: the `attach` payload's `depositRecharge` marker sends the 
 
 `AlipayNotifyFacade.handle` (`POST /api/v1/alipay/notify`) and `AlipayH5SyncReturnService.alipayResult` (`GET /api/v1/h5app/wxapp/trade/payment/alipay/result`, the front `@FrontNoAuth` controller) share the same discipline: **resolve the owning company and distributor from the trade row before any signature check**, because the RSA verify keys live in the per-company (and possibly per-distributor) Redis setting.
 
-The async facade loads the params, decides deposit-vs-order from the `attach` marker, then asks the owning side to prove the company: deposit → `AlipayNotifyDepositSidePort.requireCompanyIdByDepositTradeId` (reads the `DepositTrade` row, rejects a missing/blank/invalid `company_id`); order → `AlipayNotifyOrderSidePort.requireCompanyIdByTradeId` (same shape over the `Trade` row). In both branches the facade **rejects a cross-company callback** (`储值单企业与回调企业不一致` / `订单企业与回调企业不一致`) when the row's company differs from the notify context company, then resolves `distributorIdForSetting` via `resolveDistributorIdForAlipayRedis` and only then loads the `alipayPaymentSetting` key and calls `AlipayAsyncNotifyVerificationService.verifySignedNotify`. `TRADE_SUCCESS`/`TRADE_FINISHED` normalize to `SUCCESS`. Any exception inside the apply is logged and answered with an **empty 200** (`ResponseEntity.ok().build()`), so a business replay — including the deposit callback's guarded-update loser (`更新已处理，不需要更新`) — never triggers a gateway retry.
+The async facade loads the params through `AlipayNotifyPaymentContextLoader` (flattens the form body, requires `passback_params` — absent, it short-circuits to a `{"data":[]}` 200 — decodes the passback query string, and pulls `company_id` from it, throwing `缺少企业编号` when missing), decides deposit-vs-order from the `attach` marker, then asks the owning side to prove the company: deposit → `AlipayNotifyDepositSidePort.requireCompanyIdByDepositTradeId` (reads the `DepositTrade` row, rejects a missing/blank/invalid `company_id`); order → `AlipayNotifyOrderSidePort.requireCompanyIdByTradeId` (same shape over the `Trade` row). In both branches the facade **rejects a cross-company callback** (`储值单企业与回调企业不一致` / `订单企业与回调企业不一致`) when the row's company differs from the notify context company, then resolves `distributorIdForSetting` via `resolveDistributorIdForAlipayRedis`. Two gates then stand before verification: `AlipayPaymentConfigValidationService.assertAsyncNotifyConfigComplete` fails fast with `支付宝信息未配置，请联系商家` when the Redis setting lacks any of `app_id`/`ali_public_key`/`private_key`, and only then does the facade load the `alipayPaymentSetting` signing material and call `AlipayAsyncNotifyVerificationService.verifySignedNotify`. `TRADE_SUCCESS`/`TRADE_FINISHED` normalize to `SUCCESS`. Any exception inside the apply is logged and answered with an **empty 200** (`ResponseEntity.ok().build()`), so a business replay — including the deposit callback's guarded-update loser (`更新已处理，不需要更新`) — never triggers a gateway retry.
 
 The H5 sync-return is stricter because it is a *signed front-channel return, not a server notify*: after the same verify it **queries the gateway for ground truth** via `AlipayOpenapiTradeQueryService.queryTrade` and routes on the queried `trade_status` (not the return params), decoding `passback_params` to recover the `attach`/`company_id` context. The deposit branch additionally cross-checks a passback `company_id` against the deposit row. On a `SUCCESS` for a non-deposit trade it invokes only `AlipayNotifyOrderSidePort`; the Jushuitan dispatch-bus publish stays in the orders-layer callback shared with the async notify, and the trade-finish fan-out can reach the WXA template path (which may dispatch `job:114` under wxpay/deposit pay types).
 
@@ -291,7 +323,7 @@ The cross-cutting check is `PaymentSettingDistributorAccessGuard` (ECX-10856/108
 
 All channel credentials live in Redis, never in the orders tables. The key grammar (`PaymentSettingRedisKeys`, on the **companys** Redis unless noted):
 
-* `(distributorId?) + wxPaymentSetting: + sha1(companyId)` — same shape for `alipayPaymentSetting:`, `paypalPaymentSetting:`; the distributor prefix exists so a distributor with `payment_subject=1` can carry its own credentials.
+* `(distributorId?) + wxPaymentSetting: + sha1(companyId)` — same shape for `alipayPaymentSetting:`, `paypalPaymentSetting:`; the distributor prefix exists so a distributor with `payment_subject=1` can carry its own credentials. Readers never pass the raw request/trade distributor id into these keys — they normalize through `PaymentSubjectDistributorIdPort` (or the notify-side `resolveDistributorIdForAlipayRedis` peek) first, so any non-self-settling distributor reads the unprefixed platform bucket (see the payment-subject section).
 * `doumenIntlPaymentSetting: + sha1(companyId)` — platform-level, no distributor bucket.
 * `hfPaymentSetting:`, `bspaySetting:`, `icbcPaymentSetting:`, `paymentTypeOpenConfig:`, `chinaumsPaymentSetting:{sha1}_{subKey}`, `offline_paySetting:{sha1}:{lang}` (lang defaults `zh-CN`).
 * `adaPaySetting: + sha1(companyId)` — on the **shared** Redis, not companys (the one deliberate exception, kept from PHP).
@@ -300,11 +332,30 @@ All channel credentials live in Redis, never in the orders tables. The key gramm
 
 **Doumen mutual exclusion** (`DoumenIntlMutualExclusionService`): doumen-intl is an either/or cashier — enabling it closes every other channel (`closeAllOtherPaymentMethods` rewrites `is_open` across all nine setting keys), and with doumen open, opening any other channel throws `请先关闭斗门国际收银台` ("close the doumen international cashier first"); `point_pay` is exempt both ways. `ecshopx.payment.hfpay-is-open` (default false, accepts `1/true/yes/on`) is a separate instance-level flag exposed by `/hfpayversionstatus` (`HfpayVersionStatusService`) to pick the hfpay console generation. Channel enablement is therefore config-gated in two layers — the per-company Redis settings and the instance env flags — see [Redis Databases](../concepts/redis-databases.md) for the companys-vs-shared split and [Configuration](../operations/configuration.md) for the env knobs (`ecshopx.payment.doumen-intl.*`, `ecshopx.ums.*`, `ecshopx.bspay.*`, `ecshopx.hfpay.*`, `adapay.*`).
 
-## Distributor-scope guards on adapay surfaces
+## Payment subject: distributor-level merchant config vs platform fallback
+
+A distributor can opt out of the platform's wxpay/alipay/hfpay merchant accounts and settle under its own. The switch is the `Distributor.payment_subject` column (distribution bundle; orders mirrors it read-only through the `DistributionDistributorPeek` mapper): **`payment_subject=1` means the distributor carries its own merchant config** (the distributor-prefixed Redis bucket `distributorId + wxPaymentSetting:`/`alipayPaymentSetting:…`), and **anything else — flag 0/null, or a distributor row that doesn't exist — collapses to distributor id 0**, the platform-level bucket. Runtime code never reads the raw request `distributor_id` against Redis: it first normalizes to a `distributorIdForSetting`.
+
+The normalizer is **`PaymentSubjectDistributorIdPort`** (`ecshopx-common/src/main/java/cn/shopex/ecshopx/common/payment/PaymentSubjectDistributorIdPort.java`), a one-method common-bundle port (`long resolveActualDistributorId(long companyId, long distributorId)`) implemented in **ecshopx-distribution** by `PaymentSubjectDistributorIdPortImpl` — a `LIMIT 1` lookup of `(company_id, distributor_id)` on the distributor table that returns the id only when the row exists and its `payment_subject` equals 1, else 0. Declaring the port in common keeps the dependency direction intact: **orders and payment depend on the common port, never on the distribution bundle** ([Cross-Bundle Communication](../architecture/cross-bundle-communication.md), [Stores and Merchants Domain](stores-and-merchants.md)).
+
+Consumers of the resolved id:
+
+* **Order payment creation** — orders' `OrdersPaymentDoPaymentService.doPayment` resolves the id before anything else, then gates on it: `assertPayConfigReady` delegates to `WxpayPaymentConfigValidationService.assertConfigComplete` (requires `app_id`/`merchant_id`/`key`/`cert`/`cert_key`) or `AlipayPaymentConfigValidationService.assertConfigComplete` (requires `app_id`/`ali_public_key`/`private_key`) against the resolved bucket, throwing `店铺…配置不完整` when the resolved distributor bucket is incomplete and `平台…配置不完整` for the platform bucket. The same id flows into `OrdersExternalPayParamBuildService.buildPayParamsOrInvoke`, so the SDK params are built from the same merchant account that was validated — and the trade row still records the real request `distributor_id`. Probe: `OrdersPaymentDoPaymentServicePaymentSubjectTest` (platform-subject order pays through the `0` bucket while the trade keeps `distributor_id=285`).
+* **Payment-status query** — orders' `OrdersPaymentChannelQueryService.query` re-resolves from the trade row before building the wxpay `orderquery` XML or running the alipay trade query.
+* **Front pay-channel list** — payment's `FrontPaymentSettingReadService` resolves the id in `readWxpayMap`/`readAlipayMap`/`appendAlipayMini`, so the storefront only advertises wxpay/alipay rows whose `is_open` setting lives in the bucket the money would actually settle to.
+* **Refunds** — `StandardOnlinePayAftersalesRefundExecutor` (the `@Order(50)` runner fan-out) re-resolves per refund before calling the wxpay secapi/alipay refund runners, so money returns through the same merchant account it arrived on.
+
+The **notify side predates the port** and converges on the same answer: the wxpay/alipay facades resolve `distributorIdForSetting` through `AlipayNotifyOrderSidePort.resolveDistributorIdForAlipayRedis`, whose orders-side impl reads the trade row's `distributor_id` and applies the identical rule against the peek table (`peek == null || paymentSubject != 1 → 0`). For hfpay, the resolved id is passed into `OrdersMiniProgramHfpayPayPort.assertConfigReady`/`buildClientPayParams` rather than a Redis key prefix.
+
+## Distributor-scope guards on trade surfaces
 
 Two shop-scope guards (PHP parity, ECX-10906/10908) keep distributor operators inside their own store on adapay surfaces:
 
 * **`AdapayTradeDistributorNameScopeGuard`** — `AdapayTradeListQueryService` (trade list) and `AdapayTradeExportDataService` (trade export) both honor a `distributor_name` request filter by resolving it to distributor ids **within the company**, but only after `assertAllowed(jwtMap)`: any JWT whose `operator_type` is `distributor` is rejected with `无权筛选其他店铺` (ForbiddenException), so a shop operator can never widen the trade listing/export beyond their JWT `distributor_id` (which is force-applied to the filter before the name check). The export path additionally caps at 15000 rows and records the export operation log before enqueuing the file job. Probes: `AdapayTradeDistributorNameScopeGuardTest`, `AdapayTradeListQueryServiceDistributorNameScopeTest`, `AdapayTradeExportDataServiceDistributorNameScopeTest`.
+### BSPay trade list/export: the same guard, ECX-10939/10941
+
+The bspay trade surfaces carry the identical hardening (`BspayTradeDistributorNameScopeGuard`, ECX-10939 export / ECX-10941 list): both `BspayTradeListQueryService.getTradelist` (trade list) and `BspayTradeExportDataService.exportTradeData` (trade export) honor a `distributor_name` request filter by resolving it to distributor ids within the company, but only after `assertAllowed(jwtMap)` — a JWT with `operator_type=distributor` is rejected with `无权筛选其他店铺` before any distributor lookup or trade query runs, so a shop operator can never widen bspay trade data beyond their JWT `distributor_id` (force-applied to the filter earlier, or an empty result / `导出有误,暂无数据导出` when the JWT carries no valid id). `merchant` operators are likewise pinned to their resolved `merchant_id`, and the list path additionally pins `supplier` operators. Admin/staff operators keep the name search. Probes: `BspayTradeDistributorNameScopeGuardTest`, `BspayTradeListQueryServiceDistributorNameScopeTest`, `BspayTradeExportDataServiceDistributorNameScopeTest`.
+
 * **`AdapayWithdrawSetDistributorScopeGuard`** — `AdapayWithdrawSetSaveService.save` (the per-distributor auto-withdraw rule: `isAuto`, `cash_amt` in yuan→fen, `cash_type` T0/T1/D1, legacy-serialized `rule`) requires a positive target distributor id, then `assertTargetAllowed(target, jwtMap)`: `admin` passes; everyone else must have the target inside their JWT shop scope (`distributor_id` plus every id in the `distributor_ids` claim), and only an empty JWT shop scope (HQ-style operator) gets company-wide latitude — the company membership of the target is then proven via `DistributorRepositoryGetInfoSimpleService.getDistributorInfoForCompanyShop`, with `店铺权限不足` on any miss. Probe: `AdapayWithdrawSetSaveServiceScopeTest`.
 
 ## Doumen-intl: token lifecycle and status mapping
@@ -444,6 +495,7 @@ Every handler follows the same envelope: run the service method, log cost, and o
 ## Invariants and failure semantics
 
 * **Verify before write.** All six live notify facades check the signature before touching the trade; a failed check fails the ack so the gateway retries.
+* **One resolved distributor per payment.** `PaymentSubjectDistributorIdPort` collapses any non-`payment_subject=1` (or missing) distributor to id 0, so config validation, SDK param building, status queries, refunds, and the front pay-channel list always agree on which merchant bucket a trade settles through; the notify side reaches the same answer via the trade-row peek in `resolveDistributorIdForAlipayRedis`.
 * **Bind the company before you verify.** Alipay (async and H5 sync-return) and doumen resolve the owning company/distributor from the trade or deposit row *before* signature verification, because the verify key lives in that row's Redis setting; alipay rejects a cross-company callback outright (`储值单企业与回调企业不一致`).
 * **Ack on business replay.** wxpay and doumen-intl swallow the already-processed exception and ack SUCCESS; chinaums/doumen return plain SUCCESS/`00000000`; bspay withdraw skips on SUCCESS status. The gateway should never retry a trade that is merely already handled — only a genuinely broken one.
 * **NOTPAY is the CAS.** Every orders-side callback (`applyTradePaymentNotify`, adapay, bspay) re-reads the trade and refuses to move a non-NOTPAY row; `trade_no` is assigned from the Redis daily sequence exactly once.
@@ -483,6 +535,8 @@ Every handler follows the same envelope: run the service method, log cost, and o
 * bootstrap: `HfpayDistributorWithdrawEventSyncBusDispatchFlowTest`, `HfpayPopularizeWithdrawEventSyncBusDispatchFlowTest`, `HfpayProfitSharingEventSyncBusDispatchFlowTest`, `WithdrawJobDispatchFlowTest` — end-to-end registry + publisher + listener assembly (the pattern every cross-bundle event should copy).
 * bspay withdraw: `WithdrawApplyServiceAuditScopeTest` — audit tenant scoping and admin-only enforcement; bootstrap `WithdrawJobDispatchFlowTest` — the `job:93` payload, REDIS/default-queue options, and handler → `executeHuifuWithdraw` wiring.
 * adapay scope guards: `AdapayTradeDistributorNameScopeGuardTest`, `AdapayTradeListQueryServiceDistributorNameScopeTest`, `AdapayTradeExportDataServiceDistributorNameScopeTest`, `AdapayWithdrawSetSaveServiceScopeTest` — the `distributor_name` filter ban and withdraw-set shop scope.
+* bspay scope guards (ECX-10939/10941): `BspayTradeDistributorNameScopeGuardTest`, `BspayTradeListQueryServiceDistributorNameScopeTest`, `BspayTradeExportDataServiceDistributorNameScopeTest` — the same `distributor_name` ban on bspay trade list/export: distributor JWTs are rejected before any lookup/query, admin JWTs resolve matched store ids within the company.
+* payment subject: `OrdersPaymentDoPaymentServicePaymentSubjectTest` — a `payment_subject=platform` order validates and builds wxpay params against the `0` bucket while the trade keeps the request distributor id; the point-pay case proves local payments never touch the channel config at all.
 * deposit: `AdapayDepositTradeRechargeCallbackServiceIdempotencyTest` (guarded-update SQL carries the `trade_status` guard, double-notify cannot double-credit) and `AdapayDepositTradeRechargeCallbackServiceSmsDispatchTest` (after-commit SMS publish).
 * adapay: `AdapayAutoCloseAftersalesPaymentConfirmationServiceTest`, `AdaPayPaymentConfirmRetryPortAdapterTest`, `OpenAccountServiceTest`; bspay: `BspayAutoCloseAftersalesPaymentConfirmationServiceTest`, `BspayPaymentConfirmRetryPortAdapterTest`.
 
@@ -490,7 +544,9 @@ Every handler follows the same envelope: run the service method, log cost, and o
 
 * [Orders Domain](orders.md) — the `Trade` state machine on the other side of every port here, `trade_no` sequencing, and the pay-success fan-out.
 * [Aftersales Domain](aftersales.md) — `doRefund`, the refund lifecycle that drives every executor bean above.
-* [Cross-Bundle Communication](../architecture/cross-bundle-communication.md) — the port-inversion pattern this stack uses against orders/deposit.
+* [Cross-Bundle Communication](../architecture/cross-bundle-communication.md) — the port-inversion pattern this stack uses against orders/deposit (and the direction `PaymentSubjectDistributorIdPort` keeps intact between common, distribution, and orders).
+* [Stores and Merchants Domain](stores-and-merchants.md) — the distributor row whose `payment_subject` flag the port reads.
+* [Order Payment Flow](../workflows/order-payment-flow.md) — the end-to-end pay path where `doPayment` resolves the payment subject.
 * [Dispatch Bus](../concepts/dispatch-bus.md) — the transport under every hfpay event listed here.
 * [Scheduling (XXL-Job)](../concepts/scheduling-xxljob.md) — executor wiring for the handlers above.
 * [Redis Databases](../concepts/redis-databases.md) — the companys vs shared split the setting keys straddle.

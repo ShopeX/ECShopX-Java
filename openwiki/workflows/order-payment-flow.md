@@ -1,11 +1,13 @@
 ---
 type: workflow
 title: "Workflow: Checkout, Payment, Notify, and Trade-Finish Fan-out"
-description: End-to-end trace of the money path — cart → order creation → payment initiation (wxapp member flow and admin 代客下单 deferred flow) → channel async notify → trade state CAS → trade-finish event fan-out (pay-success bridge, notifications, statistics, ERP pushes, profit sharing) — plus the deposit recharge variant.
-tags: [payment, trade, notify, wxpay, dispatch-bus, trade-finish, fan-out, orders, deposit, sms, statistics, jushuitan, wdterp, profit-sharing, shopadmin, deferred-order, pos, micropay, refund]
+description: End-to-end trace of the money path — cart → order creation → payment initiation (wxapp member flow and admin 代客下单 deferred flow) → channel async notify (WeChat and Alipay facades) → trade state CAS → trade-finish event fan-out (pay-success bridge, notifications, statistics, ERP pushes, profit sharing) — plus the deposit recharge variant.
+tags: [payment, trade, notify, wxpay, alipay, dispatch-bus, trade-finish, fan-out, orders, deposit, sms, statistics, jushuitan, wdterp, profit-sharing, shopadmin, deferred-order, pos, micropay, refund]
 sources:
   - id: openwiki-source-ea70eb6c045047448e446296
     resource: repo://.gitignore
+  - id: openwiki-source-7050bfe0cde098993d6b2bce
+    resource: repo://ecshopx-adapay/src/main/java/cn/shopex/ecshopx/adapay/service/callback/handler/AdapayCallbackPaymentHandler.java
   - id: openwiki-source-fd94d375300df90e9a5bdcb1
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/OrdersTradeFinishDispatchPublisherBeansConfig.java
   - id: openwiki-source-cc0af63e7b93bd7afc7164f3
@@ -16,10 +18,20 @@ sources:
     resource: repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/deposit/service/AdapayDepositTradeRechargeCallbackServiceIdempotencyTest.java
   - id: openwiki-source-48403aa24e1185d0a351e2e3
     resource: repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/dispatch/WxappPaymentTradeFinishSmsNotifySyncDispatchFlowTest.java
+  - id: openwiki-source-e3f608a3254de204f775497c
+    resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/OrdersTradeFinishDispatchPublisher.java
+  - id: openwiki-source-68b9a0e3c776f0fe8beabd26
+    resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/payment/PaymentSubjectDistributorIdPort.java
   - id: openwiki-source-c9890b49121b99230c30246e
     resource: repo://ecshopx-deposit/src/main/java/cn/shopex/ecshopx/deposit/integration/alipay/AlipayNotifyDepositSidePortImpl.java
   - id: openwiki-source-f70b6d04e8550513ce6b3aa6
     resource: repo://ecshopx-deposit/src/main/java/cn/shopex/ecshopx/deposit/service/AdapayDepositTradeRechargeCallbackService.java
+  - id: openwiki-source-fb3cf06a693439057652555e
+    resource: repo://ecshopx-deposit/src/main/java/cn/shopex/ecshopx/deposit/service/DepositTradeWxappPaymentService.java
+  - id: openwiki-source-dc6e550003128c844e8ece4d
+    resource: repo://ecshopx-deposit/src/main/java/cn/shopex/ecshopx/deposit/service/DepositWxpayRechargeUnifyService.java
+  - id: openwiki-source-d1961192a688961d2d90ccf4
+    resource: repo://ecshopx-distribution/src/main/java/cn/shopex/ecshopx/distribution/integration/PaymentSubjectDistributorIdPortImpl.java
   - id: openwiki-source-0a1caaa71538649542913a46
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/api/admin/v1/NormalOrderController.java
   - id: openwiki-source-f2e1c65d6d39cb3db1a8a7e8
@@ -52,6 +64,8 @@ sources:
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/notify/TradeFinishSmsNotifyBusService.java
   - id: openwiki-source-623ecfb6b4a37473cdb9935b
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/payment/OrdersExternalPayParamBuildService.java
+  - id: openwiki-source-7832b5e57d5d960a02d053c2
+    resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/payment/OrdersPaymentChannelQueryService.java
   - id: openwiki-source-11504f9b8ac58d0bd088b826
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/payment/OrdersPaymentDoPaymentService.java
   - id: openwiki-source-2a5af3193c4467af90799bc6
@@ -62,32 +76,62 @@ sources:
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/sales/UpdateItemSalesBusService.java
   - id: openwiki-source-393459e0e5faa669429f6481
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/tradefinish/OrdersTradeFinishNormalOrderPaySuccessApplyService.java
+  - id: openwiki-source-ab420cef928add1ab3268149
+    resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/supplier/service/SupplierOrderSplitOnNormalOrderAddService.java
   - id: openwiki-source-42b59755b5fcb0f2909b92e8
     resource: repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/orders/service/normal/shopadmin/ShopadminNormalOrderCreateOrchestratorNormalOrderAddDispatchPublishProbeTest.java
+  - id: openwiki-source-1dadfec169f4df087b2904a0
+    resource: repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/orders/service/payment/OrdersPaymentDoPaymentServicePaymentSubjectTest.java
+  - id: openwiki-source-1e0309e2b800473aab8b0e9e
+    resource: repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/orders/service/payment/OrdersPaymentDoPaymentServiceWxappSyncTradeFinishPublishTest.java
+  - id: openwiki-source-8c69e7dfe69ee3ac9984cd76
+    resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/api/admin/v1/PaymentNotifyController.java
+  - id: openwiki-source-1ccbca38ff13b6c8b4a6239c
+    resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/api/front/v1/PaymentController.java
   - id: openwiki-source-4c7a3bc700c378ccd65c4327
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/api/open/WxpayNotifyController.java
+  - id: openwiki-source-64fa255fa9b2b100903e0ba4
+    resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/AlipayAsyncNotifyVerificationService.java
+  - id: openwiki-source-aaad8326cee5c8f000796994
+    resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/AlipayH5SyncReturnService.java
+  - id: openwiki-source-fc41d8fb1ed3fb46beacafec
+    resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/AlipayNotifyFacade.java
+  - id: openwiki-source-44c42192a41742b2edb67e6b
+    resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/AlipayNotifyPaymentContextLoader.java
+  - id: openwiki-source-aa7828341fef670e794e9d62
+    resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/AlipayPaymentConfigValidationService.java
+  - id: openwiki-source-4ac568ccd29169fa2fd1ca52
+    resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/front/FrontPaymentSettingReadService.java
   - id: openwiki-source-a03bf98f742e0148fbe2281e
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/orderrefund/AlipayTradeAftersalesRefundRunner.java
   - id: openwiki-source-9e4ae9aa6e977090eae5591e
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/orderrefund/WxpaySecapiAftersalesRefundRunner.java
+  - id: openwiki-source-b6f21c41b3fac2e74d0a8460
+    resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/settings/AlipayPaymentSettingWriter.java
   - id: openwiki-source-f1d910dfde8ea50422ca49b0
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/WxpayNotifyFacade.java
-generated: { by: "openwiki/0.9.0", at: "2026-11-05T17:10:02.238Z" }
+  - id: openwiki-source-84f8cd25ebcbd75c25e4b431
+    resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/WxpayPaymentConfigValidationService.java
+  - id: openwiki-source-c95fb5887e03d45919d723b1
+    resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/support/PaymentSettingRedisKeys.java
+  - id: openwiki-source-04d8f988a1b772b617717322
+    resource: repo://ecshopx-payment/src/test/java/cn/shopex/ecshopx/payment/service/AlipayNotifyFacadeDepositSmsDispatchTest.java
+generated: { by: "openwiki/0.9.0", at: "2026-11-09T03:34:48.355Z" }
 verified:
   - by: openwiki/0.9.0
-    at: 2026-11-05T17:10:02.238Z
+    at: 2026-11-09T03:34:48.355Z
 ---
 
 # Workflow: Checkout, Payment, Notify, and Trade-Finish Fan-out
 
 This page traces one payment from end to end: the customer's cart is emptied
 into a new order, the order is paid through `POST /api/v1/h5app/wxapp/payment`,
-the channel calls back asynchronously onto `POST /wechatAuth/wxpay/notify`, the
-trade row is flipped from `NOTPAY` to `SUCCESS`, and the resulting trade-finish
-event fans out to a dozen listeners (order pay-success, supplier promotion,
-notifications, statistics, ERP pushes, profit sharing). The deposit-recharge
-variant routes through a different port and ends in the deposit balance
-instead.
+the channel calls back asynchronously onto `POST /wechatAuth/wxpay/notify`
+(WeChat) or `POST /api/v1/alipay/notify` (Alipay), the trade row is flipped
+from `NOTPAY` to `SUCCESS`, and the resulting trade-finish event fans out to a
+dozen listeners (order pay-success, supplier promotion, notifications,
+statistics, ERP pushes, profit sharing). The deposit-recharge variant routes
+through a different port and ends in the deposit balance instead.
 
 There is a second entry to the same money path: the **admin 代客下单 deferred
 flow** (staff creating an order for a walk-in customer), where `POST /api/v1/order/create`
@@ -119,9 +163,10 @@ sequenceDiagram
     CT->>PS: payment with order_id and pay_type
     PS->>PS: order guards, order bundle, pay_type forcing
     PS->>DP: doPayment
-    DP->>DP: insertPendingTrade with trade_state NOTPAY
-    DP->>CH: unified order via OrdersExternalPayParamBuildService
+    DP->>DP: TX1 ensure NOTPAY trade, local types finalize inside
+    DP->>CH: channel SDK call outside any DB transaction
     CH-->>DP: prepay_id or code_url or mweb_url
+    DP->>DP: TX2 persist payment_params, finalize when pay_status
     DP-->>CL: client pay params plus trade_info
     CL->>CH: user confirms payment
     CH->>NF: POST /wechatAuth/wxpay/notify XML
@@ -149,10 +194,11 @@ sequenceDiagram
     DF->>RC: withLock shopadmin deferred lock order_id
     DF->>DF: resolve pay type, only pos or wxpaypos or alipaypos
     DF->>DP: doPayment
-    DP->>DP: insertPendingTrade NOTPAY then charge, pos finalizes locally
-    DP->>CH: micropay or alipay.trade.pay for scan codes
+    DP->>DP: TX1 insertPendingTrade NOTPAY, pos finalizes locally
+    DP->>CH: micropay or alipay.trade.pay outside the transaction
     CH-->>DP: synchronous confirmation, pay_status true
-    DP->>DB: trade-finish publish on its own commit, order row not yet written
+    DP->>DP: TX2 finalizeTradeSuccess, publish registration
+    DP->>DB: trade-finish publish on TX2 commit, order row not yet written
     DB->>LN: pay-success bridge finds no order row and returns empty
     DF->>DF: persistPreparedSnapshot then direct markPayedIfNeeded to DONE
     DF->>DB: supplier split then single normal_order_add publish
@@ -236,35 +282,117 @@ pure-point payments, currency metadata, `auto_cancel_time`, `client_ip`), and
 
 ## Step 3 — trade creation and channel unify
 
-`OrdersPaymentDoPaymentService.doPayment` is the shared core:
+`OrdersPaymentDoPaymentService.doPayment` is the shared core. Before anything
+runs it resolves the **payment subject**: `PaymentSubjectDistributorIdPort.resolveActualDistributorId(companyId, distributorId)`
+(implemented by `PaymentSubjectDistributorIdPortImpl` in the distribution
+bundle, declared in `ecshopx-common` so orders and payment can both depend on
+it) returns the order's distributor id **only when that distributor's
+`payment_subject = 1`** — any other value, a missing distributor row, or
+`distributor_id = 0` all resolve to `0` (the platform merchant). The resolved
+id decides *whose merchant config is used*: it is passed to
+`assertPayConfigReady` (which validates the `(d?)wxPaymentSetting:` /
+`(d?)alipayPaymentSetting:` Redis config for that distributor) and onward to
+`OrdersExternalPayParamBuildService.buildPayParamsOrInvoke` and
+`OrdersPaymentChannelQueryService`, so a distributor running its own WeChat/
+Alipay merchant account charges and queries against its own credentials while
+everyone else falls back to the platform config. The trade row itself still
+carries the order's real `distributor_id` (see
+[Stores and Merchants](../domains/stores-and-merchants.md) for the
+`payment_subject` flag). The front-end payment-type list
+(`FrontPaymentSettingReadService`) resolves the same port, so the cashier only
+offers channels the effective subject actually has configured.
 
-1. **Config gate** — `assertPayConfigReady` validates the channel config
-   before anything is persisted (wxpay/alipay validation services, hfpay port,
-   bspay `bspaySetting:{sha1(companyId)}`, adapay `adaPaySetting:`); an
-   unconfigured channel fails with "不支持支付服务，请联系商家" rather than
-   creating an orphan trade.
-2. **Trade reuse or insert** — `findOpenTradeWithoutParams` reuses an open
-   `NOTPAY` trade matching `(company, order, pay_type, pay_fee,
-   trade_source_type[, pay_channel])`; otherwise `insertPendingTrade` inserts
-   one with `trade_state=NOTPAY`, an encrypted mobile
-   (`SensitiveFieldEncryptor`), dealer/merchant ids resolved from the
-   distributor, `trade_id` built from `NormalOrderNumericIdService.generate`
-   prefixed by the distributor shop code, and currency conversion for
-   wxpay/alipay/hfpay (converted `pay_fee`/`total_fee`, originals preserved in
-   the `cur_*` columns).
-3. **Synchronous-finalize branches** — zero-fee non-prescription orders
-   finalize as `localPay`; `point` deducts member points *unless*
-   `trade_source_type=normal_pointsmall` (pointsmall already deducted at
-   create, pinned against double-deduction); `prepaid_point`, `pos` and
-   `deposit` (through `DepositTradeConsumeService.consume`) all finalize in
-   the same call. Each of these ends in `finalizeTradeSuccess`, which is the
-   internal twin of the notify path below.
-4. **Channel branches** — `bspay`/`adapay` call the membercard SDK services
-   and persist `bspay_req_date`/`inital_request`/`transaction_id` plus the
-   client params (adapay/bspay also reuse a previously stored
-   `payment_params` JSON instead of re-unifying); `wxpay*`/`alipay*`/`hfpay`/
-   `offline_pay`/`paypal`/`doumen_intl` go to
-   `OrdersExternalPayParamBuildService.buildPayParamsOrInvoke`.
+After subject resolution, `doPayment` runs as a **three-phase transaction
+split** — no channel SDK is ever called with a database transaction open:
+
+1. **Pre-channel (no transaction)** — `assertPayConfigReady` validates the
+   channel config for the resolved subject before anything is persisted
+   (wxpay/alipay validation services, hfpay port, bspay
+   `bspaySetting:{sha1(companyId)}`, adapay `adaPaySetting:`); an
+   unconfigured wxpay/alipay channel fails with a subject-specific message —
+   "店铺微信支付配置不完整，请先完成配置后再切换收款主体" /
+   "平台微信支付配置不完整，请先完成配置后再切换收款主体" (and the alipay
+   twins) depending on whether the resolved subject is a distributor or the
+   platform — while an unavailable hfpay/adapay channel still fails with
+   "不支持支付服务，请联系商家", in every case before an orphan trade can be
+   created. For `bspay`/`adapay` the supplier sub-orders are
+   attached to the payload and `findExistingWithPaymentParams` returns a
+   previously stored `payment_params` JSON instead of re-unifying.
+2. **TX1 — `preparePaymentInTx`** (one `transactionTemplate` execution) —
+   `findOpenTradeWithoutParams` reuses an open `NOTPAY` trade matching
+   `(company, order, pay_type, pay_fee, trade_source_type[, pay_channel])`;
+   otherwise `insertPendingTrade` inserts one with `trade_state=NOTPAY`, an
+   encrypted mobile (`SensitiveFieldEncryptor`), dealer/merchant ids resolved
+   from the distributor, `trade_id` built from
+   `NormalOrderNumericIdService.generate` prefixed by the distributor shop
+   code, and currency conversion for wxpay/alipay/hfpay (converted
+   `pay_fee`/`total_fee`, originals preserved in the `cur_*` columns). The
+   **local-payment branches finalize inside this same transaction**: zero-fee
+   non-prescription orders finalize as `localPay`; `point` deducts member
+   points *unless* `trade_source_type=normal_pointsmall` (pointsmall already
+   deducted at create, pinned against double-deduction); `prepaid_point`,
+   `pos` and `deposit` (through `DepositTradeConsumeService.consume`) all
+   finalize here too. Each ends in `finalizeTradeSuccess` — the internal twin
+   of the notify path below — and returns `pay_status=true` without ever
+   touching the channel (one transaction total). The external types
+   (`bspay`, `adapay`, `wxpay*`, `alipay*`, `hfpay`, `offline_pay`,
+   `paypal`, `doumen_intl`) instead return the pending trade, and any other
+   pay type throws "无此类型支付".
+3. **Outside any transaction — `invokeExternalChannel`** — the channel SDK
+   calls run with no DB transaction open, so a slow gateway cannot hold row
+   locks or exhaust the connection pool: `bspay`/`adapay` call the membercard
+   SDK services; `wxpay*`/`alipay*`/`hfpay`/`offline_pay`/`paypal`/
+   `doumen_intl` delegate to
+   `OrdersExternalPayParamBuildService.buildPayParamsOrInvoke(payType, companyId,
+   distributorIdForSetting, authInfo, data, trade)`.
+4. **TX2 — `persistExternalPaymentInTx`** (a second `transactionTemplate`
+   execution) — persists the channel outcome: for bspay the
+   `bspay_req_date`/`inital_request`/`transaction_id` triple, for adapay
+   `inital_request`/`transaction_id`, and for every channel the full client
+   param map as the `payment_params` JSON (which is what the adapay/bspay
+   reuse in step 1 reads back). When the client map carries
+   `pay_status=true` — the synchronous micropay/barcode confirmations —
+   `finalizeTradeSuccess` runs here, so the trade-finish publish is
+   registered on TX2's synchronization and fires when TX2 commits.
+
+```mermaid
+sequenceDiagram
+    participant SVC as OrdersPaymentDoPaymentService
+    participant PORT as PaymentSubjectDistributorIdPort
+    participant TX1 as TX1 preparePaymentInTx
+    participant CH as Channel SDKs
+    participant TX2 as TX2 persistExternalPaymentInTx
+    participant BUS as OrdersTradeFinishDispatchPublisher
+
+    SVC->>PORT: resolveActualDistributorId companyId and distributorId
+    PORT-->>SVC: distributor id when payment_subject 1 else 0 platform
+    SVC->>SVC: assertPayConfigReady with resolved subject
+    SVC->>TX1: transactionTemplate execute
+    TX1->>TX1: reuse or insert NOTPAY trade
+    alt local payment point or deposit or pos or zero fee
+        TX1->>TX1: finalizeTradeSuccess inside TX1
+        TX1->>BUS: publish registered on TX1 commit
+        TX1-->>SVC: pay_status true
+    else external channel types
+        TX1-->>SVC: pending trade
+        SVC->>CH: invokeExternalChannel no DB transaction open
+        CH-->>SVC: client params or synchronous confirmation
+        SVC->>TX2: transactionTemplate execute
+        TX2->>TX2: persist bspay or adapay outcome and payment_params JSON
+        opt channel already confirmed pay_status true
+            TX2->>TX2: finalizeTradeSuccess inside TX2
+            TX2->>BUS: publish registered on TX2 commit
+        end
+        TX2-->>SVC: client pay params plus trade_info
+    end
+```
+
+*The three-phase split inside `doPayment`: payment-subject resolution and the
+config gate run first, TX1 ensures the `NOTPAY` trade and completes all local
+payment types in one transaction, the channel SDK is invoked with no
+transaction open, and TX2 persists the channel outcome (`inital_request`,
+`transaction_id`, `payment_params`) and finalizes the trade when the channel
+confirmed synchronously.*
 
 For the wxpay family, `wxPayClientParams` loads the per-distributor config
 from Redis, builds the outer `attach`
@@ -296,7 +424,18 @@ mechanics; the alipay channel reads
 `http://localhost:8080/api/v1/alipay/notify`, the same way). The gateway will
 POST back to whatever base URL the deployment declares.
 
-## Step 4 — the channel async notify
+The alipay family is the mirror image at the charge step. `alipayh5` builds an
+`alipay.trade.wap.pay` form (`product_code=QUICK_WAP_WAY`) carrying
+`passback_params = urlenc("company_id=<id>&pay_type=alipayh5")` plus the
+configured `alipayNotifyUrl` and the caller's `return_url`; `alipaymini` and
+`alipayapp` go through `alipay.trade.app.pay` (`sdkAppPayOrderString`, an
+`orderString` returned to the client); and `alipaypos` is the synchronous
+`alipay.trade.pay` barcode call (`FACE_TO_FACE_PAYMENT` by auth code), whose
+synchronous confirmation finalizes the trade without any notify. The
+asynchronous alipay surfaces that complete the asynchronous branches are step
+4a below.
+
+## Step 4 — the WeChat async notify
 
 `POST /wechatAuth/wxpay/notify` (`WxpayNotifyController`, `ecshopx-payment`,
 `@DingoResponse(PLAIN)`, consumes XML/text/all, produces XML) is exempt from
@@ -314,11 +453,14 @@ must prove itself cryptographically. `WxpayNotifyFacade.handle`:
    "微信支付信息未配置，请联系商家".
 2. **Distributor for settings** — `AlipayNotifyOrderSidePort.resolveDistributorIdForAlipayRedis`
    (orders' `AlipayNotifyOrderSidePortImpl`) loads the trade, and returns its
-   distributor id only when the distributor's `payment_subject = 1`; the
-   notify then reads
+   distributor id only when the distributor's `payment_subject = 1` — the
+   notify-side twin of the `PaymentSubjectDistributorIdPort` resolution the
+   charge path runs in step 3 (same flag, same fall-back to `0`/platform; this
+   one re-derives the subject from the trade row because the notify carries no
+   distributor context). The notify then reads
    `(distributorId?)wxPaymentSetting:sha1(companyId)` from the companys Redis
    template and takes the `key` as the API key. Despite the "Alipay" name this
-   is the shared entry the wxpay facade reuses — the port inversion keeps
+   is the shared entry both facades reuse — the port inversion keeps
    `ecshopx-payment` free of an orders dependency.
 3. **Verify** — `WxpayAsyncNotifyVerificationService.verifySignedNotify`
    recomputes MD5 over the sorted non-empty params (skipping `sign`)
@@ -353,6 +495,81 @@ falls into the outer `catch (Exception e)`, which logs at error and returns
 (HTTP 200 with a FAIL body — the code never returns a non-200 status, the
 return code is the signal). `cdataSafe` neutralizes `]]>` inside the message.
 
+## Step 4a — the Alipay async notify and H5 sync return
+
+`POST /api/v1/alipay/notify` (`PaymentNotifyController`, `ecshopx-payment`'s
+`api/admin/v1`, `name = 支付宝异步通知`) is the Alipay twin of step 4, handled by
+`AlipayNotifyFacade.handle`. The shape is the same as wxpay — load, prove
+authenticity, classify, dispatch to the same two ports — but the mechanism
+differs at every layer:
+
+1. **Load and resolve** — `AlipayNotifyPaymentContextLoader.load` flattens the
+   form parameters, **requires `passback_params`** (its absence yields
+   `Optional.empty()` and the facade answers `{"data":[]}`), transcodes values
+   from the declared `charset` (default GB2312) to UTF-8, and URL-decodes the
+   passback query string. The passback carries `company_id` and `pay_type`
+   (written at charge time by `OrdersExternalPayParamBuildService`); a missing
+   or malformed `company_id` throws "缺少企业编号" / "企业编号格式错误".
+2. **Ownership cross-check, before any verification** — the facade resolves
+   the *owning* company from the database row named by `out_trade_no`:
+   `AlipayNotifyOrderSidePort.requireCompanyIdByTradeId` for order trades,
+   `AlipayNotifyDepositSidePort.requireCompanyIdByDepositTradeId` when the
+   decoded passback has `attach=depositRecharge`. A mismatch with the
+   passback's `company_id` throws "订单企业与回调企业不一致" /
+   "储值单企业与回调企业不一致", so a replayed or forged passback cannot
+   redirect the callback onto another tenant's trade (pinned by
+   `AlipayNotifyFacadeDepositSmsDispatchTest`'s
+   `depositRecharge_passbackCompanyMismatch_rejectsWithoutRechargeOrVerify`,
+   which also verifies the signature check never runs).
+3. **Config gate and signing material** —
+   `AlipayPaymentConfigValidationService.assertAsyncNotifyConfigComplete`
+   requires `app_id` + `ali_public_key` + `private_key` in
+   `(distributorId?)alipayPaymentSetting:{sha1(companyId)}` (companys Redis),
+   throwing "支付宝信息未配置，请联系商家" otherwise; `loadSigningMaterial`
+   then re-reads the same key and refuses a blank `app_id`. The distributor
+   override is resolved through the same
+   `resolveDistributorIdForAlipayRedis` port (orders' impl) as the wxpay
+   facade uses.
+4. **Verify** — `AlipayAsyncNotifyVerificationService.verifySignedNotify`
+   runs the Alipay SDK `AlipaySignature.rsaCheckV1` over the flattened params
+   with the configured `ali_public_key`, honouring the notify's `sign_type`
+   (default RSA2); empty params, a missing `sign`, a missing public key, or a
+   mismatch each throw `BadRequestException` ("支付宝通知参数无效" /
+   "支付宝通知缺少签名字段" / "支付宝公钥未配置" / "支付宝异步通知验签失败").
+5. **Classify and dispatch** — `trade_status` `TRADE_SUCCESS` or
+   `TRADE_FINISHED` normalizes to `SUCCESS` (anything else passes through
+   verbatim); `options` carries `pay_type` re-read from the passback and
+   `transaction_id` from the notify's `trade_no`. The deposit branch calls
+   `AlipayNotifyDepositSidePort.rechargeCallback`, the order branch
+   `applyTradePaymentAfterAlipay` — the exact same ports, and therefore the
+   same `OrdersTradePaymentCallbackService` CAS and trade-finish fan-out, as
+   the wxpay facade.
+
+The ack contract is the inverse of the wxpay facade's: a successful dispatch
+answers the plain-text body `success` (HTTP 200); **any** exception — a
+forged notify, a mismatched company, the deposit already-handled
+`ResourceException`, an unknown trade — is caught by the outer
+`catch (Exception)`, logged at error with the `out_trade_no`, and answered
+with a 200 response whose **body is empty**, which Alipay treats as a failure
+and retries. There is no swallow-and-ack for business exceptions here: a
+replayed deposit recharge acks empty and Alipay keeps retrying until its own
+retry budget expires. Unparseable requests (`Optional.empty()`) answer
+`{"data":[]}`.
+
+The **H5 sync return** `GET /payment/alipay/result` (`PaymentController`'s
+`alipayResult`, `name = 支付宝结果页`) is the polling-flavoured twin, handled by
+`AlipayH5SyncReturnService`: it requires the front H5 session company id
+(`UnauthorizedException` otherwise), verifies the return URL's signature the
+same way, then **queries the channel**
+(`AlipayOpenapiTradeQueryService.queryTrade` → `alipay.trade.query`) and
+trusts the channel's answer, not the browser's params. It re-parses the
+`passback_params` returned by the query, enforces the same ownership check
+(session company ↔ trade/deposit owner, plus passback company ↔ owner for
+deposits), and on `SUCCESS` dispatches to the same two ports — so a lost or
+delayed alipay async notify is repaired by the customer's own browser
+landing on the result page. This is the alipay analogue of `/payment/query`'s
+`finalizeTradeSuccessAfterChannelQuery`.
+
 ## Step 5 — `OrdersTradePaymentCallbackService.applyTradePaymentNotify`
 
 This is the single mutation point for a channel-confirmed trade:
@@ -386,13 +603,30 @@ Note that non-`SUCCESS` statuses (`REFUND`, `CLOSED`, `REVOKED`, `PAYERROR`)
 pay-success-only affair on this path.
 
 The sibling internal path `OrdersPaymentDoPaymentService.finalizeTradeSuccess`
-(point/prepaid_point/deposit/pos/localPay and `/payment/query`'s
+(point/prepaid_point/deposit/pos/localPay inside TX1, synchronous channel
+confirmations inside TX2, and `/payment/query`'s
 `finalizeTradeSuccessAfterChannelQuery`) performs the same CAS
 (`WHERE trade_state='NOTPAY'`), the same `trade_no` assignment, the same
 membercard fulfilment, and the same trade-finish publish; when the trade is
 already `SUCCESS` it *re-publishes* idempotently rather than failing. This is
 how a zero-fee or point-only order reaches the same listener fan-out without
 ever touching the gateway.
+
+The publish contract on the internal path: every `finalizeTradeSuccess`
+converts the full `Trade` row to a snake_case map
+(`SNAKE_ROW` Jackson mapper) and hands it to
+`OrdersTradeFinishDispatchPublisher.publish` — the `ecshopx-common` interface
+whose orders implementation, `OrdersTradeFinishAfterCommitDispatchPublisher`,
+registers a `TransactionSynchronization` and publishes **after commit** when a
+transaction is active (immediately otherwise). On the `doPayment` path that
+means the event fires when the enclosing TX1 (local payments) or TX2
+(synchronous channel confirmations) commits.
+`finalizeTradeSuccessAfterChannelQuery(trade, transactionId, channelResult)`
+is the channel-query-confirmed twin used by `/payment/query` and the admin
+deferred query leg: same NOTPAY→SUCCESS CAS, optionally persisting the
+channel-reported `transaction_id`, same publish — the one difference is that
+a trade already in a non-NOTPAY, non-SUCCESS state throws
+`BadRequestException`("更新已处理，不需要更新") instead of silently returning.
 
 ## Step 6 — trade-finish publication and the three planes
 
@@ -574,15 +808,23 @@ When the wxapp `order_id` starts with `CZ`,
 `WxappPaymentService.payment` short-circuits to
 `DepositTradeWxappPaymentService.depositPayment`, which validates the
 `deposit_trade` row (company match, `trade_status=NOTPAY`, positive money)
-and, for a wxpay channel, calls
-`DepositWxpayRechargeUnifyService.unifyAndBuildClientPayParams` — its own
+and — in the current code, **for wxpay channels only** (`wxpay*` prefixes;
+anything else is rejected with "无此类型支付！") — calls
+`DepositWxpayRechargeUnifyService.unifyAndBuildClientPayParams`, its own
 unified-order client with a **different attach**:
-`company_id=<enc>&pay_type=<enc>&attach=depositRecharge`.
+`company_id=<enc>&pay_type=<enc>&attach=depositRecharge`. The alipay
+`depositRecharge` route on the notify side is therefore reachable only for
+deposit trades created outside the wxapp front surface (e.g. by an adapay or
+admin recharge flow) — the facade, the H5 sync return and the adapay callback
+handler all still branch on it.
 
 On the notify side the same `WxpayNotifyFacade` runs, but the decoded
 `attach` contains `depositRecharge`, so the call is routed to
 `AlipayNotifyDepositSidePort.rechargeCallback` → deposit's
-`AlipayNotifyDepositSidePortImpl` → `AdapayDepositTradeRechargeCallbackService.rechargeCallback`:
+`AlipayNotifyDepositSidePortImpl` → `AdapayDepositTradeRechargeCallbackService.rechargeCallback`
+(the alipay facade and the H5 sync return reach the same port method through
+their own `attach=depositRecharge` classification, after their ownership
+cross-checks):
 
 * A blank or unknown `deposit_trade_id` throws
   `ResourceException`("储值单不存在或主键无效，无法完成回调").
@@ -739,17 +981,20 @@ runs under the `shopadmin:deferred:lock:{orderId}` Redis lock
    data rebuilt from the snapshot (`trade_source_type=normal`,
    `pay_fee = snapshot.totalFee`, `auth_code` forwarded, user/shop/
    distributor/mobile/title from the cached `orderData`,
-   `authorizer_appid`/`wxa_appid` from the operator auth). This is the same
-   `doPayment` as the wxapp flow — same config gate, same `insertPendingTrade`
-   NOTPAY insert, same channel branches — reached from the admin surface.
-   `pos` finalizes synchronously (cash — the `pos` branch in `doPayment`
-   simply calls `finalizeTradeSuccess`); `wxpaypos` invokes the WeChat
+   `authorizer_appid` from `woa_appid` and `wxa_appid` from `wxapp_appid` in
+   the operator auth map). This is the same
+   `doPayment` as the wxapp flow — same payment-subject resolution, same
+   config gate, same TX1 `insertPendingTrade` NOTPAY insert, same
+   out-of-transaction channel branches — reached from the admin surface.
+   `pos` finalizes synchronously inside TX1 (cash — the `pos` branch simply
+   calls `finalizeTradeSuccess`); `wxpaypos` invokes the WeChat
    micropay `WxPayMicropayRequest` and `alipaypos` the Alipay
    `alipay.trade.pay` barcode call inside
-   `OrdersExternalPayParamBuildService`, both returning `pay_status=true`
-   plus `transaction_id` when the channel confirms synchronously (Alipay
-   `10003` USERPAYING returns `pay_status=false` and the snapshot stays
-   `WAIT_PAY`). A non-true `pay_status` returns the channel result
+   `OrdersExternalPayParamBuildService` (outside any transaction), both
+   returning `pay_status=true` plus `transaction_id` when the channel
+   confirms synchronously — which TX2 turns into the CAS flip and publish
+   (Alipay `10003` USERPAYING returns `pay_status=false` and the snapshot
+   stays `WAIT_PAY`). A non-true `pay_status` returns the channel result
    unchanged.
 4. **On `pay_status=true`** → `persistAndFinishAfterPay`: the trade is
    re-read by `trade_info.trade_id` (falling back to the newest paid trade),
@@ -764,9 +1009,12 @@ runs under the `shopadmin:deferred:lock:{orderId}` Redis lock
    pay-success bridge listener calls — shopadmin-class orders jump straight
    to `DONE` unless they use platform item stock, then the ziti auto-complete
    marks non-logistics items delivered
-   and closes the order), then `splitAndPublishOnce` runs the supplier split
+   and closes the order; the conversion is defensive — an
+   `IllegalArgumentException` becomes "支付状态更新失败"), then
+   `splitAndPublishOnce` runs the supplier split
    (`SupplierOrderSplitOnNormalOrderAddService.split`, which itself skips
-   already-split suppliers) and publishes the **single**
+   already-split suppliers — the select-count guard is what makes the
+   recovery leg's re-split idempotent) and publishes the **single**
    `normal_order_add` event (`NormalOrderAddDispatchPublisher` →
    `event:orders:normal_order_add`, ASYNC+REDIS, payload
    `{company_id, order_id, pay_type}` — the same event and payload shape the
@@ -776,7 +1024,8 @@ runs under the `shopadmin:deferred:lock:{orderId}` Redis lock
    lock.
 
 Note the ordering subtlety: the charge itself (`doPayment` →
-`finalizeTradeSuccess`) publishes the trade-finish event on `event:291` when
+`finalizeTradeSuccess`, registered on the TX1 or TX2 synchronization)
+publishes the trade-finish event on `event:291` when
 its own `transactionTemplate` transaction commits — i.e. **before**
 `persistPreparedSnapshot` has created any order row. The pay-success bridge
 (order 77) therefore finds no `NormalOrders` row and returns empty, so **no
@@ -882,12 +1131,25 @@ is the recovery path when a notify is lost or delayed.
   but it also means an operator cannot distinguish "processed" from
   "ignored" by reading the gateway's retry log.
 * **Signature verification is a precondition.** No state is written before
-  the MD5 check passes; a failed check is an unexpected exception → `FAIL`.
+  the MD5 (wxpay) or RSA2 (alipay) check passes; a failed check is an
+  unexpected exception → `FAIL` (wxpay) or an empty-body 200 (alipay). On the
+  alipay facade the **tenant-ownership cross-check runs even earlier**: the
+  trade/deposit row's owning company must equal the passback `company_id`
+  before the signature is verified at all, so a forged passback cannot steer
+  the callback across tenants.
 * **The fan-out is transactionally ordered.** The orders plane publishes
   after commit, so listeners never see a trade that is not actually
   `SUCCESS`. The pay-success bridge additionally guards on the order row's
   `order_status='NOTPAY'`, so a trade can succeed without the order flipping
   (e.g. a second concurrent trade) and then no `event:288` is published.
+* **Channel SDKs never run inside a database transaction.** The
+  `doPayment` split (TX1 → channel call → TX2) keeps gateway latency off the
+  connection pool; local payment types collapse to TX1 only. The mirrored
+  pin lives in `OrdersPaymentDoPaymentServicePaymentSubjectTest`, which
+  asserts the channel answer arrives at tx-depth 0. The trade-off: a crash
+  between the channel charge and TX2 leaves a `NOTPAY` trade whose money may
+  already have moved — that is exactly what `/payment/query`'s
+  `finalizeTradeSuccessAfterChannelQuery` repairs.
 * **`pay_type` semantics differ by listener.** `point`/`deposit` skip SMS,
   websocket push, brokerage and coupon consumption but **not** item sales,
   statistics or profit sharing; `membercard` trades skip the WXA template and
@@ -912,7 +1174,9 @@ is the recovery path when a notify is lost or delayed.
 | --- | --- | --- |
 | `ecshopx.payment.wechat.notify-url` | `application.properties` (default `http://127.0.0.1/wechatAuth/wxpay/notify`, a local placeholder) | the absolute URL handed to WeChat as `notify_url`; must be publicly reachable — override per deployment via env/args, and blank fails unify with "不支持支付服务，请联系商家" |
 | `ecshopx.payment.alipay.notify-url` | `application.properties` (default `http://localhost:8080/api/v1/alipay/notify`) | same for the alipay channel |
+| `(d?)alipayPaymentSetting:{sha1(companyId)}` | companys Redis | the alipay channel config — `app_id`/`private_key` gate the charge, `ali_public_key` verifies the notify and the H5 sync return; the `d` prefix selects a per-distributor override |
 | `(d?)wxPaymentSetting:{sha1(companyId)}` | companys Redis | the wxpay channel config incl. the `key` used for both request signing and notify verification; the `d` prefix selects a per-distributor override |
+| `distribution_distributor.payment_subject` | DB (distributor row) | which merchant subject a distributor's charges use: `1` = the distributor's own `(d?)wxPaymentSetting:`/`(d?)alipayPaymentSetting:` config (resolved by `PaymentSubjectDistributorIdPort` at charge time and by `resolveDistributorIdForAlipayRedis` at notify time), anything else falls back to distributor `0` (the platform merchant config) |
 | `wechatPayment:companyId:{appId}` (+`wechatAppPayment:`/`wechatServicerPayment:`) | companys Redis | appId→companyId fallback resolution when the authorizer-appid port cannot resolve |
 | `bspaySetting:{sha1(companyId)}`, `adaPaySetting:{sha1(companyId)}` | companys/shared Redis | the bspay/adapay config gates used by `assertPayConfigReady` |
 | `h_trade_no_{company}_{distributor}_{MMdd}` / `c_trade_no_*` | shared Redis, 86400s TTL | the daily `trade_no` sequence |
@@ -922,7 +1186,11 @@ is the recovery path when a notify is lost or delayed.
 Operations notes: because the wxpay facade resolves the company from the
 notify's `appid` (with Redis fallbacks), a merchant console whose appid
 mapping is missing fails with "微信支付信息未配置，请联系商家" and a `FAIL` —
-the fix is the Redis mapping, not the code. The `inital_response` column is
+the fix is the Redis mapping, not the code. The alipay facade instead trusts
+the passback's `company_id` but cross-checks it against the trade/deposit
+row before verifying, so a missing or stale `(d?)alipayPaymentSetting:` credential
+set surfaces as "支付宝信息未配置，请联系商家" and an empty-body 200 that
+Alipay retries. The `inital_response` column is
 the audit trail for every raw notify; replayed notifies overwrite it with the
 latest body.
 
@@ -933,11 +1201,18 @@ latest body.
   registering on **both** `EVENT_TRADE_FINISH` and `EVENT_TRADE_FINISH_CSV292`
   (the twin planes share the listener set by design), and pick an `@Order`
   outside the occupied band. Follow [Add Event or Job](add-event-or-job.md).
-* **A new channel** — add the branch in
-  `OrdersExternalPayParamBuildService.buildPayParamsOrInvoke`, the config
+* **A new channel** — add the pending-external arm in
+  `preparePaymentInTx` and the invocation arm in `invokeExternalChannel`
+  (usually delegating to
+  `OrdersExternalPayParamBuildService.buildPayParamsOrInvoke`), the config
   gate in `assertPayConfigReady`, and a notify controller + facade that
   verifies before writing and reaches the trade through
   `AlipayNotifyOrderSidePort` (or your own port, as bspay/adapay do).
+  Remember the SDK call runs outside any transaction by design — keep it
+  that way, and put every write the call produces into TX2
+  (`persistExternalPaymentInTx`). If the channel validates against
+  per-distributor settings, the resolved `distributorIdForSetting` is what
+  both the gate and the SDK call receive.
 * **A new pay-success consumer** — listen on
   `event:288:OrdersBundle\Events\NormalOrderPaySuccessEvent` rather than the
   trade-finish plane; the bridge only publishes it when the order actually
@@ -999,6 +1274,16 @@ guard; a takeover loss (guarded update returns 0) throws
 "更新已处理，不需要更新" with **no** Redis balance mutation and no SMS publish;
 a successful first callback credits the user's deposit total exactly once.
 
+The alipay facade is pinned by `AlipayNotifyFacadeDepositSmsDispatchTest`
+(`ecshopx-payment`): a `depositRecharge` passback with `TRADE_SUCCESS`
+reaches the deposit port with the passback's `pay_type` and the notify's
+`trade_no` as `transaction_id`; a passback `company_id` that disagrees with
+the trade/deposit row's owning company rejects **before** signature
+verification and without touching either port; and a non-deposit payload
+never touches the deposit port. `AlipayNotifyOrderSidePortImplTest`
+(`ecshopx-orders`) pins the port's own guards (blank/unknown trade id,
+invalid company).
+
 The deferred variant is pinned in `ecshopx-orders`:
 
 * `ShopadminNormalOrderCreateOrchestratorNormalOrderAddDispatchPublishProbeTest`
@@ -1012,6 +1297,33 @@ The deferred variant is pinned in `ecshopx-orders`:
   ("admin POST /api/v1/order/create — createUserOrder writes deferred cache,
   no dispatch on create") — the same pin one level up, through the param
   builder into the orchestrator.
+
+The `doPayment` core itself is pinned by two sibling test classes in
+`ecshopx-orders`:
+
+* `OrdersPaymentDoPaymentServicePaymentSubjectTest` — a distributor with the
+  platform payment subject (`resolveActualDistributorId(141, 285) → 0`)
+  validates and charges against distributor **0** config
+  (`assertConfigComplete(141, 0)` and `buildPayParamsOrInvoke(..., 0, ...)`),
+  the wxpay unify runs with **no transaction open** (tx-depth probe inside the
+  stubbed channel answer), exactly two `transactionTemplate` executions wrap
+  the external path (TX1 + TX2), and the inserted trade still records the
+  order's real `distributor_id` (`"285"`). The point-pay case pins the local
+  branch: a single transaction, no external channel interaction at all
+  (`verifyNoInteractions` on the external build service and both membercard
+  SDK services).
+* `OrdersPaymentDoPaymentServiceWxappSyncTradeFinishPublishTest` — the
+  synchronous-SUCCESS publish contract: exactly one
+  `OrdersTradeFinishDispatchPublisher.publish` per finalize, and the captured
+  snake_case row carries the gate keys each downstream listener reads —
+  `company_id`/`order_id`/`pay_type` (brokerage), `user_id`/`shop_id`/
+  `distributor_id` (link-member), `pay_fee`/`discount_fee` (printer),
+  `trade_source_type`/`trade_state` (fapiao, statistics, groups), and
+  `trade_id` for the wxpay customs-declare listener. It also pins that a
+  zero-cash order with `point_amount > 0` is built as `pay_type=point`
+  (points deducted once) rather than `localPay`, and that positive-fee wxpay
+  synchronous confirmations run the channel call outside the transaction
+  with two template executions.
 
 ## Related pages
 

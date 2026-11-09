@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:57fe753bf530abbd905c33f42e5c5de6fea1e058152e86a37804128f4f51ed2e",
+  "pageVersion": "sha256:c353a84bbcac664a79fbaf54f929c399b6a0a43b485d133c68092857d8975dd2",
   "claims": [
     {
       "id": "claim_6a17d8777ae74ac19c9786dddedd59bd",
@@ -441,10 +441,28 @@
           "version": "repo-lines-v1:sha256:d38a0825c3a25cf5cad974215bb398a0e5bb57c1f0522d56256a025028fa509c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTI3LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIxZDk1ZmMwNGE4MGM5NTJmNDljZTQxODg2MjdjNTNiMGZiZThjNDQwNDFiOTUyZDU5MmFjZDFkZTk5ODYxNDY2IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0MTJjYTM0NWNjZjc1YmY5YzA4MDZiY2U2OTViZThkZTgwOGI3OTk4NDI1MWE3YTU0ZDIwMmNmNjEwMWRkNDUxIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MCwicHJlY2VkaW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MCwiZm9sbG93aW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1In0"
         }
       ]
+    },
+    {
+      "id": "claim_5c47386e2ae44537abac3f318e581ad4",
+      "statement": "The project version is 5.5.0, declared as ${revision} in the root pom.xml properties and used as the Maven project version; the lite tarball is named ecshopx-java-<version>.tar.gz with that version resolved by sed-only parsing of pom.xml (CI-friendly ${revision} placeholders resolved), and the same sed-only version read feeds the open-source install-stat reporter so customer machines never need mvn/java.",
+      "evidence": [
+        {
+          "resource": "repo://docker-lite/pack.sh#L169-L173",
+          "version": "repo-lines-v1:sha256:0beca72d8a02f8b17d635f7716f737c924c73e4fbdce27411d3e67fd257f41b1:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTM1N2VkMWNhZWY1MWRlZWVmMGJjMGM0MTBhY2IzYjljYjU5YTRjMDk2ZWI2MmFmMDI3NTA2MmQ0ZTNhZTdlMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYzFjYzk1MmI3N2VjZGE5ZWMwMmE4NDEwNGMwNmE5YjdiMGUzZjIzZTMyNzMyZDRmMjA2ZTQ1NjFhYjg3OTQ5MiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMGRkNDEyYTgzYzAwYmM4ZDczNmM2ODUyZmNhMTZhNjgyMjg3MTBkZTlhMGNmM2U0NTI2YTNjNzk0ODQyNjkzOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzY0MDM3OGMyYjYzOGQ0YTg2NmE1YmIyMzk3Yjc4MDdhYjkxMmJlNTVlNGI4OTRhYWRiODRhNWU2MTQ4ZTg0YyJ9"
+        },
+        {
+          "resource": "repo://docker/install-open-source-stat.sh#L46-L79",
+          "version": "repo-lines-v1:sha256:2eb940921d4fb59810e551c4c99d299e06dc0aae86d5be38bddb2227d54ffc50:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI5OTRkMzY4ODNkZTMyMzViMjczOTVlZDAyMDViNDA2ODg2YmIyY2FjMGYwZmY4ZDEyMTA3ZTVlYWNiMGNmODIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRmYjE2ZjkzOGNmMTkxNTNlNjRhYTkyNjlkNzg3NWFhMmM2ZTY4ODEzZDNjZGYwNDdhOWQ1NWVkZjUxYWViNjgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk1Yjg4NWRkMjhmYmI3ZmE3ZmZiNDE3MmVhMTdkYzYxNWI5YjM1MDc5NzlmNjQyNGIyMGYxM2U0OWRhZGUwMWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjEwMjI4NGYzNmI2ZDM1ZWY5MDcxNTc3ZjE4MzFjZTJmZTI1NDY2NzY3MzUxZDRhOTFhZGNjZDFmY2M4YTg0YmQifQ"
+        },
+        {
+          "resource": "repo://pom.xml#L14-L23",
+          "version": "repo-lines-v1:sha256:8d1ef5ebf5ad8290d54c39045c71204d2075eb166e24cb538e822084301ccf42:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJhZTIyNTk3NmM0OWM4MDIwYWQ2YWNiYmJkMzhkMDI0MTU2OGRmMDYwN2E2NGY1Mzg0MmM1OWQ1YmI5MjhhNDUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxYjg1MzA5OGRmNWRmM2MzNzA0MWVmZjljZjgzODhhYmQ5ZWNhZDM4MmU0YmE2ZTg3OTUzYjRkMTkyN2JhNjgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE4MTk2OTZkNGI1NzU3YTczZmEyODAyZTg3NDU4YWEzNmM5YzUxN2ExODYxYmNhMzJkYmE3MzM3MDliNDAzMjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUxYTBiMmFjNTJkN2ZlYmJmNjU0ZGIyNmMxZDMzNzkxODE0ZTgyNWRiOTk1NjA2NGE5MmVhZjEyYzkxMmU3ZWEifQ"
+        }
+      ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.7.3",
-    "at": "2026-11-04T17:09:55.577Z"
+    "by": "openwiki/0.9.0",
+    "at": "2026-11-08T17:14:16.576Z"
   }
 }

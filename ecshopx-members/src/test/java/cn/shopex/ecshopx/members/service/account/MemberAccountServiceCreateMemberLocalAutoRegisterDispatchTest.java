@@ -12,13 +12,17 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import cn.shopex.ecshopx.common.dispatch.MembersCreateMemberSuccessDispatchPublisher;
+import cn.shopex.ecshopx.common.members.admin.AdminMemberCreateDistributorUserSideEffectPort;
+import cn.shopex.ecshopx.common.members.admin.AdminMemberCreatePromoterSideEffectPort;
 import cn.shopex.ecshopx.companys.service.protocol.ShopProtocolSetService;
 import cn.shopex.ecshopx.members.dispatch.BindSalsepersonJobDispatchPublisher;
 import cn.shopex.ecshopx.members.domain.Members;
 import cn.shopex.ecshopx.members.domain.MembersInfo;
+import cn.shopex.ecshopx.members.domain.ShopRelMember;
 import cn.shopex.ecshopx.members.mapper.MembersDeleteRecordMapper;
 import cn.shopex.ecshopx.members.mapper.MembersInfoMapper;
 import cn.shopex.ecshopx.members.mapper.MembersMapper;
+import cn.shopex.ecshopx.members.mapper.ShopRelMemberMapper;
 import cn.shopex.ecshopx.thirdparty.service.dmcrm.DmCrmSettingReadPort;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -62,6 +66,15 @@ class MemberAccountServiceCreateMemberLocalAutoRegisterDispatchTest {
 	@Autowired
 	private DmCrmSettingReadPort dmCrmSettingReadPort;
 
+	@Autowired
+	private AdminMemberCreatePromoterSideEffectPort adminMemberCreatePromoterSideEffectPort;
+
+	@Autowired
+	private AdminMemberCreateDistributorUserSideEffectPort adminMemberCreateDistributorUserSideEffectPort;
+
+	@Autowired
+	private ShopRelMemberMapper shopRelMemberMapper;
+
 	@BeforeEach
 	void stubPersistenceAndPromotion() {
 		reset(
@@ -71,7 +84,10 @@ class MemberAccountServiceCreateMemberLocalAutoRegisterDispatchTest {
 				bindSalsepersonJobDispatchPublisher,
 				shopProtocolSetService,
 				membersDeleteRecordMapper,
-				dmCrmSettingReadPort);
+				dmCrmSettingReadPort,
+				adminMemberCreatePromoterSideEffectPort,
+				adminMemberCreateDistributorUserSideEffectPort,
+				shopRelMemberMapper);
 		when(dmCrmSettingReadPort.isPointIntegrationOpen(anyLong())).thenReturn(false);
 		when(membersMapper.selectDefaultGradeId(anyString())).thenReturn(1L);
 		when(membersMapper.insert(any(Members.class)))
@@ -84,6 +100,29 @@ class MemberAccountServiceCreateMemberLocalAutoRegisterDispatchTest {
 		when(membersInfoMapper.insert(any(MembersInfo.class))).thenReturn(1);
 		when(shopProtocolSetService.get(anyLong(), anyString(), anyString())).thenReturn(Map.of());
 		when(membersDeleteRecordMapper.selectOne(any())).thenReturn(null);
+		when(shopRelMemberMapper.selectOne(any())).thenReturn(null);
+		when(shopRelMemberMapper.insert(any(ShopRelMember.class))).thenReturn(1);
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	void createMemberLocalAutoRegister_newMember_shouldInvokePromoterAndDistributorSideEffects() {
+		TransactionTemplate tt = new TransactionTemplate(transactionManager);
+		Map<String, Object> extras = new LinkedHashMap<>();
+		extras.put("inviter_id", 88L);
+		extras.put("distributor_id", 310L);
+		extras.put("salesperson_id", 0L);
+		tt.execute(
+				status -> {
+					memberAccountService.createMemberLocalAutoRegister(
+							38L, "13900139001", "pw", extras);
+					return null;
+				});
+
+		verify(adminMemberCreatePromoterSideEffectPort)
+				.createForNewMember(38L, 901L, "13900139001", 1L);
+		verify(adminMemberCreateDistributorUserSideEffectPort).createData(38L, 901L, 310L, 0L, 88L);
+		verify(shopRelMemberMapper).insert(any(ShopRelMember.class));
 	}
 
 	@Test

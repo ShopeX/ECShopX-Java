@@ -5,9 +5,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import cn.shopex.ecshopx.common.util.LeadingNumberParser;
+import cn.shopex.ecshopx.companys.service.operatorcart.OperatorCartCleanupService;
 import cn.shopex.ecshopx.goods.dispatch.ItemDeleteEventDispatchPublisher;
 import cn.shopex.ecshopx.goods.domain.Items;
 import cn.shopex.ecshopx.goods.repository.ItemRelAttributesRepository;
@@ -65,6 +67,9 @@ class PlatformItemsDeleteServiceItemDeleteEventPublishProbeTest {
 	@Mock
 	private ItemDeleteEventDispatchPublisher itemDeleteEventDispatchPublisher;
 
+	@Mock
+	private OperatorCartCleanupService operatorCartCleanupService;
+
 	@InjectMocks
 	private PlatformItemsDeleteService platformItemsDeleteService;
 
@@ -119,6 +124,8 @@ class PlatformItemsDeleteServiceItemDeleteEventPublishProbeTest {
 		merged.put("company_id", companyId);
 
 		tt.executeWithoutResult(st -> platformItemsDeleteService.deletePlatformItems(merged, itemId, 0L));
+
+		verify(operatorCartCleanupService).deleteByCompanyIdAndItemIds(eq(companyId), eq(List.of(itemId)));
 
 		@SuppressWarnings("unchecked")
 		ArgumentCaptor<Map<String, Object>> captor = ArgumentCaptor.forClass(Map.class);

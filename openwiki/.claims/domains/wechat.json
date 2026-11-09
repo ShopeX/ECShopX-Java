@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:a295022b5ad843835af8b30dc461a0ea29e5c4625e655d213db162511962fab3",
+  "pageVersion": "sha256:9b3b5201fafd344a65246bacf8fa2038995c853d0916ede851fe4283dba3c7bb",
   "claims": [
     {
       "id": "claim_ae96d6b59b654529b0df4341da13897d",
@@ -471,10 +471,64 @@
           "version": "repo-file-v1:sha256:b5aecba1452b1ed34b8217de82de2e1168c3ffefd9e76acc458bf36b536ce3d4"
         }
       ]
+    },
+    {
+      "id": "claim_551055e78a7d4000bd2ca1dfe5dc49d9",
+      "statement": "All WeChat SDK calls across modules use binarywang WxJava artifacts pinned at the root pom.xml to wxjava.version 4.7.6-20250628.205748 via dependencyManagement, with the module split being: ecshopx-wechat depends on weixin-java-miniapp/open/mp, ecshopx-work-wechat on weixin-java-cp, ecshopx-third-party on weixin-java-cp, and ecshopx-orders on weixin-java-pay.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-wechat/pom.xml#L45-L58",
+          "version": "repo-lines-v1:sha256:d43d053109ef09cc6e8496ebade42dbd702f28b6bfb0780df388de5c8c77f533:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYxNTAxZWYzYWJjMDhlODRiMzlhZWE4NDRlMzUxN2E1YjE2YjY3NTJlMGNlZjQ3YmY1ZmVjNWQwNzRhYWNhOWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA2MGJhYjA0ZjIxOTY1NjZjNGU0ZDQyZjYwNjM3MmMyMzc3ODljODdmNjQ3ZTMwNDcxOTM2NzcwN2E4ODQ0MDkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE2YmFlM2YwZGZiNDk0OGFhMzA2YWQzNDMzMTg3NjQxZDg5OTE1YzMyOTQ3NDZlMjk1MWJiZWUzZDA1YjAxMmQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI1ZGFiNzFlNGFjY2QyMjc1MWNjMjhjYmY2YjkyMzUzNGFmMWQ0ZjhjZjEwNDJiY2YzYjFhNzg5OTliYjVmMTQifQ"
+        },
+        {
+          "resource": "repo://ecshopx-work-wechat/pom.xml#L20-L25",
+          "version": "repo-lines-v1:sha256:7fcf535c9493ad1a27448a4085b5aff5c0f4693083bc80e4922c50ceb910aa35:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOTVjMzgzOTgwZTcxOTk2MzgxNmUzYmY5MmY5NmEyNTkxODIzZDIxN2VlYzBjNmMyYzVjYWM1YTIyNjk1MjJlMyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDYwYmFiMDRmMjE5NjU2NmM0ZTRkNDJmNjA2MzcyYzIzNzc4OWM4N2Y2NDdlMzA0NzE5MzY3NzA3YTg4NDQwOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDIwMTEyOTUzYjljZGY5NTYyZTgxNzM3ZjQ1MmUyMDgxOWU0NjZlMjQzZTk5ODFiNTQ3OTkwMWNmMDQwNGUyMyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODZlZTYyYzE4MTY0NGY4ZTBlZGFkNzY3NTIyZmVkYTM2Y2M5NzQ3NDA5YTk0N2ExYjMxMDhkNWNjYjcwNDJjOCJ9"
+        },
+        {
+          "resource": "repo://pom.xml#L27-L62",
+          "version": "repo-lines-v1:sha256:ce7e9e4bb7cd6523ef99754c6b691071a0a3b2d3c0c9a4560cddea743865d280:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEzZTQ5NTQxOTUzNjQ5YWM2NjA3ZjhhZjI2ZGM0MjIwMzM0ZDhiYzNlMTUyMWQ4ZmUyNmIzMGUwMGM5NjU0MDkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJiYzI1Yjk3ZWJkMDY5ODlmZmViNTI4MDBhMjE3Njk1NTA2MjhiYmQyZjVhMmNhZWE4ZmI3MzBmZjEyYWIyZjgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUxYTBiMmFjNTJkN2ZlYmJmNjU0ZGIyNmMxZDMzNzkxODE0ZTgyNWRiOTk1NjA2NGE5MmVhZjEyYzkxMmU3ZWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc2YmNjNmQwMGJlYmM5MjY0Yjc5MjgwODU2ZjFjZjY4NGIwZWRjNzA5MjEwMjJiMGY3OTA4NWJmNDI2NDVhMDAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_8da67159e54e463a9dca8664f6266756",
+      "statement": "The WeCom trusted-domain verification file surface is company-scoped: admin POST /api/v1/workwechat/domain/verify (WorkWechatController) accepts a .txt upload of at most 5000 bytes whose filename matches ^([a-zA-Z0-9_]{10,50})\\.txt$ and stores stem plus UTF-8 contents in work_wechat_verify_domain_file (unique index on name) via WorkWechatVerifyDomainFileService.saveVerifyInfo; when the same name already exists for another company the save is rejected with ResourceException(\"验证文件名已被占用\") and neither update nor insert happens, a same-company re-save updates contents/operator/timestamps without changing company_id, and a new name inserts — the three branches pinned by WorkWechatVerifyDomainFileServiceCompanyScopeTest.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-work-wechat/src/main/java/cn/shopex/ecshopx/workwechat/api/admin/v1/WorkWechatController.java#L360-L399",
+          "version": "repo-lines-v1:sha256:227cdc053d4669703474c8859500daff989189c8bb791ef3977115f05d8bc71b:eyJzZWxlY3RlZExpbmVDb3VudCI6NDAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMxMjE2OTRlODFjNmQwNjUxZjAwMGU3YmVkNmZmMzg2OTg5YWQ4OTI1YmNmYjE5NWUyMmQ3NzU2MmQ2MzVhZTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZlM2EwZDExNGMwNGQ5Yjg3MmU5YmYwZjI4NzM0ZTVhN2QwZmQ1Yzg3NzY2YmFkNmJmZGY1ZmM2NGU5OTgyZWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImEzYWRhZDkzNGJiMmI3ZDk3YTk4MDJiMTNjNjEyNzg2Yzk0ZDllZjBiYmQ1NWM1Zjk5MWUxYzk1NzJhYjcxMWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA0MWEwY2QxMTUyZWEyNTU2MmIxYjAxOTA2Nzg0YTQwZWM3ZGJkMDIwZGM1NDcyODE2Yjg3NDIzNjUwODY2MWIifQ"
+        },
+        {
+          "resource": "repo://ecshopx-work-wechat/src/main/java/cn/shopex/ecshopx/workwechat/domain/WorkWechatVerifyDomainFile.java#L29-L31",
+          "version": "repo-lines-v1:sha256:1f42bee61a4a71eb0b234922ec0f6636cd94955161bc36d9f8b1bb059fd78999:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDM1ZWVlODBhODFmZDVmZTY1MjAyMWRiOWNmZDk0NGRkNjIwOTIzMjM1ZTM0ZWRjMjZhOWExYzgxNTQxZjdjMyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYTNmODZmMGVlMThkMTRlODY0OWI0YmI3NWQ3ZjFmMDQ4NjE0ODA1OTgwYmI3MGQ4M2VmMDA4MTRiMDQ2ZWY4OCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMjk2MmY2NzI0MDMwOGZiNmRkYmU2OTdjZGUzMjc5MTFiNDRkZDYyZjc1NzY0NGYxNTYxOWJlYWQ0ZjIzNWYxYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOGU5YTBmZWIxZjhhMTA5Y2U0M2FiNjE0OTUyYjc0YjMzMTM5MTZmZjM1NjcxYjg1ZWE2ODcxM2IyY2QxOGRlMiJ9"
+        },
+        {
+          "resource": "repo://ecshopx-work-wechat/src/main/java/cn/shopex/ecshopx/workwechat/service/WorkWechatVerifyDomainFileService.java#L35-L65",
+          "version": "repo-lines-v1:sha256:5084d2c67668842a5f5694ceab844f05f9555d4a2e7bd41fc587b237a7f7a19a:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM2YjhmZWNiMWExZGY5NmM5MWRkZDZjZGNkNjE0ZGIwYTAxNzE5ZTgwZDQ4YzRiOTViODQyOWYwNTI0ZWYxNzciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQwMzk5NDVmNzEzY2VjY2MyYTJiZTk4MWFiNWM1ZWVhMzdmOTVmOTc2OWU1NzVjZDhlZDlhOWZjYmFmZGYwNmEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-work-wechat/src/test/java/cn/shopex/ecshopx/workwechat/service/WorkWechatVerifyDomainFileServiceCompanyScopeTest.java#L45-L99",
+          "version": "repo-lines-v1:sha256:bb40ecec82d57d0e2b6f1ea2045e641915491c272a1b0c1657538cb9bb754dbd:eyJzZWxlY3RlZExpbmVDb3VudCI6NTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAyYmMwZTM2MWVjOTZkYTE1MWM3OWVlMjg2MWI4ZWQwOGI4ZjE5YWE4MDhjM2MxMWIxYTZjMTJjMTQyNjkyNTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_3e00dd509288485d988f70bb3e89dc5b",
+      "statement": "On every work-wechat config read, WorkWechatConfigService.attachConfig enriches the agents.dianwu section with verify_file_name: the latest uploaded verify-file stem for the company (ordered by created via WorkWechatVerifyDomainFileQueryService.findLatestVerifyFileBaseName) suffixed with .txt, or empty when none has been uploaded — so the operator UI shows which challenge file must be hosted at the dianwu H5 domain.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-work-wechat/src/main/java/cn/shopex/ecshopx/workwechat/service/WorkWechatConfigService.java#L579-L621",
+          "version": "repo-lines-v1:sha256:654680a0d3ef0e04e1f877c03870af81238707c461f845e9597866a82c96cf91:eyJzZWxlY3RlZExpbmVDb3VudCI6NDMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk0OWJkMjkyMjA1ZTJlM2ZhM2NmZjBlYTg4MThmYmViNGQzYzdmNThkMzRmODQ2MmFhN2ZlODFhZGMzZGQ4ZjciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIyZjJmZjVmZWVjNjBmNTg3YzhmYWU0ZTg3ZjgwOWE2NjFjZmZlZDZiNDdhYWU1ZjZkNmEyNjUzYWE4OTUyZWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImVmYzdkYzhjZmJhM2U0NDJjMDNhMDVlOWJkNTAyZDE0YTEwNTIwMjAwNjc1N2Y4OWQ1ZjMwZTM4NDFlYmQ1MzkifQ"
+        },
+        {
+          "resource": "repo://ecshopx-work-wechat/src/main/java/cn/shopex/ecshopx/workwechat/service/WorkWechatVerifyDomainFileQueryService.java#L33-L48",
+          "version": "repo-lines-v1:sha256:aba7df57d4a3f0dc0026c1c9afa9a65ed3c689bdb49013bc5e0651fef9fa099c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQyMzY4YTc0OTE0OWU3YjcxZjY3YjI2NzU0ZGZiOGQzZTJlMzljNmRiZTAzMzQ1ZjQyMDhjODc2NzgwNWNiZDciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVhZGRlZTkxYjViYjExYmQwN2ZkN2YzMDUwMDVmM2Q4MDkzY2IyOWQ3ZGU3YjEyNDE4NTA0MDI4MjIyMTgxYmQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQwMzk5NDVmNzEzY2VjY2MyYTJiZTk4MWFiNWM1ZWVhMzdmOTVmOTc2OWU1NzVjZDhlZDlhOWZjYmFmZGYwNmEifQ"
+        }
+      ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.7.3",
-    "at": "2026-11-04T17:09:55.577Z"
+    "by": "openwiki/0.9.0",
+    "at": "2026-11-06T17:22:02.968Z"
   }
 }

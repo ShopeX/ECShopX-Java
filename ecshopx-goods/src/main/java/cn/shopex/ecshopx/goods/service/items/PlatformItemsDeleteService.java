@@ -17,6 +17,7 @@
 package cn.shopex.ecshopx.goods.service.items;
 
 import cn.shopex.ecshopx.common.exception.ResourceException;
+import cn.shopex.ecshopx.companys.service.operatorcart.OperatorCartCleanupService;
 import cn.shopex.ecshopx.distribution.repository.DistributorItemsRepository;
 import cn.shopex.ecshopx.goods.dispatch.ItemDeleteEventDispatchPublisher;
 import cn.shopex.ecshopx.goods.domain.Items;
@@ -49,12 +50,14 @@ public class PlatformItemsDeleteService {
 	private final MemberPriceBulkDeleteRepository memberPriceBulkDeleteRepository;
 	private final ItemsBarcodeRepository itemsBarcodeRepository;
 	private final ItemDeleteEventDispatchPublisher itemDeleteEventDispatchPublisher;
+	private final OperatorCartCleanupService operatorCartCleanupService;
 
 	public PlatformItemsDeleteService(ItemsRepository itemsRepository, ItemStoreService itemStoreService,
 			ItemRelAttributesRepository itemRelAttributesRepository, ItemsRelCatsRepository itemsRelCatsRepository,
 			ItemsRelTypeRepository itemsRelTypeRepository, DistributorItemsRepository distributorItemsRepository,
 			MemberPriceBulkDeleteRepository memberPriceBulkDeleteRepository, ItemsBarcodeRepository itemsBarcodeRepository,
-			ItemDeleteEventDispatchPublisher itemDeleteEventDispatchPublisher) {
+			ItemDeleteEventDispatchPublisher itemDeleteEventDispatchPublisher,
+			OperatorCartCleanupService operatorCartCleanupService) {
 		this.itemsRepository = itemsRepository;
 		this.itemStoreService = itemStoreService;
 		this.itemRelAttributesRepository = itemRelAttributesRepository;
@@ -64,6 +67,7 @@ public class PlatformItemsDeleteService {
 		this.memberPriceBulkDeleteRepository = memberPriceBulkDeleteRepository;
 		this.itemsBarcodeRepository = itemsBarcodeRepository;
 		this.itemDeleteEventDispatchPublisher = itemDeleteEventDispatchPublisher;
+		this.operatorCartCleanupService = operatorCartCleanupService;
 	}
 
 	@Transactional(rollbackFor = Exception.class)
@@ -110,6 +114,8 @@ public class PlatformItemsDeleteService {
 		eventPayload.put("company_id", companyId);
 		eventPayload.put("del_ids", new ArrayList<>(itemIds));
 		eventPayload.put("item_info", itemInfo);
+
+		operatorCartCleanupService.deleteByCompanyIdAndItemIds(companyId, itemIds);
 
 		for (long skuId : itemIds) {
 			itemsRepository.deleteByItemIdsAndCompanyId(companyId, List.of(skuId));
