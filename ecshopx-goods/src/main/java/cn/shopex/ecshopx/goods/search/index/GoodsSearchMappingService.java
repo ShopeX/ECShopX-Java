@@ -17,6 +17,7 @@
 package cn.shopex.ecshopx.goods.search.index;
 
 import cn.shopex.ecshopx.goods.search.SearchEsProperties;
+import cn.shopex.ecshopx.goods.search.synonym.SearchSynonymSetNames;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -94,6 +95,19 @@ public class GoodsSearchMappingService {
 		settings.put("number_of_shards", 1);
 		settings.put("number_of_replicas", 0);
 		return settings;
+	}
+
+	/**
+	 * ES 8 可热更新的 synonym filter 定义，引用 {@link SearchSynonymSetNames} 推送的同义词集。
+	 *
+	 * <p>共享索引下按公司切换 analyzer 尚未接入查询路径；重建索引时可按 companyId 选用本定义。
+	 */
+	public static Map<String, Object> buildUpdatableSynonymFilter(long companyId) {
+		Map<String, Object> filter = new LinkedHashMap<>();
+		filter.put("type", "synonym");
+		filter.put("synonyms_set", SearchSynonymSetNames.synonymSetId(companyId));
+		filter.put("updateable", true);
+		return filter;
 	}
 
 	private Map<String, Object> buildProperties() {
