@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.LongSupplier;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /** 全量重建：新物理索引 → 批量子文档 → alias 切换。 */
@@ -45,6 +46,7 @@ public class SearchRebuildService {
 
 	private final LongSupplier epochMillisSupplier;
 
+	@Autowired
 	public SearchRebuildService(
 			GoodsSearchMappingService mappingService,
 			GoodsSearchIndexRepository indexRepository,
@@ -52,6 +54,7 @@ public class SearchRebuildService {
 		this(mappingService, indexRepository, sourceLoader, System::currentTimeMillis);
 	}
 
+	/** 单测用：可注入固定时钟。 */
 	SearchRebuildService(
 			GoodsSearchMappingService mappingService,
 			GoodsSearchIndexRepository indexRepository,
