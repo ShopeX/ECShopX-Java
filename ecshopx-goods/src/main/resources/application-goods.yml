@@ -1,1 +1,14 @@
 # ecshopx-goods — module-local config (optional profile: spring.config.import)
+ecshopx:
+  search:
+    es:
+      enabled: false
+      like-fallback: false
+      hosts: http://127.0.0.1:9200
+      alias: goods_store_item
+      connect-timeout-ms: 1000
+      socket-timeout-ms: 1500
+      rank:
+        has-stock-weight: 10.0
+        sales-weight: 1.0
+        listed-at-weight: 1.0

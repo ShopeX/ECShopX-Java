@@ -134,5 +134,15 @@
 			<groupId>com.google.zxing</groupId>
 			<artifactId>javase</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>co.elastic.clients</groupId>
+			<artifactId>elasticsearch-java</artifactId>
+			<version>8.15.5</version>
+		</dependency>
+		<dependency>
+			<groupId>org.elasticsearch.client</groupId>
+			<artifactId>elasticsearch-rest-client</artifactId>
+			<version>8.15.5</version>
+		</dependency>
 	</dependencies>
 </project>
