@@ -312,7 +312,8 @@ class ImportDataJobHandlerItemAddPublishProbeTest {
 				itemAddPublisher,
 				itemCreatePublisher,
 				itemsMultiLangWriteService,
-				new ObjectMapper());
+				new ObjectMapper(),
+				mock(cn.shopex.ecshopx.goods.search.sync.GoodsSearchIndexDirtyFanout.class));
 	}
 
 	/**

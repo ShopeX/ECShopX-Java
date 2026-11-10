@@ -95,6 +95,26 @@ public class DistributorItemsRepository {
 		return mapper.delete(w);
 	}
 
+	/** 搜索索引脏同步：某主商品下已有店铺商品行的 distinct distributor_id。 */
+	public List<Long> listDistinctDistributorIdsByCompanyAndDefaultItemId(long companyId, long defaultItemId) {
+		if (defaultItemId <= 0) {
+			return List.of();
+		}
+		LambdaQueryWrapper<DistributorItems> w = new LambdaQueryWrapper<>();
+		w.eq(DistributorItems::getCompanyId, companyId)
+				.and(q -> q.eq(DistributorItems::getDefaultItemId, defaultItemId).or().eq(DistributorItems::getItemId, defaultItemId))
+				.select(DistributorItems::getDistributorId);
+		List<DistributorItems> rows = mapper.selectList(w);
+		LinkedHashSet<Long> out = new LinkedHashSet<>();
+		for (DistributorItems row : rows) {
+			Long did = row.getDistributorId();
+			if (did != null && did >= 0) {
+				out.add(did);
+			}
+		}
+		return new ArrayList<>(out);
+	}
+
 	public void insert(DistributorItems row) {
 		long now = System.currentTimeMillis() / 1000L;
 		if (row.getCreated() == null) {

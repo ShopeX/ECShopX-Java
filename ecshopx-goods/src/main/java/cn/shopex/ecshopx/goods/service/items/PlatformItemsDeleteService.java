@@ -26,6 +26,7 @@ import cn.shopex.ecshopx.goods.repository.ItemsBarcodeRepository;
 import cn.shopex.ecshopx.goods.repository.ItemsRelCatsRepository;
 import cn.shopex.ecshopx.goods.repository.ItemsRelTypeRepository;
 import cn.shopex.ecshopx.goods.repository.ItemsRepository;
+import cn.shopex.ecshopx.goods.search.sync.GoodsSearchIndexDirtyFanout;
 import cn.shopex.ecshopx.promotions.repository.MemberPriceBulkDeleteRepository;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -51,13 +52,15 @@ public class PlatformItemsDeleteService {
 	private final ItemsBarcodeRepository itemsBarcodeRepository;
 	private final ItemDeleteEventDispatchPublisher itemDeleteEventDispatchPublisher;
 	private final OperatorCartCleanupService operatorCartCleanupService;
+	private final GoodsSearchIndexDirtyFanout goodsSearchIndexDirtyFanout;
 
 	public PlatformItemsDeleteService(ItemsRepository itemsRepository, ItemStoreService itemStoreService,
 			ItemRelAttributesRepository itemRelAttributesRepository, ItemsRelCatsRepository itemsRelCatsRepository,
 			ItemsRelTypeRepository itemsRelTypeRepository, DistributorItemsRepository distributorItemsRepository,
 			MemberPriceBulkDeleteRepository memberPriceBulkDeleteRepository, ItemsBarcodeRepository itemsBarcodeRepository,
 			ItemDeleteEventDispatchPublisher itemDeleteEventDispatchPublisher,
-			OperatorCartCleanupService operatorCartCleanupService) {
+			OperatorCartCleanupService operatorCartCleanupService,
+			GoodsSearchIndexDirtyFanout goodsSearchIndexDirtyFanout) {
 		this.itemsRepository = itemsRepository;
 		this.itemStoreService = itemStoreService;
 		this.itemRelAttributesRepository = itemRelAttributesRepository;
@@ -68,6 +71,7 @@ public class PlatformItemsDeleteService {
 		this.itemsBarcodeRepository = itemsBarcodeRepository;
 		this.itemDeleteEventDispatchPublisher = itemDeleteEventDispatchPublisher;
 		this.operatorCartCleanupService = operatorCartCleanupService;
+		this.goodsSearchIndexDirtyFanout = goodsSearchIndexDirtyFanout;
 	}
 
 	@Transactional(rollbackFor = Exception.class)
@@ -129,6 +133,7 @@ public class PlatformItemsDeleteService {
 			itemsRelTypeRepository.deleteAllByItemId(defaultItemId);
 		}
 
+		goodsSearchIndexDirtyFanout.scheduleDeleteForDefaultItem(companyId, defaultItemId);
 		distributorItemsRepository.deleteByCompanyIdAndDefaultItemId(companyId, defaultItemId);
 		memberPriceBulkDeleteRepository.deleteByCompanyIdAndItemIds(companyId, itemIds);
 		itemsBarcodeRepository.deleteByItemIds(companyId, itemIds);

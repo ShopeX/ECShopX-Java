@@ -16,6 +16,7 @@
 
 package cn.shopex.ecshopx.goods.service.items;
 
+import cn.shopex.ecshopx.goods.search.sync.GoodsSearchIndexDirtyFanout;
 import java.util.Map;
 import org.springframework.stereotype.Service;
 
@@ -25,31 +26,31 @@ public class ItemsCreateOrchestrator {
 	private final PlatformItemsAddService platformItemsAddService;
 	private final SupplierItemsAddService supplierItemsAddService;
 	private final DistributorGoodsSyncService distributorGoodsSyncService;
+	private final GoodsSearchIndexDirtyFanout goodsSearchIndexDirtyFanout;
 
 	public ItemsCreateOrchestrator(
 			PlatformItemsAddService platformItemsAddService,
 			SupplierItemsAddService supplierItemsAddService,
-			DistributorGoodsSyncService distributorGoodsSyncService) {
+			DistributorGoodsSyncService distributorGoodsSyncService,
+			GoodsSearchIndexDirtyFanout goodsSearchIndexDirtyFanout) {
 		this.platformItemsAddService = platformItemsAddService;
 		this.supplierItemsAddService = supplierItemsAddService;
 		this.distributorGoodsSyncService = distributorGoodsSyncService;
+		this.goodsSearchIndexDirtyFanout = goodsSearchIndexDirtyFanout;
 	}
 
 	public void createItems(Map<String, Object> params) {
-		createItemsReturningItemId(params);
-	}
-
-	/** 平台路径返回 default_item_id / 主 SKU item_id，供导入等写回会员价。 */
-	public long createItemsReturningItemId(Map<String, Object> params) {
 		long supplierId = params.get("supplier_id") != null ? toLong(params.get("supplier_id")) : 0L;
 		if (supplierId > 0) {
 			supplierItemsAddService.addItemsTransactional(params);
-			return 0L;
+			return;
 		}
 		long defaultItemId = platformItemsAddService.addItemsTransactional(params);
 		long companyId = toLong(params.get("company_id"));
 		distributorGoodsSyncService.syncGoods(companyId, defaultItemId);
-		return defaultItemId;
+		if (defaultItemId > 0) {
+			goodsSearchIndexDirtyFanout.scheduleUpsertForDefaultItem(companyId, defaultItemId);
+		}
 	}
 
 	private static long toLong(Object o) {

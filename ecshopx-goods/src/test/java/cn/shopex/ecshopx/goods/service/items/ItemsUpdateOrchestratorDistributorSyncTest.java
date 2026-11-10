@@ -9,6 +9,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import cn.shopex.ecshopx.goods.search.sync.GoodsSearchIndexDirtyFanout;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
@@ -32,6 +33,9 @@ class ItemsUpdateOrchestratorDistributorSyncTest {
 	@Mock
 	private SupplierItemsReviewGoodsService supplierItemsReviewGoodsService;
 
+	@Mock
+	private GoodsSearchIndexDirtyFanout goodsSearchIndexDirtyFanout;
+
 	@InjectMocks
 	private ItemsUpdateOrchestrator sut;
 
@@ -45,6 +49,7 @@ class ItemsUpdateOrchestratorDistributorSyncTest {
 		sut.updateItems(params, 1L, false);
 
 		verify(distributorGoodsSyncService).syncGoods(7001L, 88_001L);
+		verify(goodsSearchIndexDirtyFanout).scheduleUpsertForDefaultItem(7001L, 88_001L);
 		verifyNoInteractions(supplierItemsAddService);
 	}
 

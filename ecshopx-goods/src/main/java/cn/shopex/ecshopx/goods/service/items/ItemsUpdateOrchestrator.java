@@ -16,6 +16,7 @@
 
 package cn.shopex.ecshopx.goods.service.items;
 
+import cn.shopex.ecshopx.goods.search.sync.GoodsSearchIndexDirtyFanout;
 import java.util.Map;
 import org.springframework.stereotype.Service;
 
@@ -26,16 +27,19 @@ public class ItemsUpdateOrchestrator {
 	private final SupplierItemsAddService supplierItemsAddService;
 	private final DistributorGoodsSyncService distributorGoodsSyncService;
 	private final SupplierItemsReviewGoodsService supplierItemsReviewGoodsService;
+	private final GoodsSearchIndexDirtyFanout goodsSearchIndexDirtyFanout;
 
 	public ItemsUpdateOrchestrator(
 			PlatformItemsAddService platformItemsAddService,
 			SupplierItemsAddService supplierItemsAddService,
 			DistributorGoodsSyncService distributorGoodsSyncService,
-			SupplierItemsReviewGoodsService supplierItemsReviewGoodsService) {
+			SupplierItemsReviewGoodsService supplierItemsReviewGoodsService,
+			GoodsSearchIndexDirtyFanout goodsSearchIndexDirtyFanout) {
 		this.platformItemsAddService = platformItemsAddService;
 		this.supplierItemsAddService = supplierItemsAddService;
 		this.distributorGoodsSyncService = distributorGoodsSyncService;
 		this.supplierItemsReviewGoodsService = supplierItemsReviewGoodsService;
+		this.goodsSearchIndexDirtyFanout = goodsSearchIndexDirtyFanout;
 	}
 
 	public void updateItems(Map<String, Object> params, long pathItemId, boolean isSupplierGoods) {
@@ -60,6 +64,9 @@ public class ItemsUpdateOrchestrator {
 		long defaultItemId = platformItemsAddService.addItemsTransactional(params);
 		long companyId = toLong(params.get("company_id"));
 		distributorGoodsSyncService.syncGoods(companyId, defaultItemId);
+		if (defaultItemId > 0) {
+			goodsSearchIndexDirtyFanout.scheduleUpsertForDefaultItem(companyId, defaultItemId);
+		}
 	}
 
 	private static String str(Object o) {

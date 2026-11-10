@@ -17,6 +17,7 @@ import cn.shopex.ecshopx.goods.repository.ItemsBarcodeRepository;
 import cn.shopex.ecshopx.goods.repository.ItemsRelCatsRepository;
 import cn.shopex.ecshopx.goods.repository.ItemsRelTypeRepository;
 import cn.shopex.ecshopx.goods.repository.ItemsRepository;
+import cn.shopex.ecshopx.goods.search.sync.GoodsSearchIndexDirtyFanout;
 import cn.shopex.ecshopx.distribution.repository.DistributorItemsRepository;
 import cn.shopex.ecshopx.promotions.repository.MemberPriceBulkDeleteRepository;
 import java.util.LinkedHashMap;
@@ -69,6 +70,9 @@ class PlatformItemsDeleteServiceItemDeleteEventPublishProbeTest {
 
 	@Mock
 	private OperatorCartCleanupService operatorCartCleanupService;
+
+	@Mock
+	private GoodsSearchIndexDirtyFanout goodsSearchIndexDirtyFanout;
 
 	@InjectMocks
 	private PlatformItemsDeleteService platformItemsDeleteService;

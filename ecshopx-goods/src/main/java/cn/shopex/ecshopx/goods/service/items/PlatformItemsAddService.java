@@ -28,6 +28,7 @@ import cn.shopex.ecshopx.goods.repository.ItemRelAttributesRepository;
 import cn.shopex.ecshopx.goods.repository.ItemsBarcodeRepository;
 import cn.shopex.ecshopx.goods.repository.ItemsRelPointAccessRepository;
 import cn.shopex.ecshopx.goods.repository.ItemsRepository;
+import cn.shopex.ecshopx.goods.search.sync.GoodsSearchIndexDirtyFanout;
 import cn.shopex.ecshopx.espier.service.upload.IntroHtmlDataImageUploadService;
 import cn.shopex.ecshopx.merchant.domain.Merchant;
 import cn.shopex.ecshopx.merchant.service.MerchantQueryService;
@@ -68,6 +69,7 @@ public class PlatformItemsAddService {
 	private final ItemCreateEventDispatchPublisher itemCreateEventDispatchPublisher;
 	private final ItemsMultiLangWriteService itemsMultiLangWriteService;
 	private final ObjectMapper objectMapper;
+	private final GoodsSearchIndexDirtyFanout goodsSearchIndexDirtyFanout;
 
 	public PlatformItemsAddService(
 			IntroHtmlDataImageUploadService introHtmlDataImageUploadService,
@@ -89,7 +91,8 @@ public class PlatformItemsAddService {
 			ItemAddEventDispatchPublisher itemAddEventDispatchPublisher,
 			ItemCreateEventDispatchPublisher itemCreateEventDispatchPublisher,
 			ItemsMultiLangWriteService itemsMultiLangWriteService,
-			ObjectMapper objectMapper) {
+			ObjectMapper objectMapper,
+			GoodsSearchIndexDirtyFanout goodsSearchIndexDirtyFanout) {
 		this.introHtmlDataImageUploadService = introHtmlDataImageUploadService;
 		this.pointMemberRuleReadService = pointMemberRuleReadService;
 		this.merchantQueryService = merchantQueryService;
@@ -110,6 +113,7 @@ public class PlatformItemsAddService {
 		this.itemCreateEventDispatchPublisher = itemCreateEventDispatchPublisher;
 		this.itemsMultiLangWriteService = itemsMultiLangWriteService;
 		this.objectMapper = objectMapper;
+		this.goodsSearchIndexDirtyFanout = goodsSearchIndexDirtyFanout;
 	}
 
 	@Transactional(rollbackFor = Exception.class)
@@ -217,7 +221,11 @@ public class PlatformItemsAddService {
 		Map<String, Object> entities = buildCreateEventEntities(lastResult, params);
 		itemCreateEventDispatchPublisher.publish(entities, itemIds);
 
-		return defaultItemId != null ? defaultItemId : 0L;
+		long resolvedDefaultItemId = defaultItemId != null ? defaultItemId : 0L;
+		if (resolvedDefaultItemId > 0) {
+			goodsSearchIndexDirtyFanout.scheduleUpsertForDefaultItem(companyId, resolvedDefaultItemId);
+		}
+		return resolvedDefaultItemId;
 	}
 
 	private void afterSkuSideEffects(

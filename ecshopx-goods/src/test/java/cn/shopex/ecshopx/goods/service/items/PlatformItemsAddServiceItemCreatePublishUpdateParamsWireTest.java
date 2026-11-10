@@ -25,6 +25,7 @@ import cn.shopex.ecshopx.distribution.service.DistributorListQueryService;
 import cn.shopex.ecshopx.espier.service.upload.IntroHtmlDataImageUploadService;
 import cn.shopex.ecshopx.merchant.service.MerchantQueryService;
 import cn.shopex.ecshopx.point.service.PointMemberRuleReadService;
+import cn.shopex.ecshopx.goods.search.sync.GoodsSearchIndexDirtyFanout;
 import cn.shopex.ecshopx.promotions.service.ItemCreatePromotionGuardService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
@@ -99,6 +100,9 @@ class PlatformItemsAddServiceItemCreatePublishUpdateParamsWireTest {
 	@Mock
 	private ItemsMultiLangWriteService itemsMultiLangWriteService;
 
+	@Mock
+	private GoodsSearchIndexDirtyFanout goodsSearchIndexDirtyFanout;
+
 	private PlatformItemsAddService sut;
 
 	@BeforeEach
@@ -123,7 +127,8 @@ class PlatformItemsAddServiceItemCreatePublishUpdateParamsWireTest {
 				itemAddEventDispatchPublisher,
 				itemCreateEventDispatchPublisher,
 				itemsMultiLangWriteService,
-				new ObjectMapper());
+				new ObjectMapper(),
+				goodsSearchIndexDirtyFanout);
 
 		when(itemsMultiLangWriteService.resolveLang(any())).thenReturn("zh-CN");
 		lenient().doNothing().when(itemsMultiLangWriteService).afterItemCreate(anyLong(), anyLong(), any(), any());
