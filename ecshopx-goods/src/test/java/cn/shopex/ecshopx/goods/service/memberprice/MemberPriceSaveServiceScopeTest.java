@@ -32,6 +32,7 @@ import cn.shopex.ecshopx.goods.domain.Items;
 import cn.shopex.ecshopx.goods.repository.ItemsMemberPriceCheckRepository;
 import cn.shopex.ecshopx.goods.repository.ItemsRepository;
 import cn.shopex.ecshopx.goods.repository.ItemsStartNumUpdateRepository;
+import cn.shopex.ecshopx.goods.search.sync.GoodsSearchIndexDirtyFanout;
 import cn.shopex.ecshopx.promotions.repository.MemberPriceBulkDeleteRepository;
 import cn.shopex.ecshopx.promotions.repository.MemberPriceInsertRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -52,6 +53,7 @@ class MemberPriceSaveServiceScopeTest {
 	@Mock DistributorListQueryService distributorListQueryService;
 	@Mock DistributorItemsRepository distributorItemsRepository;
 	@Mock ItemsRepository itemsRepository;
+	@Mock GoodsSearchIndexDirtyFanout goodsSearchIndexDirtyFanout;
 
 	MemberPriceSaveService service;
 
@@ -66,7 +68,8 @@ class MemberPriceSaveServiceScopeTest {
 						itemsStartNumUpdateRepository,
 						distributorListQueryService,
 						distributorItemsRepository,
-						itemsRepository);
+						itemsRepository,
+						goodsSearchIndexDirtyFanout);
 	}
 
 	@Test

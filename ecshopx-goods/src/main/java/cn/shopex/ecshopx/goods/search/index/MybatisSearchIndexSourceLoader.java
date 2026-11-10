@@ -28,21 +28,24 @@ import java.util.Map;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
 
-/** JDBC/MyBatis 物化 {@link SearchIndexSource}（会员价/活动字段留空，Task 5 补齐）。 */
+/** JDBC/MyBatis 物化 {@link SearchIndexSource}（含定制会员价与改价活动行）。 */
 @Component
 public class MybatisSearchIndexSourceLoader implements SearchIndexSourceLoader {
 
 	private final SearchIndexSourceMapper searchIndexSourceMapper;
 	private final ItemsMapper itemsMapper;
 	private final DistributorItemsMapper distributorItemsMapper;
+	private final SearchIndexMemberActivityRepository memberActivityRepository;
 
 	public MybatisSearchIndexSourceLoader(
 			SearchIndexSourceMapper searchIndexSourceMapper,
 			ItemsMapper itemsMapper,
-			DistributorItemsMapper distributorItemsMapper) {
+			DistributorItemsMapper distributorItemsMapper,
+			SearchIndexMemberActivityRepository memberActivityRepository) {
 		this.searchIndexSourceMapper = searchIndexSourceMapper;
 		this.itemsMapper = itemsMapper;
 		this.distributorItemsMapper = distributorItemsMapper;
+		this.memberActivityRepository = memberActivityRepository;
 	}
 
 	@Override
@@ -93,6 +96,11 @@ public class MybatisSearchIndexSourceLoader implements SearchIndexSourceLoader {
 		if (skus.isEmpty()) {
 			return Optional.empty();
 		}
+		List<Long> skuItemIds = skuRows.stream().map(Items::getItemId).filter(id -> id != null && id > 0).toList();
+		SearchIndexMemberPriceMaterializer.Buckets memberPrices =
+				memberActivityRepository.loadMemberPrices(companyId, defaultItemId, skuItemIds);
+		List<SearchIndexSource.Activity> activities =
+				memberActivityRepository.loadActivities(companyId, skuItemIds);
 		return Optional.of(
 				SearchIndexSource.builder()
 						.companyId(companyId)
@@ -101,7 +109,10 @@ public class MybatisSearchIndexSourceLoader implements SearchIndexSourceLoader {
 						.hqPriceFen(hqPriceFen)
 						.distributorPriceFen(distributorPriceFen)
 						.marketPriceFen(marketPriceFen)
+						.memberPriceGrade(memberPrices.grade())
+						.memberPriceVipGrade(memberPrices.vipGrade())
 						.skus(skus)
+						.activities(activities)
 						.build());
 	}
 

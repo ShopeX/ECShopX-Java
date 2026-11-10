@@ -22,9 +22,12 @@ import cn.shopex.ecshopx.distribution.domain.Distributor;
 import cn.shopex.ecshopx.distribution.domain.DistributorItems;
 import cn.shopex.ecshopx.distribution.repository.DistributorItemsRepository;
 import cn.shopex.ecshopx.distribution.service.DistributorListQueryService;
+import cn.shopex.ecshopx.goods.domain.Items;
+import cn.shopex.ecshopx.goods.search.DefaultItemIdResolver;
 import cn.shopex.ecshopx.goods.repository.ItemsMemberPriceCheckRepository;
 import cn.shopex.ecshopx.goods.repository.ItemsRepository;
 import cn.shopex.ecshopx.goods.repository.ItemsStartNumUpdateRepository;
+import cn.shopex.ecshopx.goods.search.sync.GoodsSearchIndexDirtyFanout;
 import cn.shopex.ecshopx.promotions.domain.MemberPrice;
 import cn.shopex.ecshopx.promotions.repository.MemberPriceBulkDeleteRepository;
 import cn.shopex.ecshopx.promotions.repository.MemberPriceInsertRepository;
@@ -37,11 +40,14 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 @Service
 public class MemberPriceSaveService {
@@ -54,6 +60,7 @@ public class MemberPriceSaveService {
 	private final DistributorListQueryService distributorListQueryService;
 	private final DistributorItemsRepository distributorItemsRepository;
 	private final ItemsRepository itemsRepository;
+	private final GoodsSearchIndexDirtyFanout goodsSearchIndexDirtyFanout;
 
 	public MemberPriceSaveService(
 			ObjectMapper objectMapper,
@@ -63,7 +70,8 @@ public class MemberPriceSaveService {
 			ItemsStartNumUpdateRepository itemsStartNumUpdateRepository,
 			DistributorListQueryService distributorListQueryService,
 			DistributorItemsRepository distributorItemsRepository,
-			ItemsRepository itemsRepository) {
+			ItemsRepository itemsRepository,
+			GoodsSearchIndexDirtyFanout goodsSearchIndexDirtyFanout) {
 		this.objectMapper = objectMapper;
 		this.memberPriceBulkDeleteRepository = memberPriceBulkDeleteRepository;
 		this.memberPriceInsertRepository = memberPriceInsertRepository;
@@ -72,6 +80,7 @@ public class MemberPriceSaveService {
 		this.distributorListQueryService = distributorListQueryService;
 		this.distributorItemsRepository = distributorItemsRepository;
 		this.itemsRepository = itemsRepository;
+		this.goodsSearchIndexDirtyFanout = goodsSearchIndexDirtyFanout;
 	}
 
 	@Transactional(rollbackFor = Exception.class)
@@ -146,6 +155,40 @@ public class MemberPriceSaveService {
 					itemsStartNumUpdateRepository.updateStartNumIfItemExists(companyId, itemId, (int) sl);
 				}
 			}
+		}
+		scheduleSearchIndexAfterCommit(companyId, itemIds);
+	}
+
+	private void scheduleSearchIndexAfterCommit(long companyId, List<Long> itemIds) {
+		if (itemIds.isEmpty()) {
+			return;
+		}
+		List<Long> idsCopy = List.copyOf(itemIds);
+		Runnable fanout = () -> fanoutSearchIndexForItemIds(companyId, idsCopy);
+		if (!TransactionSynchronizationManager.isSynchronizationActive()) {
+			fanout.run();
+			return;
+		}
+		TransactionSynchronizationManager.registerSynchronization(
+				new TransactionSynchronization() {
+					@Override
+					public void afterCommit() {
+						fanout.run();
+					}
+				});
+	}
+
+	private void fanoutSearchIndexForItemIds(long companyId, List<Long> itemIds) {
+		LinkedHashSet<Long> defaultItemIds = new LinkedHashSet<>();
+		for (Long itemId : itemIds) {
+			Items row = itemsRepository.getByItemIdAndCompany(itemId, companyId);
+			long def = row != null ? DefaultItemIdResolver.resolve(row) : itemId;
+			if (def > 0) {
+				defaultItemIds.add(def);
+			}
+		}
+		for (long defaultItemId : defaultItemIds) {
+			goodsSearchIndexDirtyFanout.scheduleUpsertForDefaultItem(companyId, defaultItemId);
 		}
 	}
 
