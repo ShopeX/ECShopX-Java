@@ -29,7 +29,11 @@ public class StubSearchIndexSourceLoader implements SearchIndexSourceLoader {
 
 	@Override
 	public List<SearchIndexSource> fetchPage(
-			long companyId, Long distributorIdOrNull, long afterDefaultItemId, int limit) {
+			long companyId,
+			Long distributorIdOrNull,
+			long afterDefaultItemId,
+			long afterDistributorId,
+			int limit) {
 		return List.of();
 	}
 }

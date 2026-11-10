@@ -60,8 +60,8 @@ class SearchRebuildServiceTest {
 				.marketPriceFen(2500)
 				.build();
 
-		when(sourceLoader.fetchPage(eq(1L), isNull(), eq(0L), anyInt())).thenReturn(List.of(src));
-		when(sourceLoader.fetchPage(eq(1L), isNull(), eq(100L), anyInt())).thenReturn(List.of());
+		when(sourceLoader.fetchPage(eq(1L), isNull(), eq(0L), eq(0L), anyInt())).thenReturn(List.of(src));
+		when(sourceLoader.fetchPage(eq(1L), isNull(), eq(100L), eq(9L), anyInt())).thenReturn(List.of());
 
 		SearchRebuildService service =
 				new SearchRebuildService(mappingService, indexRepository, sourceLoader, () -> FIXED_EPOCH_MS);
@@ -78,8 +78,8 @@ class SearchRebuildServiceTest {
 		inOrder.verify(indexRepository).switchAlias(expectedIndex);
 		verify(mappingService, never()).putAlias(anyString());
 
-		verify(sourceLoader).fetchPage(1L, null, 0L, SearchRebuildService.BULK_BATCH_SIZE);
-		verify(sourceLoader).fetchPage(1L, null, 100L, SearchRebuildService.BULK_BATCH_SIZE);
+		verify(sourceLoader).fetchPage(1L, null, 0L, 0L, SearchRebuildService.BULK_BATCH_SIZE);
+		verify(sourceLoader).fetchPage(1L, null, 100L, 9L, SearchRebuildService.BULK_BATCH_SIZE);
 	}
 
 	@Test
@@ -96,7 +96,7 @@ class SearchRebuildServiceTest {
 				.marketPriceFen(2500)
 				.build();
 
-		when(sourceLoader.fetchPage(eq(1L), isNull(), eq(0L), anyInt())).thenReturn(List.of(src));
+		when(sourceLoader.fetchPage(eq(1L), isNull(), eq(0L), eq(0L), anyInt())).thenReturn(List.of(src));
 		doThrow(new IOException("Elasticsearch bulk index failed: one or more items were rejected"))
 				.when(indexRepository)
 				.bulkIndex(anyString(), anyList());

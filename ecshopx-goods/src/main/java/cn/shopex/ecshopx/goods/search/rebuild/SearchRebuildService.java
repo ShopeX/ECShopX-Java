@@ -68,10 +68,16 @@ public class SearchRebuildService {
 		mappingService.createIndex(physicalIndex);
 
 		int totalDocs = 0;
-		long cursor = 0L;
+		long afterDefaultItemId = 0L;
+		long afterDistributorId = 0L;
 		while (true) {
 			List<SearchIndexSource> batch =
-					sourceLoader.fetchPage(companyId, distributorIdOrNull, cursor, BULK_BATCH_SIZE);
+					sourceLoader.fetchPage(
+							companyId,
+							distributorIdOrNull,
+							afterDefaultItemId,
+							afterDistributorId,
+							BULK_BATCH_SIZE);
 			if (batch.isEmpty()) {
 				break;
 			}
@@ -81,7 +87,9 @@ public class SearchRebuildService {
 			}
 			indexRepository.bulkIndex(physicalIndex, documents);
 			totalDocs += documents.size();
-			cursor = batch.get(batch.size() - 1).defaultItemId();
+			SearchIndexSource last = batch.get(batch.size() - 1);
+			afterDefaultItemId = last.defaultItemId();
+			afterDistributorId = last.distributorId();
 		}
 
 		indexRepository.switchAlias(physicalIndex);

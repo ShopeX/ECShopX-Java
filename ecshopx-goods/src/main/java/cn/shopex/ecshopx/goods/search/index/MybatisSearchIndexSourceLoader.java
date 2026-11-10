@@ -47,10 +47,15 @@ public class MybatisSearchIndexSourceLoader implements SearchIndexSourceLoader {
 
 	@Override
 	public List<SearchIndexSource> fetchPage(
-			long companyId, Long distributorIdOrNull, long afterDefaultItemId, int limit) {
+			long companyId,
+			Long distributorIdOrNull,
+			long afterDefaultItemId,
+			long afterDistributorId,
+			int limit) {
 		Long distributorFilter = distributorIdOrNull != null && distributorIdOrNull > 0 ? distributorIdOrNull : null;
 		List<SearchIndexStoreItemKey> keys =
-				searchIndexSourceMapper.selectStoreItemKeys(companyId, distributorFilter, afterDefaultItemId, limit);
+				searchIndexSourceMapper.selectStoreItemKeys(
+						companyId, distributorFilter, afterDefaultItemId, afterDistributorId, limit);
 		List<SearchIndexSource> out = new ArrayList<>(keys.size());
 		for (SearchIndexStoreItemKey key : keys) {
 			loadStoreItem(companyId, key.distributorId(), key.defaultItemId()).ifPresent(out::add);

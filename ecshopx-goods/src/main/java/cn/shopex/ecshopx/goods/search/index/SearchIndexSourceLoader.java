@@ -25,15 +25,22 @@ import java.util.Optional;
 public interface SearchIndexSourceLoader {
 
 	/**
-	 * @param afterDefaultItemId 上一页最后一条的 {@code default_item_id}，首页传 0
+	 * @param afterDefaultItemId 复合游标：上一页最后一条的 {@code default_item_id}，首页传 0
+	 * @param afterDistributorId 复合游标：上一页最后一条的 {@code distributor_id}，首页传 0
 	 * @param limit 本页最大条数
 	 * @return 空列表表示扫描结束
 	 */
-	List<SearchIndexSource> fetchPage(long companyId, Long distributorIdOrNull, long afterDefaultItemId, int limit);
+	List<SearchIndexSource> fetchPage(
+			long companyId,
+			Long distributorIdOrNull,
+			long afterDefaultItemId,
+			long afterDistributorId,
+			int limit);
 
 	/** 加载单条店品；不存在则 empty（增量 upsert 用）。 */
 	default Optional<SearchIndexSource> fetchOne(long companyId, long distributorId, long defaultItemId) {
-		List<SearchIndexSource> page = fetchPage(companyId, distributorId, defaultItemId - 1, 1);
+		List<SearchIndexSource> page =
+				fetchPage(companyId, distributorId, defaultItemId, distributorId - 1, 1);
 		if (page.isEmpty() || page.get(0).defaultItemId() != defaultItemId) {
 			return Optional.empty();
 		}
