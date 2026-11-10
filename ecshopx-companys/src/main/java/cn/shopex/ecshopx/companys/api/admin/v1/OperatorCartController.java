@@ -24,6 +24,7 @@ import cn.shopex.ecshopx.common.core.domain.ApiResult;
 import cn.shopex.ecshopx.common.operatorcart.OperatorCartCouponPreviewFacade;
 import cn.shopex.ecshopx.common.operatorcart.OperatorCartDataListFacade;
 import cn.shopex.ecshopx.common.operatorcart.OperatorCartFastBuyFacade;
+import cn.shopex.ecshopx.common.operatorcart.OperatorCartPointPreviewFacade;
 import cn.shopex.ecshopx.common.operatorcart.OperatorCartScanBarcodeFacade;
 import cn.shopex.ecshopx.common.web.FlexibleBody;
 import cn.shopex.ecshopx.companys.service.operatorcart.OperatorCartAddDataService;
@@ -56,18 +57,21 @@ public class OperatorCartController {
 	private final OperatorCartDeleteDataService operatorCartDeleteDataService;
 	private final OperatorCartFastBuyFacade operatorCartFastBuyFacade;
 	private final OperatorCartCouponPreviewFacade operatorCartCouponPreviewFacade;
+	private final OperatorCartPointPreviewFacade operatorCartPointPreviewFacade;
 
 	public OperatorCartController(OperatorCartAddDataService operatorCartAddDataService,
 			OperatorCartScanBarcodeFacade scanBarcodeFacade, OperatorCartDataListFacade operatorCartDataListFacade,
 			OperatorCartDeleteDataService operatorCartDeleteDataService,
 			OperatorCartFastBuyFacade operatorCartFastBuyFacade,
-			OperatorCartCouponPreviewFacade operatorCartCouponPreviewFacade) {
+			OperatorCartCouponPreviewFacade operatorCartCouponPreviewFacade,
+			OperatorCartPointPreviewFacade operatorCartPointPreviewFacade) {
 		this.operatorCartAddDataService = operatorCartAddDataService;
 		this.scanBarcodeFacade = scanBarcodeFacade;
 		this.operatorCartDataListFacade = operatorCartDataListFacade;
 		this.operatorCartDeleteDataService = operatorCartDeleteDataService;
 		this.operatorCartFastBuyFacade = operatorCartFastBuyFacade;
 		this.operatorCartCouponPreviewFacade = operatorCartCouponPreviewFacade;
+		this.operatorCartPointPreviewFacade = operatorCartPointPreviewFacade;
 	}
 
 	@Activated(routeAlias = "companys.operator.cartdata.scanadd")
@@ -151,7 +155,8 @@ public class OperatorCartController {
 	public ResponseEntity<ApiResult<Map<String, Object>>> getCartDataList(HttpServletRequest request,
 			@RequestParam(value = "user_id", required = false, defaultValue = "0") String userIdRaw,
 			@RequestParam(value = "distributor_id", required = false, defaultValue = "0") String distributorIdRaw,
-			@RequestParam(value = "coupon_discount", required = false, defaultValue = "") String couponDiscount) {
+			@RequestParam(value = "coupon_discount", required = false, defaultValue = "") String couponDiscount,
+			@RequestParam(value = "point_use", required = false, defaultValue = "0") String pointUseRaw) {
 		long companyId = DualJwtSupport.requireCompanyId(request);
 		long operatorId = DualJwtSupport.requireActingOperatorId(request);
 		long distributorId = longVal(distributorIdRaw, 0L);
@@ -160,6 +165,8 @@ public class OperatorCartController {
 				targetUserId, request, false);
 		// ECX-11082：POS 购物车券后预览，基于活动优惠后的行金额计算；不影响下单链路（meta 不含券字段）
 		operatorCartCouponPreviewFacade.applyCouponPreview(companyId, operatorId, targetUserId, data, couponDiscount);
+		// 积分抵扣预览：基数 = 券后应付；point_use>0 时店员输入积分，否则仅返回余额/上限/规则
+		operatorCartPointPreviewFacade.applyPointPreview(companyId, targetUserId, data, (int) longVal(pointUseRaw, 0L));
 		return ResponseEntity.ok(ApiResult.ok(data));
 	}
 
