@@ -17,16 +17,26 @@
 package cn.shopex.ecshopx.goods.search.query;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
+import cn.shopex.ecshopx.goods.search.SearchEsProperties;
 import cn.shopex.ecshopx.goods.search.index.GoodsSearchDocument;
+import cn.shopex.ecshopx.goods.search.synonym.SearchSynonymKeywordExpander;
 import cn.shopex.ecshopx.goods.search.price.SearchEffectivePriceCalculator;
 import cn.shopex.ecshopx.goods.search.price.SearchMemberTier;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+@ExtendWith(MockitoExtension.class)
 class GoodsSearchQueryServiceTest {
+
+	@Mock
+	private SearchSynonymKeywordExpander synonymKeywordExpander;
 
 	@Test
 	void fromWxappParams_mapsPriceAndKeywords() {
@@ -44,6 +54,22 @@ class GoodsSearchQueryServiceTest {
 		assertThat(q.priceMaxFen()).isEqualTo(5000);
 		assertThat(q.distributorId()).isEqualTo(9L);
 		assertThat(q.page()).isEqualTo(2);
+	}
+
+	@Test
+	void withSynonymExpandedKeywords_feedsEsQueryBuilder() {
+		SearchMemberTier tier = new SearchMemberTier("normal", 1L, 100, "默认");
+		GoodsSearchQuery q = new GoodsSearchQuery(
+				10L, 0L, "手机", List.of(), List.of(), List.of("onsale"), "approved", null, null, "", 1, 10, tier, 0L);
+		when(synonymKeywordExpander.expand(10L, "手机")).thenReturn("手机 移动电话");
+
+		GoodsSearchQueryService service = new GoodsSearchQueryService(
+				null, new SearchEsProperties(), new SearchEffectivePriceCalculator(), synonymKeywordExpander);
+		GoodsSearchQuery effective = service.withSynonymExpandedKeywords(q);
+
+		String json = GoodsSearchEsQueryBuilder.queryToJson(
+				GoodsSearchEsQueryBuilder.buildRootQuery(effective, new SearchEsProperties()));
+		assertThat(json).contains("手机 移动电话");
 	}
 
 	@Test

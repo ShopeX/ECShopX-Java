@@ -19,6 +19,7 @@ package cn.shopex.ecshopx.goods.search.query;
 import cn.shopex.ecshopx.goods.search.SearchEsProperties;
 import cn.shopex.ecshopx.goods.search.index.GoodsSearchIndexNames;
 import cn.shopex.ecshopx.goods.search.price.SearchEffectivePriceCalculator;
+import cn.shopex.ecshopx.goods.search.synonym.SearchSynonymKeywordExpander;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch.core.SearchRequest;
@@ -46,14 +47,17 @@ public class GoodsSearchQueryService {
 	private final ElasticsearchClient client;
 	private final SearchEsProperties properties;
 	private final SearchEffectivePriceCalculator effectivePriceCalculator;
+	private final SearchSynonymKeywordExpander synonymKeywordExpander;
 
 	public GoodsSearchQueryService(
 			ElasticsearchClient client,
 			SearchEsProperties properties,
-			SearchEffectivePriceCalculator effectivePriceCalculator) {
+			SearchEffectivePriceCalculator effectivePriceCalculator,
+			SearchSynonymKeywordExpander synonymKeywordExpander) {
 		this.client = client;
 		this.properties = properties;
 		this.effectivePriceCalculator = effectivePriceCalculator;
+		this.synonymKeywordExpander = synonymKeywordExpander;
 	}
 
 	public GoodsSearchPageResult search(GoodsSearchQuery query) {
@@ -68,6 +72,7 @@ public class GoodsSearchQueryService {
 	}
 
 	private GoodsSearchPageResult doSearch(GoodsSearchQuery query) throws IOException {
+		query = withSynonymExpandedKeywords(query);
 		boolean javaPriceOps = query.hasPriceFilter() || query.isPriceSort();
 		int fetchSize;
 		int from = 0;
@@ -155,6 +160,17 @@ public class GoodsSearchQueryService {
 		} else if (javaPriceOps) {
 			req.sort(s -> s.score(sc -> sc.order(SortOrder.Desc)));
 		}
+	}
+
+	GoodsSearchQuery withSynonymExpandedKeywords(GoodsSearchQuery query) {
+		if (!org.springframework.util.StringUtils.hasText(query.keywords())) {
+			return query;
+		}
+		String expanded = synonymKeywordExpander.expand(query.companyId(), query.keywords());
+		if (expanded == null || expanded.equals(query.keywords())) {
+			return query;
+		}
+		return query.withKeywords(expanded);
 	}
 
 	private static List<ScoredDoc> applyPriceFilter(List<ScoredDoc> raw, GoodsSearchQuery query) {

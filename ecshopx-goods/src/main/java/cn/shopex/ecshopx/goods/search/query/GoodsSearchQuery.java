@@ -42,6 +42,24 @@ public record GoodsSearchQuery(
 
 	public static final int MAX_WINDOW = 5000;
 
+	public GoodsSearchQuery withKeywords(String newKeywords) {
+		return new GoodsSearchQuery(
+				companyId,
+				distributorId,
+				newKeywords,
+				defaultItemIdAllowList,
+				itemCategoryKeys,
+				approveStatuses,
+				auditStatus,
+				priceMinFen,
+				priceMaxFen,
+				goodsSort,
+				page,
+				pageSize,
+				tier,
+				nowEpochSec);
+	}
+
 	public boolean hasPriceFilter() {
 		return priceMinFen != null || priceMaxFen != null;
 	}
