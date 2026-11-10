@@ -47,7 +47,22 @@ public record GoodsSearchQuery(
 	}
 
 	public boolean isPriceSort() {
-		return "price_asc".equals(goodsSort) || "price_desc".equals(goodsSort);
+		return "price_asc".equals(goodsSort)
+				|| "price_desc".equals(goodsSort)
+				|| "2".equals(goodsSort)
+				|| "3".equals(goodsSort);
+	}
+
+	public boolean isPriceAscending() {
+		return "price_asc".equals(goodsSort) || "3".equals(goodsSort);
+	}
+
+	public boolean isSalesSort() {
+		return "sales".equals(goodsSort) || "1".equals(goodsSort) || "sales_desc".equals(goodsSort);
+	}
+
+	public boolean isNewSort() {
+		return "new".equals(goodsSort) || "4".equals(goodsSort);
 	}
 
 	public static GoodsSearchQuery fromWxappParams(

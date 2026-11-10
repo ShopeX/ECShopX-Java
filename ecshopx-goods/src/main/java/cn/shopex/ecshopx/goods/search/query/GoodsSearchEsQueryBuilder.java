@@ -18,9 +18,14 @@ package cn.shopex.ecshopx.goods.search.query;
 
 import cn.shopex.ecshopx.goods.search.SearchEsProperties;
 import co.elastic.clients.elasticsearch._types.FieldValue;
+import co.elastic.clients.elasticsearch._types.query_dsl.FunctionBoostMode;
 import co.elastic.clients.elasticsearch._types.query_dsl.FunctionScore;
+import co.elastic.clients.elasticsearch._types.query_dsl.FunctionScoreMode;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
+import co.elastic.clients.json.jackson.JacksonJsonpMapper;
+import jakarta.json.stream.JsonGenerator;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.util.StringUtils;
@@ -44,7 +49,7 @@ final class GoodsSearchEsQueryBuilder {
 			Query barcode = QueryBuilders.prefix(p -> p.field("barcode").value(q.keywords()));
 			inner = QueryBuilders.bool(b -> b.should(text).should(bn).should(barcode).minimumShouldMatch("1"));
 		} else {
-			inner = QueryBuilders.matchAll(m -> m);
+			inner = QueryBuilders.constantScore(cs -> cs.filter(QueryBuilders.matchAll(m -> m)).boost(1.0f));
 		}
 		Query bool = QueryBuilders.bool(b -> {
 			b.must(inner);
@@ -53,12 +58,32 @@ final class GoodsSearchEsQueryBuilder {
 			}
 			return b;
 		});
-		double hasStockWeight = properties.getRank() != null ? properties.getRank().getHasStockWeight() : 10.0;
+		SearchEsProperties.Rank rank = properties.getRank() != null ? properties.getRank() : new SearchEsProperties.Rank();
+		double hasStockWeight = rank.getHasStockWeight();
+		double salesWeight = rank.getSalesWeight();
+		double listedAtWeight = rank.getListedAtWeight();
+		List<FunctionScore> scoreFns = new ArrayList<>(3);
+		scoreFns.add(FunctionScore.of(fn -> fn
+				.filter(QueryBuilders.term(t -> t.field("has_stock").value(true)))
+				.weight(hasStockWeight)));
+		scoreFns.add(FunctionScore.of(fn -> fn.fieldValueFactor(fvf -> fvf.field("sales_30d").factor(salesWeight))));
+		scoreFns.add(FunctionScore.of(fn -> fn.fieldValueFactor(fvf -> fvf.field("listed_at").factor(listedAtWeight))));
 		return QueryBuilders.functionScore(fs -> fs
 				.query(bool)
-				.functions(FunctionScore.of(fn -> fn
-						.filter(QueryBuilders.term(t -> t.field("has_stock").value(true)))
-						.weight(hasStockWeight))));
+				.functions(scoreFns)
+				.scoreMode(FunctionScoreMode.Sum)
+				.boostMode(FunctionBoostMode.Sum));
+	}
+
+	/** 供单测断言生成的 query DSL。 */
+	static String queryToJson(Query query) {
+		JacksonJsonpMapper mapper = new JacksonJsonpMapper();
+		StringWriter writer = new StringWriter();
+		try (JsonGenerator generator = mapper.jsonProvider().createGenerator(writer)) {
+			query.serialize(generator, mapper);
+			generator.flush();
+		}
+		return writer.toString();
 	}
 
 	static List<Query> buildHardFilters(GoodsSearchQuery q) {

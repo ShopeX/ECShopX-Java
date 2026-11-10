@@ -90,11 +90,7 @@ public class GoodsSearchQueryService {
 				.from(from)
 				.size(fetchSize)
 				.trackTotalHits(t -> t.enabled(true));
-		if (!javaPriceOps && !query.isPriceSort()) {
-			req.sort(s -> s.score(sc -> sc.order(SortOrder.Desc)));
-		} else if (javaPriceOps) {
-			req.sort(s -> s.score(sc -> sc.order(SortOrder.Desc)));
-		}
+		applyEsSort(req, query, javaPriceOps);
 
 		SearchResponse<Map> response = client.search(req.build(), Map.class);
 		long esTotal = response.hits().total() != null ? response.hits().total().value() : 0L;
@@ -113,12 +109,11 @@ public class GoodsSearchQueryService {
 
 		List<ScoredDoc> filtered = applyPriceFilter(raw, query);
 		if (query.isPriceSort()) {
-			Comparator<ScoredDoc> cmp =
-					"price_asc".equals(query.goodsSort())
-							? Comparator.comparingInt(ScoredDoc::effectivePriceFen).thenComparing(ScoredDoc::score, Comparator.reverseOrder())
-							: Comparator.comparingInt(ScoredDoc::effectivePriceFen)
-									.reversed()
-									.thenComparing(ScoredDoc::score, Comparator.reverseOrder());
+			Comparator<ScoredDoc> cmp = query.isPriceAscending()
+					? Comparator.comparingInt(ScoredDoc::effectivePriceFen).thenComparing(ScoredDoc::score, Comparator.reverseOrder())
+					: Comparator.comparingInt(ScoredDoc::effectivePriceFen)
+							.reversed()
+							.thenComparing(ScoredDoc::score, Comparator.reverseOrder());
 			filtered = filtered.stream().sorted(cmp).toList();
 		}
 
@@ -143,6 +138,23 @@ public class GoodsSearchQueryService {
 					esTotal);
 		}
 		return new GoodsSearchPageResult(total, pageHits, approxTotal);
+	}
+
+	/** 默认/综合按 {@code _score}（function_score）；销量/上新走字段排序。 */
+	static void applyEsSort(SearchRequest.Builder req, GoodsSearchQuery query, boolean javaPriceOps) {
+		if (query.isSalesSort()) {
+			req.sort(s -> s.field(f -> f.field("sales_30d").order(SortOrder.Desc)));
+			return;
+		}
+		if (query.isNewSort()) {
+			req.sort(s -> s.field(f -> f.field("listed_at").order(SortOrder.Desc)));
+			return;
+		}
+		if (!javaPriceOps && !query.isPriceSort()) {
+			req.sort(s -> s.score(sc -> sc.order(SortOrder.Desc)));
+		} else if (javaPriceOps) {
+			req.sort(s -> s.score(sc -> sc.order(SortOrder.Desc)));
+		}
 	}
 
 	private static List<ScoredDoc> applyPriceFilter(List<ScoredDoc> raw, GoodsSearchQuery query) {
