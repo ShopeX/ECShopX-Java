@@ -180,6 +180,31 @@ class WxappGoodsItemsListServiceImplEsSwitchTest {
 	}
 
 	@Test
+	void whenEnabledWithLikeFallback_preresolvesKeywordLikeForDbFallback() {
+		when(searchEsProperties.isEnabled()).thenReturn(true);
+		when(searchEsProperties.isLikeFallback()).thenReturn(true);
+		when(request.getParameter("page")).thenReturn("1");
+		when(request.getParameter("pageSize")).thenReturn("10");
+		LinkedHashMap<String, Object> params = new LinkedHashMap<>();
+		params.put("is_default", Boolean.TRUE);
+		params.put("keywords", "test");
+		params.put("__keyword_default_item_ids", List.of(1L, 2L));
+		when(wxappGoodsItemsListParamBuilder.build(request, 1L, 0L, false)).thenReturn(params);
+		when(wxappGoodsItemsListQueryOrchestrator.effectiveBusinessParamsForWxappItemList(anyLong(), any()))
+				.thenReturn(new LinkedHashMap<>(params));
+		stubOpenSalesmanGate();
+		when(searchMemberTierResolver.resolve(1L, 0L)).thenReturn(new SearchMemberTier("normal", 1L, 100, "默认"));
+		when(goodsSearchFacade.queryListWithHydration(anyLong(), any(), any(), any()))
+				.thenReturn(Map.of("total_count", 0L, "list", List.of()));
+		when(companyDefaultCurrencyService.getCur(anyLong())).thenReturn(new cn.shopex.ecshopx.companys.domain.CurrencyExchangeRate());
+		when(companyPopularizeConfigReadService.readWxappPromoterConfigSlice(anyLong())).thenReturn(Map.of());
+
+		service.execute(1L, 0L, request);
+
+		verify(wxappGoodsItemsListParamBuilder).build(request, 1L, 0L, false);
+	}
+
+	@Test
 	void whenSalesmanGateEmpty_doesNotCallEs() {
 		when(searchEsProperties.isEnabled()).thenReturn(true);
 		when(request.getParameter("page")).thenReturn("1");

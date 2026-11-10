@@ -190,7 +190,9 @@ public class WxappGoodsItemsListServiceImpl implements WxappGoodsItemsListServic
 		}
 
 		boolean defaultItemListRequest = resolveDefaultItemListFromRequest(request);
-		boolean skipKeywordDbLike = searchEsProperties.isEnabled() && defaultItemListRequest;
+		boolean skipKeywordDbLike = searchEsProperties.isEnabled()
+				&& defaultItemListRequest
+				&& !searchEsProperties.isLikeFallback();
 		LinkedHashMap<String, Object> params =
 				wxappGoodsItemsListParamBuilder.build(request, companyId, userId, skipKeywordDbLike);
 		if (promoterGoodsIds != null) {
