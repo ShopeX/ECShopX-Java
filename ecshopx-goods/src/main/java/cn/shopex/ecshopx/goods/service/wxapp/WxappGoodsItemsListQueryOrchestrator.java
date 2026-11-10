@@ -116,6 +116,24 @@ public class WxappGoodsItemsListQueryOrchestrator {
 		return work;
 	}
 
+	/** 与 {@link #queryItemListData} 中导购门闸判定一致，供 ES 路径在查询前短路。 */
+	public WxappItemsListSalesmanGateResult resolveSalesmanGateForWxappItemList(long companyId,
+			LinkedHashMap<String, Object> orchestrationParams) {
+		LinkedHashMap<String, Object> work = cloneParams(orchestrationParams);
+		work.remove(KEY_INTERNAL_ACCEPT_LANGUAGE);
+		work.remove(KEY_INTERNAL_LIST_PAGE);
+		work.remove(KEY_INTERNAL_LIST_PAGE_SIZE);
+		applyMerchantDisabledDistributorFilter(companyId, work);
+		return wxappItemsListSalesmanDistributorResolveService.resolve(companyId, longUserId(work), work);
+	}
+
+	public Map<String, Object> emptyWxappItemListForSalesmanGate(WxappItemsListSalesmanGateResult gate) {
+		if (!gate.isReturnEmpty()) {
+			throw new IllegalArgumentException("gate must be returnEmpty");
+		}
+		return emptyWithNosale(gate.getNosalestore());
+	}
+
 	public Map<String, Object> queryItemListData(long companyId, LinkedHashMap<String, Object> params, List<Map<String, Object>> orderBy) {
 		LinkedHashMap<String, Object> work = cloneParams(params);
 		String acceptLanguage = takeInternalString(work, KEY_INTERNAL_ACCEPT_LANGUAGE);

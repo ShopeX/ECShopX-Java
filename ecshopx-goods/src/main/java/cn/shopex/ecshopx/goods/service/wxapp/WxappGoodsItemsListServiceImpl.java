@@ -189,7 +189,10 @@ public class WxappGoodsItemsListServiceImpl implements WxappGoodsItemsListServic
 			}
 		}
 
-		LinkedHashMap<String, Object> params = wxappGoodsItemsListParamBuilder.build(request, companyId, userId);
+		boolean defaultItemListRequest = resolveDefaultItemListFromRequest(request);
+		boolean skipKeywordDbLike = searchEsProperties.isEnabled() && defaultItemListRequest;
+		LinkedHashMap<String, Object> params =
+				wxappGoodsItemsListParamBuilder.build(request, companyId, userId, skipKeywordDbLike);
 		if (promoterGoodsIds != null) {
 			params.put("goods_id", promoterGoodsIds);
 		}
@@ -215,9 +218,13 @@ public class WxappGoodsItemsListServiceImpl implements WxappGoodsItemsListServic
 			orchestrationParams.put(WxappGoodsItemsListQueryOrchestrator.KEY_INTERNAL_LIST_PAGE_SIZE, pageSize);
 			effectiveParamsForNewFilter =
 					wxappGoodsItemsListQueryOrchestrator.effectiveBusinessParamsForWxappItemList(companyId, orchestrationParams);
-			if (searchEsProperties.isEnabled()) {
-				Map<String, Object> esResult =
-						queryDefaultItemListViaEs(companyId, userId, page, pageSize, orchestrationParams, acceptLang);
+			var salesmanGate = wxappGoodsItemsListQueryOrchestrator.resolveSalesmanGateForWxappItemList(companyId,
+					orchestrationParams);
+			if (salesmanGate.isReturnEmpty()) {
+				result = wxappGoodsItemsListQueryOrchestrator.emptyWxappItemListForSalesmanGate(salesmanGate);
+			} else if (searchEsProperties.isEnabled()) {
+				Map<String, Object> esResult = queryDefaultItemListViaEs(companyId, userId, page, pageSize,
+						orchestrationParams, effectiveParamsForNewFilter, acceptLang);
 				if (esResult != null) {
 					result = esResult;
 					esMainPriceApplied = true;
@@ -304,9 +311,9 @@ public class WxappGoodsItemsListServiceImpl implements WxappGoodsItemsListServic
 			int page,
 			int pageSize,
 			LinkedHashMap<String, Object> orchestrationParams,
+			LinkedHashMap<String, Object> effectiveBusinessParams,
 			String acceptLang) {
-		LinkedHashMap<String, Object> effective =
-				wxappGoodsItemsListQueryOrchestrator.effectiveBusinessParamsForWxappItemList(companyId, orchestrationParams);
+		LinkedHashMap<String, Object> effective = new LinkedHashMap<>(effectiveBusinessParams);
 		effective.remove("__keyword_default_item_ids");
 		applyTagItemIdConstraint(companyId, effective);
 		try {
@@ -383,6 +390,11 @@ public class WxappGoodsItemsListServiceImpl implements WxappGoodsItemsListServic
 		if (s > 50) {
 			throw new BadRequestException(LIST_ERR, Map.of("pageSize", List.of("validation.max.numeric")), 422);
 		}
+	}
+
+	private static boolean resolveDefaultItemListFromRequest(HttpServletRequest request) {
+		String isDefault = request.getParameter("is_default");
+		return isDefault == null || !"false".equalsIgnoreCase(isDefault.trim());
 	}
 
 	private static Map<String, Object> emptyListBody() {

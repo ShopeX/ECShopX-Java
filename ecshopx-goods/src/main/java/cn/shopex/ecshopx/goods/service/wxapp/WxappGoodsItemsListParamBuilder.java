@@ -49,6 +49,14 @@ public class WxappGoodsItemsListParamBuilder {
 	}
 
 	public LinkedHashMap<String, Object> build(HttpServletRequest request, long companyId, long userId) {
+		return build(request, companyId, userId, false);
+	}
+
+	/**
+	 * @param skipKeywordDbLikePreresolve ES 默认商品列表路径下为 true，跳过 DB LIKE 关键词预解析
+	 */
+	public LinkedHashMap<String, Object> build(HttpServletRequest request, long companyId, long userId,
+			boolean skipKeywordDbLikePreresolve) {
 		LinkedHashMap<String, Object> params = new LinkedHashMap<>();
 		params.put("company_id", companyId);
 		params.put("user_id", userId);
@@ -107,22 +115,24 @@ public class WxappGoodsItemsListParamBuilder {
 		if (ValuePresence.hasEffectiveValue(keywords)) {
 			String kw = keywords.trim();
 			params.put("keywords", kw);
-			LinkedHashSet<Long> merged = new LinkedHashSet<>();
-			merged.addAll(itemsListQueryRepository.mergeDefaultItemIdsByItemNameOrBrief(companyId, kw));
-			merged.addAll(itemsListQueryRepository.mergeDefaultItemIdsByItemBnOrBarcodeContains(companyId, kw));
-			List<Long> tagIds = resolveTagIdsByKeyword(companyId, kw);
-			if (!tagIds.isEmpty()) {
-				List<String> itemIdStrs = itemsTagsQueryService.getItemIdsByTagIds(companyId, tagIds);
-				for (String is : itemIdStrs) {
-					try {
-						merged.add(Long.parseLong(is.trim()));
-					} catch (NumberFormatException ignored) {
-						// skip
+			if (!skipKeywordDbLikePreresolve) {
+				LinkedHashSet<Long> merged = new LinkedHashSet<>();
+				merged.addAll(itemsListQueryRepository.mergeDefaultItemIdsByItemNameOrBrief(companyId, kw));
+				merged.addAll(itemsListQueryRepository.mergeDefaultItemIdsByItemBnOrBarcodeContains(companyId, kw));
+				List<Long> tagIds = resolveTagIdsByKeyword(companyId, kw);
+				if (!tagIds.isEmpty()) {
+					List<String> itemIdStrs = itemsTagsQueryService.getItemIdsByTagIds(companyId, tagIds);
+					for (String is : itemIdStrs) {
+						try {
+							merged.add(Long.parseLong(is.trim()));
+						} catch (NumberFormatException ignored) {
+							// skip
+						}
 					}
 				}
+				// 无命中时也必须写入空列表，否则编排层会跳过关键词过滤，退回全量商品
+				params.put("__keyword_default_item_ids", new ArrayList<>(merged));
 			}
-			// 无命中时也必须写入空列表，否则编排层会跳过关键词过滤，退回全量商品
-			params.put("__keyword_default_item_ids", new ArrayList<>(merged));
 		}
 
 		String itemName = request.getParameter("item_name");

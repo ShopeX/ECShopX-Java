@@ -44,6 +44,7 @@ import cn.shopex.ecshopx.members.mapper.MemberItemsFavMapper;
 import cn.shopex.ecshopx.orders.mapper.CartMapper;
 import cn.shopex.ecshopx.popularize.service.PromoterOnsaleGoodsIdsQueryService;
 import cn.shopex.ecshopx.promotions.service.GoodsItemsListPromotionEnrichmentService;
+import cn.shopex.ecshopx.salesperson.service.WxappItemsListSalesmanGateResult;
 import cn.shopex.ecshopx.tdkset.service.TdkGivenSaveService;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.LinkedHashMap;
@@ -121,6 +122,11 @@ class WxappGoodsItemsListServiceImplEsSwitchTest {
 				searchMemberTierResolver);
 	}
 
+	private void stubOpenSalesmanGate() {
+		WxappItemsListSalesmanGateResult gate = WxappItemsListSalesmanGateResult.proceed(Map.of());
+		when(wxappGoodsItemsListQueryOrchestrator.resolveSalesmanGateForWxappItemList(anyLong(), any())).thenReturn(gate);
+	}
+
 	@Test
 	void whenDisabled_delegateToDbPath() {
 		when(searchEsProperties.isEnabled()).thenReturn(false);
@@ -128,9 +134,10 @@ class WxappGoodsItemsListServiceImplEsSwitchTest {
 		when(request.getParameter("pageSize")).thenReturn("10");
 		LinkedHashMap<String, Object> params = new LinkedHashMap<>();
 		params.put("is_default", Boolean.TRUE);
-		when(wxappGoodsItemsListParamBuilder.build(request, 1L, 0L)).thenReturn(params);
+		when(wxappGoodsItemsListParamBuilder.build(request, 1L, 0L, false)).thenReturn(params);
 		when(wxappGoodsItemsListQueryOrchestrator.effectiveBusinessParamsForWxappItemList(anyLong(), any()))
 				.thenReturn(new LinkedHashMap<>(params));
+		stubOpenSalesmanGate();
 		when(wxappGoodsItemsListQueryOrchestrator.queryItemListData(anyLong(), any(), any()))
 				.thenReturn(Map.of("total_count", 0L, "list", List.of()));
 		when(companyDefaultCurrencyService.getCur(anyLong())).thenReturn(new cn.shopex.ecshopx.companys.domain.CurrencyExchangeRate());
@@ -138,22 +145,23 @@ class WxappGoodsItemsListServiceImplEsSwitchTest {
 		service.execute(1L, 0L, request);
 
 		verify(goodsSearchFacade, never()).queryListWithHydration(anyLong(), any(), any(), any());
+		verify(wxappGoodsItemsListParamBuilder).build(request, 1L, 0L, false);
 		verify(wxappGoodsItemsListQueryOrchestrator).queryItemListData(eq(1L), any(), any());
 	}
 
 	@Test
-	void whenEnabled_usesFacadeAndSkipsKeywordLikePreresolveEffect() {
+	void whenEnabled_usesFacadeAndSkipsKeywordLikePreresolve() {
 		when(searchEsProperties.isEnabled()).thenReturn(true);
 		when(request.getParameter("page")).thenReturn("1");
 		when(request.getParameter("pageSize")).thenReturn("10");
 		LinkedHashMap<String, Object> params = new LinkedHashMap<>();
 		params.put("is_default", Boolean.TRUE);
 		params.put("keywords", "test");
-		params.put("__keyword_default_item_ids", List.of(99L));
-		when(wxappGoodsItemsListParamBuilder.build(request, 1L, 0L)).thenReturn(params);
+		when(wxappGoodsItemsListParamBuilder.build(request, 1L, 0L, true)).thenReturn(params);
 		LinkedHashMap<String, Object> effective = new LinkedHashMap<>(params);
 		when(wxappGoodsItemsListQueryOrchestrator.effectiveBusinessParamsForWxappItemList(anyLong(), any()))
 				.thenReturn(effective);
+		stubOpenSalesmanGate();
 		when(searchMemberTierResolver.resolve(1L, 0L)).thenReturn(new SearchMemberTier("normal", 1L, 100, "默认"));
 		LinkedHashMap<String, Object> row = new LinkedHashMap<>();
 		row.put("item_id", 99L);
@@ -165,8 +173,32 @@ class WxappGoodsItemsListServiceImplEsSwitchTest {
 
 		service.execute(1L, 0L, request);
 
+		verify(wxappGoodsItemsListParamBuilder).build(request, 1L, 0L, true);
 		verify(goodsSearchFacade).queryListWithHydration(eq(1L), any(), any(), any());
 		verify(wxappGoodsItemsListQueryOrchestrator, never()).queryItemListData(anyLong(), any(), any());
 		verify(wxappGoodsItemsListMemberPriceApplyService, never()).applyForRows(anyLong(), anyLong(), any(), any());
+	}
+
+	@Test
+	void whenSalesmanGateEmpty_doesNotCallEs() {
+		when(searchEsProperties.isEnabled()).thenReturn(true);
+		when(request.getParameter("page")).thenReturn("1");
+		when(request.getParameter("pageSize")).thenReturn("10");
+		LinkedHashMap<String, Object> params = new LinkedHashMap<>();
+		params.put("is_default", Boolean.TRUE);
+		when(wxappGoodsItemsListParamBuilder.build(request, 1L, 0L, true)).thenReturn(params);
+		when(wxappGoodsItemsListQueryOrchestrator.effectiveBusinessParamsForWxappItemList(anyLong(), any()))
+				.thenReturn(new LinkedHashMap<>(params));
+		WxappItemsListSalesmanGateResult emptyGate = WxappItemsListSalesmanGateResult.empty(1);
+		when(wxappGoodsItemsListQueryOrchestrator.resolveSalesmanGateForWxappItemList(anyLong(), any())).thenReturn(emptyGate);
+		when(wxappGoodsItemsListQueryOrchestrator.emptyWxappItemListForSalesmanGate(emptyGate))
+				.thenReturn(Map.of("total_count", 0L, "list", List.of(), "nosalestore", 1));
+		when(companyDefaultCurrencyService.getCur(anyLong())).thenReturn(new cn.shopex.ecshopx.companys.domain.CurrencyExchangeRate());
+
+		service.execute(1L, 0L, request);
+
+		verify(goodsSearchFacade, never()).queryListWithHydration(anyLong(), any(), any(), any());
+		verify(wxappGoodsItemsListQueryOrchestrator, never()).queryItemListData(anyLong(), any(), any());
+		verify(wxappGoodsItemsListQueryOrchestrator).emptyWxappItemListForSalesmanGate(emptyGate);
 	}
 }
