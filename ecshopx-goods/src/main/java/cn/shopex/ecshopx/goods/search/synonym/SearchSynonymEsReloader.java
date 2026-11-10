@@ -41,6 +41,9 @@ public class SearchSynonymEsReloader {
 	}
 
 	public void reload(long companyId, Map<String, List<String>> groups) throws IOException {
+		if (!properties.isEnabled()) {
+			return;
+		}
 		String setId = SearchSynonymSetNames.synonymSetId(companyId);
 		List<SynonymRule> rules = new ArrayList<>();
 		for (Map.Entry<String, List<String>> entry : groups.entrySet()) {

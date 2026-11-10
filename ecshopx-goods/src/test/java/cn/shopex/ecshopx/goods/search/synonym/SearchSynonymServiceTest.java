@@ -26,6 +26,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -105,6 +106,22 @@ class SearchSynonymServiceTest {
 		InOrder order = inOrder(repository, reloader);
 		order.verify(repository).deleteByCompanyAndId(COMPANY_A, 1L);
 		order.verify(reloader).reload(eq(COMPANY_A), eq(Map.of("size", List.of("大号", "L"))));
+	}
+
+	@Test
+	void listCachesByCompanyUntilMutated() throws IOException {
+		GoodsSearchSynonym aGroup = row(1L, COMPANY_A, "brand", "[\"手机\",\"移动电话\"]");
+		when(repository.listByCompanyId(COMPANY_A)).thenReturn(List.of(aGroup));
+		when(repository.replaceGroup(eq(COMPANY_A), eq("brand"), anyList())).thenReturn(aGroup);
+
+		service.list(COMPANY_A);
+		service.list(COMPANY_A);
+		verify(repository, times(1)).listByCompanyId(COMPANY_A);
+
+		service.replaceGroup(COMPANY_A, "brand", List.of("手机", "移动电话"));
+
+		service.list(COMPANY_A);
+		verify(repository, times(3)).listByCompanyId(COMPANY_A);
 	}
 
 	@Test

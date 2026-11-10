@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -29,6 +30,7 @@ public class SearchSynonymService {
 	private final SearchSynonymRepository repository;
 	private final SearchSynonymEsReloader reloader;
 	private final SearchSynonymWordsCodec wordsCodec;
+	private final ConcurrentHashMap<Long, List<SynonymGroupView>> listCache = new ConcurrentHashMap<>();
 
 	public SearchSynonymService(
 			SearchSynonymRepository repository, SearchSynonymEsReloader reloader, SearchSynonymWordsCodec wordsCodec) {
@@ -38,17 +40,20 @@ public class SearchSynonymService {
 	}
 
 	public List<SynonymGroupView> list(long companyId) {
-		return repository.listByCompanyId(companyId).stream().map(this::toView).toList();
+		return listCache.computeIfAbsent(
+				companyId, id -> repository.listByCompanyId(id).stream().map(this::toView).toList());
 	}
 
 	public SynonymGroupView replaceGroup(long companyId, String groupKey, List<String> words) {
 		GoodsSearchSynonym row = repository.replaceGroup(companyId, groupKey, words);
+		invalidateCompany(companyId);
 		reloadToEs(companyId);
 		return toView(row);
 	}
 
 	public void deleteGroup(long companyId, long id) {
 		repository.deleteByCompanyAndId(companyId, id);
+		invalidateCompany(companyId);
 		reloadToEs(companyId);
 	}
 
@@ -63,9 +68,14 @@ public class SearchSynonymService {
 		}
 		try {
 			reloader.reload(companyId, groups);
+			invalidateCompany(companyId);
 		} catch (IOException e) {
 			throw new SearchSynonymEsReloadException("同义词 ES 热更新失败", e);
 		}
+	}
+
+	private void invalidateCompany(long companyId) {
+		listCache.remove(companyId);
 	}
 
 	private SynonymGroupView toView(GoodsSearchSynonym row) {

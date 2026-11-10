@@ -56,7 +56,7 @@ public class SearchSynonymKeywordExpander {
 						continue;
 					}
 					String w = word.trim();
-					if (StringUtils.hasText(w)) {
+					if (StringUtils.hasText(w) && !keywordEqualsOrToken(keywords, w)) {
 						terms.add(w);
 					}
 				}
@@ -74,10 +74,19 @@ public class SearchSynonymKeywordExpander {
 				continue;
 			}
 			String w = word.trim();
-			if (!StringUtils.hasText(w)) {
-				continue;
+			if (StringUtils.hasText(w) && keywordEqualsOrToken(keywords, w)) {
+				return true;
 			}
-			if (keywords.equals(w) || keywords.contains(w)) {
+		}
+		return false;
+	}
+
+	private static boolean keywordEqualsOrToken(String keywords, String word) {
+		if (keywords.equals(word)) {
+			return true;
+		}
+		for (String token : keywords.split("\\s+")) {
+			if (token.equals(word)) {
 				return true;
 			}
 		}
