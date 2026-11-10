@@ -22,7 +22,6 @@ import cn.shopex.ecshopx.common.order.normal.NormalOrderCreateParams;
 import cn.shopex.ecshopx.common.order.normal.OrderCreateFormatDataPort;
 import cn.shopex.ecshopx.common.order.normal.OrderDirectedCrowdDiscountPort;
 import cn.shopex.ecshopx.deposit.service.UserDepositBalanceReadService;
-import cn.shopex.ecshopx.goods.service.items.ItemSpecImageLookupService;
 import cn.shopex.ecshopx.goods.service.recommend.GoodsRecommendCheckoutMergeService;
 import cn.shopex.ecshopx.goods.service.wxapp.WxappGoodsItemsListQueryOrchestrator;
 import cn.shopex.ecshopx.kaquan.service.order.normal.NormalOrderCheckoutCouponFacade;
@@ -57,7 +56,6 @@ public class OrderCreateFormatDataPortImpl implements OrderCreateFormatDataPort 
 	private final OrderCheckoutFullGiftService orderCheckoutFullGiftService;
 
 	private final OrderCheckoutPlusBuyService orderCheckoutPlusBuyService;
-	private final ItemSpecImageLookupService itemSpecImageLookupService;
 	private final MessageSource messageSource;
 
 	public OrderCreateFormatDataPortImpl(
@@ -67,7 +65,6 @@ public class OrderCreateFormatDataPortImpl implements OrderCreateFormatDataPort 
 			WxappGoodsItemsListQueryOrchestrator wxappGoodsItemsListQueryOrchestrator,
 			OrderCheckoutFullGiftService orderCheckoutFullGiftService,
 			OrderCheckoutPlusBuyService orderCheckoutPlusBuyService,
-			ItemSpecImageLookupService itemSpecImageLookupService,
 			MessageSource messageSource) {
 		this.orderDirectedCrowdDiscountPort = orderDirectedCrowdDiscountPort;
 		this.normalOrderCheckoutCouponFacade = normalOrderCheckoutCouponFacade;
@@ -75,7 +72,6 @@ public class OrderCreateFormatDataPortImpl implements OrderCreateFormatDataPort 
 		this.wxappGoodsItemsListQueryOrchestrator = wxappGoodsItemsListQueryOrchestrator;
 		this.orderCheckoutFullGiftService = orderCheckoutFullGiftService;
 		this.orderCheckoutPlusBuyService = orderCheckoutPlusBuyService;
-		this.itemSpecImageLookupService = itemSpecImageLookupService;
 		this.messageSource = messageSource;
 	}
 
@@ -276,14 +272,7 @@ public class OrderCreateFormatDataPortImpl implements OrderCreateFormatDataPort 
 										activityType);
 						if (!pkgChild.isEmpty()) {
 							childLine.put("item_name", stringVal(pkgChild.get("item_name")));
-							childLine.put(
-									"pic",
-									itemSpecImageLookupService.resolveDisplayPic(
-											companyId,
-											childId,
-											pkgChild.get("pic"),
-											pkgChild.get("pics"),
-											pkgChild.get("spec_image_url")));
+							childLine.put("pic", stringVal(pkgChild.get("pics")));
 							if (pkgChild.get("item_spec_desc") != null) {
 								childLine.put("item_spec_desc", pkgChild.get("item_spec_desc"));
 							}
@@ -373,13 +362,15 @@ public class OrderCreateFormatDataPortImpl implements OrderCreateFormatDataPort 
 				}
 			}
 		}
-		if (wxappOnlineNormal && meta instanceof Map<?, ?> metaMap) {
+		if (shouldMergeCheckoutPromotion(wxappOnlineNormal, pr) && meta instanceof Map<?, ?> metaMap) {
 			@SuppressWarnings("unchecked")
 			Map<String, Object> checkoutMeta = (Map<String, Object>) metaMap;
 			applyCheckoutCartPromotionMerge(p, checkoutMeta, cartByItem);
-			orderCheckoutFullGiftService.applyGiftActivitiesFromCheckoutMeta(p, checkoutMeta);
-			if (!"fastbuy".equals(stringVal(pr.get("cart_type")))) {
-				orderCheckoutPlusBuyService.applyPlusBuyActivitiesFromCheckoutMeta(p, checkoutMeta);
+			if (wxappOnlineNormal) {
+				orderCheckoutFullGiftService.applyGiftActivitiesFromCheckoutMeta(p, checkoutMeta);
+				if (!"fastbuy".equals(stringVal(pr.get("cart_type")))) {
+					orderCheckoutPlusBuyService.applyPlusBuyActivitiesFromCheckoutMeta(p, checkoutMeta);
+				}
 			}
 		}
 		if (!wxappOnlineNormal) {
@@ -464,9 +455,6 @@ public class OrderCreateFormatDataPortImpl implements OrderCreateFormatDataPort 
 				}
 			}
 		}
-		if (!byId.isEmpty()) {
-			itemSpecImageLookupService.applySpecImageUrl(companyId, new ArrayList<>(byId.values()));
-		}
 		List<Map<String, Object>> merged = new ArrayList<>();
 		for (Object o : itemList) {
 			if (!(o instanceof Map<?, ?> lineRaw)) {
@@ -476,12 +464,6 @@ public class OrderCreateFormatDataPortImpl implements OrderCreateFormatDataPort 
 			long itemId = longVal(line.get("item_id"), 0L);
 			Map<String, Object> sku = byId.get(itemId);
 			if (sku == null) {
-				if (!StringUtils.hasText(stringVal(line.get("pic")))) {
-					line.put(
-							"pic",
-							itemSpecImageLookupService.resolveDisplayPic(
-									companyId, itemId, line.get("pic"), line.get("pics"), line.get("spec_image_url")));
-				}
 				merged.add(line);
 				continue;
 			}
@@ -497,16 +479,9 @@ public class OrderCreateFormatDataPortImpl implements OrderCreateFormatDataPort 
 			if (!StringUtils.hasText(stringVal(line.get("item_unit")))) {
 				line.put("item_unit", stringVal(sku.get("item_unit")));
 			}
-			line.put(
-					"pic",
-					itemSpecImageLookupService.resolveDisplayPic(
-							companyId,
-							itemId,
-							line.get("pic"),
-							line.get("pics"),
-							line.get("spec_image_url"),
-							sku.get("spec_image_url"),
-							sku.get("pics")));
+			if (!StringUtils.hasText(stringVal(line.get("pic")))) {
+				line.put("pic", firstPicFromSku(sku));
+			}
 			if (sku.get("templates_id") != null) {
 				line.put("templates_id", sku.get("templates_id"));
 			} else if (sku.get("template_id") != null) {
@@ -673,6 +648,18 @@ public class OrderCreateFormatDataPortImpl implements OrderCreateFormatDataPort 
 		}
 	}
 
+	/**
+	 * 结算促销合并门（ECX-10719）：小程序在线普通单原有合并；POS/shopadmin 购物车来源单
+	 * （请求参数 operator_id &gt; 0，购物车查询必需字段）同样执行，
+	 * 使购物车自动应用的满减、满折、限时特惠落到订单。
+	 */
+	static boolean shouldMergeCheckoutPromotion(boolean wxappOnlineNormal, Map<String, Object> pr) {
+		if (wxappOnlineNormal) {
+			return true;
+		}
+		return pr != null && longVal(pr.get("operator_id"), 0L) > 0L;
+	}
+
 	private static Map<String, Object> buildItemsPromotionRow(
 			Map<String, Object> orderitem,
 			Map<String, Object> activity,
@@ -804,6 +791,21 @@ public class OrderCreateFormatDataPortImpl implements OrderCreateFormatDataPort 
 		return StringUtils.hasText(s) ? s : fallback;
 	}
 
+	private static String firstPicFromSku(Map<String, Object> sku) {
+		Object pics = sku.get("pics");
+		if (pics == null) {
+			return "";
+		}
+		if (pics instanceof String s) {
+			return s.trim();
+		}
+		if (pics instanceof List<?> lst && !lst.isEmpty()) {
+			Object first = lst.get(0);
+			return first == null ? "" : String.valueOf(first).trim();
+		}
+		return String.valueOf(pics).trim();
+	}
+
 	private static int intFromPointUse(Object v) {
 		if (v == null) {
 			return 0;
@@ -911,7 +913,7 @@ public class OrderCreateFormatDataPortImpl implements OrderCreateFormatDataPort 
 		}
 	}
 
-	private Map<String, Object> buildOrderLineSkeleton(
+	private static Map<String, Object> buildOrderLineSkeleton(
 			long itemId,
 			int num,
 			long companyId,
@@ -943,14 +945,10 @@ public class OrderCreateFormatDataPortImpl implements OrderCreateFormatDataPort 
 		if (cartRow.get("weight") != null) {
 			line.put("weight", cartRow.get("weight"));
 		}
-		line.put(
-				"pic",
-				itemSpecImageLookupService.resolveDisplayPic(
-						companyId,
-						itemId,
-						cartRow.get("pic"),
-						cartRow.get("pics"),
-						cartRow.get("spec_image_url")));
+		line.put("pic", stringVal(cartRow.get("pic")));
+		if (!StringUtils.hasText(stringVal(line.get("pic")))) {
+			line.put("pic", stringVal(cartRow.get("pics")));
+		}
 		line.put("cost_price", intVal(cartRow.get("cost_price"), 0));
 		line.put("market_price", intVal(cartRow.get("market_price"), price));
 		line.put("is_total_store", !Boolean.FALSE.equals(cartRow.get("is_total_store")));

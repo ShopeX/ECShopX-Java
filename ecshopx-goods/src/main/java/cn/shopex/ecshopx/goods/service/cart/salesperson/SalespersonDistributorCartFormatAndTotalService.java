@@ -107,6 +107,34 @@ public class SalespersonDistributorCartFormatAndTotalService {
 		return out;
 	}
 
+	/**
+	 * 将购物车促销汇总（WxappH5DistributorCartPromotionService 产出）覆盖进 shop 桶，
+	 * 替换 buildAggregatedShopCarts 的硬编码 0/空。POS 促销范围仅满减、满折、限时特惠（ECX-10719），
+	 * 因此 gift_activity 与 plus_buy_activity 不参与覆盖，保持空列表。
+	 */
+	public void mergePromotionTotals(List<Map<String, Object>> shopBlocks, Map<String, Object> promotionTotals) {
+		if (shopBlocks == null || shopBlocks.isEmpty() || promotionTotals == null) {
+			return;
+		}
+		for (Map<String, Object> shop : shopBlocks) {
+			copyIfPresent(shop, promotionTotals, "item_fee");
+			copyIfPresent(shop, promotionTotals, "discount_fee");
+			copyIfPresent(shop, promotionTotals, "total_fee");
+			copyIfPresent(shop, promotionTotals, "cart_total_price");
+			copyIfPresent(shop, promotionTotals, "cart_total_num");
+			copyIfPresent(shop, promotionTotals, "cart_total_count");
+			copyIfPresent(shop, promotionTotals, "used_activity");
+			copyIfPresent(shop, promotionTotals, "used_activity_ids");
+			copyIfPresent(shop, promotionTotals, "activity_grouping");
+		}
+	}
+
+	private static void copyIfPresent(Map<String, Object> shop, Map<String, Object> totals, String key) {
+		if (totals.containsKey(key)) {
+			shop.put(key, totals.get(key));
+		}
+	}
+
 	private static void assertStoreCoversNum(Map<String, Object> row, boolean isSubmit) {
 		if (!isSubmit) {
 			return;
