@@ -122,6 +122,70 @@ public class NormalOrderCheckoutCouponFacade {
 		}
 	}
 
+	/**
+	 * POS 购物车券后预览（ECX-11082）：按下单同口径计算指定券码的优惠并分摊到传入行。
+	 * 仅预览，不写订单数据；行 total_fee/discount_fee/coupon_discount/discount_info 原地更新。
+	 * 券不可用、门槛不满足、无会员时返回 deduct_fen=0 且不改行。
+	 */
+	public Map<String, Object> previewCouponDeduction(
+			long companyId,
+			long operatorId,
+			long userId,
+			long distributorId,
+			String couponCode,
+			List<Map<String, Object>> lines) {
+		Map<String, Object> out = new LinkedHashMap<>();
+		out.put("deduct_fen", 0L);
+		if (userId <= 0L || !StringUtils.hasText(couponCode)
+				|| lines == null || lines.isEmpty()) {
+			return out;
+		}
+		long goodsTotal = 0L;
+		for (Map<String, Object> line : lines) {
+			goodsTotal += longVal(line.get("total_fee"), 0L);
+		}
+		Map<Long, CartItemMoneyRow> cartMoney = buildCartMoneyRows(lines);
+		Map<String, Object> cardRow =
+				findCardRowByCode(companyId, operatorId, userId, distributorId, couponCode.trim(),
+						goodsTotal, cartMoney, Map.of());
+		if (cardRow == null) {
+			return out;
+		}
+		String cardType = stringVal(firstKey(cardRow, "card_type"));
+		if ("discount".equals(cardType)) {
+			DiscountApplyResult applied =
+					applyDiscountCouponToLines(lines, cardRow, couponCode.trim(),
+							matchedItemIdSet(cardRow, cartMoney, companyId));
+			if (applied.deductFen() <= 0L) {
+				return out;
+			}
+			out.put("deduct_fen", applied.deductFen());
+			out.put("coupon_info", applied.orderDiscountDesc());
+		} else if ("cash".equals(cardType)) {
+			int reduce = intVal(firstKey(cardRow, "reduce_cost"));
+			long matched = matchedAmountForCard(cardRow, cartMoney, goodsTotal, companyId);
+			int leastCost = intVal(firstKey(cardRow, "least_cost"));
+			if (reduce <= 0 || matched <= 0L) {
+				return out;
+			}
+			if (reduce >= goodsTotal && goodsTotal > 0L) {
+				return out;
+			}
+			if (leastCost > 0 && matched < leastCost) {
+				return out;
+			}
+			long deduct = Math.min(reduce, matched);
+			if (deduct <= 0L) {
+				return out;
+			}
+			applyCashCouponToLines(lines, cardRow, deduct, goodsTotal, couponCode.trim(),
+					matchedItemIdSet(cardRow, cartMoney, companyId));
+			out.put("deduct_fen", deduct);
+			out.put("coupon_info", buildCashOrderCouponDesc(cardRow, deduct, couponCode.trim()));
+		}
+		return out;
+	}
+
 	private Map<String, Object> findCardRowByCode(
 			long companyId,
 			long operatorId,
@@ -264,6 +328,7 @@ public class NormalOrderCheckoutCouponFacade {
 		return UserDiscountCardMatchedAmount.feeFen(useBound, rel, fees, scopes);
 	}
 
+	@SuppressWarnings("unchecked")
 	private boolean applyDeductionToOrderData(
 			Map<String, Object> od,
 			Map<String, Object> cardRow,
@@ -283,7 +348,8 @@ public class NormalOrderCheckoutCouponFacade {
 		long deduct;
 		Map<String, Object> orderCouponDesc;
 		if ("discount".equals(cardType)) {
-			DiscountApplyResult applied = applyDiscountCouponToLines(od, cardRow, explicitCouponCode, matchedItemIds);
+			DiscountApplyResult applied = applyDiscountCouponToLines(
+					(List<Map<String, Object>>) od.get("items"), cardRow, explicitCouponCode, matchedItemIds);
 			if (applied.deductFen() <= 0L) {
 				return false;
 			}
@@ -305,7 +371,8 @@ public class NormalOrderCheckoutCouponFacade {
 				return false;
 			}
 			orderCouponDesc = buildCashOrderCouponDesc(cardRow, deduct, explicitCouponCode);
-			applyCashCouponToLines(od, cardRow, deduct, matched, explicitCouponCode, matchedItemIds);
+			applyCashCouponToLines(
+					(List<Map<String, Object>>) od.get("items"), cardRow, deduct, goodsTotal, explicitCouponCode, matchedItemIds);
 		} else {
 			return false;
 		}
@@ -334,7 +401,7 @@ public class NormalOrderCheckoutCouponFacade {
 
 	@SuppressWarnings("unchecked")
 	private static DiscountApplyResult applyDiscountCouponToLines(
-			Map<String, Object> od,
+			List<Map<String, Object>> lines,
 			Map<String, Object> cardRow,
 			String explicitCouponCode,
 			Set<Long> matchedItemIds) {
@@ -342,8 +409,8 @@ public class NormalOrderCheckoutCouponFacade {
 		if (disc <= 0 || disc >= 100) {
 			return new DiscountApplyResult(0L, Map.of());
 		}
-		Object itemsRaw = od.get("items");
-		if (!(itemsRaw instanceof List<?> itemList)) {
+		List<?> itemList = lines;
+		if (itemList == null || itemList.isEmpty()) {
 			return new DiscountApplyResult(0L, Map.of());
 		}
 		List<Map<String, Object>> eligible = new ArrayList<>();
@@ -444,16 +511,16 @@ public class NormalOrderCheckoutCouponFacade {
 
 	@SuppressWarnings("unchecked")
 	private static void applyCashCouponToLines(
-			Map<String, Object> od,
+			List<Map<String, Object>> lines,
 			Map<String, Object> cardRow,
 			long deduct,
 			long goodsTotal,
 			String explicitCouponCode,
 			Set<Long> matchedItemIds) {
-		Object itemsRaw = od.get("items");
-		if (!(itemsRaw instanceof List<?> itemList) || goodsTotal <= 0L) {
+		if (lines == null || lines.isEmpty() || goodsTotal <= 0L) {
 			return;
 		}
+		List<?> itemList = lines;
 		List<Map<String, Object>> eligible = new ArrayList<>();
 		long eligibleTotal = 0L;
 		for (Object o : itemList) {
