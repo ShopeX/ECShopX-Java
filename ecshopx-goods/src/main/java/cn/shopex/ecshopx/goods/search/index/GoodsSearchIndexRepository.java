@@ -84,6 +84,8 @@ public class GoodsSearchIndexRepository {
 		root.put("category_ids", doc.categoryIds());
 		root.put("sale_price", doc.salePrice());
 		root.put("market_price", doc.marketPrice());
+		root.put("sales_30d", doc.sales30d());
+		root.put("listed_at", doc.listedAt());
 		root.put("has_stock", doc.hasStock());
 		root.put("member_prices", toMemberPrices(doc.memberPrices()));
 		root.put("skus", toSkus(doc.skus()));

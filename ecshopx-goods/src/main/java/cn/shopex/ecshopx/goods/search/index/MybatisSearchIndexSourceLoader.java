@@ -102,6 +102,8 @@ public class MybatisSearchIndexSourceLoader implements SearchIndexSourceLoader {
 		long hqPriceFen = priceFen(anchor.getPrice());
 		long marketPriceFen = anchor.getMarketPrice() != null ? anchor.getMarketPrice().longValue() : 0L;
 		Long distributorPriceFen = resolveDistributorPriceFen(distributorId, defaultItemId, anchor, distByItemId);
+		long sales30d = resolveSales30d(distributorId, defaultItemId, anchor, distByItemId);
+		long listedAt = resolveListedAt(distributorId, defaultItemId, anchor, distByItemId);
 		List<SearchIndexSource.Sku> skus = buildSkus(skuRows, distByItemId, distributorId);
 		if (skus.isEmpty()) {
 			return Optional.empty();
@@ -128,6 +130,8 @@ public class MybatisSearchIndexSourceLoader implements SearchIndexSourceLoader {
 						.hqPriceFen(hqPriceFen)
 						.distributorPriceFen(distributorPriceFen)
 						.marketPriceFen(marketPriceFen)
+						.sales30d(sales30d)
+						.listedAt(listedAt)
 						.memberPriceGrade(memberPrices.grade())
 						.memberPriceVipGrade(memberPrices.vipGrade())
 						.skus(skus)
@@ -221,6 +225,45 @@ public class MybatisSearchIndexSourceLoader implements SearchIndexSourceLoader {
 
 	private static long priceFen(Integer price) {
 		return price != null ? price.longValue() : 0L;
+	}
+
+	/**
+	 * 无独立 30 日销量表时，映射 {@code items.sales} / {@code distribution_distributor_items.sales}
+	 *（累计销量，供 {@code sales_30d} 排序与加权；非严格滚动 30 日窗口）。
+	 */
+	private static long resolveSales30d(
+			long distributorId, long defaultItemId, Items anchor, Map<Long, DistributorItems> distByItemId) {
+		if (distributorId > 0) {
+			DistributorItems spuDist = distByItemId.get(defaultItemId);
+			if (spuDist != null && spuDist.getSales() != null && spuDist.getSales() > 0) {
+				return spuDist.getSales();
+			}
+			long max = 0L;
+			for (DistributorItems row : distByItemId.values()) {
+				if (row.getSales() != null) {
+					max = Math.max(max, row.getSales());
+				}
+			}
+			return max;
+		}
+		return anchor.getSales() != null ? Math.max(0L, anchor.getSales().longValue()) : 0L;
+	}
+
+	/** 上架/进店时间：店品 {@code distribution_distributor_items.created}，否则 {@code items.created}（epoch 秒）。 */
+	private static long resolveListedAt(
+			long distributorId, long defaultItemId, Items anchor, Map<Long, DistributorItems> distByItemId) {
+		if (distributorId > 0) {
+			DistributorItems spuDist = distByItemId.get(defaultItemId);
+			if (spuDist != null && spuDist.getCreated() != null && spuDist.getCreated() > 0) {
+				return spuDist.getCreated();
+			}
+			for (DistributorItems row : distByItemId.values()) {
+				if (row.getCreated() != null && row.getCreated() > 0) {
+					return row.getCreated();
+				}
+			}
+		}
+		return anchor.getCreated() != null ? anchor.getCreated().longValue() : 0L;
 	}
 
 	private List<String> resolveTagNames(long companyId, long defaultItemId) {

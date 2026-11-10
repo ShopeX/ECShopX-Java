@@ -38,6 +38,8 @@ public record GoodsSearchDocument(
 		List<Long> categoryIds,
 		long salePrice,
 		long marketPrice,
+		long sales30d,
+		long listedAt,
 		MemberPrices memberPrices,
 		List<Sku> skus,
 		List<Activity> activities) {

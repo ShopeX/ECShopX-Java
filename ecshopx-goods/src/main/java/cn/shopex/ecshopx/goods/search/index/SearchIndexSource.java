@@ -40,6 +40,8 @@ public record SearchIndexSource(
 		long hqPriceFen,
 		Long distributorPriceFen,
 		long marketPriceFen,
+		long sales30d,
+		long listedAt,
 		Map<Long, Long> memberPriceGrade,
 		Map<Long, Long> memberPriceVipGrade,
 		List<Sku> skus,
@@ -69,6 +71,8 @@ public record SearchIndexSource(
 		private long hqPriceFen;
 		private Long distributorPriceFen;
 		private long marketPriceFen;
+		private long sales30d;
+		private long listedAt;
 		private Map<Long, Long> memberPriceGrade = new HashMap<>();
 		private Map<Long, Long> memberPriceVipGrade = new HashMap<>();
 		private List<Sku> skus = new ArrayList<>();
@@ -144,6 +148,16 @@ public record SearchIndexSource(
 			return this;
 		}
 
+		public Builder sales30d(long sales30d) {
+			this.sales30d = sales30d;
+			return this;
+		}
+
+		public Builder listedAt(long listedAt) {
+			this.listedAt = listedAt;
+			return this;
+		}
+
 		public Builder memberPriceGrade(Map<Long, Long> memberPriceGrade) {
 			this.memberPriceGrade = new HashMap<>(memberPriceGrade);
 			return this;
@@ -180,6 +194,8 @@ public record SearchIndexSource(
 					hqPriceFen,
 					distributorPriceFen,
 					marketPriceFen,
+					sales30d,
+					listedAt,
 					Collections.unmodifiableMap(new HashMap<>(memberPriceGrade)),
 					Collections.unmodifiableMap(new HashMap<>(memberPriceVipGrade)),
 					List.copyOf(skus),

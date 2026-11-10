@@ -16,6 +16,7 @@
 
 package cn.shopex.ecshopx.goods.search.index;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
@@ -23,9 +24,37 @@ import static org.mockito.Mockito.when;
 
 import co.elastic.clients.elasticsearch.core.BulkResponse;
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 class GoodsSearchIndexRepositoryTest {
+
+	@Test
+	void toEsSourceIncludesSales30dAndListedAt() {
+		GoodsSearchDocument doc = new GoodsSearchDocument(
+				"1_9_100",
+				1L,
+				9L,
+				100L,
+				"n",
+				"",
+				"",
+				"",
+				List.of(),
+				"onsale",
+				"approved",
+				List.of(),
+				1000L,
+				1200L,
+				88L,
+				1_600_000_000L,
+				new GoodsSearchDocument.MemberPrices(Map.of(), Map.of()),
+				List.of(),
+				List.of());
+		Map<String, Object> src = GoodsSearchIndexRepository.toEsSource(doc);
+		assertThat(src).containsEntry("sales_30d", 88L).containsEntry("listed_at", 1_600_000_000L);
+	}
 
 	@Test
 	void assertBulkSucceededPassesWhenNoErrors() {
