@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package cn.shopex.ecshopx.goods.search.index;
+package cn.shopex.ecshopx.goods.mapper;
 
+import cn.shopex.ecshopx.goods.search.index.SearchIndexStoreItemKey;
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;

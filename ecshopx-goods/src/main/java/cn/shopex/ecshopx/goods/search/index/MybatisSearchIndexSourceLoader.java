@@ -22,6 +22,7 @@ import cn.shopex.ecshopx.goods.domain.Items;
 import cn.shopex.ecshopx.goods.domain.ItemsRelTags;
 import cn.shopex.ecshopx.goods.domain.ItemsTags;
 import cn.shopex.ecshopx.goods.mapper.ItemsMapper;
+import cn.shopex.ecshopx.goods.mapper.SearchIndexSourceMapper;
 import cn.shopex.ecshopx.goods.repository.ItemsRelTagsRepository;
 import cn.shopex.ecshopx.goods.repository.ItemsTagsRepository;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
