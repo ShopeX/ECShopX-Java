@@ -66,7 +66,7 @@ final class GoodsSearchEsQueryBuilder {
 		scoreFns.add(FunctionScore.of(fn -> fn
 				.filter(QueryBuilders.term(t -> t.field("has_stock").value(true)))
 				.weight(hasStockWeight)));
-		scoreFns.add(FunctionScore.of(fn -> fn.fieldValueFactor(fvf -> fvf.field("sales_30d").factor(salesWeight))));
+		scoreFns.add(FunctionScore.of(fn -> fn.fieldValueFactor(fvf -> fvf.field("sales").factor(salesWeight))));
 		scoreFns.add(FunctionScore.of(fn -> fn.fieldValueFactor(fvf -> fvf.field("listed_at").factor(listedAtWeight))));
 		return QueryBuilders.functionScore(fs -> fs
 				.query(bool)

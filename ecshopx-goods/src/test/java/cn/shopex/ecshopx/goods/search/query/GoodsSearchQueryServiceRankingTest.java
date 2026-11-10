@@ -43,7 +43,7 @@ class GoodsSearchQueryServiceRankingTest {
 		assertThat(dsl).contains("function_score");
 		assertThat(dsl).contains("has_stock");
 		assertThat(dsl).contains("\"weight\":10.0");
-		assertThat(dsl).contains("sales_30d");
+		assertThat(dsl).contains("\"sales\"");
 		assertThat(dsl).contains("listed_at");
 		assertThat(dsl).contains("field_value_factor");
 		assertThat(dsl).contains("constant_score");
@@ -59,12 +59,12 @@ class GoodsSearchQueryServiceRankingTest {
 	}
 
 	@Test
-	void salesSort_esFieldSort_sales30dDesc() {
+	void salesSort_esFieldSort_salesDesc() {
 		GoodsSearchQuery q = baseQuery("sales", null, new SearchEsProperties());
 		SearchRequest.Builder req = new SearchRequest.Builder();
 		GoodsSearchQueryService.applyEsSort(req, q, false);
 		String dsl = searchRequestToJson(req.build());
-		assertThat(dsl).contains("sales_30d");
+		assertThat(dsl).contains("\"sales\"");
 		assertThat(dsl).contains("\"order\":\"desc\"");
 		assertThat(dsl).doesNotContain("\"_score\"");
 	}

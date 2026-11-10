@@ -51,7 +51,7 @@ public class SearchIndexMapper {
 				src.categoryIds() != null ? src.categoryIds() : List.of(),
 				salePrice,
 				src.marketPriceFen(),
-				src.sales30d(),
+				src.sales(),
 				src.listedAt(),
 				memberPrices,
 				skus,

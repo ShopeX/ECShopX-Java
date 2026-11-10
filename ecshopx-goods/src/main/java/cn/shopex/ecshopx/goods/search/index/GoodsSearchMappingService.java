@@ -121,7 +121,7 @@ public class GoodsSearchMappingService {
 		props.put("barcode", scalar("keyword"));
 		props.put("sale_price", scalar("long"));
 		props.put("market_price", scalar("long"));
-		props.put("sales_30d", scalar("long"));
+		props.put("sales", scalar("long"));
 		props.put("member_prices", memberPrices());
 		props.put("skus", nestedSkus());
 		props.put("activities", nestedActivities());

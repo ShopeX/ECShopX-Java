@@ -102,7 +102,7 @@ public class MybatisSearchIndexSourceLoader implements SearchIndexSourceLoader {
 		long hqPriceFen = priceFen(anchor.getPrice());
 		long marketPriceFen = anchor.getMarketPrice() != null ? anchor.getMarketPrice().longValue() : 0L;
 		Long distributorPriceFen = resolveDistributorPriceFen(distributorId, defaultItemId, anchor, distByItemId);
-		long sales30d = resolveSales30d(distributorId, defaultItemId, anchor, distByItemId);
+		long sales = resolveSales(distributorId, defaultItemId, anchor, distByItemId);
 		long listedAt = resolveListedAt(distributorId, defaultItemId, anchor, distByItemId);
 		List<SearchIndexSource.Sku> skus = buildSkus(skuRows, distByItemId, distributorId);
 		if (skus.isEmpty()) {
@@ -130,7 +130,7 @@ public class MybatisSearchIndexSourceLoader implements SearchIndexSourceLoader {
 						.hqPriceFen(hqPriceFen)
 						.distributorPriceFen(distributorPriceFen)
 						.marketPriceFen(marketPriceFen)
-						.sales30d(sales30d)
+						.sales(sales)
 						.listedAt(listedAt)
 						.memberPriceGrade(memberPrices.grade())
 						.memberPriceVipGrade(memberPrices.vipGrade())
@@ -228,10 +228,9 @@ public class MybatisSearchIndexSourceLoader implements SearchIndexSourceLoader {
 	}
 
 	/**
-	 * 无独立 30 日销量表时，映射 {@code items.sales} / {@code distribution_distributor_items.sales}
-	 *（累计销量，供 {@code sales_30d} 排序与加权；非严格滚动 30 日窗口）。
+	 * 累计销量：映射 {@code items.sales} / {@code distribution_distributor_items.sales}，写入 ES {@code sales}。
 	 */
-	private static long resolveSales30d(
+	private static long resolveSales(
 			long distributorId, long defaultItemId, Items anchor, Map<Long, DistributorItems> distByItemId) {
 		if (distributorId > 0) {
 			DistributorItems spuDist = distByItemId.get(defaultItemId);

@@ -148,7 +148,7 @@ public class GoodsSearchQueryService {
 	/** 默认/综合按 {@code _score}（function_score）；销量/上新走字段排序。 */
 	static void applyEsSort(SearchRequest.Builder req, GoodsSearchQuery query, boolean javaPriceOps) {
 		if (query.isSalesSort()) {
-			req.sort(s -> s.field(f -> f.field("sales_30d").order(SortOrder.Desc)));
+			req.sort(s -> s.field(f -> f.field("sales").order(SortOrder.Desc)));
 			return;
 		}
 		if (query.isNewSort()) {

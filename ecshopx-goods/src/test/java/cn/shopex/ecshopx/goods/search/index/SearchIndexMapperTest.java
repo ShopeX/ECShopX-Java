@@ -98,11 +98,11 @@ class SearchIndexMapperTest {
 	void rankFieldsPassThroughFromSource() {
 		SearchIndexSource src = SearchIndexSource.builder()
 				.companyId(1).distributorId(9).defaultItemId(100).hqPriceFen(2000)
-				.sales30d(420L)
+				.sales(420L)
 				.listedAt(1_700_000_000L)
 				.build();
 		GoodsSearchDocument doc = new SearchIndexMapper().toDocument(src);
-		assertThat(doc.sales30d()).isEqualTo(420L);
+		assertThat(doc.sales()).isEqualTo(420L);
 		assertThat(doc.listedAt()).isEqualTo(1_700_000_000L);
 	}
 

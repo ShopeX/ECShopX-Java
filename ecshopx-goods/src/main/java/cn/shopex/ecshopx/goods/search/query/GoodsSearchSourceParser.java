@@ -48,7 +48,7 @@ final class GoodsSearchSourceParser {
 				longList(src.get("category_ids")),
 				longVal(src.get("sale_price")),
 				longVal(src.get("market_price")),
-				longVal(src.get("sales_30d")),
+				longVal(src.get("sales")),
 				longVal(src.get("listed_at")),
 				mp,
 				parseSkus(src.get("skus")),
