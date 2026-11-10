@@ -17,6 +17,7 @@
 package cn.shopex.ecshopx.goods.search.index;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * 按公司（可选店铺）分页加载 {@link SearchIndexSource}，供全量重建与增量 upsert 复用。
@@ -29,4 +30,13 @@ public interface SearchIndexSourceLoader {
 	 * @return 空列表表示扫描结束
 	 */
 	List<SearchIndexSource> fetchPage(long companyId, Long distributorIdOrNull, long afterDefaultItemId, int limit);
+
+	/** 加载单条店品；不存在则 empty（增量 upsert 用）。 */
+	default Optional<SearchIndexSource> fetchOne(long companyId, long distributorId, long defaultItemId) {
+		List<SearchIndexSource> page = fetchPage(companyId, distributorId, defaultItemId - 1, 1);
+		if (page.isEmpty() || page.get(0).defaultItemId() != defaultItemId) {
+			return Optional.empty();
+		}
+		return Optional.of(page.get(0));
+	}
 }

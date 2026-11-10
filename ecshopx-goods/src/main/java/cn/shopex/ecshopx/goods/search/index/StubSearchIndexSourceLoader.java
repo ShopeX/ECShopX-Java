@@ -17,12 +17,14 @@
 package cn.shopex.ecshopx.goods.search.index;
 
 import java.util.List;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 /**
- * 占位实现：生产 SQL 物化由 Task 4+ 接入。全量 Job 可调度但不会写入文档，直至真实 loader 替换本 Bean。
+ * 测试 Profile 占位实现；生产环境由 {@link MybatisSearchIndexSourceLoader} 提供物化。
  */
 @Component
+@Profile("test")
 public class StubSearchIndexSourceLoader implements SearchIndexSourceLoader {
 
 	@Override

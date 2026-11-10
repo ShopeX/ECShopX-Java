@@ -26,6 +26,7 @@ import cn.shopex.ecshopx.distribution.service.distributor.dto.DistributorItemsUp
 import cn.shopex.ecshopx.distribution.service.distributor.dto.DistributorItemsUpdateRowFilter;
 import cn.shopex.ecshopx.goods.domain.Items;
 import cn.shopex.ecshopx.goods.repository.ItemsRepository;
+import cn.shopex.ecshopx.goods.search.sync.SearchIndexSyncScheduler;
 import cn.shopex.ecshopx.goods.service.items.ItemStoreService;
 import cn.shopex.ecshopx.supplier.repository.SupplierItemsRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -52,18 +53,21 @@ public class DistributorItemsUpdateOrchestratorImpl implements DistributorItemsU
 	private final DistributorItemsRepository distributorItemsRepository;
 	private final ItemStoreService itemStoreService;
 	private final ShuyunOpenPlatformProductSyncPort openPlatformProductSyncPort;
+	private final SearchIndexSyncScheduler searchIndexSyncScheduler;
 
 	public DistributorItemsUpdateOrchestratorImpl(
 			ItemsRepository itemsRepository,
 			SupplierItemsRepository supplierItemsRepository,
 			DistributorItemsRepository distributorItemsRepository,
 			ItemStoreService itemStoreService,
-			ShuyunOpenPlatformProductSyncPort openPlatformProductSyncPort) {
+			ShuyunOpenPlatformProductSyncPort openPlatformProductSyncPort,
+			SearchIndexSyncScheduler searchIndexSyncScheduler) {
 		this.itemsRepository = itemsRepository;
 		this.supplierItemsRepository = supplierItemsRepository;
 		this.distributorItemsRepository = distributorItemsRepository;
 		this.itemStoreService = itemStoreService;
 		this.openPlatformProductSyncPort = openPlatformProductSyncPort;
+		this.searchIndexSyncScheduler = searchIndexSyncScheduler;
 	}
 
 	@Override
@@ -93,6 +97,9 @@ public class DistributorItemsUpdateOrchestratorImpl implements DistributorItemsU
 				distributorItemsRepository.updateByFilterWithGoodsCanSaleSync(rowFilter, patch);
 				if (!inventoryOnly) {
 					dispatchShuyunProductSync(companyId, parsed.distributorIds(), itemList);
+				}
+				if (patch.price().isPresent()) {
+					scheduleSearchIndexUpsertForRows(companyId, itemList);
 				}
 			}
 			if (patch.store().isPresent()) {
@@ -257,6 +264,36 @@ public class DistributorItemsUpdateOrchestratorImpl implements DistributorItemsU
 			}
 			if (allInstock) {
 				throw new ResourceException("确认商品总部销售状态");
+			}
+		}
+	}
+
+	private void scheduleSearchIndexUpsertForRows(long companyId, List<DistributorItems> itemList) {
+		if (itemList == null || itemList.isEmpty()) {
+			return;
+		}
+		Set<String> seen = new LinkedHashSet<>();
+		for (DistributorItems row : itemList) {
+			if (row == null || row.getDistributorId() == null || row.getItemId() == null) {
+				continue;
+			}
+			long defaultItemId =
+					row.getDefaultItemId() != null && row.getDefaultItemId() > 0
+							? row.getDefaultItemId()
+							: row.getItemId();
+			String key = row.getDistributorId() + ":" + defaultItemId;
+			if (!seen.add(key)) {
+				continue;
+			}
+			try {
+				searchIndexSyncScheduler.scheduleUpsert(companyId, row.getDistributorId(), defaultItemId);
+			} catch (RuntimeException e) {
+				log.warn(
+						"schedule search index upsert failed companyId={} distributorId={} defaultItemId={}",
+						companyId,
+						row.getDistributorId(),
+						defaultItemId,
+						e);
 			}
 		}
 	}
