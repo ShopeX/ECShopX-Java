@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:e775f24220dc1d17a7bbcd3ffc21ba1f34f33e1831efe3b90c9ef28cbd2a19cf",
+  "pageVersion": "sha256:7cff66c5c073a4d47c66c7a24753f12487991b0d0717a1509947475e1c6c7a9f",
   "claims": [
     {
       "id": "claim_99031e08043c4fcd9e0aeed337a19e0b",
@@ -402,7 +402,7 @@
         },
         {
           "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/operatorcart/OperatorCartDataListFacadeImpl.java",
-          "version": "repo-file-v1:sha256:6cb8a221b43f80caa6d1eac6b45a1c43824875fa886c953a56b92a1d126f7b6f"
+          "version": "repo-file-v1:sha256:0b00ffb46e4cbcf64d6ab63b75f68d7ace792b43cb1296054d75e015e1dca3d9"
         }
       ]
     },
@@ -665,10 +665,36 @@
           "version": "repo-file-v1:sha256:70469f931aff72b586eec3facb9e7f946756b8f564c1b70c3314ab78e96fe61c"
         }
       ]
+    },
+    {
+      "id": "claim_1b08428927cd49d280aa47c64368a928",
+      "statement": "The operator-cart Facade seam between goods and companys runs deeper than the common interface: because goods depends on companys upstream, goods' OperatorCartDataListFacadeImpl constructor-injects companys-side services directly alongside goods-local ones — OperatorCartSkuLoadFacade (SKU load / distributor price replace / member price), OperatorCartCompanyProductModelReader, OperatorCartHandleValidCartService, SalespersonDistributorCartFormatAndTotalService, and companys' OperatorCartCleanupService — which it uses to lazily delete operator_cart rows when the SKU load is empty (deleteAllRows) or the format/total pass marks rows invalid (deleteByCartIds); companys-side consumers (OperatorCartController, OperatorCartAdminSubmitDataService) and goods' OrderCheckoutCartPortImpl (driving OperatorCartFastBuyFacade) hold only the common operatorcart Facade interfaces.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/operatorcart/OperatorCartDataListFacade.java#L23-L35",
+          "version": "repo-lines-v1:sha256:a7e7043b26159d008baef332e406b737d03e01583a30c72a67d22fbb15b7cfc1:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImExYTkxYzBhMmZjZGE0MTA5MjI4ZmNlNjNjYTg1MmM3YThkZGM2OGY0YzQ5M2M2MGIzNjMyMDE1YmQwOGYxMGEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjUwMzczOGUxYTM3ZTA2MzRiY2JmMDY2OWVjMDIwYjQzMTNiMjJiYjUyZDJkMjJkNjIxM2ZlYjlhOWM0OTQ1YjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/api/admin/v1/OperatorCartController.java#L54-L59",
+          "version": "repo-lines-v1:sha256:48fb2b373f16899309f73040e60bc75cf63a7b119ae258342db88567fe16273a:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODlkZjE3NWY5NzgyMjE2NDRmZjZiYjU3ZmI4YzNkMDdiZTk4MTM3YWM4MGEwMGZiZGMzMmY0NmVhMDRjOWU5NCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjc5M2M0YjBmZmU1NzgyODBiMzU3MmNmM2E2MmI3ZmJlMTliMmFlOTNmZGU0MmVmYTRmYTEwZGIzNjkyNjQ0ZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTJiZGJiMGViMTZiMTMwNDJjNmIxZTY2ZGFmYmEyNTk1MzU5MDk0MjMwMzg1ZTlmN2ZlYWVkOTVjOWE5MTkxZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDViZDI5MDg2NzE5MWEzZWYzZmMwZjg3MzM4NDBiZjIxNTk2N2JjNjE3YjgzOGZmMTY5YWJmODBkOTYxZmJhZSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/operatorcart/OperatorCartCleanupService.java#L28-L66",
+          "version": "repo-lines-v1:sha256:50bd93fc584079920e67d49e0a6ee33d50fcbb201e2da2a94990be991b665583:eyJzZWxlY3RlZExpbmVDb3VudCI6MzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OGI3MGVjZDY5MWZlZmRiNmJkNWMyMTc4YTJiZmEzM2JlZmZkMGY2OTU1MTRhODU1MjUwNmJjMjNjM2ExOTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjliMTg4Y2VhZGY0ZDcyNmMyODA1Yjk0MmZjNGU1MTAxZjYxODU2YmFiYjQxOTM4YWI0ZjM5OTA1YmU4Zjk4MjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/operatorcart/OperatorCartDataListFacadeImpl.java#L41-L151",
+          "version": "repo-lines-v1:sha256:8bf2b85714d75360162d3f6e188940efb35a3aad27574f8cbdb63106befd29f3:eyJzZWxlY3RlZExpbmVDb3VudCI6MTExLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIwMWJhNDcxOWM4MGI2ZmU5MTFiMDkxYTdjMDUxMjRiNjRlZWVjZTk2NGUwOWMwNThlZjhmOTgwNWRhY2E1NDZiIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJlN2IwY2E1MDc1MTcyZWEyMzgxODRiN2JiOTc5ZGFlMWQxOTI5NDU3YWY1MGRjYjQwMWE5OWZjMzY0MjlhY2YwIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiIyM2Q3NTlhNTg0OTJmMWUxM2RiODM5YTc5NTQxYWQyNDg4MDI4NmNmZTllNmE5ZjZiYTY4Nzk2OTM2MzgwYmQ3IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI3YWU2MTllY2ExZjAzM2U4NTViMWMxNzEwYWU2Nzc0NDVlNGQ1ODc2YmIyZDlhMzEwMzY4MmZlYTJkM2ZjNDk0In0"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/operatorcart/OperatorCartFastBuyFacadeImpl.java#L40-L58",
+          "version": "repo-lines-v1:sha256:6c62e6796a8a4ee52294e0000583e837792c7a35aa1101e234cf64dfedcfe171:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgwOWI3ZWYxZmM0NWU2ZTQ5OGRmN2FmM2U5ZjhiYjczYmFhMDcxMWRkMzI3OTBkN2RlNDM1ZWZkN2ZjODViOGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRhNjBmM2FhYjZmNjM5ZTEwMWJjNDE0YmQ0ZDE5Mzk2M2Y1MDIwYjdiODI1ZDQ5YjYyYWU4YTk2MzNlMThiYWYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ3YzQ2YmU3MWNjMzBhMzUzNDFmMTc1MGExMjc0OTkyNDgyM2I3MzQ2NjI2MzY2ZjIwYTA4MGIwNTk2MjM2ZWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ3OTI1YTVhMjA3ODgyZjJjNDVlNWVkNDQwZTkxMzU5YmJmNThiNWQyYTIwOTJmNGViYjk4ODA0YmExODRmNGYifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.9.0",
-    "at": "2026-11-09T03:34:48.355Z"
+    "at": "2026-11-09T17:09:44.795Z"
   }
 }

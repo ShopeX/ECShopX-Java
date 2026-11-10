@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:a2e7945243638609fadbc79687e81e90e9577b2d6db38f14f5c629af41206f37",
+  "pageVersion": "sha256:27a9d867c79c7e91ab2764301f49e1b7b05627997c93fc944561cfc65c13e0ca",
   "claims": [
     {
       "id": "claim_59497cc7f3f044ed96e27a805c72b37b",
-      "statement": "ECShopX-Java is one multi-module Maven reactor: the root pom.xml declares parent cn.shopex:ecshopx (version ${revision} = 5.5.0) extending spring-boot-starter-parent:3.5.12 with Java 17, lists 53 modules (four infrastructure — ecshopx-bom, ecshopx-common, ecshopx-dispatch, ecshopx-bootstrap — plus 49 business Bundles), and skips the spring-boot-maven-plugin everywhere except ecshopx-bootstrap, where it is re-enabled with mainClass cn.shopex.ecshopx.EcshopxApplication.",
+      "statement": "ECShopX-Java is one multi-module Maven reactor: the root pom.xml declares parent cn.shopex:ecshopx (version ${revision} = 5.5.1) extending spring-boot-starter-parent:3.5.12 with Java 17, lists 53 modules (four infrastructure — ecshopx-bom, ecshopx-common, ecshopx-dispatch, ecshopx-bootstrap — plus 49 business Bundles), and skips the spring-boot-maven-plugin everywhere except ecshopx-bootstrap, where it is re-enabled with mainClass cn.shopex.ecshopx.EcshopxApplication.",
       "evidence": [
         {
           "resource": "repo://ecshopx-bootstrap/pom.xml#L264-L275",
@@ -20,7 +20,7 @@
         },
         {
           "resource": "repo://pom.xml#L6-L22",
-          "version": "repo-lines-v1:sha256:1999f426a0125214c447a9ea9a8f05b1b61e4c79403f46e0ce48902c0476eae8:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYyZDg2OTJjNDcwNGI5Y2Q5ZmMwN2Y5ODNhMDFjYWNlOTI2MjYzZjJjZjJkOGM0M2QzZGQ0NDc3ODQ0NmU4OWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRlZDdhZDljNTA1MTE1MTA4MmY4MDFlNDBjZTNkZjE2ZGY5MWVhOThmMzlmM2MyOTgzZDZhZjRiODc2NmEzNDUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM5OGMzN2Q5M2QwNWZkYWY1MjYxYjkwNzg3YWU2MzFjODhkMzIyMmQwZGE1YWRkZGU2NWJiMDU4ZjVlMzZhMWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRhM2VjZjYyMjdkMDFhMTJlNWE2M2UyOTVjMGJjODYyN2QyM2QyMzlhNTkxMjQ1YjFkYWJjMjY1YmVkMzQwNTgifQ"
+          "version": "repo-lines-v1:sha256:a8f8bbc555680decddac20f4c65613bca8d588d474cdd0dec1d74ad9515ca105:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYyZDg2OTJjNDcwNGI5Y2Q5ZmMwN2Y5ODNhMDFjYWNlOTI2MjYzZjJjZjJkOGM0M2QzZGQ0NDc3ODQ0NmU4OWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRlZDdhZDljNTA1MTE1MTA4MmY4MDFlNDBjZTNkZjE2ZGY5MWVhOThmMzlmM2MyOTgzZDZhZjRiODc2NmEzNDUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM5OGMzN2Q5M2QwNWZkYWY1MjYxYjkwNzg3YWU2MzFjODhkMzIyMmQwZGE1YWRkZGU2NWJiMDU4ZjVlMzZhMWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRhM2VjZjYyMjdkMDFhMTJlNWE2M2UyOTVjMGJjODYyN2QyM2QyMzlhNTkxMjQ1YjFkYWJjMjY1YmVkMzQwNTgifQ"
         }
       ]
     },
@@ -401,10 +401,34 @@
           "version": "repo-lines-v1:sha256:cdb1e522b0bbd4ef27dd35593745fec0ab2ce38f00986a304f2762f5dc408dad:eyJzZWxlY3RlZExpbmVDb3VudCI6MzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMwYWYxOWM3MmU1ZjAzOGNjZWJmYjFkNGJkNDk4OWFkMTQ4YzI0MDMyNjRjOGRhNjUzNDZkNmE5Mzc1YWViYmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImMwNmIzMjQyOWJkNDE3ZmIxMTg0MTJjMDVjN2VmMzI5N2FlODYyZTQ5YmYzZDcwZmQ1ZmRlY2QxMjY1ZmEwNTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhiMTc2MzgyNTJiYjk5MWIwZjllODY2MDA2NmU0OWM3YTg2NDk2NmI3ZGE5ZGIyOThkZTc4ZjMxNDU1MDVkNjIifQ"
         }
       ]
+    },
+    {
+      "id": "claim_bdbc19a293094a42bf245428f1c3c1f3",
+      "statement": "PlatformItemsDeleteService.deleteCore purges operator carts via operatorCartCleanupService.deleteByCompanyIdAndItemIds(companyId, itemIds) before deleting the SKU/item-store/attribute rows, and publishes itemDeleteEventDispatchPublisher.publishAfterCommit(eventPayload) only after all repository deletes complete.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/PlatformItemsDeleteService.java#L84-L131",
+          "version": "repo-lines-v1:sha256:c08a59fe96fae7921d58da0bf438ddbd2845fcd00d50ead7aac19b2c4f46201c:eyJzZWxlY3RlZExpbmVDb3VudCI6NDgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk0YWNkNjg1NTU5NDY2NDE3NzllOTA1Y2YwODMyYTYyMDRlYTNmODllNDQyYzhjMmQxNjgyOTE3NjE4MTVjZDUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZmZWU5NWM0OGUzNWRjMmEyOWU1NGI2ZmViMzE4Mzk2NGY1ZTMzMmY1ZGU5MWYzM2Y0OGI0Y2JlZWE5YzM0MWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjE5NzkwNjE4MzQwZWJlZjU2YTgxYWE1ZjBhYWJjMGIxYjZkNjU1MmZmNWYyNmM2MDY4MTJmMTgyOGM3OTcyODQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_79904a0c9b264277a7dd5973738aeed3",
+      "statement": "The store-cashier member-readiness endpoint POST /api/v1/operator/member/ready (OperatorStoreMemberController.postReady in ecshopx-companys, @Activated routeAlias companys.operator.member.ready) delegates to OperatorStoreMemberReadinessService.ensureOfflineMemberAtStore(companyId, distributorId, userId) in ecshopx-shuyun, which skips cleanly when the company's Shuyun open-platform config is disabled or ineligible and otherwise registers the member offline via member.register.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/api/admin/v1/OperatorStoreMemberController.java#L33-L70",
+          "version": "repo-lines-v1:sha256:824a320afe2c8c321f3dada500c7f79eab5682961b73d5beece6d1b6c396fbe7:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM5ZjY4MDE0NmZmMmU1ZGRiZWY0OTJhNTE5NjZlYjdkNjJkOGIxNTgyNDRlZWY2ZTQzMDEzZWY3MmVkYzdlYzkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ1MzFjZjY1MDI4Y2VkMTYzYzQwMDE2NmI2Y2EzYmU1MzNhOWM3MDMwN2U0MjUxNTI2Yjc5MWRmNDgxOGJjZTciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAzMGRjY2I2OWY1NGZmNGI0OGJlZjg3MDMwZTg3MTU2NTlhNGUwYzNiODI3ZTA2NTc3NmExMTQ1ZTRkYjY5MjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ4Y2E0NmM2ZTNkYjQ5OGUzOTRkOGY4ZGYxNzM3OGQ2OGFmYjBmMTg1NGViYzk4YjhlYzQ4MjVhNTQ0MjM4OTcifQ"
+        },
+        {
+          "resource": "repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/service/openplatform/OperatorStoreMemberReadinessService.java#L30-L80",
+          "version": "repo-lines-v1:sha256:8dadbcebd800350ed50c41c7a232054f72c8fcfaa8f46f2dacc1c65bb8d5b025:eyJzZWxlY3RlZExpbmVDb3VudCI6NTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc1N2NjN2Q0NmE2ODE5MWZmMDY4NWM1YjRlN2YwNGFiMzJiMTUxNDRjMmQ0OGI3MmIyNjg2NzM2OWFkNDYzOGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU3Y2JkMWE5MjFmMzg2MDI0Yjc3N2M4YTk1MjY4YmUxZjFmN2VjMGE3NjI0M2ZlYmE0YjVmMGNkMjE1N2YzMDMifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.9.0",
-    "at": "2026-11-09T03:34:48.355Z"
+    "at": "2026-11-09T17:09:44.795Z"
   }
 }

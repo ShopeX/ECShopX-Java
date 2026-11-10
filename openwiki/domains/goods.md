@@ -36,6 +36,8 @@ sources:
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/operatorcart/OperatorCartFastBuyFacade.java
   - id: openwiki-source-23521877b190e50eccec4c0a
     resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/api/admin/v1/OperatorCartController.java
+  - id: openwiki-source-d615d35129728ef237866431
+    resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/operatorcart/OperatorCartCleanupService.java
   - id: openwiki-source-d3fc99a2ed9386c1382db86d
     resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/operatorcart/OperatorFastBuyStockValidator.java
   - id: openwiki-source-fb11e56e003a1604d7d9ab7a
@@ -140,6 +142,8 @@ sources:
     resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/keywords/GoodsKeywordsWriteService.java
   - id: openwiki-source-78f76a52c291312bf7fb5c68
     resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/ome/OmeItemsFromOmePagedSyncRunner.java
+  - id: openwiki-source-08ff5f6cd6e732ced25d5918
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/operatorcart/OperatorCartDataListFacadeImpl.java
   - id: openwiki-source-6d42ce597e8782d354259630
     resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/operatorcart/OperatorCartFastBuyFacadeImpl.java
   - id: openwiki-source-e9dc6f7af94fb10be75c468e
@@ -176,6 +180,8 @@ sources:
     resource: repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/service/items/ItemsBatchUpdateStoreOrchestratorSupplierAuditTest.java
   - id: openwiki-source-11063aa1b259c6be4917558c
     resource: repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/service/items/ItemsUpdateOrchestratorDistributorSyncTest.java
+  - id: openwiki-source-3a9dcea26ced98e99c49cd90
+    resource: repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/service/items/PlatformItemsDeleteServiceItemDeleteEventPublishProbeTest.java
   - id: openwiki-source-e01da6476a3e75c45d854ba1
     resource: repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/service/items/SupplierItemsAddServiceSyncPlatformIfNeededTest.java
   - id: openwiki-source-84ae714fd4b33a8f08f702aa
@@ -214,10 +220,10 @@ sources:
     resource: repo://ecshopx-supplier/src/main/java/cn/shopex/ecshopx/supplier/service/SupplierItemBatchSyncToPoolService.java
   - id: openwiki-source-04b4e069925a03b744d9bb2f
     resource: repo://ecshopx-theme/src/main/java/cn/shopex/ecshopx/theme/service/PagesTemplateWidgetItemsService.java
-generated: { by: "openwiki/0.9.0", at: "2026-11-08T17:14:16.576Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-09T17:09:44.795Z" }
 verified:
   - by: openwiki/0.9.0
-    at: 2026-11-08T17:14:16.576Z
+    at: 2026-11-09T17:09:44.795Z
 ---
 
 # Goods Domain (ecshopx-goods)
@@ -338,7 +344,7 @@ Caption: the item create flow — permission gating, supplier-vs-platform routin
 
 * **Update** — `PUT /items/{item_id}` reuses the gate (`validateBeforeUpdate`) and `GoodsItemsCreateParamValidator.validateForUpdate` (name/pics/sort required; `normal` items require freight template + brand; supplier goods require `audit_status`), then `ItemsUpdateOrchestrator.updateItems` branches: supplier operator → `SupplierItemsAddService` with audit reset to `submitting` (unless already `processing`); platform operator editing a supplier good (`supplier_id>0` in body) → supplier add when `audit_status=approved`, then `SupplierItemsReviewGoodsService.reviewGoods`; plain platform good → platform add + `syncGoods`. The branch exclusivity is pinned by `ItemsUpdateOrchestratorDistributorSyncTest` (supplier paths never call `syncGoods`).
 * **Audit** — `PUT /audit/items` → `ItemsAuditUpdateService.auditItems` writes `audit_status`/`audit_reason` by a `goods_id` clause that accepts null/single/list semantics.
-* **Delete** — `ItemsDeleteOrchestrator.delete` routes by `operator_type`. `PlatformItemsDeleteService.deleteCore` verifies the row and the queried `distributor_id` match, expands multi-spec to all sibling SKUs (by `default_item_id`), deletes per SKU the `items` row + Redis `item_store` key + attribute rows, then rel-cats (default SKU), services rel-type, `distributor_items`, member prices and barcodes, and publishes `ItemDeleteEvent` **after commit** (payload: `item_id`, `company_id`, `del_ids`, full `item_info` snapshot).
+* **Delete** — `ItemsDeleteOrchestrator.delete` routes by `operator_type`. `PlatformItemsDeleteService.deleteCore` loads the row company-scoped (`删除商品信息有误` when missing) and refuses a mismatched `distributor_id` query (`店铺商品信息有误，不可删除`), expands multi-spec to all sibling SKUs (by `default_item_id`, falling back to the row itself when the sibling query comes back empty), and assembles the `ItemDeleteEvent` payload (`item_id`, `company_id`, `del_ids`, full `item_info` snapshot) **before any delete runs**. The deletes then execute in a fixed order inside the one transaction: first `OperatorCartCleanupService.deleteByCompanyIdAndItemIds` purges the affected `operator_cart` rows (the companys bundle's shopadmin cart table) so a deleted SKU can never linger in an operator cart; then per SKU the `items` row + Redis `item_store` key + attribute rows; then rel-cats (default SKU), services rel-type, `distributor_items`, member prices and barcodes; and only at the end does `itemDeleteEventDispatchPublisher.publishAfterCommit` schedule the event **after commit**.
 * **Supplier-linked sync.** When a supplier edits its master data, `SupplierItemsAddService.syncPlatformIfNeeded` propagates a PHP-whitelist field patch — `store`, `pics`, `other_product_materials`, `approve_status`, `item_name`, optional `cost_price` (yuan→fen, non-negative only)/`start_num`, and an audit reset (`audit_reason=""`, `audit_date=NULL`) when the edit carries `submiting`/`submitting`/`processing` — to every `items` row linked by `supplier_item_id` and refreshes each linked Redis store. It is skipped unless the goods' `supplier_items.is_sync_platform` flag is on (`isSyncPlatformEnabledForGoods`), and the surrounding `addItemsTransactional` resets that flag to `0` afterwards, so the platform pool owns the rows until the next explicit `syncToPool`. Pinned by `SupplierItemsAddServiceSyncPlatformIfNeededTest`.
 * **Supplier review and sync are split.** `SupplierItemsReviewGoodsService` implements three common interfaces the **supplier bundle** drives: `SupplierItemsReviewGoodsExecutor.reviewGoods` (called from `SupplierItemBatchReviewService`, and by `ItemsUpdateOrchestrator` when a platform operator audits a supplier good) now only writes `audit_status`/`audit_reason`/`audit_date` across the supplier `goods_id` — even an `approved` verdict no longer syncs rows into the platform pool. All three entrypoints first verify the supplier row belongs to the caller's company and reject foreign rows with `商品不存在或无权`. Pool copies happen exclusively through the explicit `SupplierItemsSyncToPoolExecutor.syncToPool` (driven by the supplier bundle's `SupplierItemBatchSyncToPoolService`), which requires the row to already be `approved` (`仅审核通过的商品可同步到商品池`), inserts/updates one pool `items` row per supplier SKU (with item-store seeding and pool-scope barcodes), deletes vanished SKUs, stamps `is_sync_platform=1`, and — under the `platform` product model — re-syncs every shop that previously copied the goods. `SupplierItemsSyncToShopExecutor.syncToShop` is likewise restricted to `platform` product-model companies, requires `approved`, and writes shop-scoped `items` rows plus dual-written shop barcode rows (`SupplierItemsReviewGoodsServiceAuditSyncSplitTest`, `SupplierItemsReviewGoodsServiceShopBarcodeDualWriteTest`).
 * **Batch status** — `PUT /itemstatusupdate` expands a truthy `query` filter into distinct `goods_id`s, then `GoodsItemsBatchApproveStatusService.updateItemsStatus`: `onsale` rejects supplier-controlled goods (`供应商商品不可售`) and prescription drugs unless the pharma-industry setting is on and their audit is not pending (`instock` skips those checks — deliberate); each goods gets `updateApproveStatusByCompanyAndGoodsId` plus an enqueue of the batch-status event through `job:74` (slow queue). The `job:74` handler republishes `EVENT_ITEM_BATCH_EDIT_STATUS`, whose listeners are the third-party marketing-center push **and** the goods-bundle's own `ItemsApproveStatusSyncDispatchListener`, which cascades the status to `distributor_items`.
@@ -429,11 +435,13 @@ The **companys** bundle owns the operator (shopadmin) cart surface — `POST /ap
 | facade (common interface) | goods implementation | purpose |
 | --- | --- | --- |
 | `OperatorCartSkuLoadFacade` | `OperatorCartSkuLoadFacadeImpl` | load SKU snapshots (`OperatorCartSkuRowDto`), shop-SKU replace, member prices, tag ids, coupon scopes, single-SKU add resolution |
-| `OperatorCartDataListFacade` | `OperatorCartDataListFacadeImpl` | operator cart list/checkout data (invalid-cart rows are unchecked in place) |
+| `OperatorCartDataListFacade` | `OperatorCartDataListFacadeImpl` | operator cart list/checkout data, with lazy cleanup — cart rows whose SKUs vanished are deleted from `operator_cart` via `OperatorCartCleanupService` |
 | `OperatorCartFastBuyFacade` | `OperatorCartFastBuyFacadeImpl` | shopadmin cloud fast-buy bucket: add / list / revalidate / clear |
 | `OperatorCartScanBarcodeFacade` | `OperatorCartScanBarcodeFacadeImpl` | shop-scoped barcode → item_id for scan-add |
 
 `OperatorCartSkuRowDto` is the shared snapshot currency: item ids, fen prices, `store`, the delivery-dimension flags `isTotalStore`/`logisticsStore`/`distributorStore` (each nullable with documented "unknown" semantics), `specialType` (mirrors `items.special_type`, defaults `normal`), and the marketing fields (tags, brand, medicine flags, crossborder tax) the coupon/promotion layers need.
+
+`OperatorCartDataListFacadeImpl.getCartDataList` is also the **lazy cleanup** counterpart of the delete-time purge: it loads the operator's rows for the `(company_id, operator_id, distributor_id)` scope (checked-only when `isSubmit`), resolves them through `loadSkus`, and when no SKU survives it throws `商品已失效` on submit or deletes all loaded cart rows and returns the empty body; likewise, after the valid-cart handling + format/total chain, rows that landed in `invalid_cart` are physically removed by `OperatorCartCleanupService.deleteByCartIds`. The eager delete-time purge and this lazy list-time sweep share one companys-bundle service, so `operator_cart` never surfaces a SKU the goods bundle has already deleted.
 
 `OperatorCartSkuLoadFacadeImpl.resolveSkuForOperatorCartAdd` is the single add-time resolver shared by the fast-buy bucket and the regular operator-cart add (`OperatorCartAddDataService` in companys): platform branch (`distributor_id=0` or `platform` product model) forces `is_total_store=true`; a shop branch reads `distributor_items` — `is_total_store=false` swaps in the shop's store/price and records `distributor_store`, `is_can_sale=false` zeroes the store; rows the shop neither owns (`items.distributor_id` equals the shop) nor has a relation for are refused with `无效商品`; supplier goods always get their `logistics_store` and a combined effective store via `ItemLogisticsStoreEnricher`.
 
@@ -596,6 +604,7 @@ Barcodes deserve their own note: `ItemsBarcodeRepository.saveBarcode` deletes th
 * **Money is fen.** All write paths convert yuan input to integer fen (`moneyToFen` in `NormalItemTypeHandler`, `moneyFen` in supplier add) before persistence.
 * **Post-commit only after real commit.** `ItemAddEvent`, `ItemDeleteEvent` and the category-add event are registered as `TransactionSynchronization.afterCommit` (or run immediately when no synchronization is active, e.g. in tests). `ItemCreateEvent` is the intentional in-transaction exception.
 * **SKU-group integrity.** Create/update unify `goods_id` + `default_item_id` + `is_default` across siblings; delete cascades across all sibling SKUs and their satellites in one transaction; the unique `(company_id, distributor_id, item_bn)` index is the backstop.
+* **A deleted SKU never lingers in an operator cart.** Delete purges `operator_cart` rows eagerly (`OperatorCartCleanupService.deleteByCompanyIdAndItemIds`, first step of `deleteCore`, inside the same transaction), and the operator-cart list path lazily removes rows whose SKUs no longer resolve (`商品已失效` on submit).
 * **Barcode uniqueness is per shop**, enforced by application-level check (delete-then-insert), pinned by `ItemsBarcodeRepositoryShopScopedTest`.
 * **Pharma gating.** Prescription drugs cannot go on sale without the pharma-industry setting and a passed medicine audit; medicine submits go through `job:72` to kuaizhen580 with audit results written back to `items_medicine`.
 * **ERP failures never break the write path** — JST/WDT/OME jobs are async bus messages; the JST inventory persist is idempotent per item (store recompute from a full snapshot).
@@ -627,7 +636,7 @@ Barcodes deserve their own note: `ItemsBarcodeRepository.saveBarcode` deletes th
 * `WxappH5DistributorCartPromotionServiceScopeBoundTest` — distributor cart promotion scope (tag-scope vs specified-SKU fallback).
 * `WxappScanCodeAddCartServiceDistributorBarcodeTest` — shop-scoped barcode resolution.
 * `PlatformItemsAddServiceItemCreatePublishUpdateParamsWireTest` — `ItemCreateEvent` published exactly once, `ItemAddEvent` scheduled per SKU.
-* `PlatformItemsDeleteServiceItemDeleteEventPublishProbeTest`, `ItemsUpdateOrchestratorDistributorSyncTest`, `SupplierItemsAddServiceSyncPlatformIfNeededTest`, `SupplierItemsReviewGoodsService*Test` — delete/update/supplier flows and event wiring.
+* `PlatformItemsDeleteServiceItemDeleteEventPublishProbeTest` — the delete flow: operator-cart purge invoked with the company + SKU ids, `ItemDeleteEvent` published exactly once via `publishAfterCommit` with the `item_id`/`company_id`/`del_ids`/`item_info` payload shape, for both default and shop-scoped (`distributor_id` query) deletes. Plus `ItemsUpdateOrchestratorDistributorSyncTest`, `SupplierItemsAddServiceSyncPlatformIfNeededTest`, `SupplierItemsReviewGoodsService*Test` — update/supplier flows and event wiring.
 * `ItemsBatchUpdateStoreOrchestratorSupplierAuditTest` / `…ScopeTest` — supplier batch store also stamps `audit_status=processing`; the single-item platform path only seeds Redis when the company-scoped update hits.
 * `ItemsTagsQueryServiceCompanyScopeTest`, `GoodsKeywordsQueryServiceCompanyScopeTest`, `GoodsKeywordsWriteServiceCompanyScopeTest`, `ItemsGroupGetGroupItemsServiceCompanyScopeTest` — the ECX-10946/47/48 (and ECX-10889) tenant-isolation pins for tag detail, keyword detail/write and group-item pages.
 * `DistributorGoodsSyncServiceAddDistributorItemsDispatchTest` — auto-sync fan-out and job enqueue.

@@ -56,15 +56,15 @@ sources:
     resource: repo://readme.md
 verified:
   - by: openwiki/0.9.0
-    at: 2026-11-08T17:14:16.576Z
-generated: { by: "openwiki/0.9.0", at: "2026-11-08T17:14:16.576Z" }
+    at: 2026-11-09T17:09:44.795Z
+generated: { by: "openwiki/0.9.0", at: "2026-11-09T17:09:44.795Z" }
 ---
 
 # Deployment: Compose, Full Dev, and Lite Offline
 
 ECShopX-Java ships as **one Spring Boot jar** (`ecshopx-bootstrap`) that must be surrounded by MySQL, Redis and an XXL-JOB admin console before it does anything useful. The repository's deployment story is therefore entirely about assembling that neighbourhood reproducibly, and it does so through three operator entrypoints that all converge on the same runtime topology (see [System Overview](../architecture/overview.md)):
 
-* **Full development** — `./dev-setup.sh` (or `bash install.sh --full`) clones and builds the three sibling frontend repositories, imports the runtime images, and starts `docker-compose.dev.yml`, whose `ecshopx-app` image is **built on the fly** by a Maven stage in `docker/Dockerfile.app` (project version **5.5.0**, set as `${revision}` in the root `pom.xml`).
+* **Full development** — `./dev-setup.sh` (or `bash install.sh --full`) clones and builds the three sibling frontend repositories, imports the runtime images, and starts `docker-compose.dev.yml`, whose `ecshopx-app` image is **built on the fly** by a Maven stage in `docker/Dockerfile.app` (project version **5.5.1**, set as `${revision}` in the root `pom.xml`).
 * **Lite offline** — `docker-lite/pack.sh` (root wrapper `./pack.sh`) produces a customer tarball containing the prebuilt jar and prebuilt frontend artifacts; `docker-lite/deploy.sh` (root wrapper `./deploy.sh`, or `bash install.sh --lite`) starts `docker-lite/docker-compose.yml` **without ever invoking Maven, npm or pnpm on the target machine**.
 * **Self-hosted jar** — `./mvnw -pl ecshopx-bootstrap -am package` then `java -jar … --spring.profiles.active=local`; outside the scope of this page (covered by [Configuration](configuration.md)).
 
@@ -237,7 +237,7 @@ The comparison from `docker-lite/README.md`:
 3. **Admin**: `npm run build:b2c` → renamed `dist-b2c`, then `build:bbc` → `dist-bbc` (both modes ship in one tarball).
 4. **Mobile**: `APP_PLATFORM=standard npm run build:h5` → `dist-b2c`, `APP_PLATFORM=platform` → `dist-bbc` (each contains `h5/`).
 5. **PC**: `pnpm install --config.dangerouslyAllowAllBuilds=true && pnpm build` under `CI=true` and `NUXT_TELEMETRY_DISABLED=1` → `.output`.
-6. **Validate + tar.** `release_validate_prebuilt_artifacts` checks `dist-b2c/index.html`, `dist-bbc/index.html`, `dist-{b2c,bbc}/h5`, `.output/server/index.mjs` **and** `.output/server/node_modules` (Nitro's production deps must ship or SSR fails). `release_build_tarball` reads the version (currently **5.5.0**, from `${revision}`) from `pom.xml` with `sed` only — the comment is explicit that lite tooling must not invoke host `mvn`/`java` — resolving CI-friendly `${revision}` placeholders, and writes `ecshopx-java-<version>.tar.gz` containing the **four project roots** with excludes `/node_modules/`, `.git/`, `*.log`, `.DS_Store`, `._*`, `dist-release`, existing `ecshopx-*.tar.gz`, `.env`, and (unanchored) `target/`. The rooted `/node_modules/` exclude is deliberate: it strips project-root deps but keeps `ECShopX-Java_Web/.output/server/node_modules`. The transient `dist` dirs are dropped (only `dist-b2c`/`dist-bbc` ship), and packaging fails if the jar or `docker-lite/docker-compose.yml` are missing from the staging tree.
+6. **Validate + tar.** `release_validate_prebuilt_artifacts` checks `dist-b2c/index.html`, `dist-bbc/index.html`, `dist-{b2c,bbc}/h5`, `.output/server/index.mjs` **and** `.output/server/node_modules` (Nitro's production deps must ship or SSR fails). `release_build_tarball` reads the version (currently **5.5.1**, from `${revision}`) from `pom.xml` with `sed` only — the comment is explicit that lite tooling must not invoke host `mvn`/`java` — resolving CI-friendly `${revision}` placeholders, and writes `ecshopx-java-<version>.tar.gz` containing the **four project roots** with excludes `/node_modules/`, `.git/`, `*.log`, `.DS_Store`, `._*`, `dist-release`, existing `ecshopx-*.tar.gz`, `.env`, and (unanchored) `target/`. The rooted `/node_modules/` exclude is deliberate: it strips project-root deps but keeps `ECShopX-Java_Web/.output/server/node_modules`. The transient `dist` dirs are dropped (only `dist-b2c`/`dist-bbc` ship), and packaging fails if the jar or `docker-lite/docker-compose.yml` are missing from the staging tree.
 7. `--with-images` additionally prefetches the CDN image bundle into `docker-lite/images/` so the tarball can carry it.
 
 ### `deploy.sh` — on the customer machine

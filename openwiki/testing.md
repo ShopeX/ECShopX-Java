@@ -76,6 +76,8 @@ sources:
     resource: repo://ecshopx-common/src/test/java/cn/shopex/ecshopx/common/config/LanguePropertiesTest.java
   - id: openwiki-source-8ac2f8d4b8342e0e9c44b7a3
     resource: repo://ecshopx-companys/src/test/java/cn/shopex/ecshopx/companys/domain/PosStoreAccountTableContractTest.java
+  - id: openwiki-source-a3f1e5e124e30d6a0667f6be
+    resource: repo://ecshopx-companys/src/test/java/cn/shopex/ecshopx/companys/service/operatorcart/OperatorCartCleanupServiceTest.java
   - id: openwiki-source-b46999eafd87f9221c90e9f4
     resource: repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/integration/OrderProcessLogPublishPortImpl.java
   - id: openwiki-source-bcc5391c60f8a5033bd2cf22
@@ -90,6 +92,10 @@ sources:
     resource: repo://ecshopx-espier/src/test/java/cn/shopex/ecshopx/espier/service/upload/EspierGoodsMarketingStyleSyncSupportRowLimitTest.java
   - id: openwiki-source-a671702ba5761b1e52cdaafb
     resource: repo://ecshopx-espier/src/test/java/cn/shopex/ecshopx/espier/service/upload/EspierUploadExcelSheetReaderLimitTest.java
+  - id: openwiki-source-3a9dcea26ced98e99c49cd90
+    resource: repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/service/items/PlatformItemsDeleteServiceItemDeleteEventPublishProbeTest.java
+  - id: openwiki-source-25bf8cef1a2c4f8f8106f987
+    resource: repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/service/ItemsCategorySaveServiceApiConvergenceDispatchTest.java
   - id: openwiki-source-4c1a598ea111a3cf1912ad1e
     resource: repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/service/ItemsProfitSaveServiceScopeTest.java
   - id: openwiki-source-fdde77b5e0fe122a5896b993
@@ -142,6 +148,8 @@ sources:
     resource: repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/auth/InboundSignedCallbackReplayGuard.java
   - id: openwiki-source-8820a9e01de0795da2508b07
     resource: repo://ecshopx-shuyun/src/test/java/cn/shopex/ecshopx/shuyun/auth/InboundSignedCallbackReplayGuardTest.java
+  - id: openwiki-source-e72414cd4a2db3d24239eee5
+    resource: repo://ecshopx-third-party/src/test/java/cn/shopex/ecshopx/thirdparty/service/marketingcenter/OrderAddPushMarketingCenterOnNormalOrderAddProcessorTest.java
   - id: openwiki-source-19d2b0be785f41a69b8d89b4
     resource: repo://ecshopx-work-wechat/src/test/java/cn/shopex/ecshopx/workwechat/service/WorkWechatVerifyDomainFileServiceCompanyScopeTest.java
   - id: openwiki-source-92aaf101516e2d92db5fa775
@@ -160,8 +168,8 @@ sources:
     resource: repo://readme.md
 verified:
   - by: openwiki/0.9.0
-    at: 2026-11-08T17:14:16.576Z
-generated: { by: "openwiki/0.9.0", at: "2026-11-08T17:14:16.576Z" }
+    at: 2026-11-09T17:09:44.795Z
+generated: { by: "openwiki/0.9.0", at: "2026-11-09T17:09:44.795Z" }
 ---
 
 # Testing Conventions and Verification
@@ -175,7 +183,7 @@ The repository-level operating principle (from `AGENTS.md`): **prefer the narrow
 * **JUnit 5 + Mockito + AssertJ**, provided by `spring-boot-starter-test` in `test` scope in each module's POM. Some tests use plain `org.junit.jupiter.api.Assertions`, others AssertJ's `assertThat*`; both styles coexist.
 * **No Spring context for the vast majority of tests.** Services are instantiated with `new` and mocks; controllers are driven through `MockMvcBuilders.standaloneSetup(...)`. The **only `@SpringBootTest` in the entire repository** is `EcshopxApplicationTests.contextLoads` in bootstrap — a full-context smoke test that expects the runtime environment from `application.properties` (MySQL on `127.0.0.1:3306`, Flyway enabled), so it is not part of the everyday unit-test loop.
 * **No Testcontainers, no `@DataJpaTest` / `@JdbcTest` / `@ActiveProfiles`, no `@WebMvcTest`** anywhere. There is no Surefire/Failsafe/JaCoCo plugin configuration in any POM — the parent POM configures only `spring-boot-maven-plugin` (skipped except in bootstrap) and `flatten-maven-plugin` — so `./mvnw test` runs the default Surefire behavior over `*Test` classes.
-* **H2 exists only as a `test`-scoped dependency in three modules**: `ecshopx-members`, `ecshopx-goods`, `ecshopx-third-party`. Everywhere else, MyBatis-Plus mappers are Mockito mocks.
+* **H2 exists only as a `test`-scoped dependency in three modules**: `ecshopx-members`, `ecshopx-goods`, `ecshopx-third-party`. Everywhere else, MyBatis-Plus mappers are Mockito mocks. Even there H2 is mostly a transaction-manager prop with no tables — only third-party's marketing-center processor tests create real (cut-down) tables against it.
 * Redis (`StringRedisTemplate`), `RabbitTemplate`, HTTP clients, and third-party SDKs are always mocked.
 
 ## The naming taxonomy
@@ -219,7 +227,7 @@ Because these tests live in `ecshopx-bootstrap`'s test tree, they can see both t
 
 ### How AFTER_COMMIT timing is pinned: the fake transaction manager
 
-Publish probes cannot use a real database transaction, so they install a hand-rolled `PlatformTransactionManager` whose `getTransaction` calls `TransactionSynchronizationManager.initSynchronization()` and whose `commit` iterates the registered synchronizations and calls each `afterCommit()` before clearing (see `syncFiringTxManager()` in `OfflinePaymentDoCheckTradeFinishCanceledRefundOplPublishProbeTest`, or the Mockito-stubbed `newCommitFiresAfterSynchronizationsTxManager()` in `AftersalesAdminApplyOrderProcessLogDispatchPublishProbeTest`). The service under test is then driven through a `TransactionTemplate` over that manager, and the test asserts `publishEvent` / `dispatchJob` fired **only** after commit — e.g. `ItemAddEventDispatchPublisherImplAfterCommitTest` proves zero facade interactions inside `tt.execute` and exactly one publish with the exact options tuple afterwards, plus the no-transaction fallback (immediate publish). An `@AfterEach` clears `TransactionSynchronizationManager` so state never leaks between tests.
+Publish probes cannot use a real database transaction, so they install a hand-rolled `PlatformTransactionManager` whose `getTransaction` calls `TransactionSynchronizationManager.initSynchronization()` and whose `commit` iterates the registered synchronizations and calls each `afterCommit()` before clearing (see `syncFiringTxManager()` in `OfflinePaymentDoCheckTradeFinishCanceledRefundOplPublishProbeTest`, the Mockito-stubbed `newCommitFiresAfterSynchronizationsTxManager()` in `AftersalesAdminApplyOrderProcessLogDispatchPublishProbeTest`, or the inline `mock(PlatformTransactionManager.class)` + `doAnswer` stubs in `PlatformItemsDeleteServiceItemDeleteEventPublishProbeTest`, where `@AfterEach` clears any synchronization the fake manager left active). The service under test is then driven through a `TransactionTemplate` over that manager, and the test asserts `publishEvent` / `dispatchJob` fired **only** after commit — e.g. `ItemAddEventDispatchPublisherImplAfterCommitTest` proves zero facade interactions inside `tt.execute` and exactly one publish with the exact options tuple afterwards, plus the no-transaction fallback (immediate publish). An `@AfterEach` clears `TransactionSynchronizationManager` so state never leaks between tests.
 
 The same fake-transaction idiom pins a **dispatch publish after commit** in a non-probe class: `AdapayDepositTradeRechargeCallbackServiceSmsDispatchTest` drives the real callback service through a `TransactionTemplate` over a Mockito-stubbed manager (`getTransaction` → `initSynchronization()`, `commit` → fire each `afterCommit()` then `clear()`), and asserts `verifyNoInteractions(publisher)` **inside** the transaction body plus exactly one `publishRechargeSendSmsNotice(10L, 20L, "13900001001", 8000L)` after commit; a second test proves a non-`SUCCESS` status never touches the publisher. This is the "dispatch probe asserting bus publish after commit" shape applied to a callback side effect rather than a named `*PublishProbeTest`.
 
@@ -329,7 +337,7 @@ The three families are complementary probes of one publish → route → consume
 ## Shared harness idioms
 
 * **`TableInfoHelper.initTableInfo` in `@BeforeAll`.** MyBatis-Plus lambda wrappers (`new LambdaUpdateWrapper<>(Entity.class)`, `Wrappers.lambdaQuery(...)`) need registered `TableInfo`, which normally comes from a live `SqlSessionFactory`. Unit tests register it manually: `TableInfoHelper.initTableInfo(new MapperBuilderAssistant(new MybatisConfiguration(), ""), OfflinePayment.class)` for each entity the mocked mapper will be called with. Without this, the service throws when building the wrapper — a classic new-test failure.
-* **`@SpringJUnitConfig` + hand-written `@Configuration` + H2.** Where a service genuinely needs Spring transaction proxies (`@Transactional` semantics, after-commit synchronizations via a real transaction manager), the members/goods/third-party families write a test configuration that `@Import`s the real service, declares every mapper/publisher/port as a Mockito `mock()` bean, and backs `@EnableTransactionManagement` with an H2 `EmbeddedDatabaseBuilder` + `DataSourceTransactionManager`. `MemberAccountServiceDispatchIntegrationTestConfiguration` is the reference; the H2 database holds no tables — it exists purely so the transaction manager is real.
+* **`@SpringJUnitConfig` + hand-written `@Configuration` + H2.** Where a service genuinely needs Spring transaction proxies (`@Transactional` semantics, after-commit synchronizations via a real transaction manager), the members/goods/third-party families write a test configuration that `@Import`s the real service, declares every mapper/publisher/port as a Mockito `mock()` bean, and backs `@EnableTransactionManagement` with an H2 `EmbeddedDatabaseBuilder` + `DataSourceTransactionManager`. `MemberAccountServiceDispatchIntegrationTestConfiguration` is the reference; its H2 database holds no tables — it exists purely so the transaction manager is real. Two related H2 idioms skip the Spring container entirely: goods' `ItemsCategorySaveServiceApiConvergenceDispatchTest` builds a bare `DataSourceTransactionManager` over a schema-less embedded H2 in `@BeforeEach` (again only to get a real transaction manager), while third-party's marketing-center processor tests (e.g. `OrderAddPushMarketingCenterOnNormalOrderAddProcessorTest`) are the **only** tests that actually create tables — they `CREATE TABLE` a cut-down `orders_normal_orders` shape and exercise the processor's `JdbcTemplate` reads for real.
 * **Inline in-memory dispatch stacks.** `MemberAccountServiceCreateMemberLocalAutoRegisterShopexCrmDispatchFlowTestConfiguration` (`@TestConfiguration`) assembles `InMemoryDispatchRegistry` (with the real listener registered), `DispatchCore.asyncReady` whose REDIS driver appends to a shared `List<DispatchMessage>`, a `DispatchFanOutPlanner`, a `DispatchFacade`, and a `@Primary` publisher bean — letting a `@SpringJUnitConfig` service test assert real captured envelopes without bootstrap's ~200 registration configs (and without duplicate-listener registration errors).
 * **`@TestPropertySource(properties = "ecshopx.h5.encrypt-sensitive-data=false")`.** `MemberAccountService` reads this flag to decide whether to encrypt mobile numbers; publish probes set it to `false` so the captured payload contains the plain fixture mobile and can be asserted field-by-field.
 * **`AftersalesTestMessageSource.FALLBACK` — the shared MessageSource test double.** Aftersales validation tests (`AftersalesApplyCheckApplyServiceFreightTest`, `...TopLevelRefundTest`, the bus probes) construct services with this package-private holder's `FALLBACK` constant — an empty `StaticMessageSource` — so message codes fall through to the exception's default text. A test that needs a real translation instead builds its own `StaticMessageSource`, adds the code under a locale, and pins the thread locale with `LocaleContextHolder.setLocale(...)` (reset in `@AfterEach`) — e.g. `pointFreightNotPaid_usesEnglishMessage` resolves `aftersales.apply.freight_point_not_paid` to its English copy.
@@ -374,6 +382,8 @@ Map that to the taxonomy:
 | Aftersales apply-check rules (freight, top-level refund) | `./mvnw -pl ecshopx-aftersales test -Dtest=AftersalesApplyCheckApplyService*Test` |
 | Consume-side envelope / listener wiring | `./mvnw -pl ecshopx-<bundle> test -Dtest=<Event>EventAsyncConsumeTest` (orders) or `...DispatchConsumerRuntimeTest` |
 | Dispatch bus internals | `./mvnw -pl ecshopx-bootstrap test -Dtest=DispatchBus*Test` |
+| Wxapp pre-login auto-register dispatch + side effects | `./mvnw -pl ecshopx-members test -Dtest=MemberAccountServiceCreateMemberLocalAutoRegisterDispatchTest` |
+| Item delete after-commit event + operator-cart purge | `./mvnw -pl ecshopx-goods test -Dtest=PlatformItemsDeleteServiceItemDeleteEventPublishProbeTest` |
 | Whole Bundle | `./mvnw -pl ecshopx-<bundle> test` |
 | Pre-PR gate | `./mvnw -pl <module> -am verify` |
 
@@ -444,7 +454,9 @@ Practical consequences: a green `./mvnw -pl <module> test` proves your units, bu
 | `AlipayNotifyOrderProcessLogEventAsyncConsumeTest` | Consume-side envelope: hand-built message with real listener name on queue `slow`, runtime drives `OrderProcessLogBusService.persistEntitiesMap` once |
 | `AftersalesControllerAdminSendbackDelegationTest` | Controller delegates exclusively to one service; `verifyNoMoreInteractions` over all injected services |
 | `OperatorsGetCredentialsWebSliceTest`, `ShopsSetWxShopsSettingWebSliceTest` | MVC slices: token gate, merged input, Dingo JSON envelope, `InOrder` downstream calls |
-| `MemberAccountServiceCreateMemberLocalAutoRegisterDispatchTest` | `@SpringJUnitConfig` + H2-backed transaction manager + mocked beans: after-commit publish payload of `EVENT_CREATE_MEMBER_SUCCESS`, and negative assertions that the salesperson job is *not* enqueued |
+| `MemberAccountServiceCreateMemberLocalAutoRegisterDispatchTest` | `@SpringJUnitConfig` + schema-less H2-backed `DataSourceTransactionManager` + mocked beans: after-commit publish payload of `EVENT_CREATE_MEMBER_SUCCESS` (plain mobile, openid/appid/source/monitor/inviter fields), the new-member promoter/distribution side effects (`AdminMemberCreatePromoterSideEffectPort.createForNewMember(38L, 901L, mobile, 1L)` + `AdminMemberCreateDistributorUserSideEffectPort.createData(38L, 901L, 310L, 0L, 88L)` with the `shop_rel_member` insert), salesperson-job enqueue gating (channel 1 + non-blank `work_userid`, DM-CRM-open picks the post-DM-create variant), and `never()` on publisher and job on rollback |
+| `PlatformItemsDeleteServiceItemDeleteEventPublishProbeTest` | Item-delete after-commit probe over a Mockito-stubbed fake `PlatformTransactionManager`: the operator-cart purge `OperatorCartCleanupService.deleteByCompanyIdAndItemIds` runs inside the delete flow, and `ItemDeleteEventDispatchPublisher.publishAfterCommit` fires once with the `item_id`/`company_id`/`del_ids`/`item_info` payload — for both the default-distributor and shop-scoped (`distributor_id` query parsed by `LeadingNumberParser`) deletes |
+| `OperatorCartCleanupServiceTest` | Pure `@ExtendWith(MockitoExtension.class)` cleanup-service unit: both delete methods issue one mapper `delete` with a `LambdaQueryWrapper` — the plain-test baseline that the goods delete probe mocks against |
 | `AftersalesApplyCheckApplyServiceFreightTest` | Pure unit shape with mocked read ports and AssertJ: freight validation skips ONLY_REFUND, validates point freight against `freight_fee` (not `freight_point`), and resolves its error messages through a `StaticMessageSource` double (`AftersalesTestMessageSource.FALLBACK` / `LocaleContextHolder`) |
 | `AftersalesApplyCheckApplyServiceTopLevelRefundTest` | Top-level refund fee/point is ignored by apply-check (recomputed per line at the handle layer): raw values above the order line total still pass |
 | `LanguePropertiesTest` | `ApplicationContextRunner` proving `@ConfigurationProperties` validation fails on an unsupported default language |

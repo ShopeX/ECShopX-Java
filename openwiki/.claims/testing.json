@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:d55bf6c2ade154e913d7754ebb0833a3f7bc5fa054fe4c7bbf410c1caf43e3eb",
+  "pageVersion": "sha256:bd806e73be86bdeb7c2aecac0de70873d2ffb7700856ff8f86f7fa6d5f281468",
   "claims": [
     {
       "id": "claim_3d9864ae8e5d4123b40f3da9acfcc8e6",
@@ -103,12 +103,12 @@
           "version": "repo-lines-v1:sha256:33a63a270ae93fe637cd6822e2a91406203a0e58d6167a322495dd0af8413b35:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjA0NzFjNTFlZTVjOWEwZTAxMDc5ZGE5MGJkYjcxZWNiNzZmNmQ0OGI2NjQ4YTUwYWZhNjM3N2Y1MjJhNTRiZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDYwYmFiMDRmMjE5NjU2NmM0ZTRkNDJmNjA2MzcyYzIzNzc4OWM4N2Y2NDdlMzA0NzE5MzY3NzA3YTg4NDQwOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiODkzNDQxYmFjZWY1NmI5ZDMwY2NlMTk0NTdkYzA3OTg2ZWJlYWEwYTVmMTNiYWM5ZGI4MDAxODJjNDZmYzQwMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjIsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMmZhMTQ0NWU4YTMyNjcxYzliMDdlOGVhYzhhZGE2OTJiY2EyNjlkYTBkMGQ3NWRlYzcyYmI0ZjM4Yzc2ZDM4NiJ9"
         },
         {
-          "resource": "repo://ecshopx-members/src/test/java/cn/shopex/ecshopx/members/service/account/MemberAccountServiceCreateMemberLocalAutoRegisterDispatchTest.java#L34-L107",
-          "version": "repo-lines-v1:sha256:3668e6c3c08af0bbbedf9b652f6d52630b1fa3c7de038d513d4e94c0971a8660:eyJzZWxlY3RlZExpbmVDb3VudCI6NzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlkNDI2YzRmMzAxZTVlMDJjYTY0ZjA3NzMxMjZhZmViNDRjYTMxZDE2MzEwZThlNWMyOGE4NmJhYTZjNzMxMTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRmYjQ3NWFmNDI3Mjk5ODcxZjE1ODI1MGQzOWRhNDU1YzM4Y2ExYzEzNTViZjY4YTFhNmUwMDRiMGY3N2U0YTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZjNGRiNjZmOTA0NmRhYjA3ZmRhMWRkNjEwYzFiMGE3MDgzMWY1MTFjNjhiYzI3M2U4ZmE1YjY3ZmJhMzYzZTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY5MGY1YjRkYzA3NmFlY2Q0MGU2YTY2ZWZlOGUwZWJmNjVmY2Q2MDRmOTdkZTczNDNjYjNiNzQ0YWVhYmRkYzAifQ"
+          "resource": "repo://ecshopx-members/src/test/java/cn/shopex/ecshopx/members/service/account/MemberAccountServiceCreateMemberLocalAutoRegisterDispatchTest.java#L38-L48",
+          "version": "repo-lines-v1:sha256:aa7d43dee379f9a6b9be6703d837077377f18baacaa690026f014e83e95822c4:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlkNDI2YzRmMzAxZTVlMDJjYTY0ZjA3NzMxMjZhZmViNDRjYTMxZDE2MzEwZThlNWMyOGE4NmJhYTZjNzMxMTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc5YjNjZTc5M2I4OTAxZjBhZDZjOTFkMmEyNjdjOWZkMjNiMDMxMjAyZTMzZTIyMGQwYWRlZjgzMzBiYWQyNjUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZjNGRiNjZmOTA0NmRhYjA3ZmRhMWRkNjEwYzFiMGE3MDgzMWY1MTFjNjhiYzI3M2U4ZmE1YjY3ZmJhMzYzZTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAxMWMwMDhjNjZjOTA4ZDFlOTY5MzgyMDYyM2ZjNmZlMTU1NjgyNTcxZTdjNzYxZTJmYjE1MzEzN2FmM2E4OGUifQ"
         },
         {
-          "resource": "repo://ecshopx-members/src/test/java/cn/shopex/ecshopx/members/service/account/MemberAccountServiceDispatchIntegrationTestConfiguration.java#L35-L48",
-          "version": "repo-lines-v1:sha256:44a67986a14226eca38105351342dd6f9fbe7d8a0986208d780eb216d7590612:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiMTQ3NjJhYWFkNThkMTM4NDRjZjJlYzU0NzQwYTRkOTdmNWUwN2VlNTE2ZDMyMGQ2MDM2YzFjN2NlNDJkZmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVjZDllMTBhNDI5ZDg3ZDNlMTZlNjMzNjdjNmZiYmEyMmU2NzdmNzZjM2NlMzIwYWQxZGZmYmIzMDdjZTdjYjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjgxY2VlYjdlMTk0YjU0ZjUzODg0NmE5NzI5ODFkMTVjNTU5NjRmOGQxZTdmYjVkMTljZDk2ZTA1NDg5ZTYyN2IifQ"
+          "resource": "repo://ecshopx-members/src/test/java/cn/shopex/ecshopx/members/service/account/MemberAccountServiceDispatchIntegrationTestConfiguration.java#L38-L50",
+          "version": "repo-lines-v1:sha256:4efd96433df85a30eb12c015ccc791d454e93e8f9626d12116e51e3ca8fb2e59:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYzNmMxNzNmN2Y1N2UyMDY4ZWJkMDE1ZjlhYTBhZmZmOTVhZDllZDBjNDUwNDg0ZDM0NGQ5OTkwM2VkOGVmMTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcyMWM3NjAzYTEzYzMyYzU0MWZkNTVmMmNkM2UxMTJiNWMxZWZmNmQ0ODA1OGFhNmYxMzc5ZWVmMjE3NGYxYzMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM2OWRkZmVlNGVmZmY5ZWQ1MDJiMDEyYWRkMjk0MTI3YjZiMTdiMzQwMWU2M2UyZjNlZWYzZjBkZjU1YzA5MGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM2NjFmNWRmYTg1NDU1YWQ4MGQzMDUzMTA4YTJkZmVmOWZhM2Q2Y2RmNjQyN2FjMTZkY2M0YWQyZjc0N2RhMzIifQ"
         }
       ]
     },
@@ -163,7 +163,7 @@
           "version": "repo-lines-v1:sha256:86e288e215926bb097baa6b8a59c28d716220ab3cc3caf6c8612a1a6e2885f12:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwOGNjMTVkMDc1NGI2ZjIxZjcxZTBiMDNiOWRkNzg2YmM5ODgwMDNiMmI1NzU2NGM2MDUwYTgwMjI1MTdjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE0ZGJiNjE0NzA1MDU0NGY0NDhmYjk2ZmIxZmNkMmYyODE3MjQxY2ZkZGYxNTVjM2M4MzRjZTA3YjM4YTljMTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
         },
         {
-          "resource": "repo://ecshopx-members/src/test/java/cn/shopex/ecshopx/members/service/account/MemberAccountServiceCreateMemberLocalAutoRegisterDispatchTest.java#L106-L123",
+          "resource": "repo://ecshopx-members/src/test/java/cn/shopex/ecshopx/members/service/account/MemberAccountServiceCreateMemberLocalAutoRegisterDispatchTest.java#L145-L162",
           "version": "repo-lines-v1:sha256:055f715e7797c2bdcc6fd3b6d5ecebe3f376254918f239579473f1e251134845:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhNWM3OWZmNzBjYjhmMGU5YTlmZjg2OTY3MGI1Nzc3MmE2NGU3ZmZjY2E5YjJjM2UyMWVmYjBiZGVkZmI1ZDEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ0OGEzNDdhMjViODc2Nzc1ZDk3MWE1OTFmZjk5NGY2OWZjMmNjNDRjNGNjMzZlNGQ3Y2QyZDIyMzMxNGMxNDYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJmMmZiNWUxNDdmOTZhN2Q2Yjg5YTgyM2I2NTQ4MzliOGM1OWUzNzY0ODkzZmU5MzNhZTdlYWIxZjYyZmQxNjQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFlOTUyZjIxNDA2NmFiOWMxMWU1NGY5MjkwMmNhNDM4Yzc4OGMzYTc3ODU0YTZmMzFlMjExYmVlYzlkMDg0NmUifQ"
         }
       ]
@@ -583,10 +583,52 @@
           "version": "repo-file-v1:sha256:6a5bf3d84a18171edaa8a0a769acca5429471998b69b458b6f46b6b2455f305f"
         }
       ]
+    },
+    {
+      "id": "claim_d9fa46df594341b8949c2413acd7a236",
+      "statement": "MemberAccountServiceCreateMemberLocalAutoRegisterDispatchTest pins the wxapp pre-login auto-register path end-to-end against a real transaction manager: a new member triggers the promoter side effect (AdminMemberCreatePromoterSideEffectPort.createForNewMember with company, assigned user id, mobile, grade) and the distribution side effect (AdminMemberCreateDistributorUserSideEffectPort.createData carrying inviter/distributor/salesperson ids) plus a shop_rel_member insert; the after-commit publish of the create-member-success event carries the extras' openid/wxa_appid/source_id/monitor_id/inviter_id; the salesperson bind job is enqueued only for channel 1 with a non-blank work_userid (the post-DM-create variant when DM-CRM integration is open); and on rollback neither the event publisher nor the job publisher is touched.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-members/src/test/java/cn/shopex/ecshopx/members/service/account/MemberAccountServiceCreateMemberLocalAutoRegisterDispatchTest.java#L108-L163",
+          "version": "repo-lines-v1:sha256:cf7bfbbeee86b9c52a057abd0662b252151ebebc5e8a80092e1751a9b54bdb35:eyJzZWxlY3RlZExpbmVDb3VudCI6NTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE3YmVmY2UzMjA2YzlhMDJiOGM3MWY0ZjI4NThkMmU5MTBjN2M2OWVlZDRmYTQ2MjI4YTMyMTA4ZDYxYTZlMTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFlOTUyZjIxNDA2NmFiOWMxMWU1NGY5MjkwMmNhNDM4Yzc4OGMzYTc3ODU0YTZmMzFlMjExYmVlYzlkMDg0NmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc5OTU5ZTRhN2Q5MDUyNGUwZWU3ZTE2MzVjMjYxM2ZiZjcxYmUyZjA5YjFmMDY3NzU2YTdkNjI4NTBlNDU2YmUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/test/java/cn/shopex/ecshopx/members/service/account/MemberAccountServiceCreateMemberLocalAutoRegisterDispatchTest.java#L165-L284",
+          "version": "repo-lines-v1:sha256:54950f70429aac3e8f71e1278bfb4a5cc648337a9c62123304a977fe86bdb810:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIwLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI0YmExYjFmMGQ5Mzk1NzQyZTIxNmY3MWM5ZTkwYzhmYjlhYTZiNDI5NmFhYTRjZTdjYzA1Yzk2ZWE1Yjg3YmFmIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0MTJjYTM0NWNjZjc1YmY5YzA4MDZiY2U2OTViZThkZTgwOGI3OTk4NDI1MWE3YTU0ZDIwMmNmNjEwMWRkNDUxIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiIyZTNkYzc2ZmIwYmI2ZDIxNjM0YTFiY2RlODQyYTFlY2Y0NjdmNTY5MzI1ZGFhY2VlMTZmYjkwMDI3ZTVkYWEyIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MCwiZm9sbG93aW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1In0"
+        }
+      ]
+    },
+    {
+      "id": "claim_6a6e6b93539d40ab9decac68ff974e4a",
+      "statement": "PlatformItemsDeleteServiceItemDeleteEventPublishProbeTest pins the item-delete after-commit contract over a Mockito-stubbed fake PlatformTransactionManager whose commit fires registered afterCommit synchronizations: the operator-cart purge (OperatorCartCleanupService.deleteByCompanyIdAndItemIds) runs in the delete flow, and ItemDeleteEventDispatchPublisher.publishAfterCommit fires once with the item_id/company_id/del_ids/item_info payload for both default-distributor and shop-scoped deletes; OperatorCartCleanupServiceTest pins the cleanup service's own one-mapper-delete-per-call behavior with plain Mockito.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-companys/src/test/java/cn/shopex/ecshopx/companys/service/operatorcart/OperatorCartCleanupServiceTest.java#L18-L44",
+          "version": "repo-lines-v1:sha256:b32a8e32cbd2876f01075c69c701a97a22ad4faf3758901f93b529aa023239f4:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNlNjk4NmQ5NzAyY2YxZTE2YjhhZWVkYzdmMDJmYmFhYWNlZTExOTQxZDE5NWU1MmZlMWU5NjQzMjhlMDgwM2MiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYwOGIxYmFhNzVmYjViMDZhMWFiNGM1MTFhOGExNDRmZTVhYjAwNjdiM2NjNGUzMmRkODY5Y2Y3ZDQ5ZDdiNGIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/service/items/PlatformItemsDeleteServiceItemDeleteEventPublishProbeTest.java#L87-L146",
+          "version": "repo-lines-v1:sha256:bdb46ff8a58f9064300fa516ebf951408a5aa6daabc49f4f9805ce2aa83c845b:eyJzZWxlY3RlZExpbmVDb3VudCI6NjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3OGE0MTRkNzBmMGNjMTE5NzU3MjVjODExZGI5OTQ5NGQzNWRmOGYxMjkyZmYwN2JlOTdiYzIyYWEyNmUyOGYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNlNWQxNDkwYjM0NmQ3Yzk2OWRlYTljYTNjN2MwYWJhODRkMzdmYmViYTE2YThmMzMzYjE0NjBmOTZkMDdlOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRiMDdmZGU2MTQ3N2RlMDhmYzdmNmRhMDE4NDNlZGNhOTZlNzlhMzI5YjQzMmI2Nzc4MDQ4OGM4MmQ0NGIzYzYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZhNmI5YmU5OGY1OGQyZjZmN2Q4OGE3OTcwMTJkMzc3MTU2ZTJlZTVkNDRiZmM1OGE3MGU1NzUwNmRlNWNkMDgifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_86fbc9da47964e059cde872cb9ce5af8",
+      "statement": "Two embedded-H2 idioms exist besides the @SpringJUnitConfig configuration: goods' ItemsCategorySaveServiceApiConvergenceDispatchTest builds a bare DataSourceTransactionManager over a schema-less embedded H2 purely to obtain a real transaction manager, while third-party's marketing-center processor tests (e.g. OrderAddPushMarketingCenterOnNormalOrderAddProcessorTest) are the only tests that CREATE TABLE against H2 and exercise JdbcTemplate reads for real — everything else in the suite mocks MyBatis-Plus mappers.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/service/ItemsCategorySaveServiceApiConvergenceDispatchTest.java#L42-L50",
+          "version": "repo-lines-v1:sha256:e048790a1baf0514c222f3e55d797197292c6ddc740deb504b6717b56d81ec4b:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMmU3ZmUzZjdlMjUzYjg3ZjA3YjdlMjYwNmFhODAzOTc1NTQxMTE0ODExOGVhZTdkNmI2YTljNDI1Yjc0MGE0OCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMGFjNDFjMDVjY2ZkZGUzZDNiZTQ2OWZmZmExZTEzNzZhOGYxZDA2MDBjNjQyOWFmNTNmOGQxM2VjYzk0MjRmNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDEyOWM3ZTYyNWM0MTcxMGZjMjUwMjJmMzZkYzMyYjFhNjRlODMxMmVmNTFmOWRlMTdiYTA4MTMzOWUzMWZjOCJ9"
+        },
+        {
+          "resource": "repo://ecshopx-third-party/src/test/java/cn/shopex/ecshopx/thirdparty/service/marketingcenter/OrderAddPushMarketingCenterOnNormalOrderAddProcessorTest.java#L42-L80",
+          "version": "repo-lines-v1:sha256:b4c7a306fdc4b922f9be5da05c0ecdeb56261ad815b198e020a1dfc8b86ad900:eyJzZWxlY3RlZExpbmVDb3VudCI6MzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIyYTFjNTYxZGU1NTdjOTZjNzcyNWQzNjRkMDVhMmYwNjg2NmI4MjhlZjE5ZjlhNGFiODE0YzUyOThkOGM4NDEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUxYTU3NjQwMjYxOGE0OThjZjU1ZTlhZGFkNDdlZDM4ZDRjNzY5OGE3NTc4MzZjZmEzMzZhNGFjMmYwYzdjNmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNmNzY5NzJkNzEzZmNhZTFhMTMzYTVmYmQyOWMwNzJhZDFjNDA1NTQ3NDE0MmQ3MWVjMTI3Y2FiZTYwMWYzODkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhjMTUyYTk3MDY1Njg5YTdmYTExZTk3OWRhYTJhYjM2NDY1N2ZiZDEwNDNkODczMmIwNjc2NWMzOGFiNWJhMzMifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.9.0",
-    "at": "2026-11-08T17:14:16.576Z"
+    "at": "2026-11-09T17:09:44.795Z"
   }
 }

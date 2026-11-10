@@ -40,6 +40,8 @@ sources:
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/OrdersDispatchJobNames.java
   - id: openwiki-source-68b9a0e3c776f0fe8beabd26
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/payment/PaymentSubjectDistributorIdPort.java
+  - id: openwiki-source-2867f272d3b645f1b2e95e5a
+    resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/api/admin/v1/OperatorStoreMemberController.java
   - id: openwiki-source-408cf03e9d042472e7119cc7
     resource: repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/client/DigiOsGatewayClient.java
   - id: openwiki-source-a1462091af0ac6e453fae382
@@ -54,6 +56,8 @@ sources:
     resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/PosJwtAuthenticationFilter.java
   - id: openwiki-source-da7950ab19f4690ae361bd4b
     resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/security/PosJwtIssuer.java
+  - id: openwiki-source-3a3f04b8b27821da165d6047
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/PlatformItemsDeleteService.java
   - id: openwiki-source-4e2f63b218566d272e8cb370
     resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/domain/MemberTags.java
   - id: openwiki-source-a204a89b1ce5a22cd0a0fe06
@@ -86,21 +90,23 @@ sources:
     resource: repo://ecshopx-orders/src/main/resources/mapper/NormalOrdersMapper.xml
   - id: openwiki-source-4c7a3bc700c378ccd65c4327
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/api/open/WxpayNotifyController.java
+  - id: openwiki-source-6b0c60a3857f097ae7426122
+    resource: repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/service/openplatform/OperatorStoreMemberReadinessService.java
   - id: openwiki-source-03ffc32a0ca502ab67c54b25
     resource: repo://install.sh
   - id: openwiki-source-2355f81d7cf522f8dbdaabd4
     resource: repo://pom.xml
   - id: openwiki-source-f1b1aacc63642e5304668821
     resource: repo://readme.md
-generated: { by: "openwiki/0.9.0", at: "2026-11-09T03:34:48.355Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-09T17:09:44.795Z" }
 verified:
   - by: openwiki/0.9.0
-    at: 2026-11-09T03:34:48.355Z
+    at: 2026-11-09T17:09:44.795Z
 ---
 
 # ECShopX-Java Wiki Quickstart
 
-ECShopX-Java is the Java server-side reimplementation of the ECShopX commerce system, keeping business semantics and configuration keys aligned with the legacy PHP version. It is **one multi-module Maven reactor** (parent `cn.shopex:ecshopx`, `${revision}` = `5.5.0`, on `spring-boot-starter-parent:3.5.12` / Java 17) of **53 modules**: four infrastructure modules — `ecshopx-bom`, `ecshopx-common` (shared contracts, no peer dependencies), `ecshopx-dispatch` (the message bus), and `ecshopx-bootstrap` (the only Spring Boot executable, which assembles everything) — plus **49 business Bundles**, one per domain (goods, orders, aftersales, members, marketing, payments, WeChat, third-party integrations, …). The single application (`cn.shopex.ecshopx.EcshopxApplication`) runs on Undertow, port **18080**, and serves the PHP-compatible `/api/`, `/storage/`, and `/wechatAuth/` URL spaces. State lives in **one MySQL database** (`ecshopx`, utf8mb4, `Asia/Shanghai`) reached through **MyBatis-Plus 3.5.16** mappers with pervasive `company_id` tenant scoping, plus **one Redis instance** partitioned into logical databases by hand-built Lettuce factories. All cross-Bundle asynchronous work rides the in-process **dispatch bus** (`DispatchFacade.publishEvent` / `dispatchJob` → Redis lists `dispatch:default` / `dispatch:slow` / `dispatch:sms` plus a delayed ZSET), whose message names preserve the legacy PHP job/event class names; all time-driven work is triggered by **XXL-JOB 2.5.0** (executor appname `ecshopx-executor`, port 19999) against a separately deployed admin console. Cross-Bundle calls never create Maven cycles: the consumer owns a Port or publisher interface (usually in `ecshopx-common`), the provider implements it, and `ecshopx-bootstrap` — which depends on everything — wires the remaining edges through `*DispatchPublisherImpl` and `*RegistrationConfig` classes in its `config` package.
+ECShopX-Java is the Java server-side reimplementation of the ECShopX commerce system, keeping business semantics and configuration keys aligned with the legacy PHP version. It is **one multi-module Maven reactor** (parent `cn.shopex:ecshopx`, `${revision}` = `5.5.1`, on `spring-boot-starter-parent:3.5.12` / Java 17) of **53 modules**: four infrastructure modules — `ecshopx-bom`, `ecshopx-common` (shared contracts, no peer dependencies), `ecshopx-dispatch` (the message bus), and `ecshopx-bootstrap` (the only Spring Boot executable, which assembles everything) — plus **49 business Bundles**, one per domain (goods, orders, aftersales, members, marketing, payments, WeChat, third-party integrations, …). The single application (`cn.shopex.ecshopx.EcshopxApplication`) runs on Undertow, port **18080**, and serves the PHP-compatible `/api/`, `/storage/`, and `/wechatAuth/` URL spaces. State lives in **one MySQL database** (`ecshopx`, utf8mb4, `Asia/Shanghai`) reached through **MyBatis-Plus 3.5.16** mappers with pervasive `company_id` tenant scoping, plus **one Redis instance** partitioned into logical databases by hand-built Lettuce factories. All cross-Bundle asynchronous work rides the in-process **dispatch bus** (`DispatchFacade.publishEvent` / `dispatchJob` → Redis lists `dispatch:default` / `dispatch:slow` / `dispatch:sms` plus a delayed ZSET), whose message names preserve the legacy PHP job/event class names; all time-driven work is triggered by **XXL-JOB 2.5.0** (executor appname `ecshopx-executor`, port 19999) against a separately deployed admin console. Cross-Bundle calls never create Maven cycles: the consumer owns a Port or publisher interface (usually in `ecshopx-common`), the provider implements it, and `ecshopx-bootstrap` — which depends on everything — wires the remaining edges through `*DispatchPublisherImpl` and `*RegistrationConfig` classes in its `config` package.
 
 ## Route your task
 
@@ -109,6 +115,7 @@ ECShopX-Java is the Java server-side reimplementation of the ECShopX commerce sy
 | Get the big picture first — reactor layout, runtime topology, ports, the single Spring context, the Bundle catalog | [System Overview and Runtime Topology](architecture/overview.md) |
 | Understand the inside of one Bundle and where new code goes (`api/admin/v1` / `api/front/v1` / `api/open`, `service`, `domain`, `mapper`, `integration`, `dispatch`, `cron`, `port`) | [Bundle Anatomy and Layering Conventions](architecture/bundle-layering.md) |
 | Add or change an HTTP endpoint — auth annotations (`@AdminAuth` / `@FrontAuth` / `@FrontNoAuth` …), `@FlexibleBody` binding, `ApiResult` / `@DingoResponse` envelopes | [HTTP Request Lifecycle, Auth, and Response Conventions](architecture/request-lifecycle.md), then [Bundle Anatomy](architecture/bundle-layering.md) |
+| Work the store-cashier operator surface — pre-checkout member readiness `POST /api/v1/operator/member/ready` (`OperatorStoreMemberController` in ecshopx-companys delegating to Shuyun's `OperatorStoreMemberReadinessService.ensureOfflineMemberAtStore`, which skips when the company's Shuyun open-platform config is disabled/ineligible and otherwise registers the member offline via `member.register`) and the operator cart fast-buy apis | [System Overview and Runtime Topology](architecture/overview.md) (operator api surface), then [Third-Party Integrations](integrations/third-party.md) (Shuyun open platform) |
 | Touch the POS auth surface — the POS dual-JWT filter chain (`PosJwtAuthenticationFilter` / `PosJwtIssuer` in ecshopx-espier, `token_kind=pos`, `POS_JWT_ISSUER`=`ecshopx-pos`, blacklist/session-validator Ports) or the `pos_store_account` handling accounts | [HTTP Request Lifecycle, Auth, and Response Conventions](architecture/request-lifecycle.md) (filter chain), then [Stores, Distributors, Merchants, and Salespersons](domains/stores-and-merchants.md) (POS store accounts) |
 | Make two Bundles collaborate without a Maven cycle (Ports, publisher interfaces, `ObjectProvider`, bootstrap adapters — e.g. the new `PaymentSubjectDistributorIdPort` in `ecshopx-common`, implemented by `ecshopx-distribution`, consumed by the ecshopx-orders payment services) | [Cross-Bundle Ports and Wiring in Bootstrap](architecture/cross-bundle-communication.md) |
 | Add a dispatch event, dispatch job, or the XXL-JOB cron handler that triggers it | [Workflow: Adding a Dispatch Event, Job, or Cron Handler](workflows/add-event-or-job.md) |
@@ -131,10 +138,10 @@ ECShopX-Java is the Java server-side reimplementation of the ECShopX commerce sy
 
 | Domain you are changing | Page |
 |---|---|
-| Products, SKUs, categories, inventory, checkout-time goods services | [Goods Domain (ecshopx-goods)](domains/goods.md) |
+| Products, SKUs, categories, inventory, checkout-time goods services — including the platform item-delete cascade in `PlatformItemsDeleteService.deleteCore`, which now purges operator carts (`operatorCartCleanupService.deleteByCompanyIdAndItemIds`) **before** removing SKU rows and publishes `itemDeleteEventDispatchPublisher.publishAfterCommit` only after all deletes | [Goods Domain (ecshopx-goods)](domains/goods.md) |
 | Orders, cart, logistics, settlement, the `Trade` vs `NormalOrders` model | [Orders Domain (ecshopx-orders)](domains/orders.md) |
 | After-sales, refund pipeline and per-channel refund executors | [Aftersales Domain (ecshopx-aftersales)](domains/aftersales.md) |
-| Members, login orchestration, member JWT, create/update fan-out, member system tags (`tag_kind` / `tag_code`, reconcile services, `MemberSystemTagWriteGuard`) | [Members Domain (ecshopx-members)](domains/members.md) |
+| Members, login orchestration, member JWT, create/update fan-out — including the wxapp pre-login auto-register path (`createMemberLocalAutoRegister`), whose in-transaction side effects now also 补齐 promoter/distribution state (`AdminMemberCreatePromoterSideEffectPort.createForNewMember`, `AdminMemberCreateDistributorUserSideEffectPort.createData`, `ShopRelMember` insert when `distributor_id` is present, `if_register_promotion` in the create-member-success payload) — member system tags (`tag_kind` / `tag_code`, reconcile services, `MemberSystemTagWriteGuard`) | [Members Domain (ecshopx-members)](domains/members.md) |
 | Member-crowd targeting in promotions (`member_tag_ids` / `member_tag_mode` matched by `MemberCrowdMatcher` against member system tags) | [Marketing and Loyalty Domains](domains/marketing.md), backed by [Members Domain](domains/members.md) |
 | Promotions, coupons/kaquan, points, points mall, deposit, employee purchase | [Marketing and Loyalty Domains](domains/marketing.md) |
 | Companies/shops, distributors-as-stores, merchants, salespersons, suppliers, community group-buy | [Stores, Distributors, Merchants, and Salespersons](domains/stores-and-merchants.md) |

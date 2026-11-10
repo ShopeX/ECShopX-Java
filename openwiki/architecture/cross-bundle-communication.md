@@ -5,7 +5,7 @@ description: The five mechanisms Bundles use to talk to each other without circu
 tags: [architecture, ports, dispatch, wiring, bootstrap, dependency-inversion, events, objectprovider]
 verified:
   - by: openwiki/0.9.0
-    at: 2026-11-09T03:34:48.355Z
+    at: 2026-11-09T17:09:44.795Z
 sources:
   - id: openwiki-source-c468812f5ebcfefdc20facd4
     resource: repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/integration/AftersalesRefundAsyncPortImpl.java
@@ -111,6 +111,10 @@ sources:
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/service/salesperson/SalespersonCartDataListFacade.java
   - id: openwiki-source-ba105787fc5bdef6f49508f5
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/wechat/WxappCommonSettingFacade.java
+  - id: openwiki-source-23521877b190e50eccec4c0a
+    resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/api/admin/v1/OperatorCartController.java
+  - id: openwiki-source-d615d35129728ef237866431
+    resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/operatorcart/OperatorCartCleanupService.java
   - id: openwiki-source-8e287cf718eb8e65c0b3a126
     resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/OperatorsCommandService.java
   - id: openwiki-source-48f750a8142d8a7487ac4de7
@@ -161,6 +165,8 @@ sources:
     resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/cart/salesperson/SalespersonCartDataListService.java
   - id: openwiki-source-08ff5f6cd6e732ced25d5918
     resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/operatorcart/OperatorCartDataListFacadeImpl.java
+  - id: openwiki-source-6d42ce597e8782d354259630
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/operatorcart/OperatorCartFastBuyFacadeImpl.java
   - id: openwiki-source-d16187f094f7ac681cbd6749
     resource: repo://ecshopx-kaquan/src/main/java/cn/shopex/ecshopx/kaquan/integration/shuyun/ShuyunOfflineBenefitKaquanCouponGrantAdapter.java
   - id: openwiki-source-d1ae183c81bdc1fdae2f0ac4
@@ -219,7 +225,7 @@ sources:
     resource: repo://ecshopx-reservation/src/test/java/cn/shopex/ecshopx/reservation/dispatch/ReservationRemindSendWxaTemplateDeferJobDispatchHandlerDispatchConsumerRuntimeTest.java
   - id: openwiki-source-56e3a2f4dec976d672048023
     resource: repo://ecshopx-salesperson/src/main/java/cn/shopex/ecshopx/salesperson/api/front/v1/SalespersonCartController.java
-generated: { by: "openwiki/0.9.0", at: "2026-11-09T03:34:48.355Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-09T17:09:44.795Z" }
 ---
 
 # Cross-Bundle Ports and Wiring in Bootstrap
@@ -328,7 +334,7 @@ Unlike the optional Ports below, this one is a **required bean** — constructor
 
 The seam is pinned by `orders/service/payment/OrdersPaymentDoPaymentServicePaymentSubjectTest` (`payment_subject=平台` → config validation uses `distributor_id=0`) and `FrontPaymentSettingReadServiceDepositListTest` on the payment side. The same merchant↔goods inversion shape, one domain over: `common/goods/port/MerchantSettlementMainCategoryPort` is implemented by `goods/integration/MerchantSettlementMainCategoryPortImpl` (validate/normalize/serialize `main_category_selection`, enrich detail rows with names and level-3 ids over `ItemsCategoryRepository`) and consumed by merchant's settlement apply/detail services — its Javadoc states the goal plainly: "由 ecshopx-goods 实现，避免 merchant↔goods Maven 环" (implemented by goods, to avoid a merchant↔goods Maven cycle).
 
-A second flavor of Port lives in the Facade family. `common/service/salesperson/SalespersonCartDataListFacade` is the cart-list orchestration entry for the salesperson (导购) channel; its Javadoc states the implementation lives in the goods domain so the controller can inject the interface and avoid a module cycle. `goods/service/cart/salesperson/SalespersonCartDataListService` implements it (composing the salesperson cart repository — which goods can see because salesperson is upstream of goods — plus goods-local SKU-load/format services), and `salesperson/api/front/v1/SalespersonCartController` injects the Facade. The same shape repeats for the operator (店务) cart: `common/operatorcart/OperatorCartDataListFacade` (plus `OperatorCartFastBuyFacade`, `OperatorCartScanBarcodeFacade`, `OperatorCartSkuLoadFacade`) is implemented by `goods/service/operatorcart/OperatorCartDataListFacadeImpl` and consumed by companys' `OperatorCartController`, keeping cart orchestration in goods while companys owns the admin endpoint. Same shape, different naming: `*Port` for narrow contracts, `*Facade` for an orchestration entry point.
+A second flavor of Port lives in the Facade family. `common/service/salesperson/SalespersonCartDataListFacade` is the cart-list orchestration entry for the salesperson (导购) channel; its Javadoc states the implementation lives in the goods domain so the controller can inject the interface and avoid a module cycle. `goods/service/cart/salesperson/SalespersonCartDataListService` implements it (composing the salesperson cart repository — which goods can see because salesperson is upstream of goods — plus goods-local SKU-load/format services), and `salesperson/api/front/v1/SalespersonCartController` injects the Facade. The same shape repeats for the operator (店务) cart: `common/operatorcart/OperatorCartDataListFacade` (plus `OperatorCartFastBuyFacade`, `OperatorCartScanBarcodeFacade`, `OperatorCartSkuLoadFacade`) is implemented by `goods/service/operatorcart/OperatorCartDataListFacadeImpl` and consumed by companys' `OperatorCartController`, keeping cart orchestration in goods while companys owns the admin endpoint. The seam runs deeper than the interface, though: goods depends on companys upstream (as it does on salesperson), so `OperatorCartDataListFacadeImpl` constructor-injects companys-side services directly alongside the goods-local ones — `OperatorCartSkuLoadFacade` (SKU load / distributor price replace / member price), `OperatorCartCompanyProductModelReader` (companys' product-model flag), goods-local `OperatorCartHandleValidCartService`, `SalespersonDistributorCartFormatAndTotalService` (shared with the salesperson cart), and companys' `OperatorCartCleanupService`, which it calls to lazily delete the operator's `operator_cart` rows when the SKU load comes back empty (`deleteAllRows`) and to delete rows by `cart_id` when the format/total pass marks them invalid (`deleteByCartIds`). Companys-side consumers beyond the controller — `OperatorCartAdminSubmitDataService` and goods' own `OrderCheckoutCartPortImpl` (the checkout Port that drives `OperatorCartFastBuyFacade`) — likewise hold only the common interfaces. Same shape, different naming: `*Port` for narrow contracts, `*Facade` for an orchestration entry point.
 
 ### Optional Ports: `ObjectProvider` and NoOp defaults
 

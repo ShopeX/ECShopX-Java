@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:a36a5cd5fe4326f1f49d574036e808076572f1793b37d0fd79a6924ed90f2cc2",
+  "pageVersion": "sha256:a63125a62d7e2060a237d90b264854e44f3f612cf87bd9164261563215adb6a8",
   "claims": [
     {
       "id": "claim_9b43b991325b4e1e83b149b1960be8a7",
@@ -134,11 +134,23 @@
     },
     {
       "id": "claim_d8f9af21f5fc45769935a09f063ddeb1",
-      "statement": "PlatformItemsDeleteService.deleteCore verifies company and distributor_id match, expands a multi-spec goods to all sibling SKUs by default_item_id, deletes per SKU the items row, Redis item_store key and attribute rows, then rel-cats, services rel-type, distributor_items, member prices and barcodes, and publishes ItemDeleteEvent after commit with a payload of item_id, company_id, del_ids and a full item_info snapshot.",
+      "statement": "PlatformItemsDeleteService.deleteCore loads the items row company-scoped (删除商品信息有误 when missing), refuses a mismatched distributor_id query (店铺商品信息有误，不可删除), expands a multi-spec goods to all sibling SKUs by default_item_id, assembles the ItemDeleteEvent payload (item_id, company_id, del_ids, full item_info snapshot) before any delete, then in one transaction purges operator_cart rows via the injected companys-bundle OperatorCartCleanupService.deleteByCompanyIdAndItemIds FIRST, deletes per SKU the items row, Redis item_store key and attribute rows, then rel-cats, services rel-type, distributor_items, member prices and barcodes, and schedules the event via itemDeleteEventDispatchPublisher.publishAfterCommit LAST.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/PlatformItemsDeleteService.java#L78-L131",
-          "version": "repo-lines-v1:sha256:4b30057a00354ef8165dcadeb08ea4bdb6d7704c2ec4192e8861a97f7f80756d:eyJzZWxlY3RlZExpbmVDb3VudCI6NTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImExM2UwN2I2MTA2OGZmMWEwMGQ1ODU2NzQ3NjU5NTgxMTc2ODhhYzQ4NmZlOTk0OTM3MmNmY2RjZGE2ZjliM2MiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAyNzc1ZTBkMjU3MDNhY2Y1ZWExM2M0NGM0YjdhNTQ2MThiOWZhMDJmMmZmZTJjNTI5MGZmOGNmMGY1ZDE3NjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjlhOWJhNDM0Y2Y1NDgxYjllMjE4YWNkYmIyY2U1MjcwODhlMjNjMDMzNWU2NDMxMzkyMWQ3YTIwNjc4YWY4N2QifQ"
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/operatorcart/OperatorCartCleanupService.java#L36-L43",
+          "version": "repo-lines-v1:sha256:034a41b6085c70156590c4eabbc6f8a50385000c57e8dc1cbc4f1dbd8d1c1603:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjUwZDM4MWU5ZWMyNzFiYzk3YjQ0YjU2N2Y3ODliNWViYjQwNGFkMDU2NzEyNzk3YzVkYmUxZDZmNjhmMTNjMyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYWU5MTc2MDIyYTFmYjY2ZjBlNzg3ZGYxNWUzMWJjNjFhOWIyMDYyMjIzYzY0YmJkYWNmY2I2N2E2ZTUxOTYzOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzNmN2JkOGU1ZGE1ZDJkODMxZDhjNTBiNDAwMDlmYjI1M2ExZDc5M2NiYTJkZTdlYTg3MzY2N2ZlMjY5ODgyNSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/PlatformItemsDeleteService.java#L53-L61",
+          "version": "repo-lines-v1:sha256:6359db4acdcc956986ec1f3b5006fa3adac13d7a9a1270d6060f5c7cbfdad1b5:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDVkNjZkZGQ5NTM0ZDZiMzBhZTZjMjU5NGUyMzg2MjcxOWVmMWNiYjNiNDk0NDk0ZWNlNGRjZmM5NTBiZGJjYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTE3MTA2MzI5YjU1ZDVmZTAxMjExMDg0YjljZWY2MDA1YTI5ODNkNjExNWRlMmVhNzZhYmY4YTRmYTNlOGQ1ZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiY2U4OWIxMGE3N2NhODE4MjZhMmUzNWUwMzU5ODMyMDk1YTIxMTcwMWM4ZjNkOGYwNDQ2NjA2MzI5YzhiMDEwOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMTcxYjc1NGRiZmQ0Nzc5YzdlMjcwMjA5ZGM0ZGQyMDU2YjE0N2U4MGViYWI1Y2Q4MzE3MDZmYmE1MTIxMDE2NSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/PlatformItemsDeleteService.java#L78-L136",
+          "version": "repo-lines-v1:sha256:ea36c2dfbdbc371def66f493992b8eaf21c479fe4079b15473d7723391798da9:eyJzZWxlY3RlZExpbmVDb3VudCI6NTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk5NGIxNzI5YWE4MmEwMjA5NWFlZjIyNjkyYjEyMjRjMTM5MzNmMTE3N2RlNjNjOTlhYzgxOTBkMzZiODFjNzEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE4NTc1MWFlZTUxYjg5ODljYzcwMjIwNzUwMjQyMmUxMDY2Y2EyOTQ2MjQyNGNmYWZmODY3ZTFmYTVmNTNmNjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ4NjBkODdjNzliNzBkZGZlZWM3YThhNWU5MzA5MmZhZjAwMThmYzIzZWEyYzIzNmM3NTQ5MzFkM2FkMTI2YWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY3MDhlY2E2NDdiOGZlMTg2NDE4NjgzMDdkNWRlNzg1ZGY0NTJjOTZlZDM0OGE4ODIwNzQyMjhkYzY2ZDBjNTQifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/service/items/PlatformItemsDeleteServiceItemDeleteEventPublishProbeTest.java#L84-L140",
+          "version": "repo-lines-v1:sha256:3731d028f4cbebf47206e424f2f34b1d5ceab3e2b4aa139000f5ea0c18be8057:eyJzZWxlY3RlZExpbmVDb3VudCI6NTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc1ZmY2ZDUxZDc1OGU3NmE5MzlhYmM4NGI1NDgwMWMxNjA0ZDhmNDNmOTZkOGNmYjgzNGZkMWQ3YzRkMDFjNDciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMxY2I2MzAzNTVkNmYzMmQ5MTdiYzg4MWIxY2M1M2Y2ODg4Y2NkMDgwMTg0NzVmY2YxYTEyMmI3MDZlNWVlODUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFlOTUyZjIxNDA2NmFiOWMxMWU1NGY5MjkwMmNhNDM4Yzc4OGMzYTc3ODU0YTZmMzFlMjExYmVlYzlkMDg0NmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc4NTgwMWNiYjFhYTI4ZGE1NmU0MjUzMTZkOWUxMmY4YjNkMDBkMzA1NTcyMTNjNzg3NzZiZGMzNWY4MjhkZTkifQ"
         }
       ]
     },
@@ -857,10 +869,34 @@
           "version": "repo-lines-v1:sha256:ad0745079385a7fb88a0ab3868d4e7289f2fbb5ca8ba7248ed5dfc86dc38ad4b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVjM2UxYTcwNzBlZWY1ODU2YjJhZTExNjNhMTU2ZDhhZWIwM2U3NjFlNWQ2YzQxODNiNmVjMmEzZTJlN2Y5NzkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU2ODA2ZjE1NWM1YWMxYWUyNzIyY2EwNmYyYWM5Y2FkY2I4ODFiOTEyM2NiNjI0YTNjMTA0NzViNDQ0OWRjMmUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE2OGE5Mjc1NGM2MmQ0Yzc1NTIyNmJjMDkwMjZlMDkzZmQ5MjcwMWM2ZWE4MTEyNTExOTA3ODc0Y2YwZmM3MzgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIyODQxODI1OTUxZmMwZDUxNzEzMDBiZmRiZDU5MGExODZjYWUwOTFiYWRlMjExNTgzNjM3ODc5MGJmNjBmOWIifQ"
         }
       ]
+    },
+    {
+      "id": "claim_c8d44550a7b84083ab2962b18e690d4c",
+      "statement": "OperatorCartDataListFacadeImpl.getCartDataList is the lazy-cleanup counterpart of the delete-time purge: when none of the cart rows' SKUs resolve it throws 商品已失效 on submit or deletes all loaded operator_cart rows via OperatorCartCleanupService, and rows that end up in invalid_cart after the valid-cart handling and format/total chain are physically removed via deleteByCartIds, so operator carts never surface deleted SKUs.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/operatorcart/OperatorCartCleanupService.java#L25-L65",
+          "version": "repo-lines-v1:sha256:425a4fd7b96eed072b6b34c6b9fb791109309cee488a3b7b61c20a7ad832c070:eyJzZWxlY3RlZExpbmVDb3VudCI6NDEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE4NTRiN2YzMjEzZDA2ZTkzMjFjYTcxNjE4MmI0NGU5NzczZTUzZDI0ZjhmZDQ0ZWI0NmRiYjhlM2JiOTEwOWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/operatorcart/OperatorCartDataListFacadeImpl.java#L71-L148",
+          "version": "repo-lines-v1:sha256:537b7b699162a27583471242fcaaa72bcc440036f8857aed3d159ca1a969b2c0:eyJzZWxlY3RlZExpbmVDb3VudCI6NzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYwMGE2MjJjOGM5MjYxZjgzMjRhMGFkZTk3ZWY1ODYzYzI3NWE0ZDU2MzVkZWE1ZTdlZDNmNDYwMTFmYmRjYjAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU2ODA2ZjE1NWM1YWMxYWUyNzIyY2EwNmYyYWM5Y2FkY2I4ODFiOTEyM2NiNjI0YTNjMTA0NzViNDQ0OWRjMmUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImViNjlhODBlYjRkMDNiMGY4ODg2ZGIwODI4MDFkODNjZjk3MzE2NzdmYTI3YTFkNzZkNWIyNzY3NWM5NTgyMzciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQxNjM2ZWE3MmQwNTk2MjAwYmQxMjE2ZmNjYzFjMDE0YTZmY2QxYjI3ZjAzNTc3NThmYzQwY2I1MDZiNGNlMzYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_769428a60b9442b19c7e90ff9130c9f7",
+      "statement": "OperatorCartSkuLoadFacadeImpl.resolveSkuForOperatorCartAdd forces isTotalStore=true on the platform branch (distributor_id=0 or the platform product model), swaps in the shop's store/price and records distributorStore when the shop relation is is_total_store=false, zeroes the store when is_can_sale=false, enriches supplier goods with their logistics store via ItemLogisticsStoreEnricher, and refuses rows the shop neither owns nor has a distributor_items relation for with 无效商品.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/operatorcart/OperatorCartSkuLoadFacadeImpl.java#L300-L373",
+          "version": "repo-lines-v1:sha256:03f6081d5f5d376e19275b5126355e4930942fd3ff10c2920e2cf3bd986dac50:eyJzZWxlY3RlZExpbmVDb3VudCI6NzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwOGNjMTVkMDc1NGI2ZjIxZjcxZTBiMDNiOWRkNzg2YmM5ODgwMDNiMmI1NzU2NGM2MDUwYTgwMjI1MTdjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFmZWMxZTA5NDNjN2FjZDNjZjljN2NkOTEyYjM1YjMwNjc4MGVlN2Y1ZWI2ZjFlNjI3NjgzYzg3ZjFjMzY3ZDQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.9.0",
-    "at": "2026-11-08T17:14:16.576Z"
+    "at": "2026-11-09T17:09:44.795Z"
   }
 }

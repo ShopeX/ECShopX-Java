@@ -217,7 +217,7 @@ public class UploadImagesService {
 
 		applyImageCatIdEqIfApplicable(wrapper, queryMap);
 
-		wrapper.orderByDesc(UploadImages::getCreated);
+		wrapper.orderByDesc(UploadImages::getCreated).orderByDesc(UploadImages::getImageId);
 
 		long page = parsePageOrPageSizeWithDefault(queryMap, "page", 1L);
 		long pageSize = parsePageOrPageSizeWithDefault(queryMap, "pageSize", 20L);

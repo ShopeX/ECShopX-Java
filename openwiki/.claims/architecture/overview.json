@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:e3d751d09d64c8b6589ebfd04765578701456f1a493620e3717e4710c1264ff5",
+  "pageVersion": "sha256:8c0e19e6efe3528c4033a6c49d04b9a2eb608ef28af94a11f067bc7b5401eadf",
   "claims": [
     {
       "id": "claim_f8125c36eada410396ebd177c71a5a4f",
-      "statement": "The repository is a single multi-module Maven reactor: root pom.xml declares parent cn.shopex:ecshopx with version ${revision}=5.5.0 (Java 17) under spring-boot-starter-parent:3.5.12, with 53 modules total — four infrastructure modules (ecshopx-bom, ecshopx-common, ecshopx-dispatch, ecshopx-bootstrap) and 49 business Bundles including ecshopx-digios, ecshopx-openapi, and ecshopx-shuyun — each also pinned in dependencyManagement, and ecshopx-bootstrap's POM declares all 49 business Bundles.",
+      "statement": "The repository is a single multi-module Maven reactor: root pom.xml declares parent cn.shopex:ecshopx with version ${revision}=5.5.1 (Java 17) under spring-boot-starter-parent:3.5.12, with 53 modules total — four infrastructure modules (ecshopx-bom, ecshopx-common, ecshopx-dispatch, ecshopx-bootstrap) and 49 business Bundles including ecshopx-digios, ecshopx-openapi, and ecshopx-shuyun — each also pinned in dependencyManagement, and ecshopx-bootstrap's POM declares all 49 business Bundles.",
       "evidence": [
         {
           "resource": "repo://ecshopx-bootstrap/pom.xml",
@@ -12,7 +12,7 @@
         },
         {
           "resource": "repo://pom.xml#L12-L29",
-          "version": "repo-lines-v1:sha256:d465bab693463b7962e2a7a5a40ee388b69e8eda6713b4f8f3fcc99b60db4355:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhiZGY5NDQzNjg2NmE5Y2ZjYTBhYzNkNjIzMDc3ZWQwNzIxOGQ1NDFhMTQ5ZjliMDM4Y2U0MjcxYzYxNjM1ZDMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM4MGFjMjJmMDg0YjYwNjY1M2IwZGVmNzIyMmQyZTU5OTk4Mzk5NTUxMTYxN2VmZGU1MTQ1NTY2ZTAyNTY3MjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU5ZGFhYTVkNDZkZmViYWViODdmYWViMTFhMDE0Yjg0MWFlZmI0OTA3ZGE4NmMwNzU5MjAyMWU4NzRhYzE5OGUifQ"
+          "version": "repo-lines-v1:sha256:f71940afdf0b3594fedd041b1eb09ea1cef0dd75192d9168bcbdc0c137f0d79a:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhiZGY5NDQzNjg2NmE5Y2ZjYTBhYzNkNjIzMDc3ZWQwNzIxOGQ1NDFhMTQ5ZjliMDM4Y2U0MjcxYzYxNjM1ZDMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM4MGFjMjJmMDg0YjYwNjY1M2IwZGVmNzIyMmQyZTU5OTk4Mzk5NTUxMTYxN2VmZGU1MTQ1NTY2ZTAyNTY3MjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU5ZGFhYTVkNDZkZmViYWViODdmYWViMTFhMDE0Yjg0MWFlZmI0OTA3ZGE4NmMwNzU5MjAyMWU4NzRhYzE5OGUifQ"
         },
         {
           "resource": "repo://pom.xml#L367-L421",
@@ -162,7 +162,7 @@
         },
         {
           "resource": "repo://ecshopx-bootstrap/src/main/resources/seed/menu/platform_menu.json",
-          "version": "repo-file-v1:sha256:a5370977171671a30f7c4e051b16d39886c5c08587b0fe207b82212169c0016b"
+          "version": "repo-file-v1:sha256:5b4b36f285c0612496f77e372070ae9d90026f6e952a617519f0e36ad1549106"
         },
         {
           "resource": "repo://ecshopx-shopmenu-border/src/main/java/cn/shopex/ecshopx/shopmenuborder/service/ShopMenuUploadService.java#L82-L88",
@@ -478,11 +478,11 @@
     },
     {
       "id": "claim_ccfd2627ca96445b9c94d1b0262813ea",
-      "statement": "Each seed menu file (e.g. platform_menu.json) is a JSON array of rows whose version groups a menu generation, menu_type names the menu types the row belongs to, and name_lang carries per-locale names (zh-CN, en-CN, ar-SA, zh-TW, ja-JP, ru-RU); ShopMenuUploadService.uploadMenus (@Transactional per file) first deletes existing company_id=0 rows of the incoming versions including their shop_menu_rel_type rows and name_lang translations written through companys' CommonLangModWriteService, then re-inserts rows with fresh sequential shopmenu_ids, remaps file-local pid values to the new parent ids, rebuilds menu-type relations, re-writes translations, and rejects rows missing alias_name.",
+      "statement": "Each seed menu file (e.g. platform_menu.json) is a JSON array of rows whose version groups a menu generation, menu_type names the menu types the row belongs to, and name_lang carries per-locale names (zh-CN, en-CN, ar-SA, zh-TW, ja-JP, ru-RU); ShopMenuUploadService.uploadMenus (@Transactional per file) first deletes existing company_id=0 rows of the incoming versions including their shop_menu_rel_type rows and name_lang translations written through companys' CommonLangModWriteService, then re-inserts rows with fresh sequential shopmenu_ids, remaps file-local pid values to the new parent ids, rebuilds menu-type relations, re-writes translations, and rejects rows missing alias_name. The head platform row (shopmenu_id 423, 概况/index, menu_type all) now ends its apis list with the operator store-cashier aliases companys.operator.member.ready and companys.operator.cartfastbuy.add, and companys.operator.member.ready also appears on the 会员列表 row (shopmenu_id 453).",
       "evidence": [
         {
-          "resource": "repo://ecshopx-bootstrap/src/main/resources/seed/menu/platform_menu.json#L1-L50",
-          "version": "repo-lines-v1:sha256:4cccb904723a53a7d97dae80f1481f2380f32bfc9a88af8a9a28e9ee293282ed:eyJzZWxlY3RlZExpbmVDb3VudCI6NTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk1ZDJiMTkzNDkzMTY5MTY2OWNjMzVhODc2MTk1MTgwMTUzMzYyMTNkZGEwYTYwZmUxYjA5ZjliOGUzZTk5M2QiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRhNGRhOTJlYjE3MTA2NjFmODhjNDlhYzQ4ZTBkNWY2YWNhNjMyYmU5YWUzYTg5Mjc3MWMyMDZkZGFmMjg4MDEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZiYTE1MDM1ZDBlYThlZTBkMmY5MTFkYmU0Mzc4Y2NlNzMzODk4YmMxYmZkODAyMWJiNTE3YWEzZmJlYzFkM2UifQ"
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/seed/menu/platform_menu.json",
+          "version": "repo-file-v1:sha256:5b4b36f285c0612496f77e372070ae9d90026f6e952a617519f0e36ad1549106"
         },
         {
           "resource": "repo://ecshopx-shopmenu-border/src/main/java/cn/shopex/ecshopx/shopmenuborder/service/ShopMenuUploadService.java#L99-L260",
@@ -575,10 +575,42 @@
           "version": "repo-file-v1:sha256:fc79db1e710cffa6dfc5e2ca0e9f47971690abb3ceba46572e2ad56d87ee41dd"
         }
       ]
+    },
+    {
+      "id": "claim_ff72bf091cf94c87935235e81e3f77fe",
+      "statement": "POST /api/v1/operator/member/ready (route alias companys.operator.member.ready) is served by OperatorStoreMemberController in ecshopx-companys and delegates to OperatorStoreMemberReadinessService in ecshopx-shuyun: before the store cashier pulls a cart, it registers the member offline with the Shuyun open platform (member.register) when the company's open-platform config is enabled and eligible and the member is not yet synced, skipping cleanly otherwise and failing with ResourceException when the member or mobile is missing.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/api/admin/v1/OperatorStoreMemberController.java",
+          "version": "repo-file-v1:sha256:d315a428844c590a6ef22f2eafac81e57c2316ecee365f40f8ebab1e22d9ff61"
+        },
+        {
+          "resource": "repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/service/openplatform/OperatorStoreMemberReadinessService.java",
+          "version": "repo-file-v1:sha256:eff4467a1422f225eeb1ec5255dbb971885cf8d5ff47c434ff157691c8b53b2f"
+        }
+      ]
+    },
+    {
+      "id": "claim_850ac9d6cea64a4391bc707e9bd1608d",
+      "statement": "POST /api/v1/operator/cartfastbuyadd is the operator fast-buy (店务立即购买) endpoint: OperatorCartController in ecshopx-companys routes it through the OperatorCartFastBuyFacade port implemented by OperatorCartFastBuyFacadeImpl in ecshopx-goods, which resolves the SKU, enforces distribution platform-store buy gating, validates shop/platform stock, and stores the fast-buy row in Redis via OperatorShopFastBuyRedisService. The platform_menu.json seed row 423 references it under the alias companys.operator.cartfastbuy.add while the Java controller is still annotated @Activated(routeAlias = \"companys.operator.cartdata.fastbuyadd\") — a seed-vs-controller alias mismatch.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/seed/menu/platform_menu.json",
+          "version": "repo-file-v1:sha256:5b4b36f285c0612496f77e372070ae9d90026f6e952a617519f0e36ad1549106"
+        },
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/api/admin/v1/OperatorCartController.java",
+          "version": "repo-file-v1:sha256:989d6fd24ce4ae6808916193bed1963b0b9389927aa311f49932f8a98b13778b"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/operatorcart/OperatorCartFastBuyFacadeImpl.java",
+          "version": "repo-file-v1:sha256:5ebd61ce926d4ce9f7fb2f6924f0d8dbfc8a03168eedc8b8b9acb0a5092ea812"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.9.0",
-    "at": "2026-11-08T17:14:16.576Z"
+    "at": "2026-11-09T17:09:44.795Z"
   }
 }
