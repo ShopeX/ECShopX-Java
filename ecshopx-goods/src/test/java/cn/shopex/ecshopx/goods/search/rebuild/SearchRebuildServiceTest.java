@@ -17,6 +17,7 @@
 package cn.shopex.ecshopx.goods.search.rebuild;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -24,8 +25,10 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -34,6 +37,7 @@ import cn.shopex.ecshopx.goods.search.index.GoodsSearchIndexRepository;
 import cn.shopex.ecshopx.goods.search.index.GoodsSearchMappingService;
 import cn.shopex.ecshopx.goods.search.index.SearchIndexSource;
 import cn.shopex.ecshopx.goods.search.index.SearchIndexSourceLoader;
+import java.io.IOException;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
@@ -71,9 +75,38 @@ class SearchRebuildServiceTest {
 		InOrder inOrder = inOrder(mappingService, indexRepository);
 		inOrder.verify(mappingService).createIndex(expectedIndex);
 		inOrder.verify(indexRepository).bulkIndex(eq(expectedIndex), anyList());
-		inOrder.verify(mappingService).putAlias(expectedIndex);
+		inOrder.verify(indexRepository).switchAlias(expectedIndex);
+		verify(mappingService, never()).putAlias(anyString());
 
 		verify(sourceLoader).fetchPage(1L, null, 0L, SearchRebuildService.BULK_BATCH_SIZE);
 		verify(sourceLoader).fetchPage(1L, null, 100L, SearchRebuildService.BULK_BATCH_SIZE);
+	}
+
+	@Test
+	void rebuildAbortsBeforeAliasSwitchWhenBulkFails() throws Exception {
+		GoodsSearchMappingService mappingService = mock(GoodsSearchMappingService.class);
+		GoodsSearchIndexRepository indexRepository = mock(GoodsSearchIndexRepository.class);
+		SearchIndexSourceLoader sourceLoader = mock(SearchIndexSourceLoader.class);
+
+		SearchIndexSource src = SearchIndexSource.builder()
+				.companyId(1)
+				.distributorId(9)
+				.defaultItemId(100)
+				.hqPriceFen(2000)
+				.marketPriceFen(2500)
+				.build();
+
+		when(sourceLoader.fetchPage(eq(1L), isNull(), eq(0L), anyInt())).thenReturn(List.of(src));
+		doThrow(new IOException("Elasticsearch bulk index failed: one or more items were rejected"))
+				.when(indexRepository)
+				.bulkIndex(anyString(), anyList());
+
+		SearchRebuildService service =
+				new SearchRebuildService(mappingService, indexRepository, sourceLoader, () -> FIXED_EPOCH_MS);
+
+		assertThatThrownBy(() -> service.rebuild(1L, null)).isInstanceOf(IOException.class);
+
+		verify(indexRepository, never()).switchAlias(anyString());
+		verify(mappingService, never()).putAlias(anyString());
 	}
 }

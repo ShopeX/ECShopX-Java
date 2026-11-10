@@ -22,7 +22,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import org.springframework.stereotype.Service;
 
@@ -63,6 +65,28 @@ public class GoodsSearchMappingService {
 	public void putAlias(String physicalIndex) throws IOException {
 		String aliasName = GoodsSearchIndexNames.alias(properties);
 		client.indices().putAlias(a -> a.index(physicalIndex).name(aliasName));
+	}
+
+	/**
+	 * 原子切换 alias：从已绑定该 alias 的物理索引移除，再挂到 {@code physicalIndex}。
+	 */
+	public void switchAlias(String physicalIndex) throws IOException {
+		String aliasName = GoodsSearchIndexNames.alias(properties);
+		List<String> bound = new ArrayList<>();
+		if (client.indices().existsAlias(e -> e.name(aliasName)).value()) {
+			bound.addAll(client.indices().getAlias(g -> g.name(aliasName)).result().keySet());
+		}
+		client.indices().updateAliases(u -> {
+			for (String index : bound) {
+				if (!physicalIndex.equals(index)) {
+					u.actions(a -> a.remove(r -> r.index(index).alias(aliasName)));
+				}
+			}
+			if (!bound.contains(physicalIndex)) {
+				u.actions(a -> a.add(add -> add.index(physicalIndex).alias(aliasName)));
+			}
+			return u;
+		});
 	}
 
 	private Map<String, Object> buildIndexSettings() {

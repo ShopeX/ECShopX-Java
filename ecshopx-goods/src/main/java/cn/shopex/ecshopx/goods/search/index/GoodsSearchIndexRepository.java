@@ -17,6 +17,7 @@
 package cn.shopex.ecshopx.goods.search.index;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch.core.BulkResponse;
 import co.elastic.clients.elasticsearch.core.bulk.BulkOperation;
 import co.elastic.clients.json.JsonData;
 import java.io.IOException;
@@ -49,7 +50,14 @@ public class GoodsSearchIndexRepository {
 					.id(doc.id())
 					.document(JsonData.of(toEsSource(doc))))));
 		}
-		client.bulk(b -> b.operations(ops));
+		BulkResponse response = client.bulk(b -> b.operations(ops));
+		assertBulkSucceeded(response);
+	}
+
+	static void assertBulkSucceeded(BulkResponse response) throws IOException {
+		if (response.errors()) {
+			throw new IOException("Elasticsearch bulk index failed: one or more items were rejected");
+		}
 	}
 
 	public void delete(String physicalIndex, String documentId) throws IOException {
@@ -58,7 +66,7 @@ public class GoodsSearchIndexRepository {
 
 	/** 将读写 alias 切换到 {@code physicalIndex}（蓝绿重建收尾）。 */
 	public void switchAlias(String physicalIndex) throws IOException {
-		mappingService.putAlias(physicalIndex);
+		mappingService.switchAlias(physicalIndex);
 	}
 
 	static Map<String, Object> toEsSource(GoodsSearchDocument doc) {

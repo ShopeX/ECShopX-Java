@@ -84,7 +84,7 @@ public class SearchRebuildService {
 			cursor = batch.get(batch.size() - 1).defaultItemId();
 		}
 
-		mappingService.putAlias(physicalIndex);
+		indexRepository.switchAlias(physicalIndex);
 		return new RebuildResult(physicalIndex, totalDocs);
 	}
 
