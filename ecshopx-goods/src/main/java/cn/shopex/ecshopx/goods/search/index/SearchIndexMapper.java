@@ -41,6 +41,14 @@ public class SearchIndexMapper {
 				src.companyId(),
 				src.distributorId(),
 				src.defaultItemId(),
+				nullToEmpty(src.itemName()),
+				nullToEmpty(src.brief()),
+				nullToEmpty(src.itemBn()),
+				nullToEmpty(src.barcode()),
+				src.tags() != null ? src.tags() : List.of(),
+				src.approveStatus() != null ? src.approveStatus() : "onsale",
+				src.auditStatus() != null ? src.auditStatus() : "approved",
+				src.categoryIds() != null ? src.categoryIds() : List.of(),
 				salePrice,
 				src.marketPriceFen(),
 				memberPrices,
@@ -88,6 +96,10 @@ public class SearchIndexMapper {
 			case "group" -> 2;
 			default -> Integer.MAX_VALUE;
 		};
+	}
+
+	private static String nullToEmpty(String s) {
+		return s != null ? s : "";
 	}
 
 	private static Map<Long, Long> copyPositivePrices(Map<Long, Long> prices) {

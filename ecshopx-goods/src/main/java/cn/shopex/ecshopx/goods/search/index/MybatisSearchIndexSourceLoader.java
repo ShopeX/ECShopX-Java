@@ -19,7 +19,11 @@ package cn.shopex.ecshopx.goods.search.index;
 import cn.shopex.ecshopx.distribution.domain.DistributorItems;
 import cn.shopex.ecshopx.distribution.mapper.DistributorItemsMapper;
 import cn.shopex.ecshopx.goods.domain.Items;
+import cn.shopex.ecshopx.goods.domain.ItemsRelTags;
+import cn.shopex.ecshopx.goods.domain.ItemsTags;
 import cn.shopex.ecshopx.goods.mapper.ItemsMapper;
+import cn.shopex.ecshopx.goods.repository.ItemsRelTagsRepository;
+import cn.shopex.ecshopx.goods.repository.ItemsTagsRepository;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,16 +40,22 @@ public class MybatisSearchIndexSourceLoader implements SearchIndexSourceLoader {
 	private final ItemsMapper itemsMapper;
 	private final DistributorItemsMapper distributorItemsMapper;
 	private final SearchIndexMemberActivityRepository memberActivityRepository;
+	private final ItemsRelTagsRepository itemsRelTagsRepository;
+	private final ItemsTagsRepository itemsTagsRepository;
 
 	public MybatisSearchIndexSourceLoader(
 			SearchIndexSourceMapper searchIndexSourceMapper,
 			ItemsMapper itemsMapper,
 			DistributorItemsMapper distributorItemsMapper,
-			SearchIndexMemberActivityRepository memberActivityRepository) {
+			SearchIndexMemberActivityRepository memberActivityRepository,
+			ItemsRelTagsRepository itemsRelTagsRepository,
+			ItemsTagsRepository itemsTagsRepository) {
 		this.searchIndexSourceMapper = searchIndexSourceMapper;
 		this.itemsMapper = itemsMapper;
 		this.distributorItemsMapper = distributorItemsMapper;
 		this.memberActivityRepository = memberActivityRepository;
+		this.itemsRelTagsRepository = itemsRelTagsRepository;
+		this.itemsTagsRepository = itemsTagsRepository;
 	}
 
 	@Override
@@ -101,11 +111,20 @@ public class MybatisSearchIndexSourceLoader implements SearchIndexSourceLoader {
 				memberActivityRepository.loadMemberPrices(companyId, defaultItemId, skuItemIds);
 		List<SearchIndexSource.Activity> activities =
 				memberActivityRepository.loadActivities(companyId, skuItemIds);
+		List<String> tagNames = resolveTagNames(companyId, defaultItemId);
 		return Optional.of(
 				SearchIndexSource.builder()
 						.companyId(companyId)
 						.distributorId(distributorId)
 						.defaultItemId(defaultItemId)
+						.itemName(anchor.getItemName())
+						.brief(anchor.getBrief())
+						.itemBn(anchor.getItemBn())
+						.barcode(anchor.getBarcode())
+						.tags(tagNames)
+						.approveStatus(anchor.getApproveStatus())
+						.auditStatus(anchor.getAuditStatus())
+						.categoryIds(parseCategoryIds(anchor.getItemCategory()))
 						.hqPriceFen(hqPriceFen)
 						.distributorPriceFen(distributorPriceFen)
 						.marketPriceFen(marketPriceFen)
@@ -202,5 +221,32 @@ public class MybatisSearchIndexSourceLoader implements SearchIndexSourceLoader {
 
 	private static long priceFen(Integer price) {
 		return price != null ? price.longValue() : 0L;
+	}
+
+	private List<String> resolveTagNames(long companyId, long defaultItemId) {
+		List<ItemsRelTags> rels =
+				itemsRelTagsRepository.listRowsByCompanyIdAndItemIdIn(companyId, List.of(defaultItemId));
+		List<String> names = new ArrayList<>(rels.size());
+		for (ItemsRelTags rel : rels) {
+			if (rel.getTagId() == null) {
+				continue;
+			}
+			ItemsTags tag = itemsTagsRepository.selectById(rel.getTagId());
+			if (tag != null && tag.getTagName() != null && !tag.getTagName().isBlank()) {
+				names.add(tag.getTagName().trim());
+			}
+		}
+		return List.copyOf(names);
+	}
+
+	private static List<Long> parseCategoryIds(String itemCategory) {
+		if (itemCategory == null || itemCategory.isBlank()) {
+			return List.of();
+		}
+		try {
+			return List.of(Long.parseLong(itemCategory.trim()));
+		} catch (NumberFormatException ignored) {
+			return List.of();
+		}
 	}
 }

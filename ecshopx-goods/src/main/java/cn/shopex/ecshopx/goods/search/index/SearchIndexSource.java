@@ -29,6 +29,14 @@ public record SearchIndexSource(
 		long companyId,
 		long distributorId,
 		long defaultItemId,
+		String itemName,
+		String brief,
+		String itemBn,
+		String barcode,
+		List<String> tags,
+		String approveStatus,
+		String auditStatus,
+		List<Long> categoryIds,
 		long hqPriceFen,
 		Long distributorPriceFen,
 		long marketPriceFen,
@@ -50,6 +58,14 @@ public record SearchIndexSource(
 		private long companyId;
 		private long distributorId;
 		private long defaultItemId;
+		private String itemName = "";
+		private String brief = "";
+		private String itemBn = "";
+		private String barcode = "";
+		private List<String> tags = List.of();
+		private String approveStatus = "onsale";
+		private String auditStatus = "approved";
+		private List<Long> categoryIds = List.of();
 		private long hqPriceFen;
 		private Long distributorPriceFen;
 		private long marketPriceFen;
@@ -70,6 +86,46 @@ public record SearchIndexSource(
 
 		public Builder defaultItemId(long defaultItemId) {
 			this.defaultItemId = defaultItemId;
+			return this;
+		}
+
+		public Builder itemName(String itemName) {
+			this.itemName = itemName != null ? itemName : "";
+			return this;
+		}
+
+		public Builder brief(String brief) {
+			this.brief = brief != null ? brief : "";
+			return this;
+		}
+
+		public Builder itemBn(String itemBn) {
+			this.itemBn = itemBn != null ? itemBn : "";
+			return this;
+		}
+
+		public Builder barcode(String barcode) {
+			this.barcode = barcode != null ? barcode : "";
+			return this;
+		}
+
+		public Builder tags(List<String> tags) {
+			this.tags = tags != null ? List.copyOf(tags) : List.of();
+			return this;
+		}
+
+		public Builder approveStatus(String approveStatus) {
+			this.approveStatus = approveStatus != null ? approveStatus : "onsale";
+			return this;
+		}
+
+		public Builder auditStatus(String auditStatus) {
+			this.auditStatus = auditStatus != null ? auditStatus : "approved";
+			return this;
+		}
+
+		public Builder categoryIds(List<Long> categoryIds) {
+			this.categoryIds = categoryIds != null ? List.copyOf(categoryIds) : List.of();
 			return this;
 		}
 
@@ -113,6 +169,14 @@ public record SearchIndexSource(
 					companyId,
 					distributorId,
 					defaultItemId,
+					itemName,
+					brief,
+					itemBn,
+					barcode,
+					List.copyOf(tags),
+					approveStatus,
+					auditStatus,
+					List.copyOf(categoryIds),
 					hqPriceFen,
 					distributorPriceFen,
 					marketPriceFen,

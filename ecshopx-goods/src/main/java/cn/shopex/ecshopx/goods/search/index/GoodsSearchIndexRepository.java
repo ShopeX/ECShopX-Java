@@ -74,6 +74,14 @@ public class GoodsSearchIndexRepository {
 		root.put("company_id", doc.companyId());
 		root.put("distributor_id", doc.distributorId());
 		root.put("default_item_id", doc.defaultItemId());
+		root.put("item_name", doc.itemName());
+		root.put("brief", doc.brief());
+		root.put("item_bn", doc.itemBn());
+		root.put("barcode", doc.barcode());
+		root.put("tags", doc.tags());
+		root.put("approve_status", doc.approveStatus());
+		root.put("audit_status", doc.auditStatus());
+		root.put("category_ids", doc.categoryIds());
 		root.put("sale_price", doc.salePrice());
 		root.put("market_price", doc.marketPrice());
 		root.put("has_stock", doc.hasStock());

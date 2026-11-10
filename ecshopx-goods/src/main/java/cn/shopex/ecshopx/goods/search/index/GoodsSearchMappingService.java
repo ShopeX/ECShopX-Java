@@ -113,6 +113,7 @@ public class GoodsSearchMappingService {
 		props.put("activities", nestedActivities());
 		props.put("has_stock", scalar("boolean"));
 		props.put("listed_at", scalar("long"));
+		props.put("tags", ikText());
 		props.put("category_ids", scalar("long"));
 		props.put("approve_status", scalar("keyword"));
 		props.put("audit_status", scalar("keyword"));

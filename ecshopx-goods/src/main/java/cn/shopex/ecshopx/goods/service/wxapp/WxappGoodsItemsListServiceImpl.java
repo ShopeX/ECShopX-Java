@@ -35,6 +35,11 @@ import cn.shopex.ecshopx.goods.repository.ItemsTagsRepository;
 import cn.shopex.ecshopx.goods.service.ItemsCategoryDistributorIdResolver;
 import cn.shopex.ecshopx.goods.service.items.ItemLogisticsStoreEnricher;
 import cn.shopex.ecshopx.goods.service.cart.salesperson.SalespersonCartDistributorSkuReplaceService;
+import cn.shopex.ecshopx.goods.search.GoodsSearchFacade;
+import cn.shopex.ecshopx.goods.search.SearchEsProperties;
+import cn.shopex.ecshopx.goods.search.price.SearchMemberTierResolver;
+import cn.shopex.ecshopx.goods.search.query.GoodsSearchEsException;
+import cn.shopex.ecshopx.goods.search.query.GoodsSearchQuery;
 import cn.shopex.ecshopx.goods.service.pointsmall.PointsmallFrontBrandFilter;
 import cn.shopex.ecshopx.goods.service.pointsmall.PointsmallFrontBrandListService;
 import cn.shopex.ecshopx.goods.service.popularize.CompanyPopularizeConfigReadService;
@@ -57,11 +62,15 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 @Service
 public class WxappGoodsItemsListServiceImpl implements WxappGoodsItemsListService {
+
+	private static final Logger log = LoggerFactory.getLogger(WxappGoodsItemsListServiceImpl.class);
 
 	private static final String LIST_ERR = "获取商品列表出错.";
 	private static final String SPECIAL_CHAR_MSG = "系统当前不支特殊字符搜索";
@@ -95,6 +104,9 @@ public class WxappGoodsItemsListServiceImpl implements WxappGoodsItemsListServic
 	private final SalespersonCartDistributorSkuReplaceService salespersonCartDistributorSkuReplaceService;
 	private final LangueProperties langueProperties;
 	private final ItemLogisticsStoreEnricher itemLogisticsStoreEnricher;
+	private final SearchEsProperties searchEsProperties;
+	private final GoodsSearchFacade goodsSearchFacade;
+	private final SearchMemberTierResolver searchMemberTierResolver;
 
 	public WxappGoodsItemsListServiceImpl(WxappGoodsItemsKeywordSpecialCharChecker wxappGoodsItemsKeywordSpecialCharChecker,
 			WxappGoodsItemsListParamBuilder wxappGoodsItemsListParamBuilder,
@@ -119,7 +131,10 @@ public class WxappGoodsItemsListServiceImpl implements WxappGoodsItemsListServic
 			ItemsCategoryDistributorIdResolver itemsCategoryDistributorIdResolver,
 			SalespersonCartDistributorSkuReplaceService salespersonCartDistributorSkuReplaceService,
 			LangueProperties langueProperties,
-			ItemLogisticsStoreEnricher itemLogisticsStoreEnricher) {
+			ItemLogisticsStoreEnricher itemLogisticsStoreEnricher,
+			SearchEsProperties searchEsProperties,
+			GoodsSearchFacade goodsSearchFacade,
+			SearchMemberTierResolver searchMemberTierResolver) {
 		this.wxappGoodsItemsKeywordSpecialCharChecker = wxappGoodsItemsKeywordSpecialCharChecker;
 		this.wxappGoodsItemsListParamBuilder = wxappGoodsItemsListParamBuilder;
 		this.promoterOnsaleGoodsIdsQueryService = promoterOnsaleGoodsIdsQueryService;
@@ -144,6 +159,9 @@ public class WxappGoodsItemsListServiceImpl implements WxappGoodsItemsListServic
 		this.salespersonCartDistributorSkuReplaceService = salespersonCartDistributorSkuReplaceService;
 		this.langueProperties = langueProperties;
 		this.itemLogisticsStoreEnricher = itemLogisticsStoreEnricher;
+		this.searchEsProperties = searchEsProperties;
+		this.goodsSearchFacade = goodsSearchFacade;
+		this.searchMemberTierResolver = searchMemberTierResolver;
 	}
 
 	@Override
@@ -189,6 +207,7 @@ public class WxappGoodsItemsListServiceImpl implements WxappGoodsItemsListServic
 		LinkedHashMap<String, Object> orchestrationParams = new LinkedHashMap<>(params);
 		orchestrationParams.put(WxappGoodsItemsListQueryOrchestrator.KEY_INTERNAL_ACCEPT_LANGUAGE, acceptLang);
 		LinkedHashMap<String, Object> effectiveParamsForNewFilter = null;
+		boolean esMainPriceApplied = false;
 		if (!defaultItemMode) {
 			result = wxappGoodsItemsListQueryOrchestrator.querySkuItemsList(companyId, orchestrationParams, List.of());
 		} else {
@@ -196,7 +215,18 @@ public class WxappGoodsItemsListServiceImpl implements WxappGoodsItemsListServic
 			orchestrationParams.put(WxappGoodsItemsListQueryOrchestrator.KEY_INTERNAL_LIST_PAGE_SIZE, pageSize);
 			effectiveParamsForNewFilter =
 					wxappGoodsItemsListQueryOrchestrator.effectiveBusinessParamsForWxappItemList(companyId, orchestrationParams);
-			result = wxappGoodsItemsListQueryOrchestrator.queryItemListData(companyId, orchestrationParams, List.of());
+			if (searchEsProperties.isEnabled()) {
+				Map<String, Object> esResult =
+						queryDefaultItemListViaEs(companyId, userId, page, pageSize, orchestrationParams, acceptLang);
+				if (esResult != null) {
+					result = esResult;
+					esMainPriceApplied = true;
+				} else {
+					result = wxappGoodsItemsListQueryOrchestrator.queryItemListData(companyId, orchestrationParams, List.of());
+				}
+			} else {
+				result = wxappGoodsItemsListQueryOrchestrator.queryItemListData(companyId, orchestrationParams, List.of());
+			}
 		}
 
 		@SuppressWarnings("unchecked")
@@ -224,7 +254,9 @@ public class WxappGoodsItemsListServiceImpl implements WxappGoodsItemsListServic
 				row.put("commission_type", commissionType);
 			}
 		} else if (!list.isEmpty()) {
-			wxappGoodsItemsListMemberPriceApplyService.applyForRows(companyId, userId, list, acceptLang);
+			if (!esMainPriceApplied) {
+				wxappGoodsItemsListMemberPriceApplyService.applyForRows(companyId, userId, list, acceptLang);
+			}
 			goodsItemsListPromotionEnrichmentService.enrich(list, userId);
 		}
 
@@ -261,6 +293,60 @@ public class WxappGoodsItemsListServiceImpl implements WxappGoodsItemsListServic
 			body.put("tdk_data", tdkGivenSaveService.getGivenSetInfo("list", companyId, countryCodeRaw));
 		}
 		return body;
+	}
+
+	/**
+	 * @return ES 列表结果；{@code null} 表示已回落 DB 路径（likeFallback）
+	 */
+	private Map<String, Object> queryDefaultItemListViaEs(
+			long companyId,
+			long userId,
+			int page,
+			int pageSize,
+			LinkedHashMap<String, Object> orchestrationParams,
+			String acceptLang) {
+		LinkedHashMap<String, Object> effective =
+				wxappGoodsItemsListQueryOrchestrator.effectiveBusinessParamsForWxappItemList(companyId, orchestrationParams);
+		effective.remove("__keyword_default_item_ids");
+		applyTagItemIdConstraint(companyId, effective);
+		try {
+			var tier = searchMemberTierResolver.resolve(companyId, userId);
+			GoodsSearchQuery query = GoodsSearchQuery.fromWxappParams(companyId, effective, page, pageSize, tier);
+			return goodsSearchFacade.queryListWithHydration(companyId, orchestrationParams, query, acceptLang);
+		} catch (GoodsSearchEsException e) {
+			if (searchEsProperties.isLikeFallback()) {
+				log.warn("goods list ES fallback to DB companyId={}", companyId);
+				return null;
+			}
+			log.error("goods list ES failed and fallback disabled companyId={}", companyId, e);
+			return emptyListBody();
+		}
+	}
+
+	private void applyTagItemIdConstraint(long companyId, LinkedHashMap<String, Object> params) {
+		String tagIdStr = params.get("tag_id") != null ? params.get("tag_id").toString().trim() : "";
+		if (!StringUtils.hasText(tagIdStr)) {
+			return;
+		}
+		try {
+			long tid = Long.parseLong(tagIdStr);
+			List<Long> byTag = itemsRelTagsRepository.listItemIdsByCompanyIdAndTagIds(companyId, List.of(tid));
+			if (byTag.isEmpty()) {
+				params.put("item_id", List.of(-1L));
+				return;
+			}
+			@SuppressWarnings("unchecked")
+			List<Long> existing = (List<Long>) params.get("item_id");
+			if (existing == null || existing.isEmpty()) {
+				params.put("item_id", new ArrayList<>(byTag));
+			} else {
+				Set<Long> tagSet = new LinkedHashSet<>(byTag);
+				List<Long> merged = existing.stream().filter(tagSet::contains).toList();
+				params.put("item_id", merged.isEmpty() ? List.of(-1L) : merged);
+			}
+		} catch (NumberFormatException ignored) {
+			// skip invalid tag
+		}
 	}
 
 	private void validatePaging(HttpServletRequest request) {
