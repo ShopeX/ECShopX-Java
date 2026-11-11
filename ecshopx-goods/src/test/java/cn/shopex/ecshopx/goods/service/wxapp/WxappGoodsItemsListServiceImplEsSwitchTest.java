@@ -176,7 +176,7 @@ class WxappGoodsItemsListServiceImplEsSwitchTest {
 		verify(wxappGoodsItemsListParamBuilder).build(request, 1L, 0L, true);
 		verify(goodsSearchFacade).queryListWithHydration(eq(1L), any(), any(), any());
 		verify(wxappGoodsItemsListQueryOrchestrator, never()).queryItemListData(anyLong(), any(), any());
-		verify(wxappGoodsItemsListMemberPriceApplyService, never()).applyForRows(anyLong(), anyLong(), any(), any());
+		verify(wxappGoodsItemsListMemberPriceApplyService).applyForRows(eq(1L), eq(0L), any(), any());
 	}
 
 	@Test

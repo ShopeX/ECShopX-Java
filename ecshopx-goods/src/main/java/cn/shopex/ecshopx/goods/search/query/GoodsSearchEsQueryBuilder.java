@@ -18,9 +18,6 @@ package cn.shopex.ecshopx.goods.search.query;
 
 import cn.shopex.ecshopx.goods.search.SearchEsProperties;
 import co.elastic.clients.elasticsearch._types.FieldValue;
-import co.elastic.clients.elasticsearch._types.query_dsl.FunctionBoostMode;
-import co.elastic.clients.elasticsearch._types.query_dsl.FunctionScore;
-import co.elastic.clients.elasticsearch._types.query_dsl.FunctionScoreMode;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
@@ -31,12 +28,15 @@ import java.util.List;
 import org.springframework.util.StringUtils;
 
 /**
- * 构建 ES 查询体：硬过滤 + 可选关键词 multi_match；默认排序走 function_score（has_stock 加权，完整权重 Task 8）。
+ * 构建 ES 查询体：硬过滤 + 可选关键词 multi_match。
+ * {@code _score} 仅表示文本相关度；默认综合排序由 {@link GoodsSearchQueryService#applyEsSort}
+ * 分层：有货 → 相关度 → 销量 → 上架时间。
  */
 final class GoodsSearchEsQueryBuilder {
 
 	private GoodsSearchEsQueryBuilder() {}
 
+	@SuppressWarnings("unused") // properties 保留给调用方；综合排序已改为分层 sort，不再读 rank 权重
 	static Query buildRootQuery(GoodsSearchQuery q, SearchEsProperties properties) {
 		List<Query> filters = buildHardFilters(q);
 		Query inner;
@@ -47,32 +47,35 @@ final class GoodsSearchEsQueryBuilder {
 					.type(co.elastic.clients.elasticsearch._types.query_dsl.TextQueryType.BestFields));
 			Query bn = QueryBuilders.prefix(p -> p.field("item_bn").value(q.keywords()));
 			Query barcode = QueryBuilders.prefix(p -> p.field("barcode").value(q.keywords()));
-			inner = QueryBuilders.bool(b -> b.should(text).should(bn).should(barcode).minimumShouldMatch("1"));
+			List<Query> shoulds = new ArrayList<>();
+			shoulds.add(text);
+			shoulds.add(bn);
+			shoulds.add(barcode);
+			String pinyinQ = GoodsSearchPinyinEncoder.normalizeQuery(q.keywords());
+			if (pinyinQ.length() >= 2) {
+				shoulds.add(QueryBuilders.multiMatch(m -> m
+						.query(pinyinQ)
+						.fields(
+								"item_name_pinyin^2.5",
+								"item_name_py^2",
+								"brief_pinyin^1.5",
+								"brief_py",
+								"tags_pinyin",
+								"tags_py")
+						.type(co.elastic.clients.elasticsearch._types.query_dsl.TextQueryType.BestFields)));
+			}
+			inner = QueryBuilders.bool(b -> b.should(shoulds).minimumShouldMatch("1"));
 		} else {
+			// 无关键词时文本分恒为 1，综合排序退化为：有货 → 销量 → 上架时间
 			inner = QueryBuilders.constantScore(cs -> cs.filter(QueryBuilders.matchAll(m -> m)).boost(1.0f));
 		}
-		Query bool = QueryBuilders.bool(b -> {
+		return QueryBuilders.bool(b -> {
 			b.must(inner);
 			for (Query f : filters) {
 				b.filter(f);
 			}
 			return b;
 		});
-		SearchEsProperties.Rank rank = properties.getRank() != null ? properties.getRank() : new SearchEsProperties.Rank();
-		double hasStockWeight = rank.getHasStockWeight();
-		double salesWeight = rank.getSalesWeight();
-		double listedAtWeight = rank.getListedAtWeight();
-		List<FunctionScore> scoreFns = new ArrayList<>(3);
-		scoreFns.add(FunctionScore.of(fn -> fn
-				.filter(QueryBuilders.term(t -> t.field("has_stock").value(true)))
-				.weight(hasStockWeight)));
-		scoreFns.add(FunctionScore.of(fn -> fn.fieldValueFactor(fvf -> fvf.field("sales").factor(salesWeight))));
-		scoreFns.add(FunctionScore.of(fn -> fn.fieldValueFactor(fvf -> fvf.field("listed_at").factor(listedAtWeight))));
-		return QueryBuilders.functionScore(fs -> fs
-				.query(bool)
-				.functions(scoreFns)
-				.scoreMode(FunctionScoreMode.Sum)
-				.boostMode(FunctionBoostMode.Sum));
 	}
 
 	/** 供单测断言生成的 query DSL。 */

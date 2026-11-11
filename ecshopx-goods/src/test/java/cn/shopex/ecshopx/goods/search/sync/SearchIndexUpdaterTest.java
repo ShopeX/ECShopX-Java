@@ -84,7 +84,7 @@ class SearchIndexUpdaterTest {
 				.distributorId(DISTRIBUTOR_ID)
 				.defaultItemId(DEFAULT_ITEM_ID)
 				.hqPriceFen(2000)
-				.distributorPriceFen(1800)
+				.distributorPriceFen(1800L)
 				.marketPriceFen(2500)
 				.skus(List.of(new SearchIndexSource.Sku(101L, 5L, "onsale")))
 				.build();

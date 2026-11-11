@@ -32,12 +32,19 @@ class GoodsSearchMappingServiceTest {
 		Map<String, Object> props = (Map<String, Object>) m.get("properties");
 		assertThat(props).containsKeys(
 				"company_id", "distributor_id", "default_item_id",
-				"item_name", "sale_price", "member_prices", "skus", "activities", "has_stock");
+				"item_name", "item_name_pinyin", "item_name_py",
+				"brief_pinyin", "tags_pinyin",
+				"sale_price", "member_prices", "skus", "activities", "has_stock");
+		@SuppressWarnings("unchecked")
+		Map<String, Object> namePy = (Map<String, Object>) props.get("item_name_pinyin");
+		assertThat(namePy.get("analyzer")).isEqualTo("goods_pinyin_index");
+		assertThat(namePy.get("search_analyzer")).isEqualTo("goods_pinyin_search");
 		@SuppressWarnings("unchecked")
 		Map<String, Object> skus = (Map<String, Object>) props.get("skus");
 		assertThat(skus.get("type")).isEqualTo("nested");
 		@SuppressWarnings("unchecked")
 		Map<String, Object> acts = (Map<String, Object>) props.get("activities");
 		assertThat(acts.get("type")).isEqualTo("nested");
+		assertThat(GoodsSearchMappingService.buildPinyinAnalysis()).containsKeys("filter", "analyzer");
 	}
 }

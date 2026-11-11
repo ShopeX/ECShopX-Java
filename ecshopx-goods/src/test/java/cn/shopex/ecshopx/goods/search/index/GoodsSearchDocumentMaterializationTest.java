@@ -43,4 +43,33 @@ class GoodsSearchDocumentMaterializationTest {
 		assertThat(es.get("listed_at")).isEqualTo(1_650_000_000L);
 		assertThat(es.keySet()).contains("sales", "listed_at");
 	}
+
+	@Test
+	void toEsSource_writesPinyinFieldsFromItemName() {
+		GoodsSearchDocument doc = new GoodsSearchDocument(
+				"1_2_99",
+				1L,
+				2L,
+				99L,
+				"山岳户外双肩包",
+				"轻便户外",
+				"BN",
+				"BC",
+				List.of("登山"),
+				"onsale",
+				"approved",
+				List.of(),
+				100L,
+				100L,
+				0L,
+				1L,
+				new GoodsSearchDocument.MemberPrices(Map.of(), Map.of()),
+				List.of(),
+				List.of());
+		Map<String, Object> es = GoodsSearchIndexRepository.toEsSource(doc);
+		assertThat(es.get("item_name_pinyin")).isEqualTo("shanyuehuwaishuangjianbao");
+		assertThat(es.get("item_name_py")).isEqualTo("syhwsjb");
+		assertThat(es.get("brief_pinyin")).isEqualTo("qingbianhuwai");
+		assertThat(es.get("tags_py")).isEqualTo("ds");
+	}
 }

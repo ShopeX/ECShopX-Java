@@ -47,7 +47,8 @@ public class GoodsSearchFacade {
 	}
 
 	/**
-	 * ES 召回 + DB hydrate；列表主价写入 {@code price}（分），调用方应跳过会员价主价重算。
+	 * ES 召回 + DB hydrate；列表主价写入 {@code price}（分）。
+	 * 调用方仍应走会员价展示字段回写（{@code member_price}/{@code vip_price} 等），勿覆盖 {@code price}。
 	 *
 	 * @throws GoodsSearchEsException ES 不可用且未走 fallback 时由上层处理
 	 */

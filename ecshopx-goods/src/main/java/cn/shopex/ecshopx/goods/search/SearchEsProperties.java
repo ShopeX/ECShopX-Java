@@ -51,6 +51,10 @@ public class SearchEsProperties {
 		return hosts;
 	}
 
+	/**
+	 * 历史权重配置；默认综合排序已改为分层字段 sort（有货 → 相关度 → 销量 → 上架时间），
+	 * 这些权重不再参与打分，保留仅为兼容既有配置项。
+	 */
 	@Data
 	public static class Rank {
 

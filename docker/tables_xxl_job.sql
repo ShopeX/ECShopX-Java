@@ -209,7 +209,8 @@ INSERT INTO `xxl_job_info`(`id`, `job_group`, `job_desc`, `add_time`, `update_ti
 (66,1,'红冲定时查询任务','2026-04-26 10:42:17','2026-05-08 16:17:49','ecshopx','','CRON','0 * * * * ? *','DO_NOTHING','FIRST','query-invoice-red','','SERIAL_EXECUTION',0,0,'BEAN',NULL,NULL,'2026-04-26 10:42:17','',1),
 (67,1,'活动时间截止时自动成团或解散','2026-04-26 11:17:02','2026-05-08 16:18:22','ecshopx','','CRON','0 * * * * ? *','DO_NOTHING','FIRST','finish-community-activity','','SERIAL_EXECUTION',0,0,'BEAN',NULL,NULL,'2026-04-26 11:17:02','',1),
 (68,1,'旺店通定时同步订单发货','2026-04-26 11:49:45','2026-05-08 16:18:55','ecshopx','','CRON','0 */5 * * * ? *','DO_NOTHING','FIRST','sync-wdt-logistics','','SERIAL_EXECUTION',0,0,'BEAN','','','2026-04-26 11:49:45','',1),
-(69,1,'旺店通定时同步货品库存','2026-04-26 12:14:23','2026-05-08 16:19:32','ecshopx','','CRON','0 */5 * * * ? *','DO_NOTHING','FIRST','sync-wdt-inventory','','SERIAL_EXECUTION',0,0,'BEAN','','','2026-04-26 12:14:23','',1);
+(69,1,'旺店通定时同步货品库存','2026-04-26 12:14:23','2026-05-08 16:19:32','ecshopx','','CRON','0 */5 * * * ? *','DO_NOTHING','FIRST','sync-wdt-inventory','','SERIAL_EXECUTION',0,0,'BEAN','','','2026-04-26 12:14:23','',1),
+(70,1,'商品搜索索引全量同步','2026-11-10 19:00:00','2026-11-10 19:00:00','ecshopx','','CRON','0 0 1 * * ? *','DO_NOTHING','FIRST','goods-search-rebuild','','SERIAL_EXECUTION',0,0,'BEAN','','','2026-11-10 19:00:00','',1);
 
 INSERT INTO `xxl_job_user`(`id`, `username`, `password`, `role`, `permission`)
 VALUES (1, 'admin', 'e10adc3949ba59abbe56e057f20f883e', 1, NULL);

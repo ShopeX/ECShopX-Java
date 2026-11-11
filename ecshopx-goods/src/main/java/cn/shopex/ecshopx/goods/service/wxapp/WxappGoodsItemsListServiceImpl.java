@@ -212,7 +212,6 @@ public class WxappGoodsItemsListServiceImpl implements WxappGoodsItemsListServic
 		LinkedHashMap<String, Object> orchestrationParams = new LinkedHashMap<>(params);
 		orchestrationParams.put(WxappGoodsItemsListQueryOrchestrator.KEY_INTERNAL_ACCEPT_LANGUAGE, acceptLang);
 		LinkedHashMap<String, Object> effectiveParamsForNewFilter = null;
-		boolean esMainPriceApplied = false;
 		if (!defaultItemMode) {
 			result = wxappGoodsItemsListQueryOrchestrator.querySkuItemsList(companyId, orchestrationParams, List.of());
 		} else {
@@ -229,7 +228,6 @@ public class WxappGoodsItemsListServiceImpl implements WxappGoodsItemsListServic
 						orchestrationParams, effectiveParamsForNewFilter, acceptLang);
 				if (esResult != null) {
 					result = esResult;
-					esMainPriceApplied = true;
 				} else {
 					result = wxappGoodsItemsListQueryOrchestrator.queryItemListData(companyId, orchestrationParams, List.of());
 				}
@@ -263,9 +261,8 @@ public class WxappGoodsItemsListServiceImpl implements WxappGoodsItemsListServic
 				row.put("commission_type", commissionType);
 			}
 		} else if (!list.isEmpty()) {
-			if (!esMainPriceApplied) {
-				wxappGoodsItemsListMemberPriceApplyService.applyForRows(companyId, userId, list, acceptLang);
-			}
+			// ES 路径已把算好的主价写入 price；applyForRows 只补 member_*/vip_* 展示字段，不覆盖 price。
+			wxappGoodsItemsListMemberPriceApplyService.applyForRows(companyId, userId, list, acceptLang);
 			goodsItemsListPromotionEnrichmentService.enrich(list, userId);
 		}
 

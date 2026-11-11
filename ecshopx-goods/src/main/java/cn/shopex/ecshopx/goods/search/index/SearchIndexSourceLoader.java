@@ -28,7 +28,7 @@ public interface SearchIndexSourceLoader {
 	 * @param afterDefaultItemId 复合游标：上一页最后一条的 {@code default_item_id}，首页传 0
 	 * @param afterDistributorId 复合游标：上一页最后一条的 {@code distributor_id}，首页传 0
 	 * @param limit 本页最大条数
-	 * @return 空列表表示扫描结束
+	 * @return 空列表表示键空间已扫完（实现应跳过无法物化的孤儿键，避免误判结束）
 	 */
 	List<SearchIndexSource> fetchPage(
 			long companyId,

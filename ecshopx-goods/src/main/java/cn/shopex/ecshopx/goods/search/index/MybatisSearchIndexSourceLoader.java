@@ -66,13 +66,33 @@ public class MybatisSearchIndexSourceLoader implements SearchIndexSourceLoader {
 			long afterDefaultItemId,
 			long afterDistributorId,
 			int limit) {
+		if (limit <= 0) {
+			return List.of();
+		}
 		Long distributorFilter = distributorIdOrNull != null && distributorIdOrNull > 0 ? distributorIdOrNull : null;
-		List<SearchIndexStoreItemKey> keys =
-				searchIndexSourceMapper.selectStoreItemKeys(
-						companyId, distributorFilter, afterDefaultItemId, afterDistributorId, limit);
-		List<SearchIndexSource> out = new ArrayList<>(keys.size());
-		for (SearchIndexStoreItemKey key : keys) {
-			loadStoreItem(companyId, key.distributorId(), key.defaultItemId()).ifPresent(out::add);
+		List<SearchIndexSource> out = new ArrayList<>(limit);
+		long cursorDefaultItemId = afterDefaultItemId;
+		long cursorDistributorId = afterDistributorId;
+		// 店品键可能因 items 已删等无法物化；空物化页不能当作扫描结束，否则会在孤儿键前缀处提前退出（如 company 38）。
+		while (out.size() < limit) {
+			List<SearchIndexStoreItemKey> keys =
+					searchIndexSourceMapper.selectStoreItemKeys(
+							companyId, distributorFilter, cursorDefaultItemId, cursorDistributorId, limit);
+			if (keys.isEmpty()) {
+				break;
+			}
+			for (SearchIndexStoreItemKey key : keys) {
+				loadStoreItem(companyId, key.distributorId(), key.defaultItemId()).ifPresent(out::add);
+				if (out.size() >= limit) {
+					break;
+				}
+			}
+			SearchIndexStoreItemKey lastKey = keys.get(keys.size() - 1);
+			cursorDefaultItemId = lastKey.defaultItemId();
+			cursorDistributorId = lastKey.distributorId();
+			if (out.size() >= limit || keys.size() < limit) {
+				break;
+			}
 		}
 		return out;
 	}

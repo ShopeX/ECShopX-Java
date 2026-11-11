@@ -20,7 +20,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import cn.shopex.ecshopx.goods.search.SearchEsProperties;
 import cn.shopex.ecshopx.goods.search.price.SearchMemberTier;
-import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch.core.SearchRequest;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import jakarta.json.stream.JsonGenerator;
@@ -33,19 +32,12 @@ class GoodsSearchQueryServiceRankingTest {
 	private static final SearchMemberTier TIER = new SearchMemberTier("normal", 1L, 100, "默认");
 
 	@Test
-	void defaultSort_functionScore_hasStockWeight_andFieldValueFactors() {
+	void defaultQuery_usesTextOrConstantScore_withoutFunctionScore() {
 		SearchEsProperties props = new SearchEsProperties();
-		props.getRank().setHasStockWeight(10.0);
-		props.getRank().setSalesWeight(2.5);
-		props.getRank().setListedAtWeight(0.5);
 		GoodsSearchQuery q = baseQuery("", null, props);
 		String dsl = GoodsSearchEsQueryBuilder.queryToJson(GoodsSearchEsQueryBuilder.buildRootQuery(q, props));
-		assertThat(dsl).contains("function_score");
-		assertThat(dsl).contains("has_stock");
-		assertThat(dsl).contains("\"weight\":10.0");
-		assertThat(dsl).contains("\"sales\"");
-		assertThat(dsl).contains("listed_at");
-		assertThat(dsl).contains("field_value_factor");
+		assertThat(dsl).doesNotContain("function_score");
+		assertThat(dsl).doesNotContain("field_value_factor");
 		assertThat(dsl).contains("constant_score");
 	}
 
@@ -56,6 +48,17 @@ class GoodsSearchQueryServiceRankingTest {
 		String dsl = GoodsSearchEsQueryBuilder.queryToJson(GoodsSearchEsQueryBuilder.buildRootQuery(q, props));
 		assertThat(dsl).contains("multi_match");
 		assertThat(dsl).doesNotContain("constant_score");
+		assertThat(dsl).doesNotContain("function_score");
+	}
+
+	@Test
+	void keywordMode_includesPinyinFields_forAsciiQuery() {
+		SearchEsProperties props = new SearchEsProperties();
+		GoodsSearchQuery q = baseQuery("", "shanyue", props);
+		String dsl = GoodsSearchEsQueryBuilder.queryToJson(GoodsSearchEsQueryBuilder.buildRootQuery(q, props));
+		assertThat(dsl).contains("item_name_pinyin");
+		assertThat(dsl).contains("item_name_py");
+		assertThat(dsl).contains("shanyue");
 	}
 
 	@Test
@@ -67,6 +70,7 @@ class GoodsSearchQueryServiceRankingTest {
 		assertThat(dsl).contains("\"sales\"");
 		assertThat(dsl).contains("\"order\":\"desc\"");
 		assertThat(dsl).doesNotContain("\"_score\"");
+		assertThat(dsl).doesNotContain("has_stock");
 	}
 
 	@Test
@@ -80,21 +84,32 @@ class GoodsSearchQueryServiceRankingTest {
 	}
 
 	@Test
-	void defaultCompositeSort_usesScoreDesc() {
+	void defaultCompositeSort_hasStockThenScoreThenSalesThenListedAt() {
 		GoodsSearchQuery q = baseQuery("", null, new SearchEsProperties());
 		SearchRequest.Builder req = new SearchRequest.Builder();
 		GoodsSearchQueryService.applyEsSort(req, q, false);
 		String dsl = searchRequestToJson(req.build());
+		assertThat(dsl).contains("has_stock");
 		assertThat(dsl).contains("_score");
-		assertThat(dsl).contains("\"order\":\"desc\"");
+		assertThat(dsl).contains("\"sales\"");
+		assertThat(dsl).contains("listed_at");
+		int hasStock = dsl.indexOf("has_stock");
+		int score = dsl.indexOf("_score");
+		int sales = dsl.indexOf("\"sales\"");
+		int listedAt = dsl.indexOf("listed_at");
+		assertThat(hasStock).isGreaterThanOrEqualTo(0);
+		assertThat(score).isGreaterThan(hasStock);
+		assertThat(sales).isGreaterThan(score);
+		assertThat(listedAt).isGreaterThan(sales);
 	}
 
 	@Test
-	void priceSort_stillUsesScoreForTieBreak_inEsRequest() {
+	void priceSort_recallStillUsesHierarchicalSort() {
 		GoodsSearchQuery q = baseQuery("price_asc", null, new SearchEsProperties());
 		SearchRequest.Builder req = new SearchRequest.Builder();
 		GoodsSearchQueryService.applyEsSort(req, q, true);
 		String dsl = searchRequestToJson(req.build());
+		assertThat(dsl).contains("has_stock");
 		assertThat(dsl).contains("_score");
 	}
 

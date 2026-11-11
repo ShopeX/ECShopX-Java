@@ -16,6 +16,7 @@
 
 package cn.shopex.ecshopx.goods.search.index;
 
+import cn.shopex.ecshopx.goods.search.query.GoodsSearchPinyinEncoder;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch.core.BulkResponse;
 import co.elastic.clients.elasticsearch.core.bulk.BulkOperation;
@@ -25,7 +26,9 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 /** 商品搜索索引文档读写（物理索引名由调用方传入）。 */
 @Repository
@@ -76,6 +79,13 @@ public class GoodsSearchIndexRepository {
 		root.put("default_item_id", doc.defaultItemId());
 		root.put("item_name", doc.itemName());
 		root.put("brief", doc.brief());
+		root.put("item_name_pinyin", GoodsSearchPinyinEncoder.fullPinyin(doc.itemName()));
+		root.put("item_name_py", GoodsSearchPinyinEncoder.firstLetters(doc.itemName()));
+		root.put("brief_pinyin", GoodsSearchPinyinEncoder.fullPinyin(doc.brief()));
+		root.put("brief_py", GoodsSearchPinyinEncoder.firstLetters(doc.brief()));
+		String tagsJoined = joinTags(doc.tags());
+		root.put("tags_pinyin", GoodsSearchPinyinEncoder.fullPinyin(tagsJoined));
+		root.put("tags_py", GoodsSearchPinyinEncoder.firstLetters(tagsJoined));
 		root.put("item_bn", doc.itemBn());
 		root.put("barcode", doc.barcode());
 		root.put("tags", doc.tags());
@@ -91,6 +101,13 @@ public class GoodsSearchIndexRepository {
 		root.put("skus", toSkus(doc.skus()));
 		root.put("activities", toActivities(doc.activities()));
 		return root;
+	}
+
+	private static String joinTags(List<String> tags) {
+		if (tags == null || tags.isEmpty()) {
+			return "";
+		}
+		return tags.stream().filter(StringUtils::hasText).collect(Collectors.joining());
 	}
 
 	private static Map<String, Object> toMemberPrices(GoodsSearchDocument.MemberPrices memberPrices) {

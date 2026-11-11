@@ -28,7 +28,7 @@ class SearchIndexMapperTest {
 	void storePriceOverridesHqPrice() {
 		SearchIndexSource src = SearchIndexSource.builder()
 				.companyId(1).distributorId(9).defaultItemId(100)
-				.hqPriceFen(2000).distributorPriceFen(1800)
+				.hqPriceFen(2000).distributorPriceFen(1800L)
 				.marketPriceFen(2500)
 				.build();
 		GoodsSearchDocument doc = new SearchIndexMapper().toDocument(src);

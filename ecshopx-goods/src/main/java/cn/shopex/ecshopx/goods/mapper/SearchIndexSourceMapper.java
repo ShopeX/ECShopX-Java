@@ -41,7 +41,7 @@ public interface SearchIndexSourceMapper {
 			  WHERE company_id = #{companyId}
 			    AND (default_item_id IS NULL OR default_item_id = 0 OR default_item_id = item_id)
 			  <if test="distributorId != null and distributorId &gt; 0">AND 1 = 0</if>
-			) keys
+			) store_item_keys
 			WHERE (default_item_id &gt; #{afterDefaultItemId})
 			   OR (default_item_id = #{afterDefaultItemId} AND distributor_id &gt; #{afterDistributorId})
 			GROUP BY distributor_id, default_item_id

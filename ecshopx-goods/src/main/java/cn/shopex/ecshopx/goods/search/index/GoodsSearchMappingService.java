@@ -68,6 +68,26 @@ public class GoodsSearchMappingService {
 		client.indices().putAlias(a -> a.index(physicalIndex).name(aliasName));
 	}
 
+	/** 读写 alias 是否已存在。 */
+	public boolean aliasExists() throws IOException {
+		String aliasName = GoodsSearchIndexNames.alias(properties);
+		return client.indices().existsAlias(e -> e.name(aliasName)).value();
+	}
+
+	/**
+	 * 确保 alias 可写：不存在时创建物理索引并挂上 alias，返回可 bulk 的索引名（alias 名）。
+	 */
+	public String ensureWritableAlias() throws IOException {
+		String aliasName = GoodsSearchIndexNames.alias(properties);
+		if (aliasExists()) {
+			return aliasName;
+		}
+		String physicalIndex = GoodsSearchIndexNames.physicalIndex(System.currentTimeMillis());
+		createIndex(physicalIndex);
+		putAlias(physicalIndex);
+		return aliasName;
+	}
+
 	/**
 	 * 原子切换 alias：从已绑定该 alias 的物理索引移除，再挂到 {@code physicalIndex}。
 	 */
@@ -94,7 +114,41 @@ public class GoodsSearchMappingService {
 		Map<String, Object> settings = new LinkedHashMap<>();
 		settings.put("number_of_shards", 1);
 		settings.put("number_of_replicas", 0);
+		// ngram max_gram(20)-min_gram(2) 超过默认差 1，需显式放宽
+		settings.put("index.max_ngram_diff", 18);
+		settings.put("analysis", buildPinyinAnalysis());
 		return settings;
+	}
+
+	/**
+	 * 拼音字段用 keyword + ngram（非 edge）：全拼连续串「nannv…shanyue…」可被中缀「shanyue」命中；
+	 * 首字母同理可被「syhw」中缀命中。查询侧仅 lowercase，整词匹配 ngram。
+	 */
+	static Map<String, Object> buildPinyinAnalysis() {
+		Map<String, Object> ngram = new LinkedHashMap<>();
+		ngram.put("type", "ngram");
+		ngram.put("min_gram", 2);
+		ngram.put("max_gram", 20);
+
+		Map<String, Object> filter = new LinkedHashMap<>();
+		filter.put("pinyin_ngram", ngram);
+
+		Map<String, Object> indexAnalyzer = new LinkedHashMap<>();
+		indexAnalyzer.put("tokenizer", "keyword");
+		indexAnalyzer.put("filter", List.of("lowercase", "pinyin_ngram"));
+
+		Map<String, Object> searchAnalyzer = new LinkedHashMap<>();
+		searchAnalyzer.put("tokenizer", "keyword");
+		searchAnalyzer.put("filter", List.of("lowercase"));
+
+		Map<String, Object> analyzer = new LinkedHashMap<>();
+		analyzer.put("goods_pinyin_index", indexAnalyzer);
+		analyzer.put("goods_pinyin_search", searchAnalyzer);
+
+		Map<String, Object> analysis = new LinkedHashMap<>();
+		analysis.put("filter", filter);
+		analysis.put("analyzer", analyzer);
+		return analysis;
 	}
 
 	/**
@@ -117,6 +171,12 @@ public class GoodsSearchMappingService {
 		props.put("default_item_id", scalar("long"));
 		props.put("item_name", ikText());
 		props.put("brief", ikText());
+		props.put("item_name_pinyin", pinyinText());
+		props.put("item_name_py", pinyinText());
+		props.put("brief_pinyin", pinyinText());
+		props.put("brief_py", pinyinText());
+		props.put("tags_pinyin", pinyinText());
+		props.put("tags_py", pinyinText());
 		props.put("item_bn", scalar("keyword"));
 		props.put("barcode", scalar("keyword"));
 		props.put("sale_price", scalar("long"));
@@ -143,6 +203,14 @@ public class GoodsSearchMappingService {
 		field.put("type", "text");
 		field.put("analyzer", "ik_max_word");
 		field.put("search_analyzer", "ik_smart");
+		return field;
+	}
+
+	private static Map<String, Object> pinyinText() {
+		Map<String, Object> field = new LinkedHashMap<>();
+		field.put("type", "text");
+		field.put("analyzer", "goods_pinyin_index");
+		field.put("search_analyzer", "goods_pinyin_search");
 		return field;
 	}
 

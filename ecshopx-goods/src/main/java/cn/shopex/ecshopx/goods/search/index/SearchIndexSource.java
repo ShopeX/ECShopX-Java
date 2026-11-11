@@ -138,7 +138,7 @@ public record SearchIndexSource(
 			return this;
 		}
 
-		public Builder distributorPriceFen(long distributorPriceFen) {
+		public Builder distributorPriceFen(Long distributorPriceFen) {
 			this.distributorPriceFen = distributorPriceFen;
 			return this;
 		}

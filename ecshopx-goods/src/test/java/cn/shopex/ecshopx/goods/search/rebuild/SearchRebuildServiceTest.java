@@ -83,6 +83,37 @@ class SearchRebuildServiceTest {
 	}
 
 	@Test
+	void reindexCompanyIntoAliasEnsuresAliasAndBulksWithoutSwitch() throws Exception {
+		GoodsSearchMappingService mappingService = mock(GoodsSearchMappingService.class);
+		GoodsSearchIndexRepository indexRepository = mock(GoodsSearchIndexRepository.class);
+		SearchIndexSourceLoader sourceLoader = mock(SearchIndexSourceLoader.class);
+
+		SearchIndexSource src = SearchIndexSource.builder()
+				.companyId(1)
+				.distributorId(9)
+				.defaultItemId(100)
+				.hqPriceFen(2000)
+				.marketPriceFen(2500)
+				.build();
+
+		when(mappingService.ensureWritableAlias()).thenReturn("goods_store_item");
+		when(sourceLoader.fetchPage(eq(1L), isNull(), eq(0L), eq(0L), anyInt())).thenReturn(List.of(src));
+		when(sourceLoader.fetchPage(eq(1L), isNull(), eq(100L), eq(9L), anyInt())).thenReturn(List.of());
+
+		SearchRebuildService service =
+				new SearchRebuildService(mappingService, indexRepository, sourceLoader, () -> FIXED_EPOCH_MS);
+
+		SearchRebuildService.RebuildResult result = service.reindexCompanyIntoAlias(1L, null);
+
+		assertThat(result.physicalIndex()).isEqualTo("goods_store_item");
+		assertThat(result.docs()).isEqualTo(1);
+		verify(mappingService).ensureWritableAlias();
+		verify(indexRepository).bulkIndex(eq("goods_store_item"), anyList());
+		verify(indexRepository, never()).switchAlias(anyString());
+		verify(mappingService, never()).createIndex(anyString());
+	}
+
+	@Test
 	void rebuildAbortsBeforeAliasSwitchWhenBulkFails() throws Exception {
 		GoodsSearchMappingService mappingService = mock(GoodsSearchMappingService.class);
 		GoodsSearchIndexRepository indexRepository = mock(GoodsSearchIndexRepository.class);

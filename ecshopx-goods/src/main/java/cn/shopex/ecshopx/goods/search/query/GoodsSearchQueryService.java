@@ -145,7 +145,10 @@ public class GoodsSearchQueryService {
 		return new GoodsSearchPageResult(total, pageHits, approxTotal);
 	}
 
-	/** 默认/综合按 {@code _score}（function_score）；销量/上新走字段排序。 */
+	/**
+	 * 默认/综合分层排序：有货 → 相关度({@code _score}) → 销量 → 上架时间；
+	 * 销量/上新走对应字段；价格滤排召回仍带分层 sort，价格主序在 Java 侧重排。
+	 */
 	static void applyEsSort(SearchRequest.Builder req, GoodsSearchQuery query, boolean javaPriceOps) {
 		if (query.isSalesSort()) {
 			req.sort(s -> s.field(f -> f.field("sales").order(SortOrder.Desc)));
@@ -156,10 +159,19 @@ public class GoodsSearchQueryService {
 			return;
 		}
 		if (!javaPriceOps && !query.isPriceSort()) {
-			req.sort(s -> s.score(sc -> sc.order(SortOrder.Desc)));
+			applyDefaultHierarchicalSort(req);
 		} else if (javaPriceOps) {
-			req.sort(s -> s.score(sc -> sc.order(SortOrder.Desc)));
+			// 价格滤排：ES 侧先按分层召回，价格主序在 Java 重排
+			applyDefaultHierarchicalSort(req);
 		}
+	}
+
+	/** 有货优先，组内：相关度 → 销量 → 上架时间（无货同理）。 */
+	private static void applyDefaultHierarchicalSort(SearchRequest.Builder req) {
+		req.sort(s -> s.field(f -> f.field("has_stock").order(SortOrder.Desc)));
+		req.sort(s -> s.score(sc -> sc.order(SortOrder.Desc)));
+		req.sort(s -> s.field(f -> f.field("sales").order(SortOrder.Desc)));
+		req.sort(s -> s.field(f -> f.field("listed_at").order(SortOrder.Desc)));
 	}
 
 	GoodsSearchQuery withSynonymExpandedKeywords(GoodsSearchQuery query) {

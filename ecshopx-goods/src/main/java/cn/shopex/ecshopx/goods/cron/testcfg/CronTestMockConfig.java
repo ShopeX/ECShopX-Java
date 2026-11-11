@@ -21,11 +21,13 @@ import cn.shopex.ecshopx.common.cron.mock.NoopExportItemsCodeDataExportFileJobDi
 import cn.shopex.ecshopx.common.cron.mock.NoopExportItemsDataExportFileJobDispatchPublisher;
 import cn.shopex.ecshopx.common.cron.mock.NoopExportItemsTagDataExportFileJobDispatchPublisher;
 import cn.shopex.ecshopx.common.cron.mock.NoopPointsmallItemsExportFileJobDispatchPublisher;
+import cn.shopex.ecshopx.common.cron.mock.NoopSearchRebuildJobDispatchPublisher;
 import cn.shopex.ecshopx.common.dispatch.EpidemicRegisterExportFileJobDispatchPublisher;
 import cn.shopex.ecshopx.common.dispatch.ExportItemsCodeDataExportFileJobDispatchPublisher;
 import cn.shopex.ecshopx.common.dispatch.ExportItemsDataExportFileJobDispatchPublisher;
 import cn.shopex.ecshopx.common.dispatch.ExportItemsTagDataExportFileJobDispatchPublisher;
 import cn.shopex.ecshopx.common.dispatch.PointsmallItemsExportFileJobDispatchPublisher;
+import cn.shopex.ecshopx.common.dispatch.SearchRebuildJobDispatchPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -63,5 +65,11 @@ public class CronTestMockConfig {
 	@Primary
 	public ExportItemsCodeDataExportFileJobDispatchPublisher exportItemsCodeDataExportFileJobDispatchPublisher() {
 		return new NoopExportItemsCodeDataExportFileJobDispatchPublisher();
+	}
+
+	@Bean
+	@Primary
+	public SearchRebuildJobDispatchPublisher searchRebuildJobDispatchPublisher() {
+		return new NoopSearchRebuildJobDispatchPublisher();
 	}
 }

@@ -66,10 +66,47 @@ public class SearchRebuildService {
 		this.epochMillisSupplier = epochMillisSupplier;
 	}
 
+	/**
+	 * 蓝绿全量：新物理索引只写入指定公司后切 alias（会替换整站可见索引，多租户场景慎用）。
+	 */
 	public RebuildResult rebuild(long companyId, Long distributorIdOrNull) throws IOException {
 		String physicalIndex = GoodsSearchIndexNames.physicalIndex(epochMillisSupplier.getAsLong());
 		mappingService.createIndex(physicalIndex);
+		int totalDocs = indexCompanyPages(physicalIndex, companyId, distributorIdOrNull);
+		indexRepository.switchAlias(physicalIndex);
+		return new RebuildResult(physicalIndex, totalDocs);
+	}
 
+	/**
+	 * 按公司全量 upsert 到当前 alias（不切蓝绿）。用于定时逐公司校准，避免共享 alias 被单公司蓝绿覆盖。
+	 */
+	public RebuildResult reindexCompanyIntoAlias(long companyId, Long distributorIdOrNull) throws IOException {
+		String writable = mappingService.ensureWritableAlias();
+		int totalDocs = indexCompanyPages(writable, companyId, distributorIdOrNull);
+		return new RebuildResult(writable, totalDocs);
+	}
+
+	/**
+	 * 蓝绿重建：将给定公司列表全部写入同一新物理索引后切 alias。
+	 */
+	public RebuildResult rebuildCompanies(List<Long> companyIds) throws IOException {
+		String physicalIndex = GoodsSearchIndexNames.physicalIndex(epochMillisSupplier.getAsLong());
+		mappingService.createIndex(physicalIndex);
+		int totalDocs = 0;
+		if (companyIds != null) {
+			for (Long companyId : companyIds) {
+				if (companyId == null || companyId <= 0L) {
+					continue;
+				}
+				totalDocs += indexCompanyPages(physicalIndex, companyId, null);
+			}
+		}
+		indexRepository.switchAlias(physicalIndex);
+		return new RebuildResult(physicalIndex, totalDocs);
+	}
+
+	private int indexCompanyPages(String physicalIndex, long companyId, Long distributorIdOrNull)
+			throws IOException {
 		int totalDocs = 0;
 		long afterDefaultItemId = 0L;
 		long afterDistributorId = 0L;
@@ -94,9 +131,7 @@ public class SearchRebuildService {
 			afterDefaultItemId = last.defaultItemId();
 			afterDistributorId = last.distributorId();
 		}
-
-		indexRepository.switchAlias(physicalIndex);
-		return new RebuildResult(physicalIndex, totalDocs);
+		return totalDocs;
 	}
 
 	public record RebuildResult(String physicalIndex, int docs) {}

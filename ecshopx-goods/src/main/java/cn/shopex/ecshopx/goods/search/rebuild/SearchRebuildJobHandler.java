@@ -17,32 +17,89 @@
 package cn.shopex.ecshopx.goods.search.rebuild;
 
 import cn.shopex.ecshopx.common.dispatch.DispatchHandler;
+import cn.shopex.ecshopx.companys.domain.Companys;
+import cn.shopex.ecshopx.companys.mapper.CompanysMapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import org.springframework.stereotype.Component;
 
 /**
- * 商品搜索索引全量重建 Job。payload：{@code company_id}（必填）、{@code distributor_id}（可选，省略则整公司）。
+ * 商品搜索索引全量重建 Job。
+ *
+ * <p>payload：
+ *
+ * <ul>
+ *   <li>{@code all_companies=true}：蓝绿重建全部未禁用且未过期公司
+ *   <li>{@code company_id}（必填，除非 all_companies）：按公司 upsert 到当前 alias；可选 {@code
+ *       distributor_id}；可选 {@code blue_green=true} 走单公司蓝绿（会替换整站 alias，慎用）
+ * </ul>
  */
 @Component
 public class SearchRebuildJobHandler implements DispatchHandler {
 
 	private final SearchRebuildService rebuildService;
+	private final CompanysMapper companysMapper;
 
-	public SearchRebuildJobHandler(SearchRebuildService rebuildService) {
+	public SearchRebuildJobHandler(SearchRebuildService rebuildService, CompanysMapper companysMapper) {
 		this.rebuildService = rebuildService;
+		this.companysMapper = companysMapper;
 	}
 
 	@Override
 	public void handle(Map<String, Object> payload) {
-		long companyId = requirePositiveLong(payload.get("company_id"), "company_id");
-		Long distributorId = parseOptionalPositiveLong(payload.get("distributor_id"));
+		Map<String, Object> body = payload != null ? payload : Map.of();
 		try {
-			rebuildService.rebuild(companyId, distributorId);
+			if (isTruthy(body.get("all_companies"))) {
+				rebuildService.rebuildCompanies(listActiveCompanyIds());
+				return;
+			}
+			long companyId = requirePositiveLong(body.get("company_id"), "company_id");
+			Long distributorId = parseOptionalPositiveLong(body.get("distributor_id"));
+			if (isTruthy(body.get("blue_green"))) {
+				rebuildService.rebuild(companyId, distributorId);
+			} else {
+				rebuildService.reindexCompanyIntoAlias(companyId, distributorId);
+			}
 		} catch (IOException e) {
 			throw new UncheckedIOException("goods search index rebuild failed", e);
 		}
+	}
+
+	List<Long> listActiveCompanyIds() {
+		long nowSec = System.currentTimeMillis() / 1000L;
+		LambdaQueryWrapper<Companys> w = new LambdaQueryWrapper<>();
+		w.select(Companys::getCompanyId)
+				.and(q -> q.isNull(Companys::getIsDisabled).or().eq(Companys::getIsDisabled, false))
+				.and(q -> q.isNull(Companys::getExpiredAt).or().gt(Companys::getExpiredAt, nowSec))
+				.orderByAsc(Companys::getCompanyId);
+		List<Companys> rows = companysMapper.selectList(w);
+		List<Long> ids = new ArrayList<>();
+		if (rows != null) {
+			for (Companys row : rows) {
+				if (row.getCompanyId() != null && row.getCompanyId() > 0L) {
+					ids.add(row.getCompanyId());
+				}
+			}
+		}
+		return ids;
+	}
+
+	private static boolean isTruthy(Object raw) {
+		if (raw == null) {
+			return false;
+		}
+		if (raw instanceof Boolean b) {
+			return b;
+		}
+		if (raw instanceof Number n) {
+			return n.intValue() != 0;
+		}
+		String s = raw.toString().trim();
+		return "true".equalsIgnoreCase(s) || "1".equals(s) || "yes".equalsIgnoreCase(s);
 	}
 
 	private static long requirePositiveLong(Object raw, String field) {
