@@ -12,6 +12,8 @@ import cn.shopex.ecshopx.popularize.domain.Brokerage;
 import cn.shopex.ecshopx.popularize.domain.Promoter;
 import cn.shopex.ecshopx.popularize.mapper.BrokerageMapper;
 import cn.shopex.ecshopx.popularize.mapper.PromoterMapper;
+import cn.shopex.ecshopx.popularize.service.BrokeragePlanCloseTimeService;
+import cn.shopex.ecshopx.popularize.service.PopularizeBrokerageStatisticsIncrementService;
 import cn.shopex.ecshopx.popularize.service.PopularizeSettingSaveService;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -41,7 +43,13 @@ class TradeFinishCountBrokerageUpgradePromoterGradeEnqueueTest {
 	private PopularizeSettingSaveService popularizeSettingSaveService;
 
 	@Mock
+	private PopularizeBrokerageStatisticsIncrementService popularizeBrokerageStatisticsIncrementService;
+
+	@Mock
 	private UpgradePromoterGradeJobDispatchPublisher upgradePromoterGradeJobDispatchPublisher;
+
+	@Mock
+	private BrokeragePlanCloseTimeService brokeragePlanCloseTimeService;
 
 	@InjectMocks
 	private NormalOrderFinishBrokerageCoordinator coordinator;
@@ -61,11 +69,15 @@ class TradeFinishCountBrokerageUpgradePromoterGradeEnqueueTest {
 		Promoter buyer = new Promoter();
 		buyer.setUserId(300L);
 		buyer.setPid(400L);
+		buyer.setIsBuy(0);
 		Promoter parent = new Promoter();
-		parent.setUserId(400L);
+		parent.setId(400L);
+		parent.setCompanyId(1L);
+		parent.setUserId(500L);
 		parent.setIsPromoter(1);
 
-		when(promoterMapper.selectOne(any())).thenReturn(buyer, parent);
+		when(promoterMapper.selectOne(any())).thenReturn(buyer);
+		when(promoterMapper.selectById(400L)).thenReturn(parent);
 
 		NormalOrderBrokerageFinishInput order =
 				new NormalOrderBrokerageFinishInput(300L, "normal", "1000", 100);
@@ -75,17 +87,21 @@ class TradeFinishCountBrokerageUpgradePromoterGradeEnqueueTest {
 		Promoter buyer2 = new Promoter();
 		buyer2.setUserId(301L);
 		buyer2.setPid(500L);
+		buyer2.setIsBuy(0);
 		Promoter parent2 = new Promoter();
-		parent2.setUserId(500L);
+		parent2.setId(500L);
+		parent2.setCompanyId(1L);
+		parent2.setUserId(600L);
 		parent2.setIsPromoter(1);
-		when(promoterMapper.selectOne(any())).thenReturn(buyer2, parent2);
+		when(promoterMapper.selectOne(any())).thenReturn(buyer2);
+		when(promoterMapper.selectById(500L)).thenReturn(parent2);
 		NormalOrderBrokerageFinishInput order2 =
 				new NormalOrderBrokerageFinishInput(301L, "normal", "2000", 200);
 
 		coordinator.onNormalOrderFinishBrokerage(1L, 11L, order2);
 
-		verify(upgradePromoterGradeJobDispatchPublisher, times(1)).enqueueUpgradePromoterGrade(1L, 400L);
 		verify(upgradePromoterGradeJobDispatchPublisher, times(1)).enqueueUpgradePromoterGrade(1L, 500L);
+		verify(upgradePromoterGradeJobDispatchPublisher, times(1)).enqueueUpgradePromoterGrade(1L, 600L);
 		verify(brokerageMapper, times(2)).insert(any(Brokerage.class));
 	}
 

@@ -1,14 +1,18 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:b7d62a0a0ea5e2be92744269e0f150741e9e23e0604d9f06a1be5662cbdc266e",
+  "pageVersion": "sha256:2c2c3308654a020d5f5fe81af64ef2ab06b8379a17c8c493929daa25e0622506",
   "claims": [
     {
       "id": "claim_e361b42057894e21933ebeee8e65ec0b",
-      "statement": "All business data is stored in a single MySQL database (default jdbc:mysql://127.0.0.1:3306/ecshopx) reached through MyBatis-Plus 3.5.16 (mybatis-plus-spring-boot3-starter, version pinned in the root pom.xml via the mybatis-plus.version property), with the MySQL JDBC driver (com.mysql:mysql-connector-j, runtime scope) declared only in ecshopx-bootstrap; ecshopx-common also declares the MyBatis-Plus starter because it hosts the shared configuration.",
+      "statement": "All business data is stored in a single MySQL database (default jdbc:mysql://127.0.0.1:3306/ecshopx) reached through MyBatis-Plus 3.5.16 (mybatis-plus-spring-boot3-starter, version pinned via the mybatis-plus.version property in the root pom.xml properties block, which sits at lines 21-29 after the revision 5.5.2 bump, and re-declared in ecshopx-bom/pom.xml), with the MySQL JDBC driver (com.mysql:mysql-connector-j, runtime scope) declared only in ecshopx-bootstrap; ecshopx-common also declares the MyBatis-Plus starter because it hosts the shared configuration.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-bootstrap/pom.xml#L241-L253",
-          "version": "repo-lines-v1:sha256:9887a465df10544e814f7148c84a07e45b90c52a3f63845d78efd96b62716c02:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwNDcxYzUxZWU1YzlhMGUwMTA3OWRhOTBiZGI3MWVjYjc2ZjZkNDhiNjY0OGE1MGFmYTYzNzdmNTIyYTU0YmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA2MGJhYjA0ZjIxOTY1NjZjNGU0ZDQyZjYwNjM3MmMyMzc3ODljODdmNjQ3ZTMwNDcxOTM2NzcwN2E4ODQ0MDkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFiOTUzM2FlNzEyMjU0ODc4NDk4NmEwMzc0OWE0Y2Q4MmQwMTdlNmVlYTk1NTljYzlhZTBhMTM2YzJkNmM1MjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM0MWUyMjM1NmY0MDNiZjYwZGQwMzA5OWYxMzMxOGFjMGY0NzZkZjU0MWEzOGY1YjBiNzBiNjk1NGY3MjQ1NjcifQ"
+          "resource": "repo://ecshopx-bom/pom.xml#L18-L34",
+          "version": "repo-lines-v1:sha256:cdebc513844ef9bd5f3a564ff287a29d12c68acdf03f337f28a4434822e865e0:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxYjg1MzA5OGRmNWRmM2MzNzA0MWVmZjljZjgzODhhYmQ5ZWNhZDM4MmU0YmE2ZTg3OTUzYjRkMTkyN2JhNjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc3ZDdlYzAxMDg5MTZjYjJkNjk3ZDNiOTFhZDJmMDkzZGVkZTg3ZmE0Yzg0YzA1NWE0YzQ4OTQ4ZTgzNGVhNGYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVhYTc3YzM4YWZlNTNlYjFlMGY3ZDhmYmE5YmNmNTVlMDQ1M2U4ZGQ3NGQ5YWE1NWQ1ZTY1MjNkZWVhYjljNjEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNiOGU1NDcwMjc1YmM5YjU5ZmUzMDNmNGY4MzdlMTU5YWM1Njc4ZWE0ZDRjMjcyMDgxY2EwNDRkN2ZjMmI0MGMifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/pom.xml#L249-L253",
+          "version": "repo-lines-v1:sha256:6aad045a4beba5d4f9f9333e34ae6614e5f4f09ba6b7d54e8f087727bcbfe17b:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjA0NzFjNTFlZTVjOWEwZTAxMDc5ZGE5MGJkYjcxZWNiNzZmNmQ0OGI2NjQ4YTUwYWZhNjM3N2Y1MjJhNTRiZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDYwYmFiMDRmMjE5NjU2NmM0ZTRkNDJmNjA2MzcyYzIzNzc4OWM4N2Y2NDdlMzA0NzE5MzY3NzA3YTg4NDQwOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzRlMjU3OTQ2MDBjYTU5MjBkNWFlNGQ3NjhiMTMwOTNiZTllZTc3OTYzZjczYzViOGIyODhmZmQwNDA1ZGZkYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYzQxZTIyMzU2ZjQwM2JmNjBkZDAzMDk5ZjEzMzE4YWMwZjQ3NmRmNTQxYTM4ZjViMGI3MGI2OTU0ZjcyNDU2NyJ9"
         },
         {
           "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties#L23-L26",
@@ -19,8 +23,8 @@
           "version": "repo-lines-v1:sha256:65759d13d0338f0ac94660288083154a2ca7dc13f67110d1b9233b10b3b67cc0:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjA0NzFjNTFlZTVjOWEwZTAxMDc5ZGE5MGJkYjcxZWNiNzZmNmQ0OGI2NjQ4YTUwYWZhNjM3N2Y1MjJhNTRiZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDYwYmFiMDRmMjE5NjU2NmM0ZTRkNDJmNjA2MzcyYzIzNzc4OWM4N2Y2NDdlMzA0NzE5MzY3NzA3YTg4NDQwOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTA4NjA0N2VhZjQ4ZGIwYjFlMGYwMGI0YjcxMDlkMGZlYTE1YTgxMWNiNTk5OTIzZmIxYmQyNzhlNjRkZjZjMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDc4OWUwY2I4MWVkMjRlYmRlYjhhNGIzNzhhYjdlZDMyMmQ1NjUxZmJiNTgzMDVkM2UzM2M4OTdkMTkxNWIzNCJ9"
         },
         {
-          "resource": "repo://pom.xml#L20-L24",
-          "version": "repo-lines-v1:sha256:bd2501558507bf89419537fc920f80f7c7be33eb2203e1351ad6a556e5cd4be8:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTM3MDRhZGI3MjhlMDAyNzA4OTljMTQxNmM3ODI1ODg0NjA5NWNmZDAyZjU0N2U3MDU2ZWI1NmIxOTIxZGE5YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjNkOGRjMzliMWNhZDI2YjgwMjcyNGUxNGM0ZDg2NzljYjMzY2RlMjNjODU0ODNiY2I5YTBlNjM0MDI1OTg4NSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjFjMWQzNmVjNmVmNjMxNjZjNjFlZDFmMDMyZWJlZDIyODA0OWZhY2ZlNTAwNTZjYjFkYmViOTkyOTYwNDJjYyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzA5YTA1OTRhMTE1OTk1YzlkZDQ4YmY5NjI0MmE4OWM4YWQxZTdlOTQ4NTllMDgxYmM5YmNlYjAxMmE5NzFiMyJ9"
+          "resource": "repo://pom.xml#L21-L29",
+          "version": "repo-lines-v1:sha256:ae7fec593bf448edc94ceeb08bc77e86f61266287827702f7531336a0f41ec47:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZGY3ZTQxZWM4ZGMyZDc4Y2VhZDg4MzNkMWQxNWMzMGNlOTNmNTU5Y2RlNTczMjQxMDk1ZTgxMGFjZmU4OGRmOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOGJkZjk0NDM2ODY2YTljZmNhMGFjM2Q2MjMwNzdlZDA3MjE4ZDU0MWExNDlmOWIwMzhjZTQyNzFjNjE2MzVkMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiM2U3ZmEyN2ZlNzY0ZmJmZTcyZTgyOWU4NDA3YTdhYjE5ZmY1MmUzYWYyMjA4OTg0N2RiYTc5ODljNjQwYWQ3NCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTlkYWFhNWQ0NmRmZWJhZWI4N2ZhZWIxMWEwMTRiODQxYWVmYjQ5MDdkYTg2YzA3NTkyMDIxZTg3NGFjMTk4ZSJ9"
         }
       ]
     },
@@ -599,6 +603,6 @@
   ],
   "verification": {
     "by": "openwiki/0.9.0",
-    "at": "2026-11-09T17:09:44.795Z"
+    "at": "2026-11-10T17:10:58.497Z"
   }
 }

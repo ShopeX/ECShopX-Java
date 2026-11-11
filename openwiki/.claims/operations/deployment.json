@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:ae854adcc832ca5d86d258e060d296d48e9f75f251367954eae2f55f7cb4d969",
+  "pageVersion": "sha256:469d7a510649d766a0d34369a0dd7d7d9e62846c28937a13fe575c6b3bb12f0e",
   "claims": [
     {
       "id": "claim_6a17d8777ae74ac19c9786dddedd59bd",
@@ -444,29 +444,33 @@
     },
     {
       "id": "claim_5c47386e2ae44537abac3f318e581ad4",
-      "statement": "The project version is 5.5.1, declared as ${revision} in the root pom.xml properties and used as the Maven project version; the lite tarball is named ecshopx-java-<version>.tar.gz with that version resolved by sed-only parsing of pom.xml (CI-friendly ${revision} placeholders resolved), and the same sed-only version read feeds the open-source install-stat reporter so customer machines never need mvn/java.",
+      "statement": "The project version is 5.5.2, declared as ${revision} in the root pom.xml properties and used as the Maven project version; the lite tarball is named ecshopx-java-<version>.tar.gz with that version resolved by sed-only parsing of pom.xml (CI-friendly ${revision} placeholders resolved), and the same sed-only version read feeds the open-source install-stat reporter so customer machines never need mvn/java.",
       "evidence": [
         {
           "resource": "repo://docker-lite/lib/common.sh#L26-L56",
           "version": "repo-lines-v1:sha256:f1419c43c829fc86492a98f6a241b58253f9a7ae1b300f18d51355b432469eac:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhiY2M0ODczNDc5ZjYzMDgxYzAxYTZiYzY3M2Q3MjI3ZGU0NTJiYzhjYzVkM2M1YzExOTEyOTg0N2YzZjdmODIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNjNmE3NWNlYzk1NWZhOWRiNmIxODk5OWQ0MTQ3YjYwMjlmMWJjNTYyMmQ0YzdhY2M1MTM0YjkzMTM0OTQyM2YiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIwMTg4NWNkOGE3MGEwMWNlZjQ1OTkwNjBjYTU3N2U1YjM4ZjZhOGUzY2M3YmVmNGMxMTI2NmVjYzAwM2UwMzEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQwZmM2N2U1NjYyZTVhMjk1ZGUyYjRjZDFiMmRhZWFjMDQyYzU2ZmJlOTRhZWIxMDY1ZWZjOTA1ZmFhZTA1ZWIifQ"
         },
         {
-          "resource": "repo://docker-lite/pack.sh#L174-L176",
-          "version": "repo-lines-v1:sha256:3640378c2b638d4a866a5bb2397b7807ab912be55e4b894aadb84a5e6148e84c:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzVmYzkwZmY4YTQ0MTRjNTQ0MWQwZjY3N2M1Y2JmZGEzOGI0NzRlNTFiZmQ1NTlhNTU1OWRlMGY4NzcwNTUyNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOThjYWJhYjgzZWIzNGY0MWU2NThhNTY1ODFiMDQxYjNhNzc3Mjg3YTU1NWM4ZjAyYmNkMDgzZWI4MDYwZmY4ZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYWJjNDYxYzVlODdiYjk3ZDczOTNhMzQ0OWUxNjEyNTVjZThkY2YzM2ZhMmExYzdmNjZiZTRhZDQ5NzI1OGMxMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOTdmMGViZTIzZWZjMWZiZjljNTJjZTZkNGUxMzFjZmY5YmRlYjUyNTc3NjNmN2JjNjJhOGNjZGE0MzU4ZDg5MiJ9"
+          "resource": "repo://docker-lite/lib/package.sh#L3-L11",
+          "version": "repo-lines-v1:sha256:5d47ad5b47a75a3d7a338e9f442d34ac51e3555b6c3830639a894375477fde9c:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjI1ODZhMThiM2I2NzI0NTBkNDQ3NzE2ODQ1Yjc5YWNjOTI2ZTRmYjlkNzVkNjM4OGE3MTBiZmUxZWEwMTJlYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNGZmMjU3OWFiZDg4OTMwNjRkMzJjNjRhMjY3YTE5NjJiNDJlYTczNzJjYjMxODRjOTdjYWQxNzczYTUyYmJkMiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjIsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTFhZDM2N2MxMzk5MGRkOTFjOWEzNGVlMDRiODc4YzQyNTY1MDljMzIwMzhjZDk4NDQwZmVhYzJkZDZkNWQyMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDRhZDQ0MmI0YWQ2YWU0OGIzNGRlNTkxNjYzYzRiOTY3YTRjOWUyMDg4MGY4ZDkwYmRhZDlmMmY0NDBkOTAxMyJ9"
         },
         {
-          "resource": "repo://docker/install-open-source-stat.sh#L42-L75",
-          "version": "repo-lines-v1:sha256:da9754be9a7dc818ba61f9b3f4c2433f0426a39069dd641f1212efdf97d9cf08:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNjNmE3NWNlYzk1NWZhOWRiNmIxODk5OWQ0MTQ3YjYwMjlmMWJjNTYyMmQ0YzdhY2M1MTM0YjkzMTM0OTQyM2YiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE4YjBkMDIwOGU2YTBjMGU4NjQ2ZGI2ZDAwOGRiYzYwNTQ2ZjMxNDg0NDhmODNmZmEzZDlmNDJkNzEyOGViZDMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQzZTI2NGM3NjUwNjE1Yzk5MmNhNjY2YjNiNzY2OTBlNTMxYjc0YTYyMDU5ZjIxOTM1OGE1Y2M4MGU5NTMzNWUifQ"
+          "resource": "repo://docker-lite/pack.sh#L177-L178",
+          "version": "repo-lines-v1:sha256:b95f39a8e463e173d83c456a59b43fd3fd4c7fc3ef63616c04538f9d126765db:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiM2IwOTdjZDE4ZDBhYWIzZjI5N2RiYWM1NTQ2YTE4NWUyNjliOGNlYTU1ZDY0MzQzMGM2OTQxZDFkMmNlYzQ5NyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNmMzMzI5MjNmNzdlYTI2NjZjYWFhOWFlMjNjN2IyN2FlOWE2NmExMTcxNjNiMzUzYzkxNjAzYmQzNzEwNzRhNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzY0MDM3OGMyYjYzOGQ0YTg2NmE1YmIyMzk3Yjc4MDdhYjkxMmJlNTVlNGI4OTRhYWRiODRhNWU2MTQ4ZTg0YyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiY2RlY2ViMzc4YmVlYjJhMGQzYjUyYTgwMmJkZTUzOGNkOTc5YzkzNGVjYjU0MDFjMDk3MWE2ZDVmZGRlNzk2MSJ9"
+        },
+        {
+          "resource": "repo://docker/install-open-source-stat.sh#L43-L75",
+          "version": "repo-lines-v1:sha256:cd3d98b848fda813d69dff04f439ac1361f804e2cb2e0af391477867f480edd1:eyJzZWxlY3RlZExpbmVDb3VudCI6MzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE0ZThkNTg3OTY0ZGJiNjVkYzhkZTJiNGFiZjFkN2FjZjdmMWY1MDA3YTRlNDYwNzgwNTliN2I5NGJmOGEwNGYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNjNmE3NWNlYzk1NWZhOWRiNmIxODk5OWQ0MTQ3YjYwMjlmMWJjNTYyMmQ0YzdhY2M1MTM0YjkzMTM0OTQyM2YiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZkNzJiZDkxNDQwMzA4ZTgzYjg1ZWE0MmRiMTEyYjNkNThkY2IyZjg1NGZhYTBjNDIwOGYyZDkwZWY5YjVmZGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQzZTI2NGM3NjUwNjE1Yzk5MmNhNjY2YjNiNzY2OTBlNTMxYjc0YTYyMDU5ZjIxOTM1OGE1Y2M4MGU5NTMzNWUifQ"
         },
         {
           "resource": "repo://pom.xml#L14-L23",
-          "version": "repo-lines-v1:sha256:13a025230dc896c46a6c2cf54f5fd6f1486dd38a590eec0714a7cc5583d8d69b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJhZTIyNTk3NmM0OWM4MDIwYWQ2YWNiYmJkMzhkMDI0MTU2OGRmMDYwN2E2NGY1Mzg0MmM1OWQ1YmI5MjhhNDUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxYjg1MzA5OGRmNWRmM2MzNzA0MWVmZjljZjgzODhhYmQ5ZWNhZDM4MmU0YmE2ZTg3OTUzYjRkMTkyN2JhNjgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE4MTk2OTZkNGI1NzU3YTczZmEyODAyZTg3NDU4YWEzNmM5YzUxN2ExODYxYmNhMzJkYmE3MzM3MDliNDAzMjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUxYTBiMmFjNTJkN2ZlYmJmNjU0ZGIyNmMxZDMzNzkxODE0ZTgyNWRiOTk1NjA2NGE5MmVhZjEyYzkxMmU3ZWEifQ"
+          "version": "repo-lines-v1:sha256:8ff94b873aa783321cf9ddd9022a30e594449ac6f99948cb34c683e308cc8443:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJhZTIyNTk3NmM0OWM4MDIwYWQ2YWNiYmJkMzhkMDI0MTU2OGRmMDYwN2E2NGY1Mzg0MmM1OWQ1YmI5MjhhNDUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxYjg1MzA5OGRmNWRmM2MzNzA0MWVmZjljZjgzODhhYmQ5ZWNhZDM4MmU0YmE2ZTg3OTUzYjRkMTkyN2JhNjgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE4MTk2OTZkNGI1NzU3YTczZmEyODAyZTg3NDU4YWEzNmM5YzUxN2ExODYxYmNhMzJkYmE3MzM3MDliNDAzMjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUxYTBiMmFjNTJkN2ZlYmJmNjU0ZGIyNmMxZDMzNzkxODE0ZTgyNWRiOTk1NjA2NGE5MmVhZjEyYzkxMmU3ZWEifQ"
         }
       ]
     }
   ],
   "verification": {
     "by": "openwiki/0.9.0",
-    "at": "2026-11-09T17:09:44.795Z"
+    "at": "2026-11-10T17:10:58.497Z"
   }
 }

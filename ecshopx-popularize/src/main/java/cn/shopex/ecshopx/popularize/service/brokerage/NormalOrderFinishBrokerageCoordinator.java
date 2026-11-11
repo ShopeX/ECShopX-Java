@@ -22,10 +22,15 @@ import cn.shopex.ecshopx.popularize.domain.Brokerage;
 import cn.shopex.ecshopx.popularize.domain.Promoter;
 import cn.shopex.ecshopx.popularize.mapper.BrokerageMapper;
 import cn.shopex.ecshopx.popularize.mapper.PromoterMapper;
+import cn.shopex.ecshopx.popularize.service.BrokeragePlanCloseTimeService;
+import cn.shopex.ecshopx.popularize.service.PopularizeBrokerageStatisticsIncrementService;
 import cn.shopex.ecshopx.popularize.service.PopularizeSettingSaveService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import java.time.Instant;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
@@ -40,6 +45,11 @@ import org.springframework.transaction.support.TransactionTemplate;
 public class NormalOrderFinishBrokerageCoordinator
 		implements cn.shopex.ecshopx.common.service.brokerage.NormalOrderFinishBrokerageCoordinator {
 
+	/** 测试环境排查 ECX-11089 用；稳定后可视情况降为 debug 或删除 */
+	private static final Logger log = LoggerFactory.getLogger(NormalOrderFinishBrokerageCoordinator.class);
+
+	private static final String LOG_TAG = "[popularize-trade-finish]";
+
 	private static final String BROKERAGE_FIRST_LEVEL = "first_level";
 	private static final String ORDER_SOURCE = "order";
 
@@ -47,33 +57,47 @@ public class NormalOrderFinishBrokerageCoordinator
 	private final BrokerageMapper brokerageMapper;
 	private final PromoterMapper promoterMapper;
 	private final PopularizeSettingSaveService popularizeSettingSaveService;
+	private final PopularizeBrokerageStatisticsIncrementService popularizeBrokerageStatisticsIncrementService;
 	private final UpgradePromoterGradeJobDispatchPublisher upgradePromoterGradeJobDispatchPublisher;
+	private final BrokeragePlanCloseTimeService brokeragePlanCloseTimeService;
 
 	public NormalOrderFinishBrokerageCoordinator(
 			PlatformTransactionManager platformTransactionManager,
 			BrokerageMapper brokerageMapper,
 			PromoterMapper promoterMapper,
 			PopularizeSettingSaveService popularizeSettingSaveService,
-			UpgradePromoterGradeJobDispatchPublisher upgradePromoterGradeJobDispatchPublisher) {
+			PopularizeBrokerageStatisticsIncrementService popularizeBrokerageStatisticsIncrementService,
+			UpgradePromoterGradeJobDispatchPublisher upgradePromoterGradeJobDispatchPublisher,
+			BrokeragePlanCloseTimeService brokeragePlanCloseTimeService) {
 		this.platformTransactionManager = platformTransactionManager;
 		this.brokerageMapper = brokerageMapper;
 		this.promoterMapper = promoterMapper;
 		this.popularizeSettingSaveService = popularizeSettingSaveService;
+		this.popularizeBrokerageStatisticsIncrementService = popularizeBrokerageStatisticsIncrementService;
 		this.upgradePromoterGradeJobDispatchPublisher = upgradePromoterGradeJobDispatchPublisher;
+		this.brokeragePlanCloseTimeService = brokeragePlanCloseTimeService;
 	}
 
 	@Override
 	public void onNormalOrderFinishBrokerage(long companyId, long orderId, NormalOrderBrokerageFinishInput order) {
 		if (companyId <= 0L || orderId <= 0L || order == null) {
+			log.info("{} skip invalid_args companyId={} orderId={} orderNull={}", LOG_TAG, companyId, orderId, order == null);
 			return;
 		}
+		log.info(
+				"{} enter companyId={} orderId={} buyerUserId={}",
+				LOG_TAG,
+				companyId,
+				orderId,
+				order.userId());
 		DefaultTransactionDefinition def = new DefaultTransactionDefinition();
 		def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
 		TransactionTemplate tx = new TransactionTemplate(platformTransactionManager, def);
 		tx.executeWithoutResult(
 				status -> {
-					if (!"true".equalsIgnoreCase(
-							popularizeSettingSaveService.getOpenPopularizeLiteral(companyId).trim())) {
+					String openLiteral = popularizeSettingSaveService.getOpenPopularizeLiteral(companyId).trim();
+					if (!"true".equalsIgnoreCase(openLiteral)) {
+						log.info("{} skip open_popularize_off companyId={} orderId={} isOpen={}", LOG_TAG, companyId, orderId, openLiteral);
 						return;
 					}
 					String orderIdStr = String.valueOf(orderId);
@@ -83,10 +107,12 @@ public class NormalOrderFinishBrokerageCoordinator
 											.eq(Brokerage::getCompanyId, companyId)
 											.eq(Brokerage::getOrderId, orderIdStr));
 					if (existing > 0L) {
+						log.info("{} skip idempotent_existing companyId={} orderId={} count={}", LOG_TAG, companyId, orderId, existing);
 						return;
 					}
 					Long buyerUserId = order.userId();
 					if (buyerUserId == null || buyerUserId <= 0L) {
+						log.info("{} skip no_buyer_user_id companyId={} orderId={}", LOG_TAG, companyId, orderId);
 						return;
 					}
 					Promoter buyerPromoter =
@@ -96,24 +122,47 @@ public class NormalOrderFinishBrokerageCoordinator
 											.eq(Promoter::getUserId, buyerUserId)
 											.last("LIMIT 1"));
 					if (buyerPromoter == null || buyerPromoter.getPid() == null || buyerPromoter.getPid() <= 0L) {
+						log.info(
+								"{} skip buyer_not_promoter_or_no_pid companyId={} orderId={} buyerUserId={}",
+								LOG_TAG,
+								companyId,
+								orderId,
+								buyerUserId);
 						return;
 					}
-					long parentUserId = buyerPromoter.getPid();
-					Promoter parentPromoter =
-							promoterMapper.selectOne(
-									new LambdaQueryWrapper<Promoter>()
-											.eq(Promoter::getCompanyId, companyId)
-											.eq(Promoter::getUserId, parentUserId)
-											.eq(Promoter::getIsPromoter, 1)
-											.last("LIMIT 1"));
-					if (parentPromoter == null) {
+					long buyerPid = buyerPromoter.getPid();
+					Promoter parentPromoter = promoterMapper.selectById(buyerPid);
+					if (parentPromoter == null
+							|| parentPromoter.getCompanyId() == null
+							|| parentPromoter.getCompanyId().longValue() != companyId
+							|| parentPromoter.getUserId() == null
+							|| parentPromoter.getUserId() <= 0L
+							|| parentPromoter.getIsPromoter() == null
+							|| parentPromoter.getIsPromoter() != 1) {
+						log.info(
+								"{} skip parent_invalid companyId={} orderId={} buyerPid={} parentNull={} parentUserId={} parentIsPromoter={}",
+								LOG_TAG,
+								companyId,
+								orderId,
+								buyerPid,
+								parentPromoter == null,
+								parentPromoter != null ? parentPromoter.getUserId() : null,
+								parentPromoter != null ? parentPromoter.getIsPromoter() : null);
 						return;
 					}
+					long parentUserId = parentPromoter.getUserId();
 					Map<String, Object> cfg = popularizeSettingSaveService.getMergedPopularizeConfig(companyId);
 					long orderBaseMinor = resolveOrderBaseMinorForRatio(cfg, order);
 					double ratioPercent = resolveFirstLevelRatioPercent(cfg);
 					int rebateMinor = (int) Math.min(Integer.MAX_VALUE, Math.round(orderBaseMinor * ratioPercent / 100.0d));
 					if (rebateMinor <= 0) {
+						log.info(
+								"{} skip rebate_zero companyId={} orderId={} orderBaseMinor={} ratioPercent={}",
+								LOG_TAG,
+								companyId,
+								orderId,
+								orderBaseMinor,
+								ratioPercent);
 						return;
 					}
 					int nowSec = (int) Instant.now().getEpochSecond();
@@ -131,11 +180,48 @@ public class NormalOrderFinishBrokerageCoordinator
 					row.setRebatePoint("money");
 					row.setDetail("{}");
 					row.setIsClose(false);
+					row.setPlanCloseTime(brokeragePlanCloseTimeService.computePlanCloseTimeEpochSec());
 					row.setCreated(nowSec);
 					row.setUpdated(nowSec);
 					brokerageMapper.insert(row);
+					long priceMinor = orderBaseMinor;
+					long rebateMinorLong = rebateMinor;
+					popularizeBrokerageStatisticsIncrementService.add(
+							Map.of(
+									"item_total_price",
+									priceMinor,
+									"rebate_total",
+									rebateMinorLong,
+									"no_close_rebate",
+									rebateMinorLong),
+							parentUserId,
+							companyId);
+					markBuyerPromoterPurchasedIfNeeded(companyId, buyerUserId, buyerPromoter);
 					upgradePromoterGradeJobDispatchPublisher.enqueueUpgradePromoterGrade(companyId, parentUserId);
+					log.info(
+							"{} done companyId={} orderId={} parentUserId={} buyUserId={} rebateMinor={} priceMinor={}",
+							LOG_TAG,
+							companyId,
+							orderId,
+							parentUserId,
+							buyerUserId,
+							rebateMinor,
+							priceMinor);
 				});
+	}
+
+	private void markBuyerPromoterPurchasedIfNeeded(
+			long companyId, long buyerUserId, Promoter buyerPromoter) {
+		Integer isBuy = buyerPromoter.getIsBuy();
+		if (isBuy != null && isBuy == 1) {
+			return;
+		}
+		UpdateWrapper<Promoter> uw = new UpdateWrapper<>();
+		uw.eq("company_id", companyId)
+				.eq("user_id", buyerUserId)
+				.and(w -> w.isNull("is_buy").or().eq("is_buy", 0))
+				.set("is_buy", 1);
+		promoterMapper.update(null, uw);
 	}
 
 	private static String safeOrderType(NormalOrderBrokerageFinishInput order) {

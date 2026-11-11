@@ -192,12 +192,16 @@ sources:
     resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/MarketingActivityCreatePersistenceService.java
   - id: openwiki-source-9c61992f85949d88e97006d2
     resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/wxatemplate/WxaTemplateSceneDefinitions.java
+  - id: openwiki-source-20d1f28c4e16414522b84f67
+    resource: repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/dispatch/CreateMemberSuccessShuyunMemberRegisterDispatchListener.java
+  - id: openwiki-source-77b9be238a039ce267c0c43e
+    resource: repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/service/openplatform/MemberRegisterDispatchService.java
   - id: openwiki-source-eab9c10485100198740b4183
     resource: repo://ecshopx-wechat/src/main/java/cn/shopex/ecshopx/wechat/repository/WeappAuthorizerAppidRepository.java
-generated: { by: "openwiki/0.9.0", at: "2026-11-09T17:09:44.795Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-10T17:10:58.497Z" }
 verified:
   - by: openwiki/0.9.0
-    at: 2026-11-09T17:09:44.795Z
+    at: 2026-11-10T17:10:58.497Z
 ---
 
 # Members Domain (ecshopx-members)
@@ -345,7 +349,7 @@ Bootstrap registers **nine listeners** on the event (each in its own `*DispatchL
 | Listener name | Bundle / listener | Queue | Gate |
 |---|---|---|---|
 | `listener:youshu.member_create_success` | youshu `CreateMemberSuccessYoushuDispatchListener` → `YoushuMemberCreateSuccessSyncService.syncMemberAfterCreate` | default | needs `company_id` + `user_id` |
-| `listener:shuyun.open_platform.member_register_on_create_member_success` | shuyun `CreateMemberSuccessShuyunMemberRegisterDispatchListener` → `MemberRegisterDispatchService.dispatchCreateMemberSuccess` (falls back to the `members` row for distributor/mobile) | default | — |
+| `listener:shuyun.open_platform.member_register_on_create_member_success` | shuyun `CreateMemberSuccessShuyunMemberRegisterDispatchListener` → `MemberRegisterDispatchService.dispatchCreateMemberSuccess`: when the payload's `distributor_id`/`mobile` are missing it re-reads them from the `members` row (distributor falls back through `reg_distributor` then `offline_reg_distributor`) and skips when either is still unresolved; the OFFLINE `member.register` readiness and sync-state semantics are documented on [Third-Party Integrations](../integrations/third-party.md) | default | — |
 | `listener:thirdparty.shopex_crm.sync_add_member` | third-party `CreateMemberSuccessShopexCrmSyncDispatchListener` → `CreateMemberSuccessShopexCrmSyncExecutionService` | default | no-op unless `crm.crm-sync` is configured |
 | `listener:promotions.create_member_success` | promotions `CreateMemberSuccessPromotionsDispatchListener` → `executionMarketingAfterMemberCreate` | default | `if_register_promotion` must be `true`; needs `company_id`, `distributor_id`, `user_id`, `mobile` |
 | `listener:members.register_point` | promotions `CreateMemberSuccessRegisterPointDispatchListener` → register-gift points via `PointMemberAddPointService` | default | Redis register-point config `is_open` and positive `point` |

@@ -72,6 +72,8 @@ sources:
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/mybatis/FqcnMapperBeanNameGenerator.java
   - id: openwiki-source-23521877b190e50eccec4c0a
     resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/api/admin/v1/OperatorCartController.java
+  - id: openwiki-source-c4239fd10cbbee9db016ba54
+    resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/api/admin/v1/OperatorsController.java
   - id: openwiki-source-2867f272d3b645f1b2e95e5a
     resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/api/admin/v1/OperatorStoreMemberController.java
   - id: openwiki-source-e8ae20ad9a0b9aab932192bb
@@ -134,15 +136,15 @@ sources:
     resource: repo://pom.xml
   - id: openwiki-source-f1b1aacc63642e5304668821
     resource: repo://readme.md
-generated: { by: "openwiki/0.9.0", at: "2026-11-09T17:09:44.795Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-10T17:10:58.497Z" }
 verified:
   - by: openwiki/0.9.0
-    at: 2026-11-09T17:09:44.795Z
+    at: 2026-11-10T17:10:58.497Z
 ---
 
 # System Overview and Runtime Topology
 
-ECShopX-Java is the Java server-side implementation of the ECShopX commerce system, rewritten from the legacy PHP codebase with aligned business semantics and one-to-one mapped configuration keys. The whole repository is a single **multi-module Maven reactor**: the root `pom.xml` declares the parent project `cn.shopex:ecshopx` (version `${revision}` = `5.5.1`, CI-friendly, Java 17, MyBatis-Plus 3.5.16, jjwt 0.12.6) under `spring-boot-starter-parent:3.5.12`, and lists every module as a `<module>`. The reactor has 53 modules: exactly four infrastructure modules plus 49 business "Bundles", and every Bundle is also pinned in the parent `dependencyManagement` so Bundle POMs never declare versions:
+ECShopX-Java is the Java server-side implementation of the ECShopX commerce system, rewritten from the legacy PHP codebase with aligned business semantics and one-to-one mapped configuration keys. The whole repository is a single **multi-module Maven reactor**: the root `pom.xml` declares the parent project `cn.shopex:ecshopx` (version `${revision}` = `5.5.2`, CI-friendly, Java 17, MyBatis-Plus 3.5.16, jjwt 0.12.6) under `spring-boot-starter-parent:3.5.12`, and lists every module as a `<module>`. The reactor has 53 modules: exactly four infrastructure modules plus 49 business "Bundles", and every Bundle is also pinned in the parent `dependencyManagement` so Bundle POMs never declare versions:
 
 * **`ecshopx-bom`** — a `pom`-packaging bill-of-materials module that imports `spring-boot-dependencies:3.5.12` and pins MyBatis-Plus / Lombok versions.
 * **`ecshopx-common`** — shared cross-cutting code with **no** Shopex peer dependencies (only Spring Boot starters, MyBatis-Plus, Lombok): unified response body, exception hierarchy, pagination, audit base classes, annotations, the `common/auth` JWT ports (`OperatorJwtIssuerPort`, `PosJwtIssuerPort`, `PosJwtSessionValidatorPort`, blacklist ports), and the ~150 `common/dispatch` interfaces (dispatch job/event names + publisher ports) that keep cross-Bundle wiring acyclic.
@@ -224,7 +226,38 @@ flowchart TD
 
 Runtime topology of ECShopX-Java: one Spring application inside the `ecshopx-app` container, backed by MySQL (business + `xxl_job` schemas, Flyway history), a single Redis instance partitioned into logical databases, and a separately deployed XXL-JOB admin console; external payment and WeChat gateways push asynchronous notifications into the `/wechatAuth` URL space.
 
-### The HTTP surface: Undertow on 18080
+### The HTTP surface: Undertow on 18080 and URL-space routing
+
+```mermaid
+flowchart LR
+    subgraph edge["Container edge"]
+        NGX["OpenResty/nginx :80 (Docker)"]
+    end
+
+    subgraph app["Undertow :18080 (single Spring context)"]
+        direction TB
+        subgraph apiSpace["/api/**"]
+            ADMIN["/api/v1/… operator/admin controllers (JWT)"]
+            H5["/api/v1/h5app/… buyer H5/mini-program controllers (JWT)"]
+            POSA["/api/v1/pos/auth/** POS login/logout/me (POS JWT)"]
+            OAPI["/api/openapi/** third-party gateway"]
+        end
+        STORE["/storage/** local static files"]
+        WXA["/wechatAuth/** unauthenticated gateway callbacks"]
+        FIREWALL["StorageAwareHttpFirewall (strict, lenient under /storage)"]
+    end
+
+    EXT["Browsers, mini-programs, H5"] --> NGX --> FIREWALL
+    GW["Payment / WeChat gateways"] --> NGX
+    FIREWALL --> ADMIN
+    FIREWALL --> H5
+    FIREWALL --> POSA
+    FIREWALL --> OAPI
+    FIREWALL --> STORE
+    FIREWALL --> WXA
+```
+
+The concrete mappings:
 
 `application.properties` pins `server.port=18080` and selects **Undertow** as the embedded server (the bootstrap POM excludes `spring-boot-starter-tomcat` and adds `spring-boot-starter-undertow`; `server.tomcat.*` is therefore ignored). Three Undertow behaviors exist specifically for PHP-era URL and upload compatibility:
 
@@ -269,7 +302,7 @@ After Flyway completes, `MigrationSeedRunner` (an `ApplicationRunner` in bootstr
 
 Each seed file is a JSON array of menu rows whose `version` groups a menu generation, `menu_type` names the menu types the row belongs to, and `name_lang` carries per-locale names (currently `zh-CN`, `en-CN`, `ar-SA`, `zh-TW`, `ja-JP`, `ru-RU`). `ShopMenuUploadService.uploadMenus` (in `ecshopx-shopmenu-border`, `@Transactional(rollbackFor = Exception.class)` per file) first deletes existing `company_id=0` rows matching the incoming versions — including their `shop_menu_rel_type` rows and `name_lang` translations written through companys' `CommonLangModWriteService` — then re-inserts rows with fresh sequential `shopmenu_id`s, remaps each file-local `pid` to the new parent id, rebuilds the menu-type relations, and re-writes the translations; rows missing `alias_name` are rejected.
 
-The current `platform_menu.json` head row (`shopmenu_id` 423, `概况`/`index`, `menu_type: ["all"]`, version 1) binds the operator-facing store-cashier APIs into the platform overview menu: its `apis` list ends with `companys.operator.member.ready` and `companys.operator.cartfastbuy.add`, and `companys.operator.member.ready` additionally appears on the 会员列表 row (`shopmenu_id` 453). Two concrete endpoints sit behind these aliases:
+The current `platform_menu.json` head row (`shopmenu_id` 423, `概况`/`index`, `menu_type: ["all"]`, version 1) binds the operator-facing store-cashier APIs into the platform overview menu: its `apis` list ends with `companys.operator.member.ready` and `companys.operator.cartfastbuy.add`, and `companys.operator.member.ready` additionally appears on the 会员列表 row (`shopmenu_id` 453). The same seed file now also ends with a new operation-log row: `shopmenu_id` 681 (`操作日志`, alias `operator-logs`, version 1, level 3 under 系统信息 `shopmenu_id` 680 ← 设置, `menu_type: ["all"]`, url `/setting/systeminfo/operatorlogs`) whose `apis` is exactly `company.get.operatorlogs`, granting the platform operation-log listing on the system-information menu. That alias is served by `OperatorsController.getCompanysLogs` in `ecshopx-companys` (`@Activated(routeAlias = "company.get.operatorlogs")`, `GET /api/v1/company/operatorlogs`), which pages through `operatorLogsQueryService.getCompanysLogs(companyId, jwtMerchantId, operatorType, page, pageSize, listFilterHasNonemptyMerchantId)` — merchant operators are automatically scoped to their own `merchant_id`, and pagination defaults to page 1 / 20 rows. The two store-cashier endpoints behind the head-row aliases:
 
 * **`POST /api/v1/operator/member/ready`** — `OperatorStoreMemberController.postReady` in `ecshopx-companys` (`@Activated(routeAlias = "companys.operator.member.ready")`, 门店会员就绪（开单前）): before the store cashier pulls a cart, it delegates to Shuyun's `OperatorStoreMemberReadinessService.ensureOfflineMemberAtStore(companyId, distributorId, userId)`, which skips cleanly when the company's Shuyun open-platform config is disabled or ineligible, otherwise requires the member to exist under the same company with a mobile number and registers them offline with the open platform (`member.register`) when not already synced — failures surface as `ResourceException` so the cashier flow stops before cart pull.
 * **`POST /api/v1/operator/cartfastbuyadd`** — `OperatorCartController.cartFastBuyAdd` (店务立即购买（云仓分桶）): the companion fast-buy endpoint. Note the drift in the seed: the Java controller is still annotated `@Activated(routeAlias = "companys.operator.cartdata.fastbuyadd")`, while the menu seed row was updated to the newer alias `companys.operator.cartfastbuy.add` — a mismatch to be aware of when auditing `@Activated` route-alias enforcement against seeded menu permissions. The handler goes through the `OperatorCartFastBuyFacade` port in `ecshopx-common`, implemented by `OperatorCartFastBuyFacadeImpl` in `ecshopx-goods`, which resolves the SKU, gates the purchase through distribution's platform-store buy rules, validates shop/platform stock via `OperatorFastBuyStockValidator`, and stores the fast-buy row in Redis through companys' `OperatorShopFastBuyRedisService`.

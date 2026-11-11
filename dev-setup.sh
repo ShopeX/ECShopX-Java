@@ -699,7 +699,7 @@ build_web_if_needed() {
         -e NUXT_API_BASE_INTERNAL=http://127.0.0.1:18080/api/v1/h5app \
         -e NUXT_PUBLIC_API_BASE="${PC_API_URL:-http://admin.ecshopx.test/api/v1/h5app}" \
         "$NODE_BUILD_IMAGE" \
-        sh -c 'corepack enable && pnpm install --store-dir /pnpm-store --registry "$npm_config_registry" && pnpm build'
+        sh -c 'corepack enable && pnpm install --config.dangerouslyAllowAllBuilds=true --store-dir /pnpm-store --registry "$npm_config_registry" && pnpm build'
     [ -f "$WEB_DIR/.output/server/index.mjs" ] || { log_error "Nuxt .output 缺失"; return 1; }
     log_success "ECShopX-Java_Web Nuxt 编译完成 (.output/)"
     INSTALLED_PC=true

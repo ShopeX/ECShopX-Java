@@ -104,6 +104,8 @@ sources:
     resource: repo://ecshopx-merchant/src/main/java/cn/shopex/ecshopx/merchant/config/MerchantWxappJwtProperties.java
   - id: openwiki-source-2a6ed641b7be57a3f7fcd6a5
     resource: repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/web/OpenapiAuthInterceptor.java
+  - id: openwiki-source-4889f150849f66bdb3e774ab
+    resource: repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/web/OpenapiSignedRequestReplayGuard.java
   - id: openwiki-source-189b7866f8db73ca77451821
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/integration/notify/OrderDeliverySuccessNotifyWechatService.java
   - id: openwiki-source-0bfae3187b4a720c922e07fc
@@ -116,8 +118,14 @@ sources:
     resource: repo://ecshopx-popularize/src/main/java/cn/shopex/ecshopx/popularize/service/PopularizeSettingSaveService.java
   - id: openwiki-source-ac9bff6fbfacb24d146d9682
     resource: repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/config/ShuyunOpenPlatformProperties.java
+  - id: openwiki-source-1f5dcc44fe8af5ae99100ae6
+    resource: repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/service/openplatform/OpenPlatformConfigService.java
+  - id: openwiki-source-6b0c60a3857f097ae7426122
+    resource: repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/service/openplatform/OperatorStoreMemberReadinessService.java
   - id: openwiki-source-92eb21d2bf0a2c41237ee143
     resource: repo://ecshopx-shuyun/src/main/resources/application-shuyun.yml
+  - id: openwiki-source-5fa85271d55023bb8158457e
+    resource: repo://ecshopx-shuyun/src/test/java/cn/shopex/ecshopx/shuyun/service/openplatform/OpenPlatformConfigServiceTest.java
   - id: openwiki-source-8330d5527f45c831dc36ecc5
     resource: repo://ecshopx-system-link/src/main/java/cn/shopex/ecshopx/systemlink/service/jushuitan/JushuitanSettingAdminService.java
   - id: openwiki-source-49d1ee3f1ad373aa187391ee
@@ -140,10 +148,10 @@ sources:
     resource: repo://ecshopx-wechat/src/main/java/cn/shopex/ecshopx/wechat/wxa/WechatOpenPlatformAuthorizerTokenService.java
   - id: openwiki-source-f1b1aacc63642e5304668821
     resource: repo://readme.md
-generated: { by: "openwiki/0.9.0", at: "2026-11-06T17:22:02.968Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-10T17:10:58.497Z" }
 verified:
   - by: openwiki/0.9.0
-    at: 2026-11-06T17:22:02.968Z
+    at: 2026-11-10T17:10:58.497Z
 ---
 
 # Configuration and Secrets Reference
@@ -186,7 +194,7 @@ flowchart TD
 Three mechanisms read these keys, and knowing which one a key uses tells you its failure mode:
 
 1. **`@Value("${key:default}")`** — the dominant pattern for scalar keys (`ADMIN_LOGIN_CHECK_LEVEL`, `common.product-model`, `ecshopx.payment.wechat.notify-url`, `ecshopx.jushuitan.app-key`). `@Value` requires the key to exist when there is no default; that is why `application.properties` must list `espier.shopex-usercenter.*` even though the espier jar has defaults.
-2. **`@ConfigurationProperties(prefix = "...")`** — typed binding for grouped keys, 35 classes across the Bundles. Representative: `StorageProperties` (`ecshopx.storage`), `H5JwtProperties` (`ecshopx.h5.jwt`), `AliyunsmsSmsSceneWhitelistProperties` (`ecshopx.sms`), `PrismCoreProperties` (`ecshopx.thirdparty.prism-core`), `DoumenIntlProperties` (`ecshopx.payment.doumen-intl`), `RequestFieldProperties` (`ecshopx.request-field`), `ShuyunOpenPlatformProperties` (`ecshopx.shuyun.open-platform`).
+2. **`@ConfigurationProperties(prefix = "...")`** — typed binding for grouped keys, 36 classes across the Bundles. Representative: `StorageProperties` (`ecshopx.storage`), `H5JwtProperties` (`ecshopx.h5.jwt`), `AliyunsmsSmsSceneWhitelistProperties` (`ecshopx.sms`), `PrismCoreProperties` (`ecshopx.thirdparty.prism-core`), `DoumenIntlProperties` (`ecshopx.payment.doumen-intl`), `RequestFieldProperties` (`ecshopx.request-field`), `ShuyunOpenPlatformProperties` (`ecshopx.shuyun.open-platform`).
 3. **`Environment.getProperty(...)`** — used where the key name itself is dynamic. `SuperadminWxappTemplateMetadataService` builds `ecshopx.wechat.wxa-template-fallback.<key>.*` property names at runtime from the DB key and reads each suffix via the injected `Environment`.
 
 The file is deliberately a superset: many keys are read by Bundles far from bootstrap, and the file documents — in comments, mostly Chinese — the PHP-era environment variable each group replaces (`OSS_*`, `QINIU_*`, `AWS_*`, `COS_*`, `DIS_WORKWECHAT_H5_BASEURI`, `DOUMEN_INTL_*`, `BROKERAGE_URI`).
@@ -298,7 +306,7 @@ Behaviour notes:
 * `ADMIN_LOGIN_CHECK_LEVEL=img_code` makes `RequiresImgCodeWhenLevelValidator` require a captcha token/`yzm` pair on admin login; any other value (including empty) skips the check.
 * `common.encrypt-sensitive-data=true` is a **hard startup failure** (`OperatorsQueryService.assertEncryptMode` throws `IllegalStateException`) — the mode is not implemented in this migration iteration.
 * `ecshopx.common.api-token` gates `GET /api/v1/operator/credential`; when the key is blank the endpoint always answers `无权访问该API,签名错误` — i.e. **empty means closed**, the safe direction.
-* `openapi.debug=1` skips signature verification on public OpenAPI paths entirely — after the required-parameter checks it calls `OpenapiAuthAttributes.setAuth(request, systemCompanyId)` and returns, without checking `timestamp` tolerance, `sign`, the developer lookup or the replay guard. The `systemCompanyId` it stamps is the `openapi.system-company-id` @Value (falling back to `common.system-companys-id`, default `1`). A debug-only bypass that must never ship as `1`.
+* `openapi.debug=1` skips signature verification on public OpenAPI paths entirely — after the required-parameter checks it calls `OpenapiAuthAttributes.setAuth(request, systemCompanyId)` and returns, without checking `timestamp` tolerance, `sign`, the developer lookup or the replay guard. The `systemCompanyId` it stamps is the `openapi.system-company-id` @Value (falling back to `common.system-companys-id`, default `1`). A debug-only bypass that must never ship as `1`. On the normal path, `OpenapiAuthInterceptor` enforces a 600-second `timestamp` tolerance and then passes the same 600 seconds as the TTL to `OpenapiSignedRequestReplayGuard` (ECX-10869), which deduplicates `app_key|sign|timestamp` via a Redis `SETNX` on `openapi:auth:replay:{sha256}` and answers `请求已失效或重复` on repeats or Redis errors. No property tunes either the tolerance or the TTL — both are hardcoded constants in the interceptor.
 * `JWT_SECRET` is also the POS signing key: `PosJwtIssuer` (issues POS tokens at login, TTL = `JWT_TTL` minutes, HS512) and `PosJwtAuthenticationFilter` (verifies them) both build their HMAC key from the **Base64-decoded** bytes of `JWT_SECRET` (raw UTF-8 bytes only if the value is not valid Base64) and **fail startup with `IllegalStateException("JWT_SECRET is required")` when it is blank**. `POS_JWT_ISSUER` (default `ecshopx-pos`) is both the `iss` claim written by the issuer and one of the two markers the filter accepts — a token counts as a POS token when `token_kind=pos` **or** `iss` equals the configured issuer.
 * `ecshopx.mail.password.app-key` implements the PHP Laravel `APP_KEY` + AES-256-CBC codec for mail-setting passwords; when the key is missing, `MailSettingPasswordCodec` degrades to passing plaintext through.
 
@@ -440,6 +448,8 @@ DigiOS keys bind to `DigiOsProperties` (`@ConfigurationProperties(prefix = "ecsh
 | `offline-benefit-report-push-max-cycles` | `3` | report/detail push retry rounds |
 | `merge-dispatch-ttl-seconds` | `3` (`0` = disabled) | merge-dispatch dedup TTL |
 | `order-class-trade-source-map.<order_class>` | `normal`→`11`, `pointsmall`→`12`, `shopadmin`→`13`, `shopguide`→`14`, `employee_purchase`→`15`, `groups`→`16`, `seckill`→`17`, `community`→`18`, `bargain`→`19`, `excard`→`20`, `drug`→`21` | order_class → trade_source mapping, overridable per entry |
+
+**Admin-saved rows live in the database, not in properties.** `OpenPlatformConfigService` backs the admin config endpoints, reading/writing one `company_shuyun_open_platform_config` row per tenant (always stamped `plat_code=OFFLINE`). `getAdminView` returns a default shell (`app_secret_masked: ""`, `is_enabled: false`) when no row exists and masks both the app secret and the stored access token (`****` + last 4 chars — ECX-10945: the token plaintext never leaves the admin API). `saveFromAdmin` classifies the patch — credential bootstrap (`app_id`/`app_secret`), access-token-only, or enable-only — and on save fills a blank `auth_value` from the `auth-value` property (the same cold-start value used by token callbacks); enabling sync without a stored non-expired `access_token` is rejected. The mobile-POS cart flow (`OperatorStoreMemberReadinessService`) consults the same row and silently skips member registration unless `is_enabled=1` with eligible credentials, so the properties here are only cold-start defaults — per-tenant credentials live in the DB.
 
 ### SMS scene whitelists
 

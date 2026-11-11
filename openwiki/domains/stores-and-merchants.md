@@ -1,8 +1,8 @@
 ---
 type: domain-reference
 title: Stores, Distributors, Merchants, and Salespersons
-description: The store-side and B2B2C Bundles — companies/shops/operators, the POS store-account subsystem plus its POS terminal JWT auth plane (login, session invalidation, three-role permission matrix), distributors as physical stores with create/update after-commit fan-out and DigiOS sync listeners, promoter QR codes and first-level brokerage, merchant onboarding now on the mall-member @FrontAuth plane (ECX-10617), WeCom salesperson tasks and commissions, plus selfservice, reservation, community group-buy chief write-off, and the supplier_order split out of normal orders.
-tags: [distributors, stores, companies, merchants, salesperson, popularize, community, supplier, dispatch-bus, payment-subject, payment-subject-resolution, distributor-items, onboarding, settlement, pos-store-account, pos-auth, digios]
+description: The store-side and B2B2C Bundles — companies/shops/operators, the POS store-account subsystem plus its POS terminal JWT auth plane (login, session invalidation, three-role permission matrix), the store-cashier operator surface (pre-checkout Shuyun member readiness at POST /api/v1/operator/member/ready and the companys-owned operator_cart cleanup, ECX-10747), distributors as physical stores with create/update after-commit fan-out and DigiOS sync listeners, promoter QR codes and first-level brokerage, merchant onboarding now on the mall-member @FrontAuth plane (ECX-10617), WeCom salesperson tasks and commissions, plus selfservice, reservation, community group-buy chief write-off, and the supplier_order split out of normal orders.
+tags: [distributors, stores, companies, merchants, salesperson, popularize, community, supplier, dispatch-bus, payment-subject, payment-subject-resolution, distributor-items, onboarding, settlement, pos-store-account, pos-auth, digios, operator-cart, shuyun, member-readiness]
 sources:
   - id: openwiki-source-4460b2ae6ffdfa7f6511ddc1
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/CreateDistributorJobDispatchPublisherImpl.java
@@ -30,6 +30,8 @@ sources:
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ShuyunOpenPlatformDistributorCreateDispatchListenerRegistrationConfig.java
   - id: openwiki-source-6ef3227b25a21e819e4fc01a
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ThirdPartyDistributionAddPushMarketingCenterDispatchListenerRegistrationConfig.java
+  - id: openwiki-source-27abacbd20fe67d63b27d863
+    resource: repo://ecshopx-bootstrap/src/main/resources/seed/menu/platform_menu.json
   - id: openwiki-source-201046f4a1e3bd734f14eede
     resource: repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/config/DistributionAddEventDispatchPublisherImplDualPublishFacadeProbeTest.java
   - id: openwiki-source-85785a30ce788dca4d2c8534
@@ -64,6 +66,10 @@ sources:
     resource: repo://ecshopx-community/src/main/java/cn/shopex/ecshopx/community/service/chief/CommunityChiefQrWriteoffService.java
   - id: openwiki-source-4dd5e7bacc83353ba3f45b01
     resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/api/admin/v1/EmployeeController.java
+  - id: openwiki-source-c4239fd10cbbee9db016ba54
+    resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/api/admin/v1/OperatorsController.java
+  - id: openwiki-source-2867f272d3b645f1b2e95e5a
+    resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/api/admin/v1/OperatorStoreMemberController.java
   - id: openwiki-source-9d44d60aa3db9b37155e8c0a
     resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/api/admin/v1/PosStoreAccountController.java
   - id: openwiki-source-e8ae20ad9a0b9aab932192bb
@@ -78,6 +84,8 @@ sources:
     resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/espier/PosStoreAccountEspierImportRowSink.java
   - id: openwiki-source-c6d26c34e8d6b81c0e515e09
     resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/merchant/CompanysMerchantMainOperatorProvisioner.java
+  - id: openwiki-source-d615d35129728ef237866431
+    resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/operatorcart/OperatorCartCleanupService.java
   - id: openwiki-source-4fbd0011a9965297c75e16bc
     resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/posaccount/PosStoreAccountExportService.java
   - id: openwiki-source-ebc91c9c020dd1a99e042eaf
@@ -156,6 +164,10 @@ sources:
     resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/upload/EspierUploadHeaderCatalog.java
   - id: openwiki-source-c47b0102b62dec8fc0d98f93
     resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/DistributorGoodsSyncService.java
+  - id: openwiki-source-3a3f04b8b27821da165d6047
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/PlatformItemsDeleteService.java
+  - id: openwiki-source-08ff5f6cd6e732ced25d5918
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/operatorcart/OperatorCartDataListFacadeImpl.java
   - id: openwiki-source-209aaa4708096983e43434f6
     resource: repo://ecshopx-merchant/src/main/java/cn/shopex/ecshopx/merchant/api/front/v1/MerchantController.java
   - id: openwiki-source-7e78af38c8a63b7842f49ac8
@@ -214,14 +226,22 @@ sources:
     resource: repo://ecshopx-salesperson/src/main/java/cn/shopex/ecshopx/salesperson/web/QywxSalespersonAuthInterceptor.java
   - id: openwiki-source-a34636f6657202e2d8a079f3
     resource: repo://ecshopx-selfservice/src/main/java/cn/shopex/ecshopx/selfservice/package-info.java
+  - id: openwiki-source-a24f036c8d0eb888d3b5c8c3
+    resource: repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/auth/InboundSignedCallbackPreparer.java
+  - id: openwiki-source-92aa641d651e0abfd1d0cea1
+    resource: repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/service/openplatform/MemberOpenPlatformSyncState.java
+  - id: openwiki-source-63bad4a9ad12a2376363414f
+    resource: repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/service/openplatform/MemberRegisterService.java
+  - id: openwiki-source-6b0c60a3857f097ae7426122
+    resource: repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/service/openplatform/OperatorStoreMemberReadinessService.java
   - id: openwiki-source-5895edaca96277d53a43148a
     resource: repo://ecshopx-supplier/src/main/java/cn/shopex/ecshopx/supplier/package-info.java
   - id: openwiki-source-3619796531667b6781e35a09
     resource: repo://ecshopx-theme/src/main/java/cn/shopex/ecshopx/theme/dispatch/CreateDistributorJobHandler.java
-generated: { by: "openwiki/0.9.0", at: "2026-11-09T03:34:48.355Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-10T17:10:58.497Z" }
 verified:
   - by: openwiki/0.9.0
-    at: 2026-11-09T03:34:48.355Z
+    at: 2026-11-10T17:10:58.497Z
 ---
 
 # Stores, Distributors, Merchants, and Salespersons
@@ -453,6 +473,24 @@ The POS store accounts above double as the **login identities of the POS termina
 
 `GET /api/v1/account/management` (`EmployeeController.getListData` → `EmployeeManagementListService.getListData`) — the employee-account list, readable by operator **and POS** JWTs (`DualJwtSupport`, with `pos_store_account_id` filling the `operator_id` slot for cashier read-only use) — now accepts **`shop_name`** in addition to `shop_code`: `applyShopNameFilter` resolves matching `distribution_distributor` ids by name (`listDistributorIdsByCompanyAndNameLike`) and intersects them with any already-scoped `distributor_ids`; no match (or an intersection with the earlier `shop_code` scope that is empty) forces `operator_ids=[-1]`, i.e. an empty result page rather than an unfiltered leak.
 
+## Store cashier: pre-checkout member readiness (`/api/v1/operator/member/ready`)
+
+`OperatorStoreMemberController` (`@AdminAuth` under `/api/v1/operator`, the same store-cashier base as `OperatorCartController`) exposes exactly one route: `POST /api/v1/operator/member/ready` (门店会员就绪（开单前）, route alias `companys.operator.member.ready`). The cashier client calls it **before pulling the operator cart** so the target member is registered on the Shuyun open-platform OFFLINE side in time for cart-level benefit resolution. The controller merges the flexible body, resolves `company_id` via `DualJwtSupport.requireCompanyId` (operator or POS JWT), extracts `user_id`/`distributor_id`, and delegates everything else to `OperatorStoreMemberReadinessService.ensureOfflineMemberAtStore` — which physically lives in **ecshopx-shuyun**, so the companys bundle holds no Shuyun gateway logic. The response is `{ok: true, synced, skipped}`.
+
+The service semantics, in order:
+
+* **Argument gate** — `user_id <= 0` → `请指定会员`; `distributor_id <= 0` → `请选择门店` (both `ResourceException`, Dingo 422).
+* **Config skip** — when the company's Shuyun open-platform config row is missing, `is_enabled != 1`, or fails `InboundSignedCallbackPreparer.isEligible` (needs `auth_value`, `app_id`/`app_secret`, a stored `access_token`, and `is_over_due != "1"`), the endpoint returns `{synced: false, skipped: true}` — readiness is a no-op rather than an error on malls without Shuyun.
+* **Member gate** — the `members` row is re-read through `JdbcTemplate` scoped `(company_id, user_id)`; a missing row **or** a `company_id` mismatch on the row throws `未找到该会员` (never leaking cross-company existence).
+* **Idempotent skip** — `MemberOpenPlatformSyncState.isRegisteredWithOpenPlatform` treats the member as already registered when either `shuyun_open_online_wxapp_sync_at > 0` or `offline_reg_distributor > 0`, and the call short-circuits to `skipped`. These two local columns are the shared "已入会" markers for the wxapp-online and 店务建档 register paths, so repeated pre-checkout calls never re-register.
+* **Register** — a blank `mobile` is fatal (`会员手机号缺失，无法完成门店登记`); otherwise `MemberRegisterService.registerOfflineAfterCreate(companyId, userId, distributorId, mobile)` POSTs the OFFLINE `member.register` action through the Shuyun gateway (shop id suffixed with the configured offline plat suffix), then stamps `members.offline_reg_distributor = distributor_id` and runs the enhance card-code sync. A `false` return or any exception is rethrown as a `ResourceException` (`门店会员登记失败：…`) — the failure **halts the cashier flow before cart pull** rather than being logged and swallowed.
+
+The seeded permission surface ties in at `platform_menu.json`: the alias `companys.operator.member.ready` is bound on the head 概况/`index` row (`shopmenu_id` 423) and again on the 会员列表 row (`shopmenu_id` 453) — the same seed whose trailing 操作日志 row (`shopmenu_id` 681) maps `company.get.operatorlogs`, served by `OperatorsController.getCompanysLogs` (`GET /api/v1/company/operatorlogs`); see [Architecture Overview](../architecture/overview.md) for the full seed-row breakdown and the companion cartfastbuy alias drift.
+
+## Operator cart cleanup: the companys-owned half (ECX-10747)
+
+`operator_cart` rows belong to companys (`OperatorCart` + `OperatorCartMapper`), and `OperatorCartCleanupService` is the **delete-only** companion service — three wrappers over mapper deletes: `deleteByCompanyIdAndItemIds(companyId, itemIds)` (scoped by company, no-ops on `companyId < 1` or an empty id collection), `deleteByCartIds(cartIds)`, and `deleteAllRows(cartRows)` which extracts the distinct positive `cart_id`s. Both callers live in the goods bundle: `PlatformItemsDeleteService.deleteCore` purges rows for the deleted SKUs eagerly inside the item-delete transaction, and `OperatorCartDataListFacadeImpl.getCartDataList` sweeps lazily at list time — deleting **every loaded row** when no SKU resolves, and deleting the ids that landed in `invalid_cart` after the format/total chain. The ECX-10747 change is that purged rows **no longer surface as `商品已失效` entries**: physically removing them from `operator_cart` means the cashier's cart simply omits deleted SKUs, and only the submit path (`isSubmit=true`) still throws `商品已失效` when nothing valid remains. The full mechanism is documented on [Goods Domain](goods.md#operator-cart-facades-the-companys-bundle-calls); this page owns the service contract itself, pinned by `OperatorCartCleanupServiceTest` (both the company+item-ids purge and the `deleteAllRows` cart-id extraction reach the mapper).
+
 ## Merchants: apply → audit → account
 
 ```mermaid
@@ -642,6 +680,8 @@ Caption: the store-side tables — the distributor as the join point between com
 * **POS plaintext passwords are transient.** They exist only in the create/reset responses and the super-admin-only CSV export; at rest they are `SensitiveFieldEncryptor` ciphertext.
 * **POS tokens are revocable and scoped.** Logout blacklists the token in prism Redis (`pos_jwt_invalidate:{sha256}`, TTL = remaining lifetime); `PosJwtSessionValidator` reloads the account per request so disable/resign/transfer/role-change 401 immediately; and `PosJwtPathWhitelist` caps POS tokens to the cashier/order surface — `/api/v1/store/pos-accounts*` is explicitly denied even to a valid POS session.
 * **Merchant settlement is member-scoped.** Since ECX-10617 the wxapp settlement surface resolves the apply by mall-member `user_id`, and an apply with `audit_status=2` (passed) is immutable; a refused (`3`) apply is re-opened only by a step-3 re-submit (`disabled=false`, `audit_status` back to `1`).
+* **Member readiness skips, never silently fails.** `POST /api/v1/operator/member/ready` returns `skipped` whenever the Shuyun config is disabled/ineligible or the member is already registered (`shuyun_open_online_wxapp_sync_at` or `offline_reg_distributor` positive); but once a sync is attempted, any failure — missing member, cross-company row, blank mobile, or a failed `member.register` — throws `ResourceException` and halts the cashier flow before cart pull.
+* **Deleted SKUs leave no cashier-facing trace (ECX-10747).** `OperatorCartCleanupService` physically removes purged `operator_cart` rows rather than reporting them as 失效 entries; `商品已失效` survives only on the submit path when no valid row remains.
 * **Idempotent brokerage and supplier split.** Both are guarded by existence checks on (company, order[, supplier]) so listener retries cannot double-count.
 * **Salesperson identity comes from the DB, not the session.** Redis supplies the session, the DB row is authoritative for `salesperson_id` and distributor binding; a type mismatch between the two is a hard reject.
 * **Chief write-off ownership.** Only the chief who opened the group can write off, and only before completion/cancel-pending states — the delegation to `orderZitiWriteoffForChief` keeps order-state transitions in one place.
@@ -674,11 +714,14 @@ The dispatch-flow tests are the executable spec for the ordering claims above:
 * `DistributorGoodsSyncServiceAddDistributorItemsDispatchTest`, `ItemsUpdateOrchestratorDistributorSyncTest` — the goods→store catalog contract (in [Goods Domain](goods.md)).
 * `PosStoreAccountWriteServiceTest`, `PosStoreAccountImportServiceTest`, `PosStoreAccountStatusServiceTest`, `PosStoreAccountPasswordServiceTest`, `PosStoreAccountPasswordGeneratorTest`, `PosStoreAccountRulesTest`, `PosStoreAccountQueryServiceTest`, `PosStoreAccountExportServiceTest` (ecshopx-companys) — the POS account scope, rules, resign-one-way lifecycle, password generation/encryption, DigiOS fail-closed gate, and CSV row shape; `PosStoreAccountDigiOsCreatePortImplTest` (ecshopx-digios) pins the gateway upsert/error mapping.
 * POS auth plane: `PosAuthServiceTest`, `PosJwtSessionValidatorTest`, `PosMeServiceTest`, `PosPermissionMatrixTest` (ecshopx-companys) — login status/shop gates, live-session invalidation, the `/me` profile + matrix; `PosJwtIssuerTest`, `PosJwtPathWhitelistTest`, `DualJwtSupportTest` (ecshopx-espier/common) — token shape/HS512, the path whitelist, and POS-vs-operator claim resolution; `PosOrderBinderTest` (ecshopx-orders) pins the order handler stamping.
+* `OperatorStoreMemberReadinessServiceTest`, `MemberOpenPlatformSyncStateTest` (ecshopx-shuyun) — the readiness skip/sync/halt branches (disabled config, already-registered marker, missing member/user) and the two-column sync-state predicate; `OperatorCartCleanupServiceTest` (ecshopx-companys) — the company+item-ids purge and the cart-id extraction of `deleteAllRows`; the goods-side lazy-sweep and delete-time purge coverage stays on [Goods Domain](goods.md).
 
 ## Related pages
 
-* [Goods Domain](goods.md) — the other half of `distributor_items`: auto-sync fan-out, `job:62`, price/store overrides.
-* [Orders Domain](orders.md) — normal order create (which calls the supplier split), ziti write-off, cancel/restore.
+* [Goods Domain](goods.md) — the other half of `distributor_items`: auto-sync fan-out, `job:62`, price/store overrides; and the goods-side operator-cart facades (`OperatorCartDataListFacadeImpl` lazy sweep, `PlatformItemsDeleteService` eager purge) that drive the companys-owned `OperatorCartCleanupService` documented here.
+* [Orders Domain](orders.md) — normal order create (which calls the supplier split), ziti write-off, cancel/restore; the shopadmin checkout read of the operator cart after `member/ready` has run.
+* [Members Domain](members.md) — the member-create dispatch listener (`member_register_on_create_member_success`) that shares `MemberRegisterService.registerOfflineAfterCreate` and the `offline_reg_distributor` sync marker with the store-cashier readiness endpoint.
+* [Architecture Overview](../architecture/overview.md) — the seeded platform-menu rows granting `companys.operator.member.ready` (and the 操作日志 / `company.get.operatorlogs` row), plus the cartfastbuy seed-alias drift.
 * [Payments Domain](payments.md) and [Order Payment Flow](../workflows/order-payment-flow.md) — the consumer side of `PaymentSubjectDistributorIdPort`: which payment-setting bucket and gateway credentials a trade settles through.
 * [Marketing Domain](marketing.md) — distributor scoping of coupon issue and activity goods; salesperson shelves jobs 138–149.
 * [Dispatch Bus](../concepts/dispatch-bus.md) — the SYNC/ASYNC, queue, and fan-out semantics under every event and job here.

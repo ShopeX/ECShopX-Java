@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:32e5b324623cf8eacfc9ab7d5d2aec85e057fb48c66ff2f8010610b12f0e8ddd",
+  "pageVersion": "sha256:a08480dccea79d30260468231505db9d7e81925992052ce6206a0cf1b22361b8",
   "claims": [
     {
       "id": "claim_939c9eac23bd4d77a826ca9431a5ae9f",
@@ -805,10 +805,122 @@
           "version": "repo-lines-v1:sha256:0724fb5445a9ffd4354cafba2efb9d55035baf57a6dd8feb7a431b53ac1c0d29:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTJjOTkzMWVkZDgwNWQyMmE2ZDIxNTM4MzI3NTMzNzY3MjkzZThiZGQ0Y2NjMWFiMTQ5NmY2ZTZiMTI3MTgwNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZmRjZjY4NGQ1Y2NiZmIzOGYxMWNiNWFiYjdlYTRkYTNlNGRmZTQzNzdjMTFmN2I1ZGIxNWY4OTk2ZWIzMGZjYiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiN2U0MzQ0MTkzNDJlMGJhZjIxMDE0MGE0ODFjZTY3NTAyMzBiYjNhZjI3Mjg5ZDJmOTRiMjhiNmIzMGY3YmRlMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzYzM2JmZWE2OGUyZTJjOGYyMjJmMDQxNWE2N2MzODgwZmQzYzRiOGQzOTFlMmRlZGVkM2ZlMzdmMWQ4OGRkYSJ9"
         }
       ]
+    },
+    {
+      "id": "claim_d3d88342debd423a89c25b6fdb63b591",
+      "statement": "POST /api/v1/operator/member/ready (OperatorStoreMemberController.postReady in ecshopx-companys, route alias companys.operator.member.ready, 门店会员就绪（开单前）) is the store-cashier pre-checkout endpoint: it resolves company_id via DualJwtSupport (operator or POS JWT), takes user_id/distributor_id from the flexible body, delegates entirely to OperatorStoreMemberReadinessService.ensureOfflineMemberAtStore in ecshopx-shuyun, and returns {ok: true, synced, skipped}.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/api/admin/v1/OperatorStoreMemberController.java#L44-L68",
+          "version": "repo-lines-v1:sha256:7ebc08debe5550501dfdfd19aaaa7b2a3be93ad5ba69b8e536a2c8673a10545a:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRjMzZhZWE5NzNhMjQ4NWUwYzQwNzBiMjk5NzdjZjUyNDI0NWRjNWU5ZTU3Yjg1YjhkZDNkMzMwYTQyZjBkMWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM2YTgyZDk1ZTFjMWU4YTA3YjMzNTU2ZDA5YzZmMWNlNWViZWFmZmUzYjIxY2FkNTBhOWM4Zjg0MmYyZGJiNTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjczMTI0MWQzOWUzOTI4NTBiMzE2MjM2ZjVmMzljZDIzZWJjYzJjNTllMmNmNDgxODQzMmZjYTNjNTE5MzBlNzgifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b248cf5d99a243389c937adc517955c1",
+      "statement": "OperatorStoreMemberReadinessService.ensureOfflineMemberAtStore skips cleanly ({synced:false, skipped:true}) when the company's Shuyun open-platform config is missing, is_enabled != 1, or fails InboundSignedCallbackPreparer.isEligible (which requires auth_value, app_id/app_secret, a stored access_token, and is_over_due != \"1\") — readiness is a no-op rather than an error on malls without Shuyun.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/auth/InboundSignedCallbackPreparer.java#L230-L245",
+          "version": "repo-lines-v1:sha256:be4437e479048617ca6d512078d14695e4d3d8ec560526eace4c092638ad2b51:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4NmY2NDcyODU4MWVmMmYzNjAyNTc2YzFhNWMyNTk5NDY1NzZiNDcyZDM3MjAxNmIyZjA1MjJiYTIxMTdlMjQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRlMDAzMzZjNjliMjRlNzU4YmI3NDY0YzkwMmQ1NjE3MGIzNDg5NTJjMTIwYzliYWY1ODQwYzBiNjFhYWZiMTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRmZjQ5ZDdlZTE1ZjBkYzNkOGZkOTUxZGJjMmRhYzJkZDFkNjg2ZTgyZDkwNmU5OGFhNzU3MzhhY2Y4ZjU4YTYifQ"
+        },
+        {
+          "resource": "repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/service/openplatform/OperatorStoreMemberReadinessService.java#L57-L70",
+          "version": "repo-lines-v1:sha256:2718e544e26b1c6401afa108e2f9bcdab4afbcb93121773c26b4522ec2e623b9:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU4MTExYWJhOTcyMzA3OGVhZjFmMzYyMzZhN2MzYmMzYjk5ZDc3NjE4ZTViMTIzYjY0NzQ4YWI1NmNjMzg3NDciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQyMmEzOTJhYWMyZTVhOGY3ZTM2NTg4Yjc0MDY4ZTk2N2M0YzM1MDViODlmODIyNGIzNjIxNmRiMDBhNTVkZDMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQyNWUwZGIyNGZiMjIyZDhmOGMwNDA3ZTYyM2RjYzk0NDAwMmZlYWU5NmI0ZGZiZTYwNTNhNWFjMjRmNzUyYmIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_16974b4335b541c5a62fcfdd89275f92",
+      "statement": "The readiness service re-reads the members row via JdbcTemplate scoped (company_id, user_id) and throws ResourceException 未找到该会员 when the row is missing or its company_id differs; a blank member mobile throws 会员手机号缺失，无法完成门店登记, and missing user_id/distributor_id arguments throw 请指定会员/请选择门店.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/service/openplatform/OperatorStoreMemberReadinessService.java#L54-L90",
+          "version": "repo-lines-v1:sha256:c8c53d30e517f24c6585c663cb24a954837835b1239011fc8b3abffddf794530:eyJzZWxlY3RlZExpbmVDb3VudCI6MzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNiYzc3NTY5OTVjZmQ0YzkxNjk2ZTk1NjYzYzhiNmFlMGI5NGZjZTRiN2Q1ODk0M2U4MDU0NGY5ZTRlMDk4YjEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdkZTg5OGFhMWNjNDdhODI3ODBkYzMyYTg4OTIxOTA4ZDRkODJhNDNmNjZmNDIxOGQ0MTBkM2FlNDg2ZjIzZTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk4ZTIyN2VjMzU5NzEyMTlmMGRhMzkxNTExNWQ5NWZjYmFkNWZhYTQzMDQwMjQ3OGY4ZGI2Mjc5MTY2YmQ5YTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFiMDY5MmJjYzNjMDA2OWZhZjZkZGI1YjUxMmM0ZWFlNWI4ZGQ2ZWM4MjFkMjgxYTg2MTZmY2IyZTYxYTNkOWIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_8122c48987524f8888f24963d28d082f",
+      "statement": "MemberOpenPlatformSyncState.isRegisteredWithOpenPlatform treats a member as already registered when either members.shuyun_open_online_wxapp_sync_at or members.offline_reg_distributor is positive, so the readiness endpoint short-circuits to skipped for already-registered members and repeated pre-checkout calls never re-register.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/service/openplatform/MemberOpenPlatformSyncState.java#L27-L40",
+          "version": "repo-lines-v1:sha256:3259ce368eb7f15466afe369199a07ca3b29589a86af6605136b200cef959e52:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgyNzQ5ZTYxMjY4M2RkZDgyOTkxYTllMTg1YjBlMTYxMGNjNjkxZWQyYTFiYTVkYTNjODY2ZWQ2ZmQyMzYzMjQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYyNzc1ZDQ1ODU4N2NmZGE1NDM0NWE1YjhkZjRhNzM2ZjJiM2RlZjAzMmI0NDYxZjBlZWM3YzA0NjZmOTFhZDQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU3YjE3MTJjMmQwMGYwM2MwOWYzMWZmYmZlODQzYTVjNDY4YTgyNGZiODNkMDU1Nzc3ZDBlN2YxZGQwZjIxMDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZmYTQ5YTI1NTY4MWQwNDQ4MWYzMzM3MDRiOTE3ZDZmYjlmNzhjYzEwNjcyOTU4NjNiZTY3MzI1ZGQyNTFjNDIifQ"
+        },
+        {
+          "resource": "repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/service/openplatform/OperatorStoreMemberReadinessService.java#L81-L83",
+          "version": "repo-lines-v1:sha256:e7cbd1a921f386024b777c8a95268be1f1f7ec0a76243feba4b5f0cd2157f303:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZWRjMGI4NzI3NzEzZmFiZjE0NjhiMTViMGE4ZmY1OGJmZDg2MmNkZjlkYmI1OWIwMGQ2YThiYjU2ZWE3NjdiNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjRlZmM0OTQxOGQyNmRjZjEyOWIyMmE2YWEyMTEwOGNlZWMzNzY3N2EzMmQwOGU5ZDVmZWUzNWRkYTY2YmI5ZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNTQxM2ZhMjJkOTEzNzEyNzE3NGViMjA0MzM0YWJhMmExNTY5ZmUxZWIyYzFlNzM0MWM2N2IzMmFjNTFkMzdjOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMTYzMDQwMjQ2MjJiZGYwZDljODJmNjNkZDNiMDA4NjI5YWI2ZjE5YjJmODBiMWViYTdkNjI2ZmI5MDc4YjQ1MiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_1b7d3ab1207442da906f4684f7729f0c",
+      "statement": "When a sync is attempted, the readiness service calls MemberRegisterService.registerOfflineAfterCreate, which POSTs the OFFLINE member.register action through the Shuyun gateway, then stamps members.offline_reg_distributor = distributor_id and runs the enhance card-code sync; a false return or any exception is rethrown as a ResourceException (门店会员登记失败：…) so the failure halts the cashier flow before cart pull rather than being swallowed.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/service/openplatform/MemberRegisterService.java#L62-L105",
+          "version": "repo-lines-v1:sha256:1a8a6a25394c7598494411414f9e698ca5c6ee4790d49c9ec9d06dcf600a1a10:eyJzZWxlY3RlZExpbmVDb3VudCI6NDQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM0NmY4MjAxNWNjMmFiMzQ4M2Q2ZTg1YTViZWI1NGUzMDM4ZDNjZDBhY2E4YTA4YmJmOWY0YTYzYmE4OTI4MjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM1YjA1Njg3MTU3YmM4NGFlNWYyMDRiMDE0OGU3YmZkNzM1ZTI1OWYxMzI4MGVhNTc1NzBkMTRlNTY2YTYyNGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk4ZTIyN2VjMzU5NzEyMTlmMGRhMzkxNTExNWQ5NWZjYmFkNWZhYTQzMDQwMjQ3OGY4ZGI2Mjc5MTY2YmQ5YTcifQ"
+        },
+        {
+          "resource": "repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/service/openplatform/OperatorStoreMemberReadinessService.java#L92-L114",
+          "version": "repo-lines-v1:sha256:c001476e37d18c04b75ea7d5c21a463b85ec4855e1ee717a615ea1dc05a7187f:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlhMjVhM2RlMWJjYWFlYzZiNzBkNGU3MTVkMDg5YTI3NWE3YzM0YTcyZmQ3MzAwOGU2YzU5NzZhYjA2YjU1YWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM3NDY0OTUyODg4ZWQ4ODBjMjEzZTU3MGZhMzE1M2EyZTYyMGY5OGM3NzczNmQyNzhjZGI3NWUyMzEwNGE5ZDUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFhZTRmMTlkZjEwZGFkN2U5OTFiMTc2OTIzN2U1ZjVlY2FlMzczNzJjMjkxZjdmODdmNzM5MTEzM2I5Y2ExMWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc3MDkzOWMxZDRiNzAyYWEwNzVlZDQzMTYxNDdkOTI0ZDg5ZmI5YTI1ODMyZDVkZmRiZmNmY2M1YWZhZmYwYWIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_9a4a612f6cac42259f3d1639f5886cd6",
+      "statement": "The seeded platform menu binds the companys.operator.member.ready alias on the head 概况/index row (shopmenu_id 423) and on the 会员列表 row (shopmenu_id 453), while the trailing 操作日志 row (shopmenu_id 681, url /setting/systeminfo/operatorlogs) maps company.get.operatorlogs, which is served by OperatorsController.getCompanysLogs (GET /api/v1/company/operatorlogs, @Activated(routeAlias = \"company.get.operatorlogs\")) in ecshopx-companys.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/seed/menu/platform_menu.json#L2-L10",
+          "version": "repo-lines-v1:sha256:11e31cb9ded4afa61750e0a1dc6a837403b2a5e774d91d6e2a6e51220e38344a:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMjExMWYyMzlhYzY1YzlmZWNkNGY3OTc1ZDRlZTBjNjc3YjU4YThlYTY3ODUyZWEyNWQyNzkyMzkyNTE4ZDJmOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMWVmYWFhM2UxZGU5Y2Y5NWZmNjZkZmFhM2IzOWQxZWYyYTVjYzllMWJjNGY1NjUwMDFjNTA3YzczYmYxMDkzNiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjEsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTVkMmIxOTM0OTMxNjkxNjY5Y2MzNWE4NzYxOTUxODAxNTMzNjIxM2RkYTBhNjBmZTFiMDlmOWI4ZTNlOTkzZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTVmMTlmZTQ1OThiZjZmOTIzZTcxMWM3MjMxYWRkMDczZGZiYmQ5Mzc4ZGI3YzViZmZhZGNjZmZlNWFjMDhlMiJ9"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/seed/menu/platform_menu.json#L8126-L8132",
+          "version": "repo-lines-v1:sha256:9ddfa2934c90e5308259891aa412e0fa721df6169ac044509e084508471f6c23:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzY0Yjc3NzgxZDczYTg2NjNkYjliNGY3MWM3NDJkYzQ0MjBmYmRhMTc3OGJhZWI3NmU0YTYyYTFiZmYwNzk0NiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYjJlNzU0MDk0MmY1ZTBiYzQ1ZGU5MWQzMTQ5MjU0YzllZTk3MjI1ODI3MTA3ZDU4NTM4YjNkN2Y3MGI0Y2UzMiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjIxNjc5MGM4Y2I0YTlmY2UxNWI4YzJmZjhkZTU5NjNmNTA3MzIwNWMxZGVjZGRmMTM4MzM2YTg5YWNmZTYxOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTdhMjZlNTBiZjNlMjBmOGI3MWQ2NDI0ZGFiZTlhMGVhNTQ4MjZlYjBiYjllZDI2YzNlYWQ4MTQ4NmU5YWE2NSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/seed/menu/platform_menu.json#L937-L941",
+          "version": "repo-lines-v1:sha256:3d3dc24662c7dd7f04bf3e35ce419ee1b6ff36735859caef418737b6649e2224:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjVmNzVmMTcxOTczYzU4MjNkN2VhM2ZkZjU0YzZiYjVkZGY2Mzg5ZGE4YTcxZWIzMzlmODgzMWJlMDE3NmNkMiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzMxZmJlNTdkYzYxMDk4ZWQ0YzE3ZThiM2M3YWQ1ZTE1OTllYjJlNTUxOWM3Y2E0NzM2ZmY0ZmI5YjBlYWRkZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTgyZTg0MWVlZTc2MDAzZTA3NWY5OGY2MWUzMDBmYmQ4YWU1OGM4YzlkOGIwYzViY2VhY2RhNmFhMzAzMjRmOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZmMxNjVlZjI5MGUxZjQ2NmU0Y2M4YzNjYjBkNTQ4NjgxZmE4YjZjOTFjMzJhZTVjODE0ODJhNGFlZWU1NjI1MiJ9"
+        },
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/api/admin/v1/OperatorsController.java#L255-L256",
+          "version": "repo-lines-v1:sha256:e30d2c108caee211e9f7108b2df75bad83fe99ca5066ed4d51a36f644fe22fd1:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYWUxZjE4NjFmZDk0OGQ5NDNmYzdmMzQ4Yjg4MDc1Yzg0OTlkZjA5OGM4Y2YwNTRlOTgxN2MzNWY5ZDNlYjBhMyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYTE1MTQ2YThhYTkzNWEzY2I0OTA1ZWUxN2I5ODc0Zjg3ZjkyOTEyYzQ5Y2RlYWU5MmU0MmY1ZDQwZWMyYzA3ZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNTBkOWU4ZjZlYjFiODY4NDAzZjNlZDhhNTNlZDdiMjhlNDQwMGViYzYzNjAyMDQwNGU5NTFjYmZmZmQ0OGU3OCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOTJiN2M4OTgxZmQxOWFkOWE3NGJlMzdhZThmYTg4MTkzODZjOTA3MDZmOGE1NjhlZWRmMGI4MzMxZmM4N2YxMyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_c404abed068b44e3b8978d5b340527fd",
+      "statement": "OperatorCartCleanupService (ecshopx-companys) is the delete-only companion over operator_cart: deleteByCompanyIdAndItemIds (scoped by company, no-ops on companyId < 1 or empty ids), deleteByCartIds, and deleteAllRows (extracts distinct positive cart_ids); both callers live in ecshopx-goods — PlatformItemsDeleteService.deleteCore purges rows for deleted SKUs eagerly inside the item-delete transaction, and OperatorCartDataListFacadeImpl.getCartDataList sweeps lazily at list time (all loaded rows when no SKU resolves, invalid_cart ids after the format/total chain).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/operatorcart/OperatorCartCleanupService.java#L25-L65",
+          "version": "repo-lines-v1:sha256:425a4fd7b96eed072b6b34c6b9fb791109309cee488a3b7b61c20a7ad832c070:eyJzZWxlY3RlZExpbmVDb3VudCI6NDEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE4NTRiN2YzMjEzZDA2ZTkzMjFjYTcxNjE4MmI0NGU5NzczZTUzZDI0ZjhmZDQ0ZWI0NmRiYjhlM2JiOTEwOWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/PlatformItemsDeleteService.java#L118-L118",
+          "version": "repo-lines-v1:sha256:665771e1353dc0c39c7d74d1f0d5f4baf57c9ee23d9e33d7808a698c0f9cea23:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjY1NzcxZTEzNTNkYzBjMzljN2Q3NGQxZjBkNWY0YmFmNTdjOWVlMjNkOWUzM2Q3ODA4YTY5OGMwZjljZWEyMyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjY1NzcxZTEzNTNkYzBjMzljN2Q3NGQxZjBkNWY0YmFmNTdjOWVlMjNkOWUzM2Q3ODA4YTY5OGMwZjljZWEyMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjFmMTRiZTQzMzU0NmI3MmFhZjg4MTM3NDczNGFkYjM1NjAyZjk1N2ViODJjY2ExMmQ3MmEyNWRiZTdhMjc4ZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOGVkNTQ4NDhhYjg1NmQxZGI0ZGExYjg3ODUwZGUzNTBjNWNiZDViZGFkZmJkYTIyN2FmNWEyMTNlYzVhOTRiMyJ9"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/operatorcart/OperatorCartDataListFacadeImpl.java#L93-L146",
+          "version": "repo-lines-v1:sha256:8c7a3d96645d85e7a26f06b6ce84d304164162d2c09ca9601b5e455349cf9b16:eyJzZWxlY3RlZExpbmVDb3VudCI6NTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkzYWRiYzI4MDI3YjJjMzU2YjBhNTI4NTkzZDI2NThlNDAyMDNhOGE4ODAwYTcxY2VjMGQ4MDI1N2I2MDc1YTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQzOGNkZGQzOTUwN2QzOTg5OTgzZGUzZDExZmY2M2U4OTJlYzA3NjFiNjI1NWY0NzFhMWIzMzNhMDA4NmVlNmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjEwMjM1MTY2YjMwNWMxYTJjNTkxOTg4Nzc2ODk5MjBiOTNlN2U3MzgxODQ1MzdhZjEyMDRhNzVhMGQ3OTI1MzciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRmMTMzOGQzMmNiNGU3OWM0YzgxYWFhYWE1NjI2NTdjZGEyYzYzMjEwOTRkY2Y1ODJmYjU5NzI2OWFmMDI3OGQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_f649364b54b047f793fa65a7986c5e08",
+      "statement": "Under ECX-10747 the operator-cart purge physically removes operator_cart rows instead of surfacing deleted SKUs as 失效 entries: the list path returns the empty body (or the post-chain cart data) with purged rows deleted, and only the submit path (isSubmit=true) still throws ResourceException 商品已失效 when nothing valid remains.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/operatorcart/OperatorCartDataListFacadeImpl.java#L92-L147",
+          "version": "repo-lines-v1:sha256:5b0ec7eca209cdf6ce2187b8034f0411925c65fc94a5edb0fc5764f090b8d214:eyJzZWxlY3RlZExpbmVDb3VudCI6NTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImViNzM4MmFhNGQ3MjAwOWM3ZTdjZGQ5NjEzNzlmZjY0NjI5MWNiNGY4OTI1ZGU4Yjg4ZGE1Nzk0NGU5ZmMyNjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE2ZDA1OWMyZWMwZjYzZmFhYmFiNTQ1MzcyYjIzYzIyZWFjMmM5MDA4NjdlNmMzNGVkNmVmNmQyNTA3NDMyNGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdlYzRlMzUxYzM2ZjM3ZjY2ODkxMWY4ZDUxOWEzM2Y5OTZmNDRiNGMyNmMyOGQzMzM1M2ZlMDdmYjJiMjNkNWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNjMjYxYjNjMmNmMWNiNjYxNGEyZDhjMjkzOTc4YjY0MGQ3YzE3YWFkNjMxYjEzNzRhZTgzYzk1NDNhNzMwM2QifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.9.0",
-    "at": "2026-11-09T03:34:48.355Z"
+    "at": "2026-11-10T17:10:58.497Z"
   }
 }

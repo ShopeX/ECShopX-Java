@@ -44,12 +44,18 @@ public class BrokeragePlanCloseTimeService {
 		this.brokerageMapper = brokerageMapper;
 	}
 
+	/** 与 {@link #updatePlanCloseTime} 相同口径，供佣金行 insert 时写入非空 plan_close_time。 */
+	public int computePlanCloseTimeEpochSec() {
+		int nowSec = (int) Instant.now().getEpochSecond();
+		return (int) (nowSec + 86400L * ((long) settleDays + (long) aftersaleDays));
+	}
+
 	public void updatePlanCloseTime(long companyId, long orderId) {
 		if (companyId <= 0L || orderId <= 0L) {
 			return;
 		}
 		int nowSec = (int) Instant.now().getEpochSecond();
-		int planCloseTime = (int) (nowSec + 86400L * ((long) settleDays + (long) aftersaleDays));
+		int planCloseTime = computePlanCloseTimeEpochSec();
 		String orderIdStr = String.valueOf(orderId);
 
 		LambdaUpdateWrapper<Brokerage> uw = new LambdaUpdateWrapper<>();

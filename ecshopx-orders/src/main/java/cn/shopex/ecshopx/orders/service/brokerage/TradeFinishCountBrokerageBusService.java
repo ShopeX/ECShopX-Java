@@ -34,6 +34,8 @@ public class TradeFinishCountBrokerageBusService {
 
 	private static final Logger log = LoggerFactory.getLogger(TradeFinishCountBrokerageBusService.class);
 
+	private static final String LOG_TAG = "[popularize-trade-finish]";
+
 	private final NormalOrdersMapper normalOrdersMapper;
 	private final NormalOrderBrokerageOnFinishService normalOrderBrokerageOnFinishService;
 
@@ -46,31 +48,45 @@ public class TradeFinishCountBrokerageBusService {
 
 	public void handleTradeFinishRow(Map<String, Object> tradeRowSnakeCase) {
 		if (tradeRowSnakeCase == null || tradeRowSnakeCase.isEmpty()) {
+			log.info("{} listener_skip empty_payload", LOG_TAG);
 			return;
 		}
+		Object payTypeRaw = tradeRowSnakeCase.get("pay_type");
 		Long companyId = parseCompanyId(tradeRowSnakeCase.get("company_id"));
 		Long orderId = parsePositiveOrderId(tradeRowSnakeCase.get("order_id"));
 		if (companyId == null || orderId == null) {
-			log.debug("TradeFinishCountBrokerage: skip, invalid company_id or order_id");
+			log.info(
+					"{} listener_skip invalid_ids companyId={} orderId={} payType={}",
+					LOG_TAG,
+					tradeRowSnakeCase.get("company_id"),
+					tradeRowSnakeCase.get("order_id"),
+					payTypeRaw);
 			return;
 		}
-		if (isPointPayType(tradeRowSnakeCase.get("pay_type"))) {
-			log.debug("TradeFinishCountBrokerage: skip, pay_type is point");
+		if (isPointPayType(payTypeRaw)) {
+			log.info("{} listener_skip pay_type_point companyId={} orderId={}", LOG_TAG, companyId, orderId);
 			return;
 		}
+		log.info("{} listener_invoke companyId={} orderId={} payType={}", LOG_TAG, companyId, orderId, payTypeRaw);
 		NormalOrders order = normalOrdersMapper.selectById(orderId);
 		if (order == null) {
-			log.debug("TradeFinishCountBrokerage: skip, order not found for order_id={}", orderId);
+			log.info("{} listener_skip order_not_found companyId={} orderId={}", LOG_TAG, companyId, orderId);
 			return;
 		}
 		if (order.getCompanyId() != null && !order.getCompanyId().equals(companyId)) {
-			log.debug("TradeFinishCountBrokerage: skip, company_id mismatch for order_id={}", orderId);
+			log.info(
+					"{} listener_skip company_mismatch companyId={} orderId={} orderCompanyId={}",
+					LOG_TAG,
+					companyId,
+					orderId,
+					order.getCompanyId());
 			return;
 		}
 		try {
 			normalOrderBrokerageOnFinishService.orderFinishBrokerage(companyId, orderId, order);
+			log.info("{} listener_orderFinishBrokerage_returned companyId={} orderId={}", LOG_TAG, companyId, orderId);
 		} catch (Throwable t) {
-			log.debug("TradeFinishCountBrokerage: orderFinishBrokerage failed: {}", t.toString());
+			log.warn("{} listener_orderFinishBrokerage_failed companyId={} orderId={}", LOG_TAG, companyId, orderId, t);
 		}
 	}
 

@@ -19,7 +19,6 @@ package cn.shopex.ecshopx.popularize.service;
 import cn.shopex.ecshopx.common.exception.BadRequestException;
 import cn.shopex.ecshopx.popularize.domain.Brokerage;
 import cn.shopex.ecshopx.popularize.mapper.BrokerageMapper;
-import cn.shopex.ecshopx.popularize.support.DistributorIdParamParser;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -96,9 +95,18 @@ public class PopularizeBrokerageListReadService {
 		}
 
 		if (distributorIdRaw != null && StringUtils.hasText(distributorIdRaw.trim())) {
-			List<Long> ids = DistributorIdParamParser.parseDistributorIdListParam(distributorIdRaw.trim(), "distributor_id");
-			if (ids != null && !ids.isEmpty()) {
-				filter.put("dIds", ids);
+			String dTrim = distributorIdRaw.trim();
+			if (!DIGITS_ONLY.matcher(dTrim).matches()) {
+				throw new BadRequestException("distributor_id 格式错误");
+			}
+			long distributorId;
+			try {
+				distributorId = Long.parseLong(dTrim);
+			} catch (NumberFormatException e) {
+				throw new BadRequestException("distributor_id 格式错误");
+			}
+			if (distributorId > 0L) {
+				filter.put("dIds", List.of(distributorId));
 			}
 		}
 

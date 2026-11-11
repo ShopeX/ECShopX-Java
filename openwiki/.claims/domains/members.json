@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:a964a9986c70939977a47ee811d2a9ad9e8fdabbccd22b3f070d87fcda5ac04c",
+  "pageVersion": "sha256:53edc9966a617c4c102d321a9eedd1d54f8f9d5c81cac4cc61352ef49382099b",
   "claims": [
     {
       "id": "claim_a77f54208d174b0c866c7d5de18e4130",
@@ -859,10 +859,28 @@
           "version": "repo-file-v1:sha256:b63f8e8cd861135cd899e7abfac0a01d013cb06bed6a52078df1114ac64b1fbb"
         }
       ]
+    },
+    {
+      "id": "claim_b2158392fe6b482bbbb46bd822f85b42",
+      "statement": "The shuyun create_member_success listener (listener:shuyun.open_platform.member_register_on_create_member_success, registered in bootstrap at @Order(11) with async defaults on the default queue) routes through CreateMemberSuccessShuyunMemberRegisterDispatchListener to MemberRegisterDispatchService.dispatchCreateMemberSuccess, which skips when company_id/user_id are non-positive and, when the payload's distributor_id/mobile are missing or non-positive, re-reads the members row to fall back through reg_distributor then offline_reg_distributor for the distributor and the stored mobile — skipping with an info log when either is still unresolved before calling the OFFLINE member.register.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ShuyunOpenPlatformCreateMemberSuccessDispatchListenerRegistrationConfig.java#L37-L46",
+          "version": "repo-lines-v1:sha256:95f13efe91d3f95fbcb00c00028e3f23e27af0568ebdf89173a405360d8c3e28:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA2ODFhMTdmY2E5Y2YzN2M3OTI0YjIzZGUxNjJjNDNiNTVkNGEzOGE3Yzg5ZDA3YmJjYjhhMjE5YjY2ZmM1NzUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJmNWU1ODFmMGU2ZTZlNWI1NTAyNzc3ZTMxODEyNmY4MDMzY2M3NDU5OTQ4ODMyYTNjOTk2NWYyNGNlOGFkOWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM1ODkzN2MxYmY4M2M4YzBjNGU3ZjE4Y2U5ODgxNmQ0YWNkMTEyYjc2NTJjZmE3MDc0ODE0ODg3YjQ4NjFjOTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQwMzk5NDVmNzEzY2VjY2MyYTJiZTk4MWFiNWM1ZWVhMzdmOTVmOTc2OWU1NzVjZDhlZDlhOWZjYmFmZGYwNmEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/dispatch/CreateMemberSuccessShuyunMemberRegisterDispatchListener.java#L32-L39",
+          "version": "repo-lines-v1:sha256:e7fa196a7a89c342c33e934ec4c7730512709a750031afe6ede36a68e2c110e7:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjAyNTkyMDExOTRiYmY2MTJlZWZjNTFlMjBkYjcyNzUwOWRjZjE2Mjk1ODFhZjZkNjNmYzFmZmQ2ZDNhMDAyMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjc0MzRkODA1ZmRiNjNhODdhYWM1MzJmY2U5ZjgwZDUyZmMzY2E1MTZhOWQ5NWQ0MzJiNzQxZmY2ZmFjZTdjMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzk5ZDlhMjQ0MGI4NWJhZTg3Y2I0NzdjOTVlNTlmYjI5YTlmOTE1YzIyMTU1NzViMzc4NWIyNzk1NTc1OWFjYiJ9"
+        },
+        {
+          "resource": "repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/service/openplatform/MemberRegisterDispatchService.java#L34-L77",
+          "version": "repo-lines-v1:sha256:6a803c1c692e7000a6714331f93d971d0f77f0638bb2177f65f2ac3190fdda20:eyJzZWxlY3RlZExpbmVDb3VudCI6NDQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVmYWYyYmJlMDkxM2Y4ZjU3MzlkODc4ZDM2NTA3NTdmNzk2NDY1MWQzMWQ0NWYwMTZmOGEwZGVhNmIzOTVjYzQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI2MTU5MTU5YzZkM2EwNzU3MWZiNGRmYmQ1ZjMwNjllZmJiMzdkYTI0MDE0NjY4MWFmYjI3NzcwODIzN2Y4YWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkyYTJjODdkMzZjZjMyZTJlNGE4OTJkYTZiNTA4ZDE4NTg5N2RkZWQ5Y2FmODgyMTAxNjVmMzBhMGJjMjU2NTQifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.9.0",
-    "at": "2026-11-09T17:09:44.795Z"
+    "at": "2026-11-10T17:10:58.497Z"
   }
 }

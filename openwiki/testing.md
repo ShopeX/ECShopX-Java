@@ -86,12 +86,18 @@ sources:
     resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/ExportCsvFileService.java
   - id: openwiki-source-6f8bde073acb1f585db6b979
     resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/upload/EspierUploadExcelSheetReader.java
+  - id: openwiki-source-cc15e909aca2e7ff04cfebc0
+    resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/UploadImagesService.java
   - id: openwiki-source-aa9b6c4b6566d52da78581e6
     resource: repo://ecshopx-espier/src/test/java/cn/shopex/ecshopx/espier/service/ExportCsvFileServiceTest.java
   - id: openwiki-source-d5af79184950cc683b2f5d28
     resource: repo://ecshopx-espier/src/test/java/cn/shopex/ecshopx/espier/service/upload/EspierGoodsMarketingStyleSyncSupportRowLimitTest.java
   - id: openwiki-source-a671702ba5761b1e52cdaafb
     resource: repo://ecshopx-espier/src/test/java/cn/shopex/ecshopx/espier/service/upload/EspierUploadExcelSheetReaderLimitTest.java
+  - id: openwiki-source-232c00a0397f16c7f0571cce
+    resource: repo://ecshopx-espier/src/test/java/cn/shopex/ecshopx/espier/service/UploadImagesServiceTest.java
+  - id: openwiki-source-08ff5f6cd6e732ced25d5918
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/operatorcart/OperatorCartDataListFacadeImpl.java
   - id: openwiki-source-3a9dcea26ced98e99c49cd90
     resource: repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/service/items/PlatformItemsDeleteServiceItemDeleteEventPublishProbeTest.java
   - id: openwiki-source-25bf8cef1a2c4f8f8106f987
@@ -138,6 +144,10 @@ sources:
     resource: repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/orders/service/offline/OfflinePaymentDoCheckTradeFinishCanceledRefundOplPublishProbeTest.java
   - id: openwiki-source-8fbfa48e32b202f4fe7a2b1e
     resource: repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/orders/service/orderexport/OrderExportFilterAssemblerDistributorScopeTest.java
+  - id: openwiki-source-1dadfec169f4df087b2904a0
+    resource: repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/orders/service/payment/OrdersPaymentDoPaymentServicePaymentSubjectTest.java
+  - id: openwiki-source-1e0309e2b800473aab8b0e9e
+    resource: repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/orders/service/payment/OrdersPaymentDoPaymentServiceWxappSyncTradeFinishPublishTest.java
   - id: openwiki-source-dcecbe368deb2e47355cab19
     resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/MarketingActivityCrossPromotionGuardService.java
   - id: openwiki-source-7e61a49a5e4cea474b0d2c66
@@ -146,8 +156,16 @@ sources:
     resource: repo://ecshopx-promotions/src/test/java/cn/shopex/ecshopx/promotions/service/SeckillActivityCreateServiceLimitedTimeSaleShopOverlapTest.java
   - id: openwiki-source-ff9eb737c3f5fd8b605a107f
     resource: repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/auth/InboundSignedCallbackReplayGuard.java
+  - id: openwiki-source-92aa641d651e0abfd1d0cea1
+    resource: repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/service/openplatform/MemberOpenPlatformSyncState.java
+  - id: openwiki-source-6b0c60a3857f097ae7426122
+    resource: repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/service/openplatform/OperatorStoreMemberReadinessService.java
   - id: openwiki-source-8820a9e01de0795da2508b07
     resource: repo://ecshopx-shuyun/src/test/java/cn/shopex/ecshopx/shuyun/auth/InboundSignedCallbackReplayGuardTest.java
+  - id: openwiki-source-30092f4ef9bb7b93afb9e1ae
+    resource: repo://ecshopx-shuyun/src/test/java/cn/shopex/ecshopx/shuyun/service/openplatform/MemberOpenPlatformSyncStateTest.java
+  - id: openwiki-source-dfa9e5d9f9fa09eedc626efd
+    resource: repo://ecshopx-shuyun/src/test/java/cn/shopex/ecshopx/shuyun/service/openplatform/OperatorStoreMemberReadinessServiceTest.java
   - id: openwiki-source-e72414cd4a2db3d24239eee5
     resource: repo://ecshopx-third-party/src/test/java/cn/shopex/ecshopx/thirdparty/service/marketingcenter/OrderAddPushMarketingCenterOnNormalOrderAddProcessorTest.java
   - id: openwiki-source-19d2b0be785f41a69b8d89b4
@@ -168,8 +186,8 @@ sources:
     resource: repo://readme.md
 verified:
   - by: openwiki/0.9.0
-    at: 2026-11-09T17:09:44.795Z
-generated: { by: "openwiki/0.9.0", at: "2026-11-09T17:09:44.795Z" }
+    at: 2026-11-10T17:10:58.497Z
+generated: { by: "openwiki/0.9.0", at: "2026-11-10T17:10:58.497Z" }
 ---
 
 # Testing Conventions and Verification
@@ -275,6 +293,13 @@ Two earlier shapes dominate the scoping family and are still the reference for t
 
 * **Write-side rejection.** `ItemsProfitSaveServiceScopeTest` stubs `itemsRepository.getByItemIdAndCompany(42L, 100L)` to return `null` (item owned by another company) and asserts the save throws `ResourceException("商品不存在")` — then `verify(..., never())` on **every** write path (`deleteByCompanyAndItemIds`, `insertRow`, `updateProfitFeeByItemId`, `updateProfitByItemId`) proves a rejected entry aborts the entire batch with zero partial writes. The positive case verifies the update is issued with the company id in scope (`updateProfitFeeByItemId(eq(100L), ...)`).
 * **Read-side filter forcing.** `OrderExportFilterAssemblerDistributorScopeTest` drives the real assembler with a `MockHttpServletRequest` carrying the activated `DISTRIBUTOR_ID` request attribute (or the JWT `distributor_ids` attribute) and asserts the resulting export filter forces `distributor_id` to the scoped shop — including that an attacker-supplied `distributor_id` request parameter is overridden — while an `admin` account's filter gains no distributor key at all.
+
+### Operator-cart cleanup: the delete-purge / lazy-load pair (ECX-10747)
+
+Deleted items must disappear from the back-office operator cart (`operator_cart`) without surfacing 失效 ("invalid") rows to the operator. Two complementary tests pin the two halves of the contract:
+
+* **Delete-side purge.** `PlatformItemsDeleteServiceItemDeleteEventPublishProbeTest` verifies the real `PlatformItemsDeleteService` calls `OperatorCartCleanupService.deleteByCompanyIdAndItemIds(companyId, itemIds)` inside the delete flow (companys owns the `operator_cart` table; goods reaches it as a plain injected service bean), so cart rows are purged in the same transaction as the item delete — before the after-commit `item_delete` event fires. `OperatorCartCleanupServiceTest` pins the purge service itself with plain Mockito: `deleteByCompanyIdAndItemIds` issues exactly one mapper `delete` with a `LambdaQueryWrapper` scoped by `company_id` + `item_id IN (...)` (returning 0 without touching the mapper for an empty id collection or `companyId < 1`), and the `deleteAllRows` lazy-cleanup entry point reduces the rows to distinct positive cart ids and delegates to `deleteByCartIds`.
+* **Lazy-load skip.** `OperatorCartSkuLoadFacadeImplLoadSkusTest` pins the read side behind `GET /api/v1/operator/cart`: `loadSkus` silently skips item ids no longer present in `items` — a mixed batch returns only the existing rows (with `store` resolved through `ItemLogisticsStoreEnricher.combineEffectiveStore`), and an all-missing batch returns an empty list without throwing. `OperatorCartDataListFacadeImpl` then treats an empty SKU list as "everything deleted": a submit (`is_check=1`) throws `ResourceException("商品已失效")`, while a plain list call purges every cart row via `operatorCartCleanupService.deleteAllRows(cartRows)` and returns the empty-cart body — the lazy cleanup path for rows deleted before the purge ran.
 
 ### Table contract tests
 
@@ -383,7 +408,12 @@ Map that to the taxonomy:
 | Consume-side envelope / listener wiring | `./mvnw -pl ecshopx-<bundle> test -Dtest=<Event>EventAsyncConsumeTest` (orders) or `...DispatchConsumerRuntimeTest` |
 | Dispatch bus internals | `./mvnw -pl ecshopx-bootstrap test -Dtest=DispatchBus*Test` |
 | Wxapp pre-login auto-register dispatch + side effects | `./mvnw -pl ecshopx-members test -Dtest=MemberAccountServiceCreateMemberLocalAutoRegisterDispatchTest` |
-| Item delete after-commit event + operator-cart purge | `./mvnw -pl ecshopx-goods test -Dtest=PlatformItemsDeleteServiceItemDeleteEventPublishProbeTest` |
+| Item delete after-commit event + operator-cart purge | `./mvnw -pl ecshopx-goods test -Dtest=PlatformItemsDeleteServiceItemDeleteEventPublishProbeTest` (cleanup service itself: `-pl ecshopx-companys -Dtest=OperatorCartCleanupServiceTest`; lazy-load skip: `-pl ecshopx-goods -Dtest=OperatorCartSkuLoadFacadeImplLoadSkusTest`) |
+| Wxapp sync trade_finish publish (producer gate keys for all listeners) | `./mvnw -pl ecshopx-orders test -Dtest=OrdersPaymentDoPaymentServiceWxappSyncTradeFinishPublishTest` |
+| Payment-subject → config-validation distributor / point-pay single transaction | `./mvnw -pl ecshopx-orders test -Dtest=OrdersPaymentDoPaymentServicePaymentSubjectTest` |
+| Stable image-list ordering (`created` desc, `image_id` desc) / empty short-circuit | `./mvnw -pl ecshopx-espier test -Dtest=UploadImagesServiceTest` |
+| Shuyun OFFLINE-only registered markers | `./mvnw -pl ecshopx-shuyun test -Dtest=MemberOpenPlatformSyncStateTest` |
+| Operator store-member readiness skip / ResourceException semantics | `./mvnw -pl ecshopx-shuyun test -Dtest=OperatorStoreMemberReadinessServiceTest` |
 | Whole Bundle | `./mvnw -pl ecshopx-<bundle> test` |
 | Pre-PR gate | `./mvnw -pl <module> -am verify` |
 
@@ -396,12 +426,12 @@ Production code also documents its own re-verification commands: `WxappOrderCont
 
 ## What the suite does and does not cover
 
-**Covered well:** dispatch publish tuples and AFTER_COMMIT timing; fan-out planning (per-listener queue/delay, parent-delay precedence — `DispatchFanOutPlannerTest`); consume envelopes and listener wiring; controller→service delegation and the HTTP envelope; tenant scoping of writes, reads, exports, cross-tenant batch rejects, `distributor_name` filter overrides, and row-level distributor authorization (`*ScopeTest` / `*CompanyScopeTest` / `*DistributorScopeTest` / `*DistributorNameScopeTest` / `*ScopeGuardTest`); front-endpoint self-service ownership (`*OwnershipTest`); callback idempotency / atomic takeover (`*IdempotencyTest`); signed-request and signed-callback replay guards (`*ReplayGuardTest`); CSV formula-injection escaping and Excel upload row caps (`ExportCsvFileServiceTest`, `EspierUploadExcelSheetReaderLimitTest`); pure business rules (aftersales freight/refund validation, limits, codecs, CSV export flattening); entity table/unique-index metadata (`*TableContractTest`); MyBatis-Plus wrapper construction (via mocked mappers + `TableInfoHelper`); the bus drivers' behaviors against mocked Redis/Rabbit templates (`RedisDispatchDriverTest`, `RedisDelayedDispatchMoverTest`, `RabbitDispatchDriverTest`, …).
+**Covered well:** dispatch publish tuples and AFTER_COMMIT timing; fan-out planning (per-listener queue/delay, parent-delay precedence — `DispatchFanOutPlannerTest`); consume envelopes and listener wiring; controller→service delegation and the HTTP envelope; tenant scoping of writes, reads, exports, cross-tenant batch rejects, `distributor_name` filter overrides, and row-level distributor authorization (`*ScopeTest` / `*CompanyScopeTest` / `*DistributorScopeTest` / `*DistributorNameScopeTest` / `*ScopeGuardTest`); front-endpoint self-service ownership (`*OwnershipTest`); callback idempotency / atomic takeover (`*IdempotencyTest`); signed-request and signed-callback replay guards (`*ReplayGuardTest`); CSV formula-injection escaping and Excel upload row caps (`ExportCsvFileServiceTest`, `EspierUploadExcelSheetReaderLimitTest`); stable admin list ordering and empty-page short-circuits (`UploadImagesServiceTest`); payment-subject → config-validation distributor resolution and channel-outside-transaction ordering (`OrdersPaymentDoPaymentServicePaymentSubjectTest`); sync-payment `trade_finish` producer gate keys for every registered listener (`OrdersPaymentDoPaymentServiceWxappSyncTradeFinishPublishTest`); pure business rules (aftersales freight/refund validation, limits, codecs, CSV export flattening); operator-cart delete-purge + lazy-skip (`OperatorCartCleanupServiceTest`, `OperatorCartSkuLoadFacadeImplLoadSkusTest`); pure-function state predicates (shuyun `MemberOpenPlatformSyncStateTest`); operator store-member readiness skip/throw matrix (`OperatorStoreMemberReadinessServiceTest`); entity table/unique-index metadata (`*TableContractTest`); MyBatis-Plus wrapper construction (via mocked mappers + `TableInfoHelper`); the bus drivers' behaviors against mocked Redis/Rabbit templates (`RedisDispatchDriverTest`, `RedisDelayedDispatchMoverTest`, `RabbitDispatchDriverTest`, …).
 
 **Not covered by the automated suite — verify by other means:**
 
 * **No real database anywhere.** Mapper XML, SQL correctness, index behavior, and Flyway migrations are never executed by tests. `*TableContractTest` classes pin the entity-side annotation contract and any present local SQL text, but schema changes rely on the migration workflow (see [Workflow: Schema Migration](workflows/schema-migration.md)) and a manual/docker run — there is no test that replays `V*.sql` against MySQL. The idempotency tests assert the `trade_status` guard is present in the update wrapper's SQL text, but the actual atomic `UPDATE ... WHERE trade_status <> 'SUCCESS'` semantics depend on the real database.
-* **No real Redis, no AMQP broker.** Queue draining, the delayed-ZSET mover loop, and the 1-second pollers are only exercised with mocked `ListOperations`/`ZSetOperations`. The at-most-once consumption semantics documented on the dispatch page are consequences of code shape, not guarded by an integration test. The replay guards are proven against a mocked `setIfAbsent`, so the real Redis `SET NX EX` atomicity is assumed, not exercised.
+* **No real Redis, no AMQP broker, no MySQL-backed JDBC.** Queue draining, the delayed-ZSET mover loop, and the 1-second pollers are only exercised with mocked `ListOperations`/`ZSetOperations`; shuyun's `OperatorStoreMemberReadinessService` member-row SELECT is likewise proven only against a mocked `JdbcTemplate` (its `queryForList` is stubbed with hand-built row maps), so the SQL text itself is never executed. The at-most-once consumption semantics documented on the dispatch page are consequences of code shape, not guarded by an integration test. The replay guards are proven against a mocked `setIfAbsent`, so the real Redis `SET NX EX` atomicity is assumed, not exercised.
 * **No end-to-end HTTP + DB + dispatch run.** `EcshopxApplicationTests.contextLoads` boots the context (needing the configured MySQL/Flyway environment) but asserts nothing beyond startup; there is no request→database→queue→handler round-trip test.
 * **Failure paths that need real infrastructure** — payment gateway callbacks, XXL-JOB triggers, WeChat APIs — are pinned only at the unit seam (mocked clients/ports), not against sandboxes.
 
@@ -456,7 +486,13 @@ Practical consequences: a green `./mvnw -pl <module> test` proves your units, bu
 | `OperatorsGetCredentialsWebSliceTest`, `ShopsSetWxShopsSettingWebSliceTest` | MVC slices: token gate, merged input, Dingo JSON envelope, `InOrder` downstream calls |
 | `MemberAccountServiceCreateMemberLocalAutoRegisterDispatchTest` | `@SpringJUnitConfig` + schema-less H2-backed `DataSourceTransactionManager` + mocked beans: after-commit publish payload of `EVENT_CREATE_MEMBER_SUCCESS` (plain mobile, openid/appid/source/monitor/inviter fields), the new-member promoter/distribution side effects (`AdminMemberCreatePromoterSideEffectPort.createForNewMember(38L, 901L, mobile, 1L)` + `AdminMemberCreateDistributorUserSideEffectPort.createData(38L, 901L, 310L, 0L, 88L)` with the `shop_rel_member` insert), salesperson-job enqueue gating (channel 1 + non-blank `work_userid`, DM-CRM-open picks the post-DM-create variant), and `never()` on publisher and job on rollback |
 | `PlatformItemsDeleteServiceItemDeleteEventPublishProbeTest` | Item-delete after-commit probe over a Mockito-stubbed fake `PlatformTransactionManager`: the operator-cart purge `OperatorCartCleanupService.deleteByCompanyIdAndItemIds` runs inside the delete flow, and `ItemDeleteEventDispatchPublisher.publishAfterCommit` fires once with the `item_id`/`company_id`/`del_ids`/`item_info` payload — for both the default-distributor and shop-scoped (`distributor_id` query parsed by `LeadingNumberParser`) deletes |
-| `OperatorCartCleanupServiceTest` | Pure `@ExtendWith(MockitoExtension.class)` cleanup-service unit: both delete methods issue one mapper `delete` with a `LambdaQueryWrapper` — the plain-test baseline that the goods delete probe mocks against |
+| `OrdersPaymentDoPaymentServiceWxappSyncTradeFinishPublishTest` | Wxapp sync-payment `trade_finish` producer probe: every SUCCESS path (zero-fee wxpay → `localPay`, zero-fee-with-points → `point`, point pay, positive-fee wxpay) publishes through `OrdersTradeFinishDispatchPublisher` exactly once on the calling thread, and the captured row carries the gate keys of each registered listener — brokerage (`company_id`/`order_id`/`pay_type`), UpdateItemSales, LinkMember (`user_id`/`shop_id`/`distributor_id`), PrinterOrder (`pay_fee`/`discount_fee`), Fapiao (`trade_state=SUCCESS`/`trade_source_type`), CustomDeclareOrder (wxpay + non-empty `trade_id`), WorkWechatNotify — plus `trade_source_type=normal_groups` for the groups listener; a depth-counted stubbed `TransactionTemplate` also proves the pay-channel call happens outside the transaction |
+| `OrdersPaymentDoPaymentServicePaymentSubjectTest` | Payment-subject resolution and point-pay shape: a platform-subject payment validates wxpay config and builds pay params with `distributor_id=0` (from `PaymentSubjectDistributorIdPort`) while the inserted `Trade` keeps the real shop's `distributor_id` (285), with the channel invoked outside the second transaction; a local point payment finalizes in a single transaction with zero interactions on the external-channel builders |
+| `UploadImagesServiceTest` | Stable image-list ordering (ECX-11056): the captured `selectList` wrapper's SQL segment carries `ORDER BY created DESC, image_id DESC` in that order (pagination cannot interleave same-second uploads); a zero `total_count` short-circuits to an empty list without calling `selectList` |
+| `MemberOpenPlatformSyncStateTest` | OFFLINE-only two-field registered check: `isRegisteredWithOpenPlatform` returns true when `shuyun_open_online_wxapp_sync_at > 0` **or** `offline_reg_distributor > 0`, false when both markers are absent or zero — one shared `member.register` per member across mini-program and store-assist (aligned with PHP `ShuyunOpenPlatformMemberSyncState`) |
+| `OperatorStoreMemberReadinessServiceTest` | Store-member readiness (`POST /api/v1/operator/member/ready`) skip/throw matrix over a mocked `JdbcTemplate`: skip with no register call when the open platform is disabled/ineligible or the member row is already registered; `ResourceException` for `user_id<=0`, a missing member row, or a blank mobile; an eligible unregistered member triggers `registerOfflineAfterCreate(company, user, distributor, mobile)` and returns `synced=true` |
+| `OperatorCartCleanupServiceTest` | Pure `@ExtendWith(MockitoExtension.class)` cleanup-service unit (ECX-10747): both delete methods issue one mapper `delete` with a `LambdaQueryWrapper` — `deleteByCompanyIdAndItemIds` scoped by company + item ids, `deleteAllRows` delegating to `deleteByCartIds` — the baseline the goods delete probe mocks against |
+| `OperatorCartSkuLoadFacadeImplLoadSkusTest` | Operator-cart lazy-load skip (ECX-10747): `loadSkus` silently skips item ids missing from `items` — a mixed batch returns only existing rows (store via `ItemLogisticsStoreEnricher.combineEffectiveStore`), an all-missing batch returns an empty list without throwing, letting the cart-list facade purge or throw `商品已失效` instead of surfacing 失效 rows |
 | `AftersalesApplyCheckApplyServiceFreightTest` | Pure unit shape with mocked read ports and AssertJ: freight validation skips ONLY_REFUND, validates point freight against `freight_fee` (not `freight_point`), and resolves its error messages through a `StaticMessageSource` double (`AftersalesTestMessageSource.FALLBACK` / `LocaleContextHolder`) |
 | `AftersalesApplyCheckApplyServiceTopLevelRefundTest` | Top-level refund fee/point is ignored by apply-check (recomputed per line at the handle layer): raw values above the order line total still pass |
 | `LanguePropertiesTest` | `ApplicationContextRunner` proving `@ConfigurationProperties` validation fails on an unsupported default language |

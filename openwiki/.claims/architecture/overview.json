@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:8c0e19e6efe3528c4033a6c49d04b9a2eb608ef28af94a11f067bc7b5401eadf",
+  "pageVersion": "sha256:5fd775708b3e7e8eaa9f6f219cca1eea012433d2342339316c58dea079525950",
   "claims": [
     {
       "id": "claim_f8125c36eada410396ebd177c71a5a4f",
-      "statement": "The repository is a single multi-module Maven reactor: root pom.xml declares parent cn.shopex:ecshopx with version ${revision}=5.5.1 (Java 17) under spring-boot-starter-parent:3.5.12, with 53 modules total — four infrastructure modules (ecshopx-bom, ecshopx-common, ecshopx-dispatch, ecshopx-bootstrap) and 49 business Bundles including ecshopx-digios, ecshopx-openapi, and ecshopx-shuyun — each also pinned in dependencyManagement, and ecshopx-bootstrap's POM declares all 49 business Bundles.",
+      "statement": "The repository is a single multi-module Maven reactor: root pom.xml declares parent cn.shopex:ecshopx with version ${revision}=5.5.2 (Java 17) under spring-boot-starter-parent:3.5.12, with 53 modules total — four infrastructure modules (ecshopx-bom, ecshopx-common, ecshopx-dispatch, ecshopx-bootstrap) and 49 business Bundles including ecshopx-digios, ecshopx-openapi, and ecshopx-shuyun — each also pinned in dependencyManagement, and ecshopx-bootstrap's POM declares all 49 business Bundles.",
       "evidence": [
         {
           "resource": "repo://ecshopx-bootstrap/pom.xml",
@@ -12,11 +12,11 @@
         },
         {
           "resource": "repo://pom.xml#L12-L29",
-          "version": "repo-lines-v1:sha256:f71940afdf0b3594fedd041b1eb09ea1cef0dd75192d9168bcbdc0c137f0d79a:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhiZGY5NDQzNjg2NmE5Y2ZjYTBhYzNkNjIzMDc3ZWQwNzIxOGQ1NDFhMTQ5ZjliMDM4Y2U0MjcxYzYxNjM1ZDMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM4MGFjMjJmMDg0YjYwNjY1M2IwZGVmNzIyMmQyZTU5OTk4Mzk5NTUxMTYxN2VmZGU1MTQ1NTY2ZTAyNTY3MjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU5ZGFhYTVkNDZkZmViYWViODdmYWViMTFhMDE0Yjg0MWFlZmI0OTA3ZGE4NmMwNzU5MjAyMWU4NzRhYzE5OGUifQ"
+          "version": "repo-lines-v1:sha256:3937531c54411f01782da6d2d5968f031632c7baef8017dcd952333f65c79790:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhiZGY5NDQzNjg2NmE5Y2ZjYTBhYzNkNjIzMDc3ZWQwNzIxOGQ1NDFhMTQ5ZjliMDM4Y2U0MjcxYzYxNjM1ZDMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM4MGFjMjJmMDg0YjYwNjY1M2IwZGVmNzIyMmQyZTU5OTk4Mzk5NTUxMTYxN2VmZGU1MTQ1NTY2ZTAyNTY3MjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU5ZGFhYTVkNDZkZmViYWViODdmYWViMTFhMDE0Yjg0MWFlZmI0OTA3ZGE4NmMwNzU5MjAyMWU4NzRhYzE5OGUifQ"
         },
         {
-          "resource": "repo://pom.xml#L367-L421",
-          "version": "repo-lines-v1:sha256:327a2784226bb0ac6afac0848c456af37c28ec80a95527993b4c6f710e093998:eyJzZWxlY3RlZExpbmVDb3VudCI6NTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk1OTE5OTljNTNjMWFmMzUyZDk5YWQyNzljNTU5NGRiOTBhMmQ0NzdhMDE2NDA2OTNmZGE3ZWM1M2UzNzNlMTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI0NWEzNDAxYjEwNTIwOGY0ZmViZWZjMDYyNTljNzNhMzY3MGFiZTVkNzQzYWJjMDEzNzkxYWZmMjMxNzc4MGYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk2ODE0Mjc1NWJiMTdjZDVmYzAzZDE5YjQ1N2FjYmMzMGZlN2MyNGU2N2I5OTJmMmUxZjNlMDI0ZjhiZTZkYTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ0NDM4MDBmZTUyNGFlZjQ4ZGU2MTE3MjhmMTY5NGVhZDAwMWYyZjQyNGI3OWY4NTU3ZmZiYTFmOTMxZDFiYmYifQ"
+          "resource": "repo://pom.xml#L367-L420",
+          "version": "repo-lines-v1:sha256:8d9561c3eaf6271309f50d3d39d73c63e0de62a751992c53fa5141c42765b383:eyJzZWxlY3RlZExpbmVDb3VudCI6NTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk1OTE5OTljNTNjMWFmMzUyZDk5YWQyNzljNTU5NGRiOTBhMmQ0NzdhMDE2NDA2OTNmZGE3ZWM1M2UzNzNlMTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRhODEyNWNjMGMyMzRhNDE3MzE2ZTkyMjQ0NjgyMjQ3ODNlNGM2YzJiZTNkYjVkYzk1NGYxYjc3ZGQzMDVhMjkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk2ODE0Mjc1NWJiMTdjZDVmYzAzZDE5YjQ1N2FjYmMzMGZlN2MyNGU2N2I5OTJmMmUxZjNlMDI0ZjhiZTZkYTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg4MTk2MDQxODg5NzdhMjIxYTkxODY0NjQ3NzRlZGFkYTUxMWFlNjQxMWRkNDU1M2JjMjg0ZTNkNmJiY2UwNmUifQ"
         }
       ]
     },
@@ -607,10 +607,24 @@
           "version": "repo-file-v1:sha256:5ebd61ce926d4ce9f7fb2f6924f0d8dbfc8a03168eedc8b8b9acb0a5092ea812"
         }
       ]
+    },
+    {
+      "id": "claim_49ddeb84c1ba4c309f06de99ebc7c8f2",
+      "statement": "The platform_menu.json seed now ends with a new operation-log row (shopmenu_id 681, 操作日志, alias operator-logs, url /setting/systeminfo/operatorlogs, level 3 under 系统信息) whose apis grant exactly company.get.operatorlogs, served by OperatorsController.getCompanysLogs at GET /api/v1/company/operatorlogs (@Activated(routeAlias = \"company.get.operatorlogs\")), which pages operator logs via operatorLogsQueryService and auto-scopes merchant operators to their own merchant_id.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/seed/menu/platform_menu.json#L8126-L8155",
+          "version": "repo-lines-v1:sha256:85f897a075776b54d6ca2368f49e1b841e94bf288cffd8ffaf6be7d2b872caeb:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM2NGI3Nzc4MWQ3M2E4NjYzZGI5YjRmNzFjNzQyZGM0NDIwZmJkYTE3NzhiYWViNzZlNGE2MmExYmZmMDc5NDYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY5NDE2ZTA5Zjc4YmEzMTZjMDMyNTY4MjEzYjg1NWVlNzU2ZTQxNTY1ZDkxOGYwOTUxOWM4MWZkNjIwZjQwNjAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIyMTY3OTBjOGNiNGE5ZmNlMTViOGMyZmY4ZGU1OTYzZjUwNzMyMDVjMWRlY2RkZjEzODMzNmE4OWFjZmU2MTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/api/admin/v1/OperatorsController.java#L248-L279",
+          "version": "repo-lines-v1:sha256:67428756f6fa9310d3734dbb87b2c50488a271ccf09daa4cc60c0f40351ea878:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4MzA4ZTg1ZGY4MTQ1YmZiZGNhNDlmZTNiMjM5MzAyOTk0YTBiNWRlNTFkZWFmODBjY2U5MGRmM2ExNjVkNWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4MzA4ZTg1ZGY4MTQ1YmZiZGNhNDlmZTNiMjM5MzAyOTk0YTBiNWRlNTFkZWFmODBjY2U5MGRmM2ExNjVkNWMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVjM2YwYzUxZTc4MzQxZDU4NzQ2NGIxZTA3MGY0YzJlZGMyMTM5YTY1ZTZmOTc0NGU2OGFiN2M2NGMwZDRmM2IiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc0YjM2YTdjOWE1YjMzZTUzMGI1M2RhMzQzYTk3Y2JiNDQzMjI1NWQ0ZTkxODYwZGJiMTkyNzI2YmI3NjlmZDEifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.9.0",
-    "at": "2026-11-09T17:09:44.795Z"
+    "at": "2026-11-10T17:10:58.497Z"
   }
 }

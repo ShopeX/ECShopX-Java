@@ -1,7 +1,7 @@
 ---
 type: integration
 title: Third-Party Integrations (ERP, CRM, Analytics, Cross-border, DigiOS)
-description: How ECShopX pushes and pulls with external systems — the trade-finish fan-out into Jushuitan, WdtErp, OME, Marketing Center, DmCrm, SaasErp, Shuyun, Youshu, Ali and customs; the ecshopx-digios DigiOS direct-connect stack (token-cached gateway client, store/account sync, stock adjustment and inbound stock push, API log); the per-tenant settings model in Redis/DB; the Shuyun admin config surface that masks the stored access token (ECX-10945); and the http-enabled / NoOp gating that makes an unconfigured integration silently skip instead of failing the request.
+description: How ECShopX pushes and pulls with external systems — the trade-finish fan-out into Jushuitan, WdtErp, OME, Marketing Center, DmCrm, SaasErp, Shuyun, Youshu, Ali and customs; the ecshopx-digios DigiOS direct-connect stack (token-cached gateway client, store/account sync, stock adjustment and inbound stock push, API log); the Shuyun open-platform member register/readiness half (store-cashier POST /api/v1/operator/member/ready, the OFFLINE two-field sync-state check, and the create_member_success members-row fallback, ECX-11025); the per-tenant settings model in Redis/DB; the Shuyun admin config surface that masks the stored access token (ECX-10945); and the http-enabled / NoOp gating that makes an unconfigured integration silently skip instead of failing the request.
 tags: [thirdparty, integration, erp, crm, dispatch, redis-settings, xxljob, crossborder, digios]
 sources:
   - id: openwiki-source-e3ef9e434fef572806710742
@@ -26,6 +26,8 @@ sources:
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/OrdersTradeFinishNormalOrderPaySuccessBridgeDispatchListenerRegistrationConfig.java
   - id: openwiki-source-f3b71eb9d6873d40cbc6bb31
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/PosStoreAccountCreateEventDispatchPublisherImpl.java
+  - id: openwiki-source-ebbcd0aeec7940f4f0465f31
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ShuyunOpenPlatformCreateMemberSuccessDispatchListenerRegistrationConfig.java
   - id: openwiki-source-4b4b98eac2f2e4cb60688735
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ShuyunOpenPlatformTradeRefundFinishDispatchListenerRegistrationConfig.java
   - id: openwiki-source-a253dadbd229b5be70efd916
@@ -62,6 +64,8 @@ sources:
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/port/systemlink/WdtErpTradeAfterSaleAssemblePort.java
   - id: openwiki-source-e9fe415026b7649c6390e14c
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/port/systemlink/WdtErpTradeFinishPushSelfAssemblePort.java
+  - id: openwiki-source-2867f272d3b645f1b2e95e5a
+    resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/api/admin/v1/OperatorStoreMemberController.java
   - id: openwiki-source-26499232cc5422538ecc24fc
     resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/posaccount/PosStoreAccountWriteService.java
   - id: openwiki-source-be29ed08d983fcac069c37b7
@@ -140,14 +144,28 @@ sources:
     resource: repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/config/ShuyunOpenPlatformProperties.java
   - id: openwiki-source-f65d5e58e58ead1a57b33f28
     resource: repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/config/TokenRefreshScheduler.java
+  - id: openwiki-source-20d1f28c4e16414522b84f67
+    resource: repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/dispatch/CreateMemberSuccessShuyunMemberRegisterDispatchListener.java
   - id: openwiki-source-d8be560cf4096d63731af0b4
     resource: repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/domain/CompanyShuyunOpenPlatformConfig.java
   - id: openwiki-source-000541236f5bc5d7f0cd6c5b
     resource: repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/gateway/ShuyunOpenGatewayClient.java
   - id: openwiki-source-360776dc08765b4b83e96cfb
     resource: repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/package-info.java
+  - id: openwiki-source-f154ed4392ee8136694bdc58
+    resource: repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/service/openplatform/MemberEnhanceCardSyncService.java
+  - id: openwiki-source-92aa641d651e0abfd1d0cea1
+    resource: repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/service/openplatform/MemberOpenPlatformSyncState.java
+  - id: openwiki-source-77b9be238a039ce267c0c43e
+    resource: repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/service/openplatform/MemberRegisterDispatchService.java
+  - id: openwiki-source-63bad4a9ad12a2376363414f
+    resource: repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/service/openplatform/MemberRegisterService.java
+  - id: openwiki-source-cce5cf61a24197e480f3128e
+    resource: repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/service/openplatform/MemberWxappOnlineSyncService.java
   - id: openwiki-source-1f5dcc44fe8af5ae99100ae6
     resource: repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/service/openplatform/OpenPlatformConfigService.java
+  - id: openwiki-source-6b0c60a3857f097ae7426122
+    resource: repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/service/openplatform/OperatorStoreMemberReadinessService.java
   - id: openwiki-source-5fa85271d55023bb8158457e
     resource: repo://ecshopx-shuyun/src/test/java/cn/shopex/ecshopx/shuyun/service/openplatform/OpenPlatformConfigServiceTest.java
   - id: openwiki-source-cc20893ef5acacbcfd5bcffc
@@ -178,10 +196,10 @@ sources:
     resource: repo://ecshopx-youshu/src/main/java/cn/shopex/ecshopx/youshu/integration/YoushuOpenApiSignSupport.java
   - id: openwiki-source-9b2d13f1c467ba70b358feb5
     resource: repo://ecshopx-youshu/src/main/java/cn/shopex/ecshopx/youshu/package-info.java
-generated: { by: "openwiki/0.9.0", at: "2026-11-08T17:14:16.576Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-10T17:10:58.497Z" }
 verified:
   - by: openwiki/0.9.0
-    at: 2026-11-08T17:14:16.576Z
+    at: 2026-11-10T17:10:58.497Z
 ---
 
 # Third-Party Integrations (ERP, CRM, Analytics, Cross-border, DigiOS)
@@ -281,7 +299,7 @@ The refund/aftersales "fan-out" publishers in bootstrap (`TradeRefundAsyncFanOut
 | `event:orders:normal_order_delivery` | Youshu, Marketing Center, DmCrm order-delivery sync, Shuyun trade.sync, DigiOS `listener:digios.store_adjustment_on_normal_order_delivery` (`@Order 80`, async) |
 | `event:orders:normal_order_confirm_receipt` | Youshu, Marketing Center, Shopex CRM sync (sync), Shuyun trade.sync |
 | `event:orders:normal_order_cancel` (published SYNC) | Youshu, Marketing Center schedule-cancel push, Shuyun trade.sync, Shuyun offline-benefit release (`NOT_USED`) |
-| `event:members:create_member_success` | Youshu (`@Order 10`), Shuyun `member_register_on_create_member_success` (`@Order 11`), Shopex CRM `sync_add_member` (`@Order 15`) |
+| `event:members:create_member_success` | Youshu (`@Order 10`), Shuyun `member_register_on_create_member_success` (`@Order 11`, async — OFFLINE `member.register` with a `members`-row fallback for mobile / `reg_distributor` / `offline_reg_distributor`, see [Member register and store-cashier readiness](#member-register-and-store-cashier-readiness-ecx-11025)), Shopex CRM `sync_add_member` (`@Order 15`) |
 | `event:members:update_member_success` | Shopex CRM `sync_update_member` |
 | `event:CompanysBundle\Events\OperatorCreateEvent` | DigiOS `listener:digios.account_sync_on_operator_create` (`@Order 81`, async) — staff-only account upsert |
 | `event:digios:aftersales_return_adjustment` | DigiOS `listener:digios.store_adjustment_on_aftersales_return` (`@Order 81`, async) — refund-goods inbound adjustment |
@@ -491,6 +509,54 @@ The action vocabulary (`ShuyunOpenPlatformGatewayActions`) maps one-to-one onto 
 
 Tokens are refreshed daily by `TokenRefreshScheduler` — `@Scheduled(cron = "0 15 4 * * ?")`, aligned with the PHP `dailyAt('4:15')` — against `token-refresh-base-uri` (default `http://open-client.shuyun.com`), with Shuyun calling back to store the new token. The `fallbackGatewayAccessToken` (DELTA-001) is deliberately empty by default: with no DB token and no fallback, outbound calls are refused rather than sent unsigned. Other `ShuyunOpenPlatformProperties` defaults: `offlinePlatIdSuffix=-off` (offline shops get suffixed shop ids), `gatewayPartner=nnormal` (`bind.push` body partner), `offlineBenefitIssuer=kaquan` (offline benefits are issued as kaquan coupons), and the `orderClassTradeSourceMap` normal=11 … drug=21 mapping that translates internal order classes into Shuyun trade sources.
 
+### Member register and store-cashier readiness (ECX-11025)
+
+The member half of the open platform is **OFFLINE-only**: mini-program (wxapp) and store-cashier (店务) registration share a single `shuyun.loyalty.member.register` gateway action (posted with the `platform` header `offline`), and the `members` row itself carries the "already registered" markers.
+
+**The two-field sync state.** `MemberOpenPlatformSyncState.isRegisteredWithOpenPlatform(memberRow)` treats a member as registered when **either** `shuyun_open_online_wxapp_sync_at` (written by the wxapp online path: `MemberWxappOnlineSyncService` marks it after register/enhance/bind.push, or after bind.push alone when `offline_reg_distributor` is already set) **or** `offline_reg_distributor` (written by the store-cashier register below) is positive. Because both writers maintain the markers, either side can skip the other — the cashier never re-registers a wxapp-synced member and vice versa.
+
+**The register core** is `MemberRegisterService.registerOfflineAfterCreate(companyId, userId, distributorId, mobile)`:
+
+1. Returns `false` when the company config fails the shared `InboundSignedCallbackPreparer.isEligible` check (needs `auth_value`, `is_enabled=1`, `app_id`/`app_secret`, a non-expired `access_token`) or when the arguments are invalid.
+2. POSTs `member.register` with `{id: userId, platCode: "OFFLINE", shopId, mobile}` where `shopId` is the distributor id suffixed with `offline-plat-id-suffix` (default `-off`; an already-suffixed id is left alone).
+3. On gateway success it writes `members.offline_reg_distributor = distributorId` and then best-effort calls `MemberEnhanceCardSyncService.syncUserCardCodeAfterRegister` — an `shuyun.loyalty.enhance.member.post` whose returned `memberId` is persisted into `members.user_card_code`; enhance failures are logged, never thrown.
+4. Any gateway exception (including the `IllegalStateException` the client throws on non-2xx) is caught and returns `false`, so the boolean is the caller's only success signal.
+
+Two callers drive this core, with deliberately different failure postures:
+
+* **`create_member_success` listener (fire-and-forget).** `CreateMemberSuccessShuyunMemberRegisterDispatchListener` — registered by `ShuyunOpenPlatformCreateMemberSuccessDispatchListenerRegistrationConfig` (`@Order 11`, `asyncDefaults()` = platform-default queue/retry) — hands `company_id`/`user_id`/`distributor_id`/`mobile` from the event payload to `MemberRegisterDispatchService.dispatchCreateMemberSuccess`. When the payload lacks `distributor_id` or `mobile`, the service **re-reads the `members` row**: mobile falls back to `members.mobile`, and the distributor falls back through `reg_distributor` then `offline_reg_distributor`. If either is still unresolved — or the row does not exist — the dispatch is skipped with a log line; there is no PHP-style compensating member deletion on failure.
+* **Store-cashier readiness (fail-hard, ECX-11025).** The cashier client calls `POST /api/v1/operator/member/ready` (route alias `companys.operator.member.ready`) **before pulling the operator cart**; `OperatorStoreMemberController` (in `ecshopx-companys`, `@AdminAuth` + `@Activated`) resolves `company_id` from the operator/POS JWT and delegates to `OperatorStoreMemberReadinessService.ensureOfflineMemberAtStore`, which lives in `ecshopx-shuyun`. Unlike the listener, this endpoint *decides* the checkout flow, so it distinguishes skip from failure:
+  * **Skips** — returns `{synced: false, skipped: true}` — when the company config is missing/`is_enabled != 1`, when the config fails the shared eligibility check, or when the two-field sync state says the member is already registered. A non-integrated or already-synced tenant therefore never blocks the cashier.
+  * **Throws `ResourceException`** for a missing/blank `user_id` ("请指定会员") or `distributor_id` ("请选择门店"), when no `members` row matches or the row's `company_id` differs (both surface as "未找到该会员" — cross-company reads are deliberately indistinguishable from absence), when the member has no mobile ("会员手机号缺失，无法完成门店登记"), and when `registerOfflineAfterCreate` returns false or throws ("门店会员登记失败：…"), so a failed `member.register` halts the flow *before* cart pull instead of letting an unregistered member through.
+  * **Registers** — only when the sync-state check says not yet synced — and returns `{synced: true, skipped: false}` (the controller wraps this as `{ok: true, ...}`).
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant C as Store cashier client
+    participant MC as OperatorStoreMemberController
+    participant RD as OperatorStoreMemberReadinessService
+    participant ST as MemberOpenPlatformSyncState
+    participant RS as MemberRegisterService
+    participant GW as ShuyunOpenGatewayClient
+
+    C->>MC: POST /api/v1/operator/member/ready (user_id, distributor_id)
+    MC->>RD: ensureOfflineMemberAtStore(companyId, distributorId, userId)
+    RD->>RD: config missing, disabled or ineligible — return skipped
+    RD->>ST: isRegisteredWithOpenPlatform(members row)
+    ST-->>RD: true when wxapp sync-at or offline-reg distributor is positive
+    RD->>RD: missing member, cross-company row or blank mobile — throw ResourceException
+    RD->>RS: registerOfflineAfterCreate(companyId, userId, distributorId, mobile)
+    RS->>GW: postJson shuyun.loyalty.member.register platCode OFFLINE, shopId suffixed -off
+    GW-->>RS: JsonNode (IllegalStateException on non-2xx)
+    RS->>RS: update members.offline_reg_distributor, then enhance.member.post writes user_card_code
+    RS-->>RD: true (false on gateway failure, which readiness rethrows as ResourceException)
+    RD-->>MC: synced true, skipped false
+    MC-->>C: 200 ok true, cashier proceeds to pull the cart
+```
+
+*`POST /api/v1/operator/member/ready`: config problems skip silently, data problems and gateway failures throw, and the register only fires when the two-field members-row sync state says the member is not yet known to the open platform.*
+
 ### Admin config and token masking (ECX-10945)
 
 The per-company open-platform row is administered through `ShuyunOpenPlatformConfigController` — `@AdminAuth` + `@ShopLog` routes `GET/PUT /api/v1/shuyun/open-platform/config` (aliases `shuyun.open_platform.config.get/put`) — backed by `OpenPlatformConfigService`. The **admin view never exposes the stored access token**: `getAdminView` returns `access_token` only as `maskSecret(...)` — `""` when empty, `****` when ≤4 chars, otherwise `****` + the last 4 characters — alongside `app_secret_masked`, while `app_id`, `is_enabled`, `is_over_due` and `plat_code` (`OFFLINE`) come through in plain; when no row exists a default shell view (empty credentials, `plat_code=OFFLINE`, `is_enabled=false`) is returned so the form still renders (ECX-10945).
@@ -595,7 +661,7 @@ Per-tenant state (Redis, `companysRedisTemplate` unless noted): `JushuitanSettin
 * `ScheduleSyncInventoryHandlerTest`, `ScheduleSyncLogisticsHandlerTest`, `WdtErpSyncServiceTest`, `WdtErpSyncServiceScheduleSyncInventoryTest` (systemlink) — the `WdtErpSetting:*` iteration and `sync-wdt-*` handlers.
 * `DmCrmTradeFinishOrchestratorServiceTest`, `TradeRefundFinishDmCrmProcessorTest`, `OrderDeliveryDmCrmOnNormalOrderDeliveryProcessorTest` (third-party) — point + sync orchestration and its swallow-everything semantics.
 * The `*PushMarketingCenterProcessorTest` family (third-party) — per-event marketing-center pushes; `PrismOAuthServicePasswordGrantTest` — the Prism password grant.
-* `TokenCallbackServiceTest`, `CallbackSignatureVerifierTest`, `InboundSignedCallbackReplayGuardTest`, `TradeSyncServiceMappingTest`, `TradeSyncDispatchServiceTest`, `OpenPlatformConfigServiceTest` (including the `getAdminView` masking assertions for ECX-10945), `OfflineBenefitKaquanIssuerTest`, `MemberRegisterServiceTest`, `ProductSyncServiceValidationTest`, `RefundPayloadHelpersTest`, `PointChangePayloadBuilderTest` (shuyun) — the open-platform stack including the order-class→trade-source map.
+* `TokenCallbackServiceTest`, `CallbackSignatureVerifierTest`, `InboundSignedCallbackReplayGuardTest`, `TradeSyncServiceMappingTest`, `TradeSyncDispatchServiceTest`, `OpenPlatformConfigServiceTest` (including the `getAdminView` masking assertions for ECX-10945), `OfflineBenefitKaquanIssuerTest`, `MemberRegisterServiceTest` (payload shape: `id`/`platCode=OFFLINE`/`-off`-suffixed `shopId`/`mobile`), `OperatorStoreMemberReadinessServiceTest` (the skip/throw/register matrix of the store-cashier readiness endpoint, ECX-11025), `MemberOpenPlatformSyncStateTest` (the two-field registered check), `ProductSyncServiceValidationTest`, `RefundPayloadHelpersTest`, `PointChangePayloadBuilderTest` (shuyun) — the open-platform stack including the order-class→trade-source map.
 * Youshu listener tests and their `*DispatchConsumerRuntimeTest` variants, plus `YoushuTaskServiceTest`, `YoushuMemberCreateSuccessSyncServiceTest`, `YoushuNormalOrderAddSrDataSyncServiceTest`, `YoushuNormalOrderCancelSrDataSyncServiceTest`, and the three cron handler tests — the analytics push surface.
 * `ItemStoreUpdatedAliTemplateBusDispatchFlowTest`, `AliTemplateMsgSendJobDispatchFlowTest` (bootstrap) — `event:258` fan-out and the delayed template send.
 * `OfflinePaymentDoCheckTradeFinishCustomDeclareOrderPublishTest` (orders) — the CSV-292 offline plane carrying the customs listener; `OrdersTradePaymentCallbackServiceNormalOrderPaySuccessPublishProbeTest` — the bridge publish after payment success.

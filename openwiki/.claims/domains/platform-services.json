@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:fd9ec1de8e92c67b5dd8eb92bab2b2fab66ae34d0c267a41723be8c6f49644ef",
+  "pageVersion": "sha256:d231fc69c1541046e2dfb5c7d37e9a7e8190bb2124b0a0cd1a1a8bd110ff516a",
   "claims": [
     {
       "id": "claim_8d9a39ff21104a5e9f8a87abb98360a9",
@@ -1099,10 +1099,86 @@
           "version": "repo-lines-v1:sha256:60ebc5141eda370ec1f1d7e9ab3c01d3004ee47292846d10a95a2780464abac6:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRiOTU1Y2NkNjAxY2U2MWYzMTkzZGI0NmVlN2QxMDM3MTgwNTUxMWIxMzZmYzBmOTNlMmI5N2IwMjI4Y2E0NTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVmYzhjZjlkZWI3ZmRhNjczNDhmYTVmMDI0NGFlNTlhNmY3MWI1ZjNiMTQxM2U1OWEyOGYwZDcxY2I3YmFiNTAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjlkNDdiNGFlMzk4NmE0ZDFjNWE5MDlhMzMxNzE1NjliNWYyMzViNWMwYzBlODc5NjJhOGVhM2U1ZTIyMzY2NTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRmMmI0NjgwNDM5ZDQwYTUxZmEwNzFkNGI5OTUxZjBkZTRlOGFkMTc2MzY1OGU0YzZlMmEwYmFkMjM5ODVmM2EifQ"
         }
       ]
+    },
+    {
+      "id": "claim_ce42ff6c84dc442285311e05c67ed1bf",
+      "statement": "UploadImagesService.getImageList (behind admin GET /api/v1/espier/images, alias espier.image.list) applies equality-only tenant/role scoping — company_id, supplier_id (operator id when operator_type=supplier, else 0), merchant_id (JWT merchant id when operator_type=merchant, else 0), distributor_id and a truthy-disabled flag are all eq predicates — and since ECX-11056 orders by created DESC with image_id DESC as the tiebreaker (created is epoch-second resolution, so same-second inserts collide and the image_id tiebreaker keeps pagination deterministic); UploadImagesServiceTest.getImageList_appliesStableOrderByCreatedThenImageId pins both ORDER BY columns and their relative order, while the openapi sibling OpenapiThirdApiV1ImageListService (behind OpenapiImageListPortImpl) keeps the older created-only ordering.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/openapi/OpenapiThirdApiV1ImageListService.java#L82-L83",
+          "version": "repo-lines-v1:sha256:d2c000b2b2000cde96d3d26bf6174249db7a8df81d990725c5b3bc6e3ff35fe7:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTliZmE5ZThmZTExMTg5MDBiNWNmNmY0MjdhMTNmOTMzYjVkMGE0MjYxYzFmMTkzMjExZmM4N2U0MmVkY2Q0YSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOGM3YzllMDdiZDIzMjI0ZjViNTU0NjVlM2EyNDBmZDA0NzMwYmMxN2UyOTE3NTAxMjJiYWVlMjA1ZTEyMGNlOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTBmZDRlYjNhOTIyMjNiMmU1YmM4ZjhlODk4NjYyNjA0NzI3MTMwNzU5YWI2YmEyOWNmYWY4YTAyMzJkNTdmNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNjQ5NmM0ODZlMGJlODA0YjY1ZmJlODExODMwYTM1YjRmMmUwZTE1MmYzYjhiMzFiZTU4NTg3NTQ1NWJhNjQ5ZSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/UploadImagesService.java#L195-L221",
+          "version": "repo-lines-v1:sha256:5092f2b697b9816a80f3f0fe13e31ed6c0252be27fd3f1bd01098fc60ce101db:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhNmNhNjdlYjliNDJlOTgyY2I5NjI5YmE0ZTk4YjA5ODUxZjdiMDA5ZTc1MmE2ODMwMmVjOTI2NDdjYzU2N2IiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRmMTA1YTdjZWM1NzNhNjlmMzMxYzI4NTJiZThmZGZiMjNkNDMxZGI4NmY2NWY5NThlNDQxY2YzYjYxNmEyYzciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUwZmQ0ZWIzYTkyMjIzYjJlNWJjOGY4ZTg5ODY2MjYwNDcyNzEzMDc1OWFiNmJhMjljZmFmOGEwMjMyZDU3ZjcifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/test/java/cn/shopex/ecshopx/espier/service/UploadImagesServiceTest.java#L72-L94",
+          "version": "repo-lines-v1:sha256:41f3f835feddf600994e3fa59f7e26b3ff235237ada557f7ea308ec154e665c7:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ1NWZkZmE0NmJkZDg3ZWMyYTA0NGE5ZDdmYTEzZjQ2NmZkY2ZiMjRkNDNhYzdiZWY0OTY0ZjMzODIzZTIzZTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ5ZDBkZjg0NTU0MmFhMTFlODM1ZThjOTQwZjYyOGU3MzFmNjZmYzVlYjBhNDg1MDVhODFjMzNjM2FkYWE3ZTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIxZTcxYWU5MGU0NWQ4YjM3OGI5ZTFjZDBkNTg4N2JiMjllODEyMGNmNmU0MTUzNmJiMDUwZGI4NGJiYTQwZTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFhNWY1OWE2MmRjOGFmYjc2NjQzNzBlM2M5NzgzMTAzZjVhYjJhOWI2ZWFlYTNmMTliNTUwY2UyOTQ5ZTViNTkifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_f5ce8c104f7149f6a693ddc31a0a4e56",
+      "statement": "UploadImagesService.getImageList hand-rolls its pagination: page/pageSize default to 1/20 with non-numeric or fractional input silently falling back to the defaults, the query appends a literal LIMIT pageSize OFFSET pageSize*(page-1) suffix, total_count comes from a separate selectCount, pageSize=0 (or an empty table) short-circuits to an empty list without hitting selectList, and each row's image_full_url/url is resolved through LocalStoragePublicUrl under the local driver and FileStorageService.url otherwise.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/UploadImagesService.java#L223-L248",
+          "version": "repo-lines-v1:sha256:c8c59e23369484baf30cdc1acfc3cb019c4916a221c1af2421565a44202b1896:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVhNjVhZWZlYWZkZTk1NzJlZDk2ZTM0NjgxYmI4Y2U4YWQ5ODdkNzdhNjc5MTczYTY2MTE2OTdiZDVmMThlNjQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU5MWFkNWE0Nzk4NzM4NmU0NGYyZGI4YzExNDc0NWJkMDVhYjFhZGEzMTA3NTg3OGM1MzY0ODRkNjA1ZjFiODEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQyZDJiZmU1ZjYyZTQ3MWViOTM4OTFjN2UwMjI2YzJmODEzMzEyYjlkMWJlMjFlODMyOTZiNTFmZDViMzc1ZTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM0ZWQ0NzdlMDAyNGJlMWU2MTcwZDczM2E3Yjk1NmMxM2ZhYWRlNDE0MmZiNWZiMGNhZjM4NDA4OTEzNjZlZWYifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/UploadImagesService.java#L826-L835",
+          "version": "repo-lines-v1:sha256:dd8a06e9632891b2d6e02488edad9623239d4ba4b7e7fa93377950961999d644:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAzODQwYmI1NDBhZjZiMmEzN2IwNjZmNjRjMzI1ZjFkYzIyZDJkZjcwMTg1N2I5ZDhiNjAzZDg5ZWY5ZDRjODEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI1YWY0ZjMzZTE4YzlkZmJjMGY4ZTdmM2VhZmE4ODc5ZDQ5ZWQ0MjgxOTdlZWRhYzU3Njg2NGRkMTdiOTIyOWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM0ZmQ1ZWU5MGQyNTIxMzIwNGZiN2VhNWUzNzFkOGU0ZGVkOWRkNDQ2YjA4MDdiZjAzMGYwZTYzOGY4NzcwYjkifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/test/java/cn/shopex/ecshopx/espier/service/UploadImagesServiceTest.java#L97-L108",
+          "version": "repo-lines-v1:sha256:5eed9b411e0a79f05c1239fc91ed386446b175e84b0414509081a8d8dd39b9b6:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFhNDdiMmU3ZTU0NGNlMWEzOTIzZTdhNzQ1OWM1NTE4Njk0MTNhM2MxYWQxNmU4NTEzNjA2YjkyMDU2NTE5N2UiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU2ZmM5OTk5OThhYmM5N2I5MDQ2MzI0ZGFiYjQyZDkxNTk1ODE5Y2ZmMjkxZGIzZTE2MTU3NTIwNjFlZTQyZTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_15f6b34485d14b998bff62899794b267",
+      "statement": "The admin material-library surface is api/admin/v1/UploadImagesController (/api/v1/espier, @AdminAuth @ShopLog @DingoResponse(DINGO_422)): image/video/oss upload-token and direct-upload endpoints plus image save/list/delete/movecat and /image/cat* category CRUD, each route gated by its own espier.image.* / espier.oss.* / espier.localimage.upload @Activated alias; on the category side delImgCat refuses to delete a folder that still has children or non-disabled images (请先删除子文件夹 / 该文件夹下存在图片，不能删除), clears the per-locale common_lang_mod rows for espier_uploadimages_cat before deleting inside one @Transactional, and deleteImage is a soft delete (disabled=1, max 100 comma-separated ids per call, ResourceException when nothing matched).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/api/admin/v1/UploadImagesController.java#L300-L321",
+          "version": "repo-lines-v1:sha256:c6fdff6a67282628cc30ced96c2d1d42f60cff67af4f013f90a0d9a2e02cdc18:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI2YjE3MWNiOWQwN2JhMzlmODlkNjVmNzFkN2JkZjU1ZGY0Mzk4ZDQwMjUxNTI5MzZhMmE4ZTc1YzdkMDg0OTkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJhNzlkYWE5ZWZkYjI0OGM1YjE4YjUzMmJjYmRlMjVjMTg3MzQ4ZWY5ZmQ0OGJkZTUwMjAyMTQzMDlmOWE2Y2MiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIxMzM5NDRhY2Q3OTdhZGRjNDhlN2ZjNjM0MTgwY2U5ZWRlMDlkZGU2MzliOTkxMjNmOTQ1Zjk3OGE1OGUxZDkifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/api/admin/v1/UploadImagesController.java#L43-L67",
+          "version": "repo-lines-v1:sha256:4485be54de5ba52c86d99f5461e7f698760084fb8974d3e7c908ba517fde32b7:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc3ZTU1MmNmODAyYTY5MGFjYWIxY2IxNzMwZTlhYjQzZmViNTdhYjdhZGRjM2JjZjk5YmJhZGMxNTNhMmIzZmEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVhMDRlODc5YWZjMzFiYzZiZmM0ZWYwODM4ZTU4MDgwYmZhYmU0OWIyNGEzNTBkNWRmZDEwNmZlNDQ0MTIwOGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdiZjk3MmRlZmQwNGEyNWM4OGFlYWU5YWE2ZTY5ZTYxOWRkY2Q5ZjJlNmRjYjNjYTEyYTE0NTM2ZjQ2MmIzYWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjgyYzUwZDQ4OTc4MGVlZjA2YThkZWQ3ZDE5ZTRiZmVlZDg2YjJjZGVkMWJlOGE4ZjQ4MTFkZTAwMDZmY2FiMjQifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/UploadImagesService.java#L497-L550",
+          "version": "repo-lines-v1:sha256:9d55943d02ade397fda53a261010e8759d706f9f0fea5ba09c3ad74d67c2b64b:eyJzZWxlY3RlZExpbmVDb3VudCI6NTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAzZWEyZGEyYTZkOTE2MDkyN2FmZjI3MTVlYTE2YzBiYTk5NjBjZWUzYjg4NGFkOTBmODI5NTAyN2U2NmM5ZWMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdkOTFhMjE4OTA5YTQ5YTI5YzNjZTczNGFlMTU2NjhjNzE0YTUyYjkwMDJkZTVhNDc1NjBhMzMzNjgzYTM0MzkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIwYzM5MmM5MjNlYTE3ZmI0ZDU5MGUxODY4MTgxN2YwOGYzYTRmNjU5MDk0YmVkNmM2NTgyY2ZlOGQyOTM1OGIifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/UploadImagesService.java#L552-L582",
+          "version": "repo-lines-v1:sha256:b2a88b8c8f4d88c285e1ac94d1057989f355598ce141df14f67d8744943b7339:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU5MzhiZTNkMjU2ZjU3YzU1NjQzN2RkNTg3MjQwYTVkNzM4MmE2ZDE0NGM2YzI1ZTdmYmUxNjI3ZDg5OTBkMTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA2Nzg4NmFkZmFlNDA5M2M4ZDRjYjYyYjM0ZDUwOWRjYjQwODgxMjY4NDRmYzcyNzhlNzhlZGI1MTVmMzViNGYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZlNWU0YWEwODM2NTc4Y2M5Y2JiYTZjMWUyMTQxMmRhOGViN2VlNzgyYjIzMDQzMjJhYjAxMGQ2MzA3MzhjOTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNjYzJmM2UyYmFkYTAwNmY3YTNmZDgwNDRlMThkOWIxZjUwODBjNGRhZmIxMjBhNDAwYjk5ZjVlOWE3OGUzMjAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d489a5926b844169967b2788415cf949",
+      "statement": "The operator_cart table is owned by companys (OperatorCartMapper plus OperatorCartCleanupService, a delete-only service exposing deleteByCompanyIdAndItemIds / deleteByCartIds / deleteAllRows), but both cleanup triggers live in the goods bundle: PlatformItemsDeleteService.deleteCore purges operator_cart rows eagerly as the first step of the item-delete transaction, and OperatorCartDataListFacadeImpl.getCartDataList sweeps lazily at list time (deleting every loaded cart row when no SKU resolves, and deleting the invalid_cart ids after the format/total chain); the cleanup service itself is unchanged since baseline — what changed is which goods services call it — so a deleted SKU never lingers in an operator cart.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/operatorcart/OperatorCartCleanupService.java#L25-L65",
+          "version": "repo-lines-v1:sha256:425a4fd7b96eed072b6b34c6b9fb791109309cee488a3b7b61c20a7ad832c070:eyJzZWxlY3RlZExpbmVDb3VudCI6NDEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE4NTRiN2YzMjEzZDA2ZTkzMjFjYTcxNjE4MmI0NGU5NzczZTUzZDI0ZjhmZDQ0ZWI0NmRiYjhlM2JiOTEwOWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-companys/src/test/java/cn/shopex/ecshopx/companys/service/operatorcart/OperatorCartCleanupServiceTest.java#L24-L44",
+          "version": "repo-lines-v1:sha256:60a8f4aafbc01f09d40253d32caf2f77d508b7a508e11cc5152249ae08ecc476:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUwNThhNWFkOWJlYTE3Zjk4YzFjOTdmM2JhOGVkNDcwNzg0YzhmMDhmODNhNDBjZGU1MTVhNjMyN2VmMDVhNGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVkMjdjNmY4NWQ4NWI3ZTA2NWZmYzdiNTllNjA3NjI3MzNkYmJkMjM3MzZhZTcxNWU5ZWVjZjAxZmRjNDQyMmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/operatorcart/OperatorCartDataListFacadeImpl.java#L67-L137",
+          "version": "repo-lines-v1:sha256:18c77aeb571143d955dfcc1217ed6fb485e157133d6780e76e6d6089e6a52d6b:eyJzZWxlY3RlZExpbmVDb3VudCI6NzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNjMDllYTVmYzBjYTljMGIyMTY5MzU3NmMwNDI1N2VmOWRhYjU0NDQ0YWQ3MWE3MDUwNzk3MzNiNWNhZjA5YTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk1MjhjYTlmNDk1MWU0NWI4N2FmYjU3NDgyZGZkMDBkOWUzYTRhM2RiZTIxZjJhZDhjNGZkYjU4ZTNhMjkyNjgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA3NzFkNGI3YTM0YTE3YTE2MjlhNDQ3NmM2ZTU5NmJkZTA4OWZhZjA2MmY5Y2E2OTJkNmQzYzc3MmY2NDg1OWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjlhY2I5YjQ1N2FhNTZkYjVjNGI4MDJhZWU4MDU4Njg2M2E2ZGUwM2VmYzk5NDFmYTQ3MjcyNWM3YWIyNzVmZGEifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.9.0",
-    "at": "2026-11-08T17:14:16.576Z"
+    "at": "2026-11-10T17:10:58.497Z"
   }
 }

@@ -25,6 +25,8 @@ sources:
     resource: repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/service/AftersalesRefundConfirmService.java
   - id: openwiki-source-ba9273e9b980d61a9fa46794
     resource: repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/service/AftersalesReviewService.java
+  - id: openwiki-source-c68757c87447d8ed7a07d480
+    resource: repo://ecshopx-bom/pom.xml
   - id: openwiki-source-84aeb105875424c9aac7edf8
     resource: repo://ecshopx-bootstrap/pom.xml
   - id: openwiki-source-c83108e0b31507dc4b736d71
@@ -155,16 +157,16 @@ sources:
     resource: repo://pom.xml
   - id: openwiki-source-f1b1aacc63642e5304668821
     resource: repo://readme.md
-generated: { by: "openwiki/0.9.0", at: "2026-11-08T17:14:16.576Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-10T17:10:58.497Z" }
 verified:
   - by: openwiki/0.9.0
-    at: 2026-11-09T17:09:44.795Z
+    at: 2026-11-10T17:10:58.497Z
 ---
 
 
 # Persistence: MySQL, MyBatis-Plus, Mappers, and Tenancy
 
-All business data in ECShopX-Java lives in **one MySQL database** (`ecshopx`) reached through **MyBatis-Plus 3.5.16** (`mybatis-plus-spring-boot3-starter`, version pinned in the root `pom.xml` / `ecshopx-bom`). There is no JPA, no separate reporting store, and no second SQL dialect: every Bundle in the reactor talks to the same schema through mapper interfaces, and Redis (see [Redis: Logical Database Isolation](redis-databases.md)) only holds caches, counters, and queue state — MySQL is the system of record. For where `domain/`, `mapper/`, and `repository/` packages sit inside a Bundle, see [Bundle Layering](../architecture/bundle-layering.md).
+All business data in ECShopX-Java lives in **one MySQL database** (`ecshopx`) reached through **MyBatis-Plus 3.5.16** (`mybatis-plus-spring-boot3-starter`, version pinned via the `mybatis-plus.version` property in the root `pom.xml` `<properties>` block and re-declared in `ecshopx-bom`). There is no JPA, no separate reporting store, and no second SQL dialect: every Bundle in the reactor talks to the same schema through mapper interfaces, and Redis (see [Redis: Logical Database Isolation](redis-databases.md)) only holds caches, counters, and queue state — MySQL is the system of record. For where `domain/`, `mapper/`, and `repository/` packages sit inside a Bundle, see [Bundle Layering](../architecture/bundle-layering.md).
 
 ## The connection and its two pinned values
 

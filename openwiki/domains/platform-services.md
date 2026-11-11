@@ -38,8 +38,12 @@ sources:
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/espier/upload/EspierImportRowSink.java
   - id: openwiki-source-0ced4eb2aefb8260715e3891
     resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/espier/PosStoreAccountEspierImportRowSink.java
+  - id: openwiki-source-d615d35129728ef237866431
+    resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/operatorcart/OperatorCartCleanupService.java
   - id: openwiki-source-48f750a8142d8a7487ac4de7
     resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/posauth/PosJwtSessionValidator.java
+  - id: openwiki-source-a3f1e5e124e30d6a0667f6be
+    resource: repo://ecshopx-companys/src/test/java/cn/shopex/ecshopx/companys/service/operatorcart/OperatorCartCleanupServiceTest.java
   - id: openwiki-source-73028b1c849bf5bd4e87803c
     resource: repo://ecshopx-data-cube/pom.xml
   - id: openwiki-source-a21a234d49d44d9efb0c39df
@@ -68,6 +72,8 @@ sources:
     resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/api/admin/v1/ExportDataController.java
   - id: openwiki-source-911eee2a4fd6d4654b40f32a
     resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/api/admin/v1/UploadFileController.java
+  - id: openwiki-source-141b69174d0b2cf4a004da0b
+    resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/api/admin/v1/UploadImagesController.java
   - id: openwiki-source-2e497b6cef2850b658815ddb
     resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/cron/ScheduleDeleteErrorFileHandler.java
   - id: openwiki-source-d841f21d909676bc6f4b4262
@@ -76,6 +82,8 @@ sources:
     resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/dispatch/EspierUploadFileJobHandler.java
   - id: openwiki-source-fa8318ca1ad30a267439021b
     resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/dispatch/ImportDataJobHandler.java
+  - id: openwiki-source-56611045864aaedd6a28d20d
+    resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/openapi/OpenapiThirdApiV1ImageListService.java
   - id: openwiki-source-c3ce781e36cc4f90ca50966a
     resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/package-info.java
   - id: openwiki-source-d229dab5a02385013d416e5e
@@ -128,6 +136,8 @@ sources:
     resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/UploadFileImportDataService.java
   - id: openwiki-source-40cb6a6b9f25156ee12a650c
     resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/UploadFileService.java
+  - id: openwiki-source-cc15e909aca2e7ff04cfebc0
+    resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/UploadImagesService.java
   - id: openwiki-source-8316b851d4dccee26fe2fecd
     resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/storage/FileStorageService.java
   - id: openwiki-source-67afa4568bf0223023961dcc
@@ -166,12 +176,16 @@ sources:
     resource: repo://ecshopx-espier/src/test/java/cn/shopex/ecshopx/espier/service/upload/EspierGoodsMarketingStyleSyncSupportRowLimitTest.java
   - id: openwiki-source-a671702ba5761b1e52cdaafb
     resource: repo://ecshopx-espier/src/test/java/cn/shopex/ecshopx/espier/service/upload/EspierUploadExcelSheetReaderLimitTest.java
+  - id: openwiki-source-232c00a0397f16c7f0571cce
+    resource: repo://ecshopx-espier/src/test/java/cn/shopex/ecshopx/espier/service/UploadImagesServiceTest.java
   - id: openwiki-source-a38b30d6b6268d4d2f64fe9a
     resource: repo://ecshopx-form/src/main/java/cn/shopex/ecshopx/form/api/admin/v1/TranscriptsController.java
   - id: openwiki-source-eb087a80cbc892a64ca5881b
     resource: repo://ecshopx-form/src/main/java/cn/shopex/ecshopx/form/api/admin/v1/UserTranscriptsController.java
   - id: openwiki-source-4ae99d02217ea655417c2b0d
     resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/espier/UploadTbItemsEspierImportRowSink.java
+  - id: openwiki-source-08ff5f6cd6e732ced25d5918
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/operatorcart/OperatorCartDataListFacadeImpl.java
   - id: openwiki-source-ab18109adb94a742a1adfa2b
     resource: repo://ecshopx-im/src/main/java/cn/shopex/ecshopx/im/service/EChatConfigService.java
   - id: openwiki-source-34856e8009ec602c6af1c083
@@ -284,10 +298,10 @@ sources:
     resource: repo://ecshopx-wsugc/src/test/java/cn/shopex/ecshopx/wsugc/service/topic/TopicSetTopServiceScopeTest.java
   - id: openwiki-source-f88bbfd29df85476326a0455
     resource: repo://ecshopx-wsugc/src/test/java/cn/shopex/ecshopx/wsugc/service/topic/TopicVerifyServiceScopeTest.java
-generated: { by: "openwiki/0.9.0", at: "2026-11-08T17:14:16.576Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-10T17:10:58.497Z" }
 verified:
   - by: openwiki/0.9.0
-    at: 2026-11-08T17:14:16.576Z
+    at: 2026-11-10T17:10:58.497Z
 ---
 
 # Platform Services and Supporting Bundles
@@ -304,7 +318,7 @@ This page covers the shared and peripheral Bundles. Most of them follow the stan
 |---|---|
 | `storage/` | `StorageDriver`, `StorageFactory`, `StorageProperties`, the five driver impls, `FileStorageService` (facade), `StorageWebMvcConfigurer` (`/storage/**` handler for local driver) |
 | `service/upload/` | the Excel import handler SPI + registry + header catalog + storage writer + enqueue/dispatch ports |
-| `service/` | `UploadFileService`, `EspierUploadFileAsyncRunner`, `UploadFileImportDataService`, export CSV/XLSX/ZIP services, `UploadeFileRepository` |
+| `service/` | `UploadFileService`, `UploadImagesService` (material library), `EspierUploadFileAsyncRunner`, `UploadFileImportDataService`, export CSV/XLSX/ZIP services, `UploadeFileRepository` |
 | `service/address/`, `service/subdistrict/` | address tree + region label resolution, subdistrict reference data |
 | `service/upgrade/` | `UpgradeAgreementQueryService`, `UpgradeExecuteService`, `UpgradeRollbackService` |
 | `service/front/`, `service/offline/`, `service/printer/`, `service/config/` | wxapp upload/new-login, offline bank accounts, printers, request-field config |
@@ -349,6 +363,19 @@ For the local driver specifically, `StorageWebMvcConfigurer` is `@ConditionalOnP
 * The object-key derivation also differs: `uploadeImage` builds the key from the client filename plus (at most once) the `Content-Type` subtype; `upload` appends the parsed file extension for non-local drivers but *always* appends the literal `.png` under the `local` driver regardless of the actual bytes.
 * `assertCosNonBlankFilenameHasExtensionIfNeeded` enforces that under the `cosv5` driver a supplied filename must contain a non-empty extension — a COS-specific rule applied on both the token and direct paths.
 * `uploadImportLocalRelativePath` is local-only — it throws `BadRequestException("本地上传仅支持本地存储配置")` unless `StorageFactory.getDriverName()` is `local`, so under the shipped OSS/Qiniu/AWS/COS production drivers this path is dead — and it returns the bare relative key without the token envelope. Its only caller is `FrontWxappEspierUploadImageService.uploadeLocalImage` (behind `@FrontNoAuth POST /api/v1/h5app/wxapp/espier/uploadlocal`), i.e. the flow that needs a plain relative path string rather than a `{driver, token}` wrapper.
+
+### Material library: `UploadImagesService` and the `espier_uploadimages*` tables
+
+The material library (图片/素材库) sits on top of the storage facade: bytes land through the upload paths above, and `UploadImagesService` persists the metadata in `espier_uploadimages` / `espier_uploadimages_cat`. The admin surface is `api/admin/v1/UploadImagesController` (`/api/v1/espier`, `@AdminAuth @ShopLog`, `@DingoResponse(DINGO_422)`): `POST /image_upload_token`, `POST /video_upload_token`, `POST /oss_upload_token`, `POST /oss_upload`, `POST /uploade_image`, `POST /upload_localimage`, `POST /image` (save), `GET /images` (list), `DELETE /images`, `POST /image/movecat`, and the `/image/cat*` category CRUD — each with its own `@Activated(routeAlias = "espier.image.*" / "espier.oss.*" / "espier.localimage.upload")`.
+
+`getImageList` (`GET /api/v1/espier/images`, alias `espier.image.list`) is the query worth knowing precisely:
+
+* **Tenant/role scoping is always equality-based** — `company_id`, `supplier_id` (operator id when `operator_type=supplier`, else 0), `merchant_id` (JWT merchant id when `operator_type=merchant`, else 0) and `distributor_id` are all `eq` predicates, so a supplier or merchant only ever sees its own rows; `disabled` flips with the truthy `disabled` query flag.
+* **Filters** — `storage` defaults to `image` when blank; `image_name` is an exact match (`eq`); `image_cat_id` applies only when present and truthy, with `"0"` meaning the uncategorized bucket.
+* **Stable ordering (ECX-11056)** — the list orders `created DESC, image_id DESC`: `wrapper.orderByDesc(UploadImages::getCreated).orderByDesc(UploadImages::getImageId)`. Because `created` is epoch-second resolution, same-second inserts collide; the `image_id` tiebreaker keeps pagination deterministic. `UploadImagesServiceTest.getImageList_appliesStableOrderByCreatedThenImageId` pins both the presence of the two `ORDER BY` columns and their relative order. The openapi sibling (`OpenapiThirdApiV1ImageListService`, behind `OpenapiImageListPortImpl`) deliberately keeps the older `created`-only ordering.
+* **Pagination is hand-rolled** — `page`/`pageSize` default to 1/20, non-numeric or fractional values silently fall back to the defaults, and the query uses a literal `LIMIT pageSize OFFSET pageSize*(page-1)` suffix; `total_count` comes from a separate `selectCount`, and `pageSize=0` (or an empty table) short-circuits to an empty list without hitting `selectList`. Each row's `image_full_url`/`url` is resolved through `LocalStoragePublicUrl` under the local driver and `FileStorageService.url` otherwise.
+
+The category side mirrors the same company scoping: `delImgCat` refuses to delete a folder that still has children (`请先删除子文件夹`) or non-disabled images (`该文件夹下存在图片，不能删除`), then clears the per-locale `common_lang_mod` rows for `espier_uploadimages_cat` before deleting — all inside one `@Transactional`. `deleteImage` is a soft delete (`disabled=1`, max 100 comma-separated ids per call, `ResourceException` when nothing matched).
 
 ### Excel import: the chunked dispatch pipeline
 
@@ -583,4 +610,5 @@ Package-info: "Shopex AI domain module" (Shopex AI 域模块). The smallest func
 * **Cross-bundle wiring stays acyclic.** The port interfaces live in `ecshopx-common` (`EspierDispatchJobNames`, `DatacubeDispatchJobNames`, `EspierImportRowSink`) or in the consuming bundle (`KujialeDesignerWorksByItemIdPort` in goods), with the `DispatchFacade`-backed or mapper-backed impls in the owning bundle or in `ecshopx-bootstrap/config` — see [Cross-bundle communication](../architecture/cross-bundle-communication.md).
 * **Redis template discipline.** Datacube counters use `datacubeStringRedisTemplate`, the bloom filter and all UGC/IM blobs use `sharedStringRedisTemplate`, the agreement throttle uses `companysRedisTemplate`, the address tree cache uses `espierStringRedisTemplate`, and the front upload-image day quota uses `membersStringRedisTemplate` (see *Member-facing image upload quota* above) — the qualifier matters because `companysRedisTemplate` is `@Primary`.
 * **Cron handlers** in espier, theme and data-cube all follow the shared alert-and-rethrow template; the queue-feeding split (handler enqueues, bus does the work) is the norm for the statistics family, as detailed on the [XXL-JOB](../concepts/scheduling-xxljob.md) page.
+* **Some tables are owned by one bundle and swept by another.** The `operator_cart` table belongs to companys (`OperatorCartMapper` + `OperatorCartCleanupService`, a small delete-only service with `deleteByCompanyIdAndItemIds` / `deleteByCartIds` / `deleteAllRows`), but both of its cleanup triggers live in goods: `PlatformItemsDeleteService.deleteCore` purges rows eagerly inside the item-delete transaction, and `OperatorCartDataListFacadeImpl.getCartDataList` sweeps lazily at list time (deleting every loaded row when no SKU resolves, and deleting the `invalid_cart` ids after the format/total chain). Since baseline the cleanup service itself is unchanged — what moved is which goods services call it — so `operator_cart` never surfaces a SKU goods has already deleted. The full semantics are on the [Goods](goods.md) page.
 * **Cross-tenant reads degrade to "not found".** The wsugc company-match guards above throw (except topic delete, which silently skips foreign ids), but the selfservice bundle takes the softer PHP-parity route for detail reads: `RegistrationActivityDataInfoService.getDataInfo` (behind admin `GET /selfhelp/registrationActivity/get`, route alias `selfhelp.registrationActivity.info`) reloads the activity, and when its `company_id` does not match the operator JWT's company it returns an empty result rather than an error (ECX-10916) — cross-tenant probing is indistinguishable from a missing id; `FormSettingDataInfoService` (ECX-10938) and `FormTemplateDataInfoService` (ECX-10944) apply the same empty-result rule to the form setting/template detail reads.

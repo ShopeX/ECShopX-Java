@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:04b920a6ef776aa9492bde5b8adc34f10e6677b4faa8d1b882a87b019c572132",
+  "pageVersion": "sha256:3b39fb00072f5de90d5e540c0e917f96b8d4ad1af80c37180ef003fe2068bc91",
   "claims": [
     {
       "id": "claim_9752d7d3781543a9b36be65942a23176",
@@ -731,10 +731,48 @@
           "version": "repo-lines-v1:sha256:ea45d5f37cfbe38fc8c3880bd74e091a954eb57d866f26d8f8866ceabc4931d5:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE1YjY3ZGI3N2ZlYWQ3MDkzMWFhYjM4YjVhOTIyMzE2NjM5NGQzNTZiZTkzMzI1ZTdiMmFjMTZkMWQ5MTFmMWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
         }
       ]
+    },
+    {
+      "id": "claim_2af38175e6bf42e1a72d29fcd352e96e",
+      "statement": "Shuyun open-platform admin configuration is persisted per tenant in the database (`company_shuyun_open_platform_config`, always stamped plat_code=OFFLINE), not in properties: OpenPlatformConfigService masks the stored app_secret and access_token for the admin view, classifies admin saves into credential-bootstrap / access-token-only / enable-only patches, fills a blank auth_value from the auth-value property on save, and rejects enabling sync without a stored non-expired access_token.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/service/openplatform/OpenPlatformConfigService.java#L96-L262",
+          "version": "repo-lines-v1:sha256:0ca55a0d4ced5699732d8c4023dd41b7122b5967afc6834ffe547d6d5a58fe9b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTY3LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIyMGNlZjk0NDJjMzk4OWJhYzRiZGZkZGRhZWZlYWVhODlkMGNlNThkMjBlMjY5YTFlNjFiYTI3ODdmNGU4MTQ4IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJiYTliYzhjOTYyMGU5OTBlNDVmMTFkNTkyMzFlYWM2ZDQ0MzU5MjlhN2RmNjQ5YTVmMzMwMmJiNjA2YTU5NzVhIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJiZmU2YTNjODcyNGNjZTYwNGI4Yjc1YzVjODY3ZmVmYTE5ZGY2NWYxYTMxZTVjNjQ1Y2JiN2Q5M2I3NGUzZTgyIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIwMjA3ZGU0MDdhZTJhMTQ5YTM2YzE3MWI3MTY5Y2Y1YjdjMzQ2YWI2MDczNzNjNTdkYzA5MTY5NjNkMGJkMTg1In0"
+        },
+        {
+          "resource": "repo://ecshopx-shuyun/src/test/java/cn/shopex/ecshopx/shuyun/service/openplatform/OpenPlatformConfigServiceTest.java#L60-L109",
+          "version": "repo-lines-v1:sha256:7882f4a478cc1033cf42d8834b5573c1e18ca28cd55a7e4416c4cdc06bb32868:eyJzZWxlY3RlZExpbmVDb3VudCI6NTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ0OWE1NDEzNDcwZjgwNWQyMDIxYjFmYTBlNWViYzUyYWY1N2NkOWZiMTg3ZTZjNmE0NGNlNTI1ZTNjMTlhNGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFlOTUyZjIxNDA2NmFiOWMxMWU1NGY5MjkwMmNhNDM4Yzc4OGMzYTc3ODU0YTZmMzFlMjExYmVlYzlkMDg0NmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_920ec20da63244b798844e463d7a5916",
+      "statement": "The mobile-POS member readiness flow (OperatorStoreMemberReadinessService) introduces no new configuration keys; it consults the same per-tenant DB row and silently skips member registration unless the row is enabled with eligible credentials, so the ecshopx.shuyun.open-platform.* properties act only as cold-start defaults.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/service/openplatform/OperatorStoreMemberReadinessService.java#L50-L111",
+          "version": "repo-lines-v1:sha256:fc7e2270a8f8b3287053b3fd70f0d6430f590c4c77de950f2e82a0f6e745c64c:eyJzZWxlY3RlZExpbmVDb3VudCI6NjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJkOWI0NDE0NWEwMjk1NTBiY2ZhYzc3MDI3YWVjY2RjMGE2NDBjN2RjZWZhY2EyZTVhYzc0N2IxMGVlYzgzZWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEwN2FkNjlmNjI1ODQwYzJjYmZkMTliMzhhZjQzYmZiMWQ1ZTI3NDU3NWQyNmM5MzU4NDczMzdiOWE1Mjg3ZGUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVmMmRkZmUxZTVmNGRjMGIxNzg3NDZmMGJmODc0OTM5NTUxMzMxN2IzZjI5MGVmNDMyYzllN2U1NzcyYTIzY2YiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhmODdlNTgzYTcwOTg5YzhkNDYwZWNiMTUzNDMzODZiMjhiNTI5ZTEzOGFmMThmYjhjNzM5NGIyYjlkODUwMDEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_5594c83041df47edae68e7231062bd59",
+      "statement": "OpenAPI public-path auth uses a hardcoded 600-second timestamp tolerance and replays that same value as the TTL to OpenapiSignedRequestReplayGuard (ECX-10869), which deduplicates app_key|sign|timestamp via Redis SETNX on openapi:auth:replay:{sha256}; neither the tolerance nor the TTL is property-configurable, and openapi.debug=1 bypasses the guard entirely.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/web/OpenapiAuthInterceptor.java#L40-L117",
+          "version": "repo-lines-v1:sha256:845980167256f3db3e8b72506afe7c61670cd9ce9f2eb4a2c7d3ffaf121b4af5:eyJzZWxlY3RlZExpbmVDb3VudCI6NzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ2NGYxNDZjYzVmMzhlOTJjNDE2MTlhNmFkNzZkY2JjMGIxNjRhZmUyOGUwMTA0ZWJhOWIzZGI5OTZhMzA1YWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU2ODA2ZjE1NWM1YWMxYWUyNzIyY2EwNmYyYWM5Y2FkY2I4ODFiOTEyM2NiNjI0YTNjMTA0NzViNDQ0OWRjMmUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA3Y2ZiMGVjZjZkNGYwZDNlOWEwMjlhODhkOWU4OThjZGVlMzUzOWNhZWQxY2NiNGIyMWUyMjk0NTQ3YmViZTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNiOTY3ODkxNzdhZGQ3NjQzNWUxOGRhYTI5NDE4ZGU5NWYzMjFmNTA1NDNiZGJhZDJiZDU3N2JiYTE2NTFjY2MifQ"
+        },
+        {
+          "resource": "repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/web/OpenapiSignedRequestReplayGuard.java#L34-L62",
+          "version": "repo-lines-v1:sha256:5427f8fdd0a74340a5e4b23eaccc586d1f42ee1b8972db34f1490cb049184db6:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZjMDBkYzAyYjY0OTg0OGE0NzU5N2IwMGM5Y2Y3ZTdlN2YyNjA2YzFlOGZmNDc3NzFmOGEyM2ExYmI5YjA2MDUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjgxMzBmM2M0YTcyMjA5YmNkZDU5MWJjM2MxNzA3MzEwM2VhOTVkZDZjY2NhMjk3NzA1OTcwNDU4MWFiODUyY2EiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIyZjJmZjVmZWVjNjBmNTg3YzhmYWU0ZTg3ZjgwOWE2NjFjZmZlZDZiNDdhYWU1ZjZkNmEyNjUzYWE4OTUyZWYifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.9.0",
-    "at": "2026-11-06T17:22:02.968Z"
+    "at": "2026-11-10T17:10:58.497Z"
   }
 }

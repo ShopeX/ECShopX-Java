@@ -1,18 +1,18 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:27a9d867c79c7e91ab2764301f49e1b7b05627997c93fc944561cfc65c13e0ca",
+  "pageVersion": "sha256:547be602e1bd3833f64235bb5338bd2276c6ded0b0d3482bef2d06e36a956661",
   "claims": [
     {
       "id": "claim_59497cc7f3f044ed96e27a805c72b37b",
-      "statement": "ECShopX-Java is one multi-module Maven reactor: the root pom.xml declares parent cn.shopex:ecshopx (version ${revision} = 5.5.1) extending spring-boot-starter-parent:3.5.12 with Java 17, lists 53 modules (four infrastructure — ecshopx-bom, ecshopx-common, ecshopx-dispatch, ecshopx-bootstrap — plus 49 business Bundles), and skips the spring-boot-maven-plugin everywhere except ecshopx-bootstrap, where it is re-enabled with mainClass cn.shopex.ecshopx.EcshopxApplication.",
+      "statement": "ECShopX-Java is one multi-module Maven reactor: the root pom.xml declares parent cn.shopex:ecshopx (version ${revision} = 5.5.2) extending spring-boot-starter-parent:3.5.12 with Java 17, lists 53 modules (four infrastructure — ecshopx-bom, ecshopx-common, ecshopx-dispatch, ecshopx-bootstrap — plus 49 business Bundles), and skips the spring-boot-maven-plugin everywhere except ecshopx-bootstrap, where it is re-enabled with mainClass cn.shopex.ecshopx.EcshopxApplication.",
       "evidence": [
         {
           "resource": "repo://ecshopx-bootstrap/pom.xml#L264-L275",
           "version": "repo-lines-v1:sha256:39d9164cdadbbb6d98c6cddc249977c3d78b281ea0ceaea759155ac4fc3ddaa5:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMwYTBlMTVjNjM3NWM1NmI2ZWExNGFjMGUxZWY3M2NiNGE1NjVmZDE5ZGYxODA0ZmI0NzIxYTQ2NTc0NTczNGQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYyZTg0MTI0MThhMDQ0OWRjODU1ODZiYjRkYTYzNGFiYjRlY2YzZDk5YThlMDhmZDZiODI2YzQyYjgzZDZiOGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjExZjUxYmUzY2M0YWE0MDZhOGVhN2EyODhkMTRkM2ZlYmVkNTAzZGFjMjJmNTk3MDAxZTMzNWNiNjM3OGY4NjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI2ZTMyYTMwZjNmMjBiYmM4MmY1YzUzZDQ4MDg4M2RhODk0OWQwYWJhYTllZGQwNWFkMzJjZDdhYzRlMjc5ZTcifQ"
         },
         {
-          "resource": "repo://pom.xml#L366-L418",
-          "version": "repo-lines-v1:sha256:cce4edd431cc1946dd76dd60016dc650c45a692c793afaad0a3ae17920ea3a71:eyJzZWxlY3RlZExpbmVDb3VudCI6NTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxNDFjY2UwOWU5MTllN2YzYjJkMTM1Y2I4NzI5MDQzZjc4OTkwNTJmNzAwYzE1ZTNhZWZhMzU0MWJlOGI4OTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE2NWIxMGE3NTMyMWFhYzNmOTJjMmUwZjQ4ZjcxZmE0YzMzZWM0Y2M5YThlNTRhZTQ3NjA5YWI4MjY5MmM4M2UiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ5MWY0YjIxMjJlMGY5NThlYzBhYjA5MDg3ZTc3YTRhMzcyOTY2MDM1OTBmMDQ4ZTQ2NWI1NDgzYjA5YjRmOWYifQ"
+          "resource": "repo://pom.xml#L365-L418",
+          "version": "repo-lines-v1:sha256:8a8f5301ede7df208c1c2d2d2f33ad4ea573e27668892d7b0ae8c55e4e11ad52:eyJzZWxlY3RlZExpbmVDb3VudCI6NTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjliMGY2NWRjMWZiNDNkMjczNDU3OTg3NDIyMTU5NTllOWEwNjQ5NmI3ZjE2YmNmOTI5ZTAzN2RmZWVhMDU3ZTkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxNDFjY2UwOWU5MTllN2YzYjJkMTM1Y2I4NzI5MDQzZjc4OTkwNTJmNzAwYzE1ZTNhZWZhMzU0MWJlOGI4OTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZmMDQwMWJmYTEwMzMzODE4OTczNzEwNzRlYjczOGU1ZTFjYzA1OTY5MTViMzQwNGNjMDllMTM4MjcxODc5ODIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ5MWY0YjIxMjJlMGY5NThlYzBhYjA5MDg3ZTc3YTRhMzcyOTY2MDM1OTBmMDQ4ZTQ2NWI1NDgzYjA5YjRmOWYifQ"
         },
         {
           "resource": "repo://pom.xml#L424-L433",
@@ -20,7 +20,7 @@
         },
         {
           "resource": "repo://pom.xml#L6-L22",
-          "version": "repo-lines-v1:sha256:a8f8bbc555680decddac20f4c65613bca8d588d474cdd0dec1d74ad9515ca105:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYyZDg2OTJjNDcwNGI5Y2Q5ZmMwN2Y5ODNhMDFjYWNlOTI2MjYzZjJjZjJkOGM0M2QzZGQ0NDc3ODQ0NmU4OWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRlZDdhZDljNTA1MTE1MTA4MmY4MDFlNDBjZTNkZjE2ZGY5MWVhOThmMzlmM2MyOTgzZDZhZjRiODc2NmEzNDUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM5OGMzN2Q5M2QwNWZkYWY1MjYxYjkwNzg3YWU2MzFjODhkMzIyMmQwZGE1YWRkZGU2NWJiMDU4ZjVlMzZhMWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRhM2VjZjYyMjdkMDFhMTJlNWE2M2UyOTVjMGJjODYyN2QyM2QyMzlhNTkxMjQ1YjFkYWJjMjY1YmVkMzQwNTgifQ"
+          "version": "repo-lines-v1:sha256:8958c0f87b1849660e1caee98a1b20059c787ddd8572700e9eac456db12763ff:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYyZDg2OTJjNDcwNGI5Y2Q5ZmMwN2Y5ODNhMDFjYWNlOTI2MjYzZjJjZjJkOGM0M2QzZGQ0NDc3ODQ0NmU4OWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRlZDdhZDljNTA1MTE1MTA4MmY4MDFlNDBjZTNkZjE2ZGY5MWVhOThmMzlmM2MyOTgzZDZhZjRiODc2NmEzNDUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM5OGMzN2Q5M2QwNWZkYWY1MjYxYjkwNzg3YWU2MzFjODhkMzIyMmQwZGE1YWRkZGU2NWJiMDU4ZjVlMzZhMWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRhM2VjZjYyMjdkMDFhMTJlNWE2M2UyOTVjMGJjODYyN2QyM2QyMzlhNTkxMjQ1YjFkYWJjMjY1YmVkMzQwNTgifQ"
         }
       ]
     },
@@ -429,6 +429,6 @@
   ],
   "verification": {
     "by": "openwiki/0.9.0",
-    "at": "2026-11-09T17:09:44.795Z"
+    "at": "2026-11-10T17:10:58.497Z"
   }
 }

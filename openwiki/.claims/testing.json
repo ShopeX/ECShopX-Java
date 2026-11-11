@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:bd806e73be86bdeb7c2aecac0de70873d2ffb7700856ff8f86f7fa6d5f281468",
+  "pageVersion": "sha256:998ac2f633c19e4eee0a53085c5e9470218ff3ea9b1fb30538d6af2f45897936",
   "claims": [
     {
       "id": "claim_3d9864ae8e5d4123b40f3da9acfcc8e6",
@@ -600,15 +600,19 @@
     },
     {
       "id": "claim_6a6e6b93539d40ab9decac68ff974e4a",
-      "statement": "PlatformItemsDeleteServiceItemDeleteEventPublishProbeTest pins the item-delete after-commit contract over a Mockito-stubbed fake PlatformTransactionManager whose commit fires registered afterCommit synchronizations: the operator-cart purge (OperatorCartCleanupService.deleteByCompanyIdAndItemIds) runs in the delete flow, and ItemDeleteEventDispatchPublisher.publishAfterCommit fires once with the item_id/company_id/del_ids/item_info payload for both default-distributor and shop-scoped deletes; OperatorCartCleanupServiceTest pins the cleanup service's own one-mapper-delete-per-call behavior with plain Mockito.",
+      "statement": "ECX-10747 pins the operator-cart cleanup contract from both sides: PlatformItemsDeleteServiceItemDeleteEventPublishProbeTest proves the item-delete flow calls OperatorCartCleanupService.deleteByCompanyIdAndItemIds inside the transaction (purging operator_cart rows in the same tx as the delete, before the after-commit item_delete event fires), while OperatorCartSkuLoadFacadeImplLoadSkusTest proves the read side silently skips item ids missing from items (a mixed batch returns only existing rows; an all-missing batch returns an empty list without throwing) so OperatorCartDataListFacadeImpl can purge every cart row via deleteAllRows and return the empty-cart body (or throw 商品已失效 on submit) instead of surfacing 失效 rows. OperatorCartCleanupServiceTest pins the purge service itself: deleteByCompanyIdAndItemIds issues one mapper delete with a company_id + item_id-IN LambdaQueryWrapper (returning 0 for an empty id list or companyId<1), and deleteAllRows delegates to deleteByCartIds.",
       "evidence": [
         {
           "resource": "repo://ecshopx-companys/src/test/java/cn/shopex/ecshopx/companys/service/operatorcart/OperatorCartCleanupServiceTest.java#L18-L44",
           "version": "repo-lines-v1:sha256:b32a8e32cbd2876f01075c69c701a97a22ad4faf3758901f93b529aa023239f4:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNlNjk4NmQ5NzAyY2YxZTE2YjhhZWVkYzdmMDJmYmFhYWNlZTExOTQxZDE5NWU1MmZlMWU5NjQzMjhlMDgwM2MiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYwOGIxYmFhNzVmYjViMDZhMWFiNGM1MTFhOGExNDRmZTVhYjAwNjdiM2NjNGUzMmRkODY5Y2Y3ZDQ5ZDdiNGIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
         },
         {
-          "resource": "repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/service/items/PlatformItemsDeleteServiceItemDeleteEventPublishProbeTest.java#L87-L146",
-          "version": "repo-lines-v1:sha256:bdb46ff8a58f9064300fa516ebf951408a5aa6daabc49f4f9805ce2aa83c845b:eyJzZWxlY3RlZExpbmVDb3VudCI6NjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3OGE0MTRkNzBmMGNjMTE5NzU3MjVjODExZGI5OTQ5NGQzNWRmOGYxMjkyZmYwN2JlOTdiYzIyYWEyNmUyOGYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNlNWQxNDkwYjM0NmQ3Yzk2OWRlYTljYTNjN2MwYWJhODRkMzdmYmViYTE2YThmMzMzYjE0NjBmOTZkMDdlOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRiMDdmZGU2MTQ3N2RlMDhmYzdmNmRhMDE4NDNlZGNhOTZlNzlhMzI5YjQzMmI2Nzc4MDQ4OGM4MmQ0NGIzYzYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZhNmI5YmU5OGY1OGQyZjZmN2Q4OGE3OTcwMTJkMzc3MTU2ZTJlZTVkNDRiZmM1OGE3MGU1NzUwNmRlNWNkMDgifQ"
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/operatorcart/OperatorCartDataListFacadeImpl.java#L87-L120",
+          "version": "repo-lines-v1:sha256:0c68ca278015a7028989bd3a54293ab82764e8215be88f9d3587d9278167a87d:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU2ODA2ZjE1NWM1YWMxYWUyNzIyY2EwNmYyYWM5Y2FkY2I4ODFiOTEyM2NiNjI0YTNjMTA0NzViNDQ0OWRjMmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwN2JiNzNhMWU0NWNhNTVjNTAxZGQ0MDNkOWY1ODMyOGVkMzQyODc2YjNlODUwOTEwZTQ0YWI1MjM0MzljZmUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAwYjBmNTViZTNmNDAwMWFhMDg1NWIzYTIzNTJiNjY5MDY0MTVjMzQzZmQzOGQxOWJlNTczOTg2YTY2MjU4YWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJiYjkzZDlkOTRlNzI0N2ZiMjI2YWQ3NWY3Nzc3MTVkNGZlOWExMzYzNTUzZjEwOGY4NzRlMGJkYmRkODUwYWEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/service/items/PlatformItemsDeleteServiceItemDeleteEventPublishProbeTest.java#L120-L146",
+          "version": "repo-lines-v1:sha256:8e49fcfb99b95f67e56e75c477d8a720feda226a398f552a9f69955553476d13:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNlNWQxNDkwYjM0NmQ3Yzk2OWRlYTljYTNjN2MwYWJhODRkMzdmYmViYTE2YThmMzMzYjE0NjBmOTZkMDdlOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjViYjEzN2RjMWNkNzEwZWIxOGFmNDBhZDU0ZDU4MzRmMTQwYmQ0YzNiMGJmMmVjZDFkMTUxMzdkYzcwYjc3MzMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZhNmI5YmU5OGY1OGQyZjZmN2Q4OGE3OTcwMTJkMzc3MTU2ZTJlZTVkNDRiZmM1OGE3MGU1NzUwNmRlNWNkMDgifQ"
         }
       ]
     },
@@ -625,10 +629,72 @@
           "version": "repo-lines-v1:sha256:b4c7a306fdc4b922f9be5da05c0ecdeb56261ad815b198e020a1dfc8b86ad900:eyJzZWxlY3RlZExpbmVDb3VudCI6MzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIyYTFjNTYxZGU1NTdjOTZjNzcyNWQzNjRkMDVhMmYwNjg2NmI4MjhlZjE5ZjlhNGFiODE0YzUyOThkOGM4NDEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUxYTU3NjQwMjYxOGE0OThjZjU1ZTlhZGFkNDdlZDM4ZDRjNzY5OGE3NTc4MzZjZmEzMzZhNGFjMmYwYzdjNmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNmNzY5NzJkNzEzZmNhZTFhMTMzYTVmYmQyOWMwNzJhZDFjNDA1NTQ3NDE0MmQ3MWVjMTI3Y2FiZTYwMWYzODkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhjMTUyYTk3MDY1Njg5YTdmYTExZTk3OWRhYTJhYjM2NDY1N2ZiZDEwNDNkODczMmIwNjc2NWMzOGFiNWJhMzMifQ"
         }
       ]
+    },
+    {
+      "id": "claim_5cd4b7ddadc14823bf0c7b2465201442",
+      "statement": "UploadImagesServiceTest (ECX-11056) pins stable admin image-list ordering: the captured selectList LambdaQueryWrapper's SQL segment carries ORDER BY created DESC, image_id DESC in that order (so same-second uploads cannot interleave across pages), and a zero total_count short-circuits getImageList to an empty list without calling selectList.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/UploadImagesService.java#L182-L250",
+          "version": "repo-lines-v1:sha256:89a3c7c06fa12ad12e48ac6df28e9802d968431ccb10e5056d41070b3c4685af:eyJzZWxlY3RlZExpbmVDb3VudCI6NjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE0Y2RiZmRlYWIyNWVmN2Y4NzMyMDI1NDdmMjY0NWVjYTFhZDgwNGY0ZjlkMzNmMTk3N2NmZDNkOWJjNTRiYWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM3NDY0OTUyODg4ZWQ4ODBjMjEzZTU3MGZhMzE1M2EyZTYyMGY5OGM3NzczNmQyNzhjZGI3NWUyMzEwNGE5ZDUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJhYmJjNzVjMjEyMTM2OTUyMjMxMTA2N2E0MjYzOTI1ZmY0NGY4Njc4MWFlY2IxODIyY2E3ZjUxNmM0MWZkYTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM1MzYzMDE0OGRiNTAxNDI3ZWRiZDg5YjNjYmI1YWRlNjg1NmU2ZTliNWEzZjEzYzZhYzhkNmNlYWEyZTE3MDMifQ"
+        },
+        {
+          "resource": "repo://ecshopx-espier/src/test/java/cn/shopex/ecshopx/espier/service/UploadImagesServiceTest.java#L74-L109",
+          "version": "repo-lines-v1:sha256:a2f70405876e0e49325ae9a53cde99c6488ef4d35b7e8d2849ebf784b0294c83:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZjNDVlNjBhZDgxYzZkYzc0YmMxZDA5ZTgyZWFjZGE1M2NlYTBiNWQ1OGNjMTY5Y2UxNzY4OGEzNDY1ODQ3ODkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d6c562f428824d03bbcb6b571f5935c6",
+      "statement": "MemberOpenPlatformSyncStateTest pins the OFFLINE-only two-field registered check (aligned with PHP ShuyunOpenPlatformMemberSyncState): isRegisteredWithOpenPlatform returns true when shuyun_open_online_wxapp_sync_at > 0 OR offline_reg_distributor > 0, and false when both markers are absent or zero — one shared member.register per member across mini-program and store-assist.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/service/openplatform/MemberOpenPlatformSyncState.java#L28-L52",
+          "version": "repo-lines-v1:sha256:5727850e122369e46aeab804aa9c5c473619fe6a6ba1a8c02388c6ae5f6b2d3d:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdiZmE5YmQ5YmU5ZWZmNzVmZDg0ZmNjNmYwYWFlMTU0Yjc5OGZiY2EyOGZkOGJhYjQ0MzFkMDRhNjE3ZmFlZDkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-shuyun/src/test/java/cn/shopex/ecshopx/shuyun/service/openplatform/MemberOpenPlatformSyncStateTest.java#L8-L27",
+          "version": "repo-lines-v1:sha256:ec66ab09463790a22d7d92584392fea971f12838eaf14820bf3c7c2eaf56bb34:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg5OTg0ZjM1ZWExNGU1ZTAyMDBkNTViNzRkN2RjOTk0MWE3NTU0ODFmNTdkNDBiNGI4OTZiZTgwNjA5NDg0ZWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_aa42326567eb4653a94bb36b6e2c17a4",
+      "statement": "OperatorStoreMemberReadinessServiceTest pins the skip/ResourceException matrix behind POST /api/v1/operator/member/ready over a mocked JdbcTemplate: ensureOfflineMemberAtStore skips (synced=false, skipped=true, never() on registerOfflineAfterCreate) when the open-platform config is disabled/ineligible or the member row is already registered per MemberOpenPlatformSyncState; it throws ResourceException for user_id<=0, a missing/foreign member row, or a blank mobile; and an eligible unregistered member triggers MemberRegisterService.registerOfflineAfterCreate(companyId, userId, distributorId, mobile) returning synced=true.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/service/openplatform/OperatorStoreMemberReadinessService.java#L55-L114",
+          "version": "repo-lines-v1:sha256:3a321a22fe480fab5dffa5bfc73afbfc4276214beda00fc12e6096bc33425f8c:eyJzZWxlY3RlZExpbmVDb3VudCI6NjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZmZWQ5MTZkNGU2OGY3ZTJiMjgwMTJjOThhMmE5NTg5NmU3ZDY0NDJmMmIzOGEzNDViOWUxNWNmZjM0NjkyN2YiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM3NDY0OTUyODg4ZWQ4ODBjMjEzZTU3MGZhMzE1M2EyZTYyMGY5OGM3NzczNmQyNzhjZGI3NWUyMzEwNGE5ZDUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIzZDY1ODY2ZjlhNTJhOGNmM2M0NDk3YjlhZTJlMmRkNjdjMDgzYTc3ZTk5ZjZiZDY1YjUxOWU5ODFlMDhjNmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc3MDkzOWMxZDRiNzAyYWEwNzVlZDQzMTYxNDdkOTI0ZDg5ZmI5YTI1ODMyZDVkZmRiZmNmY2M1YWZhZmYwYWIifQ"
+        },
+        {
+          "resource": "repo://ecshopx-shuyun/src/test/java/cn/shopex/ecshopx/shuyun/service/openplatform/OperatorStoreMemberReadinessServiceTest.java#L47-L133",
+          "version": "repo-lines-v1:sha256:31cbe419c1d0c2a98ef91603d26492cb8171c5b6e19e0990483da9d6ab303a44:eyJzZWxlY3RlZExpbmVDb3VudCI6ODcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBkOWViMTlmMTBhYzVhMzM3ZDNlODA4NmM5MjA1MGU0OGM4OWViMWViY2U0MWM5NjhmODkzY2UzMmY2N2QxMjAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFlOTUyZjIxNDA2NmFiOWMxMWU1NGY5MjkwMmNhNDM4Yzc4OGMzYTc3ODU0YTZmMzFlMjExYmVlYzlkMDg0NmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_3e6ee120eaa14867b1c896b5524aa64c",
+      "statement": "OrdersPaymentDoPaymentServiceWxappSyncTradeFinishPublishTest pins the wxapp synchronous-payment SUCCESS publish contract: every success path (zero-fee wxpay recorded as localPay, zero-fee-with-points recorded as point, point pay, positive-fee wxpay) publishes the trade_finish row through OrdersTradeFinishDispatchPublisher exactly once on the calling thread, and the captured row carries the producer gate keys of each registered listener — TradeFinishCountBrokerage (company_id/order_id/pay_type), UpdateItemSales, TradeFinishLinkMember (user_id/company_id/shop_id/distributor_id), PrinterOrder (pay_fee/discount_fee), TradeFinishFapiao (trade_state=SUCCESS, trade_source_type), TradeFinishCustomDeclareOrder (pay_type=wxpay plus non-empty trade_id), and TradeFinishWorkWechatNotify (non-blank company_id/order_id) — with trade_source_type=normal_groups preserved for the UpdateGroupsActivityOrder gate; a depth-counted stubbed TransactionTemplate additionally proves the external pay-channel call happens outside the transaction.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/orders/service/payment/OrdersPaymentDoPaymentServiceWxappSyncTradeFinishPublishTest.java#L99-L250",
+          "version": "repo-lines-v1:sha256:7ec677ffd374ad133fca2b37b64159e17ab7755c55cd72d49e0d7917dc10ddfc:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUyLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIwMWJhNDcxOWM4MGI2ZmU5MTFiMDkxYTdjMDUxMjRiNjRlZWVjZTk2NGUwOWMwNThlZjhmOTgwNWRhY2E1NDZiIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIwMWJhNDcxOWM4MGI2ZmU5MTFiMDkxYTdjMDUxMjRiNjRlZWVjZTk2NGUwOWMwNThlZjhmOTgwNWRhY2E1NDZiIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJhYjExYTNiYjcyMGU5OGNlNjk5NTRjYzYzNDk3MzhlZGQ3MGNiOGM1OWMyMGI3MmZkOTU3ZDVlZjViZTlkMTYwIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJlYzNhNzVlN2QzODFjMmI2OWI1ODM3ZmU0ZDcxNTlmNjlhMGE1NWMyYjUxMzMyOTIxZWQ5MGJkYjhjODFmM2Y4In0"
+        }
+      ]
+    },
+    {
+      "id": "claim_e6fcd854424c4ed69e3f6d07a4fccbb1",
+      "statement": "OrdersPaymentDoPaymentServicePaymentSubjectTest pins payment-subject resolution and the point-pay shape: a platform payment_subject resolves the config-validation/pay-params distributor to 0 via PaymentSubjectDistributorIdPort (wxpayPaymentConfigValidationService.assertConfigComplete(companyId, 0) and buildPayParamsOrInvoke(..., 0, ...)) while the inserted Trade row keeps the real shop distributor_id (285) and the channel is invoked outside the second transaction; a local point payment finalizes in a single TransactionTemplate execution with verifyNoInteractions on all external-channel builders.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/orders/service/payment/OrdersPaymentDoPaymentServicePaymentSubjectTest.java#L134-L280",
+          "version": "repo-lines-v1:sha256:4b99a8e888923fdce046b6d446b6ad9ab00e4901aa06d9fbcfd4750e315b72fd:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQ3LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJmNWJhY2E3NWY0N2ZiOGZmOTViMjFmODI1Y2YwNmFiMWIyMTUxNjZjYTAwNTMyZjVkNTgwNWQ0ZGIwMWJmNjU2IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0MTJjYTM0NWNjZjc1YmY5YzA4MDZiY2U2OTViZThkZTgwOGI3OTk4NDI1MWE3YTU0ZDIwMmNmNjEwMWRkNDUxIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJhMTQyNzZiMTQ2YjM3ODMyZTIyZWVmNTZiYzU1MzlhMjE5ZGFkM2VmZGU2Njc0NGRjN2Q3ZTgzYTI5ZTQ5NTNlIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MCwiZm9sbG93aW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1In0"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.9.0",
-    "at": "2026-11-09T17:09:44.795Z"
+    "at": "2026-11-10T17:10:58.497Z"
   }
 }

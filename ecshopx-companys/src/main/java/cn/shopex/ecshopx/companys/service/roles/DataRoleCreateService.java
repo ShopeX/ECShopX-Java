@@ -112,6 +112,7 @@ public class DataRoleCreateService {
 
 		Roles entity = new Roles();
 		applyColumnData(entity, dataForMain, permissionJson);
+		ensureInsertableRoleName(entity, requestLang);
 
 		int nowSec = (int) (System.currentTimeMillis() / 1000L);
 		if (entity.getCreated() == null) {
@@ -189,6 +190,16 @@ public class DataRoleCreateService {
 			copy.remove(k);
 		}
 		return copy;
+	}
+
+	/** 非默认语种不写主表 role_name，但 INSERT 列 NOT NULL，须占位空串；译文走 common_lang_mod。 */
+	private void ensureInsertableRoleName(Roles entity, String requestLang) {
+		if (langueProperties.isDefaultLang(requestLang)) {
+			return;
+		}
+		if (entity.getRoleName() == null || entity.getRoleName().isBlank()) {
+			entity.setRoleName("");
+		}
 	}
 
 	private Map<String, Object> buildLangSource(

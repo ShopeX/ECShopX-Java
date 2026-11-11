@@ -19,11 +19,17 @@ package cn.shopex.ecshopx.orders.dispatch;
 import cn.shopex.ecshopx.common.dispatch.DispatchListener;
 import cn.shopex.ecshopx.orders.service.brokerage.TradeFinishCountBrokerageBusService;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 @Component
 public class TradeFinishCountBrokerageDispatchListener implements DispatchListener {
+
+	private static final Logger log = LoggerFactory.getLogger(TradeFinishCountBrokerageDispatchListener.class);
+
+	private static final String LOG_TAG = "[popularize-trade-finish]";
 
 	private final TradeFinishCountBrokerageBusService tradeFinishCountBrokerageBusService;
 
@@ -37,11 +43,19 @@ public class TradeFinishCountBrokerageDispatchListener implements DispatchListen
 			return;
 		}
 		if (isBlankOrInvalidOrderId(payload.get("order_id"))) {
+			log.info("{} dispatch_skip invalid_order_id payload={}", LOG_TAG, payload.get("order_id"));
 			return;
 		}
 		if (isPointPayType(payload.get("pay_type"))) {
+			log.info("{} dispatch_skip point pay_type order_id={}", LOG_TAG, payload.get("order_id"));
 			return;
 		}
+		log.info(
+				"{} dispatch_onEvent order_id={} company_id={} pay_type={}",
+				LOG_TAG,
+				payload.get("order_id"),
+				payload.get("company_id"),
+				payload.get("pay_type"));
 		tradeFinishCountBrokerageBusService.handleTradeFinishRow(payload);
 	}
 
