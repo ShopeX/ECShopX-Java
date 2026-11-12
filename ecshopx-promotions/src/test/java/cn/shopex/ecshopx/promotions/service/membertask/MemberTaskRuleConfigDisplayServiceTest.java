@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 import cn.shopex.ecshopx.common.discount.DiscountCardItemScopeGateway;
 import cn.shopex.ecshopx.distribution.domain.Distributor;
 import cn.shopex.ecshopx.distribution.service.DistributorListQueryService;
+import cn.shopex.ecshopx.promotions.port.LimitPromotionAdminGoodsSupportPort;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,13 +26,18 @@ class MemberTaskRuleConfigDisplayServiceTest {
 	@Mock
 	private DistributorListQueryService distributorListQueryService;
 
+	@Mock
+	private LimitPromotionAdminGoodsSupportPort limitPromotionAdminGoodsSupportPort;
+
 	private MemberTaskRuleConfigDisplayService service;
 
 	@BeforeEach
 	void setUp() {
 		service =
 				new MemberTaskRuleConfigDisplayService(
-						discountCardItemScopeGateway, distributorListQueryService);
+						discountCardItemScopeGateway,
+						distributorListQueryService,
+						limitPromotionAdminGoodsSupportPort);
 	}
 
 	@Test
@@ -64,10 +70,37 @@ class MemberTaskRuleConfigDisplayServiceTest {
 	}
 
 	@Test
+	void enrich_addsItemListInIdOrder() {
+		when(limitPromotionAdminGoodsSupportPort.loadItemNameBnRowsByItemIds(1L, List.of(5L, 6L)))
+				.thenReturn(
+						List.of(
+								Map.of("item_id", 5L, "item_name", "SKU-A", "item_bn", "BN001")));
+
+		Map<String, Object> rule = new LinkedHashMap<>();
+		rule.put("goods_scope", "items");
+		rule.put("item_ids", List.of(5L, 6L));
+
+		Map<String, Object> out = service.enrichForAdminDetail(1L, rule);
+
+		@SuppressWarnings("unchecked")
+		List<Map<String, Object>> items = (List<Map<String, Object>>) out.get("item_list");
+		assertThat(items).hasSize(2);
+		assertThat(items.get(0))
+				.containsEntry("item_id", 5L)
+				.containsEntry("item_name", "SKU-A")
+				.containsEntry("item_bn", "BN001");
+		assertThat(items.get(1))
+				.containsEntry("item_id", 6L)
+				.containsEntry("item_name", "")
+				.containsEntry("item_bn", "");
+	}
+
+	@Test
 	void enrich_emptyIds_yieldsEmptyLists() {
 		Map<String, Object> out = service.enrichForAdminDetail(1L, Map.of("goods_scope", "unlimited"));
 
 		assertThat(out.get("category_list")).isEqualTo(List.of());
 		assertThat(out.get("distributor_list")).isEqualTo(List.of());
+		assertThat(out.get("item_list")).isEqualTo(List.of());
 	}
 }

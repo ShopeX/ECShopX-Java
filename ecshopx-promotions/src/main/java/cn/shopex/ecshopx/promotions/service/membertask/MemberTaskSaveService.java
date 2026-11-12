@@ -420,6 +420,7 @@ public class MemberTaskSaveService {
 		if (node instanceof ObjectNode obj) {
 			obj.remove("category_list");
 			obj.remove("distributor_list");
+			obj.remove("item_list");
 		}
 	}
 

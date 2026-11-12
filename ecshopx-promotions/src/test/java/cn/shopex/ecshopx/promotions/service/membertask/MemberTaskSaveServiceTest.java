@@ -114,6 +114,9 @@ class MemberTaskSaveServiceTest {
 		rule.put("need_receipt", false);
 		rule.put("category_list", List.of(Map.of("category_id", 1L, "category_name", "展示")));
 		rule.put("distributor_list", List.of(Map.of("distributor_id", 2L, "name", "展示")));
+		rule.put(
+				"item_list",
+				List.of(Map.of("item_id", 3L, "item_name", "展示", "item_bn", "BN-DEMO")));
 		body.put("rule_config", rule);
 
 		service.create(9L, body, now, Locale.SIMPLIFIED_CHINESE);
@@ -122,6 +125,7 @@ class MemberTaskSaveServiceTest {
 		verify(memberTaskMapper).insert(cap.capture());
 		assertThat(cap.getValue().getRuleConfig()).doesNotContain("category_list");
 		assertThat(cap.getValue().getRuleConfig()).doesNotContain("distributor_list");
+		assertThat(cap.getValue().getRuleConfig()).doesNotContain("item_list");
 	}
 
 	@Test
