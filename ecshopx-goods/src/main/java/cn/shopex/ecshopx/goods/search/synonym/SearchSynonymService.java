@@ -51,6 +51,12 @@ public class SearchSynonymService {
 		return toView(row);
 	}
 
+	public SynonymGroupView upsertGroupWithoutEsReload(long companyId, String groupKey, List<String> words) {
+		GoodsSearchSynonym row = repository.replaceGroup(companyId, groupKey, words);
+		invalidateCompany(companyId);
+		return toView(row);
+	}
+
 	public void deleteGroup(long companyId, long id) {
 		repository.deleteByCompanyAndId(companyId, id);
 		invalidateCompany(companyId);

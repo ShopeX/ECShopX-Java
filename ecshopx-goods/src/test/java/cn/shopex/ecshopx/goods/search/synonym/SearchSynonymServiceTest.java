@@ -125,6 +125,20 @@ class SearchSynonymServiceTest {
 	}
 
 	@Test
+	void upsertGroupWithoutEsReloadPersistsButDoesNotReload() throws IOException {
+		GoodsSearchSynonym stored = row(5L, COMPANY_A, "color", "[\"红色\",\"红\"]");
+		when(repository.replaceGroup(eq(COMPANY_A), eq("color"), anyList())).thenReturn(stored);
+
+		SearchSynonymService.SynonymGroupView view =
+				service.upsertGroupWithoutEsReload(COMPANY_A, "color", List.of("红色", "红"));
+
+		assertThat(view.groupKey()).isEqualTo("color");
+		assertThat(view.words()).containsExactly("红色", "红");
+		verify(repository).replaceGroup(eq(COMPANY_A), eq("color"), anyList());
+		verify(reloader, never()).reload(anyLong(), anyMap());
+	}
+
+	@Test
 	void reloadFailureAfterReplaceDoesNotRollbackDbWrite() throws IOException {
 		GoodsSearchSynonym stored = row(7L, COMPANY_A, "sku", "[\"货号\",\"编码\"]");
 		when(repository.replaceGroup(eq(COMPANY_A), eq("sku"), anyList())).thenReturn(stored);
