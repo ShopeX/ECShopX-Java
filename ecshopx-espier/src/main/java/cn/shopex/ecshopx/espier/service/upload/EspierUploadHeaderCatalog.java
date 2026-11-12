@@ -39,6 +39,7 @@ import cn.shopex.ecshopx.espier.service.upload.headerinfo.NormalPointsmallGoodsH
 import cn.shopex.ecshopx.espier.service.upload.headerinfo.NormalPointsmallGoodsStoreHeaderInfo;
 import cn.shopex.ecshopx.espier.service.upload.headerinfo.PosStoreAccountHeaderInfo;
 import cn.shopex.ecshopx.espier.service.upload.headerinfo.PurchaseGoodsHeaderInfo;
+import cn.shopex.ecshopx.espier.service.upload.headerinfo.SearchSynonymHeaderInfo;
 import cn.shopex.ecshopx.espier.service.upload.headerinfo.SelformRegistrationRecordHeaderInfo;
 import cn.shopex.ecshopx.espier.service.upload.headerinfo.SupplierGoodsHeaderInfo;
 import cn.shopex.ecshopx.espier.service.upload.headerinfo.UpdateDistributionItemHeaderInfo;
@@ -348,6 +349,7 @@ public final class EspierUploadHeaderCatalog {
 		HDR_NORMAL_GOODS.put("成本价", "cost_price");
 		HDR_NORMAL_GOODS.put("起订量", "start_num");
 		HDR_NORMAL_GOODS.put("会员价", "member_price");
+		HDR_NORMAL_GOODS.put("审核状态", "audit_status");
 		HDR_NORMAL_GOODS.put("库存", "store");
 		HDR_NORMAL_GOODS.put("头图", "pics");
 		HDR_NORMAL_GOODS.put("详情图", "intro");
@@ -729,6 +731,26 @@ public final class EspierUploadHeaderCatalog {
 				HDR_POS_STORE_ACCOUNT, NEED_POS_STORE_ACCOUNT, PosStoreAccountHeaderInfo.map());
 	}
 
+	private static final Map<String, String> HDR_SEARCH_SYNONYM;
+	static {
+		HDR_SEARCH_SYNONYM = new LinkedHashMap<>();
+		HDR_SEARCH_SYNONYM.put("同义词组标识", "group_key");
+		for (int i = 1; i <= 20; i++) {
+			HDR_SEARCH_SYNONYM.put("词语" + i, "word_" + i);
+		}
+	}
+
+	private static final Map<String, String> NEED_SEARCH_SYNONYM;
+	static {
+		NEED_SEARCH_SYNONYM = new LinkedHashMap<>();
+		NEED_SEARCH_SYNONYM.put("同义词组标识", "group_key");
+	}
+
+	public static UploadHeaderTitle SEARCH_SYNONYM() {
+		return new UploadHeaderTitle(
+				HDR_SEARCH_SYNONYM, NEED_SEARCH_SYNONYM, SearchSynonymHeaderInfo.map());
+	}
+
 	public static UploadHeaderTitle forFileType(String fileType) {
 		return switch (fileType) {
 			case "adapay_tradedata" -> ADAPAY_TRADEDATA();
@@ -754,6 +776,7 @@ public final class EspierUploadHeaderCatalog {
 			case "normal_pointsmall_goods_store" -> NORMAL_POINTSMALL_GOODS_STORE();
 			case "pos_store_account" -> POS_STORE_ACCOUNT();
 			case "purchase_goods" -> PURCHASE_GOODS();
+			case "search_synonym" -> SEARCH_SYNONYM();
 			case "selform_registration_record" -> SELFORM_REGISTRATION_RECORD();
 			case "supplier_goods" -> SUPPLIER_GOODS();
 			case "update_distribution_item" -> UPDATE_DISTRIBUTION_ITEM();
