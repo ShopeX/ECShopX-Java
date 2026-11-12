@@ -120,6 +120,7 @@ public class UploadFileImportDataService {
 				new ArrayList<>(errorHeaderTitles),
 				storagePath,
 				companyId,
+				requestFileType,
 				table);
 	}
 
@@ -158,6 +159,7 @@ public class UploadFileImportDataService {
 			List<String> exportHeaderTitleColumns,
 			String storagePath,
 			long companyId,
+			String fileType,
 			EspierUploadTableHandler table) {
 		int triesRemaining = -1;
 		int spin = 0;
@@ -251,6 +253,14 @@ public class UploadFileImportDataService {
 			} catch (Exception e) {
 				log.error("persist import merge failed id={}", id, e);
 				return;
+			}
+
+			if (leftJobNum == 0) {
+				try {
+					table.onImportFinished(companyId, fileType, mergedSuccess, mergedError);
+				} catch (Exception ex) {
+					log.warn("onImportFinished failed companyId={} fileType={}", companyId, fileType, ex);
+				}
 			}
 
 			try {

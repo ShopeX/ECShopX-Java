@@ -42,4 +42,8 @@ public interface EspierUploadFileHandler {
 			String requestFileType) {
 		// default no-op
 	}
+
+	default void onImportFinished(long companyId, String fileType, int successLine, int errorLine) {
+		// default no-op
+	}
 }
