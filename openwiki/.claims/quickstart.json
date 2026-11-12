@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:547be602e1bd3833f64235bb5338bd2276c6ded0b0d3482bef2d06e36a956661",
+  "pageVersion": "sha256:8b5da57dfb80a479eb6fe8ed43391d06726e07d5b20cbcefe14c5b22731787bf",
   "claims": [
     {
       "id": "claim_59497cc7f3f044ed96e27a805c72b37b",
-      "statement": "ECShopX-Java is one multi-module Maven reactor: the root pom.xml declares parent cn.shopex:ecshopx (version ${revision} = 5.5.2) extending spring-boot-starter-parent:3.5.12 with Java 17, lists 53 modules (four infrastructure — ecshopx-bom, ecshopx-common, ecshopx-dispatch, ecshopx-bootstrap — plus 49 business Bundles), and skips the spring-boot-maven-plugin everywhere except ecshopx-bootstrap, where it is re-enabled with mainClass cn.shopex.ecshopx.EcshopxApplication.",
+      "statement": "ECShopX-Java is one multi-module Maven reactor: the root pom.xml declares parent cn.shopex:ecshopx (version ${revision} = 5.5.3) extending spring-boot-starter-parent:3.5.12 with Java 17, lists 53 modules (four infrastructure — ecshopx-bom, ecshopx-common, ecshopx-dispatch, ecshopx-bootstrap — plus 49 business Bundles), and skips the spring-boot-maven-plugin everywhere except ecshopx-bootstrap, where it is re-enabled with mainClass cn.shopex.ecshopx.EcshopxApplication.",
       "evidence": [
         {
           "resource": "repo://ecshopx-bootstrap/pom.xml#L264-L275",
@@ -20,7 +20,7 @@
         },
         {
           "resource": "repo://pom.xml#L6-L22",
-          "version": "repo-lines-v1:sha256:8958c0f87b1849660e1caee98a1b20059c787ddd8572700e9eac456db12763ff:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYyZDg2OTJjNDcwNGI5Y2Q5ZmMwN2Y5ODNhMDFjYWNlOTI2MjYzZjJjZjJkOGM0M2QzZGQ0NDc3ODQ0NmU4OWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRlZDdhZDljNTA1MTE1MTA4MmY4MDFlNDBjZTNkZjE2ZGY5MWVhOThmMzlmM2MyOTgzZDZhZjRiODc2NmEzNDUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM5OGMzN2Q5M2QwNWZkYWY1MjYxYjkwNzg3YWU2MzFjODhkMzIyMmQwZGE1YWRkZGU2NWJiMDU4ZjVlMzZhMWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRhM2VjZjYyMjdkMDFhMTJlNWE2M2UyOTVjMGJjODYyN2QyM2QyMzlhNTkxMjQ1YjFkYWJjMjY1YmVkMzQwNTgifQ"
+          "version": "repo-lines-v1:sha256:960e3b21b0f0d1acb16894df8227b73fc9ccc6456085a1d8814f35e398e4daac:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYyZDg2OTJjNDcwNGI5Y2Q5ZmMwN2Y5ODNhMDFjYWNlOTI2MjYzZjJjZjJkOGM0M2QzZGQ0NDc3ODQ0NmU4OWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRlZDdhZDljNTA1MTE1MTA4MmY4MDFlNDBjZTNkZjE2ZGY5MWVhOThmMzlmM2MyOTgzZDZhZjRiODc2NmEzNDUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM5OGMzN2Q5M2QwNWZkYWY1MjYxYjkwNzg3YWU2MzFjODhkMzIyMmQwZGE1YWRkZGU2NWJiMDU4ZjVlMzZhMWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRhM2VjZjYyMjdkMDFhMTJlNWE2M2UyOTVjMGJjODYyN2QyM2QyMzlhNTkxMjQ1YjFkYWJjMjY1YmVkMzQwNTgifQ"
         }
       ]
     },
@@ -425,10 +425,48 @@
           "version": "repo-lines-v1:sha256:8dadbcebd800350ed50c41c7a232054f72c8fcfaa8f46f2dacc1c65bb8d5b025:eyJzZWxlY3RlZExpbmVDb3VudCI6NTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc1N2NjN2Q0NmE2ODE5MWZmMDY4NWM1YjRlN2YwNGFiMzJiMTUxNDRjMmQ0OGI3MmIyNjg2NzM2OWFkNDYzOGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU3Y2JkMWE5MjFmMzg2MDI0Yjc3N2M4YTk1MjY4YmUxZjFmN2VjMGE3NjI0M2ZlYmE0YjVmMGNkMjE1N2YzMDMifQ"
         }
       ]
+    },
+    {
+      "id": "claim_0da25df1d6d240edae0248f5d523e6a6",
+      "statement": "The quickstart's money-path routing row now routes the trade-finish brokerage chain (ECX-11089) to the order-payment workflow, orders, and stores-and-merchants pages: the order-88 TradeFinishCountBrokerageDispatchListener delegates to TradeFinishCountBrokerageBusService.handleTradeFinishRow, which skips empty payloads, unparseable/non-positive company_id or order_id, pay_type=point, missing orders, and company-mismatch rows (all logged under the [popularize-trade-finish] tag), invokes NormalOrderBrokerageOnFinishService.orderFinishBrokerage, and logs any Throwable from that call at warn rather than letting it propagate back into the dispatch bus.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/brokerage/TradeFinishCountBrokerageBusService.java#L44-L81",
+          "version": "repo-lines-v1:sha256:463a01f1e7f248a34a5cb6d4d1d0228da7bebdb2a4a8a5382aa214d818f848d6:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUxZDI1ZGVlMGE5YTE1ODU0OWE5ZTBmMDQ1YzhmNjYzYjdjN2UwMTAxMmI0NmNhZDdhODc5NWJiMTZhZmY1MmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA1ZWZjMzMxNWZkOGZhZTgyZmMwMDQyOGEwMTgwN2IyMDUyZDViZDU0ZTY1OGNjNTRkNmE1MzRlMWU3ZTg4NjgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIwZDVkZjc2YmUwZWFjYTIwZTU0ZTZjNDdkZWE2ODU1MmM3Y2RhYTEyZmVhOTk2ZWIxYjkzYmY4MTYxNWQ0N2YiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFmZTJmZTAzMTY1NzVmMWI2ZDkzMTVjZjI4ZTg3YWI1ZWJjNTdhMDljOGE5MTUwZGU4OTc5M2EyZmUxZjE5ZTYifQ"
+        },
+        {
+          "resource": "repo://ecshopx-popularize/src/main/java/cn/shopex/ecshopx/popularize/service/brokerage/NormalOrderFinishBrokerageCoordinator.java#L80-L198",
+          "version": "repo-lines-v1:sha256:602ec15dba82e31dbedac817cf4cd87f75cac488f31398988306940aa173c88c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTE5LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIwMWJhNDcxOWM4MGI2ZmU5MTFiMDkxYTdjMDUxMjRiNjRlZWVjZTk2NGUwOWMwNThlZjhmOTgwNWRhY2E1NDZiIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJkNzllZDdhY2NmNzFjNTI0MzNhNjk0ZWIyNjI5ZjIxNDk5MThlOTcxOTBkNjFhNDYxZjYzNGEyZDI1ZjBkMGIwIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiIyMWEyOTc0NGE0YjkyZTBkNDkyMDhlM2ZjMzEyZWVmYzI5N2NjZmUxNDAyYzA5Yzc4MWUwMTI5MDg3NTgwNjcxIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIwYWY0NzRkYWY3YzU0NDhkZjBkZjc4YmUxZTJlYjg4ZjViOWQ2YzI0NjhiMjQ0MTRiYWEyNGQ4NmJlYTk3OTJmIn0"
+        }
+      ]
+    },
+    {
+      "id": "claim_585b8afbc14a40378c6b2c884c7c1315",
+      "statement": "The pid-based first-level brokerage write that the routing row points to: NormalOrderFinishBrokerageCoordinator.onNormalOrderFinishBrokerage runs in a programmatic TransactionTemplate (PROPAGATION_REQUIRED), gates on the company's open_popularize setting, is idempotent per (company_id, order_id), resolves the parent promoter through the buyer promoter's positive pid (the parent must be a same-company is_promoter=1 row), and inserts one first_level brokerage row keyed on the parent promoter's user_id with source=order, is_close=false, and a non-null plan_close_time computed at insert (now + 86400 * (settle-days + aftersale-days), both config keys defaulting to 0), then increments the parent's popularize_brokerage_statistics (item_total_price/rebate_total/no_close_rebate), flips the buyer promoter's is_buy flag once, and enqueues the upgrade-promoter-grade job for the parent.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-popularize/src/main/java/cn/shopex/ecshopx/popularize/service/brokerage/NormalOrderFinishBrokerageCoordinator.java#L84-L198",
+          "version": "repo-lines-v1:sha256:ef46fd905aa93af31c7170936694d52b4be215ad3dbcd556e785f86c9bab3095:eyJzZWxlY3RlZExpbmVDb3VudCI6MTE1LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI2NzdlYzZhMmUwN2Y0ZjI3ZGJjNmVlZDIxMzFmMThmY2I2MzhhZDE4MDgyMmE5NjhlNWIxNWRmYjY2NzQ5NGNhIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJkNzllZDdhY2NmNzFjNTI0MzNhNjk0ZWIyNjI5ZjIxNDk5MThlOTcxOTBkNjFhNDYxZjYzNGEyZDI1ZjBkMGIwIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI3OGFjNDQ4ZmM2ZTdiNmQ3OWJjNzFlZTc3ODE1ZGNiZDZlYzUyZDZhYzQ0ZGQyYWEzNTUxZmIzOGYzNmMyYjY4IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIwYWY0NzRkYWY3YzU0NDhkZjBkZjc4YmUxZTJlYjg4ZjViOWQ2YzI0NjhiMjQ0MTRiYWEyNGQ4NmJlYTk3OTJmIn0"
+        }
+      ]
+    },
+    {
+      "id": "claim_3aa7dc032deb402cb8279bcb36f47a7b",
+      "statement": "The quickstart's Redis routing row now points protocol-cache work at both the Redis layout page and the stores-and-merchants page: ShopProtocolSetService.get reads the companys Redis protocol hash first and, when a single-type hash field is missing or blank (or a whole-hash read finds no entries), repopulates from the companys_protocol_update_log MySQL table and writes the rebuilt JSON back into the Redis hash before answering (ECX-11114), so flushing the companys Redis DB no longer permanently loses published protocol content.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/domain/ProtocolUpdateLog.java#L29-L29",
+          "version": "repo-lines-v1:sha256:9de6225afcd165235004c1c7d3803bdf4fd7bdfa3a4fe61978cff78c0a28f41e:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOWRlNjIyNWFmY2QxNjUyMzUwMDRjMWM3ZDM4MDNiZGY0ZmQ3YmRmYTNhNGZlNjE5NzhjZmY3OGMwYTI4ZjQxZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOWRlNjIyNWFmY2QxNjUyMzUwMDRjMWM3ZDM4MDNiZGY0ZmQ3YmRmYTNhNGZlNjE5NzhjZmY3OGMwYTI4ZjQxZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTUzMDcyZDcwYmQyYzE0NjhmNjY1ZmJiNDY3YTRjMTg4ZjdjM2E2ZGMyYTVmZDEwNjc3NWQ1NjhmYTI1NzUzNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOTY4YWMzN2ExZTc0ODI5Yjk3OWM1ZmU0YTM2ODVmNzZjODllN2MxOTU0ZDQxZDQ0MDVhMzcxMDhhOTNmNzE2YiJ9"
+        },
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/protocol/ShopProtocolSetService.java#L112-L140",
+          "version": "repo-lines-v1:sha256:5a3c05205c6c72fd743bc1efa8581ada660650e554568880cceb92e8a332ae8d:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE2YmY5OTJmMTljMGEyNGEyODNjOWEzODk1MTJmYjBjZGRiNjVmMzE3NWU4OWNlMzJmOTQwZDY4OWQ5NTIzYWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU4YzZjY2YyMTBkMTllNTU4ZGEyODZhZWFiZDE1MjY5NzhiOTk3YjllYzY3ZDVkMjY0MWNjZTc1Nzg1OGEzZjYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNjMTU3MWEzZjlhOTBhNzlhMmJlOTdmNjY4OTQ0OWE1NzJkYzU4ZmY5MzViNWUzODQwYjg0NDc5YjIzZTczYTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImEzODMyNDRhMTJkOGY4NDIxODJlNmUwNDRlYWUzMjg3NmRkMTFhN2I3MDBmZmY4ODZlOWY0Yzk3NDQ0NzZjMzYifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.9.0",
-    "at": "2026-11-10T17:10:58.497Z"
+    "at": "2026-11-11T17:12:30.774Z"
   }
 }

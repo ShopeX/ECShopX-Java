@@ -56,10 +56,14 @@ sources:
     resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/auth/OperatorAuthService.java
   - id: openwiki-source-8c03be8a0cc77ec67904bfe6
     resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/OperatorsQueryService.java
+  - id: openwiki-source-f35423ff8c8af35c303879bc
+    resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/protocol/ShopProtocolSetService.java
   - id: openwiki-source-d92c6d18e8d95be008173828
     resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/statistics/CompanysDepositDayRechargeRedisReader.java
   - id: openwiki-source-5f707efd6e4f414e3b677b6a
     resource: repo://ecshopx-companys/src/main/resources/application.properties
+  - id: openwiki-source-d3b97c69d28e1a6595fca2a7
+    resource: repo://ecshopx-companys/src/test/java/cn/shopex/ecshopx/companys/service/protocol/ShopProtocolSetServiceGetFallbackTest.java
   - id: openwiki-source-f70b6d04e8550513ce6b3aa6
     resource: repo://ecshopx-deposit/src/main/java/cn/shopex/ecshopx/deposit/service/AdapayDepositTradeRechargeCallbackService.java
   - id: openwiki-source-dc6e550003128c844e8ece4d
@@ -96,6 +100,8 @@ sources:
     resource: repo://ecshopx-kujiale/src/main/resources/application.properties
   - id: openwiki-source-d047c7468d273d91dfd23e49
     resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/config/H5JwtProperties.java
+  - id: openwiki-source-956e41f5e2b48630f273ed8c
+    resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/h5/protocol/H5RegisterProtocolQueryService.java
   - id: openwiki-source-9e5ba1b03959db9c3ca0ecc3
     resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/trustlogin/SocialTrustLoginService.java
   - id: openwiki-source-f7cc1ca9a61d5729ee5477e1
@@ -108,12 +114,18 @@ sources:
     resource: repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/web/OpenapiSignedRequestReplayGuard.java
   - id: openwiki-source-189b7866f8db73ca77451821
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/integration/notify/OrderDeliverySuccessNotifyWechatService.java
+  - id: openwiki-source-c2e0d21be538ee1e2cb4e432
+    resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/NormalOrderBrokerageOnFinishService.java
   - id: openwiki-source-0bfae3187b4a720c922e07fc
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/config/DoumenIntlProperties.java
   - id: openwiki-source-f4f2fc3f040de90a6b782487
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/admin/HfpayVersionStatusService.java
   - id: openwiki-source-068af776fd99e61d3a05ed2c
     resource: repo://ecshopx-popularize/src/main/java/cn/shopex/ecshopx/popularize/config/PopularizeCommonImageDefaultsProperties.java
+  - id: openwiki-source-027ba59abcf47758829bb66e
+    resource: repo://ecshopx-popularize/src/main/java/cn/shopex/ecshopx/popularize/service/brokerage/NormalOrderFinishBrokerageCoordinator.java
+  - id: openwiki-source-02c872815f7217e1d310af6f
+    resource: repo://ecshopx-popularize/src/main/java/cn/shopex/ecshopx/popularize/service/BrokeragePlanCloseTimeService.java
   - id: openwiki-source-6d549e5da4278050fc21b6ef
     resource: repo://ecshopx-popularize/src/main/java/cn/shopex/ecshopx/popularize/service/PopularizeSettingSaveService.java
   - id: openwiki-source-ac9bff6fbfacb24d146d9682
@@ -148,10 +160,10 @@ sources:
     resource: repo://ecshopx-wechat/src/main/java/cn/shopex/ecshopx/wechat/wxa/WechatOpenPlatformAuthorizerTokenService.java
   - id: openwiki-source-f1b1aacc63642e5304668821
     resource: repo://readme.md
-generated: { by: "openwiki/0.9.0", at: "2026-11-10T17:10:58.497Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-11T17:12:30.774Z" }
 verified:
   - by: openwiki/0.9.0
-    at: 2026-11-10T17:10:58.497Z
+    at: 2026-11-11T17:12:30.774Z
 ---
 
 # Configuration and Secrets Reference
@@ -285,6 +297,8 @@ There is a second family of module-local files that are **not** imported here �
 | `ecshopx.redis.wechat.database` | *(commented out; falls back to `spring.data.redis.database`)* | — | — |
 
 The `deposit` selector is the classic trap: with the shipped defaults (`shared` DB 0, `deposit` DB 1) the operator dashboard `real_deposit` reads a *different* logical DB than the recharge writers — the properties comment (`# Deposit Redis logical database; day recharge totals e.g. dayRechargeTotal{yyyy-MM-dd}`) is the only in-repo hint of this coupling. See [Redis Databases](../concepts/redis-databases.md) for the full analysis.
+
+**Flushing the companys DB no longer loses shop-protocol content.** Shop protocols (registration/privacy/logout agreements) live as JSON fields of the companys Redis hash `hash:companyProtocol[:{lang}]:{sha1(companyId)}`, written and read through the primary `companysRedisTemplate` (`ShopProtocolSetService`). Because every save also appends a `protocol_update_log` row, `get()` now heals the cache on a miss: an empty hash triggers `repopulateAllTypesFromDbIfPresent` (latest log row per type) and a blank single field triggers `repopulateSingleTypeFromDbIfPresent`, each rebuilding the JSON from the DB and writing it back to Redis (ECX-11114). Draft (`*_draft`) and `member_logout_config` fields are never repopulated, and nothing is written when the DB has no row. The caveat is the members-side H5 reader: `H5RegisterProtocolQueryService` reads the same hash directly through the default (shared) template with **no** DB fallback, so immediately after a flush the H5 register/privacy endpoints answer empty until an admin-side `get()` repopulates the key.
 
 ### JWT / auth / login
 
@@ -466,8 +480,11 @@ DigiOS keys bind to `DigiOsProperties` (`@ConfigurationProperties(prefix = "ecsh
 |---|---|---|
 | `ecshopx.popularize.common-defaults.distribution-default-banner` / `.distribution-default-weapp` / `.distribution-default-poster` / `.qrcode-bg-img` / `.promoter-qrcode-bg-img` | yuanyuanke CDN image URLs | [Marketing](../domains/marketing.md) |
 | `ecshopx.popularize.brokerage-qrcode.uri` / `.uri-item` | `${BROKERAGE_URI:}` / `${BROKERAGE_URI_ITEM:}` | [Marketing](../domains/marketing.md) |
+| `ecshopx.popularize.brokerage-plan-close.settle-days` / `.aftersale-days` | `0` / `0` (code defaults; not listed in `application.properties`) | [Marketing](../domains/marketing.md) |
 
 `PopularizeSettingSaveService.applyCommonImageDefaults` coalesces these over the saved config (missing/null, and for banner/applets also empty-string, fall back to the property).
+
+The `brokerage-plan-close` pair feeds `BrokeragePlanCloseTimeService.computePlanCloseTimeEpochSec()` as `@Value("${ecshopx.popularize.brokerage-plan-close.settle-days:0}")` and `@Value("${ecshopx.popularize.brokerage-plan-close.aftersale-days:0}")`, with **`plan_close_time = now + 86400 * (settle-days + aftersale-days)`** (epoch seconds, computed from `Instant.now()` with a long-cast to avoid overflow). That timestamp is written onto unsettled brokerage rows in two places: on order confirm-receipt finish (`NormalOrderBrokerageOnFinishService` → `updatePlanCloseTime`, updating the `brokerage` rows where `is_close=false`) and at commission-row insert (`NormalOrderFinishBrokerageCoordinator` stamps each new row's `plan_close_time`). **Both keys are placeholders:** the code carries an explicit TODO that they should be replaced by the merchant-side 分销确认天数 (distribution confirmation days) / 售后时效天数 (after-sale validity days) settings, so today they are flat platform-wide day offsets — not wired to any merchant setting — and the shipped `0`/`0` default collapses `plan_close_time` to "now". Operators overriding them do so via `APP_ARGS`/env; there is no tracked line in `application.properties`.
 
 ## Operational hazards: keys whose empty value changes behaviour
 

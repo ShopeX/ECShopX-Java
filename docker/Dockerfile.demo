@@ -1,0 +1,63 @@
+# Java app image: Maven build + Temurin 17 JRE (Alpine) + OpenResty（反向代理到 Java）。
+# 与 Dockerfile.app 的区别：不含 Node / Nuxt / 前端静态资源，只跑 Java + OpenResty。
+#
+# 运行底包：reg.ishopex.cn/base-images/eclipse-temurin:17-jre-alpine（私有仓库；
+# CI 无法拉取 Docker Hub 的 jammy 底包）。OpenResty 通过官方 Alpine APK 源安装
+# （仓库最高支持到 v3.18；在当前 Alpine 3.24 底包上实测可用）。
+#
+# 构建：
+#   docker build -f docker/Dockerfile.java -t ecshopx-java:latest .
+#
+# 端口：
+#   18080 OpenResty 反向代理入口（转发至 127.0.0.1:8080）
+#   8080  Spring Boot HTTP API（容器内 SERVER_PORT=8080，覆盖 application.properties）
+#   19999 XXL-Job Executor（xxl.job.executor.port 默认值）
+
+ARG MAVEN_BUILD_IMAGE=reg.ishopex.cn/base-images/maven:3.9-eclipse-temurin-17
+ARG RUNTIME_IMAGE=reg.ishopex.cn/base-images/eclipse-temurin:17-jre-alpine
+
+FROM ${MAVEN_BUILD_IMAGE} AS builder
+WORKDIR /build
+COPY docker/maven-settings.xml /tmp/maven-settings.xml
+COPY . .
+RUN mvn -B -s /tmp/maven-settings.xml -pl ecshopx-bootstrap -am package -DskipTests
+
+FROM ${RUNTIME_IMAGE} AS runtime
+WORKDIR /app
+
+# fontconfig + ttf-dejavu：AWT 图像绘制（图形验证码 / 二维码 / 条码）。
+# tzdata：TZ=Asia/Shanghai。curl：entrypoint 探测 Java 就绪。
+# OpenResty：18080 端口反向代理到本机 8080。
+RUN apk add --no-cache fontconfig ttf-dejavu tzdata curl wget \
+    && wget -q -O /etc/apk/keys/admin@openresty.com-5ea678a6.rsa.pub \
+         https://openresty.org/package/admin@openresty.com-5ea678a6.rsa.pub \
+    && echo "https://openresty.org/package/alpine/v3.18/main" >> /etc/apk/repositories \
+    && apk add --no-cache openresty \
+    && ln -snf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
+    && fc-cache -f > /dev/null \
+    && mkdir -p /app/logs /var/log/nginx \
+         /var/lib/nginx/tmp/client_body /var/lib/nginx/tmp/proxy \
+         /var/lib/nginx/tmp/fastcgi /var/lib/nginx/tmp/uwsgi /var/lib/nginx/tmp/scgi \
+    && openresty -v
+
+# Alpine 不带 locale 数据，必须显式钉住 UTF-8；否则 JDK 17 按 C locale 推导，
+# file.encoding 会变成 ANSI_X3.4-1968（ASCII），中文数据读写会乱码。
+# java.awt.headless=true：Alpine 无 X11 库，AWT 只能走 headless。
+ENV LANG=C.UTF-8 \
+    LC_ALL=C.UTF-8 \
+    TZ=Asia/Shanghai \
+    JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -Djava.security.egd=file:/dev/./urandom -Dfile.encoding=UTF-8 -Dsun.jnu.encoding=UTF-8 -Djava.awt.headless=true" \
+    APP_ARGS="" \
+    APP_JAR=/app/app.jar \
+    SERVER_PORT=8080 \
+    NGINX_CONF=/usr/local/openresty/nginx/conf/nginx.conf
+
+COPY docker/java-nginx.conf /usr/local/openresty/nginx/conf/nginx.conf
+COPY docker/java-entrypoint.sh /app/entrypoint.sh
+COPY --from=builder /build/ecshopx-bootstrap/target/ecshopx-bootstrap-*.jar /app/app.jar
+RUN chmod +x /app/entrypoint.sh
+
+EXPOSE 18080 8080 19999
+
+# entrypoint 同时拉起 Java 与 OpenResty，并对 SIGTERM 做优雅停机。
+ENTRYPOINT ["/app/entrypoint.sh"]

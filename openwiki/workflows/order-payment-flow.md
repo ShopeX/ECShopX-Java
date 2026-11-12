@@ -40,12 +40,18 @@ sources:
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/dispatch/OrdersTradeFinishAfterCommitDispatchPublisher.java
   - id: openwiki-source-2578fa97e7cd4e074c6dff42
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/dispatch/OrdersTradeFinishNormalOrderPaySuccessBridgeDispatchListener.java
+  - id: openwiki-source-863ce4338f295783b77f3eeb
+    resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/dispatch/TradeFinishCountBrokerageDispatchListener.java
   - id: openwiki-source-0f82b454b43d90e72507a58c
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/alipay/AlipayNotifyOrderSidePortImpl.java
+  - id: openwiki-source-f451eeaaacd8448e25e3c13a
+    resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/brokerage/TradeFinishCountBrokerageBusService.java
   - id: openwiki-source-48c58afd50c9934ddd5eb49b
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/front/wxapp/WxappPaymentService.java
   - id: openwiki-source-1e59ed1d09620110f69b2b0a
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/create/OrderCreatePersistencePortImpl.java
+  - id: openwiki-source-c2e0d21be538ee1e2cb4e432
+    resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/NormalOrderBrokerageOnFinishService.java
   - id: openwiki-source-a252c563ca705b5943957b38
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/shopadmin/NormalOrderAdminPaymentQueryService.java
   - id: openwiki-source-5a2ec1c085dae82424db4467
@@ -60,8 +66,6 @@ sources:
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/shopadmin/ShopadminNormalOrderCreateOrchestrator.java
   - id: openwiki-source-6bee7c44879ca7bd01cdede7
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/shopadmin/ShopadminNormalOrderCreateTransactionalRunner.java
-  - id: openwiki-source-541592d1df9edc4c8c641347
-    resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/notify/TradeFinishSmsNotifyBusService.java
   - id: openwiki-source-623ecfb6b4a37473cdb9935b
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/payment/OrdersExternalPayParamBuildService.java
   - id: openwiki-source-7832b5e57d5d960a02d053c2
@@ -116,10 +120,22 @@ sources:
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/support/PaymentSettingRedisKeys.java
   - id: openwiki-source-04d8f988a1b772b617717322
     resource: repo://ecshopx-payment/src/test/java/cn/shopex/ecshopx/payment/service/AlipayNotifyFacadeDepositSmsDispatchTest.java
-generated: { by: "openwiki/0.9.0", at: "2026-11-09T03:34:48.355Z" }
+  - id: openwiki-source-0ed5fd37b41e84a0b1711d6d
+    resource: repo://ecshopx-popularize/src/main/java/cn/shopex/ecshopx/popularize/dispatch/UpgradePromoterGradeJobDispatchPublisher.java
+  - id: openwiki-source-027ba59abcf47758829bb66e
+    resource: repo://ecshopx-popularize/src/main/java/cn/shopex/ecshopx/popularize/service/brokerage/NormalOrderFinishBrokerageCoordinator.java
+  - id: openwiki-source-02c872815f7217e1d310af6f
+    resource: repo://ecshopx-popularize/src/main/java/cn/shopex/ecshopx/popularize/service/BrokeragePlanCloseTimeService.java
+  - id: openwiki-source-fd281108667e53d343466b89
+    resource: repo://ecshopx-popularize/src/main/java/cn/shopex/ecshopx/popularize/service/PopularizeBrokerageStatisticsIncrementService.java
+  - id: openwiki-source-64db68f43408803a5d0963c0
+    resource: repo://ecshopx-popularize/src/test/java/cn/shopex/ecshopx/popularize/service/brokerage/NormalOrderFinishBrokerageCoordinatorPidResolutionTest.java
+  - id: openwiki-source-fe66b244c874bead512c2f16
+    resource: repo://ecshopx-popularize/src/test/java/cn/shopex/ecshopx/popularize/service/brokerage/TradeFinishCountBrokerageUpgradePromoterGradeEnqueueTest.java
+generated: { by: "openwiki/0.9.0", at: "2026-11-11T17:12:30.774Z" }
 verified:
   - by: openwiki/0.9.0
-    at: 2026-11-10T17:10:58.497Z
+    at: 2026-11-11T17:12:30.774Z
 ---
 
 # Workflow: Checkout, Payment, Notify, and Trade-Finish Fan-out
@@ -683,7 +699,7 @@ sequence:
 | 85 | `listener:kaquan.trade_finish_consume_card_pay_bill` | async | coupon card consumption |
 | 86 | `listener:orders.listeners.UpdateItemSalesListener` | async `default` | item sales count increment |
 | 87 | `listener:orders.listeners.UpdateGroupsActivityOrder` | sync | groups activity order update (`normal_groups` only) |
-| 88 | `listener:orders.listeners.TradeFinishCountBrokerage` | async `default` | brokerage counting (skips `point`) |
+| 88 | `listener:orders.listeners.TradeFinishCountBrokerage` | async `default` | brokerage counting (skips `point`; the delegating chain below) |
 | 89 | `listener:orders.listeners.TradeFinishLinkMember` | async `default` | member link |
 | 90 | `listener:orders.listeners.TradePayFinishStatistics` | async `slow` | pay-finish statistics |
 | 91 | `listener:orders.listeners.TradeFinishProfit` | sync | profit sharing |
@@ -776,7 +792,55 @@ transaction, `@Transactional(rollbackFor = Exception.class)`):
   calling `TradePayFinishStatisticsBusService.recordPayFinishStatistics`
   (queue `slow`).
 * **Brokerage (order 88)** — `TradeFinishCountBrokerageDispatchListener`
-  skips blank/non-positive `order_id` and `point` pay type.
+  pre-filters the payload (a blank/non-positive `order_id` or the `point` pay
+  type short-circuits before any order load) and delegates to
+  `TradeFinishCountBrokerageBusService.handleTradeFinishRow`. The bus service
+  repeats the `point` skip against its own parse, rejects a non-positive or
+  unparseable `company_id`/`order_id` (`listener_skip invalid_ids`), loads
+  `NormalOrders` by id and skips on order-not-found or a company mismatch
+  between the payload and the order row, and invokes
+  `NormalOrderBrokerageOnFinishService.orderFinishBrokerage` inside a
+  `catch (Throwable)` that only logs at warn — a brokerage failure never
+  propagates back into the trade-finish fan-out.
+  `orderFinishBrokerage` is the shared finish-flow brokerage entry (also used
+  by confirm receipt, batch finish and ziti write-off): it publishes the
+  ASYNC+REDIS
+  `EVENT_NORMAL_ORDER_CONFIRM_RECEIPT`
+  (`event:orders:normal_order_confirm_receipt`) event, calls the popularize
+  bundle's `NormalOrderFinishBrokerageCoordinator` through the
+  `ecshopx-common` interface (the port inversion keeps `ecshopx-orders` free
+  of a popularize dependency), and then back-fills `plan_close_time` on any
+  still-unsettled brokerage rows via
+  `BrokeragePlanCloseTimeService.updatePlanCloseTime`. Inside one explicit
+  `TransactionTemplate` (REQUIRED), the coordinator skips when
+  `open_popularize` is off for the company, when a brokerage row already
+  exists for `(company_id, order_id)` (the idempotency guard), when the buyer
+  is not a promoter or has no parent `pid`, when the parent promoter is
+  invalid, or when the computed first-level rebate is zero; otherwise it
+  resolves the parent through the **buyer promoter's `pid`** (not the order's
+  `user_id`) and inserts one `first_level` brokerage row keyed on the
+  **parent promoter's `user_id`** — `source=order`, `is_close=false`,
+  `price` = the order base (`total_fee`, or `commission_fee` when the config
+  ratio type is `profit`), `rebate` = base × the merged
+  `popularize_ratio.first_level.ratio`, and a **non-null `plan_close_time`**
+  computed at insert by
+  `BrokeragePlanCloseTimeService.computePlanCloseTimeEpochSec()` (now +
+  86400 × (`ecshopx.popularize.brokerage-plan-close.settle-days` +
+  `aftersale-days`, both defaulting to 0 until the merchant-side
+  分销确认天数/售后时效天数 settings land — see the TODO in the class). It then
+  increments the parent promoter's statistics
+  (`PopularizeBrokerageStatisticsIncrementService.add` with
+  `item_total_price`, `rebate_total` and `no_close_rebate`, inserting the
+  statistics row when missing), marks the buyer promoter's `is_buy` flag via
+  a guarded update, and **enqueues the upgrade-promoter-grade job**
+  (`UpgradePromoterGradeJobDispatchPublisher.enqueueUpgradePromoterGrade` →
+  `dispatchJob` ASYNC+REDIS with `{company_id, user_id}`) for the parent —
+  so the popularize bundle owns the actual brokerage write while orders only
+  triggers it. The pid-keyed insert, the statistics increment and the
+  once-per-row grade enqueue are pinned by
+  `NormalOrderFinishBrokerageCoordinatorPidResolutionTest` and
+  `TradeFinishCountBrokerageUpgradePromoterGradeEnqueueTest`
+  (`ecshopx-popularize`).
 * **Item sales (order 86)** — `UpdateItemSalesBusService` keys only on
   `company_id`/`order_id`; it does **not** skip `point` — the contrast with
   the SMS/brokerage listeners is deliberate and pinned by the
@@ -1151,8 +1215,10 @@ is the recovery path when a notify is lost or delayed.
   already have moved — that is exactly what `/payment/query`'s
   `finalizeTradeSuccessAfterChannelQuery` repairs.
 * **`pay_type` semantics differ by listener.** `point`/`deposit` skip SMS,
-  websocket push, brokerage and coupon consumption but **not** item sales,
-  statistics or profit sharing; `membercard` trades skip the WXA template and
+  websocket push and coupon consumption but **not** item sales,
+  statistics or profit sharing; brokerage skips `point` only (neither the
+  listener nor the bus service special-cases `deposit`); `membercard` trades
+  skip the WXA template and
   instead fulfil the VIP port inside the callback service. Anyone adding a
   listener must decide explicitly which pay types it serves.
 * **`trade_no` is assigned exactly once**, on the first SUCCESS, from the
@@ -1253,7 +1319,16 @@ downstream port:
 * `UpdateItemSalesWxappPaymentSyncDispatchFlowTest` and
   `TradeFinishCountBrokerageWxappPaymentSyncDispatchFlowTest` — the
   deliberate contrast: item sales increments for **both** wxpay and `point`
-  (keys only on company/order), brokerage runs for wxpay but skips `point`.
+  (keys only on company/order), brokerage runs for wxpay but skips `point`
+  (the `point` short-circuit lives in
+  `TradeFinishCountBrokerageDispatchListener`, so the bus service is never
+  invoked). The brokerage write itself is pinned in `ecshopx-popularize`:
+  `NormalOrderFinishBrokerageCoordinatorPidResolutionTest` (the inserted row
+  and the statistics increment key on the parent promoter's `user_id`
+  resolved through the buyer promoter's `pid`, and the buyer's `is_buy` is
+  flipped) and
+  `TradeFinishCountBrokerageUpgradePromoterGradeEnqueueTest` (exactly one
+  `enqueueUpgradePromoterGrade` per inserted first-level row).
 * `TradePayFinishStatisticsEventSyncDispatchFlowTest` — `trade_state=NOTPAY`
   and unknown `trade_source_type` skip statistics; a normal SUCCESS payload
   records once.

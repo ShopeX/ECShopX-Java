@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:53edc9966a617c4c102d321a9eedd1d54f8f9d5c81cac4cc61352ef49382099b",
+  "pageVersion": "sha256:82835c164f6660b580e0d1080a89ccbeb7f5b5e0ffd984dde7cb7f029727596c",
   "claims": [
     {
       "id": "claim_a77f54208d174b0c866c7d5de18e4130",
@@ -877,10 +877,64 @@
           "version": "repo-lines-v1:sha256:6a803c1c692e7000a6714331f93d971d0f77f0638bb2177f65f2ac3190fdda20:eyJzZWxlY3RlZExpbmVDb3VudCI6NDQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVmYWYyYmJlMDkxM2Y4ZjU3MzlkODc4ZDM2NTA3NTdmNzk2NDY1MWQzMWQ0NWYwMTZmOGEwZGVhNmIzOTVjYzQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI2MTU5MTU5YzZkM2EwNzU3MWZiNGRmYmQ1ZjMwNjllZmJiMzdkYTI0MDE0NjY4MWFmYjI3NzcwODIzN2Y4YWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkyYTJjODdkMzZjZjMyZTJlNGE4OTJkYTZiNTA4ZDE4NTg5N2RkZWQ5Y2FmODgyMTAxNjVmMzBhMGJjMjU2NTQifQ"
         }
       ]
+    },
+    {
+      "id": "claim_8648bf9456154e21b69976c2763c6280",
+      "statement": "createMemberLocalAutoRegister registers a TransactionSynchronization (guarded by isSynchronizationActive(), else BadRequestException \"createMemberLocalAutoRegister requires active transaction synchronization\") whose afterCommit runs, in order: publish of event:members:create_member_success with the stable eleven-key payload, a sharedRedis daily-active set add Member:<companyId>:<yyyyMMdd>, and the bind-salesperson enqueue; because publish and enqueue both live inside afterCommit, a transaction rollback suppresses both — pinned by the two rollback tests in MemberAccountServiceCreateMemberLocalAutoRegisterDispatchTest (real DataSourceTransactionManager over H2, mocked publishers verify never()).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/account/MemberAccountService.java#L622-L650",
+          "version": "repo-lines-v1:sha256:1487ad9d88b464c3ded8a466f3616054557d2c797488428c2c05f1c230687f57:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEwZGY4MWIwNDZmNTgwNjU5MzhkNDk0ZWFlMTJlNTdjMDQwMmRlZTU1NjYwZjYwZDM2MDk0NjA2OGVlYzIzYzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk3ODUwNDg3NjkyYzgwZjVjY2JiYjlkMmFiNjRiZTM2NTBjMzgzM2VlMjc2NDc4NjlmNjkxMzZmMDYzM2YyNGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImVmOGM3ZTQ1MDM2Y2JlZTI0ZDE4MDcxOTI2Y2JiNDNlZmNhMjk5MjBhYTQxY2VhNWNhNWZiYTczNWQ2NWU1NDUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/test/java/cn/shopex/ecshopx/members/service/account/MemberAccountServiceCreateMemberLocalAutoRegisterDispatchTest.java#L245-L284",
+          "version": "repo-lines-v1:sha256:290f39edea23f4dbd6e4837ca16be7dbcabf42623a24ff0747b015288bd35312:eyJzZWxlY3RlZExpbmVDb3VudCI6NDAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY0NTcyZDMxYTNhMWEzNDg2Y2RjZDBlZmFiODcxYmVlZTY1MDMwOWU4MGUwZjIxMjljMjcyM2Q2MGQ1Zjc1YzMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/test/java/cn/shopex/ecshopx/members/service/account/MemberAccountServiceDispatchIntegrationTestConfiguration.java#L41-L52",
+          "version": "repo-lines-v1:sha256:356002d4e680434c798e1dd1559c3525a5ba7c34d7c5291a040012ca78648343:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI2NGEzZjBkYmZhZDFiMTY5YmNmOWVkMmM2NWU2OWVjZGU0OGM3ODVkZjg2YzUxNTU0N2I2M2FmZDIyZTRiMGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFkMmE0YjQ0NDk1ZWM0MzlkYWE5OTVjZmY1MmFmMTUwY2ZiNmIwNzBjMjQ3Yjk0MjEwNzA0ZDUxYzlmMTA2ZmUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ1ZDUzYjkzNTg4ZWMwYzEwNzdiNjU4ZWNjM2RkMzRhMjIzMGE1N2NiOGIwYTk1ZDYxODdiODI5NjExYTU3MjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI1OWNiYTllZDY0NjY3YjU3MjExZWJkMzJkMGI3Y2Q0MTJjYzlmNzU1YTU5ODVmOGEyZjEyNWI1M2U5OTFmOGEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_5f71388443a042b8b03803bc8e2f4603",
+      "statement": "The bind-salesperson enqueue in createMemberLocalAutoRegister's afterCommit fires only when the extras' work_userid is non-blank after trim and channel parses to 1 (lenient Number-or-String parsing); channel=2 or a blank work_userid enqueues neither BindSalseperson job — pinned by the dispatch test's channel-not-1 and blank-work_userid cases.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/account/MemberAccountService.java#L631-L649",
+          "version": "repo-lines-v1:sha256:f419f6d14742175b8bcf9b70d3af5bdc1a8204016a90cc02b4f3895344a97594:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgyN2Y0ODE2YWQyMDczOWUwY2VmYjAzZGJhNmRiODg4ZTM1ODExMDExYmYwY2E0M2RkMjNlNDlhNWVjNDQzZGYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI2OTE4Nzk1ZDQ1YjhmZGY1NjI5ZDFmZmJjMDUxM2IxNGE2OTIzZWQxYmIzZmEwOWNlMWMxYTgyZDRjOGE5NTkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU3MDM5MTBkMmE3ZDg1OTNlNzQ1MTc5NTc1YTA2M2UxNWQzZmNiOGRjYzM2NzhmOTYxMDJmN2M2OTRjZDAzZDAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ1ZDdlMWZkMzA4ZjI3M2IwOTgzMjFjYWNkOWQ3MTVkMzAzNTE1NDU5YzU1MGYwM2Y5YjkxZTI0NGEzMzUyMzMifQ"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/test/java/cn/shopex/ecshopx/members/service/account/MemberAccountServiceCreateMemberLocalAutoRegisterDispatchTest.java#L208-L243",
+          "version": "repo-lines-v1:sha256:8f91226c282847c65fa6a196c98058d496c14e479073c53c04aeb1bea7531bb3:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI2Mjc4NjIwOWQ1Yzg3OWYwNGQ4YjYwYjk5M2I0MDQyZDdmOWY0YTE1MDA4ZGFmNGVhNmU4NDliNjk3M2MxNzEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcyNzI4ODRiZjQwMmQ4NTAxYzhmNGQzOTRjYmExZWNlOWFlZjM2MjZhZWIwYWQ1NzIxMDhmNzhjODk4N2EzMGIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFlOTUyZjIxNDA2NmFiOWMxMWU1NGY5MjkwMmNhNDM4Yzc4OGMzYTc3ODU0YTZmMzFlMjExYmVlYzlkMDg0NmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJlM2RjNzZmYjBiYjZkMjE2MzRhMWJjZGU4NDJhMWVjZjQ2N2Y1NjkzMjVkYWFjZWUxNmZiOTAwMjdlNWRhYTIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_23c4036706494f0e8908c220d887d759",
+      "statement": "The bind-salesperson bus name is selected by the DM point-integration gate: DmCrmSettingReadPort.isPointIntegrationOpen(companyId) false → enqueueBindSalseperson → job:185:MembersBundle\\Jobs\\BindSalseperson carrying the real new user_id; open → enqueueBindSalsepersonAfterDmMemberCreate → job:186:MembersBundle\\Jobs\\BindSalseperson with user_id forced to 0 (the \"five-argument job dispatch shape\"). job:185, job:186 and the sibling job:194 (wxapp bindSalesperson) are three registrations of one BindSalseperson handler; BindSalsepersonJobDispatchPublisher dispatches ASYNC/REDIS on the slow queue with RetryPolicy.platformDefault().",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/MembersBundleDispatchJobNames.java#L27-L34",
+          "version": "repo-lines-v1:sha256:a536d3363ce9e28a20beb2a553fc8e777ff438c2af8a4afa0129fdee8914c9cd:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTVjMTE3NjUyZDJiY2JmOGU5NDkyZDY2YmI2OGIwZWVjYzg0ZmJhNDI4MDAwZWNlOWQwNWMyMzNkMDk3NGZiYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiM2JlYzliMGJmMTg3Y2ZlOGI3NzlhNmQwNjgxMjI2NmVmOTIwM2FjN2UyMGE3OTkxMTk4MzA3ZjIxNDAxNWRlYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjZkYjMwMzkxOGI5MjdlZTQ3YTc5MzQ5ODM0N2M0N2UwZGVmZmFmZmJhZTA5YThiY2MyODc1Y2IzNmQxMDRjYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOTA1MzQwZGQzYjU0YjkxOWEzMTVkMzVkMTFmOWUzOGYyMDljM2UzNGQ5ZjkzYzg4MGRhN2I0MWMzOGMxMDgwOSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/dispatch/BindSalsepersonJobDispatchPublisher.java#L28-L107",
+          "version": "repo-lines-v1:sha256:bd20873de873c9bde73debda697840058f1052da75e77ad70bd067264fd68c30:eyJzZWxlY3RlZExpbmVDb3VudCI6ODAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFlZGViNTIzOTlhNTA1OGFlNGZhZTQxN2MwMWZjYzhlNTlmYWM0MjdjNDVmODJjYTQyOTczODljYWRjZDhmMDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/account/MemberAccountService.java#L633-L648",
+          "version": "repo-lines-v1:sha256:bb96493f91ae8dd75a7d11f3806083ad530e68d1c4d63a91309396564b7eecb0:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVkODM1YTc1MjI4OTAyNzhjNDQ3NjgzMTQxN2QwZmUxODQ0NDdlMzI3NDZlZTg2NjNlOTM3MmQ1OWRiZGM4MWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxN2U2Yzk0ODU1ZWE3MWRjYThiMjczMzM2MzFjZGJlNmQyYmE5N2VhNzg1YWNjOTJlNTQyN2I2ZDhmYjJlZTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNmNGQxNjIyZDRhMTEwZWQxNjJjM2FjN2M3MGJlMzNjODFjMjkwZDM5NWMxOGVlMmYwNThmZDE4NDNkZDU0OWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU4NzQyN2UzNDZmMzQ5OGQyODBlMTY3MDAzNjc5MmU1YTAxMjkxMjNiYWM3ZGEwMzE1ZTQ5NjU2YjIwYzE2NWIifQ"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/test/java/cn/shopex/ecshopx/members/service/account/MemberAccountServiceCreateMemberLocalAutoRegisterDispatchTest.java#L162-L206",
+          "version": "repo-lines-v1:sha256:4eeef1538900050e2ea5fe71a6af548dc2e09e757faf22819843e83f94b83b5c:eyJzZWxlY3RlZExpbmVDb3VudCI6NDUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ0OGEzNDdhMjViODc2Nzc1ZDk3MWE1OTFmZjk5NGY2OWZjMmNjNDRjNGNjMzZlNGQ3Y2QyZDIyMzMxNGMxNDYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZhYmNmZTBmZjY2ZGIyN2NkNGFmNzIwZWQzZmExNTQ2NDhkOGFjY2QyZWNhNmMzMjk4Mzg0MGRjZTJkZWRlZWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ0MzVkM2M1NThmNDhjMWE4Y2U3MTlhMDQ2YzJkN2EzMTZiZDA3NGQyYWZlMWI5ZDg1MjIwZGY2M2Q0OWRkYjQifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.9.0",
-    "at": "2026-11-10T17:10:58.497Z"
+    "at": "2026-11-11T17:12:30.774Z"
   }
 }

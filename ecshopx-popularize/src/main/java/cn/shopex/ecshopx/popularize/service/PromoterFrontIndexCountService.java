@@ -137,24 +137,6 @@ public class PromoterFrontIndexCountService {
 		data.put("notbuy_promoter", notbuyPromoter);
 		data.put("pointTotal", pointTotal);
 
-		if (!PopularizeQueryFlagTruthy.isTruthyForH5QueryFlag(isSalesmanPageRaw)) {
-			return data;
-		}
-
-		List<Long> dIds = loadSalespersonShopIds(companyId, userId);
-		LinkedHashMap<String, Object> filterCount = new LinkedHashMap<>();
-		filterCount.put("company_id", Long.valueOf(companyId));
-		filterCount.put("user_id", Long.valueOf(userId));
-		if (!dIds.isEmpty()) {
-			filterCount.put("dIds", dIds);
-		}
-		applyDistributorIdToFilterCount(filterCount, distributorIdRaw);
-
-		Map<String, Object> aggregateRow =
-				salesmanBrokerageCountListQueryService.getSalesmanBrokerageCountAggregate(filterCount);
-		data.put("countDataShop", new LinkedHashMap<>(aggregateRow));
-		data.put("rebateTotal", rebateTotalFromSalesmanAggregate(aggregateRow.get("rebate_sum")));
-
 		return data;
 	}
 

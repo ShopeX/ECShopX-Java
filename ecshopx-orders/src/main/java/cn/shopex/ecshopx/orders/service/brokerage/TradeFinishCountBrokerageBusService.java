@@ -83,7 +83,7 @@ public class TradeFinishCountBrokerageBusService {
 			return;
 		}
 		try {
-			normalOrderBrokerageOnFinishService.orderFinishBrokerage(companyId, orderId, order);
+			normalOrderBrokerageOnFinishService.orderFinishBrokerageOnTradePaySuccess(companyId, orderId, order);
 			log.info("{} listener_orderFinishBrokerage_returned companyId={} orderId={}", LOG_TAG, companyId, orderId);
 		} catch (Throwable t) {
 			log.warn("{} listener_orderFinishBrokerage_failed companyId={} orderId={}", LOG_TAG, companyId, orderId, t);

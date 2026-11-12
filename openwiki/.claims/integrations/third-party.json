@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:fe1e249f0a681eb76177ddb53077c2014937b9cbb92345c0558bf7021790994e",
+  "pageVersion": "sha256:93f9f57b5f16aa8d3014bbdc125f453ce037a8146209df9f5dbec51226d89296",
   "claims": [
     {
       "id": "claim_1f618faf51234a25a7a90fd65c384347",
@@ -691,12 +691,12 @@
       "statement": "The store-cashier pre-checkout member readiness flow is exposed as POST /api/v1/operator/member/ready (route alias companys.operator.member.ready) by OperatorStoreMemberController in ecshopx-companys (@AdminAuth + @Activated); the controller resolves company_id from the operator/POS JWT via DualJwtSupport.requireCompanyId, extracts user_id/distributor_id, and delegates everything to OperatorStoreMemberReadinessService.ensureOfflineMemberAtStore in ecshopx-shuyun, wrapping the result as {ok: true, synced, skipped} (ECX-11025).",
       "evidence": [
         {
-          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/api/admin/v1/OperatorStoreMemberController.java#L42-L68",
-          "version": "repo-lines-v1:sha256:fbfe997e76b85b65fa9390751d5cd27b7e2f129de2ba0cdbccce5dcb8faef275:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYzZTU5NDNiZjYyMTAyNzQxMWQwNTI1OTdmNTE0OTc4ZDFhMjU4YzNhYTMzYTM0YjM5ODc5ODUxNjdkODNiMTkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjlmY2Y4OGQwNWQ1NDBkNmY5MjEyNmFhNzQ4ZTBjN2ZiOTUyOGRjYzg3ZTZjYTY1NzlkZjAxZjVkZGE3YmQ5YmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjczMTI0MWQzOWUzOTI4NTBiMzE2MjM2ZjVmMzljZDIzZWJjYzJjNTllMmNmNDgxODQzMmZjYTNjNTE5MzBlNzgifQ"
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/api/admin/v1/OperatorStoreMemberController.java#L36-L68",
+          "version": "repo-lines-v1:sha256:6622b6f53d507928068a412e61ef932b2bd1b1f5f60a56643bf58e591c608509:eyJzZWxlY3RlZExpbmVDb3VudCI6MzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVmNjE2ZDk4ZGJhODI3MTUzYjNjYTA4Mjc2MTllMWNmYWJiYTQzYTZjZGYzOWEzMTYwYTg1YzdmZmQwMTkyZDEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI5MjI2MTQ3MTk4ZDIwYTZjNmJmZTk2NjQ3NzkwZjU4Y2MyYjM4MzZkZTY3NzQ1Y2E0Nzg4MWNhN2VhNzcxMDIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjczMTI0MWQzOWUzOTI4NTBiMzE2MjM2ZjVmMzljZDIzZWJjYzJjNTllMmNmNDgxODQzMmZjYTNjNTE5MzBlNzgifQ"
         },
         {
-          "resource": "repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/service/openplatform/OperatorStoreMemberReadinessService.java#L36-L52",
-          "version": "repo-lines-v1:sha256:9c830b055c7db7b6f7c6c48db236c22b879b7a3af9302695d42cd4d6b78b34f4:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZlM2FlMjY0NWIwMjM0MDIwMDRjY2YzODMyMGNkODhjYWEzYmNlOGFhNWY5MTc2YmQ2MDc1YjhiNjBhZTQzOGYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE1ZWJhODZhM2ZkNTlmNGFhZTBhMGZiNWM4YjEzZGEwNGNjNTEwMDJhMmFiYTBjMDQwMjQ4N2E5YjU0YjA0YTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA1Y2FiZTdmYWU0NmU2OWIyOTBjNGU2MDU3ODI2ZjA2N2IwYzc0M2U1MTI4NDMyNzM5YTdiOTIwOWFiNTQ2NjMifQ"
+          "resource": "repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/service/openplatform/OperatorStoreMemberReadinessService.java#L33-L58",
+          "version": "repo-lines-v1:sha256:1e069b98192524cbca4463809f9d0122edfd4c7789f2081cad8d4b3f48ef8470:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkwZjdhYjVhYzc5ZDYyZDMzOWNkMjY1NWUyMWNmNzA0MjdlMDZhYmM5YTc4ODQ1YWM3ZGI4MTQ0MzFlYjY4OTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIwYWM2N2Q5MDU3OTAyNzMyZTA0ZDc5ZmQ2M2U4YWZkNWIyYjhmMzFmNTFjZGI2NTg5YTg5NGEyMzgyZGFlNDciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImViOWQ2MDUwZjUyZTk4NTYyZTUyZmFlMTc0YTc2MWU1ZGQ0MjJiYmJhMWIxZGVjMzA1MmUzYzgxNzE5NWFiNGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjEyNjhkMTExNjVhMDdhMjVlYzE2MDhjNGQzOTk1ZDJjNzIwZWMyM2FkY2UzNmRhOGRiYjEyNTE5NjRhN2VlNzAifQ"
         }
       ]
     },
@@ -705,8 +705,8 @@
       "statement": "ensureOfflineMemberAtStore returns a skipped result ({synced: false, skipped: true}) when the company's Shuyun open-platform config is missing, is_enabled != 1, or fails the shared InboundSignedCallbackPreparer.isEligible check, and also when the member is already registered per the two-field sync state; it throws ResourceException for a missing user_id/distributor_id, a missing members row or a cross-company member row (both surfaced as 未找到该会员), a blank member mobile, and a failed member.register (false return or exception rethrown as 门店会员登记失败).",
       "evidence": [
         {
-          "resource": "repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/service/openplatform/OperatorStoreMemberReadinessService.java#L52-L117",
-          "version": "repo-lines-v1:sha256:b8550fa3859f5d0288e97600c9f14c4a25c130d8be6e594bfe9f38cd7690b0b3:eyJzZWxlY3RlZExpbmVDb3VudCI6NjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZhYjU0Y2ZjNzQyZDcxZjMyNzVjMDcwMWU1NDQ5NjljZTgwN2M1ZWMwZDQ2NDAwYTJlYmE5YjA1NGM4NzEzNWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk2MTg4ZTk2NDA3ZTMwYzRlM2Q0MGQ5ZGFkYTNmNjhjMjA0NTdhMWFhMjkzYTJhYTgyZWMzM2QzOTZjZjc0YzciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQyNWZiMGY5MjExODhjMWE0NDczMDg4ZDg0ZmFhYjM2MzQ3ZTc0Yjg1MTRiYzczMjE2NGY5YzZhZjhiYTY0NmEifQ"
+          "resource": "repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/service/openplatform/OperatorStoreMemberReadinessService.java#L54-L115",
+          "version": "repo-lines-v1:sha256:8e7ca8254b2cd697919bbe34cb201c024d1bbc053ff4b482eeb31e9f7225c90b:eyJzZWxlY3RlZExpbmVDb3VudCI6NjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNiYzc3NTY5OTVjZmQ0YzkxNjk2ZTk1NjYzYzhiNmFlMGI5NGZjZTRiN2Q1ODk0M2U4MDU0NGY5ZTRlMDk4YjEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk4ZTIyN2VjMzU5NzEyMTlmMGRhMzkxNTExNWQ5NWZjYmFkNWZhYTQzMDQwMjQ3OGY4ZGI2Mjc5MTY2YmQ5YTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFmYTA4MjRiMjdmNDRmZWVhZWY0OGQ5ZjdjYWU0OGZhMzNmYTNkMzc1NTc1MjM1NWNhMWFiN2FiNWFlMmY1YjUifQ"
         }
       ]
     },
@@ -719,8 +719,8 @@
           "version": "repo-lines-v1:sha256:c420c865d3f42f5d3b3713f0b97a7052efecafe39c2e8adfcefe2f5021800138:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY0NDQ5NTJkMzE5MzA4MzI0OWRlNjVlOGMwNmExZDZjMDUxYzI4NTc1NDY3M2U4OGY3NTI4MzNkYjA3NzIzYTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRkYTYwOTFiZWMxYjhkNGU5ODc0NTA2MWI0NmQ3MGI3NDM1OTUxYmM0YTUyNWU3OTJkNTQ0MjNkZmU4MGYyZmYifQ"
         },
         {
-          "resource": "repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/service/openplatform/MemberRegisterService.java#L82-L94",
-          "version": "repo-lines-v1:sha256:c00db8e23639c654f7569310203b59e5c7cb51f7b0e10f9ddef8ab8e04b9439b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRmMzlhNzc5MjFhYjFkNjUwMDEyYWNmZGJlMmQxZTk4NTg0NjViOTcwM2E0OTE4ZGRlYzA0NzE3MWQ4NjliODMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFlY2ZiOTQwNTRlNDY5NDgyNmFiNjFlY2MxN2Q4MWQzNTViMDA1NmRiNjA3MWY2NDY0M2VhNDFlMTg3ZWI0MzEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ0ODljNWEzYWMyNTMwNTI4NDEyYWEzMDljODM1MGEzZGI0ZWY5ZDI0ZDI0NWM4OTQyMDEwYzEwMDMwMmFhMmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImVkNzU4ZTI4NTk2ZmQyMzg5MDBmZGY1YTQyNjk4OTIxMDI4MzZhYjAxZWE2YTE1ZjZjY2M0NjQwZDY5OWIyMjkifQ"
+          "resource": "repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/service/openplatform/MemberRegisterService.java#L82-L105",
+          "version": "repo-lines-v1:sha256:621d466411c9b8e39208e5b60d801c07093cd67bdef80c02fa4ce0b5bbb0f89b:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRmMzlhNzc5MjFhYjFkNjUwMDEyYWNmZGJlMmQxZTk4NTg0NjViOTcwM2E0OTE4ZGRlYzA0NzE3MWQ4NjliODMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ0ODljNWEzYWMyNTMwNTI4NDEyYWEzMDljODM1MGEzZGI0ZWY5ZDI0ZDI0NWM4OTQyMDEwYzEwMDMwMmFhMmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk4ZTIyN2VjMzU5NzEyMTlmMGRhMzkxNTExNWQ5NWZjYmFkNWZhYTQzMDQwMjQ3OGY4ZGI2Mjc5MTY2YmQ5YTcifQ"
         },
         {
           "resource": "repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/service/openplatform/MemberWxappOnlineSyncService.java#L83-L125",
@@ -730,15 +730,19 @@
     },
     {
       "id": "claim_4415490db0ed46a98361798d6af28670",
-      "statement": "MemberRegisterService.registerOfflineAfterCreate gates on InboundSignedCallbackPreparer.isEligible, POSTs shuyun.loyalty.member.register with {id: userId, platCode: \"OFFLINE\", shopId, mobile} where shopId is the distributor id suffixed with the offline-plat-id-suffix property (default -off), and on gateway success writes members.offline_reg_distributor and best-effort calls MemberEnhanceCardSyncService.syncUserCardCodeAfterRegister (shuyun.loyalty.enhance.member.post, persisting the returned memberId into members.user_card_code); any gateway exception is caught and surfaced as a false return.",
+      "statement": "MemberRegisterService.registerOfflineAfterCreate gates on InboundSignedCallbackPreparer.isEligible, POSTs shuyun.loyalty.member.register with {id: userId, platCode: \"OFFLINE\", shopId, mobile} where shopId is the distributor id suffixed with the offline-plat-id-suffix property (default -off, already-suffixed ids left alone), and on gateway success writes members.offline_reg_distributor and best-effort calls MemberEnhanceCardSyncService.syncUserCardCodeAfterRegister (shuyun.loyalty.enhance.member.post, persisting the returned memberId into members.user_card_code); any gateway exception is caught and surfaced as a false return.",
       "evidence": [
         {
           "resource": "repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/service/openplatform/MemberEnhanceCardSyncService.java#L54-L96",
           "version": "repo-lines-v1:sha256:f5f37ffff1629dc7fd23e60b6c5eeb4d3bb81fd5f505c5d0b765833f04c488e1:eyJzZWxlY3RlZExpbmVDb3VudCI6NDMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdhOGUzNzIxYTg2ZmRiNDFmNzM4NjRhNTNlMDE0MjU1ZWFiZTdkNWVjYzgzODE4MDU0MmZjYjExZjc4ZWY5YWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZkNjY3NTc5YzJjOTRlZGFkNGVjNGVhOTljNmY5ZjYyYTIyM2QxMzM4YzE1OWU4YjgyYmUwNjE4NmNiMzRhYmEifQ"
         },
         {
-          "resource": "repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/service/openplatform/MemberRegisterService.java#L57-L106",
-          "version": "repo-lines-v1:sha256:12986cffdb450d51748fa00008d1becfd9e142afbda4071aace207d2d2ce747b:eyJzZWxlY3RlZExpbmVDb3VudCI6NTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVkOWQ4Y2EyYmNhNmJiZDE2YjU5Y2JmNTJiNDM1ZDNlNzY3NjA3MTk4NjQ1Njc0YTdjN2ZiOGMyZTA1NjA2YTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBkMTg1NDIxZmJmYjc0MDViZDc2Y2UwYWJjYWExZmIzZDE4MzU1NDgxY2VjYTBmZTkwMjUzNTUxYTAzODE5NWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ3NGY5ZDE3MGM4ZDU0MDlhZTUzYTVjZjYzYWNiZDk3ZTMzODYxNTkyYmM3MGQwNjY4MGVjMGQ0YjZmYTQxMjkifQ"
+          "resource": "repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/service/openplatform/MemberRegisterService.java#L163-L171",
+          "version": "repo-lines-v1:sha256:c8422262cb9fcc9a89bd36bc671ce722f418d1a4a1632ca1c4075f1bafb94986:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMGZkM2FjMjhiYjgyYmMyMjIwODQ4MDBlNTQ0NWZiMDMwZTg1OGQwMjBkZmJmY2ViNGVkZTE5YWExNzA2NzI2OSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/service/openplatform/MemberRegisterService.java#L62-L106",
+          "version": "repo-lines-v1:sha256:34780dc95c4bfe58d0c4504c987ddfebc5cfa4b43afeb8e172a608dd850c7175:eyJzZWxlY3RlZExpbmVDb3VudCI6NDUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM0NmY4MjAxNWNjMmFiMzQ4M2Q2ZTg1YTViZWI1NGUzMDM4ZDNjZDBhY2E4YTA4YmJmOWY0YTYzYmE4OTI4MjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM1YjA1Njg3MTU3YmM4NGFlNWYyMDRiMDE0OGU3YmZkNzM1ZTI1OWYxMzI4MGVhNTc1NzBkMTRlNTY2YTYyNGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ3NGY5ZDE3MGM4ZDU0MDlhZTUzYTVjZjYzYWNiZDk3ZTMzODYxNTkyYmM3MGQwNjY4MGVjMGQ0YjZmYTQxMjkifQ"
         }
       ]
     },
@@ -755,14 +759,14 @@
           "version": "repo-lines-v1:sha256:5339d46a4e0f615e2ab6c9bb4fc28c52e55bbd638dd6c19f83d5823c3937e718:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTM2ZWFhNTk2NTY0NDI1MTcxNmVjODU5MTZhMDQ0ODc5ODRlZWQwMWZlYTM4NmQ3YzA1Yjk1NjU0MGJiOTJkMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTY4NzM4NjhkYTVjYWVkMjFjOWZkZjY5ODYyYjBkYTU0MDY5ZWNkZjE4ODJjMjE2NTM1NmM3NGY1YTdkMWQwMyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMWY5MjNiMDNmYmI2NDI2YzMwOGVmNzRiMGFhMDFmMThjMDFhM2U1ZGNjYzI5MzBhOWJjZTkxY2U2NzI3YWI0ZCJ9"
         },
         {
-          "resource": "repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/service/openplatform/MemberRegisterDispatchService.java#L39-L72",
-          "version": "repo-lines-v1:sha256:3a83c1b72207d9cc0248d175178ae7d2571c9a350c688efb3ded3b119f41be21:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhN2UxOGQzMDA3MjYwODY1NmUwODc2YjY4YTE3ODVmN2RiOWJlYTg2MWQ1MjI1MGIwNjQ0MWRhZTk2OGZhZTciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY4MzliZTRhOGVhYWUzYTVhOGU4YjMyZjgwYzM3NWNmMmRiNTA5YjAwNDlmYjI3NmVhNjdhNzNjNzBlZTI4MTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ5M2ZmMTNlYzc0YjQ5M2QxODM3M2VkNzgzNzUzY2JjNDQ0NTkwYTMwZTVlYTkyMjU1OTY0NjkyODJiMGFmM2QifQ"
+          "resource": "repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/service/openplatform/MemberRegisterDispatchService.java#L42-L79",
+          "version": "repo-lines-v1:sha256:f45600e3810d72e541c7db50878681fd8b424e787a99f8f6733e8031d18efcbf:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk0NWJhOTE1OTJiYTJiNTliYjg3OGYwMGMxMWUwZTc4MGMzY2RjNDZkYTQyZmVmYTIxMDFjN2ExYmE3M2Y0MzIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcwMWQ5ZDhkNjQxNWI2MWU0NWI5ZTc5MWI3ZTUxMzI2ZWUzZWRjMTY4MzEyZTEwNDllYzBmYjc0MGI4ZGFmODYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjgyZGVjZGQ4MjFlOTViYWFhODEwY2U5YmI5MTI3ODEwOTkxNzE3MGEwZjVjNWI2OTJkODQ4YjRmMmVkMjAxZjYifQ"
         }
       ]
     }
   ],
   "verification": {
     "by": "openwiki/0.9.0",
-    "at": "2026-11-10T17:10:58.497Z"
+    "at": "2026-11-11T17:12:30.774Z"
   }
 }

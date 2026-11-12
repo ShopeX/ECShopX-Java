@@ -36,10 +36,9 @@ public final class NormalGoodsHeaderInfo {
 		map.put("成本价", new UploadHeaderColumnInfo(255, "单位为(元)，最多两位小数", false));
 		map.put("会员价", new UploadHeaderColumnInfo(255, "单位为(元)，最多两位小数", false));
 		map.put("起订量", new UploadHeaderColumnInfo(255, "起订量", false));
-		map.put("审核状态", new UploadHeaderColumnInfo(20, "待提交、待审核、已通过、已拒绝", false));
 		map.put("库存", new UploadHeaderColumnInfo(255, "库存为0-999999999的整数", true));
 		map.put("头图", new UploadHeaderColumnInfo(255, "多个图片使用英文逗号隔开，最多上传9个", false));
-		map.put("详情", new UploadHeaderColumnInfo(255, "多个图片使用英文逗号隔开", false));
+		map.put("详情图", new UploadHeaderColumnInfo(255, "多个图片使用英文逗号隔开", false));
 		map.put("规格图", new UploadHeaderColumnInfo(255, "多个图片使用英文逗号隔开，最多上传5个", false));
 		map.put("视频", new UploadHeaderColumnInfo(255, "在视频素材复制对应的ID", false));
 		map.put("品牌", new UploadHeaderColumnInfo(255, "已有的品牌名称", false));

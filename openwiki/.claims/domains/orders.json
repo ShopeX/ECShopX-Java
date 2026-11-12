@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:8fe9f54cd22db08970d47dbcdadd27ca9c1b0ab0fed5f195ca6f2101a10e7a73",
+  "pageVersion": "sha256:8b1ce936bb26a94d6e1e7e8aeb34a45e1f46d6e5f5deda9c509d38c7b1b47c9c",
   "claims": [
     {
       "id": "claim_69ac159b62bf45208bbe954b62b22d78",
@@ -875,10 +875,68 @@
           "version": "repo-lines-v1:sha256:b83d62bec92d549847981fff5bba072f9f97da1e465a32116de4f09a2a83455d:eyJzZWxlY3RlZExpbmVDb3VudCI6NTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlmNzExYmVhMDJkZjUxZGRkNWVjYzc4ZWNkY2E4NTQ1N2UwOTViOWI4ZjFhZGQ3YjU3MDg2ZjQ5ZjZiMTAxYzEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3M2JjZGI0MzQ5MDgzZTZkODM0MWZkZGFjZjJjOWE5MTkyNWMyZTNiY2UyNmI1NWE3ZTFlMDU3YTZkNWMxZDEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFlOTUyZjIxNDA2NmFiOWMxMWU1NGY5MjkwMmNhNDM4Yzc4OGMzYTc3ODU0YTZmMzFlMjExYmVlYzlkMDg0NmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ0NzUwNGYyZDNkZWU1ODYzM2EzNzZmYmMwODQyMzc0ZDg0M2Y0M2M3Y2M4MTZkMTI3MjMwNWJjZTZiYzgzYWEifQ"
         }
       ]
+    },
+    {
+      "id": "claim_8d66a1a7bf4a4fc79ae05d596df04d0d",
+      "statement": "ECX-11089 delegating shape: TradeFinishCountBrokerageDispatchListener is a thin gate that skips null/empty payloads, blank/non-numeric/non-positive order_id, and pay_type=point (all logged at info under the [popularize-trade-finish] tag) before delegating the raw payload map to TradeFinishCountBrokerageBusService.handleTradeFinishRow.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/dispatch/TradeFinishCountBrokerageDispatchListener.java#L38-L57",
+          "version": "repo-lines-v1:sha256:2201ba7476fb2ee78bb9881217b6559f23a82760142172f507b0d84c7df7e437:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ0OWMxZWZhNmQ5MzE3ZDY3MjYxYTY1MzY3OTI3OTgwYTE3N2M5MjU3NjQyYmUyZWIyZGY5YTUyMzkwZGFjMmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU1MTI5ZWE0ZWQ5ZjY1Mjk2ZWQxMTAxNWZiNjRkZmJiYWYzZjk5NGFkMGIwZTBhNDVlYjgxOGMzYjdlN2YxYjQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZjMGMwYTgwMDI4OTFlMTBlNzdmMzdlODZjMmMxZWMxY2M3YWY1YzRjNGE5ODc0NjM5ZWI1OGFlNGU2YWFkMDIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_74fd8be9f1f942678454397be6b8208a",
+      "statement": "TradeFinishCountBrokerageBusService.handleTradeFinishRow re-checks empty payload, parses company_id and order_id to positive longs (Number or numeric string), re-checks pay_type=point, then loads the order via NormalOrdersMapper.selectById and skips order-not-found and company-mismatch rows — each skip logged at info under [popularize-trade-finish] — before delegating.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/brokerage/TradeFinishCountBrokerageBusService.java#L46-L78",
+          "version": "repo-lines-v1:sha256:b0b267bcd9ef03f5fba781499bf448fcc8ea3e61aac6fbdb7fd7a22b0bf5798c:eyJzZWxlY3RlZExpbmVDb3VudCI6MzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVmMDAwZWMxMzNhMTQ1ZmYwZTA4NGJjMGQzMzk1OGYzYzFjOTQyZDBmOTMxN2Y5MjY3NTYzMzJiN2FiNGZhZjciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY1YThjNGY1YmFkOGFjZDA3OTFjNGUwYzBkNDcyOGM2Yzg2NGMyMmMxNDBiNTI2Mzk3NjM4M2ZlNTM2NzU2OTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA4Y2E4NTc0ZjkzMjJlYjc0ZjVlZWZjNDgxM2RmNDM1ZTYwOTEwYzNiMmExNGJkNDNmZGEwYzJkNWY0MmFmZWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjUxOGZjYzI0ZGJiODdiNzdhZmNhM2E0N2U4ZDlkMzA5NjNmOGNhZWNiODFjNzM1N2YzZWM0NGFkMGUwN2U5MzMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_9772bb3ae17c4f74b7f6d46cf8346618",
+      "statement": "The brokerage listener delegates the surviving row to NormalOrderBrokerageOnFinishService.orderFinishBrokerage — the same finish-time brokerage entry used by confirm-receipt, the finish batch (FinishOrderBatchService), and ziti write-off flows — and catches any Throwable from that call, logging it at warn (listener_orderFinishBrokerage_failed) so the listener never throws back into the dispatch bus.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/brokerage/TradeFinishCountBrokerageBusService.java#L84-L91",
+          "version": "repo-lines-v1:sha256:2623562681bb119f0a16d0525f36fc9955b5d57efddf1e91a6cda6d4a25b3b44:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjRlZmM0OTQxOGQyNmRjZjEyOWIyMmE2YWEyMTEwOGNlZWMzNzY3N2EzMmQwOGU5ZDVmZWUzNWRkYTY2YmI5ZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDAwOGEwZWQ3YzYzZjFmMWJmZDE1OTU5NWU5ZGZmOWE3OWQ2MTllNWQzODdhN2VkNDc4NzlhMDU2NDNjYTAzZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOTljMzE2MGUzZjAxZGNhMjI3M2I5ZDI1ZDNiNThlMTdhMDRiZWVhN2Y5M2YxYzk4MzBhZDc5YzNkMzE2NGRjZSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/finish/FinishOrderBatchService.java#L182-L182",
+          "version": "repo-lines-v1:sha256:79319012cd6be754baa8b130d3d8abbf811cea31c8e8d4ac419333e914774c6c:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNzkzMTkwMTJjZDZiZTc1NGJhYThiMTMwZDNkOGFiYmY4MTFjZWEzMWM4ZThkNGFjNDE5MzMzZTkxNDc3NGM2YyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzkzMTkwMTJjZDZiZTc1NGJhYThiMTMwZDNkOGFiYmY4MTFjZWEzMWM4ZThkNGFjNDE5MzMzZTkxNDc3NGM2YyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzBlOWQ0MWZmY2ExMWI2ZmQxMzQ0YTBlODM5ZjFhNjg3OWUxZjE4YzU4NjM2MmY1YzAyYmY3YTJiZmQxMDk2MSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTA4NjQ0MjRiMzFiMTNiMDE0MDE3MzdlOGMyNzk2YzNhNTY2ZTU4M2FiMjI0MWYyMTYzYjA0ZmRmNTBlMmE0NiJ9"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/NormalOrderBrokerageOnFinishService.java#L60-L70",
+          "version": "repo-lines-v1:sha256:aa07151ec5d82a197f492352b0fa44f2f703fd7eca58c860de9703cc60efcb2e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkwYzZhYWFhZWJhMTQ3NjMzNTRlNmVlNjFmZGEwMWI4NmY2MjQwYjMyMWVmNzc2N2M2MThiOGY4NTMyMDk4OTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE0ZGJiNjE0NzA1MDU0NGY0NDhmYjk2ZmIxZmNkMmYyODE3MjQxY2ZkZGYxNTVjM2M4MzRjZTA3YjM4YTljMTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZlOWM0MDU2ODZjYTRmM2I2OWQ1MDdjNzQzNDBjYzllZDQ3YzAzMjBlMDllZjFjYzdiYmQwYTE2ZTY0ZWI3MjYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_47eeae5874f34a9daf92b7ec7ab83364",
+      "statement": "TradeFinishCountBrokerageDispatchListener is registered in bootstrap as listener:orders.listeners.TradeFinishCountBrokerage, async on the default queue, against both EVENT_TRADE_FINISH (event:291) and its EVENT_TRADE_FINISH_CSV292 twin, via the @Order(88) TradeFinishCountBrokerageDispatchListenerRegistrationConfig.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/TradeFinishCountBrokerageDispatchListenerRegistrationConfig.java#L29-L55",
+          "version": "repo-lines-v1:sha256:57f7353e961901d6775f21756477ed3949db68781bea9884327d7ca0e7779cde:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhMTk1MDNmNWRlZDRiYWM0Nzg2OGM2NDY0MmI3ODI4ZDhjYjBiYjc0ZDUyYmQ1NjVhYWU2MmYwOTQ0YmE5NmEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcwNTYzNWM2YjQzMDY2MmNkZTBhY2E1NmZjYjYzNTViN2M3YzliNGE3Njk4MjcxZWUwZjc1NmI3NzZlZDRjZWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_84b7df1a9fe74852be135a0169d1d5d2",
+      "statement": "The brokerage listener dispatch envelope is pinned by bootstrap TradeFinishCountBrokerageEventSyncDispatchFlowTest: blank order_id and pay_type=point payloads never reach handleTradeFinishRow, while alipay and positive-fee offline_pay payloads invoke it exactly once.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/dispatch/TradeFinishCountBrokerageEventSyncDispatchFlowTest.java#L24-L112",
+          "version": "repo-lines-v1:sha256:4ab3695ac65dffcc9e9117090caae4a7ab76e3675dc41b00a831ee2f79901653:eyJzZWxlY3RlZExpbmVDb3VudCI6ODksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNjYjgzYTE0M2RlNTgzMmU1Mzc4MDQwN2UxYWU4YzE2ZTQ3MzlkMDM0NGRlY2Y2YzE4MjhiNDQ5YzIwM2I4NWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJmNWU1ODFmMGU2ZTZlNWI1NTAyNzc3ZTMxODEyNmY4MDMzY2M3NDU5OTQ4ODMyYTNjOTk2NWYyNGNlOGFkOWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY3YmMwNjlhNDYzZTBiZjYzNzA0ODkyYWYzZjJhNTM3MTcxNjI2OWU2NTg1MGQ5ZTY1MGM1ODdlZDBlOWQ2OTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdlM2UxNzRjMjJlZWIwNjM1OWU5MzdlZDk4Njg4ZDNlMjBjZTdmYzAyY2I1YjMxNGJjYTljNTNjY2JmMTQ5ZjEifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.9.0",
-    "at": "2026-11-10T17:10:58.497Z"
+    "at": "2026-11-11T17:12:30.774Z"
   }
 }

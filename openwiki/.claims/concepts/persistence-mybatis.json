@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:2c2c3308654a020d5f5fe81af64ef2ab06b8379a17c8c493929daa25e0622506",
+  "pageVersion": "sha256:065d8f92ee71f74200be6c681ccba95c2a6ad72820260d6cd6478db784fb0640",
   "claims": [
     {
       "id": "claim_e361b42057894e21933ebeee8e65ec0b",
-      "statement": "All business data is stored in a single MySQL database (default jdbc:mysql://127.0.0.1:3306/ecshopx) reached through MyBatis-Plus 3.5.16 (mybatis-plus-spring-boot3-starter, version pinned via the mybatis-plus.version property in the root pom.xml properties block, which sits at lines 21-29 after the revision 5.5.2 bump, and re-declared in ecshopx-bom/pom.xml), with the MySQL JDBC driver (com.mysql:mysql-connector-j, runtime scope) declared only in ecshopx-bootstrap; ecshopx-common also declares the MyBatis-Plus starter because it hosts the shared configuration.",
+      "statement": "All business data is stored in a single MySQL database (default jdbc:mysql://127.0.0.1:3306/ecshopx) reached through MyBatis-Plus 3.5.16 (mybatis-plus-spring-boot3-starter, version pinned via the mybatis-plus.version property in the root pom.xml properties block at lines 21-29, which also carry the reactor revision 5.5.3 plus lombok 1.18.36, jjwt 0.12.6, zxing 3.5.3, wxjava 4.7.6-20250628.205748, and alipay-sdk 4.39.134.ALL, and re-declared in ecshopx-bom/pom.xml), with the MySQL JDBC driver (com.mysql:mysql-connector-j, runtime scope) declared only in ecshopx-bootstrap; ecshopx-common also declares the MyBatis-Plus starter because it hosts the shared configuration.",
       "evidence": [
         {
           "resource": "repo://ecshopx-bom/pom.xml#L18-L34",
@@ -24,7 +24,7 @@
         },
         {
           "resource": "repo://pom.xml#L21-L29",
-          "version": "repo-lines-v1:sha256:ae7fec593bf448edc94ceeb08bc77e86f61266287827702f7531336a0f41ec47:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZGY3ZTQxZWM4ZGMyZDc4Y2VhZDg4MzNkMWQxNWMzMGNlOTNmNTU5Y2RlNTczMjQxMDk1ZTgxMGFjZmU4OGRmOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOGJkZjk0NDM2ODY2YTljZmNhMGFjM2Q2MjMwNzdlZDA3MjE4ZDU0MWExNDlmOWIwMzhjZTQyNzFjNjE2MzVkMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiM2U3ZmEyN2ZlNzY0ZmJmZTcyZTgyOWU4NDA3YTdhYjE5ZmY1MmUzYWYyMjA4OTg0N2RiYTc5ODljNjQwYWQ3NCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTlkYWFhNWQ0NmRmZWJhZWI4N2ZhZWIxMWEwMTRiODQxYWVmYjQ5MDdkYTg2YzA3NTkyMDIxZTg3NGFjMTk4ZSJ9"
+          "version": "repo-lines-v1:sha256:6a72ce18f88d034fac6e1246bb9788ede3dc45c089da3866d0ce317accc626b3:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNWE1NWRlYWFjNWRkODkyOGZiNTc4YmUwMzY4MzkzNGQ3MWY0OWQ4Zjg4YzY2M2RlNzczZjQ5ZTI5OGYxNDE1YyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOGJkZjk0NDM2ODY2YTljZmNhMGFjM2Q2MjMwNzdlZDA3MjE4ZDU0MWExNDlmOWIwMzhjZTQyNzFjNjE2MzVkMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiM2U3ZmEyN2ZlNzY0ZmJmZTcyZTgyOWU4NDA3YTdhYjE5ZmY1MmUzYWYyMjA4OTg0N2RiYTc5ODljNjQwYWQ3NCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTlkYWFhNWQ0NmRmZWJhZWI4N2ZhZWIxMWEwMTRiODQxYWVmYjQ5MDdkYTg2YzA3NTkyMDIxZTg3NGFjMTk4ZSJ9"
         }
       ]
     },
@@ -599,10 +599,38 @@
           "version": "repo-file-v1:sha256:a77677165428dd8385909331ae94eeddea84519d1a36df02f8f0ecac7ed9aea0"
         }
       ]
+    },
+    {
+      "id": "claim_97662f0159284ca1af7e46eaca81849f",
+      "statement": "DataRoleCreateService.create implements the ECX-11083 lang-strip write: when the request language is non-default (langueProperties.isDefaultLang(requestLang) is false) it strips LANG_STRIP_KEYS (role_name) from the main-table params, and ensureInsertableRoleName backfills an empty-string role_name so the NOT NULL main row stays insertable, while the real translated name is written via CommonLangModWriteService.saveLang into a per-locale outside_item_multi_lang_mod_lang_ table keyed by company_id/table_name/module_name (both 'companys_roles')/data_id/field.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/CommonLangModWriteService.java#L63-L85",
+          "version": "repo-lines-v1:sha256:954ef0055d8e181da7f59042d0d36edee985606a6bc2694fc91eed61538b5e4a:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVjZWYwYmQwY2NmOTY1NzExMDNmNmMxZDViM2JiMTc4Y2Q5OGVmNzQ2NGEwNWU0YWQ4ZTQwYjNhMWVkOTE1YWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImYzNzY5ZTMxZjQ5MjRlODZlMTVkZDUxOGU3OTU0NTI0MTdmMzk1YzQ1ZjkxNDgxYTY4ZmU3OTY1YjkzYTEzMDciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY2YTZlZmMwMmU5OWJhZTU5Yjg1NDU4NTJiZDRkMGExOWU2YzdhZGE0NjEzYjVhMTE5YzZkNWYyMDgwYzM5ZWMifQ"
+        },
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/roles/DataRoleCreateService.java#L110-L140",
+          "version": "repo-lines-v1:sha256:a4f921f47227e31cecf24a01e1713cab2bbc9100cc7c50bcf1f2fd5efc12c3f2:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgzMTg0MDkxN2ViMjg5MzBkOTk5NGYyMGY1Yjk5ZDhiODE5ZmQ0MmY0ZjZmMGIxOTQyMTU3MjVkZDlhNGU4N2MiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY4NWM0ZmIzYTU1OWE0Y2VjOTY0ZDA2OGVlYmNhYjJhMjBiZGM0OWUwMDgwZmE1OTY4MTMzZDkyZWNhMTYzYTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIwYTM4Njg5NzMyYmFkMTYwMDA2YTBhZDM0Zjg0ZDYzN2ZiMmY1ODA4MjM4NTc3OTljOGZiOWYyYzc1ZGI4YzMifQ"
+        },
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/roles/DataRoleCreateService.java#L193-L203",
+          "version": "repo-lines-v1:sha256:98089e1452f212063fd1560fb57d62bb2a75a70e4a682ecfa339cad19ab7e03b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBjM2M3MDk1OWFiMzIxYzAzNGIzODM5N2E5NmNlMDJhNzdlOGI3ZjQ1Y2RiNTBiNmExOGVjYWU4OTU5YjY3MjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBhM2E5ZTBkYjI2Njc5MGU1YzdjNDgwODgyNmZhMTQ2YmVkNzlhZmM4YTFmYjNhZGM1YzgwOGZmNzIyZDFlNmIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d247dd45e9bd4ffabaad31c535f5a5bc",
+      "statement": "DataRoleCreateServiceTest pins both branches of the lang-strip rule: a non-default-language create captures an inserted Roles whose roleName is the empty-string placeholder while saveLang receives the real role_name under table/module 'companys_roles' with the new role id, and a default-language (zh-CN) create persists the actual role name into the main row.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-companys/src/test/java/cn/shopex/ecshopx/companys/service/roles/DataRoleCreateServiceTest.java#L59-L117",
+          "version": "repo-lines-v1:sha256:5396c4f54baefc954e7c0f77573f5bbdafa371249e1628b0af259779c4f4aaa7:eyJzZWxlY3RlZExpbmVDb3VudCI6NTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVjNDQ5NWQzNmVmNTRjYjBhZmRjOTI4ZGFiODUzZjU1OGIxZjdjMDYyZjg0YzcwOTNlZWFjNTE2ODllMGYxNTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFlOTUyZjIxNDA2NmFiOWMxMWU1NGY5MjkwMmNhNDM4Yzc4OGMzYTc3ODU0YTZmMzFlMjExYmVlYzlkMDg0NmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.9.0",
-    "at": "2026-11-10T17:10:58.497Z"
+    "at": "2026-11-11T17:12:30.774Z"
   }
 }

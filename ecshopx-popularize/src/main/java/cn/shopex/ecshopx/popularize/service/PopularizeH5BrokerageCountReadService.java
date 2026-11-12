@@ -119,9 +119,6 @@ public class PopularizeH5BrokerageCountReadService {
 
 	public Map<String, Object> brokerageCount(
 			long companyId, long userId, String isSalesmanPageRaw, String distributorIdRaw) {
-		if (PopularizeH5BrokerageCountReadService.looksLikeSalesmanPageFlag(isSalesmanPageRaw)) {
-			return brokerageCountSalesmanBranch(companyId, userId, distributorIdRaw);
-		}
 		return brokerageCountPromoterBranch(companyId, userId);
 	}
 

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:34904128f6a52400728b875e72c8b7f04541c04896fb856e08780e179c4ec1bc",
+  "pageVersion": "sha256:8aaab82cd35b35790e14d31778b790897de588e34198f04adfe0efce5c2f4377",
   "claims": [
     {
       "id": "claim_42c913eebfc94dd384ba446f036982f6",
@@ -557,10 +557,114 @@
           "version": "repo-lines-v1:sha256:780cf9b3409e7f8a6d3e1aa3ce9d503c8c5cf1d18416b588345350067d43c167:eyJzZWxlY3RlZExpbmVDb3VudCI6NDgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM5NTNiOTNiMTI2MTllNDZhOWI5NzM5MzJmMmIzYjI1N2ZlYTE4NTFjM2U5N2U2NTlmMGQ1ZTliNjhlODU4ZDkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZiYmJlNjlhMjNkNWMxYTNjMDcyOWEzN2Y2YmUzYzE1ZDZjM2Q5ZGY0ZjZjNzQyM2JhZDFiNmM5Mzg4NTdjOWIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZlNzNmNmY0NThjZDA1M2YxODViNmIyMmU5NjA2YjM2ODJkZWZlMjZhODQzNDQ5ZjdjNDc3YWFhNzRhMjkwMDciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMxNWEwMTNkZGI0YjdiNTFkZGVkYTFjZDQ1ZGZjZGY0NzFhMTdmZmMwM2JlNmIxNjgzYzRiZjM1ODBkOTU5OGUifQ"
         }
       ]
+    },
+    {
+      "id": "claim_d8820bb47eb9414ea11bc39d6a1153fc",
+      "statement": "ShopProtocolSetService stores member-facing legal protocols as a Redis hash in the companys logical DB via the explicitly qualified companysRedisTemplate: one hash per (company, country_code) at key hash:companyProtocol:<sha1(companyId)> for zh-CN (absent/\"\"/\"0\" country_code collapse to zh-CN) or hash:companyProtocol_<lang>:<sha1(companyId)> otherwise, with hash fields per protocol type plus a parallel <type>_draft field, values being JSON blobs carrying type/title/content/update_date/take_effect_date/update_time and an MD5 content digest.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/protocol/ShopProtocolSetService.java#L322-L331",
+          "version": "repo-lines-v1:sha256:08cab3a75e7709d9ab48024af87ee80efec6223fd9b8fd1a83aef75ad926702b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMyNGJlZGE0NGNkMzcxZDhjMWJmMmFjMGQxOGYxNTgwOWRjZTQ2MTM0NTAzZDAyMjljMGU5ZjM0YWNkMzkyYmEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdhMmI3NmZmZDY4MzA3NTVlMDNiNWYwNDY2YWMyMjc1NzQyMzI5NjAxNDQ0MTBjMGRjMGQyNTRhZmFlYzY5OWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVmZDc2Mzg2OTVhYzY4NThlZWE4YWUzNjhiZGM5MmE3OThkNDdiOTA2NzQ0M2ZlNWYyNjUxMjhmMjk0MDgxNGIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJiN2JlNjU3MDcxYWUzNzJmZmJjMjUxOWMyYjcxZjJiYzk3NzE3NDJlYTlkODE0NWQyZjZkODg3YjA4MTVjZmEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/protocol/ShopProtocolSetService.java#L497-L508",
+          "version": "repo-lines-v1:sha256:89d5072a9c1c431791f121d669f26a1c8a577e9e835f20650d18ecec5e343df6:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdhOTE0ZTAyOTllY2UxMTI2ZWNjNDg0M2EzNjFlYTQ4MTlkZmFiMTNlM2EyOWVmYTAwM2IzMGMyMzJlNWVjYmMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg3NzJhYzRiOTQzYmNmYWZjMjhhMjhhOGFkMjFjNzU5NDc3ZTQ4MmNhM2FkZDRhMzUyMWFmZDZjMDJlZDNhMDEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQyODljZjNjYjdhNDQ5NWViZDk4MDM0NTk2YTk3NTNmNGIzMDdkOTQ5YzczZDliNDJkM2I4N2VkOTQ0YzIyYTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjczNmYzZDFkMTg2ZTgwZWI5MWVjMGEzYTEwZjhjNzA3OGIxZjBkMTRmODU5NGMxYTAzMzIzODgyNjdlNzdjNzIifQ"
+        },
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/protocol/ShopProtocolSetService.java#L66-L77",
+          "version": "repo-lines-v1:sha256:0f13575458992c3fe598760ea22fac1121764d3f92a6069c9fe9bc9053b2c5b9:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ4NWU1NTRlMjU1N2E4NmEzMzU1ZDA4ZDM1NzMxMWE2M2ExN2NjOWYzOWU5ODlhNTk4NTEzZmY0MzE1YTU0YzgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE1ZTY5M2I5ZmJkZjUxNDdiMmZlY2QxYTM2YzgxNTA0ODA1YTUzZjJjYTI2MjMxN2JkYTQ3NmNlM2I1ZWJjZDYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI4NjQ4NTFhYzA3MjA3ZGNjNTI2NThhNjRhNzNmOWI4ZjA3OWIwNWVlZTNiYTkwZWUzZmUwOWUyMzk2YThlNWQifQ"
+        },
+        {
+          "resource": "repo://ecshopx-companys/src/test/java/cn/shopex/ecshopx/companys/service/protocol/ShopProtocolSetServiceGetFallbackTest.java#L159-L169",
+          "version": "repo-lines-v1:sha256:bbde722bfd0fcd2a2c35d78284eea823f407b599d4e2b7f22a97c1c9a5833396:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ3ZTE5NmZkOGFjNDU0YTUzY2FhYjYxNjhiN2VlNDRmMWQ4OGU3OGQwMmU1MzVjN2IxOTg5NjQ0YzJhOWMzYjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE5ZTIxYjE1YzhhZTA3NzExNmM1MmRhYzEyNTk2OTNlODViNzk5ZGMwNjgxNTllYmQ0YjNiM2YwNDk4NjJjODUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_6189f56256c144238711ad0ab521eb73",
+      "statement": "The protocol write path is dual-store: ShopProtocolSetService.set (behind admin PUT /api/v1/shops/protocol) writes every non-draft save to the Redis hash and appends a row to the companys_protocol_update_log MySQL table via ProtocolUpdateLogMapper.insert, skipped only when the latest logged row for (companyId, type) already has the same digest; draft saves and the member_logout_config pseudo-type touch Redis only.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/domain/ProtocolUpdateLog.java#L28-L31",
+          "version": "repo-lines-v1:sha256:f9cf8b0f10bf0363f0f3039d6af57732b29053d83be34724598cd483e72ca001:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZWE2MWQ5M2FkZWZhOTViMGEzMzBiNTgwMjJkMjE0OTg3ZWNiOTBkZDk4YzZiM2VmY2Q3Njc2MTVhNGM0ZGQ2OSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNGY3Zjc4OWNhNzNiMmE4MGUyYjM4NTVkMWRhMmViYmQ3NGU0Njc0YjY2MDNhMGQ3OGRkOTAxYjRlNjA5NTFkOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMTU1NmY2MTQzYWEyNGFjNzI0MTY0YjIwOGJlMmU1N2MxZDMyYzAwZmVjMWJmMDlkYmJhZjc1MmYwZTc4YjM4ZCJ9"
+        },
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/protocol/ShopProtocolSetService.java#L510-L543",
+          "version": "repo-lines-v1:sha256:755f2579882730a8457c415ae5aa43a45e5e7f9db92f5e24dcd6dfa52b4e693c:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY1ZmNjMzRiNzczNWZmZjc5MGQ2NzVjN2JjZDhhNTczYTFhYmIxZjQxNDEzYjE3YmE4YTJmNTQzNmVmODIzNzYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA0ZmE2OWJmZjQ5YjRkNzExYTE5YmQ5YzY2OWU1YmIzNWEzYzNhMGNkODBjODg3YTc2N2Q2ZDViMjExZTBhYjUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdiYjI1ZTcwNmFmMWMxNjIxMzI2YjllYTIwYTViYjBmMmY0NmU4OWI1MDNhMzc3MDBiODZjMTQ3Njk2MTllNmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU4N2ZmMzU1ZmY0N2I3N2EwZmY5NWMwNjdkNDM4OWVhMjJhOWJiNDkwMDgxNzkwNzJhNjE0ZDJjNjRhODYyZWUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/protocol/ShopProtocolSetService.java#L79-L107",
+          "version": "repo-lines-v1:sha256:672027e5fbe5aa329e1513f7ddd7af189cb6c84c5dd27c124f0ed7931eaf5942:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIxODZmMmQ4NzBiOWE3OWE2ZDRkOTJjYjc1NDE3NjZhZjcwNTkwYWFjNGM1OWNhNDhlZGMyY2ZlYTRjYWUyODAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEzMGYxYWFhNWU0MmU5ZjFhZWU5YjYwNzk5MmVhMzU4NjZmNTVhNTQyODVkNjFjN2U1MzJkNDZmZWJmNjBkMmMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY4MGIwZjdhNWQ1NWU2NjdmMmJmODY4Y2NmMzY4NDM2NTAzNWFiZDU3YThlOTFiMjQ2MDgwMjBkMWVhN2Q4MzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjcyNWIxZjBkY2UzNTVjMGZiOTA4YTQ1ZWM2YjU3NjA4ZWQwNzViYjY5MTZjMDJmZjgxNjhiNmIxMDVkYzIzMzMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_449bb95f2b2a46599b8b92c2c84e4f20",
+      "statement": "ShopProtocolSetService.get is Redis-hash-first with DB repopulation (ECX-11114): a single-type read whose hash field is missing or blank/whitespace triggers repopulateSingleTypeFromDbIfPresent, which selects the latest companys_protocol_update_log row for (companyId, type) (ORDER BY created DESC LIMIT 1) and rewrites the field with rebuilt JSON before answering, while _draft fields and member_logout_config never fall back; an all-types read (blank type) falls back to repopulateAllTypesFromDbIfPresent only when the entire hash is empty, keeping the latest non-draft row per type and rewriting each field.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/protocol/ShopProtocolSetService.java#L109-L140",
+          "version": "repo-lines-v1:sha256:2b795a0ee686dfd29c3fce11d41d51d751a4a52b9340f41b395cfde34ad6b3a0:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEzNzY0ZjlkMzQ1NzljNDcyZjQ1ZTExYzRhMmFhMWQ2Yzc0YmE3NzM4YjNlM2I4MmEwNWY3ODQ2ZjAzNzI4ZDciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU4YzZjY2YyMTBkMTllNTU4ZGEyODZhZWFiZDE1MjY5NzhiOTk3YjllYzY3ZDVkMjY0MWNjZTc1Nzg1OGEzZjYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRjNGVlMzNhZjJlYzkxNzk0MTEwYjE5NDY0ZDNiNjViMzZlZDcwYTlhMjEyZjZkYWQzNzEwZWRlNzkxNTI2NDEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImEzODMyNDRhMTJkOGY4NDIxODJlNmUwNDRlYWUzMjg3NmRkMTFhN2I3MDBmZmY4ODZlOWY0Yzk3NDQ0NzZjMzYifQ"
+        },
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/protocol/ShopProtocolSetService.java#L236-L276",
+          "version": "repo-lines-v1:sha256:579038e28c9ae1423dcb61ade94b1c4a0543e4a2e04b723092a08e814f1013ef:eyJzZWxlY3RlZExpbmVDb3VudCI6NDEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVlZTdmNjNlMzViZjVhNzZjY2EwZTE5Yjc3YjRkNjU3MDBiNTU5NmRkZTQzNzM5MzI1ZWZkNDBlYWQyOWUwMWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZkNDUzODdiMGMxNWRhMzBjZGI5YWRhODZjMWFjYjhlNDBhYjY5YTA3Zjk2OWMxMDNhYzlhODU0MDNkMWQ3ZTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk0YWU1YTdkY2ViNDE5MDZkNjg0NDg5Y2Y0NWZkZDVkZTMyN2ZkZGYzNDI0NzkxZWU3NjllMGZhMGUxM2Q2MDMifQ"
+        },
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/protocol/ShopProtocolSetService.java#L301-L307",
+          "version": "repo-lines-v1:sha256:cff8d068421aff95b84d24b8530085804431435971fb6b43e59f15f5f79ac532:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOWI2NDQ2NDBiMGM0Mzg0ZmNmMWUwOWI3NGQ2NDg1NTAwYjZjMjMwNjhhNjVjM2E2NTBmZWQ1ZGE5N2MzMzY2MSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiODFlZTAwYWQ3ZTAwNDFjZTJhNjQxZGM4MmUzNzc2MDc5NmQ2YjFkNzc3OTZjNTcxN2M2OGRlN2ZlMzFlZTBiOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTU4NGExNjJhNzA3ZDU4ZDk3OWFhNGY4ZDVmNDA3NzM1ZDdlNDg2ZDYyNmY5MGY0YmRhYjNkZWYwYzQ2YWE0YSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/protocol/ShopProtocolSetService.java#L309-L312",
+          "version": "repo-lines-v1:sha256:2b3de37c31e20b3c081f5ab2e4c3a922be29f3b88594bddeacedfeae0b84497f:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiM2YxY2MwMDE5NDZkNzZmZDBkYjE5MDUwZTg1OWIwMTZhZDZiOThlNjdlZDJiZWIxN2ZiMmJkODBlOTRlYzRmZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYzU3M2U1ODJmYTY1YWNiNzAwODJmOWEwYTRmZDdmZjFmYzgyODA3NWNiOWRlZmMxOGIyMTExZGRlNTRjZGI0ZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMjJjZDA5NTNiYTE3NjE0MzgxNGRlNTQ5MGZlNjgzYmFmMWQ3OWRlMzI0NWI5ODU4YWY1MWYzYWZkYTM3MTdhZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDNkNTJhODNkYzYwNWY1M2U2YjQ4YWY4ZWQxN2JlMmFiMWJjNzg3YWI0MDZlMWJlY2E1NzcyYzA0OWM1ZGY4MSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_a900616ebbb74b4391e94015386d8366",
+      "statement": "When the DB fallback finds no protocol rows either, ShopProtocolSetService.get writes nothing back to Redis and answers empty (with default titles and empty draft lists), so the repopulation is strictly read-through: only existing companys_protocol_update_log rows are cached.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/protocol/ShopProtocolSetService.java#L236-L245",
+          "version": "repo-lines-v1:sha256:850362597e8b3b0c0950f0cf7ee26f228588ac6521ce2041ec52dbff8b70cbeb:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVlZTdmNjNlMzViZjVhNzZjY2EwZTE5Yjc3YjRkNjU3MDBiNTU5NmRkZTQzNzM5MzI1ZWZkNDBlYWQyOWUwMWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI4MzI2ZjUyNDI1MjJmNzFjN2JhMmY1M2Q3ZTI4NjY1MjZiODEyMDMwY2Q0MzQwM2RkY2NkMjAzNjVlMjUzZjgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZkNDUzODdiMGMxNWRhMzBjZGI5YWRhODZjMWFjYjhlNDBhYjY5YTA3Zjk2OWMxMDNhYzlhODU0MDNkMWQ3ZTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU4Y2YzNzUzOWU4N2ZiMmFiYTVmODczODUyODc1NmI4YWExMDkwYjM2NWNiNTlmZTQxNDkzN2FjZWM3MDI4YjkifQ"
+        },
+        {
+          "resource": "repo://ecshopx-companys/src/test/java/cn/shopex/ecshopx/companys/service/protocol/ShopProtocolSetServiceGetFallbackTest.java#L115-L126",
+          "version": "repo-lines-v1:sha256:0f56a7962932008cd4b53cacf59ba1ae6869dcc2449be1f7fea7d8a401af178d:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhkZThkZTI2MWQ1OTQwNzQ2MThkMGVjYWIxMzBmZTkyYjg0M2ZjMjU1YzdhODIxYzc4ZDAxNTYzZDk1OTllYjciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQxZTIyMmQxZDgyMGJjZjI2ZDBhNzIyOGEzOGVkZTJhMzQ1MTQ3NGY4ZTk5M2FiMWE2ZmFjYTdkOGEyZGFjODIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFkNDQ2YzIzM2MyYTlmYjVkNGMxNjc2OGQ4MzU3NDczOWQ2NDZkOTM3MDdmOGY5NzZhYzU4MjcxY2RmYzQ1NmMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_7f5922413df147aab62a8107e6c123d2",
+      "statement": "The ECX-11114 fallback changes the flush semantics of the companys Redis DB for protocols: unlike the settings family (which has no MySQL write path), published protocol content is rebuilt from companys_protocol_update_log on the next read after a flush, while unpublished <type>_draft payloads exist only in Redis and are lost; the get() entrypoints are both the admin GET /api/v1/shops/protocol and the unauthenticated @FrontNoAuth H5 GET /api/v1/h5app/wxapp/shops/protocol.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/api/admin/v1/ProtocolController.java#L85-L95",
+          "version": "repo-lines-v1:sha256:eb9c35b255d0f5b294550063932e49614c87274507114d27fb3868c18c132fbe:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM3N2UyYjExNDIzZTJlZWZlODczMjcyN2M2MTVmMTNkNjcyYTlhMzg0ZWFmZDlkMmZhZjNjNDJiZTkwN2JlN2MiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY3ZmM2MWQ4ZmVhYjI4ZTdkNjZmNWVhYTBmODNkZTRjNjRmYzkwMWJkMzA4YWVhMjAwYmNmNDcxODlkNTAwODgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImIzY2E5MDczNDVlMWM5ZDMyMTMxZWUyNzY1NGJjODdmNzM0YTBkYWNjMGQyYjI2OTNiMmVmMGNmNmUyZDUzZmMifQ"
+        },
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/api/front/v1/ProtocolController.java#L40-L84",
+          "version": "repo-lines-v1:sha256:c742ce2ad9465bd6d694fa7e933fa76ece283090971f31b07b8239f9e659235d:eyJzZWxlY3RlZExpbmVDb3VudCI6NDUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFmN2NjN2E3ODc3NGQzNzBkMTYzM2Y3MTAyY2M0OTY1MmJmZjNjNzdlOTkyM2JiYjZjZDYwNjc2YjAwMmNiZjAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE0OTgxZGE5ZWZmNGI0NzBhOWQ0ZmIwOTJlNTdlMWU5ZjEzYjk0ODFjMGU0YWJhYWY4ZWI4OWJlYzE4YzkyMTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMxNzczNzRkMzQwMGVjZTFkMDE3MjdmMzk1ZjE3M2NlYWU2ZmE3YjQxNDMwODA3YWM0MDgzMjNmZjJkNTIxZDgifQ"
+        },
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/protocol/ShopProtocolSetService.java#L359-L382",
+          "version": "repo-lines-v1:sha256:615010a820bac0b3e31aef690bba96f446e034715a5d9bee6e87a53a0a53d018:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ1ZThjZTliNzExYTA5ZmUxODhlNzVhOWFiNmEwYjRhNjhhZTgwN2Q5NmMzMDNlMzk1NTg1NGYxZGI0NmU3ZDEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkwMGZkZGNmZWRmMzMzNjUyODZhMTZhODkwMTAwZjU1ZGU3OWViYzYyZGM5NGE4NGYwNzYyNThiMDcyYWU0ZmUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIyZjJmZjVmZWVjNjBmNTg3YzhmYWU0ZTg3ZjgwOWE2NjFjZmZlZDZiNDdhYWU1ZjZkNmEyNjUzYWE4OTUyZWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjgxNjc3ZGRmYzVmMjNmOGYzYjA4M2Q5NDE4ZWEwZGM4MGM3Y2M2ZTI1MGIzNTQ2ZTc3NmNhNThmODZhYTBmZjUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_20ad9c2f4854490286e6ff01ddfac502",
+      "statement": "ShopProtocolSetServiceGetFallbackTest pins the ECX-11114 repopulation contract with a mocked StringRedisTemplate/HashOperations/ProtocolUpdateLogMapper: an empty hash with a DB row repopulates and rewrites the hash field; a populated hash produces zero mapper calls and zero writes; an empty hash with an empty DB produces no write-back; and a missing single-type field falls back to a per-type selectOne and rewrites the field.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-companys/src/test/java/cn/shopex/ecshopx/companys/service/protocol/ShopProtocolSetServiceGetFallbackTest.java#L51-L157",
+          "version": "repo-lines-v1:sha256:bc986b8b8c3a783f6baa73fe620609ad70f86a0e718eb87448e0accd5d0b4033:eyJzZWxlY3RlZExpbmVDb3VudCI6MTA3LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI0YmExYjFmMGQ5Mzk1NzQyZTIxNmY3MWM5ZTkwYzhmYjlhYTZiNDI5NmFhYTRjZTdjYzA1Yzk2ZWE1Yjg3YmFmIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI2N2NkYTgyZGE2MDYyMzhlMDVlNjIzOTk1NjljNWVlMDM5OTM0MTk2NDhhZTVkNDNhMmJmOGNkNjM0N2Y4MjYzIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiIyN2EyOWYxNzY2ZDVmNTRjOTljM2NjNTZjMTJhYzA0OGUyNzE3YzEyOGVhN2Q1YWUxYjEwZDQ3MGUwOTZkNTM4IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIwNWM3MTVkNjhjNWFiNTM4ZDlmYTEyMDRjNTk0N2NlYTRiMjU0NmJhZGZlZjM1NDRkODExZmRhNWIyYmNiMTg0In0"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.9.0",
-    "at": "2026-11-06T17:22:02.968Z"
+    "at": "2026-11-11T17:12:30.774Z"
   }
 }

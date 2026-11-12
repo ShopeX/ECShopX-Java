@@ -1,8 +1,10 @@
 ---
-type: domain-reference
-title: Members Domain (ecshopx-members)
-description: The member/account bundle — H5 and wxapp login orchestration behind espier's LoginController, HS256 JWT issuing/verification and blacklist-backed token refresh, member account creation with in-transaction promoter/distribution side-effects and the post-commit CreateMemberSuccess dispatch fan-out to CRM/Shuyun/Youshu/promotions/points/datacube, member update and mobile-change flows, wechat fans/tag sync, the goods-arrival subscription surface (缺货订阅) whose wxapp subscribe-message notices fire from the goods bundle's event:258 item-store update, overseas trust login (Apple/Google/Facebook/Line), member-side SMS verification codes, the hardened address buy_user_id scoping on the front MembersController, and the member system-tag subsystem (tag_kind/tag_code schema, new_customer/birthday_this_month/sleeping_user reconcile services with cron and dispatch listeners, write guard, audit table).
-tags: [members, h5, login, jwt, auth, wxapp, trust-login, wechat-fans, dispatch-bus, create-member-success, sms, shuyun, youshu, dm-crm, datacube, promotions, redis, goods-arrival, subscribe-notice, wxa-notify, item-store-update, system-tags, member-tags, reconcile, address-scope, xxl-job, audit]
+type: "Reference"
+title: "Members Domain (ecshopx-members)"
+openwiki_generated: true
+verified:
+  - by: openwiki/0.9.0
+    at: 2026-11-11T17:12:30.774Z
 sources:
   - id: openwiki-source-aefde5c5815dc42e82aa67f0
     resource: repo://ecshopx-ali/src/main/java/cn/shopex/ecshopx/ali/service/alitemplate/ItemStoreGoodsArrivalAliTemplateOrchestrator.java
@@ -46,6 +48,8 @@ sources:
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/auth/H5JwtBlacklistPort.java
   - id: openwiki-source-7265523c083a528e5f5d8893
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/GoodsDispatchEventNames.java
+  - id: openwiki-source-be75b67e34085afc534d075b
+    resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/MembersBundleDispatchJobNames.java
   - id: openwiki-source-03eb47a2257dd8b22aaaa750
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/MembersCreateMemberSuccessDispatchPublisher.java
   - id: openwiki-source-e88aaedda534a005ae27fbdf
@@ -76,6 +80,8 @@ sources:
     resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/config/H5JwtProperties.java
   - id: openwiki-source-0dc8108aad3a021385563889
     resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/cron/ScheduleBirthdayThisMonthTagHandler.java
+  - id: openwiki-source-2e4feaac89d06c1e0a2f73a6
+    resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/dispatch/BindSalsepersonJobDispatchPublisher.java
   - id: openwiki-source-d1ae183c81bdc1fdae2f0ac4
     resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/dispatch/CreateMemberSuccessNewCustomerDispatchListener.java
   - id: openwiki-source-d332b3afaea16086bf6d2dd6
@@ -170,6 +176,8 @@ sources:
     resource: repo://ecshopx-members/src/test/java/cn/shopex/ecshopx/members/service/account/MemberAccountServiceCreateMemberForWxappBindNoBindSalespersonDispatchTest.java
   - id: openwiki-source-6abe756b6b1ec9215d78d6c9
     resource: repo://ecshopx-members/src/test/java/cn/shopex/ecshopx/members/service/account/MemberAccountServiceCreateMemberLocalAutoRegisterDispatchTest.java
+  - id: openwiki-source-8d2e064cfc630650dab54bda
+    resource: repo://ecshopx-members/src/test/java/cn/shopex/ecshopx/members/service/account/MemberAccountServiceDispatchIntegrationTestConfiguration.java
   - id: openwiki-source-87fb25a888939ab7f8b6ec03
     resource: repo://ecshopx-members/src/test/java/cn/shopex/ecshopx/members/service/GoodsArrivalSubscribeMatchServiceTest.java
   - id: openwiki-source-ebeaa8eab25d1fdbf30994ef
@@ -198,11 +206,9 @@ sources:
     resource: repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/service/openplatform/MemberRegisterDispatchService.java
   - id: openwiki-source-eab9c10485100198740b4183
     resource: repo://ecshopx-wechat/src/main/java/cn/shopex/ecshopx/wechat/repository/WeappAuthorizerAppidRepository.java
-generated: { by: "openwiki/0.9.0", at: "2026-11-10T17:10:58.497Z" }
-verified:
-  - by: openwiki/0.9.0
-    at: 2026-11-10T17:10:58.497Z
+generated: { by: "openwiki/0.9.0", at: "2026-11-11T17:12:30.774Z" }
 ---
+
 
 # Members Domain (ecshopx-members)
 
@@ -342,7 +348,52 @@ The payload keys are stable across all paths — `company_id`, `user_id`, `mobil
 
 ### In-transaction side effects of `createMemberLocalAutoRegister`
 
-The wxapp pre-login auto-register path (`createMemberLocalAutoRegister`, called from `H5WxappLoginRegisterFacade.registerMemberForWxapp`, `registerMemberForAliapp` and `LocalH5AuthStrategy` with `auto_register`) does more than insert the `members` / `members_info` rows. For a **new** member it resolves the tracking ids out of the request extras (`inviter_id`, `source_id`, `monitor_id`, `latest_source_id`, `latest_monitor_id` — each persisted on the `members` row only when positive) and then runs the same promoter/distribution side-effect pipeline as the admin/H5-post paths, **inside the registration transaction**: `AdminMemberCreatePromoterSideEffectPort.createForNewMember(companyId, userId, mobilePlain, gradeId)` (popularize promoter), `AdminMemberCreateDistributorUserSideEffectPort.createData(companyId, userId, distributorId, salespersonId, inviterId)` (distribution user), and — when the extras carry a positive `distributor_id` — `insertShopRelMemberIfAbsent` inserts the `ShopRelMember` row. The `create_member_success` eventData is then built with the same `distributor_id` / `salesperson_id` / `inviter_id` values and the `if_register_promotion` flag (resolved via `resolveIfRegisterPromotionForNewMember`), and only then is the after-commit synchronization registered — with the usual `BadRequestException("createMemberLocalAutoRegister requires active transaction synchronization")` guard when no synchronization is active. Note the existing-member branch (a mobile that already has a `members` row) skips this whole pipeline: it updates the row and returns `is_new=0` (or `1` for an upload member) with no promoter/distributor side effects and no publish.
+The wxapp pre-login auto-register path (`createMemberLocalAutoRegister`, called from `H5WxappLoginRegisterFacade.registerMemberForWxapp`, `registerMemberForAliapp` and `LocalH5AuthStrategy` with `auto_register`; summarized in the [quickstart](../quickstart.md) members row) does more than insert the `members` / `members_info` rows. For a **new** member it resolves the tracking ids out of the request extras (`inviter_id`, `source_id`, `monitor_id`, `latest_source_id`, `latest_monitor_id` — each persisted on the `members` row only when positive) and then runs the same promoter/distribution side-effect pipeline as the admin/H5-post paths, **inside the registration transaction**: `AdminMemberCreatePromoterSideEffectPort.createForNewMember(companyId, userId, mobilePlain, gradeId)` (popularize promoter), `AdminMemberCreateDistributorUserSideEffectPort.createData(companyId, userId, distributorId, salespersonId, inviterId)` (distribution user), and — when the extras carry a positive `distributor_id` — `insertShopRelMemberIfAbsent` inserts the `ShopRelMember` row. The `create_member_success` eventData is then built with the same `distributor_id` / `salesperson_id` / `inviter_id` values and the `if_register_promotion` flag (resolved via `resolveIfRegisterPromotionForNewMember`), and only then is the after-commit synchronization registered — with the usual `BadRequestException("createMemberLocalAutoRegister requires active transaction synchronization")` guard when no synchronization is active. Note the existing-member branch (a mobile that already has a `members` row) skips this whole pipeline: it updates the row and returns `is_new=0` (or `1` for an upload member) with no promoter/distributor side effects and no publish.
+
+### Post-commit dispatch contract of `createMemberLocalAutoRegister`
+
+The after-commit synchronization runs three steps in order, and `MemberAccountServiceCreateMemberLocalAutoRegisterDispatchTest` pins every gate (it drives the service through a real `DataSourceTransactionManager` over H2 with mocked mappers and mocked publishers, so the transaction boundary is real):
+
+1. **Publish** `event:members:create_member_success` via `MembersCreateMemberSuccessDispatchPublisher.publish(eventData)` with the eleven-key payload above (the test asserts the extras-provided `openid`, `wxa_appid`, `source_id`, `monitor_id`, `inviter_id` survive verbatim, and that `members_info.other_params` is `"[]"` on insert).
+2. **Daily active set** — `sharedStringRedisTemplate.opsForSet().add("Member:<companyId>:<yyyyMMdd>", userId)`.
+3. **Bind-salesperson enqueue, only when `work_userid` is non-blank *and* `channel == 1`** (parsed leniently from either a `Number` or a `String`, trimmed). Two bus names collapse onto the same handler ([MembersBundleDispatchJobNames](../concepts/dispatch-bus.md) constants in `ecshopx-common`):
+   * `DmCrmSettingReadPort.isPointIntegrationOpen(companyId)` **false** → `enqueueBindSalseperson` → `job:185:MembersBundle\Jobs\BindSalseperson`, payload `{company_id, unionid, work_userid, customer_type:1, mobile, user_id}` with the real new `user_id`;
+   * DM point-integration **open** → `enqueueBindSalsepersonAfterDmMemberCreate` → `job:186:MembersBundle\Jobs\BindSalseperson`, identical payload except **`user_id` is forced to `0`** (the DM register flow has not assigned a local id at dispatch time — the publisher's Javadoc calls this "the five-argument job dispatch shape").
+   `channel` other than `1` (the test uses `2`) or a blank `work_userid` enqueue neither. The publisher itself dispatches with `DispatchMode.ASYNC`, `DispatchDriverType.REDIS`, the **`slow`** queue, `RetryPolicy.platformDefault()`; `job:185`, `job:186` and the sibling `job:194` (wxapp `bindSalesperson` entry) are three registrations of one handler, documented in [Add Event or Job](../workflows/add-event-or-job.md).
+
+**Rollback suppresses everything.** Because both the publish and the enqueue live inside `afterCommit`, `status.setRollbackOnly()` means *neither* the `create_member_success` publish *nor* the BindSalseperson enqueue happens — the test pins both `never()` verifications on both rollback shapes (with and without the salesperson extras). This is the invariant the `isSynchronizationActive()` guard exists for: the event and the job can never fire for rows that did not commit.
+
+```mermaid
+sequenceDiagram
+    participant CALL as registerMemberForWxapp facade
+    participant MAS as MemberAccountService
+    participant PEP as Promoter and Distributor ports
+    participant DB as members plus ShopRelMember
+    participant TSM as TransactionSynchronizationManager
+    participant PUB as CreateMemberSuccess publisher
+    participant BSP as BindSalsepersonJob publisher
+
+    CALL->>MAS: createMemberLocalAutoRegister within transaction
+    MAS->>DB: insert members and members_info
+    MAS->>PEP: createForNewMember and createData and ShopRelMember
+    MAS->>TSM: guard isSynchronizationActive else BadRequestException
+    MAS->>TSM: registerSynchronization afterCommit
+    TSM-->>MAS: commit
+    TSM->>PUB: afterCommit publish create_member_success
+    TSM->>TSM: daily active set Member companyId yyyyMMdd
+    alt work_userid non-blank and channel equals 1
+        alt DM point integration open
+            TSM->>BSP: enqueueBindSalsepersonAfterDmMemberCreate job186 user_id 0
+        else closed
+            TSM->>BSP: enqueueBindSalseperson job185 real user_id
+        end
+    else other channel or blank work_userid
+        TSM->>TSM: no enqueue
+    end
+    Note over TSM: rollback means afterCommit never runs so neither publish nor enqueue fires
+```
+
+Caption: the post-commit contract of `createMemberLocalAutoRegister` — the in-transaction side-effect ports run before the synchronization is registered, then the after-commit hook publishes CreateMemberSuccess, updates the daily active set, and enqueues the BindSalseperson job only under the `work_userid` + `channel=1` gate with the DM-open switch between `job:185` and `job:186`; a rollback suppresses both.
 
 Bootstrap registers **nine listeners** on the event (each in its own `*DispatchListenerRegistrationConfig`, wired in `@PostConstruct` with `DispatchRegistry.registerEventListener`):
 
@@ -562,7 +613,7 @@ The front `MembersController` hardened the address surface against cross-member 
 
 ## Focused tests that pin this domain
 
-* **`MemberAccountService*DispatchTest` family** (`ecshopx-members/src/test/.../service/account/`) pins exactly which listeners fire per registration path, using `MemberAccountServiceDispatchIntegrationTestConfiguration` (mocked mappers + mocked publishers + a real `PlatformTransactionManager`): `MemberAccountServiceCreateMemberForWxappBindNoBindSalespersonDispatchTest` (no `BindSalseperson` without salesperson identifiers; payload keys/values of the wxapp-bind path), `MemberAccountServiceCreateMemberLocalAutoRegisterDispatchTest` (promoter/distributor side-effect ports invoked in-transaction with the resolved `inviter_id`/`distributor_id`/`salesperson_id` and `ShopRelMember` inserted when `distributor_id>0`; the published payload carries the extras' `openid`/`wxa_appid`/`source_id`/`monitor_id`/`inviter_id`; `work_userid`+`channel=1` → `enqueueBindSalseperson`, DM-open → `enqueueBindSalsepersonAfterDmMemberCreate`, other channels/blank work_userid → neither; rollback → nothing published), `MemberAccountServiceRegisterShuyunMemberDispatchTest`, `MemberAccountServiceCreatMemberForH5PostDispatchTest`, and the `*ShopexCrmDispatchFlowTest` siblings that run the real bootstrap publisher impl against a captured dispatch driver.
+* **`MemberAccountService*DispatchTest` family** (`ecshopx-members/src/test/.../service/account/`) pins exactly which listeners fire per registration path, using `MemberAccountServiceDispatchIntegrationTestConfiguration` (mocked mappers + mocked publishers + a real `DataSourceTransactionManager` over H2, so the commit/rollback boundary is genuine): `MemberAccountServiceCreateMemberForWxappBindNoBindSalespersonDispatchTest` (no `BindSalseperson` without salesperson identifiers; payload keys/values of the wxapp-bind path), `MemberAccountServiceCreateMemberLocalAutoRegisterDispatchTest` (promoter/distributor side-effect ports invoked in-transaction with the resolved `inviter_id`/`distributor_id`/`salesperson_id` and `ShopRelMember` inserted when `distributor_id>0`; the published payload carries the extras' `openid`/`wxa_appid`/`source_id`/`monitor_id`/`inviter_id`; `work_userid`+`channel=1` → `enqueueBindSalseperson` with `channel 1`, DM-open → `enqueueBindSalsepersonAfterDmMemberCreate`, other channels/blank work_userid → neither; `status.setRollbackOnly()` → **neither** the publish nor either enqueue fires — see the [post-commit dispatch contract](#post-commit-dispatch-contract-of-creatememberlocalautoregister) section), `MemberAccountServiceRegisterShuyunMemberDispatchTest`, `MemberAccountServiceCreatMemberForH5PostDispatchTest`, and the `*ShopexCrmDispatchFlowTest` siblings that run the real bootstrap publisher impl against a captured dispatch driver.
 * `AdminMemberCreateMemberServiceCreateMemberDispatchTest` / `AdminMemberCreateMemberShopexCrmDispatchFlowTest` — the admin path's after-commit publication.
 * `H5NewLoginPathsCreateMemberSuccessDispatchProbeTest` (in `service/h5/prelogin`) — end-to-end from the three real login entries (`H5WxappLoginRegisterFacade.registerMemberForWxapp`, `registerMemberForAliapp`, `LocalH5AuthStrategy.resolve` with `auto_register`) to the published payload, plus the rollback case (`status.setRollbackOnly()` → **no** publish), which is the invariant the `afterCommit` registration enforces.
 * `CreateMemberSuccessEventDispatchFlowTest` / `CreateMemberSuccessShopexCrmSyncDispatchFlowTest` / `SyncWechatFansEventDispatchFlowTest` (bootstrap) — the registry/fan-out/consume side: N registered listeners ⇒ N enqueued `DispatchMessage`s in registration order, each consumed by `DispatchConsumerRuntime`.

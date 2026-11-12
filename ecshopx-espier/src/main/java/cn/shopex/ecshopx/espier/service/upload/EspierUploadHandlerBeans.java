@@ -51,12 +51,6 @@ public class EspierUploadHandlerBeans {
 	}
 
 	@Bean
-	public EspierUploadFileHandler espierUploadNormalGoodsHandler(
-			@Qualifier("espierImportRowSinkByType") Map<String, EspierImportRowSink> sinks) {
-		return delegating("normal_goods", EspierUploadHeaderCatalog.NORMAL_GOODS(), null, sinks);
-	}
-
-	@Bean
 	public EspierUploadFileHandler espierUploadNormalEpidemicGoodsHandler(
 			@Qualifier("espierImportRowSinkByType") Map<String, EspierImportRowSink> sinks) {
 		return delegating(

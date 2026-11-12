@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:3b39fb00072f5de90d5e540c0e917f96b8d4ad1af80c37180ef003fe2068bc91",
+  "pageVersion": "sha256:aee27a8ed002729029a2950cb6379c9a3716da06a441786955dbcf2f861b5a1f",
   "claims": [
     {
       "id": "claim_9752d7d3781543a9b36be65942a23176",
@@ -769,10 +769,74 @@
           "version": "repo-lines-v1:sha256:5427f8fdd0a74340a5e4b23eaccc586d1f42ee1b8972db34f1490cb049184db6:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZjMDBkYzAyYjY0OTg0OGE0NzU5N2IwMGM5Y2Y3ZTdlN2YyNjA2YzFlOGZmNDc3NzFmOGEyM2ExYmI5YjA2MDUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjgxMzBmM2M0YTcyMjA5YmNkZDU5MWJjM2MxNzA3MzEwM2VhOTVkZDZjY2NhMjk3NzA1OTcwNDU4MWFiODUyY2EiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIyZjJmZjVmZWVjNjBmNTg3YzhmYWU0ZTg3ZjgwOWE2NjFjZmZlZDZiNDdhYWU1ZjZkNmEyNjUzYWE4OTUyZWYifQ"
         }
       ]
+    },
+    {
+      "id": "claim_250d9d78970547328c5059f3fdd84f30",
+      "statement": "BrokeragePlanCloseTimeService computes the distribution commission settlement timestamp as plan_close_time = now (epoch seconds) + 86400 * (settleDays + aftersaleDays), where settleDays and aftersaleDays come from @Value(\"${ecshopx.popularize.brokerage-plan-close.settle-days:0}\") and @Value(\"${ecshopx.popularize.brokerage-plan-close.aftersale-days:0}\"); the code carries an explicit TODO that these placeholders should be replaced by the merchant-side 分销确认天数/售后时效天数 settings, so today they are flat platform-wide day offsets not wired to any merchant setting.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-popularize/src/main/java/cn/shopex/ecshopx/popularize/service/BrokeragePlanCloseTimeService.java#L36-L51",
+          "version": "repo-lines-v1:sha256:72557438286b958e770b2530ef679737cfc81347b1928794c418c20e79452605:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVmYTMxMTBlNGJiZDliOWNhZjZkMWRlZmMzMGZhOWRmNDM4YjJiNThhMTNhYjAxOWM2ZWQ5ODNmYmQzMzIyYTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY4ODAzOGIzZDc4NTFmN2IxZmM1NzM1YzI4MmE0YTY2YWVhYmNiYjRlNzBmODRmMDY1MzkwZTI5MWE0YmQxMmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRjODE2ODJkOWU2NjBhMzY3ZjNhZTFmOGY0OTJjYjI5NTU3NjhhMjgzY2VjYmIzYTU0Yzk5MTJiYzQwNTM5MDcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_7f31b70537c948668df2502ed6856106",
+      "statement": "The plan_close_time value produced by BrokeragePlanCloseTimeService is written onto unsettled brokerage rows in two places: on order confirm-receipt finish, NormalOrderBrokerageOnFinishService calls updatePlanCloseTime which UPDATEs brokerage rows matching companyId/orderId with is_close=false; and at commission-row insert, NormalOrderFinishBrokerageCoordinator stamps each new row's plan_close_time via computePlanCloseTimeEpochSec().",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/NormalOrderBrokerageOnFinishService.java#L60-L69",
+          "version": "repo-lines-v1:sha256:a4d5d56fdeb2bf801fa400b74571ad7a9efa56bc301fca9600fecf29cfc92df4:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkwYzZhYWFhZWJhMTQ3NjMzNTRlNmVlNjFmZGEwMWI4NmY2MjQwYjMyMWVmNzc2N2M2MThiOGY4NTMyMDk4OTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk5NmU2MjNhYTE1ZjNkOTliYTUyMjkyMWYxZmZhNzU1NDA2OWY0NWI1Nzg2YWQ5ZGRiMDBhOTlkNjhmNjgzMGIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE0ZGJiNjE0NzA1MDU0NGY0NDhmYjk2ZmIxZmNkMmYyODE3MjQxY2ZkZGYxNTVjM2M4MzRjZTA3YjM4YTljMTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZkM2FmZDI0NDdiMDM3Y2JiMjM5N2YzYTk1MzYxODliMTgyMjExMDZhNDBiNmRlYzA3MzcyYzg0NGYxMjczNzAifQ"
+        },
+        {
+          "resource": "repo://ecshopx-popularize/src/main/java/cn/shopex/ecshopx/popularize/service/BrokeragePlanCloseTimeService.java#L53-L67",
+          "version": "repo-lines-v1:sha256:64c0d47eab94665d1c6423eb53c2ca6763a82b88c2e85c9d2524f29d9e0ff46f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYzZjljNjQyYzExZjQyNDcwM2VjMWU1ODNiMmE3ZmM1YThlZmYwNmZiYTVlNjBkMmRmOTA4NTA1MjNmNTcyZWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRjNjk1YjMzNDRiNjNhZDk5NzY5NmM2MTc2MDY5YWQ2MTUyZDQ2OWNhZTZhMjE5NzYyZTlkOWYyZDE1NGUwNmEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg5YWUzNGYwNTAxMzg2ODkzZmI5N2FjYzk4NjA3MzcxYjZmODkyNTM1OTlmNmY2OGZkYmU3YmM4ZjdlNjg0MTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI0Y2MxYjE5MTk4NzgzYWRkMGJhMDhiMGQ4NDg5MDJhYzdjOTc5NzVmZGM0YmQ1MjJmNDBiZDVhNmY1ZDQxOWEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-popularize/src/main/java/cn/shopex/ecshopx/popularize/service/brokerage/NormalOrderFinishBrokerageCoordinator.java#L176-L186",
+          "version": "repo-lines-v1:sha256:a0b78a617ce62c287b0af67471314f54775776c2c3a006c7448d9551e4e3c8f5:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjllZGI2ZWVhMzUwOTFlY2U3YjMxMGViYzg5NmI3NGFjZWM1MTMyMzNjYmY3MzY3OTAyYjg4MDk4M2ZmOGNlNjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRhYWE4OGIzZTEyODQxZGZiMzg1MzA1ODc4YjViN2I0OTEzMTdiY2RkNTA3NzFjNDRiNWRlZjgxYTZlMDM4ZjYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU2ZTI5NWViNDQ3NTkzODc5M2QxNTk0YWZhNDM4MTlkMmU2MDg5ZWM0NDM5NTllOTdkODJkZmE3ZmE1NjgyZGYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ5MWVjMWU1OGQ2OGVmNTI1NGE2N2M2YTAxOGVhMzVkMjk5ZjIyYmQ3OTg4ZDQ2OWExZjhiMjJkZDY4ZjljZmUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_a1d372de0b37400b92b208f5865d65ed",
+      "statement": "Shop protocol values are stored as JSON fields of the companys Redis hash hash:companyProtocol[:{lang}]:{sha1(companyId)} via the primary companysRedisTemplate, and because every save also appends a protocol_update_log row, ShopProtocolSetService.get() repopulates the hash from the DB on a miss (ECX-11114): an empty hash triggers repopulateAllTypesFromDbIfPresent (latest log row per type) and a blank single field triggers repopulateSingleTypeFromDbIfPresent, each rebuilding the JSON and writing it back to Redis — so flushing that Redis DB no longer loses protocol content. Draft (*_draft) and member_logout_config fields are never repopulated, and nothing is written when the DB has no row.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/protocol/ShopProtocolSetService.java#L107-L141",
+          "version": "repo-lines-v1:sha256:c08fa92e59ae5a8169941e33b6eb5bce6aebfa3005090bc955b6ef68fcd7d5ae:eyJzZWxlY3RlZExpbmVDb3VudCI6MzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEzMGYxYWFhNWU0MmU5ZjFhZWU5YjYwNzk5MmVhMzU4NjZmNTVhNTQyODVkNjFjN2U1MzJkNDZmZWJmNjBkMmMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNkMzVjZDI4MmZjMzE5OGM5OTExMjliNGIzNTM5OTNmMWVmNTZiZTdmNTM1NjBmYmUzNjQ2NTljYTlhNjUxNzYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIyZjJmZjVmZWVjNjBmNTg3YzhmYWU0ZTg3ZjgwOWE2NjFjZmZlZDZiNDdhYWU1ZjZkNmEyNjUzYWE4OTUyZWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImViMjYxOWZkYTEzYzNmMjg0OWVhNjg3NWE0MDY3OGI2MGMwYjZiOTMyYWFlMTZmYTM2ZWMwMjZjODkyNDJlMTIifQ"
+        },
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/protocol/ShopProtocolSetService.java#L237-L276",
+          "version": "repo-lines-v1:sha256:3d08b550c953dce46a4e8946003526770c2271f285395da7acefb4358658569e:eyJzZWxlY3RlZExpbmVDb3VudCI6NDAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUyMjU1MjJiOTQ4YzIzOTFhYTdjMTBiNWNhYTMxY2MwNDdhMmQ5NDBhMTRjODZlZjVkYzczODhhODdmNTc5OTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY4ZDc5N2NlYmQxNjU3MzQwOWJlZWE2YWUzZTEzNWU4MDdkZWVhYzRhMjE3YjhlMDE3MzAwZDliZjE5NjJlMGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk0YWU1YTdkY2ViNDE5MDZkNjg0NDg5Y2Y0NWZkZDVkZTMyN2ZkZGYzNDI0NzkxZWU3NjllMGZhMGUxM2Q2MDMifQ"
+        },
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/protocol/ShopProtocolSetService.java#L311-L320",
+          "version": "repo-lines-v1:sha256:86aea11efa0c12db455ad34bf9806707ff0b3abd50d792e281ab0603a7e37200:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhjZGY4ZDk5NmUwNmZhZWIzNDI1MmRiZDNiMTM0ZGY2YTEyZmY0NTQ3MDU2YTdlMWNkZGM4YTZjZjMzNjg4NjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE1ODRhMTYyYTcwN2Q1OGQ5NzlhYTRmOGQ1ZjQwNzczNWQ3ZTQ4NmQ2MjZmOTBmNGJkYWIzZGVmMGM0NmFhNGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM1NGJhOTNjZWQwODdmNDlhMGU0ODg1ZGMxMDAyYjBjNTY3ZTlkMDdjN2E0NjUwZjk1ZjhmN2RjZGZmMWY0NmEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/protocol/ShopProtocolSetService.java#L507-L546",
+          "version": "repo-lines-v1:sha256:d5dd46ed579bde48139c7c0a86b45fd34548ec419e48408a1aa48a1cf04d6161:eyJzZWxlY3RlZExpbmVDb3VudCI6NDAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA2NzFiYTRhOTUzNTJkYjcxMzM1ZDIxYzFlZGZiMTQ5YWE2NTRhMWNjM2QzNzM0YjM2N2RjYWFmZWJjZGM2N2EiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIwZWQwZjI2OWY2MWI3OThkNjg5YjgzNTY1NDZjNWYxZmRkYzU3YzBmNzM1NjVmOWEyMDVkNDE0ZWFjOTZhOGIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZlY2U0NzdjM2E5YWUxYjg3MzZiY2FjZTJiZDgwMWEzNzA1NzdhYWMwYzM4YTM3NjhiNjUxYTc0ZmU2OTQ4YzQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjUxZGVjN2NjYjdjYjJjYjU2Njg4NTUwMjY3NTY4ZGU0NGNlMzQwZjQ5NWZlYThjZjcxMTNlZDYyN2Y5MjY5MjgifQ"
+        },
+        {
+          "resource": "repo://ecshopx-companys/src/test/java/cn/shopex/ecshopx/companys/service/protocol/ShopProtocolSetServiceGetFallbackTest.java#L56-L118",
+          "version": "repo-lines-v1:sha256:2fdf388003d0152479db4040c1951b6f2c81e71e3f125c488998ed0c76aa88ea:eyJzZWxlY3RlZExpbmVDb3VudCI6NjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiYTFiMWYwZDkzOTU3NDJlMjE2ZjcxYzllOTBjOGZiOWFhNmI0Mjk2YWFhNGNlN2NjMDVjOTZlYTViODdiYWYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk2Y2M3ODgyZDdlMmI1NGI5OWQxZDA0MjZmYjI1ZWQxMTJlM2RjZjM1MDdhN2VhNzFlYTFkZGYyODczNjM4YTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA0MjEwZmRlOGZhOTZmZGZkNDU2MDNmMGQxYzUyN2UwYTA5OTlkYTM2MjBlYWI1MDZhM2ZkOThjOTRkMDY0MmQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_0f39107829c7473480953065a60dbf3c",
+      "statement": "The members-side H5 reader H5RegisterProtocolQueryService reads the same companyProtocol hash directly through the default StringRedisTemplate with no DB fallback, so immediately after a flush of the companys Redis DB the H5 register/privacy protocol endpoints answer empty until an admin-side ShopProtocolSetService.get() repopulates the key.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/h5/protocol/H5RegisterProtocolQueryService.java#L42-L59",
+          "version": "repo-lines-v1:sha256:71105d6e129a3e4a81308efe093fc3d1e14127f005491926794feed7fc1c73f4:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJlZTFkOTM1NDdlZDQwNGVkZDAwY2EzNDEzMjUxMzkyYWE1MzNjODM0ZTUyODc5NjdjODk2MmNhYWViYWQ3NGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhiMTBjM2IyZjczZjM1Mjc5N2FiMGFjMGUyMzhhOGVkOWI0MTZjNzE1OTVmOWNkYjkyM2U2MjNmYzM2MjY5ZTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ5ZjI4MmI0MWI3MDY5NDk2YjdjMjczNDlmMGFmYTY3MTUyMmQ3NWRiNDFkODk0MjU4NDc1MmFiMjcwYzc4YmIifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.9.0",
-    "at": "2026-11-10T17:10:58.497Z"
+    "at": "2026-11-11T17:12:30.774Z"
   }
 }

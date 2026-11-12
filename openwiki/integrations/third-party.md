@@ -196,10 +196,10 @@ sources:
     resource: repo://ecshopx-youshu/src/main/java/cn/shopex/ecshopx/youshu/integration/YoushuOpenApiSignSupport.java
   - id: openwiki-source-9b2d13f1c467ba70b358feb5
     resource: repo://ecshopx-youshu/src/main/java/cn/shopex/ecshopx/youshu/package-info.java
-generated: { by: "openwiki/0.9.0", at: "2026-11-10T17:10:58.497Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-11T17:12:30.774Z" }
 verified:
   - by: openwiki/0.9.0
-    at: 2026-11-10T17:10:58.497Z
+    at: 2026-11-11T17:12:30.774Z
 ---
 
 # Third-Party Integrations (ERP, CRM, Analytics, Cross-border, DigiOS)
@@ -527,7 +527,7 @@ Two callers drive this core, with deliberately different failure postures:
 * **`create_member_success` listener (fire-and-forget).** `CreateMemberSuccessShuyunMemberRegisterDispatchListener` — registered by `ShuyunOpenPlatformCreateMemberSuccessDispatchListenerRegistrationConfig` (`@Order 11`, `asyncDefaults()` = platform-default queue/retry) — hands `company_id`/`user_id`/`distributor_id`/`mobile` from the event payload to `MemberRegisterDispatchService.dispatchCreateMemberSuccess`. When the payload lacks `distributor_id` or `mobile`, the service **re-reads the `members` row**: mobile falls back to `members.mobile`, and the distributor falls back through `reg_distributor` then `offline_reg_distributor`. If either is still unresolved — or the row does not exist — the dispatch is skipped with a log line; there is no PHP-style compensating member deletion on failure.
 * **Store-cashier readiness (fail-hard, ECX-11025).** The cashier client calls `POST /api/v1/operator/member/ready` (route alias `companys.operator.member.ready`) **before pulling the operator cart**; `OperatorStoreMemberController` (in `ecshopx-companys`, `@AdminAuth` + `@Activated`) resolves `company_id` from the operator/POS JWT and delegates to `OperatorStoreMemberReadinessService.ensureOfflineMemberAtStore`, which lives in `ecshopx-shuyun`. Unlike the listener, this endpoint *decides* the checkout flow, so it distinguishes skip from failure:
   * **Skips** — returns `{synced: false, skipped: true}` — when the company config is missing/`is_enabled != 1`, when the config fails the shared eligibility check, or when the two-field sync state says the member is already registered. A non-integrated or already-synced tenant therefore never blocks the cashier.
-  * **Throws `ResourceException`** for a missing/blank `user_id` ("请指定会员") or `distributor_id` ("请选择门店"), when no `members` row matches or the row's `company_id` differs (both surface as "未找到该会员" — cross-company reads are deliberately indistinguishable from absence), when the member has no mobile ("会员手机号缺失，无法完成门店登记"), and when `registerOfflineAfterCreate` returns false or throws ("门店会员登记失败：…"), so a failed `member.register` halts the flow *before* cart pull instead of letting an unregistered member through.
+  * **Throws `ResourceException`** for a missing/blank `user_id` ("请指定会员") or `distributor_id` ("请选择门店"), when the member query returns no row or a row whose `company_id` differs from the caller's (both surface as "未找到该会员" — cross-company reads are deliberately indistinguishable from absence), when the member has no mobile ("会员手机号缺失，无法完成门店登记"), and when `registerOfflineAfterCreate` returns false or throws ("门店会员登记失败：…"), so a failed `member.register` halts the flow *before* cart pull instead of letting an unregistered member through.
   * **Registers** — only when the sync-state check says not yet synced — and returns `{synced: true, skipped: false}` (the controller wraps this as `{ok: true, ...}`).
 
 ```mermaid

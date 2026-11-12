@@ -26,6 +26,10 @@ sources:
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ShuyunOpenPlatformOfflineBenefitConsumeCancelDispatchListenerRegistrationConfig.java
   - id: openwiki-source-5f8f8dc234430bba81295584
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ShuyunOpenPlatformOfflineBenefitConsumePaySuccessDispatchListenerRegistrationConfig.java
+  - id: openwiki-source-905c2d15218c5790932d35d3
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/TradeFinishCountBrokerageDispatchListenerRegistrationConfig.java
+  - id: openwiki-source-547e956e62dedaff163cd4e6
+    resource: repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/dispatch/TradeFinishCountBrokerageEventSyncDispatchFlowTest.java
   - id: openwiki-source-c006b43585c4309283fc9235
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/auth/PosOrderDocAccessPort.java
   - id: openwiki-source-27bfcace5400d2804562fba2
@@ -68,6 +72,8 @@ sources:
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/api/front/v1/WxappOrderController.java
   - id: openwiki-source-2f2f509ddef48c4bd871109f
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/cron/ScheduleCancelNormalOrdersHandler.java
+  - id: openwiki-source-863ce4338f295783b77f3eeb
+    resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/dispatch/TradeFinishCountBrokerageDispatchListener.java
   - id: openwiki-source-ed65984a7a7370ed7a4a3265
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/domain/NormalOrders.java
   - id: openwiki-source-4f7f81d28106c51d16420d2c
@@ -88,6 +94,8 @@ sources:
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/admin/AdminNormalOrderFullCancelService.java
   - id: openwiki-source-98844588f9706a41812b3335
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/admin/AdminOrderCancelService.java
+  - id: openwiki-source-f451eeaaacd8448e25e3c13a
+    resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/brokerage/TradeFinishCountBrokerageBusService.java
   - id: openwiki-source-ac4f22cc6b429722429f379f
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/excard/NormalOrderNumericIdService.java
   - id: openwiki-source-b30ccaf3a71ef98378fd3e75
@@ -120,6 +128,8 @@ sources:
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/create/OrderCreatePersistencePortImpl.java
   - id: openwiki-source-2e8626d63f714e784ae5de1d
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/create/OrderCreatePostCommitPortImpl.java
+  - id: openwiki-source-c2e0d21be538ee1e2cb4e432
+    resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/NormalOrderBrokerageOnFinishService.java
   - id: openwiki-source-6bc2855e5564660b1ef558f5
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/shopadmin/NormalOrderAdminCheckoutService.java
   - id: openwiki-source-d378afc8d5bf5b75d478055a
@@ -202,10 +212,10 @@ sources:
     resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/wxapp/WxappSeckillItemTicketService.java
   - id: openwiki-source-8533324b29578695d2393415
     resource: repo://ecshopx-promotions/src/test/java/cn/shopex/ecshopx/promotions/service/systemtag/MemberCrowdMatcherTest.java
-generated: { by: "openwiki/0.9.0", at: "2026-11-09T03:34:48.355Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-11T17:12:30.774Z" }
 verified:
   - by: openwiki/0.9.0
-    at: 2026-11-10T17:10:58.497Z
+    at: 2026-11-11T17:12:30.774Z
 ---
 
 # Orders Domain (ecshopx-orders)
@@ -510,6 +520,16 @@ The same `markPayedIfNeeded` is invoked **directly** (not via the bus) by the de
 
 The rest of the trade-finish fan-out lives in `dispatch/TradeFinish*DispatchListener` beans in this bundle: `OrdersTradeFinishPaymentSuccessOrderProcessLogDispatchListener` (writes the "订单支付" OPL for SUCCESS trades), work-wechat and wxa-template notifications, `TradeFinishCountBrokerageDispatchListener`, `TradeFinishProfitDispatchListener`, `TradeFinishCustomDeclareOrderDispatchListener` (customs), `TradeFinishFapiaoDispatchListener`, `TradeFinishLinkMemberDispatchListener`, notify-push and SMS listeners, `UpdateItemSalesDispatchListener` (item sales counts). Jushuitan and WdtErp trade-finish upload/ack assembly live in `integration/` (`JushuitanTradeFinishOrderUploadAssemblePortImpl`, `WdtErpTradeFinishPushSelfAssemblePortImpl`).
 
+### Trade-finish brokerage listener (ECX-11089 delegating shape)
+
+`TradeFinishCountBrokerageDispatchListener` — registered in bootstrap as `listener:orders.listeners.TradeFinishCountBrokerage`, async on the `default` queue, against **both** `EVENT_TRADE_FINISH` (`event:291`) and its `EVENT_TRADE_FINISH_CSV292` twin — runs the finish-time brokerage hooks for a paid trade so the commission path does not wait for confirm-receipt. In the ECX-11089 shape the listener itself is a thin gate that delegates to `TradeFinishCountBrokerageBusService.handleTradeFinishRow` (`service/brokerage/`):
+
+* **Listener-level early exits** (all logged at info under the `[popularize-trade-finish]` tag): a null/empty payload returns silently; an `order_id` that is blank, non-numeric, or non-positive (Number or string form) is skipped as `dispatch_skip invalid_order_id`; `pay_type=point` (case-insensitive) is skipped as `dispatch_skip point pay_type` — pure-point trades carry no cash commission. Anything else is logged `dispatch_onEvent` and handed to the bus service with the raw payload map.
+* **Bus-service guard chain** (`handleTradeFinishRow`, same `[popularize-trade-finish]` tag): the empty-payload skip is repeated (`listener_skip empty_payload`), then `company_id` **and** `order_id` must both parse to positive longs (Number or numeric string — `listener_skip invalid_ids` otherwise); `pay_type=point` is re-checked (`listener_skip pay_type_point`). Only then is the order loaded via `NormalOrdersMapper.selectById(orderId)`: a missing row is skipped (`listener_skip order_not_found`), and a row whose `company_id` disagrees with the payload's is skipped as a cross-tenant guard (`listener_skip company_mismatch`).
+* **Delegation and failure isolation** — the surviving row goes to `NormalOrderBrokerageOnFinishService.orderFinishBrokerage(companyId, orderId, order)`, the same finish-time brokerage entry used by confirm-receipt, the finish batch, and the ziti write-off flows (it publishes the `event:orders:normal_order_confirm_receipt` parent event, runs the popularize `NormalOrderFinishBrokerageCoordinator`, and updates the brokerage plan close time). Any `Throwable` out of that call is caught and logged at **warn** (`listener_orderFinishBrokerage_failed`) — the listener never throws back into the dispatch bus, so a brokerage failure can neither break nor retry the trade-finish fan-out for the sibling listeners.
+
+The dispatch envelope is pinned in bootstrap by `TradeFinishCountBrokerageEventSyncDispatchFlowTest` (blank `order_id` and `pay_type=point` never reach `handleTradeFinishRow`; alipay and positive-fee `offline_pay` payloads invoke it exactly once) and `TradeFinishCountBrokerageWxappPaymentSyncDispatchFlowTest`; the producer-side gate keys (`company_id`/`order_id`/`pay_type`) the listener filters on are pinned by `OrdersPaymentDoPaymentServiceWxappSyncTradeFinishPublishTest` in this bundle.
+
 ## Order Process Log (OPL)
 
 The order process log (`orders_process_log`) is written exclusively through `OrderProcessLogPublishPort` (interface in ecshopx-common, implemented in **ecshopx-dispatch**): `publish` registers an after-commit synchronization that emits `event:orders:order_process_log` via `DispatchOptions.oplQueuedAfterCommit()` (publishes inline when no transaction is active). The `OrderProcessLogDispatchListener` in this bundle consumes it and `OrderProcessLogBusService.persistEntitiesMap` inserts the row (operator_type/operator_id, remarks/detail, params JSON, is_show). A secondary Spring-event path exists for service/excard orders: `OrderProcessLogSpringEvent` + `OrderProcessLogSpringEventListener` (`@TransactionalEventListener(AFTER_COMMIT, fallbackExecution = true)`) calling the same bus service. Roughly 60 `*OrderProcessLogEventAsyncConsumeTest` / `*OrderProcessLogDispatchPublishProbeTest` classes under `src/test/.../orders/integration` pin the publish and async-consume envelope for every state change — the `WxappOrderController` Javadoc documents the re-verification commands (e.g. `mvn -pl ecshopx-orders -Dtest=AdminOrderDeliveryOrderProcessLogDispatchPublishProbeTest,AdminApiV1OrderDeliveryOrderProcessLogEventAsyncConsumeTest test`). See [Dispatch Bus](../concepts/dispatch-bus.md) for the transport.
@@ -597,7 +617,7 @@ Event and listener name constants live in `ecshopx-common/dispatch/OrdersDispatc
 
 | event | name | publishers | listeners |
 | --- | --- | --- | --- |
-| `EVENT_TRADE_FINISH` | `event:291:OrdersBundle\Events\TradeFinishEvent` (+`event:292` twin for offline bank approval) | `OrdersTradeFinishAfterCommitDispatchPublisher` (`@Primary` bean in bootstrap), notify path | pay-success bridge (sync, `@Order(77)`), OPL 订单支付, work-wechat, wxa template, brokerage, profit, custom declare, fapiao, link member, notify push, SMS, item sales, Jushuitan trade-finish upload, WdtErp push, hfpay listener |
+| `EVENT_TRADE_FINISH` | `event:291:OrdersBundle\Events\TradeFinishEvent` (+`event:292` twin for offline bank approval) | `OrdersTradeFinishAfterCommitDispatchPublisher` (`@Primary` bean in bootstrap), notify path | pay-success bridge (sync, `@Order(77)`), OPL 订单支付, work-wechat, wxa template, **brokerage** (`listener:orders.listeners.TradeFinishCountBrokerage`, async default queue, registered on both 291 and 292 via `@Order(88)` config — delegates to `TradeFinishCountBrokerageBusService`), profit, custom declare, fapiao, link member, notify push, SMS, item sales, Jushuitan trade-finish upload, WdtErp push, hfpay listener |
 | `EVENT_NORMAL_ORDER_PAY_SUCCESS` | `event:288:OrdersBundle\Events\NormalOrderPaySuccessEvent` | bridge listener (only when the order actually flipped) | youshu, wsugc, **members new-customer** (`listener:members.normal_order_pay_success_new_customer`, registered `@DependsOn` the wsugc registration), **Shuyun open-platform trade.sync**, **Shuyun offline-benefit consume (result.push.v2 USED)**, employee-purchase behavior log |
 | `EVENT_NORMAL_ORDER_ADD` | `event:orders:normal_order_add` | wxapp orchestrator after supplier split; shopadmin deferred pipeline **at materialization** (payment), not at create | youshu (`listener:youshu.orders_normal_order_add`), thirdparty marketing-center push (`listener:thirdparty.order_add_push_marketing_center_on_normal_order_add`) |
 | `EVENT_NORMAL_ORDER_CANCEL` | `event:orders:normal_order_cancel` | full cancel + every auto-cancel batch (after commit) | youshu, **members new-customer** (`listener:members.normal_order_cancel_new_customer`), **Shuyun open-platform trade.sync** (`listener:shuyun.open_platform.trade_sync_on_normal_order_cancel`), **Shuyun offline-benefit consume (result.push.v2 NOT_USED)** (`listener:shuyun.open_platform.offline_benefit_consume_on_normal_order_cancel`), thirdparty schedule-cancel marketing-center push, orders auto-pass refund listener |
@@ -626,6 +646,7 @@ Handlers live in `dispatch/`; registration in bootstrap `*RegistrationConfig` cl
 * **No external call inside a DB transaction.** `doPayment` keeps channel SDK/HTTP invocations between TX1 (`preparePaymentInTx`) and TX2 (`persistExternalPaymentInTx`), so a slow or failing channel never holds row locks on `trade`; local pay types never leave TX1 at all. The pay-success bridge's `order_status='NOTPAY'` guard likewise prevents double pay-success events; auto-cancel and confirm-receipt batches guard their status transitions the same way; the deferred refund path CAS-guards `SUCCESS→REFUND`.
 * **Trade reuse.** `doPayment` never stacks pending trades for the same payment intent: an open NOTPAY trade (channel-keyed for adapay/bspay/offline_pay/paypal) is reused, and a cached `payment_params` payload short-circuits channel re-invocation.
 * **Post-commit dispatch.** Trade-finish, normal-order-cancel, and OPL publishes are registered as `afterCommit` synchronizations and run inline when no transaction is active — listeners always observe committed state.
+* **Trade-finish brokerage never throws back into the bus.** The ECX-11089 brokerage listener gate-skips empty payloads, invalid/non-positive `company_id`/`order_id`, `pay_type=point`, unknown orders, and company-mismatch rows before delegating to `NormalOrderBrokerageOnFinishService.orderFinishBrokerage`, and any `Throwable` from that call is logged at warn under `[popularize-trade-finish]` — a brokerage failure is invisible to the dispatch retry machinery.
 * **Point deduction happens exactly once.** Pointsmall orders deduct at create; `normal_pointsmall` trades do not deduct again at payment; zero-cash mixed orders are forced to `pay_type=point` rather than `localPay`.
 * **No charge without an order, no order without a charge.** The deferred pipeline only persists after `doPayment` reports `pay_status=true`; when persistence fails the charge is either refunded (business failure) or parked in `PAID_WAIT_ORDER`/`REFUND_FAILED` with a 24 h compensation window for query-driven recovery; supplier split and `normal_order_add` publish run exactly once, under the per-order Redis lock, only on the materialization path.
 * **Bounded batches.** Every cron batch pages (20/page for cancels and finish, 500 for statement details, 1000 for merchant scans) and isolates per-order/per-merchant failures so one bad row never aborts a run.
@@ -647,6 +668,7 @@ Handlers live in `dispatch/`; registration in bootstrap `*RegistrationConfig` cl
 * `OrderCreatePostCommitPortImplNormalOrderCreateUserOrderOrderProcessLogDispatchPublishProbeTest` + `OrderCreatePostCommitPortImplSendPayRemindTest` — the 订单创建 OPL envelope (operator_id from orderData user_id, full params map, excard remarks variant) and the pay-remind payload for the shopadmin create path.
 * `OrdersPaymentDoPaymentServicePaymentSubjectTest` — payment-subject resolution feeds `distributorIdForSetting=0` into pay-config validation and the channel builder while the trade keeps the original distributor id; the TX1/TX2 transaction split (one `transactionTemplate.execute` for local `point`, two for `wxpayh5`) with the channel invocation asserted at transaction depth 0.
 * `OrdersPaymentDoPaymentServiceWxappSyncTradeFinishPublishTest` — the publish-on-success contract: exactly one snake_case trade-row publish on the zero-fee wxpay (`pay_type` stamped `localPay`), point, `normal_groups` and sync-success wxpay paths, carrying the brokerage/item-sales, member-link, printer, fapiao, customs and work-wechat gate keys, plus the zero-cash-with-points rewrite to `pay_type=point`.
+* `TradeFinishCountBrokerageEventSyncDispatchFlowTest` / `TradeFinishCountBrokerageWxappPaymentSyncDispatchFlowTest` (ecshopx-bootstrap) — the ECX-11089 brokerage listener dispatch envelope: async `default`-queue registration on `EVENT_TRADE_FINISH`, blank-`order_id` and `pay_type=point` payloads skipped before `TradeFinishCountBrokerageBusService.handleTradeFinishRow`, alipay/offline_pay payloads delegated exactly once.
 * `OrdersTradeFinishNormalOrderPaySuccessApplyServiceTest` — NOTPAY→PAYED transition, supplier sync, empty-Optional on non-normal source types.
 * `OrderDeliverySuccessNotifyWechatServiceTest` — the `orderDeliverySucc` payload envelope: recipient lookup short-circuit, order-title fallback for `item_name`, per-item `sep` payload preferring `item_name`/`logi_name`.
 * `WxappUpdateCartCheckStatusServiceTest` — the local check-status mutation: one UPDATE with `cart_id IN`, the single-id overload delegating to the batch, empty list skipping the write.

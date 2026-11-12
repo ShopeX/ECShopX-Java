@@ -112,13 +112,23 @@ public class ShopProtocolSetService {
 			String field = type.trim();
 			Object v = companysRedisTemplate.opsForHash().get(hashKey, field);
 			String val = v == null ? null : String.valueOf(v);
+			if (isBlankRedisValue(val)) {
+				String restored = repopulateSingleTypeFromDbIfPresent(companyId, hashKey, field);
+				if (restored != null) {
+					val = restored;
+				}
+			}
 			raw.put(field, val);
 		} else {
 			Map<Object, Object> entries = companysRedisTemplate.opsForHash().entries(hashKey);
-			for (Map.Entry<Object, Object> e : entries.entrySet()) {
-				String k = e.getKey() == null ? "" : String.valueOf(e.getKey());
-				Object ev = e.getValue();
-				raw.put(k, ev == null ? null : String.valueOf(ev));
+			if (entries == null || entries.isEmpty()) {
+				raw.putAll(repopulateAllTypesFromDbIfPresent(companyId, hashKey));
+			} else {
+				for (Map.Entry<Object, Object> e : entries.entrySet()) {
+					String k = e.getKey() == null ? "" : String.valueOf(e.getKey());
+					Object ev = e.getValue();
+					raw.put(k, ev == null ? null : String.valueOf(ev));
+				}
 			}
 		}
 		LinkedHashMap<String, Object> result = new LinkedHashMap<>();
@@ -220,6 +230,83 @@ public class ShopProtocolSetService {
 			}
 		}
 		return 0L;
+	}
+
+	private LinkedHashMap<String, String> repopulateAllTypesFromDbIfPresent(
+			long companyId, String hashKey) {
+		LinkedHashMap<String, String> restored = new LinkedHashMap<>();
+		LambdaQueryWrapper<ProtocolUpdateLog> w = new LambdaQueryWrapper<>();
+		w.eq(ProtocolUpdateLog::getCompanyId, companyId).orderByDesc(ProtocolUpdateLog::getCreated);
+		List<ProtocolUpdateLog> logs = protocolUpdateLogMapper.selectList(w);
+		if (logs == null || logs.isEmpty()) {
+			return restored;
+		}
+		LinkedHashMap<String, ProtocolUpdateLog> latestByType = new LinkedHashMap<>();
+		for (ProtocolUpdateLog log : logs) {
+			if (log == null || log.getType() == null) {
+				continue;
+			}
+			String typeKey = log.getType().trim();
+			if (typeKey.isEmpty() || typeKey.contains("_draft") || latestByType.containsKey(typeKey)) {
+				continue;
+			}
+			latestByType.put(typeKey, log);
+		}
+		for (Map.Entry<String, ProtocolUpdateLog> e : latestByType.entrySet()) {
+			String json = writeProtocolJsonToRedis(hashKey, e.getKey(), buildProtocolMapFromLog(e.getValue()));
+			restored.put(e.getKey(), json);
+		}
+		return restored;
+	}
+
+	private String repopulateSingleTypeFromDbIfPresent(long companyId, String hashKey, String typeKey) {
+		if (typeKey.contains("_draft") || TYPE_MEMBER_LOGOUT_CONFIG.equals(typeKey)) {
+			return null;
+		}
+		LambdaQueryWrapper<ProtocolUpdateLog> w = new LambdaQueryWrapper<>();
+		w.eq(ProtocolUpdateLog::getCompanyId, companyId)
+				.eq(ProtocolUpdateLog::getType, typeKey)
+				.orderByDesc(ProtocolUpdateLog::getCreated)
+				.last("LIMIT 1");
+		ProtocolUpdateLog latest = protocolUpdateLogMapper.selectOne(w);
+		if (latest == null) {
+			return null;
+		}
+		return writeProtocolJsonToRedis(hashKey, typeKey, buildProtocolMapFromLog(latest));
+	}
+
+	private LinkedHashMap<String, Object> buildProtocolMapFromLog(ProtocolUpdateLog log) {
+		String typeKey = log.getType() == null ? "" : log.getType().trim();
+		LinkedHashMap<String, Object> info = new LinkedHashMap<>();
+		info.put("type", typeKey);
+		info.put("title", PROTOCOL_TITLE_DEFAULT.getOrDefault(typeKey, ""));
+		info.put("content", log.getContent() == null ? "" : log.getContent());
+		info.put("update_date", "");
+		info.put("take_effect_date", "");
+		Integer updateTime = log.getUpdated() != null ? log.getUpdated() : log.getCreated();
+		info.put("update_time", updateTime == null ? 0 : updateTime);
+		if (log.getDigest() != null && !log.getDigest().isEmpty()) {
+			info.put("digest", log.getDigest());
+		} else {
+			info.put("digest", md5Utf8(String.valueOf(info.get("content"))));
+		}
+		return info;
+	}
+
+	private String writeProtocolJsonToRedis(
+			String hashKey, String typeKey, Map<String, Object> paramsForRedis) {
+		String json;
+		try {
+			json = redisJsonMapper.writeValueAsString(paramsForRedis);
+		} catch (JsonProcessingException e) {
+			throw new IllegalStateException(e);
+		}
+		companysRedisTemplate.opsForHash().put(hashKey, typeKey, json);
+		return json;
+	}
+
+	private static boolean isBlankRedisValue(String val) {
+		return val == null || val.trim().isEmpty();
 	}
 
 	private String resolveProtocolHashKey(long companyId, String rawCountryCode) {

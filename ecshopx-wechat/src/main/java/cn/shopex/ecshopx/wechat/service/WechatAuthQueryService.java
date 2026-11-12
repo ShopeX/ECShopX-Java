@@ -214,11 +214,17 @@ public class WechatAuthQueryService {
 	}
 
 	/**
-	 * 按 JWT 中的 authorizer_appid 查询授权基础信息，并合并公司菜单类型文案。
+	 * 查询企业已绑定服务号的基础信息，并合并菜单类型文案。
+	 * <p>
+	 * 优先使用 JWT 中的 {@code authorizer_appid}；运营端 JWT 通常不含该字段（与 PHP 登录 token 一致），
+	 * 则按 {@link #getAuthorizerAppid(Long)} 回退，与 PHP {@code getBasicUserById} + authorizerinfo 行为对齐。
 	 */
 	public Map<String, Object> getAuthorizerInfo(long companyId, String authorizerAppidFromJwt) {
 		LinkedHashMap<String, Object> result = new LinkedHashMap<>();
 		String appid = authorizerAppidFromJwt == null ? null : authorizerAppidFromJwt.trim();
+		if (!StringUtils.hasText(appid)) {
+			appid = getAuthorizerAppid(companyId);
+		}
 		WechatAuth row = null;
 		if (appid != null && !appid.isEmpty()) {
 			try {

@@ -1,7 +1,7 @@
 ---
 type: architecture-overview
 title: System Overview and Runtime Topology
-description: The big-picture map of ECShopX-Java — the Spring Boot 3.5 / Java 17 multi-module Maven reactor under cn.shopex:ecshopx, the single ecshopx-bootstrap Spring Boot entry that assembles 49 business Bundles, and the runtime topology (Undertow on 18080, MySQL via MyBatis-Plus, multi-DB Redis, XXL-JOB admin + executor, Redis-backed dispatch queues, and the /api, /storage, /wechatAuth URL spaces).
+description: The big-picture map of ECShopX-Java — the Spring Boot 3.5 / Java 17 multi-module Maven reactor under cn.shopex:ecshopx (revision 5.5.3), the single ecshopx-bootstrap Spring Boot entry that assembles 49 business Bundles, and the runtime topology (Undertow on 18080, MySQL via MyBatis-Plus, multi-DB Redis, XXL-JOB admin + executor, Redis-backed dispatch queues, and the /api, /storage, /wechatAuth URL spaces).
 tags: [architecture, overview, maven, bootstrap, undertow, redis, xxl-job, dispatch, deployment, topology]
 sources:
   - id: openwiki-source-ea70eb6c045047448e446296
@@ -136,15 +136,15 @@ sources:
     resource: repo://pom.xml
   - id: openwiki-source-f1b1aacc63642e5304668821
     resource: repo://readme.md
-generated: { by: "openwiki/0.9.0", at: "2026-11-10T17:10:58.497Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-11T17:12:30.774Z" }
 verified:
   - by: openwiki/0.9.0
-    at: 2026-11-10T17:10:58.497Z
+    at: 2026-11-11T17:12:30.774Z
 ---
 
 # System Overview and Runtime Topology
 
-ECShopX-Java is the Java server-side implementation of the ECShopX commerce system, rewritten from the legacy PHP codebase with aligned business semantics and one-to-one mapped configuration keys. The whole repository is a single **multi-module Maven reactor**: the root `pom.xml` declares the parent project `cn.shopex:ecshopx` (version `${revision}` = `5.5.2`, CI-friendly, Java 17, MyBatis-Plus 3.5.16, jjwt 0.12.6) under `spring-boot-starter-parent:3.5.12`, and lists every module as a `<module>`. The reactor has 53 modules: exactly four infrastructure modules plus 49 business "Bundles", and every Bundle is also pinned in the parent `dependencyManagement` so Bundle POMs never declare versions:
+ECShopX-Java is the Java server-side implementation of the ECShopX commerce system, rewritten from the legacy PHP codebase with aligned business semantics and one-to-one mapped configuration keys. The whole repository is a single **multi-module Maven reactor**: the root `pom.xml` declares the parent project `cn.shopex:ecshopx` (version `${revision}` = `5.5.3`, CI-friendly, Java 17, MyBatis-Plus 3.5.16, jjwt 0.12.6) under `spring-boot-starter-parent:3.5.12`, and lists every module as a `<module>`. The reactor has 53 modules: exactly four infrastructure modules plus 49 business "Bundles", and every Bundle is also pinned in the parent `dependencyManagement` so Bundle POMs never declare versions:
 
 * **`ecshopx-bom`** — a `pom`-packaging bill-of-materials module that imports `spring-boot-dependencies:3.5.12` and pins MyBatis-Plus / Lombok versions.
 * **`ecshopx-common`** — shared cross-cutting code with **no** Shopex peer dependencies (only Spring Boot starters, MyBatis-Plus, Lombok): unified response body, exception hierarchy, pagination, audit base classes, annotations, the `common/auth` JWT ports (`OperatorJwtIssuerPort`, `PosJwtIssuerPort`, `PosJwtSessionValidatorPort`, blacklist ports), and the ~150 `common/dispatch` interfaces (dispatch job/event names + publisher ports) that keep cross-Bundle wiring acyclic.

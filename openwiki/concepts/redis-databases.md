@@ -1,7 +1,7 @@
 ---
 type: "Reference"
 title: "Redis Database Layout"
-description: "How ECShopX-Java splits one Redis instance into logical databases via hand-built LettuceConnectionFactory beans in MultiRedisConfig, which @Qualifier template holds sessions, carts, captcha/SMS/email verification codes, rate-limit counters, pickup QR codes, goods-arrival subscriptions, operator fast-buy state, tenant settings, counters, snapshots and locks, and the per-environment DB-index selectors."
+description: "How ECShopX-Java splits one Redis instance into logical databases via hand-built LettuceConnectionFactory beans in MultiRedisConfig, which @Qualifier template holds sessions, carts, captcha/SMS/email verification codes, rate-limit counters, pickup QR codes, goods-arrival subscriptions, operator fast-buy state, tenant settings, counters, snapshots and locks, the shop-protocol hashes with their MySQL repopulation fallback (ECX-11114), and the per-environment DB-index selectors."
 tags: [redis, lettuce, configuration, infrastructure, rate-limiting]
 sources:
   - id: openwiki-source-ea70eb6c045047448e446296
@@ -26,6 +26,12 @@ sources:
     resource: repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/deposit/service/DepositTradeConsumeServiceTest.java
   - id: openwiki-source-5ca885ed4fd631f49af8a1bb
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/exception/GlobalExceptionHandler.java
+  - id: openwiki-source-e31299dc253062c2735455ff
+    resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/api/admin/v1/ProtocolController.java
+  - id: openwiki-source-de652e4a71939689f69a8689
+    resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/api/front/v1/ProtocolController.java
+  - id: openwiki-source-09f8ef2d65947e2b57d002cc
+    resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/domain/ProtocolUpdateLog.java
   - id: openwiki-source-3fe260ad41b93a3fc9fce4f7
     resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/activation/CompanysActivationService.java
   - id: openwiki-source-fb11e56e003a1604d7d9ab7a
@@ -34,12 +40,16 @@ sources:
     resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/OperatorsImageVcodeService.java
   - id: openwiki-source-3eed8e8306b019e3b83601a2
     resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/OperatorSmsVerifyService.java
+  - id: openwiki-source-f35423ff8c8af35c303879bc
+    resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/protocol/ShopProtocolSetService.java
   - id: openwiki-source-be232f29466e2a213e673a73
     resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/setting/LanguageSettingRedisService.java
   - id: openwiki-source-8430dd3e5be4135957d18f6c
     resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/statistics/CompanysDashboardStatisticsService.java
   - id: openwiki-source-d92c6d18e8d95be008173828
     resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/statistics/CompanysDepositDayRechargeRedisReader.java
+  - id: openwiki-source-d3b97c69d28e1a6595fca2a7
+    resource: repo://ecshopx-companys/src/test/java/cn/shopex/ecshopx/companys/service/protocol/ShopProtocolSetServiceGetFallbackTest.java
   - id: openwiki-source-a21a234d49d44d9efb0c39df
     resource: repo://ecshopx-data-cube/src/main/java/cn/shopex/ecshopx/datacube/api/front/v1/TrackController.java
   - id: openwiki-source-4f43f1207c21281b4ea687b1
@@ -134,10 +144,10 @@ sources:
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/settings/WxpayPaymentSettingWriter.java
   - id: openwiki-source-8d94eb289e06a9eb2bcb9a68
     resource: repo://ecshopx-third-party/src/main/java/cn/shopex/ecshopx/thirdparty/service/prism/ShopexPrismSmsSignClient.java
-generated: { by: "openwiki/0.9.0", at: "2026-11-06T17:22:02.968Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-11T17:12:30.774Z" }
 verified:
   - by: openwiki/0.9.0
-    at: 2026-11-06T17:22:02.968Z
+    at: 2026-11-11T17:12:30.774Z
 ---
 
 # Redis Database Layout
@@ -177,7 +187,7 @@ Because user-defined `@Bean` methods are registered before auto-configuration co
 
 | Qualifier bean | Connection factory | DB selector | Default | Representative consumers |
 |---|---|---|---|---|
-| `companysRedisTemplate` (**`@Primary`**) | `companysRedisConnectionFactory` | `ecshopx.redis.companys.database` | 0 | Company/shop settings, payment-channel settings, `LanguageSettingRedisService`, ERP/Jushuitan settings, operator captcha/SMS codes (`admin-<type>:<token>`, `operator-sms:verify:*`, `admin-forget:*`), admin pickup codes (`admin-pickupcode:*`), operator fast-buy cart (`shop_fastbuy:*`), ID generators — the default for *unqualified* `StringRedisTemplate` injection |
+| `companysRedisTemplate` (**`@Primary`**) | `companysRedisConnectionFactory` | `ecshopx.redis.companys.database` | 0 | Company/shop settings, payment-channel settings, `LanguageSettingRedisService`, ERP/Jushuitan settings, shop protocol hashes (`hash:companyProtocol*:<sha1(companyId)>`, with DB repopulation — see below), operator captcha/SMS codes (`admin-<type>:<token>`, `operator-sms:verify:*`, `admin-forget:*`), admin pickup codes (`admin-pickupcode:*`), operator fast-buy cart (`shop_fastbuy:*`), ID generators — the default for *unqualified* `StringRedisTemplate` injection |
 | `redisTemplate` (`RedisTemplate<Object, Object>`) | `companysRedisConnectionFactory` | same as above | 0 | Declared but has no injection sites; all business code uses `StringRedisTemplate` |
 | `sharedStringRedisTemplate` | `springDataRedisConnectionFactory` | `spring.data.redis.database` | 0 | Wxapp sessions (`session3rd:*`), member fast-buy cart (`fastbuy:*`) and plus-buy cart keys, pickup QR-code mapping (`orderziticode:*`), goods-arrival subscribe hashes (`arrivalNoticeSub:*`), deposit counters, trade-no sequences, UGC, shopadmin deferred-order snapshots (`shopadmin:deferred:*`), employee-purchase email vcodes/throttles (`employee-purchase-email*:*`), passphrase rate limiting (`ep_behavior_rl:*`) and verified flags (`ep_passphrase_verified:*`), participation quota (`ep:pquota:*`), employee fast-buy (`employee_purchase_fastbuy:*`) and invite tickets (`employee_purchase_invite:*`) |
 | `dispatchBusStringRedisTemplate` | `springDataRedisConnectionFactory` | `spring.data.redis.database` | 0 | Dispatch-bus queues (`dispatch:*`) |
@@ -279,6 +289,19 @@ Two operational consequences follow:
 
 Prism-DB state follows the same shape but for gateway credentials rather than tenant settings: `H5JwtBlacklistService` / `OperatorJwtBlacklistService` keep `h5_jwt_invalidate:<sha256(jwt)>` / `operator_jwt_invalidate:<sha256(jwt)>` keys, `CompanysActivationService` keeps a 7-day `black_token_<operatorId>_<operatorType>` cache, and `ShopexPrismSmsSignClient` stores `prism:<sha1(uid_companyId_AccessToken|RefreshToken|ForeverToken)>` session/forever tokens for the ShopEx Prism SMS gateway.
 
+## Shop protocols: Redis hash with DB repopulation fallback (ECX-11114)
+
+The member-facing legal protocols (registration agreement, privacy policy, account-cancellation agreement, salesman agreements) are served from the **companys DB** but, unlike the settings family above, are backed by a MySQL table — so this store is a *rebuildable* cache, not the system of record. `ShopProtocolSetService` (companys bundle, `service/protocol/`, explicitly `@Qualifier("companysRedisTemplate")`) owns both sides:
+
+* **Key shape — one hash per (company, country_code).** `resolveProtocolHashKey` normalizes the optional `country_code` (absent, `""` or `"0"` collapse to `zh-CN`), lowercases it and strips dashes, then builds `hash:companyProtocol:<sha1(companyId)>` for `zh-CN` and `hash:companyProtocol_<lang>:<sha1(companyId)>` for any other language. Hash *fields* are protocol types (`privacy`, `member_register`, `member_logout`, `salesman_service`, …) plus a parallel `<type>_draft` field per type holding the draft payload (or the literal `"[]"` when the last save published instead of drafting). Values are JSON blobs with `type`, `title`, `content`, `update_date`, `take_effect_date`, `update_time` and a `digest` (MD5 of content).
+* **Writes are dual-store.** `set` (behind the admin `PUT /api/v1/shops/protocol`) writes every non-draft save to the Redis hash *and* appends a row to the `companys_protocol_update_log` MySQL table via `ProtocolUpdateLogMapper.insert` (skipped only when the latest logged row already has the same digest). Draft saves and the `member_logout_config` pseudo-type touch Redis only.
+* **Reads are Redis-hash-first with DB repopulation.** `get(companyId, type, countryCode)` — called by both the admin `GET /api/v1/shops/protocol` and the unauthenticated H5 `GET /api/v1/h5app/wxapp/shops/protocol` — answers from the hash when it can, and otherwise *rebuilds the hash from MySQL before answering* (ECX-11114):
+  * **Single-type read.** `opsForHash().get(hashKey, type)`; a miss *or* a blank/whitespace value (`isBlankRedisValue`) triggers `repopulateSingleTypeFromDbIfPresent`, which selects the latest `companys_protocol_update_log` row for `(companyId, type)` (`ORDER BY created DESC LIMIT 1`) and, when one exists, rewrites the field with the rebuilt JSON (`opsForHash().put`) and returns it. `_draft` fields and `member_logout_config` never fall back — they answer blank.
+  * **All-types read.** When `type` is blank, `opsForHash().entries(hashKey)` is used; only a *completely empty* hash (not individual blank fields) triggers `repopulateAllTypesFromDbIfPresent`, which loads all of the company's log rows, keeps the latest non-draft row per type, and rewrites each field before answering.
+  * If the DB has no rows either, nothing is written back — the read simply answers empty (the request still degrades to the default titles via `applyDefaultProtocolTitle`, and drafts attach as empty lists via `attachDraftSubstructure`).
+
+The operational consequence of ECX-11114 is the inverse of the settings family: **flushing the companys DB does not permanently lose published protocol content** — the next read for each (company, country, type) repopulates the hash from `companys_protocol_update_log` — but it *does* destroy any unpublished drafts (the `<type>_draft` fields exist only in Redis) and turns the flush into a burst of one extra `SELECT` per requested type/company until the hashes are warm again. `ShopProtocolSetServiceGetFallbackTest` pins the contract: empty hash + DB row → repopulated and rewritten to Redis; populated hash → zero mapper calls and zero writes; empty hash + empty DB → no write-back; single-type blank field → per-type `selectOne` fallback and rewrite.
+
 ## Counters and the deposit DB split
 
 Day-scoped counters are the other main Redis payload. The deposit recharge path is the canonical example and the one place the logical-DB split can bite:
@@ -337,7 +360,7 @@ Conversely, repointing an *existing* area is a pure properties change: because e
 
 * `MultiRedisConfigLettuceFactoryTest` (bootstrap) — the only test of the wiring itself: asserts `validateConnection`, `autoReconnect` and socket `keepAlive` on a factory built by `standaloneFactory`.
 * `DispatchBusConfigTest` / `RedisDispatchDriverTest` / `RedisDispatchListenerTest` / `RedisDelayedDispatchMoverTest` (bootstrap + dispatch) — boot the dispatch graph with a **mocked** `dispatchBusStringRedisTemplate` bean and pin queue/delay/dead-list semantics.
-* `DepositTradeConsumeServiceTest`, `AdapayDepositTradeRechargeCallbackServiceSmsDispatchTest`, `OrdersTradePaymentCallbackService*Test`, `LanguageSettingRedisServiceTest`, `ShopexAdminBindServiceTest`, `OrderPickupSmsRedisVerifyServiceTest`, `WxappOrderZitiQrCodeServiceTest`, `WxappOrderPickupCodeServiceTest`, `OperatorShopFastBuyRedisServiceTest`, `TrackViewNumServiceMonitorScopeTest`, `ShopadminNormalOrderCreateOrchestratorNormalOrderAddDispatchPublishProbeTest`, `NormalOrderAdminCreateUserOrderServiceNormalOrderAddDispatchPublishProbeTest`, `EmployeePurchaseEmailVcodeRedisServiceRateLimitTest` (pins the 60 s cooldown TTL and the 24-hour expiry set only on the first daily increment), `EmployeeEmailVcodeSendServiceRateLimitTest`, `PassphraseBehaviorRateLimitServiceTest` (pins the 10-per-60 s window, the 429 exception past the limit, and the subject fallback order) — all mock `StringRedisTemplate`/`HashOperations`/mappers/`ShopadminDeferredOrderCache` and verify the counter increments, hash writes, defaults-merge, pickup-code consume-and-delete, track-guard early return, rate-limit windows, or deferred-snapshot-save behaviour described above; none run against a real Redis.
+* `DepositTradeConsumeServiceTest`, `AdapayDepositTradeRechargeCallbackServiceSmsDispatchTest`, `OrdersTradePaymentCallbackService*Test`, `LanguageSettingRedisServiceTest`, `ShopexAdminBindServiceTest`, `OrderPickupSmsRedisVerifyServiceTest`, `WxappOrderZitiQrCodeServiceTest`, `WxappOrderPickupCodeServiceTest`, `OperatorShopFastBuyRedisServiceTest`, `TrackViewNumServiceMonitorScopeTest`, `ShopadminNormalOrderCreateOrchestratorNormalOrderAddDispatchPublishProbeTest`, `NormalOrderAdminCreateUserOrderServiceNormalOrderAddDispatchPublishProbeTest`, `EmployeePurchaseEmailVcodeRedisServiceRateLimitTest` (pins the 60 s cooldown TTL and the 24-hour expiry set only on the first daily increment), `EmployeeEmailVcodeSendServiceRateLimitTest`, `PassphraseBehaviorRateLimitServiceTest` (pins the 10-per-60 s window, the 429 exception past the limit, and the subject fallback order), `ShopProtocolSetServiceGetFallbackTest` (pins the ECX-11114 DB-repopulation contract for the protocol hash: repopulate-and-rewrite on an empty hash, no DB access on a hit, no write-back when MySQL is also empty, and the single-type `selectOne` fallback) — all mock `StringRedisTemplate`/`HashOperations`/mappers/`ShopadminDeferredOrderCache` and verify the counter increments, hash writes, defaults-merge, pickup-code consume-and-delete, track-guard early return, rate-limit windows, or deferred-snapshot-save behaviour described above; none run against a real Redis.
 
 ## Related pages
 

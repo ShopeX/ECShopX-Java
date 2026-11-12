@@ -59,6 +59,7 @@ public class NormalGoodsImportRowOrchestrator {
 	private final SupplierGoodsImportRowOrchestrator supplierGoodsImportRowOrchestrator;
 	private final ItemsAttributesRepository itemsAttributesRepository;
 	private final ItemRelAttributesRepository itemRelAttributesRepository;
+	private final NormalGoodsImportMemberPriceFromRowService normalGoodsImportMemberPriceFromRowService;
 
 	public NormalGoodsImportRowOrchestrator(
 			ItemsRepository itemsRepository,
@@ -66,13 +67,15 @@ public class NormalGoodsImportRowOrchestrator {
 			ItemsUpdateOrchestrator itemsUpdateOrchestrator,
 			SupplierGoodsImportRowOrchestrator supplierGoodsImportRowOrchestrator,
 			ItemsAttributesRepository itemsAttributesRepository,
-			ItemRelAttributesRepository itemRelAttributesRepository) {
+			ItemRelAttributesRepository itemRelAttributesRepository,
+			NormalGoodsImportMemberPriceFromRowService normalGoodsImportMemberPriceFromRowService) {
 		this.itemsRepository = itemsRepository;
 		this.itemsCreateOrchestrator = itemsCreateOrchestrator;
 		this.itemsUpdateOrchestrator = itemsUpdateOrchestrator;
 		this.supplierGoodsImportRowOrchestrator = supplierGoodsImportRowOrchestrator;
 		this.itemsAttributesRepository = itemsAttributesRepository;
 		this.itemRelAttributesRepository = itemRelAttributesRepository;
+		this.normalGoodsImportMemberPriceFromRowService = normalGoodsImportMemberPriceFromRowService;
 	}
 
 	public void acceptRow(long companyId, long distributorId, Map<String, Object> row) {
@@ -89,6 +92,8 @@ public class NormalGoodsImportRowOrchestrator {
 				}
 				Map<String, Object> params = buildUpdateParams(companyId, did, r, old, row);
 				itemsUpdateOrchestrator.updateItems(params, old.getItemId(), false);
+				normalGoodsImportMemberPriceFromRowService.saveFromImportRowIfPresent(
+						companyId, old.getItemId(), row);
 				rememberSpuAnchorAfterWrite(companyId, r, row, itemBn);
 				return;
 			}
@@ -96,8 +101,24 @@ public class NormalGoodsImportRowOrchestrator {
 
 		validateCreateRequired(r);
 		Map<String, Object> params = buildCreateParams(companyId, did, r, row);
-		itemsCreateOrchestrator.createItems(params);
+		long createdItemId = itemsCreateOrchestrator.createItemsReturningItemId(params);
+		long itemIdForMemberPrice = resolveItemIdAfterCreate(companyId, r, itemBn, createdItemId);
+		if (itemIdForMemberPrice > 0L) {
+			normalGoodsImportMemberPriceFromRowService.saveFromImportRowIfPresent(
+					companyId, itemIdForMemberPrice, row);
+		}
 		rememberSpuAnchorAfterWrite(companyId, r, row, itemBn);
+	}
+
+	private long resolveItemIdAfterCreate(
+			long companyId, Map<String, String> r, String itemBn, long createReturnedItemId) {
+		if (StringUtils.hasText(itemBn)) {
+			Items found = itemsRepository.findByItemBnAndCompany(itemBn.trim(), companyId);
+			if (found != null && found.getItemId() != null && found.getItemId() > 0L) {
+				return found.getItemId();
+			}
+		}
+		return createReturnedItemId > 0L ? createReturnedItemId : 0L;
 	}
 
 	private Map<String, Object> buildCreateParams(

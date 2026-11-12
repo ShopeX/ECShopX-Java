@@ -119,7 +119,6 @@ public class PopularizeH5BrokerageListReadService {
 			String closeType) {
 		int page = parseLenientPage(pageRaw);
 		int pageSize = parseLenientPageSize(pageSizeRaw);
-		boolean isSalesman = PopularizeH5BrokerageCountReadService.looksLikeSalesmanPageFlag(isSalesmanPageRaw);
 
 		LinkedHashMap<String, Object> baseFilter = new LinkedHashMap<>();
 		baseFilter.put("company_id", Long.valueOf(companyId));
@@ -134,8 +133,8 @@ public class PopularizeH5BrokerageListReadService {
 		putTruthyStringFilter(baseFilter, "mobile", mobileRaw);
 		putTruthyStringFilter(baseFilter, "order_id", orderIdRaw);
 
-		Object dataClose = fetchOneSegment(isSalesman, baseFilter, true, page, pageSize);
-		Object dataNoClose = fetchOneSegment(isSalesman, baseFilter, false, page, pageSize);
+		Object dataClose = fetchOneSegment(baseFilter, true, page, pageSize);
+		Object dataNoClose = fetchOneSegment(baseFilter, false, page, pageSize);
 
 		if ("close".equals(closeType)) {
 			return dataClose;
@@ -150,13 +149,12 @@ public class PopularizeH5BrokerageListReadService {
 	}
 
 	private Object fetchOneSegment(
-			boolean isSalesman, LinkedHashMap<String, Object> baseFilter, boolean isClose, int page, int pageSize) {
+			LinkedHashMap<String, Object> baseFilter, boolean isClose, int page, int pageSize) {
 		LinkedHashMap<String, Object> filter = new LinkedHashMap<>(baseFilter);
 		filter.put("is_close", Boolean.valueOf(isClose));
-		if (!isSalesman) {
-			return fetchDefaultSegment(companyIdFromFilter(filter), filter, page, pageSize);
-		}
-		return fetchSalesmanSegment(companyIdFromFilter(filter), userIdFromFilter(filter), filter, page, pageSize);
+		long companyId = companyIdFromFilter(filter);
+		// 推广员 H5 业绩仅直查 popularize_brokerage；isSalesmanPage 不再走门店导购 JOIN
+		return fetchDefaultSegment(companyId, filter, page, pageSize);
 	}
 
 	private static long companyIdFromFilter(Map<String, Object> filter) {

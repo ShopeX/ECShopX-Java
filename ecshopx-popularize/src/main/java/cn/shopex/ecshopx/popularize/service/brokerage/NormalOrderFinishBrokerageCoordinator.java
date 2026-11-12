@@ -180,7 +180,7 @@ public class NormalOrderFinishBrokerageCoordinator
 					row.setRebatePoint("money");
 					row.setDetail("{}");
 					row.setIsClose(false);
-					row.setPlanCloseTime(brokeragePlanCloseTimeService.computePlanCloseTimeEpochSec());
+					row.setPlanCloseTime(brokeragePlanCloseTimeService.pendingPlanCloseTimeForInsert());
 					row.setCreated(nowSec);
 					row.setUpdated(nowSec);
 					brokerageMapper.insert(row);

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:998ac2f633c19e4eee0a53085c5e9470218ff3ea9b1fb30538d6af2f45897936",
+  "pageVersion": "sha256:b2b7918664e42b8fa2a97f8e2f0fe2b132bea7e3fe5d7d13bfcf6005db5ff678",
   "claims": [
     {
       "id": "claim_3d9864ae8e5d4123b40f3da9acfcc8e6",
@@ -691,10 +691,138 @@
           "version": "repo-lines-v1:sha256:4b99a8e888923fdce046b6d446b6ad9ab00e4901aa06d9fbcfd4750e315b72fd:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQ3LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJmNWJhY2E3NWY0N2ZiOGZmOTViMjFmODI1Y2YwNmFiMWIyMTUxNjZjYTAwNTMyZjVkNTgwNWQ0ZGIwMWJmNjU2IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0MTJjYTM0NWNjZjc1YmY5YzA4MDZiY2U2OTViZThkZTgwOGI3OTk4NDI1MWE3YTU0ZDIwMmNmNjEwMWRkNDUxIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJhMTQyNzZiMTQ2YjM3ODMyZTIyZWVmNTZiYzU1MzlhMjE5ZGFkM2VmZGU2Njc0NGRjN2Q3ZTgzYTI5ZTQ5NTNlIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MCwiZm9sbG93aW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1In0"
         }
       ]
+    },
+    {
+      "id": "claim_8a5cd545db82423f90c1d7abf24d708a",
+      "statement": "ShopProtocolSetServiceGetFallbackTest pins the company-protocol read fallback of ShopProtocolSetService.get: when the Redis hash (hash:companyProtocol:<sha1(companyId)>, language-suffixed) is empty, the service reloads the latest protocol_update_log rows per type via the mocked ProtocolUpdateLogMapper and repopulates the hash with hashOperations.put; when the hash is populated it serves from Redis with never() on both mapper reads and put; when both Redis and the DB are empty it leaves the hash untouched; single-type reads fall back per field through selectOne.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/protocol/ShopProtocolSetService.java#L107-L133",
+          "version": "repo-lines-v1:sha256:0d6af15d6ba11d96385fd99e7e2251982a01d08d972762dfa78154274a588b1c:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEzMGYxYWFhNWU0MmU5ZjFhZWU5YjYwNzk5MmVhMzU4NjZmNTVhNTQyODVkNjFjN2U1MzJkNDZmZWJmNjBkMmMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIyZjJmZjVmZWVjNjBmNTg3YzhmYWU0ZTg3ZjgwOWE2NjFjZmZlZDZiNDdhYWU1ZjZkNmEyNjUzYWE4OTUyZWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBkNTUxNDc3ZmM1ZmMyN2EyZDdjYmU5NGUxZmYwZTQ0Nzc5NzJhOTI2NDgyMDhmYWYzMmI0N2MyZWUzZmJjZDAifQ"
+        },
+        {
+          "resource": "repo://ecshopx-companys/src/test/java/cn/shopex/ecshopx/companys/service/protocol/ShopProtocolSetServiceGetFallbackTest.java",
+          "version": "repo-file-v1:sha256:e66825c3950407447ac733c7022154aeac37c568bf36079c92e0175187ab48ec"
+        }
+      ]
+    },
+    {
+      "id": "claim_d966e90bbdeb467699b0111fe2fb7568",
+      "statement": "DataRoleCreateServiceTest pins the multi-language storage split of DataRoleCreateService.create over companys_roles: a non-default-language (en-CN) create inserts the main row with role_name=\"\" and delegates the real name to CommonLangModWriteService.saveLang(companyId, Map.of(\"role_name\", name), \"companys_roles\", roleId, \"companys_roles\", \"en-CN\"), while a default-language (zh-CN) create writes the role name into the captured main-row insert directly; the test registers Roles metadata via @BeforeAll TableInfoHelper.initTableInfo for the MyBatis-Plus wrappers.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/roles/DataRoleCreateService.java#L110-L140",
+          "version": "repo-lines-v1:sha256:a4f921f47227e31cecf24a01e1713cab2bbc9100cc7c50bcf1f2fd5efc12c3f2:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgzMTg0MDkxN2ViMjg5MzBkOTk5NGYyMGY1Yjk5ZDhiODE5ZmQ0MmY0ZjZmMGIxOTQyMTU3MjVkZDlhNGU4N2MiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY4NWM0ZmIzYTU1OWE0Y2VjOTY0ZDA2OGVlYmNhYjJhMjBiZGM0OWUwMDgwZmE1OTY4MTMzZDkyZWNhMTYzYTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIwYTM4Njg5NzMyYmFkMTYwMDA2YTBhZDM0Zjg0ZDYzN2ZiMmY1ODA4MjM4NTc3OTljOGZiOWYyYzc1ZGI4YzMifQ"
+        },
+        {
+          "resource": "repo://ecshopx-companys/src/test/java/cn/shopex/ecshopx/companys/service/roles/DataRoleCreateServiceTest.java",
+          "version": "repo-file-v1:sha256:79ced01ee13f68cdee34e89e4b2f1801797899ebda655a948ba5d7b60c1c792c"
+        }
+      ]
+    },
+    {
+      "id": "claim_d9ad55c84a724415994e7bfef1c74aab",
+      "statement": "PopularizeBrokerageListReadServiceTest pins the brokerage-list dispatcher: distributor_id \"0\" or absent routes to the default BrokerageMapper.selectPage path with never() on the salesman query service, a positive distributor_id routes through SalesmanBrokerageLogsQueryService.countByFilter/selectPageByFilter/enrichListWithSalesperson with never() on the mapper, and a non-numeric distributor_id throws BadRequestException before any query runs.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-popularize/src/main/java/cn/shopex/ecshopx/popularize/service/PopularizeBrokerageListReadService.java#L58-L120",
+          "version": "repo-lines-v1:sha256:dda21fbf8087d6a501a0020edbd6759e06ffbed92800204368b2078183811524:eyJzZWxlY3RlZExpbmVDb3VudCI6NjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJmYTJjZDY0ZDdmNTg2OTM4MzQ3Yjc5MWUyZjJmNDI5MTEwOTNiYzBkZjkwYzE3NjhlNzYzNmI0MzZjMjczN2EiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ2YjgyZWY0ZDY5ZWYzN2ZhMDFmNzVmOGNlZjY2MWI0MjliNGFiMzJmMTU1MDA4YzUyMjg5OTU1NDY4YTM4NWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMyOGUyMTQ4NTgxNWJmZTk2MzM5YTE4ODM0MzZkMjdiODBlNDFmODFjZTVhNzIyNGUwYjY4N2E0YTU1MzllZDMifQ"
+        },
+        {
+          "resource": "repo://ecshopx-popularize/src/test/java/cn/shopex/ecshopx/popularize/service/PopularizeBrokerageListReadServiceTest.java",
+          "version": "repo-file-v1:sha256:71eea5cbc33e4a09f8404165a39ccfe50d7e722cd2d2ee43d300ae4b6bf01357"
+        }
+      ]
+    },
+    {
+      "id": "claim_d4d5a9f8d2bd4a658b148b5184903283",
+      "statement": "NormalOrderFinishBrokerageCoordinatorPidResolutionTest pins the trade-finish brokerage attribution of NormalOrderFinishBrokerageCoordinator.onNormalOrderFinishBrokerage: the buyer promoter's pid is resolved via promoterMapper.selectById(pid) to the parent promoter, and the captured Brokerage insert carries user_id = the parent promoter's member user id with buy_user_id = the buyer; the same parent user id keys the PopularizeBrokerageStatisticsIncrementService.add increment (item_total_price/rebate_total/no_close_rebate), the promoter update, and the enqueueUpgradePromoterGrade(companyId, parentUserId) call.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-popularize/src/main/java/cn/shopex/ecshopx/popularize/service/brokerage/NormalOrderFinishBrokerageCoordinator.java#L82-L208",
+          "version": "repo-lines-v1:sha256:33b3e40070538bcc06425d42d45b93e740a7787fc578593d15cbd5a393cd81e4:eyJzZWxlY3RlZExpbmVDb3VudCI6MTI3LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI2ZGFjMTgwOGRjZjczMDU2MmQwMjliMDgzOWQzZDZhY2UyMDI3YmFkNjBiYTczYTY3ZTFjMTNiMmIyMWE0YTRiIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIxMzZmOTkxZDZiOWE1OTg2MTBiZTQ5NDZkNTM5MmM5YjQ2ZjMxYTlmNzMxNmE5MGExZDE5MmNiYzQ5MTU4MjUwIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJlNjg3Mzg2OGRhNWNhZWQyMWM5ZmRmNjk4NjJiMGRhNTQwNjllY2RmMTg4MmMyMTY1MzU2Yzc0ZjVhN2QxZDAzIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJhYzk4MTdiZDNjODY4ODVjMWE0YzFhYTdhOGU2ZWRiYzZiODBmODdhNjE3Mjg4MGRiNDlhNzBhY2EyZDAxOTcyIn0"
+        },
+        {
+          "resource": "repo://ecshopx-popularize/src/test/java/cn/shopex/ecshopx/popularize/service/brokerage/NormalOrderFinishBrokerageCoordinatorPidResolutionTest.java",
+          "version": "repo-file-v1:sha256:74618aaaf707ab61a3beb41bc527bf80a1ce4a3c977d8a78deb7d55cac0acf87"
+        }
+      ]
+    },
+    {
+      "id": "claim_b6535fa87a2447129ef280f029091c1d",
+      "statement": "TradeFinishCountBrokerageUpgradePromoterGradeEnqueueTest pins the one-enqueue-per-brokerage-row contract: each onNormalOrderFinishBrokerage call that inserts a first-level Brokerage row triggers exactly one times(1) enqueueUpgradePromoterGrade(companyId, parentUserId) keyed to that row's parent user id — two finishes for two buyer/parent pairs produce one enqueue each alongside their own brokerageMapper.insert.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-popularize/src/main/java/cn/shopex/ecshopx/popularize/service/brokerage/NormalOrderFinishBrokerageCoordinator.java#L195-L196",
+          "version": "repo-lines-v1:sha256:63372bcf38d1fc7aa03b477392e64a513459953ac6d450704658cd887e864f3d:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOGZmMGVjNWRmOTZlYjBkNjNkYzNkODcxNzgxMmQ1ZmExZmViM2E1MWVhMDljOTU2NWZkMzgzMzRmMTVkZTYwYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNmNlYjI0MzJhZjI3M2ViYTBjOTgzMzk4YjQ2MmViNjg5Y2Q4NjAyMGZlOTlhYzYzZWJiMzc5YzNkMzMyNjFlNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZWNlMDI4ZGFjNjRlMWZkMzAzZTE3MWFmYmY0MmQ0NTJlZDI0MzdlNzliNGU1ZWRjMmMyMTBlMjU1ZDk1NWRjMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMTBkNTRiOWRlNWVjYTQ1MWU5NmExOGM0MzliOGU2YWM2YmVkOWQ5OWFjNDllMmFkODI3ODZkOTlkN2Y4NDA4NSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-popularize/src/test/java/cn/shopex/ecshopx/popularize/service/brokerage/TradeFinishCountBrokerageUpgradePromoterGradeEnqueueTest.java#L103-L105",
+          "version": "repo-lines-v1:sha256:953359695040e8a12ef33fa52be9116d7379626a8acd5d517489931fd1a61529:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMWRiMmViYzE5NzdhOTYwNjFkZDlhNDBkNDczNTMzMjlhYzg4YTU4ZGYyNGMxMWQ2YTJlMDhmMDM3YjRmYzEyYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYjk5ZTkwY2MwNTVhMzMzZWU5Nzg3YTc4ZDViZWZjMWQyNTAwMDEzNmM3YTU2YzM1MDk1ZDVkYmY5NzliOTM1NyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNTA2OTA3MzM5OTZjZmU5NTk5NjY1ZDk5MmMyNzYyMmVjZDcwNDNmNmZmMGE2ZWY0YmI0YTllMTNkNGI3ODk1ZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDk5NTlhZjBhMWY3NzNkZmRlNGI3N2RmNWVlYjk1NzIyMmI3NTVjZmZiYzhiMmZhM2M3ZGY3NTk5YmRjM2Q4NiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_c6580f2e718c4e098715fa9ea7cde6a6",
+      "statement": "Both NormalOrderFinishBrokerageCoordinator probes run the coordinator's TransactionTemplate body over a mocked PlatformTransactionManager whose getTransaction returns a bare SimpleTransactionStatus, so the coordinator logic executes synchronously with no real transaction, commit, or rollback.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-popularize/src/test/java/cn/shopex/ecshopx/popularize/service/brokerage/NormalOrderFinishBrokerageCoordinatorPidResolutionTest.java#L50-L55",
+          "version": "repo-lines-v1:sha256:028d3821a6ea4f83dad456553f0fcc2bb4919489855522c3cecda4bc7c1996a4:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDc1NWI1OTVhZjU3ZmNkMTlhMTQ4OTAyYmIzYjljN2RlYWRkOWNkN2YzMTNkNWUxZDQ3MzgzYzgwYmRiYTBhMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMjJhMjFmOTk0MjEzZjBlMDIxMjY3ZGU2MWE5ZmExMTgwZmZiZWY0ZDNjNzNjM2VkZmMyNmZkN2U4Nzg5ZTI0YiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOWU2MGJlMmNmZDAyOGIyNThkMGViZWUzZDcwM2I5YWE0Yzk0ODFlMDJhMTc3MTRiMDVmNDg4Mzg4MmZhYjdkMCJ9"
+        },
+        {
+          "resource": "repo://ecshopx-popularize/src/test/java/cn/shopex/ecshopx/popularize/service/brokerage/TradeFinishCountBrokerageUpgradePromoterGradeEnqueueTest.java#L49-L54",
+          "version": "repo-lines-v1:sha256:e13d1d5825d7840412043511633e5aed2e14a3088b952c67d3b9d3f3531d49c5:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNzZiMTJkNzBhMWQ3ZWQyZWMxNTdhY2U0MzdkNDYxODVhMzA2MGRlMDQ5YzRjZDYxMTQ0OGEyYWI3ZGY4MDczYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzEyMTk0ZGMwMzljMDkyZjJhY2IxMzI0YzgwMWY3NDFlMzE3MWE3MjM2NTRmYWUxYjNkYjhlNDQwMzNiY2IxMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTk3NWUyMWFlNzExMzExNDY1NzliMzIyM2VkYTIzYjgyNDI4MmU0Njg1ZmJiYTViOTBhMzg0ZjdkMTU4M2I0ZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODM5YTI2YmI1ODY4OTQwZjRlZjBiZTVlYmEzYTkxMzJkMmU5Y2M5YzEzODM0ZDZjZTMxYTMxMmFmODQ1YzEzNyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_6212dc6b1f45485aa0655fc1f22b9bc0",
+      "statement": "The per-change command map registers narrowest verification commands for the newest probes: ./mvnw -pl ecshopx-companys test -Dtest=ShopProtocolSetServiceGetFallbackTest and -Dtest=DataRoleCreateServiceTest; ./mvnw -pl ecshopx-popularize test -Dtest=PopularizeBrokerageListReadServiceTest, -Dtest=NormalOrderFinishBrokerageCoordinatorPidResolutionTest, and -Dtest=TradeFinishCountBrokerageUpgradePromoterGradeEnqueueTest; ./mvnw -pl ecshopx-members test -Dtest=MemberAccountServiceCreateMemberLocalAutoRegisterDispatchTest.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-companys/src/test/java/cn/shopex/ecshopx/companys/service/protocol/ShopProtocolSetServiceGetFallbackTest.java#L26-L26",
+          "version": "repo-lines-v1:sha256:16a82cc1152ea4e7c58bb46d8e16fc544d35ec29120120d6b1c2d70f11fb05d1:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMTZhODJjYzExNTJlYTRlN2M1OGJiNDZkOGUxNmZjNTQ0ZDM1ZWMyOTEyMDEyMGQ2YjFjMmQ3MGYxMWZiMDVkMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMTZhODJjYzExNTJlYTRlN2M1OGJiNDZkOGUxNmZjNTQ0ZDM1ZWMyOTEyMDEyMGQ2YjFjMmQ3MGYxMWZiMDVkMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZmMyYTI3OTI0OTU5NGQzMmZiNzBhMDJjY2Y3YzQ4NGI3Y2RkMTVkZTZiODVkYTViMmUyMDA1MTViZWJlZmExNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTRjMzM4MzkxNzUwYWNjMGIyYjU5OTIzMjI0MjNlMjViOTczNWFjYzM3OGEyYzBhNjMxYzNiYzg4MDhmMDZjMCJ9"
+        },
+        {
+          "resource": "repo://ecshopx-companys/src/test/java/cn/shopex/ecshopx/companys/service/roles/DataRoleCreateServiceTest.java#L33-L33",
+          "version": "repo-lines-v1:sha256:4323766ae557361c1e17939b1ba8ba7ebef16d03acd9de4471ecc6cb5ced918d:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDMyMzc2NmFlNTU3MzYxYzFlMTc5MzliMWJhOGJhN2ViZWYxNmQwM2FjZDlkZTQ0NzFlY2M2Y2I1Y2VkOTE4ZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDMyMzc2NmFlNTU3MzYxYzFlMTc5MzliMWJhOGJhN2ViZWYxNmQwM2FjZDlkZTQ0NzFlY2M2Y2I1Y2VkOTE4ZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiN2EwMmI0MGU1OTBhODUxZTg1N2NlYjJlMzcxOGY4ZjFkOTUyMmU5MWIzZmY1ZDNmZWVkZDBkYWExMmRmZjQ1ZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiY2NmMzRmYzdiY2M2MzA2NGI4MTMwM2IxMDRjOTQzMTVlNTdkZTg4YTk0MWJiZTViOTAyYzE3YzM3Y2E1YTZjNSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/test/java/cn/shopex/ecshopx/members/service/account/MemberAccountServiceCreateMemberLocalAutoRegisterDispatchTest.java#L38-L38",
+          "version": "repo-lines-v1:sha256:9d426c4f301e5e02ca64f0773126afeb44ca31d16310e8e5c28a86baa6c73110:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOWQ0MjZjNGYzMDFlNWUwMmNhNjRmMDc3MzEyNmFmZWI0NGNhMzFkMTYzMTBlOGU1YzI4YTg2YmFhNmM3MzExMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOWQ0MjZjNGYzMDFlNWUwMmNhNjRmMDc3MzEyNmFmZWI0NGNhMzFkMTYzMTBlOGU1YzI4YTg2YmFhNmM3MzExMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZmM0ZGI2NmY5MDQ2ZGFiMDdmZGExZGQ2MTBjMWIwYTcwODMxZjUxMWM2OGJjMjczZThmYTViNjdmYmEzNjNlNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYzU2NjgyYjM1YWQzMWMwZGVjYTQ0MzM2YTJmMWUyOWY1ZGMzNTQ5OTcwY2RhZDYzMTQwMWFkNGI5NWJmM2NkMiJ9"
+        },
+        {
+          "resource": "repo://ecshopx-popularize/src/test/java/cn/shopex/ecshopx/popularize/service/PopularizeBrokerageListReadServiceTest.java#L31-L31",
+          "version": "repo-lines-v1:sha256:01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMjJkMzkwOTQ2YzM3NjI2NWI2ZWMwMWM0NzAyNWU3ZGVkN2RlYWM4MDYzMTBhMWI1ZTA2Njk3NjkyMGRmZDMwNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTE0YjJkMzBiNTYxODA1NTAwOTc3NDA4ODVhNGEwOTZlOTAyNDU3ZTJhZmE3YTBkNzZlZTFlMDc1ZDdhMGRkYSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-popularize/src/test/java/cn/shopex/ecshopx/popularize/service/brokerage/NormalOrderFinishBrokerageCoordinatorPidResolutionTest.java#L30-L30",
+          "version": "repo-lines-v1:sha256:14338e723610d578a077fb4ae98ca2b0878cc1a94a689c1e87c22badd991c006:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMTQzMzhlNzIzNjEwZDU3OGEwNzdmYjRhZTk4Y2EyYjA4NzhjYzFhOTRhNjg5YzFlODdjMjJiYWRkOTkxYzAwNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMTQzMzhlNzIzNjEwZDU3OGEwNzdmYjRhZTk4Y2EyYjA4NzhjYzFhOTRhNjg5YzFlODdjMjJiYWRkOTkxYzAwNiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTcyZTZiMGQ0MjBmOTc3ZmI5YzRmMGY0Njk0MGY2OTlkYzY4N2E4OTU4M2QxODljZjI2YWZmNTc1MzMxZWE2MiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDRkMjUyZmQwN2Y2ZWNkN2JlM2MxMzZkNjdjNTUyNTI0ODRlZDUyNTBlMDlkZTA1Yzc1NzFiZmZhNWJkZWM0NyJ9"
+        },
+        {
+          "resource": "repo://ecshopx-popularize/src/test/java/cn/shopex/ecshopx/popularize/service/brokerage/TradeFinishCountBrokerageUpgradePromoterGradeEnqueueTest.java#L29-L29",
+          "version": "repo-lines-v1:sha256:01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNGE3ZTRiMDY4YmU2MTRhOTQwNzRjNzQxYWZiMTBlZDE0NGNkMTU3NmNjZWFmOGRjMjU0MjRlMzRmMzc5YmI1ZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNjE5YzZiNWRiMjU4ZjlmZTc4ZGFmZGMzZWE2OTUwZGQ5NjYxZmMwOGM4YWIyMWU2YjE2MDVkZTBmOTEwMWZiNiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_76c8c0a6d9a5444ba8e7716e33729e8f",
+      "statement": "The suite's no-real-infrastructure boundary holds for the newest tests: ShopProtocolSetServiceGetFallbackTest stubs StringRedisTemplate/HashOperations and the ProtocolUpdateLogMapper as Mockito mocks, and the brokerage coordinator probes mock PlatformTransactionManager plus the brokerage/promoter mappers, so Redis hash TTL/eviction behavior, the protocol_update_log SQL, and the idempotent selectCount pre-check's protection under real concurrent finishes are assumed, not exercised.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-companys/src/test/java/cn/shopex/ecshopx/companys/service/protocol/ShopProtocolSetServiceGetFallbackTest.java#L26-L46",
+          "version": "repo-lines-v1:sha256:d68d7bbe1c782ef9bd9c2d0a3e5c5b26b714d2c600679cb338267f22ffa1b0bc:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE2YTgyY2MxMTUyZWE0ZTdjNThiYjQ2ZDhlMTZmYzU0NGQzNWVjMjkxMjAxMjBkNmIxYzJkNzBmMTFmYjA1ZDEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMxODM2YTRhYmU4MzQzZjg1Y2JkOTA1YWE5MjI4MTZlZTM3Y2M1NWQ4YTBiMzY4NWM5YjViYjBiMTVkN2NhZWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZjMmEyNzkyNDk1OTRkMzJmYjcwYTAyY2NmN2M0ODRiN2NkZDE1ZGU2Yjg1ZGE1YjJlMjAwNTE1YmViZWZhMTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNiOTdmNTEwNzBhNjU5ZjA2NThlMTdhNTgzNTMwNWRhZDgxYzMxM2E0MmNmMDc1YzQ5YmZlMDQ0NDhkMmY0Y2IifQ"
+        },
+        {
+          "resource": "repo://ecshopx-popularize/src/test/java/cn/shopex/ecshopx/popularize/service/brokerage/NormalOrderFinishBrokerageCoordinatorPidResolutionTest.java#L32-L55",
+          "version": "repo-lines-v1:sha256:18753e42a6ff1c598643fef2d6e98a0c1df0d5afe725a6aac6fdbf08f6d77d87:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ3NTViNTk1YWY1N2ZjZDE5YTE0ODkwMmJiM2I5YzdkZWFkZDljZDdmMzEzZDVlMWQ0NzM4M2M4MGJkYmEwYTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImMyMjNmOTIyYzQ5ODJmMmU3MGI2ZDdlN2JmYmFkNWQxNDkyZGQ3NDMzM2ExZDk2Y2NiMzgyZTFhODI0MWFlZjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjllNjBiZTJjZmQwMjhiMjU4ZDBlYmVlM2Q3MDNiOWFhNGM5NDgxZTAyYTE3NzE0YjA1ZjQ4ODM4ODJmYWI3ZDAifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.9.0",
-    "at": "2026-11-10T17:10:58.497Z"
+    "at": "2026-11-11T17:12:30.774Z"
   }
 }

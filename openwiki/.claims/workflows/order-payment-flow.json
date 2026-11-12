@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:59211b4fe9ca7f020d91a4ab8b6989cc2b57c32442a5d8ac40301f48ba0ec4ac",
+  "pageVersion": "sha256:5c35c0ff535e1898b5fa526c659884ddd9021d89ed946ee05d02f07703722fb9",
   "claims": [
     {
       "id": "claim_8ebde6be55a342c6aad350bc80c8c0f5",
@@ -164,15 +164,15 @@
     },
     {
       "id": "claim_357fd5e92ba8459180731a4fdaf819ee",
-      "statement": "The SMS listener (listener:orders.listeners.TradeFinishSmsNotify, @Order 78, async queue sms) runs TradeFinishSmsNotifyBusService.handleTradeFinishRow, which skips point/deposit pay types, requires a resolvable company, a non-blank passport uid and a non-blank mobile, formats pay_money as yuan (pay_fee/100) and pay_time from time_start, then calls TradePaySuccessTemplatedSmsPort.sendTradePaySuccess; send failures are caught and logged at debug.",
+      "statement": "The order-88 brokerage listener `TradeFinishCountBrokerageDispatchListener` pre-filters the payload (a blank/non-positive order_id or pay_type=point short-circuit before any order load) and delegates to `TradeFinishCountBrokerageBusService.handleTradeFinishRow`; the bus service repeats the point skip against its own parse, rejects a non-positive or unparseable company_id/order_id, loads the NormalOrders row and skips on order-not-found or a company mismatch between payload and order row, and invokes `NormalOrderBrokerageOnFinishService.orderFinishBrokerage` inside a `catch (Throwable)` that only logs at warn — a brokerage failure never propagates back into the trade-finish fan-out.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/dispatch/WxappPaymentTradeFinishSmsNotifySyncDispatchFlowTest.java#L49-L100",
-          "version": "repo-lines-v1:sha256:857565227ebd8e468fafe6c6201c0bcd7fd236369da2041bb27100d218282b0e:eyJzZWxlY3RlZExpbmVDb3VudCI6NTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiYTFiMWYwZDkzOTU3NDJlMjE2ZjcxYzllOTBjOGZiOWFhNmI0Mjk2YWFhNGNlN2NjMDVjOTZlYTViODdiYWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVkOWVkNTE3MzNiNGNlZDNjODI4MzVhOWQ1NDhkODVlM2U0YTIwYTk5N2NlN2JmZjdlMzdhZDI4ZTIwOTA3ODciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/dispatch/TradeFinishCountBrokerageDispatchListener.java",
+          "version": "repo-file-v1:sha256:40a177d9f18ef45a20a95275af556923d96ad2c37332ff24d91ab6d7b2dda5d5"
         },
         {
-          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/notify/TradeFinishSmsNotifyBusService.java#L88-L88",
-          "version": "repo-lines-v1:sha256:c1d039bba44255c7df71ee22f10984b98cc6d95d6e9bb4d7d9ca9274a37dfc06:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzFkMDM5YmJhNDQyNTVjN2RmNzFlZTIyZjEwOTg0Yjk4Y2M2ZDk1ZDZlOWJiNGQ3ZDljYTkyNzRhMzdkZmMwNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYzFkMDM5YmJhNDQyNTVjN2RmNzFlZTIyZjEwOTg0Yjk4Y2M2ZDk1ZDZlOWJiNGQ3ZDljYTkyNzRhMzdkZmMwNiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOWY0YWIwMTU2ZjM0YzdmZTIyMDMwZDU4ZWNiNDg5NGU2YzUzNzY2MTJhZjRlNzg2YjI0MWI5MzMyZmUyNTQ0MSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYzA5MzRmZmEwNWUzOGNkZjk5YjU1YTFjMjBmYjA4N2JiODBkNjZhZmU2YjgyZmVhNGE3ZWE2NTExNzUzYjY4OSJ9"
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/brokerage/TradeFinishCountBrokerageBusService.java",
+          "version": "repo-file-v1:sha256:c44517c3e8755339b0ccf9d0243bea21d6d1823ef75cf768a1d0e5e1e62935ba"
         }
       ]
     },
@@ -675,10 +675,74 @@
           "version": "repo-lines-v1:sha256:14bd793bb17644008c948aeed7aa1b4754d20fbffbb256c1356a548b27dee1b4:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUwYzkxZDM3MmQ0Mzg4NGJkNTA3ZWFiMGQ5NTI2MTA5MjliOThiYmI3YzY4NzBmM2ZlYmFkZWNiN2RhMzhhYTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE0OGI0ZjY4MTljYTAyYzcyYjQzNWUwNTA2MGEyMGExOTQ2ODRiNDk2YWJlZWY5MjgwNzVlNDdhMzA1OTlhYTkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFiOWFhOTNhYjFjOWFiYjk5M2I3MjlmNWMyMGZiYzgyYjAxOGU0ZjVmM2E4MzIyMjFhN2UxMDNlMmM2OGMwNTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk4ZTIyN2VjMzU5NzEyMTlmMGRhMzkxNTExNWQ5NWZjYmFkNWZhYTQzMDQwMjQ3OGY4ZGI2Mjc5MTY2YmQ5YTcifQ"
         }
       ]
+    },
+    {
+      "id": "claim_1f75f7b9b529424ba97c57518cc90984",
+      "statement": "`NormalOrderBrokerageOnFinishService.orderFinishBrokerage` is the shared finish-flow brokerage entry (also used by confirm receipt, batch finish and ziti write-off): it publishes the ASYNC+REDIS `event:orders:normal_order_confirm_receipt` event, then calls the popularize bundle's `NormalOrderFinishBrokerageCoordinator` through the `ecshopx-common` interface (the port inversion keeps ecshopx-orders free of a popularize dependency), and back-fills plan_close_time on still-unsettled brokerage rows via `BrokeragePlanCloseTimeService.updatePlanCloseTime`.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/NormalOrderBrokerageOnFinishService.java",
+          "version": "repo-file-v1:sha256:804d7c5ed502c04883b5923aa474751874375dff419425047bdc6cd89377ef09"
+        },
+        {
+          "resource": "repo://ecshopx-popularize/src/main/java/cn/shopex/ecshopx/popularize/service/BrokeragePlanCloseTimeService.java",
+          "version": "repo-file-v1:sha256:88d671c5d311b4096298766025025520324914add1e1a22ef775dd267196af30"
+        }
+      ]
+    },
+    {
+      "id": "claim_12c37c49edfe4972ae6867cc627c5867",
+      "statement": "The popularize `NormalOrderFinishBrokerageCoordinator` runs inside one explicit `TransactionTemplate` (REQUIRED) and skips when `open_popularize` is off for the company, when a brokerage row already exists for (company_id, order_id) (the idempotency guard), when the buyer is not a promoter or has no parent pid, when the parent promoter is invalid (wrong company / missing user_id / is_promoter != 1), or when the computed first-level rebate is zero.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-popularize/src/main/java/cn/shopex/ecshopx/popularize/service/brokerage/NormalOrderFinishBrokerageCoordinator.java",
+          "version": "repo-file-v1:sha256:5525c82142eba5094d89707133f490cfdc0262f842d7cd78dc7a945246ab6962"
+        }
+      ]
+    },
+    {
+      "id": "claim_ea7c1e02590b4aa589773e101081bae8",
+      "statement": "The coordinator resolves the parent promoter through the buyer promoter's `pid` (not the order's user_id) and inserts one `first_level` brokerage row keyed on the parent promoter's `user_id` — source=order, is_close=false, price = the order base (total_fee, or commission_fee when the config ratio type is profit), rebate = base × the merged `popularize_ratio.first_level.ratio`, and a non-null `plan_close_time` computed at insert by `BrokeragePlanCloseTimeService.computePlanCloseTimeEpochSec()` (now + 86400 × (`ecshopx.popularize.brokerage-plan-close.settle-days` + `aftersale-days`, both defaulting to 0 pending the merchant-side 分销确认天数/售后时效天数 settings).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-popularize/src/main/java/cn/shopex/ecshopx/popularize/service/BrokeragePlanCloseTimeService.java",
+          "version": "repo-file-v1:sha256:88d671c5d311b4096298766025025520324914add1e1a22ef775dd267196af30"
+        },
+        {
+          "resource": "repo://ecshopx-popularize/src/main/java/cn/shopex/ecshopx/popularize/service/brokerage/NormalOrderFinishBrokerageCoordinator.java",
+          "version": "repo-file-v1:sha256:5525c82142eba5094d89707133f490cfdc0262f842d7cd78dc7a945246ab6962"
+        }
+      ]
+    },
+    {
+      "id": "claim_f7601d50ee1a4dd6b8fa252178861da2",
+      "statement": "After inserting the first-level brokerage row, the coordinator increments the parent promoter's statistics via `PopularizeBrokerageStatisticsIncrementService.add` (item_total_price, rebate_total, no_close_rebate — inserting the statistics row when missing), marks the buyer promoter's `is_buy` flag via a guarded update, and enqueues the upgrade-promoter-grade job (`UpgradePromoterGradeJobDispatchPublisher.enqueueUpgradePromoterGrade` → ASYNC+REDIS dispatchJob with {company_id, user_id}) exactly once per inserted row; the pid-keyed insert, statistics increment and once-per-row grade enqueue are pinned by `NormalOrderFinishBrokerageCoordinatorPidResolutionTest` and `TradeFinishCountBrokerageUpgradePromoterGradeEnqueueTest` (ecshopx-popularize).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-popularize/src/main/java/cn/shopex/ecshopx/popularize/dispatch/UpgradePromoterGradeJobDispatchPublisher.java",
+          "version": "repo-file-v1:sha256:47b3db99ab46b4a184628dec3d2f4d0e9501e154cbc470802a26ac6552e62263"
+        },
+        {
+          "resource": "repo://ecshopx-popularize/src/main/java/cn/shopex/ecshopx/popularize/service/PopularizeBrokerageStatisticsIncrementService.java",
+          "version": "repo-file-v1:sha256:63c5f30af302280a4202f2046d60f030c38c2ee2bee75f558d010e914d2f2aed"
+        },
+        {
+          "resource": "repo://ecshopx-popularize/src/main/java/cn/shopex/ecshopx/popularize/service/brokerage/NormalOrderFinishBrokerageCoordinator.java",
+          "version": "repo-file-v1:sha256:5525c82142eba5094d89707133f490cfdc0262f842d7cd78dc7a945246ab6962"
+        },
+        {
+          "resource": "repo://ecshopx-popularize/src/test/java/cn/shopex/ecshopx/popularize/service/brokerage/NormalOrderFinishBrokerageCoordinatorPidResolutionTest.java",
+          "version": "repo-file-v1:sha256:74618aaaf707ab61a3beb41bc527bf80a1ce4a3c977d8a78deb7d55cac0acf87"
+        },
+        {
+          "resource": "repo://ecshopx-popularize/src/test/java/cn/shopex/ecshopx/popularize/service/brokerage/TradeFinishCountBrokerageUpgradePromoterGradeEnqueueTest.java",
+          "version": "repo-file-v1:sha256:3bacbbc715fe6183710813ca3ba0e7dc5e004fd8f89ebdfe802da0162a7fe1a0"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.9.0",
-    "at": "2026-11-10T17:10:58.497Z"
+    "at": "2026-11-11T17:12:30.774Z"
   }
 }

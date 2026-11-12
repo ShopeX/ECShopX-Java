@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:469d7a510649d766a0d34369a0dd7d7d9e62846c28937a13fe575c6b3bb12f0e",
+  "pageVersion": "sha256:c69a8241d27de5d4306abdefbc8032c7823c854e7f6815756c00c95b1133cd33",
   "claims": [
     {
       "id": "claim_6a17d8777ae74ac19c9786dddedd59bd",
@@ -206,11 +206,11 @@
     },
     {
       "id": "claim_bdee04d0bf704f6e8c1356b467a38629",
-      "statement": "dev-setup.sh orchestrates the full path: check Docker/Compose, resolve b2c/bbc mode and persist PRODUCT_MODEL to .env, configure public URLs/hosts, collect secrets, import the CDN image bundle (verifying both RUNTIME_BASE_IMAGE and MAVEN_BUILD_IMAGE landed), clone the three sibling frontend repos from gitee (admin and mobile required, PC optional), build each frontend inside the Node 20 runtime image via docker run with /data/httpd mounted, then docker compose -f docker-compose.dev.yml up -d --build, apply the admin password and companys.menu_type, and poll http://127.0.0.1:18080/ until Java answers because Flyway migrates during Spring Boot startup.",
+      "statement": "dev-setup.sh orchestrates the full path: check Docker/Compose, resolve b2c/bbc mode and persist PRODUCT_MODEL to .env, configure public URLs/hosts, collect secrets, import the CDN image bundle (verifying both RUNTIME_BASE_IMAGE and MAVEN_BUILD_IMAGE landed), clone the three sibling frontend repos from gitee (admin and mobile required, PC optional), build each frontend inside the Node 22 runtime image via docker run with /data/httpd mounted, then docker compose -f docker-compose.dev.yml up -d --build, apply the admin password and companys.menu_type, and poll http://127.0.0.1:18080/ until Java answers because Flyway migrates during Spring Boot startup.",
       "evidence": [
         {
-          "resource": "repo://dev-setup.sh#L229-L267",
-          "version": "repo-lines-v1:sha256:05e2cd81b50de8bacc5319a32b375755888b717cb36cac41f2bf80749c3d017b:eyJzZWxlY3RlZExpbmVDb3VudCI6MzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgwNTc1NjUyNTIxMjFmNzVlYzk5Y2IyOGIxNjg0ZGI4M2I1M2Q2ZTMzMGJlYzY0MzU3OGIyMjA0ODEyMzljN2UiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkxY2E1MDdlNWUwMTU2Mjk1MjFjNzcyYzc1ZDNjZThjNmVmMmI2YTlkMDFkNGUwZTA1ZDAzNDlkYTBlMDUwYjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkyZDE1MWUzOThiZDBhNTlmN2U1ODc3OTNmMmZhYWY1NzMzZjFlNGZhMGIwNDc3ZjQ4MDA0NDYwY2Y5MTU1ODgifQ"
+          "resource": "repo://dev-setup.sh#L228-L251",
+          "version": "repo-lines-v1:sha256:75278c26271f38fe602bcdad87d9a1b0abe9c24ec46639e6bad8caa3e8f68a29:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg0ZTc2MDQyNmE4ZTNhODYwZGQxNTBlNmMxMTc4YmFhNmJmMTgyNGM1N2ZlODI3M2IwMmI0YTVjZTQ1M2FhNzEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcxODhiMTFmODIxOTYxOTQ0OTQyMmU2OWQ1OGZlOGZkNThjMTg1MmIzMTljMWJkZjYxNDBmZjA2YjEwNTRkZTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNjZjNhYTY1NDk2YjNhYzhhMDg4MTE0YTJmODVjZGE0ZDUyMzA4NzBkNWQ0MmZjYzIyNzE1YTRjZGViZTI4YzIifQ"
         },
         {
           "resource": "repo://dev-setup.sh#L499-L535",
@@ -221,8 +221,8 @@
           "version": "repo-lines-v1:sha256:bb41c8ad816b76afe49378c42306416aa9d6cf0017e16fe7617d0fd8179791ef:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZmZjAyMDEzYzE3YjEwYTk5ZjE5YjkyMTAxNjkxYzkwM2Y5ZDFkNDY3MTUwOWVkNDc1NTdkNWU1ZDI5MDIzZjUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFhNmViZWI4NDBlMmM0NjdhNTFlN2ZhODcyYTUwZmYzZGFiYWY2Yjg3OWUxOTAxZTRkZWI1ZDkyNjA5YTA1ZDIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI4NzJkZGIwMGQ2MTNjNGUxNDU5N2E3ZDdiMjJkYmFhYzg1N2JmMmE5ODE5ZTIxZTliMTI2YzQ0YzcxZTE0YTMifQ"
         },
         {
-          "resource": "repo://dev-setup.sh#L610-L706",
-          "version": "repo-lines-v1:sha256:bafcc307fe16cf6d7daa857c5494d8ccc480ea27bf0bd12f50aebeb9348f2738:eyJzZWxlY3RlZExpbmVDb3VudCI6OTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ3Y2M5M2YyZDAyY2ViOTNiMGViYjA2NzFmMjRjMDk1MDhmOGZkMzdjOWMwZGEyNmE0NzljZDE1OTk5Y2NkNTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjMyNDUwNzhhYWU3ODY3NzZlMDI0ZWNmMzZmZTFhYWQ5ZjZhZjM3NTkwZWVmMWM3MWExNWFmN2FlNDQyMWE5NmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA0NjUzOWM2OGNkZmUxYjlmMjM3ZDdiYzA2OGRjMjYwZTlmMTZhNzc1MmRhYmE5ZjAyZTliNjIyZmQyNjA3ODAifQ"
+          "resource": "repo://dev-setup.sh#L678-L706",
+          "version": "repo-lines-v1:sha256:8dae7f395af77a487a789b118c7fd2f73f518627da9062aef6361ea88cdfafc9:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVmZDk4NmRhYzg1NzcwNmFkZGJjYzkxMTBmOWZhN2JjOThjMzIwZjFhZWU5NzJjOTlkMjZjNzVhZmNiOWI2M2YiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY3NDlhYjZkYTYzMWY5NGY2M2Q3ZjM3OWQyNmM2YTYxZDZlN2YzNzhmZGNhN2I0OWE3NDRhNzlkNGYyNTAzOTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA0NjUzOWM2OGNkZmUxYjlmMjM3ZDdiYzA2OGRjMjYwZTlmMTZhNzc1MmRhYmE5ZjAyZTliNjIyZmQyNjA3ODAifQ"
         },
         {
           "resource": "repo://dev-setup.sh#L753-L791",
@@ -232,15 +232,15 @@
     },
     {
       "id": "claim_e300095690fc43449bd67a15803cf5a9",
-      "statement": "dev-setup.sh builds the Nuxt PC frontend before compose up because the ecshopx-app entrypoint refuses to start without /data/httpd/ECShopX-Java_Web/.output/server/index.mjs, and the build uses two named volumes (ecshopx-web-node-modules, ecshopx-web-pnpm-store) with NUXT_API_BASE and NUXT_API_BASE_INTERNAL pinned to http://127.0.0.1:18080/api/v1/h5app.",
+      "statement": "dev-setup.sh builds the Nuxt PC frontend before compose up because the ecshopx-app entrypoint refuses to start without /data/httpd/ECShopX-Java_Web/.output/server/index.mjs. build_web_if_needed creates two named volumes (ecshopx-web-node-modules mounted at the project's node_modules, ecshopx-web-pnpm-store at /pnpm-store) and runs 'corepack enable && pnpm install --config.dangerouslyAllowAllBuilds=true --store-dir /pnpm-store --registry \"$npm_config_registry\" && pnpm build', with NUXT_API_BASE and NUXT_API_BASE_INTERNAL pinned to http://127.0.0.1:18080/api/v1/h5app and both npm_config_registry and COREPACK_NPM_REGISTRY pointed at $NPM_REGISTRY.",
       "evidence": [
         {
-          "resource": "repo://dev-setup.sh#L668-L706",
-          "version": "repo-lines-v1:sha256:9adfee8606fd05d1901f44045d63dd7f14bf2b971665e1022ea0e09d3ad736a2:eyJzZWxlY3RlZExpbmVDb3VudCI6MzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwNDQwODk4OTY1NzNlZDkwZTQ0MTQ5MzZiZGMwOWQ4MzhiMTY4NmRjODI3N2Q2MGU1NDgxMzZiNDI3MGE0Y2IiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFhZGE2ZTlkN2FmYzczZDhiYWFjZWNiNWM2ZmRkODk5YmYwYmY5MDlhYjljMjQzZGY1NzVlZWM0OTBiZDIyN2QiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA0NjUzOWM2OGNkZmUxYjlmMjM3ZDdiYzA2OGRjMjYwZTlmMTZhNzc1MmRhYmE5ZjAyZTliNjIyZmQyNjA3ODAifQ"
+          "resource": "repo://dev-setup.sh#L678-L706",
+          "version": "repo-lines-v1:sha256:8dae7f395af77a487a789b118c7fd2f73f518627da9062aef6361ea88cdfafc9:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVmZDk4NmRhYzg1NzcwNmFkZGJjYzkxMTBmOWZhN2JjOThjMzIwZjFhZWU5NzJjOTlkMjZjNzVhZmNiOWI2M2YiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY3NDlhYjZkYTYzMWY5NGY2M2Q3ZjM3OWQyNmM2YTYxZDZlN2YzNzhmZGNhN2I0OWE3NDRhNzlkNGYyNTAzOTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA0NjUzOWM2OGNkZmUxYjlmMjM3ZDdiYzA2OGRjMjYwZTlmMTZhNzc1MmRhYmE5ZjAyZTliNjIyZmQyNjA3ODAifQ"
         },
         {
-          "resource": "repo://docker/app-entrypoint.sh#L4-L16",
-          "version": "repo-lines-v1:sha256:cd1b21fcc3d32da1eb9c5c7f45f9dfd6413751a25d5f4648bac56d4799cb4536:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImViZWY2N2Y1NDYxYzJkY2NmMTIwNThjNDNiZjhjNjVkNGIzNWQ0ZTFiMGU1NGExNTAzMTA1NjEzZDQzYjhiM2UiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZjNWNjODgxMTJmZWMyMzBkZjQ2MmEzZjJiZGQyYjFkOTMwNzdhYzU0MzYwY2M0NDgzMzY5MDI5YWZlODQ4ZmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI1YmQ1NjE5MDk4YzI1NTRkNGYwM2M4NjgzYjE5Y2QwOWFmYWFlMGE3ZWY2ZGQ5YTk5NGRmNmQwNzZhMWNjOTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg2NzkyMWM1ZDBkNWI1MjNhNTRkZmEwMzU0YTA3YWZiMGUyZGFjZDMyOTUwYzYyNDZhZWE5ZTRjOTQ3MjA3YmIifQ"
+          "resource": "repo://docker/app-entrypoint.sh#L14-L16",
+          "version": "repo-lines-v1:sha256:45454309eda5ea27712d7c2f171a94537237e21b37bc560b72d88c25a1ca37db:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNmM1Y2M4ODExMmZlYzIzMGRmNDYyYTNmMmJkZDJiMWQ5MzA3N2FjNTQzNjBjYzQ0ODMzNjkwMjlhZmU4NDhmZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTQ2YjVmOTVkOTMxZTI2YzNlZDhmMjYyZWYzODRmN2EyNGI5NmEwODljYzg2MDZkNDYyYzY4ZmFkZDkwMGUxMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODY3OTIxYzVkMGQ1YjUyM2E1NGRmYTAzNTRhMDdhZmIwZTJkYWNkMzI5NTBjNjI0NmFlYTllNGM5NDcyMDdiYiJ9"
         }
       ]
     },
@@ -444,7 +444,7 @@
     },
     {
       "id": "claim_5c47386e2ae44537abac3f318e581ad4",
-      "statement": "The project version is 5.5.2, declared as ${revision} in the root pom.xml properties and used as the Maven project version; the lite tarball is named ecshopx-java-<version>.tar.gz with that version resolved by sed-only parsing of pom.xml (CI-friendly ${revision} placeholders resolved), and the same sed-only version read feeds the open-source install-stat reporter so customer machines never need mvn/java.",
+      "statement": "The project version is 5.5.3, declared as ${revision} in the root pom.xml properties (parent spring-boot 3.5.12) and used as the Maven project version; the lite tarball is named ecshopx-java-<version>.tar.gz with that version resolved by sed-only parsing of pom.xml (CI-friendly ${revision} placeholders resolved), and the same sed-only version read feeds the open-source install-stat reporter so customer machines never need mvn/java.",
       "evidence": [
         {
           "resource": "repo://docker-lite/lib/common.sh#L26-L56",
@@ -455,22 +455,22 @@
           "version": "repo-lines-v1:sha256:5d47ad5b47a75a3d7a338e9f442d34ac51e3555b6c3830639a894375477fde9c:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjI1ODZhMThiM2I2NzI0NTBkNDQ3NzE2ODQ1Yjc5YWNjOTI2ZTRmYjlkNzVkNjM4OGE3MTBiZmUxZWEwMTJlYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNGZmMjU3OWFiZDg4OTMwNjRkMzJjNjRhMjY3YTE5NjJiNDJlYTczNzJjYjMxODRjOTdjYWQxNzczYTUyYmJkMiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjIsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTFhZDM2N2MxMzk5MGRkOTFjOWEzNGVlMDRiODc4YzQyNTY1MDljMzIwMzhjZDk4NDQwZmVhYzJkZDZkNWQyMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDRhZDQ0MmI0YWQ2YWU0OGIzNGRlNTkxNjYzYzRiOTY3YTRjOWUyMDg4MGY4ZDkwYmRhZDlmMmY0NDBkOTAxMyJ9"
         },
         {
-          "resource": "repo://docker-lite/pack.sh#L177-L178",
-          "version": "repo-lines-v1:sha256:b95f39a8e463e173d83c456a59b43fd3fd4c7fc3ef63616c04538f9d126765db:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiM2IwOTdjZDE4ZDBhYWIzZjI5N2RiYWM1NTQ2YTE4NWUyNjliOGNlYTU1ZDY0MzQzMGM2OTQxZDFkMmNlYzQ5NyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNmMzMzI5MjNmNzdlYTI2NjZjYWFhOWFlMjNjN2IyN2FlOWE2NmExMTcxNjNiMzUzYzkxNjAzYmQzNzEwNzRhNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzY0MDM3OGMyYjYzOGQ0YTg2NmE1YmIyMzk3Yjc4MDdhYjkxMmJlNTVlNGI4OTRhYWRiODRhNWU2MTQ4ZTg0YyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiY2RlY2ViMzc4YmVlYjJhMGQzYjUyYTgwMmJkZTUzOGNkOTc5YzkzNGVjYjU0MDFjMDk3MWE2ZDVmZGRlNzk2MSJ9"
+          "resource": "repo://docker-lite/pack.sh#L224-L228",
+          "version": "repo-lines-v1:sha256:10116249213080c687da2fe9eac70cb52f2da9d5d0093eabc4314965a45e37b7:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNzRhZjEwOTViM2EzNmI2MmJkM2IyYjRhY2Q2MjE4ZTFhNWY4NDQwNmFhNDIwNTZkM2QyZTg5OTkxY2YxNWU2MiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTNlYWJhNjIyNmI1MGFmYjI4NTEzYzQzOTdjOTM2OTFjNWVlMDM1ZWQ4ZWJlMGQ2YjMzOGNiYTQwZjViNWU3YiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNmQ4Y2I0MDVjYTg2Y2Q3NzQ0YTU3NzdiMDU1ZDJlYzhiNGZjYzZmMjFiNzY1ODE2NTg2YzBhZGEwNjEyN2Q0ZSJ9"
         },
         {
           "resource": "repo://docker/install-open-source-stat.sh#L43-L75",
           "version": "repo-lines-v1:sha256:cd3d98b848fda813d69dff04f439ac1361f804e2cb2e0af391477867f480edd1:eyJzZWxlY3RlZExpbmVDb3VudCI6MzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE0ZThkNTg3OTY0ZGJiNjVkYzhkZTJiNGFiZjFkN2FjZjdmMWY1MDA3YTRlNDYwNzgwNTliN2I5NGJmOGEwNGYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNjNmE3NWNlYzk1NWZhOWRiNmIxODk5OWQ0MTQ3YjYwMjlmMWJjNTYyMmQ0YzdhY2M1MTM0YjkzMTM0OTQyM2YiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZkNzJiZDkxNDQwMzA4ZTgzYjg1ZWE0MmRiMTEyYjNkNThkY2IyZjg1NGZhYTBjNDIwOGYyZDkwZWY5YjVmZGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQzZTI2NGM3NjUwNjE1Yzk5MmNhNjY2YjNiNzY2OTBlNTMxYjc0YTYyMDU5ZjIxOTM1OGE1Y2M4MGU5NTMzNWUifQ"
         },
         {
-          "resource": "repo://pom.xml#L14-L23",
-          "version": "repo-lines-v1:sha256:8ff94b873aa783321cf9ddd9022a30e594449ac6f99948cb34c683e308cc8443:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJhZTIyNTk3NmM0OWM4MDIwYWQ2YWNiYmJkMzhkMDI0MTU2OGRmMDYwN2E2NGY1Mzg0MmM1OWQ1YmI5MjhhNDUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxYjg1MzA5OGRmNWRmM2MzNzA0MWVmZjljZjgzODhhYmQ5ZWNhZDM4MmU0YmE2ZTg3OTUzYjRkMTkyN2JhNjgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE4MTk2OTZkNGI1NzU3YTczZmEyODAyZTg3NDU4YWEzNmM5YzUxN2ExODYxYmNhMzJkYmE3MzM3MDliNDAzMjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUxYTBiMmFjNTJkN2ZlYmJmNjU0ZGIyNmMxZDMzNzkxODE0ZTgyNWRiOTk1NjA2NGE5MmVhZjEyYzkxMmU3ZWEifQ"
+          "resource": "repo://pom.xml#L6-L23",
+          "version": "repo-lines-v1:sha256:79cc45ae7b162c67934ac9da79b52b1017c2404dfd1a3368b0c09482d498a0f8:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYyZDg2OTJjNDcwNGI5Y2Q5ZmMwN2Y5ODNhMDFjYWNlOTI2MjYzZjJjZjJkOGM0M2QzZGQ0NDc3ODQ0NmU4OWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxYjg1MzA5OGRmNWRmM2MzNzA0MWVmZjljZjgzODhhYmQ5ZWNhZDM4MmU0YmE2ZTg3OTUzYjRkMTkyN2JhNjgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM5OGMzN2Q5M2QwNWZkYWY1MjYxYjkwNzg3YWU2MzFjODhkMzIyMmQwZGE1YWRkZGU2NWJiMDU4ZjVlMzZhMWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUxYTBiMmFjNTJkN2ZlYmJmNjU0ZGIyNmMxZDMzNzkxODE0ZTgyNWRiOTk1NjA2NGE5MmVhZjEyYzkxMmU3ZWEifQ"
         }
       ]
     }
   ],
   "verification": {
     "by": "openwiki/0.9.0",
-    "at": "2026-11-10T17:10:58.497Z"
+    "at": "2026-11-11T17:12:30.774Z"
   }
 }

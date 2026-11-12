@@ -57,6 +57,18 @@ public class NormalOrderBrokerageOnFinishService {
 		this.dispatchFacade = dispatchFacade;
 	}
 
+	/** 支付成功：仅写佣；计划结算时间在订单完成后刷新。 */
+	public void orderFinishBrokerageOnTradePaySuccess(long companyId, long orderId, NormalOrders order) {
+		if (companyId <= 0L || orderId <= 0L || order == null) {
+			return;
+		}
+		NormalOrderBrokerageFinishInput finishInput =
+				new NormalOrderBrokerageFinishInput(
+						order.getUserId(), order.getOrderClass(), order.getTotalFee(), order.getCommissionFee());
+		normalOrderFinishBrokerageCoordinator.onNormalOrderFinishBrokerage(companyId, orderId, finishInput);
+	}
+
+	/** 订单完成（确认收货、批量完成、自提核销等）：写佣幂等 + 按配置刷新 plan_close_time。 */
 	public void orderFinishBrokerage(long companyId, long orderId, NormalOrders order) {
 		if (companyId <= 0L || orderId <= 0L || order == null) {
 			return;
