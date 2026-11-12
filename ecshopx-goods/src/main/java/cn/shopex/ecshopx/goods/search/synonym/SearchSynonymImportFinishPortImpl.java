@@ -25,6 +25,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class SearchSynonymImportFinishPortImpl implements SearchSynonymImportFinishPort {
 
+	static final String ES_RELOAD_WARNING_HINT =
+			"数据已保存，搜索同义词热更新失败，请稍后重试或通过编辑保存触发刷新";
+
 	private static final Logger log = LoggerFactory.getLogger(SearchSynonymImportFinishPortImpl.class);
 
 	private final SearchSynonymService searchSynonymService;
@@ -37,12 +40,13 @@ public class SearchSynonymImportFinishPortImpl implements SearchSynonymImportFin
 	}
 
 	@Override
-	public void onImportFinished(long companyId, int successLine, int errorLine) {
+	public String onImportFinished(long companyId, int successLine, int errorLine) {
 		if (successLine <= 0 || !searchEsProperties.isEnabled()) {
-			return;
+			return null;
 		}
 		try {
 			searchSynonymService.reloadToEs(companyId);
+			return null;
 		} catch (SearchSynonymEsReloadException e) {
 			log.warn(
 					"search synonym ES reload failed after import companyId={} successLine={} errorLine={}",
@@ -50,6 +54,7 @@ public class SearchSynonymImportFinishPortImpl implements SearchSynonymImportFin
 					successLine,
 					errorLine,
 					e);
+			return ES_RELOAD_WARNING_HINT;
 		} catch (Exception e) {
 			log.warn(
 					"search synonym ES reload failed after import companyId={} successLine={} errorLine={}",
@@ -57,6 +62,7 @@ public class SearchSynonymImportFinishPortImpl implements SearchSynonymImportFin
 					successLine,
 					errorLine,
 					e);
+			return ES_RELOAD_WARNING_HINT;
 		}
 	}
 }

@@ -256,11 +256,14 @@ public class UploadFileImportDataService {
 			}
 
 			if (leftJobNum == 0) {
+				String importFinishedHint = null;
 				try {
-					table.onImportFinished(companyId, fileType, mergedSuccess, mergedError);
+					importFinishedHint =
+							table.onImportFinished(companyId, fileType, mergedSuccess, mergedError);
 				} catch (Exception ex) {
 					log.warn("onImportFinished failed companyId={} fileType={}", companyId, fileType, ex);
 				}
+				persistImportFinishedHint(id, importFinishedHint);
 			}
 
 			try {
@@ -271,6 +274,36 @@ public class UploadFileImportDataService {
 				log.debug("delete storage path failed: {}", ex.toString());
 			}
 			return;
+		}
+	}
+
+	private void persistImportFinishedHint(long id, String hint) {
+		if (hint == null || hint.isBlank()) {
+			return;
+		}
+		try {
+			Map<String, Object> data = uploadeFileRepository.getInfoById(id);
+			if (data.isEmpty()) {
+				return;
+			}
+			Map<String, Object> msg = new LinkedHashMap<>();
+			Object hm = data.get("handle_message");
+			if (hm instanceof Map<?, ?> raw) {
+				for (Map.Entry<?, ?> e : raw.entrySet()) {
+					if (e.getKey() != null) {
+						msg.put(String.valueOf(e.getKey()), e.getValue());
+					}
+				}
+			} else if (hm instanceof String s && !s.isBlank()) {
+				@SuppressWarnings("unchecked")
+				Map<String, Object> parsed = objectMapper.readValue(s, Map.class);
+				msg.putAll(parsed);
+			}
+			msg.put("esReloadWarning", hint);
+			uploadeFileRepository.updateOneBy(
+					Map.of("id", id), Map.of("handle_message", objectMapper.writeValueAsString(msg)));
+		} catch (Exception ex) {
+			log.warn("persist import finished hint failed id={}", id, ex);
 		}
 	}
 

@@ -236,11 +236,12 @@ public class EspierUploadHandlerBeans {
 			}
 
 			@Override
-			public void onImportFinished(long companyId, String fileType, int successLine, int errorLine) {
+			public String onImportFinished(long companyId, String fileType, int successLine, int errorLine) {
 				SearchSynonymImportFinishPort port = finishPort.getIfAvailable();
 				if (port != null) {
-					port.onImportFinished(companyId, successLine, errorLine);
+					return port.onImportFinished(companyId, successLine, errorLine);
 				}
+				return null;
 			}
 		};
 	}

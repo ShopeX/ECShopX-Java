@@ -19,5 +19,8 @@ package cn.shopex.ecshopx.common.espier.upload;
 /** Invoked when Espier {@code search_synonym} import finishes successfully. */
 public interface SearchSynonymImportFinishPort {
 
-	void onImportFinished(long companyId, int successLine, int errorLine);
+	/**
+	 * @return operator hint when post-import work failed but import remains finished; {@code null} if ok
+	 */
+	String onImportFinished(long companyId, int successLine, int errorLine);
 }

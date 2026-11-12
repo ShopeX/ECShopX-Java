@@ -16,7 +16,9 @@
 
 package cn.shopex.ecshopx.goods.search.synonym;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -60,7 +62,17 @@ class SearchSynonymImportFinishPortImplTest {
 	@Test
 	void onImportFinished_esDisabled_skipsReload() {
 		when(searchEsProperties.isEnabled()).thenReturn(false);
-		port.onImportFinished(10L, 3, 0);
+		assertThat(port.onImportFinished(10L, 3, 0)).isNull();
 		verify(searchSynonymService, never()).reloadToEs(anyLong());
+	}
+
+	@Test
+	void onImportFinished_reloadFails_returnsHintAndDoesNotThrow() {
+		when(searchEsProperties.isEnabled()).thenReturn(true);
+		doThrow(new SearchSynonymEsReloadException("es down", new RuntimeException("cause")))
+				.when(searchSynonymService)
+				.reloadToEs(10L);
+		assertThat(port.onImportFinished(10L, 3, 0))
+				.isEqualTo(SearchSynonymImportFinishPortImpl.ES_RELOAD_WARNING_HINT);
 	}
 }

@@ -43,7 +43,11 @@ public interface EspierUploadFileHandler {
 		// default no-op
 	}
 
-	default void onImportFinished(long companyId, String fileType, int successLine, int errorLine) {
-		// default no-op
+	/**
+	 * Called after import merge reaches {@code finish}. Return non-null text to record an operator hint
+	 * on the upload row ({@code handle_message}), without changing status.
+	 */
+	default String onImportFinished(long companyId, String fileType, int successLine, int errorLine) {
+		return null;
 	}
 }
