@@ -96,6 +96,35 @@ class MemberTaskSaveServiceTest {
 	}
 
 	@Test
+	void create_stripsRuleConfigDisplayListsBeforePersist() {
+		long now = 1_700_000_000L;
+		when(memberTaskMapper.insert(any(MemberTask.class)))
+				.thenAnswer(
+						inv -> {
+							inv.getArgument(0, MemberTask.class).setTaskId(44L);
+							return 1;
+						});
+
+		Map<String, Object> body = validBody();
+		body.put("begin_time", (int) (now + 100));
+		body.put("end_time", (int) (now + 1000));
+		Map<String, Object> rule = new LinkedHashMap<>();
+		rule.put("goods_scope", "unlimited");
+		rule.put("amount_fen", 0);
+		rule.put("need_receipt", false);
+		rule.put("category_list", List.of(Map.of("category_id", 1L, "category_name", "展示")));
+		rule.put("distributor_list", List.of(Map.of("distributor_id", 2L, "name", "展示")));
+		body.put("rule_config", rule);
+
+		service.create(9L, body, now, Locale.SIMPLIFIED_CHINESE);
+
+		ArgumentCaptor<MemberTask> cap = ArgumentCaptor.forClass(MemberTask.class);
+		verify(memberTaskMapper).insert(cap.capture());
+		assertThat(cap.getValue().getRuleConfig()).doesNotContain("category_list");
+		assertThat(cap.getValue().getRuleConfig()).doesNotContain("distributor_list");
+	}
+
+	@Test
 	void create_purchaseItemsScope_requiresItemIds() {
 		long now = 1_700_000_000L;
 		when(messageSource.getMessage(

@@ -41,16 +41,19 @@ public class MemberTaskDetailService {
 	private final MessageSource messageSource;
 	private final ObjectMapper objectMapper;
 	private final MemberTaskRewardsDisplayService memberTaskRewardsDisplayService;
+	private final MemberTaskRuleConfigDisplayService memberTaskRuleConfigDisplayService;
 
 	public MemberTaskDetailService(
 			MemberTaskMapper memberTaskMapper,
 			MessageSource messageSource,
 			ObjectMapper objectMapper,
-			MemberTaskRewardsDisplayService memberTaskRewardsDisplayService) {
+			MemberTaskRewardsDisplayService memberTaskRewardsDisplayService,
+			MemberTaskRuleConfigDisplayService memberTaskRuleConfigDisplayService) {
 		this.memberTaskMapper = memberTaskMapper;
 		this.messageSource = messageSource;
 		this.objectMapper = objectMapper;
 		this.memberTaskRewardsDisplayService = memberTaskRewardsDisplayService;
+		this.memberTaskRuleConfigDisplayService = memberTaskRuleConfigDisplayService;
 	}
 
 	public Map<String, Object> detail(long companyId, long taskId, Locale locale) {
@@ -102,7 +105,7 @@ public class MemberTaskDetailService {
 		out.put("audience_tag_combine", row.getAudienceTagCombine());
 		out.put("task_rule", row.getTaskRule());
 		out.put("reward_config", parseJsonObject(row.getRewardConfig()));
-		out.put("rule_config", parseJsonObject(row.getRuleConfig()));
+		out.put("rule_config", enrichRuleConfigForDetail(companyId, row.getRuleConfig()));
 		out.put("jump_page", row.getJumpPage());
 		return out;
 	}
@@ -141,5 +144,15 @@ public class MemberTaskDetailService {
 		} catch (Exception e) {
 			return Map.of();
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private Object enrichRuleConfigForDetail(long companyId, String ruleConfigJson) {
+		Object parsed = parseJsonObject(ruleConfigJson);
+		if (!(parsed instanceof Map<?, ?> map)) {
+			return parsed;
+		}
+		Map<String, Object> rule = new LinkedHashMap<>((Map<String, Object>) map);
+		return memberTaskRuleConfigDisplayService.enrichForAdminDetail(companyId, rule);
 	}
 }

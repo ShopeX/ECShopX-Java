@@ -30,8 +30,10 @@ import cn.shopex.ecshopx.goods.repository.ItemsCategoryRepository;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
@@ -62,6 +64,22 @@ public class DiscountCardItemScopeSupportService implements DiscountCardItemScop
 		}
 		List<ItemsCategory> rows = itemsCategoryRepository.listByCompanyAndCategoryIdIn(companyId, categoryIds);
 		return rows.stream().map(ItemsCategory::getCategoryName).filter(Objects::nonNull).collect(Collectors.joining(","));
+	}
+
+	@Override
+	public Map<Long, String> categoryNamesByIds(long companyId, Collection<Long> categoryIds) {
+		if (categoryIds == null || categoryIds.isEmpty()) {
+			return Map.of();
+		}
+		List<ItemsCategory> rows = itemsCategoryRepository.listByCompanyAndCategoryIdIn(companyId, categoryIds);
+		Map<Long, String> out = new LinkedHashMap<>();
+		for (ItemsCategory c : rows) {
+			if (c.getCategoryId() == null) {
+				continue;
+			}
+			out.put(c.getCategoryId(), c.getCategoryName() == null ? "" : c.getCategoryName());
+		}
+		return out;
 	}
 
 	@Override

@@ -29,6 +29,7 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -411,7 +412,15 @@ public class MemberTaskSaveService {
 			validateOptionalIdArray(node.get("item_ids"), locale);
 			validateOptionalIdArray(node.get("distributor_ids"), locale);
 		}
+		stripRuleConfigDisplayOnlyFields(node);
 		return writeJson(node, locale);
+	}
+
+	private static void stripRuleConfigDisplayOnlyFields(JsonNode node) {
+		if (node instanceof ObjectNode obj) {
+			obj.remove("category_list");
+			obj.remove("distributor_list");
+		}
 	}
 
 	private JsonNode toJsonNode(Object raw, Locale locale, String key, String defaultZh) {

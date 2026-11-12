@@ -18,6 +18,7 @@ package cn.shopex.ecshopx.common.discount;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 标准优惠券创建时，类目/标签/品牌范围与商品计数的只读门面（由商品模块实现，供卡券模块注入）。
@@ -28,6 +29,9 @@ public interface DiscountCardItemScopeGateway {
 	 * 主类目名称，按逗号拼接，用于适用范围展示或持久化。
 	 */
 	String joinCategoryNames(long companyId, Collection<Long> categoryIds);
+
+	/** 主类目 id → 名称（仅返回能查到的行；key 为 category_id）。 */
+	Map<Long, String> categoryNamesByIds(long companyId, Collection<Long> categoryIds);
 
 	/**
 	 * 商品标签名称，逗号拼接。
