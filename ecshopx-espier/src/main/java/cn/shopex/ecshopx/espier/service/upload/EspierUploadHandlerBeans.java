@@ -17,8 +17,10 @@
 package cn.shopex.ecshopx.espier.service.upload;
 
 import cn.shopex.ecshopx.common.espier.upload.EspierImportRowSink;
+import cn.shopex.ecshopx.common.espier.upload.SearchSynonymImportFinishPort;
 import cn.shopex.ecshopx.common.exception.BadRequestException;
 import java.util.Map;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -48,6 +50,12 @@ public class EspierUploadHandlerBeans {
 	public EspierUploadFileHandler espierUploadSupplierGoodsHandler(
 			@Qualifier("espierImportRowSinkByType") Map<String, EspierImportRowSink> sinks) {
 		return delegating("supplier_goods", EspierUploadHeaderCatalog.SUPPLIER_GOODS(), null, sinks);
+	}
+
+	@Bean
+	public EspierUploadFileHandler espierUploadNormalGoodsHandler(
+			@Qualifier("espierImportRowSinkByType") Map<String, EspierImportRowSink> sinks) {
+		return delegating("normal_goods", EspierUploadHeaderCatalog.NORMAL_GOODS(), null, sinks);
 	}
 
 	@Bean
@@ -193,6 +201,48 @@ public class EspierUploadHandlerBeans {
 					}
 				},
 				sinks);
+	}
+
+	@Bean
+	public EspierUploadFileHandler espierUploadSearchSynonymHandler(
+			@Qualifier("espierImportRowSinkByType") Map<String, EspierImportRowSink> sinks,
+			ObjectProvider<SearchSynonymImportFinishPort> finishPort) {
+		return new AbstractEspierTableUploadHandler(
+				EspierUploadHeaderCatalog.SEARCH_SYNONYM(),
+				f -> {
+					if (!"xlsx".equalsIgnoreCase(AbstractEspierUploadFileHandler.extensionOf(f))) {
+						throw new BadRequestException("搜索同义词导入只支持Excel文件格式");
+					}
+				}) {
+			@Override
+			public String supportedFileType() {
+				return "search_synonym";
+			}
+
+			@Override
+			protected void handleBusinessRow(EspierUploadRowContext ctx, Map<String, Object> row) {
+				EspierImportRowSink sink = sinks.get("search_synonym");
+				if (sink == null) {
+					throw new IllegalStateException("missing EspierImportRowSink for search_synonym");
+				}
+				sink.acceptRow(
+						ctx.companyId(),
+						ctx.operatorId(),
+						ctx.distributorId(),
+						ctx.supplierId(),
+						ctx.merchantId(),
+						row,
+						ctx.operatorType());
+			}
+
+			@Override
+			public void onImportFinished(long companyId, String fileType, int successLine, int errorLine) {
+				SearchSynonymImportFinishPort port = finishPort.getIfAvailable();
+				if (port != null) {
+					port.onImportFinished(companyId, successLine, errorLine);
+				}
+			}
+		};
 	}
 
 	private static EspierUploadFileHandler delegating(
