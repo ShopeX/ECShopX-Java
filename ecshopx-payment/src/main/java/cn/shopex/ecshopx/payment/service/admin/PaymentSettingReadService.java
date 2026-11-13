@@ -20,6 +20,7 @@ import cn.shopex.ecshopx.common.exception.BadRequestException;
 import cn.shopex.ecshopx.common.hfpay.HfPayPaymentSettingApplyPort;
 import cn.shopex.ecshopx.espier.security.OperatorJwtAuthenticationFilter;
 import cn.shopex.ecshopx.payment.service.settings.DoumenIntlPaymentSettingReader;
+import cn.shopex.ecshopx.payment.service.settings.WxpayPaymentSettingAdminReadSupport;
 import cn.shopex.ecshopx.payment.support.PaymentConfigJsonSupport;
 import cn.shopex.ecshopx.payment.support.PaymentSettingRedisKeys;
 import cn.shopex.ecshopx.point.service.PointMemberRuleReadService;
@@ -96,6 +97,7 @@ public class PaymentSettingReadService {
 			String raw = companysRedisTemplate.opsForValue()
 					.get(PaymentSettingRedisKeys.wxpayRedisKey(companyId, distributorId));
 			Map<String, Object> data = PaymentConfigJsonSupport.parseObjectMap(objectMapper, raw);
+			WxpayPaymentSettingAdminReadSupport.enrichAdminDisplayFields(data);
 			return emptyPaymentSettingBodyOrArray(data);
 		}
 		if (PT_ALIPAY.equals(payType)) {
