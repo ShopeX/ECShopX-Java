@@ -349,7 +349,6 @@ public final class EspierUploadHeaderCatalog {
 		HDR_NORMAL_GOODS.put("成本价", "cost_price");
 		HDR_NORMAL_GOODS.put("起订量", "start_num");
 		HDR_NORMAL_GOODS.put("会员价", "member_price");
-		HDR_NORMAL_GOODS.put("审核状态", "audit_status");
 		HDR_NORMAL_GOODS.put("库存", "store");
 		HDR_NORMAL_GOODS.put("头图", "pics");
 		HDR_NORMAL_GOODS.put("详情图", "intro");

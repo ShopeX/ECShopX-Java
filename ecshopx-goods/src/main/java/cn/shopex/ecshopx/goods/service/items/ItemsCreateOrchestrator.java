@@ -40,10 +40,15 @@ public class ItemsCreateOrchestrator {
 	}
 
 	public void createItems(Map<String, Object> params) {
+		createItemsReturningItemId(params);
+	}
+
+	/** 平台路径返回 default_item_id / 主 SKU item_id，供导入等写回会员价。 */
+	public long createItemsReturningItemId(Map<String, Object> params) {
 		long supplierId = params.get("supplier_id") != null ? toLong(params.get("supplier_id")) : 0L;
 		if (supplierId > 0) {
 			supplierItemsAddService.addItemsTransactional(params);
-			return;
+			return 0L;
 		}
 		long defaultItemId = platformItemsAddService.addItemsTransactional(params);
 		long companyId = toLong(params.get("company_id"));
@@ -51,6 +56,7 @@ public class ItemsCreateOrchestrator {
 		if (defaultItemId > 0) {
 			goodsSearchIndexDirtyFanout.scheduleUpsertForDefaultItem(companyId, defaultItemId);
 		}
+		return defaultItemId;
 	}
 
 	private static long toLong(Object o) {
