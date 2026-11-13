@@ -36,6 +36,11 @@ import org.springframework.util.StringUtils;
 @RequiredArgsConstructor
 public class OpenScreenAdSaveService {
 
+	/** Admin no longer sends display window; keep rows valid for wxapp epoch-second filter. */
+	private static final long DEFAULT_START_EPOCH_SEC = 0L;
+
+	private static final long DEFAULT_END_EPOCH_SEC = 2_147_483_647L;
+
 	private final OpenScreenAdMapper openScreenAdMapper;
 	private final ObjectMapper objectMapper;
 	private final OpenScreenAdColumnNamesDataMapper openScreenAdColumnNamesDataMapper;
@@ -61,8 +66,11 @@ public class OpenScreenAdSaveService {
 	public Map<String, Object> save(long companyId, OpenScreenAdSaveRequest req) {
 		validateSaveRequest(req);
 
-		long startTs = Long.parseLong(trim(req.getStartTime()));
-		long endTs = Long.parseLong(trim(req.getEndTime()));
+		long startTs =
+				resolveEpochSeconds(
+						req.getStartTime(), DEFAULT_START_EPOCH_SEC, "请选择展示开始时间");
+		long endTs =
+				resolveEpochSeconds(req.getEndTime(), DEFAULT_END_EPOCH_SEC, "请选择展示结束时间");
 
 		String adUrlJson;
 		try {
@@ -153,23 +161,31 @@ public class OpenScreenAdSaveService {
 		if (!waiting.matches("^[0-9]+$")) {
 			throw new BadRequestException("请设置秒数");
 		}
-		String start = trim(req.getStartTime());
-		if (!StringUtils.hasText(start)) {
-			throw new BadRequestException("请选择展示开始时间");
+		assertEpochSecondsIfPresent(req.getStartTime(), "请选择展示开始时间");
+		assertEpochSecondsIfPresent(req.getEndTime(), "请选择展示结束时间");
+	}
+
+	private static void assertEpochSecondsIfPresent(String raw, String invalidMsg) {
+		String t = trim(raw);
+		if (!StringUtils.hasText(t)) {
+			return;
 		}
 		try {
-			Long.parseLong(start);
+			Long.parseLong(t);
 		} catch (NumberFormatException ex) {
-			throw new BadRequestException("请选择展示开始时间");
+			throw new BadRequestException(invalidMsg);
 		}
-		String end = trim(req.getEndTime());
-		if (!StringUtils.hasText(end)) {
-			throw new BadRequestException("请选择展示结束时间");
+	}
+
+	private static long resolveEpochSeconds(String raw, long defaultWhenBlank, String invalidMsg) {
+		String t = trim(raw);
+		if (!StringUtils.hasText(t)) {
+			return defaultWhenBlank;
 		}
 		try {
-			Long.parseLong(end);
+			return Long.parseLong(t);
 		} catch (NumberFormatException ex) {
-			throw new BadRequestException("请选择展示结束时间");
+			throw new BadRequestException(invalidMsg);
 		}
 	}
 
