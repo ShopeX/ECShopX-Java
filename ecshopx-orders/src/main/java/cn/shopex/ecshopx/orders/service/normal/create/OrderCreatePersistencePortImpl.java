@@ -175,7 +175,7 @@ public class OrderCreatePersistencePortImpl implements OrderCreatePersistencePor
 			// Last-resort fallback; create path should set from order_cancel_time (default 15 min).
 			order.setAutoCancelTime(String.valueOf(now + 15 * 60));
 		}
-		order.setIsOnlineOrder(Boolean.FALSE.equals(od.get("is_online_order")) ? Boolean.FALSE : Boolean.TRUE);
+		order.setIsOnlineOrder(resolveIsOnlineOrderForPersist(od));
 		order.setSalesmanId(longVal(od.get("salesman_id"), 0L));
 		long posAccountId = longVal(od.get("pos_store_account_id"), 0L);
 		if (posAccountId <= 0L) {
@@ -637,6 +637,25 @@ public class OrderCreatePersistencePortImpl implements OrderCreatePersistencePor
 		} catch (JsonProcessingException e) {
 			return "";
 		}
+	}
+
+	static Boolean resolveIsOnlineOrderForPersist(Map<String, Object> od) {
+		if (od == null) {
+			return Boolean.TRUE;
+		}
+		if ("shopadmin".equals(stringVal(od.get("order_class")))) {
+			return Boolean.FALSE;
+		}
+		if (Boolean.FALSE.equals(od.get("is_online_order"))) {
+			return Boolean.FALSE;
+		}
+		if ("dianwu".equals(stringVal(od.get("source_from")))) {
+			return Boolean.FALSE;
+		}
+		if ("shop_offline".equals(stringVal(od.get("order_source")))) {
+			return Boolean.FALSE;
+		}
+		return Boolean.TRUE;
 	}
 
 	private static int intValPoints(Object v) {

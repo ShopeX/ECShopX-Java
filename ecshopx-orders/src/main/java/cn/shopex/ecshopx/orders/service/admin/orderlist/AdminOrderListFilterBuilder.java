@@ -104,6 +104,7 @@ public class AdminOrderListFilterBuilder {
 			}
 		}
 		putStringParam(f, request, "is_invoiced");
+		applyIsOnlineOrderFilter(f, request);
 
 		String shopIdReq = request.getParameter("shop_id");
 		if (StringUtils.hasText(shopIdReq)) {
@@ -314,6 +315,17 @@ public class AdminOrderListFilterBuilder {
 		String v = request.getParameter(param);
 		if (StringUtils.hasText(v)) {
 			f.put(param, v.trim());
+		}
+	}
+
+	private static void applyIsOnlineOrderFilter(Map<String, Object> f, HttpServletRequest request) {
+		String raw = request.getParameter("is_online_order");
+		if (!StringUtils.hasText(raw)) {
+			return;
+		}
+		String t = raw.trim();
+		if ("0".equals(t) || "1".equals(t)) {
+			f.put("is_online_order", t);
 		}
 	}
 

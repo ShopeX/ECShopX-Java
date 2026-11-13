@@ -122,6 +122,51 @@ class OrderCreatePersistencePortImplShopIdAlignPhpTest {
 	}
 
 	@Test
+	void persistOrder_shopadminOrder_persistsIsOnlineOrderFalse() {
+		when(normalOrderNumericIdService.generate(anyLong())).thenReturn(90002L);
+		CurrencyExchangeRate cny = new CurrencyExchangeRate();
+		cny.setCurrency("CNY");
+		cny.setRate(1.0);
+		cny.setSymbol("￥");
+		when(companyDefaultCurrencyService.getCur(141L)).thenReturn(cny);
+
+		NormalOrderCreateParams p = new NormalOrderCreateParams();
+		Map<String, Object> od = p.getOrderData();
+		od.put("company_id", 141L);
+		od.put("user_id", 7L);
+		od.put("mobile", "13800000000");
+		od.put("distributor_id", 104L);
+		od.put("shop_id", 0L);
+		od.put("order_type", "normal");
+		od.put("order_class", "shopadmin");
+		od.put("receipt_type", "ziti");
+		od.put("order_source", "shop_offline");
+		od.put("source_from", "dianwu");
+		od.put("title", "pos");
+		od.put("total_fee", 100);
+		od.put("item_fee", 100);
+		od.put("pay_type", "pos");
+		od.put("is_online_order", Boolean.FALSE);
+		Map<String, Object> item = new LinkedHashMap<>();
+		item.put("item_id", 11L);
+		item.put("goods_id", 11L);
+		item.put("item_name", "sku");
+		item.put("num", 1);
+		item.put("price", 100);
+		item.put("total_fee", 100);
+		item.put("item_fee", 100);
+		item.put("distributor_id", 104L);
+		item.put("shop_id", 0L);
+		od.put("items", List.of(item));
+
+		port.persistOrder(p);
+
+		ArgumentCaptor<NormalOrders> orderCaptor = ArgumentCaptor.forClass(NormalOrders.class);
+		verify(normalOrdersMapper).insert(orderCaptor.capture());
+		assertThat(orderCaptor.getValue().getIsOnlineOrder()).isFalse();
+	}
+
+	@Test
 	void persistOrder_usesOrderDataShopId_notDistributorId() {
 		when(normalOrderNumericIdService.generate(anyLong())).thenReturn(90001L);
 		CurrencyExchangeRate cny = new CurrencyExchangeRate();

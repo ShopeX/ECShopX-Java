@@ -117,6 +117,11 @@ public class OrderCreateFormatDataPortImpl implements OrderCreateFormatDataPort 
 		od.put("order_type", typed.orderType());
 		od.put("order_class", typed.orderClass());
 		od.put("order_type_slug", slug);
+		if (pr.containsKey("is_online_order")) {
+			od.put("is_online_order", pr.get("is_online_order"));
+		} else if ("shopadmin".equals(typed.orderClass())) {
+			od.put("is_online_order", Boolean.FALSE);
+		}
 		// PHP OrderService::_formatOrderData uses_platform_item_stock
 		boolean shopadminFastBuy =
 				"shopadmin".equals(typed.orderClass()) && "fastbuy".equals(stringVal(pr.get("cart_type")));

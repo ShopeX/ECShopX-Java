@@ -27,4 +27,24 @@ class AdminOrderListFilterBuilderOrderStatusTest {
 		assertFalse(filter.containsKey("cancel_status"));
 		assertFalse(filter.containsKey("cancel_status|in"));
 	}
+
+	@Test
+	void isOnlineOrderFilter_acceptsZeroOrOneOnly() {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		request.setParameter("is_online_order", "0");
+
+		Map<String, Object> filter = builder.build(38L, Map.of("operator_type", "admin"), request).filter();
+
+		assertEquals("0", filter.get("is_online_order"));
+
+		request = new MockHttpServletRequest();
+		request.setParameter("is_online_order", "1");
+		filter = builder.build(38L, Map.of("operator_type", "admin"), request).filter();
+		assertEquals("1", filter.get("is_online_order"));
+
+		request = new MockHttpServletRequest();
+		request.setParameter("is_online_order", "yes");
+		filter = builder.build(38L, Map.of("operator_type", "admin"), request).filter();
+		assertFalse(filter.containsKey("is_online_order"));
+	}
 }

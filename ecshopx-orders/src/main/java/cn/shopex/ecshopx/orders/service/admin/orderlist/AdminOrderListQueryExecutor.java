@@ -389,6 +389,10 @@ public class AdminOrderListQueryExecutor {
 		if (isInvoiced != null && StringUtils.hasText(String.valueOf(isInvoiced).trim())) {
 			w.eq(NormalOrders::getIsInvoiced, intVal(isInvoiced) != 0);
 		}
+		Object isOnlineOrder = filter.get("is_online_order");
+		if (isOnlineOrder != null && StringUtils.hasText(String.valueOf(isOnlineOrder).trim())) {
+			w.eq(NormalOrders::getIsOnlineOrder, intVal(isOnlineOrder) != 0);
+		}
 		Object cancelIn = filter.get("cancel_status|in");
 		if (cancelIn instanceof Collection<?> c && !c.isEmpty()) {
 			w.in(NormalOrders::getCancelStatus, c.stream().map(String::valueOf).toList());

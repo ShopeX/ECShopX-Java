@@ -89,7 +89,7 @@ public class AftersalesAdminDetailPhpParityApplier {
 			Set.of("item_fee", "total_fee", "market_fee");
 
 	private static final Set<String> ORDER_INFO_REMOVE_KEYS =
-			Set.of("is_online_order", "coupon_discount_desc", "member_discount_desc", "original_order_id");
+			Set.of("coupon_discount_desc", "member_discount_desc", "original_order_id");
 
 	private static final Set<String> ITEM_REMOVE_KEYS =
 			Set.of(
