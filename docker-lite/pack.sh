@@ -14,7 +14,7 @@ source "$LITE_DIR/lib/images.sh"
 release_init_paths "$SCRIPT_PATH"
 
 # Admin / mobile / PC all build on Node 22.
-RELEASE_NODE="${RELEASE_NODE:-22.23}"
+RELEASE_NODE="${RELEASE_NODE:-22.23.4}"
 RELEASE_PNPM_VERSION="${RELEASE_PNPM_VERSION:-10.13.0}"
 APP_IMAGE_CDN="${APP_IMAGE_CDN:-https://ecshopx-vshop-images.oss-cn-shanghai.aliyuncs.com}"
 WITH_IMAGES=false

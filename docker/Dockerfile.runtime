@@ -38,7 +38,7 @@ RUN --mount=type=bind,source=docker/vendor/OpenJDK17U-jre_x64_linux_hotspot_17.0
     && apt-get -o Acquire::Retries=5 install -y --no-install-recommends \
       curl ca-certificates gnupg tzdata gettext-base \
     && curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
-    && apt-get -o Acquire::Retries=5 install -y --no-install-recommends 'nodejs=22.23.*' \
+    && apt-get -o Acquire::Retries=5 install -y --no-install-recommends 'nodejs=22.23.4' \
     && curl -fsSL https://openresty.org/package/pubkey.gpg | gpg --dearmor -o /usr/share/keyrings/openresty.gpg \
     && echo "deb [signed-by=/usr/share/keyrings/openresty.gpg] http://openresty.org/package/ubuntu jammy main" \
          > /etc/apt/sources.list.d/openresty.list \
