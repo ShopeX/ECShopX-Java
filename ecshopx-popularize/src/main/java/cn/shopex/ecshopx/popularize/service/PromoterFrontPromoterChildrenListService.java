@@ -121,6 +121,7 @@ public class PromoterFrontPromoterChildrenListService {
 				filtered.add(row);
 			}
 		}
+		filtered = retainLiveTeamMemberRows(companyId, filtered);
 
 		long totalLong = filtered.size();
 		int offset = (page - 1) * pageSize;
@@ -161,13 +162,13 @@ public class PromoterFrontPromoterChildrenListService {
 
 		List<Map<String, Object>> collected =
 				collectRelationRowsBfs(companyId, rootId, filterCopy, DEFAULT_RELATION_DEPTH);
-		int n = 0;
+		List<Map<String, Object>> matched = new ArrayList<>();
 		for (Map<String, Object> row : collected) {
 			if (rowMatchesFilterCopy(row, filterCopy)) {
-				n++;
+				matched.add(row);
 			}
 		}
-		return n;
+		return retainLiveTeamMemberRows(companyId, matched).size();
 	}
 
 	/**
@@ -204,13 +205,64 @@ public class PromoterFrontPromoterChildrenListService {
 		}
 
 		List<Map<String, Object>> collected = collectRelationRowsBfs(companyId, rootId, filterCopy, depth);
-		long n = 0L;
+		List<Map<String, Object>> matched = new ArrayList<>();
 		for (Map<String, Object> row : collected) {
 			if (rowMatchesFilterCopy(row, filterCopy)) {
-				n++;
+				matched.add(row);
 			}
 		}
-		return n;
+		return retainLiveTeamMemberRows(companyId, matched).size();
+	}
+
+	/**
+	 * 团队下级统计/列表仅保留有效会员：未禁用且 {@code members} 行仍存在（已注销排除）。
+	 */
+	List<Map<String, Object>> retainLiveTeamMemberRows(long companyId, List<Map<String, Object>> rows) {
+		if (rows == null || rows.isEmpty()) {
+			return List.of();
+		}
+		List<Map<String, Object>> enabled = new ArrayList<>();
+		List<Long> userIds = new ArrayList<>();
+		for (Map<String, Object> row : rows) {
+			Object dis = row.get("disabled");
+			int disabled = 0;
+			if (dis instanceof Number n) {
+				disabled = n.intValue();
+			} else if (dis != null) {
+				try {
+					disabled = Integer.parseInt(String.valueOf(dis).trim());
+				} catch (NumberFormatException ignored) {
+					disabled = 0;
+				}
+			}
+			if (disabled != 0) {
+				continue;
+			}
+			Object uidObj = row.get("user_id");
+			if (uidObj == null) {
+				continue;
+			}
+			long uid = uidObj instanceof Number n ? n.longValue() : Long.parseLong(String.valueOf(uidObj).trim());
+			if (uid <= 0L) {
+				continue;
+			}
+			enabled.add(row);
+			if (!userIds.contains(uid)) {
+				userIds.add(uid);
+			}
+		}
+		if (enabled.isEmpty()) {
+			return List.of();
+		}
+		Set<Long> activeUserIds = memberAccountService.filterActiveMemberUserIds(companyId, userIds);
+		List<Map<String, Object>> out = new ArrayList<>();
+		for (Map<String, Object> row : enabled) {
+			long uid = ((Number) row.get("user_id")).longValue();
+			if (activeUserIds.contains(uid)) {
+				out.add(row);
+			}
+		}
+		return out;
 	}
 
 	private Long resolveRootPromoterIdFromUser(long companyId, long userId) {

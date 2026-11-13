@@ -19,6 +19,8 @@ package cn.shopex.ecshopx.popularize.integration.members;
 import cn.shopex.ecshopx.common.members.h5.H5WxappMemberDeleteDisablePromoterPort;
 import cn.shopex.ecshopx.popularize.domain.Promoter;
 import cn.shopex.ecshopx.popularize.mapper.PromoterMapper;
+import cn.shopex.ecshopx.popularize.service.PromoterGradeUpgradeTriggerService;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,16 +30,37 @@ import org.springframework.stereotype.Service;
 public class H5WxappMemberDeleteDisablePromoterPortImpl implements H5WxappMemberDeleteDisablePromoterPort {
 
 	private final PromoterMapper promoterMapper;
+	private final PromoterGradeUpgradeTriggerService promoterGradeUpgradeTriggerService;
 
 	@Override
 	public void disablePromoter(long companyId, long userId) {
+		Promoter row =
+				promoterMapper.selectOne(
+						new LambdaQueryWrapper<Promoter>()
+								.eq(Promoter::getCompanyId, companyId)
+								.eq(Promoter::getUserId, userId)
+								.last("LIMIT 1"));
+		if (row == null) {
+			return;
+		}
+		Long oldParentRecordId = row.getPid();
 		int nowSec = (int) (System.currentTimeMillis() / 1000L);
 		LambdaUpdateWrapper<Promoter> u =
 				new LambdaUpdateWrapper<Promoter>()
 						.eq(Promoter::getCompanyId, companyId)
 						.eq(Promoter::getUserId, userId)
 						.set(Promoter::getDisabled, 1)
+						.set(Promoter::getPid, null)
+						.set(Promoter::getPmobile, null)
+						.set(Promoter::getPname, null)
 						.set(Promoter::getUpdated, nowSec);
 		promoterMapper.update(null, u);
+		promoterGradeUpgradeTriggerService.upgradeGrade(companyId, userId);
+		if (oldParentRecordId != null && oldParentRecordId > 0L) {
+			Promoter parent = promoterMapper.selectById(oldParentRecordId);
+			if (parent != null && parent.getUserId() != null && parent.getUserId() > 0L) {
+				promoterGradeUpgradeTriggerService.upgradeGrade(companyId, parent.getUserId());
+			}
+		}
 	}
 }

@@ -68,7 +68,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -808,6 +810,31 @@ public class MemberAccountService {
 		} catch (Exception e) {
 			return null;
 		}
+	}
+
+	/** User ids that still have a {@code members} row in the tenant (excludes logged-out accounts). */
+	public Set<Long> filterActiveMemberUserIds(long companyId, Collection<Long> userIds) {
+		if (userIds == null || userIds.isEmpty()) {
+			return Set.of();
+		}
+		List<Long> ids =
+				userIds.stream()
+						.filter(Objects::nonNull)
+						.filter(id -> id > 0L)
+						.distinct()
+						.toList();
+		if (ids.isEmpty()) {
+			return Set.of();
+		}
+		LambdaQueryWrapper<Members> wm = new LambdaQueryWrapper<>();
+		wm.eq(Members::getCompanyId, companyId)
+				.in(Members::getUserId, ids)
+				.select(Members::getUserId);
+		return membersMapper.selectList(wm).stream()
+				.map(Members::getUserId)
+				.filter(Objects::nonNull)
+				.filter(id -> id > 0L)
+				.collect(Collectors.toCollection(LinkedHashSet::new));
 	}
 
 	public List<Map<String, Object>> listMemberSummariesByUserIds(long companyId, Collection<Long> userIds) {

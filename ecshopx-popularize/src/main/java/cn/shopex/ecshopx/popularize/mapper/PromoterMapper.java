@@ -28,9 +28,11 @@ import org.apache.ibatis.annotations.Select;
 public interface PromoterMapper extends BaseMapper<Promoter> {
 
 	@Select("<script>"
-			+ "SELECT pid AS pid, COUNT(1) AS cnt FROM popularize_promoter WHERE company_id = #{companyId} AND pid IN "
+			+ "SELECT c.pid AS pid, COUNT(1) AS cnt FROM popularize_promoter c "
+			+ "INNER JOIN members m ON m.company_id = c.company_id AND m.user_id = c.user_id "
+			+ "WHERE c.company_id = #{companyId} AND (c.disabled IS NULL OR c.disabled = 0) AND c.pid IN "
 			+ "<foreach collection='pids' item='p' open='(' separator=',' close=')'>#{p}</foreach> "
-			+ "GROUP BY pid"
+			+ "GROUP BY c.pid"
 			+ "</script>")
 	List<Map<String, Object>> countDirectChildrenByPidList(@Param("companyId") long companyId,
 			@Param("pids") List<Long> pids);
