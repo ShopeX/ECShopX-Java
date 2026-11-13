@@ -45,6 +45,14 @@ public class DiscountCardsAdminListFilterBuilder {
 		applyDateStatus(w, merged.get("date_status"), nowEpochSeconds);
 		applyCardType(w, merged.get("card_type"));
 
+		Object cardIdObj = merged.get("card_id");
+		if (cardIdObj != null && StringUtils.hasText(String.valueOf(cardIdObj).trim())) {
+			long cardId = DiscountCardParamNormalize.longFromObject(cardIdObj, 0L);
+			if (cardId > 0L) {
+				w.eq(DiscountCards::getCardId, cardId);
+			}
+		}
+
 		Object titleObj = merged.get("title");
 		if (titleObj != null && StringUtils.hasText(String.valueOf(titleObj).trim())) {
 			w.like(DiscountCards::getTitle, String.valueOf(titleObj).trim());
