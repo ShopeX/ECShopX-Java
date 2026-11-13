@@ -465,7 +465,7 @@
     }
   },
   {
-    "shopmenu_id": 785,
+    "shopmenu_id": 786,
     "company_id": 0,
     "name": "搜索同义词",
     "url": "/entity/goodsbase/searchsynonym",
@@ -478,8 +478,8 @@
     "alias_name": "searchsynonym",
     "version": 1,
     "disabled": false,
-    "created": 1794300000,
-    "updated": 1794300000,
+    "created": 1794399865,
+    "updated": 1794484476,
     "level": 3,
     "parent_name": "基础配置",
     "isChildrenMenu": false,
@@ -488,11 +488,11 @@
     ],
     "name_lang": {
       "zh-CN": "搜索同义词",
-      "en-CN": "Search Synonyms",
-      "ar-SA": "مرادفات البحث",
-      "zh-TW": "搜尋同義詞",
-      "ja-JP": "検索同義語",
-      "ru-RU": "Синонимы поиска"
+      "en-CN": "",
+      "ar-SA": "",
+      "zh-TW": "",
+      "ja-JP": "",
+      "ru-RU": ""
     }
   },
   {
@@ -1516,37 +1516,6 @@
       "zh-TW": "人群打標",
       "ja-JP": "セグメントタグ付け",
       "ru-RU": "Тегирование аудиторий"
-    }
-  },
-  {
-    "shopmenu_id": 471,
-    "company_id": 0,
-    "name": "会员储值",
-    "url": "/member/deposit",
-    "sort": 1,
-    "is_menu": true,
-    "pid": 451,
-    "apis": null,
-    "icon": null,
-    "is_show": true,
-    "alias_name": "deposit",
-    "version": 1,
-    "disabled": false,
-    "created": 1792035297,
-    "updated": 1792035297,
-    "level": 2,
-    "parent_name": "会员",
-    "isChildrenMenu": false,
-    "menu_type": [
-      "all"
-    ],
-    "name_lang": {
-      "zh-CN": "会员储值",
-      "en-CN": "Member Stored Value",
-      "ar-SA": "رصيد العضو المسبق",
-      "zh-TW": "會員儲值",
-      "ja-JP": "会員プリペイド",
-      "ru-RU": "Предоплата участников"
     }
   },
   {
@@ -6068,6 +6037,37 @@
     ],
     "name_lang": {
       "zh-CN": "进销存设置",
+      "en-CN": "",
+      "ar-SA": "",
+      "zh-TW": "",
+      "ja-JP": "",
+      "ru-RU": ""
+    }
+  },
+  {
+    "shopmenu_id": 785,
+    "company_id": 0,
+    "name": "日结记录",
+    "url": "/applications/pos/daily-close-records",
+    "sort": 1,
+    "is_menu": true,
+    "pid": 782,
+    "apis": null,
+    "icon": null,
+    "is_show": true,
+    "alias_name": "daily-close-records",
+    "version": 1,
+    "disabled": false,
+    "created": 1794365682,
+    "updated": 1794365682,
+    "level": 3,
+    "parent_name": "POS",
+    "isChildrenMenu": false,
+    "menu_type": [
+      "all"
+    ],
+    "name_lang": {
+      "zh-CN": "日结记录",
       "en-CN": "",
       "ar-SA": "",
       "zh-TW": "",
