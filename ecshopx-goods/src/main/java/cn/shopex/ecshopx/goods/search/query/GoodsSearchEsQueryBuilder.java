@@ -41,16 +41,20 @@ final class GoodsSearchEsQueryBuilder {
 		List<Query> filters = buildHardFilters(q);
 		Query inner;
 		if (StringUtils.hasText(q.keywords())) {
-			// IK 主字段打相关度；.ngram 补 IK 词典整词（如「小金」）不拆单字时的召回
+			// IK 主字段打相关度；仅单字查询才走 .ngram（补「小」「金」召回）。
+			// 多字若带 ngram，「耐克」会拆成「耐」「克」误召「耐磨」等。
+			List<String> textFields = new ArrayList<>();
+			textFields.add("item_name^3");
+			textFields.add("brief^2");
+			textFields.add("tags^1");
+			if (isSingleCodePointKeyword(q.keywords())) {
+				textFields.add("item_name.ngram^0.8");
+				textFields.add("brief.ngram^0.5");
+				textFields.add("tags.ngram^0.4");
+			}
 			Query text = QueryBuilders.multiMatch(m -> m
 					.query(q.keywords())
-					.fields(
-							"item_name^3",
-							"item_name.ngram^0.8",
-							"brief^2",
-							"brief.ngram^0.5",
-							"tags^1",
-							"tags.ngram^0.4")
+					.fields(textFields)
 					.type(co.elastic.clients.elasticsearch._types.query_dsl.TextQueryType.BestFields));
 			Query bn = QueryBuilders.prefix(p -> p.field("item_bn").value(q.keywords()));
 			Query barcode = QueryBuilders.prefix(p -> p.field("barcode").value(q.keywords()));
@@ -139,5 +143,14 @@ final class GoodsSearchEsQueryBuilder {
 
 	static int hardFilterCount(GoodsSearchQuery q) {
 		return buildHardFilters(q).size();
+	}
+
+	/** 去掉空白后恰好一个 Unicode 码点时启用 ngram（单字召回）。 */
+	static boolean isSingleCodePointKeyword(String keywords) {
+		if (!StringUtils.hasText(keywords)) {
+			return false;
+		}
+		String trimmed = keywords.trim().replaceAll("\\s+", "");
+		return !trimmed.isEmpty() && trimmed.codePointCount(0, trimmed.length()) == 1;
 	}
 }

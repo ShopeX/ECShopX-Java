@@ -47,10 +47,22 @@ class GoodsSearchQueryServiceRankingTest {
 		GoodsSearchQuery q = baseQuery("", "牛奶", props);
 		String dsl = GoodsSearchEsQueryBuilder.queryToJson(GoodsSearchEsQueryBuilder.buildRootQuery(q, props));
 		assertThat(dsl).contains("multi_match");
-		assertThat(dsl).contains("item_name.ngram");
-		assertThat(dsl).contains("brief.ngram");
+		assertThat(dsl).contains("item_name");
+		// 多字不走 ngram，避免「耐克」误召「耐磨」
+		assertThat(dsl).doesNotContain("item_name.ngram");
+		assertThat(dsl).doesNotContain("brief.ngram");
 		assertThat(dsl).doesNotContain("constant_score");
 		assertThat(dsl).doesNotContain("function_score");
+	}
+
+	@Test
+	void singleCharKeyword_includesNgramFields() {
+		SearchEsProperties props = new SearchEsProperties();
+		GoodsSearchQuery q = baseQuery("", "小", props);
+		String dsl = GoodsSearchEsQueryBuilder.queryToJson(GoodsSearchEsQueryBuilder.buildRootQuery(q, props));
+		assertThat(dsl).contains("item_name.ngram");
+		assertThat(dsl).contains("brief.ngram");
+		assertThat(dsl).contains("tags.ngram");
 	}
 
 	@Test
