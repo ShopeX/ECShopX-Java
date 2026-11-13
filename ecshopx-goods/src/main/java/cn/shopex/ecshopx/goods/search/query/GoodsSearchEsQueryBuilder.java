@@ -41,21 +41,25 @@ final class GoodsSearchEsQueryBuilder {
 		List<Query> filters = buildHardFilters(q);
 		Query inner;
 		if (StringUtils.hasText(q.keywords())) {
-			// IK 主字段打相关度；仅单字查询才走 .ngram（补「小」「金」召回）。
-			// 多字若带 ngram，「耐克」会拆成「耐」「克」误召「耐磨」等。
-			List<String> textFields = new ArrayList<>();
-			textFields.add("item_name^3");
-			textFields.add("brief^2");
-			textFields.add("tags^1");
-			if (isSingleCodePointKeyword(q.keywords())) {
-				textFields.add("item_name.ngram^0.8");
-				textFields.add("brief.ngram^0.5");
-				textFields.add("tags.ngram^0.4");
-			}
-			Query text = QueryBuilders.multiMatch(m -> m
+			// IK：整串（含同义词扩展「金 小金」）只打主字段，多字不走 ngram，避免「小金」拆出「小」误召。
+			// ngram：仅对单字 token（如「金」）另开 multi_match，补「白金级」单字召回。
+			Query ikText = QueryBuilders.multiMatch(m -> m
 					.query(q.keywords())
-					.fields(textFields)
+					.fields("item_name^3", "brief^2", "tags^1")
 					.type(co.elastic.clients.elasticsearch._types.query_dsl.TextQueryType.BestFields));
+			List<Query> textShoulds = new ArrayList<>();
+			textShoulds.add(ikText);
+			List<String> singleChars = listSingleCodePointTokens(q.keywords());
+			if (!singleChars.isEmpty()) {
+				String ngramQuery = String.join(" ", singleChars);
+				textShoulds.add(QueryBuilders.multiMatch(m -> m
+						.query(ngramQuery)
+						.fields("item_name.ngram^0.8", "brief.ngram^0.5", "tags.ngram^0.4")
+						.type(co.elastic.clients.elasticsearch._types.query_dsl.TextQueryType.BestFields)));
+			}
+			Query text = textShoulds.size() == 1
+					? textShoulds.get(0)
+					: QueryBuilders.bool(b -> b.should(textShoulds).minimumShouldMatch("1"));
 			Query bn = QueryBuilders.prefix(p -> p.field("item_bn").value(q.keywords()));
 			Query barcode = QueryBuilders.prefix(p -> p.field("barcode").value(q.keywords()));
 			List<Query> shoulds = new ArrayList<>();
@@ -145,12 +149,24 @@ final class GoodsSearchEsQueryBuilder {
 		return buildHardFilters(q).size();
 	}
 
-	/** 去掉空白后恰好一个 Unicode 码点时启用 ngram（单字召回）。 */
-	static boolean isSingleCodePointKeyword(String keywords) {
+	/** 按空白拆词后，收集恰好一个 Unicode 码点的 token（供 ngram 专用查询）。 */
+	static List<String> listSingleCodePointTokens(String keywords) {
+		List<String> out = new ArrayList<>();
 		if (!StringUtils.hasText(keywords)) {
+			return out;
+		}
+		for (String token : keywords.trim().split("\\s+")) {
+			if (isSingleCodePointToken(token)) {
+				out.add(token);
+			}
+		}
+		return out;
+	}
+
+	static boolean isSingleCodePointToken(String token) {
+		if (!StringUtils.hasText(token)) {
 			return false;
 		}
-		String trimmed = keywords.trim().replaceAll("\\s+", "");
-		return !trimmed.isEmpty() && trimmed.codePointCount(0, trimmed.length()) == 1;
+		return token.codePointCount(0, token.length()) == 1;
 	}
 }

@@ -66,6 +66,19 @@ class GoodsSearchQueryServiceRankingTest {
 	}
 
 	@Test
+	void synonymExpanded_onlySingleCharUsesNgramQuery() {
+		SearchEsProperties props = new SearchEsProperties();
+		// 同义词扩展形态：原词「金」+「小金」→ IK 打整串，ngram 只打单字「金」
+		GoodsSearchQuery q = baseQuery("", "金 小金", props);
+		String dsl = GoodsSearchEsQueryBuilder.queryToJson(GoodsSearchEsQueryBuilder.buildRootQuery(q, props));
+		assertThat(dsl).contains("item_name.ngram");
+		assertThat(dsl).contains("金 小金");
+		assertThat(GoodsSearchEsQueryBuilder.listSingleCodePointTokens("金 小金")).containsExactly("金");
+		assertThat(GoodsSearchEsQueryBuilder.listSingleCodePointTokens("耐克")).isEmpty();
+		assertThat(GoodsSearchEsQueryBuilder.listSingleCodePointTokens("白金")).isEmpty();
+	}
+
+	@Test
 	void keywordMode_includesPinyinFields_forAsciiQuery() {
 		SearchEsProperties props = new SearchEsProperties();
 		GoodsSearchQuery q = baseQuery("", "shanyue", props);
