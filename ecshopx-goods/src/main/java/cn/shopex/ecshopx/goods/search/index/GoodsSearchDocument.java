@@ -38,6 +38,7 @@ public record GoodsSearchDocument(
 		List<Long> categoryIds,
 		long salePrice,
 		long marketPrice,
+		long sort,
 		long sales,
 		long listedAt,
 		MemberPrices memberPrices,

@@ -107,6 +107,7 @@ class SearchEffectivePriceCalculatorTest {
 				0L,
 				0L,
 				0L,
+				0L,
 				new GoodsSearchDocument.MemberPrices(grade, vipGrade),
 				List.of(),
 				activities);

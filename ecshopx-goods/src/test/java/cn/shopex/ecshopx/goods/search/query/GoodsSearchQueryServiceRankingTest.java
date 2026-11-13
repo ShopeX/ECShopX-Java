@@ -47,6 +47,8 @@ class GoodsSearchQueryServiceRankingTest {
 		GoodsSearchQuery q = baseQuery("", "牛奶", props);
 		String dsl = GoodsSearchEsQueryBuilder.queryToJson(GoodsSearchEsQueryBuilder.buildRootQuery(q, props));
 		assertThat(dsl).contains("multi_match");
+		assertThat(dsl).contains("item_name.ngram");
+		assertThat(dsl).contains("brief.ngram");
 		assertThat(dsl).doesNotContain("constant_score");
 		assertThat(dsl).doesNotContain("function_score");
 	}
@@ -84,7 +86,7 @@ class GoodsSearchQueryServiceRankingTest {
 	}
 
 	@Test
-	void defaultCompositeSort_hasStockThenScoreThenSalesThenListedAt() {
+	void defaultCompositeSort_hasStockThenScoreThenSortThenSalesThenListedAt() {
 		GoodsSearchQuery q = baseQuery("", null, new SearchEsProperties());
 		SearchRequest.Builder req = new SearchRequest.Builder();
 		GoodsSearchQueryService.applyEsSort(req, q, false);
@@ -95,11 +97,14 @@ class GoodsSearchQueryServiceRankingTest {
 		assertThat(dsl).contains("listed_at");
 		int hasStock = dsl.indexOf("has_stock");
 		int score = dsl.indexOf("_score");
+		// 请求顶层也有 "sort" 数组键；字段 sort 出现在 _score 之后
+		int sortField = dsl.indexOf("\"sort\"", score + 1);
 		int sales = dsl.indexOf("\"sales\"");
 		int listedAt = dsl.indexOf("listed_at");
 		assertThat(hasStock).isGreaterThanOrEqualTo(0);
 		assertThat(score).isGreaterThan(hasStock);
-		assertThat(sales).isGreaterThan(score);
+		assertThat(sortField).isGreaterThan(score);
+		assertThat(sales).isGreaterThan(sortField);
 		assertThat(listedAt).isGreaterThan(sales);
 	}
 

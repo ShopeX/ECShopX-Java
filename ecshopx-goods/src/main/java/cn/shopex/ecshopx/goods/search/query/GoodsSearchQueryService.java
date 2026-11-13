@@ -146,7 +146,7 @@ public class GoodsSearchQueryService {
 	}
 
 	/**
-	 * 默认/综合分层排序：有货 → 相关度({@code _score}) → 销量 → 上架时间；
+	 * 默认/综合分层排序：有货 → 相关度({@code _score}) → 后台 sort 权重 → 销量 → 上架时间；
 	 * 销量/上新走对应字段；价格滤排召回仍带分层 sort，价格主序在 Java 侧重排。
 	 */
 	static void applyEsSort(SearchRequest.Builder req, GoodsSearchQuery query, boolean javaPriceOps) {
@@ -166,10 +166,11 @@ public class GoodsSearchQueryService {
 		}
 	}
 
-	/** 有货优先，组内：相关度 → 销量 → 上架时间（无货同理）。 */
+	/** 有货优先，组内：相关度 → 后台 sort（越大越前）→ 销量 → 上架时间（无货同理）。 */
 	private static void applyDefaultHierarchicalSort(SearchRequest.Builder req) {
 		req.sort(s -> s.field(f -> f.field("has_stock").order(SortOrder.Desc)));
 		req.sort(s -> s.score(sc -> sc.order(SortOrder.Desc)));
+		req.sort(s -> s.field(f -> f.field("sort").order(SortOrder.Desc)));
 		req.sort(s -> s.field(f -> f.field("sales").order(SortOrder.Desc)));
 		req.sort(s -> s.field(f -> f.field("listed_at").order(SortOrder.Desc)));
 	}

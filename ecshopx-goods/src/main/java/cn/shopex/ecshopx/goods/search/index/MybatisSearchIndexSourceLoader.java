@@ -123,6 +123,7 @@ public class MybatisSearchIndexSourceLoader implements SearchIndexSourceLoader {
 		long hqPriceFen = priceFen(anchor.getPrice());
 		long marketPriceFen = anchor.getMarketPrice() != null ? anchor.getMarketPrice().longValue() : 0L;
 		Long distributorPriceFen = resolveDistributorPriceFen(distributorId, defaultItemId, anchor, distByItemId);
+		long sort = anchor.getSort() != null ? anchor.getSort().longValue() : 0L;
 		long sales = resolveSales(distributorId, defaultItemId, anchor, distByItemId);
 		long listedAt = resolveListedAt(distributorId, defaultItemId, anchor, distByItemId);
 		List<SearchIndexSource.Sku> skus = buildSkus(skuRows, distByItemId, distributorId);
@@ -151,6 +152,7 @@ public class MybatisSearchIndexSourceLoader implements SearchIndexSourceLoader {
 						.hqPriceFen(hqPriceFen)
 						.distributorPriceFen(distributorPriceFen)
 						.marketPriceFen(marketPriceFen)
+						.sort(sort)
 						.sales(sales)
 						.listedAt(listedAt)
 						.memberPriceGrade(memberPrices.grade())

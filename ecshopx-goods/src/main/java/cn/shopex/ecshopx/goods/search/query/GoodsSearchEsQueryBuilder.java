@@ -41,9 +41,16 @@ final class GoodsSearchEsQueryBuilder {
 		List<Query> filters = buildHardFilters(q);
 		Query inner;
 		if (StringUtils.hasText(q.keywords())) {
+			// IK 主字段打相关度；.ngram 补 IK 词典整词（如「小金」）不拆单字时的召回
 			Query text = QueryBuilders.multiMatch(m -> m
 					.query(q.keywords())
-					.fields("item_name^3", "brief^2", "tags")
+					.fields(
+							"item_name^3",
+							"item_name.ngram^0.8",
+							"brief^2",
+							"brief.ngram^0.5",
+							"tags^1",
+							"tags.ngram^0.4")
 					.type(co.elastic.clients.elasticsearch._types.query_dsl.TextQueryType.BestFields));
 			Query bn = QueryBuilders.prefix(p -> p.field("item_bn").value(q.keywords()));
 			Query barcode = QueryBuilders.prefix(p -> p.field("barcode").value(q.keywords()));
@@ -66,7 +73,7 @@ final class GoodsSearchEsQueryBuilder {
 			}
 			inner = QueryBuilders.bool(b -> b.should(shoulds).minimumShouldMatch("1"));
 		} else {
-			// 无关键词时文本分恒为 1，综合排序退化为：有货 → 销量 → 上架时间
+			// 无关键词时文本分恒为 1，综合排序退化为：有货 → 后台 sort → 销量 → 上架时间
 			inner = QueryBuilders.constantScore(cs -> cs.filter(QueryBuilders.matchAll(m -> m)).boost(1.0f));
 		}
 		return QueryBuilders.bool(b -> {

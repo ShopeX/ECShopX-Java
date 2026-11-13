@@ -31,17 +31,20 @@ class GoodsSearchDocumentMaterializationTest {
 				.distributorId(2)
 				.defaultItemId(99)
 				.hqPriceFen(500)
+				.sort(42L)
 				.sales(31L)
 				.listedAt(1_650_000_000L)
 				.build();
 		GoodsSearchDocument doc = new SearchIndexMapper().toDocument(src);
 		Map<String, Object> es = GoodsSearchIndexRepository.toEsSource(doc);
 
+		assertThat(doc.sort()).isEqualTo(42L);
 		assertThat(doc.sales()).isEqualTo(31L);
 		assertThat(doc.listedAt()).isEqualTo(1_650_000_000L);
+		assertThat(es.get("sort")).isEqualTo(42L);
 		assertThat(es.get("sales")).isEqualTo(31L);
 		assertThat(es.get("listed_at")).isEqualTo(1_650_000_000L);
-		assertThat(es.keySet()).contains("sales", "listed_at");
+		assertThat(es.keySet()).contains("sort", "sales", "listed_at");
 	}
 
 	@Test
@@ -61,6 +64,7 @@ class GoodsSearchDocumentMaterializationTest {
 				List.of(),
 				100L,
 				100L,
+				0L,
 				0L,
 				1L,
 				new GoodsSearchDocument.MemberPrices(Map.of(), Map.of()),

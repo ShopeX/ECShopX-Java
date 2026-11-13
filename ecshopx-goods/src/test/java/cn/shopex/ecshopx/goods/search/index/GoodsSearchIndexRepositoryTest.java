@@ -47,13 +47,17 @@ class GoodsSearchIndexRepositoryTest {
 				List.of(),
 				1000L,
 				1200L,
+				7L,
 				88L,
 				1_600_000_000L,
 				new GoodsSearchDocument.MemberPrices(Map.of(), Map.of()),
 				List.of(),
 				List.of());
 		Map<String, Object> src = GoodsSearchIndexRepository.toEsSource(doc);
-		assertThat(src).containsEntry("sales", 88L).containsEntry("listed_at", 1_600_000_000L);
+		assertThat(src)
+				.containsEntry("sort", 7L)
+				.containsEntry("sales", 88L)
+				.containsEntry("listed_at", 1_600_000_000L);
 	}
 
 	@Test

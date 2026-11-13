@@ -51,6 +51,7 @@ public class SearchIndexMapper {
 				src.categoryIds() != null ? src.categoryIds() : List.of(),
 				salePrice,
 				src.marketPriceFen(),
+				src.sort(),
 				src.sales(),
 				src.listedAt(),
 				memberPrices,

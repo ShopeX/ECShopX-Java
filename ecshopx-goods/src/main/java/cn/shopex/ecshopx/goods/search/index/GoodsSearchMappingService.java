@@ -114,10 +114,26 @@ public class GoodsSearchMappingService {
 		Map<String, Object> settings = new LinkedHashMap<>();
 		settings.put("number_of_shards", 1);
 		settings.put("number_of_replicas", 0);
-		// ngram max_gram(20)-min_gram(2) 超过默认差 1，需显式放宽
+		// pinyin ngram max_gram(20)-min_gram(2) 超过默认差 1，需显式放宽
 		settings.put("index.max_ngram_diff", 18);
-		settings.put("analysis", buildPinyinAnalysis());
+		settings.put("analysis", buildAnalysis());
 		return settings;
+	}
+
+	/**
+	 * 索引 analysis：拼音 ngram + CJK 1–2 元 ngram（补 IK 词典整词不拆单字的召回）。
+	 */
+	static Map<String, Object> buildAnalysis() {
+		Map<String, Object> analysis = buildPinyinAnalysis();
+		@SuppressWarnings("unchecked")
+		Map<String, Object> tokenizer = (Map<String, Object>) analysis.computeIfAbsent("tokenizer", k -> new LinkedHashMap<>());
+		tokenizer.put("goods_cjk_ngram_tokenizer", cjkNgramTokenizer());
+		@SuppressWarnings("unchecked")
+		Map<String, Object> analyzer = (Map<String, Object>) analysis.computeIfAbsent("analyzer", k -> new LinkedHashMap<>());
+		Map<String, Object> cjk = new LinkedHashMap<>();
+		cjk.put("tokenizer", "goods_cjk_ngram_tokenizer");
+		analyzer.put("goods_cjk_ngram", cjk);
+		return analysis;
 	}
 
 	/**
@@ -151,6 +167,15 @@ public class GoodsSearchMappingService {
 		return analysis;
 	}
 
+	/** CJK 单字/二字片：补齐 IK 词典词（如「小金」）不拆成单字的召回缺口。 */
+	private static Map<String, Object> cjkNgramTokenizer() {
+		Map<String, Object> tokenizer = new LinkedHashMap<>();
+		tokenizer.put("type", "ngram");
+		tokenizer.put("min_gram", 1);
+		tokenizer.put("max_gram", 2);
+		return tokenizer;
+	}
+
 	/**
 	 * ES 8 可热更新的 synonym filter 定义，引用 {@link SearchSynonymSetNames} 推送的同义词集。
 	 *
@@ -181,6 +206,7 @@ public class GoodsSearchMappingService {
 		props.put("barcode", scalar("keyword"));
 		props.put("sale_price", scalar("long"));
 		props.put("market_price", scalar("long"));
+		props.put("sort", scalar("long"));
 		props.put("sales", scalar("long"));
 		props.put("member_prices", memberPrices());
 		props.put("skus", nestedSkus());
@@ -198,11 +224,20 @@ public class GoodsSearchMappingService {
 		return Map.of("type", type);
 	}
 
+	/**
+	 * IK 主字段（词粒度相关度）+ {@code .ngram} 子字段（1–2 元，覆盖单字召回）。
+	 */
 	private static Map<String, Object> ikText() {
+		Map<String, Object> ngram = new LinkedHashMap<>();
+		ngram.put("type", "text");
+		ngram.put("analyzer", "goods_cjk_ngram");
+		ngram.put("search_analyzer", "goods_cjk_ngram");
+
 		Map<String, Object> field = new LinkedHashMap<>();
 		field.put("type", "text");
 		field.put("analyzer", "ik_max_word");
 		field.put("search_analyzer", "ik_smart");
+		field.put("fields", Map.of("ngram", ngram));
 		return field;
 	}
 
