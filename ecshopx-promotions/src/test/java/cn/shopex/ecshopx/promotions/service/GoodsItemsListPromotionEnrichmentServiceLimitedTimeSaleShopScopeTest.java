@@ -140,6 +140,7 @@ class GoodsItemsListPromotionEnrichmentServiceLimitedTimeSaleShopScopeTest {
 		List<Map<String, Object>> acts = (List<Map<String, Object>>) row.get("promotion_activity");
 		assertEquals(1, acts.size());
 		assertEquals(100L, ((Number) row.get("activity_price")).longValue());
-		assertEquals(100L, ((Number) row.get("price")).longValue());
+		// PHP 对齐：命中限时特惠只写 activity_price，不覆盖原售价 price
+		assertEquals(1200000L, ((Number) row.get("price")).longValue());
 	}
 }

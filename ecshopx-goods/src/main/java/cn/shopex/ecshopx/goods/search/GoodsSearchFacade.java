@@ -96,7 +96,7 @@ public class GoodsSearchFacade {
 		return out;
 	}
 
-	/** 列表 enrichment 未命中改价活动时，用于回退 ES 活动价污染后的主价。 */
+	/** ES 水合写入的销售价；enrichment 未命中改价活动时用于兜底主价并清理内部字段。 */
 	public static final String KEY_LIST_SALE_PRICE = "__list_sale_price";
 
 	private static List<Map<String, Object>> reorderAndApplyEsPrices(
@@ -116,11 +116,13 @@ public class GoodsSearchFacade {
 			}
 			GoodsSearchHit hit = hitById.get(id);
 			if (hit != null) {
-				if (hit.sourceDocument() != null && hit.sourceDocument().salePrice() > 0L) {
-					row.put(KEY_LIST_SALE_PRICE, hit.sourceDocument().salePrice());
-				}
-				if (hit.effectivePriceFen() > 0) {
-					row.put("price", hit.effectivePriceFen());
+				// 列表主价对齐 PHP：写销售价；活动价由 enrichment 单独填 activity_price。
+				// effectivePriceFen 仅用于 ES 排序/筛选，不可覆盖 price，否则前端原价/划线价消失。
+				long saleFen =
+						hit.sourceDocument() != null ? hit.sourceDocument().salePrice() : 0L;
+				if (saleFen > 0L) {
+					row.put(KEY_LIST_SALE_PRICE, saleFen);
+					row.put("price", saleFen);
 				}
 			}
 			ordered.add(row);

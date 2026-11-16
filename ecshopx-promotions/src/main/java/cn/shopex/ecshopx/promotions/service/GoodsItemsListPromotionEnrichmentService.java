@@ -185,9 +185,8 @@ public class GoodsItemsListPromotionEnrichmentService {
 				if (ACTIVITY_PRICE_TAG_TYPES.contains(tagType)) {
 					Object ap = data.get("activity_price");
 					if (ap instanceof Number an) {
+						// PHP ItemsService：只写 activity_price，保留原售价 price 供划线/列表展示
 						items.put("activity_price", an.longValue());
-						// 与标签一致：命中改价类活动时覆盖列表主价（避免 ES 残留其他店活动价）
-						items.put("price", an.longValue());
 					}
 				}
 			}

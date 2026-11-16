@@ -487,7 +487,8 @@ public class WxappGoodsItemsListServiceImpl implements WxappGoodsItemsListServic
 	}
 
 	/**
-	 * ES effectivePrice 可能含其他店限时特惠；标签 enrichment 未命中改价活动时回退销售价，避免活动价残留。
+	 * 清理 ES 内部销售价标记；未命中改价类活动时去掉残留 activity_price。
+	 * 主价 price 已由 ES 写入销售价（或门店 replace），此处不再用活动价覆盖。
 	 */
 	static void restoreSalePriceWhenNoActivityPriceTag(List<Map<String, Object>> list) {
 		if (list == null || list.isEmpty()) {
@@ -499,6 +500,7 @@ public class WxappGoodsItemsListServiceImpl implements WxappGoodsItemsListServic
 				continue;
 			}
 			row.remove("activity_price");
+			// 无活动标签时：若门店 replace 未改价，用 ES 销售价兜底（兼容旧路径曾写入 effectivePrice）
 			long sale = longVal(saleRaw);
 			if (sale > 0L) {
 				row.put("price", sale);
