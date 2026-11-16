@@ -274,10 +274,6 @@ public class WxappH5CartAddService {
 		Cart insert = new Cart();
 		insert.setCompanyId(longVal(params.get("company_id")));
 		insert.setUserId(longVal(params.get("user_id")));
-		long promoterUserId = longVal(params.get("promoter_user_id"));
-		if (promoterUserId > 0L) {
-			insert.setPromoterUserId(promoterUserId);
-		}
 		insert.setShopType(stringVal(params.get("shop_type")));
 		insert.setShopId(longVal(params.get("shop_id")));
 		String activityType = stringVal(formatted.get("activity_type"));

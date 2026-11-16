@@ -185,18 +185,9 @@ public class CartController {
 		}
 
 		long authUserId = longVal(auth.get("user_id"));
-		long effectiveUserId = authUserId;
-		long promoterUserId = longVal(merged.get("promoter_user_id"));
-		long buyUserId = longVal(merged.get("buy_user_id"));
-		if (promoterUserId != 0L) {
-			merged.put("promoter_user_id", promoterUserId);
-		}
-		if (buyUserId != 0L && promoterUserId == authUserId) {
-			effectiveUserId = buyUserId;
-		}
 
 		Map<String, Object> data =
-				wxappCartListPort.getDistributorCartList(companyId, authUserId, effectiveUserId, merged);
+				wxappCartListPort.getDistributorCartList(companyId, authUserId, authUserId, merged);
 		return ResponseEntity.ok(ApiResult.ok(data));
 	}
 

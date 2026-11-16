@@ -30,7 +30,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -42,10 +41,6 @@ import org.springframework.util.StringUtils;
 public class PopularizeH5BrokerageCountReadService {
 
 	private static final Logger log = LoggerFactory.getLogger(PopularizeH5BrokerageCountReadService.class);
-
-	private static final Pattern DIGITS_ONLY = Pattern.compile("^[0-9]+$");
-
-	private final SalesmanBrokerageCountListQueryService salesmanBrokerageCountListQueryService;
 
 	private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
@@ -60,14 +55,12 @@ public class PopularizeH5BrokerageCountReadService {
 	private final MembersContactByUserIdsLookupService membersContactByUserIdsLookupService;
 
 	public PopularizeH5BrokerageCountReadService(
-			SalesmanBrokerageCountListQueryService salesmanBrokerageCountListQueryService,
 			NamedParameterJdbcTemplate namedParameterJdbcTemplate,
 			PromoterBrokerageStatisticsMapper promoterBrokerageStatisticsMapper,
 			TaskBrokerageCountMapper taskBrokerageCountMapper,
 			BrokerageMapper brokerageMapper,
 			PopularizeSettingSaveService popularizeSettingSaveService,
 			MembersContactByUserIdsLookupService membersContactByUserIdsLookupService) {
-		this.salesmanBrokerageCountListQueryService = salesmanBrokerageCountListQueryService;
 		this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
 		this.promoterBrokerageStatisticsMapper = promoterBrokerageStatisticsMapper;
 		this.taskBrokerageCountMapper = taskBrokerageCountMapper;
@@ -117,8 +110,7 @@ public class PopularizeH5BrokerageCountReadService {
 		return out;
 	}
 
-	public Map<String, Object> brokerageCount(
-			long companyId, long userId, String isSalesmanPageRaw, String distributorIdRaw) {
+	public Map<String, Object> brokerageCount(long companyId, long userId, String distributorIdRaw) {
 		return brokerageCountPromoterBranch(companyId, userId);
 	}
 
@@ -174,134 +166,6 @@ public class PopularizeH5BrokerageCountReadService {
 		out.put("order_team_close_rebate", Integer.valueOf(orderTeamCloseRebateInt));
 		out.put("order_team_total", bcaddInt(orderTeamNoCloseRebateInt, orderTeamCloseRebateInt));
 		return out;
-	}
-
-	private Map<String, Object> brokerageCountSalesmanBranch(long companyId, long userId, String distributorIdRaw) {
-		long distScalar = parseDistributorIdScalar(distributorIdRaw);
-		List<Long> dIds = loadSalespersonShopIds(companyId, userId);
-
-		LinkedHashMap<String, Object> filterCount = new LinkedHashMap<>();
-		filterCount.put("company_id", Long.valueOf(companyId));
-		filterCount.put("user_id", Long.valueOf(userId));
-		if (!dIds.isEmpty()) {
-			filterCount.put("dIds", dIds);
-		}
-		if (distScalar > 0L) {
-			filterCount.put("distributor_id", distScalar);
-			filterCount.remove("dIds");
-		}
-
-		Map<String, Object> aggregateRow =
-				salesmanBrokerageCountListQueryService.getSalesmanBrokerageCountAggregate(filterCount);
-		LinkedHashMap<String, Object> countDataShop = new LinkedHashMap<>(aggregateRow);
-
-		LinkedHashMap<String, Object> filterWithdraw = new LinkedHashMap<>();
-		if (distScalar > 0L) {
-			filterWithdraw.put("distributor_id", distScalar);
-		} else if (!dIds.isEmpty()) {
-			filterWithdraw.put("distributor_id", dIds);
-		}
-
-		long sumWithdrawalMoney = sumWithdrawalMoneyFen(companyId, userId, filterWithdraw);
-
-		log.debug(
-				"brokerageCount salesman filters: filter_count={}, filter_withdrow={}",
-				summarizeFilterShape(filterCount),
-				summarizeFilterShape(filterWithdraw));
-
-		int rebateClose = intOrZero(countDataShop.get("rebate_sum_close"));
-		countDataShop.put("sum_withdrawal_money", (int) sumWithdrawalMoney);
-		countDataShop.put("cashWithdrawalRebate", (int) (rebateClose - sumWithdrawalMoney));
-		countDataShop.put("payedRebate", (int) sumWithdrawalMoney);
-		countDataShop.put("orderRebate", intOrZero(countDataShop.get("rebate_sum")));
-		countDataShop.put("noCloseRebate", intOrZero(countDataShop.get("rebate_sum_noclose")));
-		countDataShop.put("orderCloseRebate", rebateClose);
-		countDataShop.put("rebateTotal", intOrZero(countDataShop.get("rebate_sum")));
-		return countDataShop;
-	}
-
-	private List<Long> loadSalespersonShopIds(long companyId, long userId) {
-		String sql =
-				"SELECT shop_id FROM shop_salesperson WHERE company_id = :companyId AND user_id = :userId LIMIT 1000";
-		MapSqlParameterSource p =
-				new MapSqlParameterSource()
-						.addValue("companyId", companyId)
-						.addValue("userId", (int) userId);
-		List<Map<String, Object>> rows = namedParameterJdbcTemplate.queryForList(sql, p);
-		List<Long> out = new ArrayList<>();
-		for (Map<String, Object> row : rows) {
-			Object sid = row.get("shop_id");
-			if (sid == null) {
-				continue;
-			}
-			long v;
-			if (sid instanceof Number n) {
-				v = n.longValue();
-			} else {
-				try {
-					v = Long.parseLong(String.valueOf(sid).trim());
-				} catch (NumberFormatException e) {
-					continue;
-				}
-			}
-			if (v > 0L) {
-				out.add(v);
-			}
-		}
-		return out;
-	}
-
-	private long sumWithdrawalMoneyFen(long companyId, long userId, Map<String, Object> filterWithdraw) {
-		StringBuilder sql = new StringBuilder();
-		sql.append("SELECT money FROM distribution_cash_withdrawal ");
-		sql.append("WHERE company_id = :companyId AND user_id = :userId ");
-		sql.append("AND status IN ('apply','process','success') ");
-		MapSqlParameterSource p =
-				new MapSqlParameterSource()
-						.addValue("companyId", companyId)
-						.addValue("userId", String.valueOf(userId));
-		Object distVal = filterWithdraw.get("distributor_id");
-		if (distVal instanceof List<?> list && !list.isEmpty()) {
-			List<String> ids = new ArrayList<>();
-			for (Object el : list) {
-				if (el == null) {
-					continue;
-				}
-				ids.add(String.valueOf(el instanceof Number n ? n.longValue() : el));
-			}
-			if (!ids.isEmpty()) {
-				sql.append("AND distributor_id IN (:distributorIds) ");
-				p.addValue("distributorIds", ids);
-			}
-		} else if (distVal instanceof Number n && n.longValue() > 0L) {
-			sql.append("AND distributor_id = :distributorIdStr ");
-			p.addValue("distributorIdStr", String.valueOf(n.longValue()));
-		}
-		sql.append("ORDER BY created DESC");
-		List<Map<String, Object>> records = namedParameterJdbcTemplate.queryForList(sql.toString(), p);
-		long sum = 0L;
-		for (Map<String, Object> row : records) {
-			sum += moneyToFenLong(row.get("money"));
-		}
-		return sum;
-	}
-
-	private static long moneyToFenLong(Object money) {
-		if (money == null) {
-			return 0L;
-		}
-		if (money instanceof Number n) {
-			return n.longValue();
-		}
-		String s = String.valueOf(money).trim();
-		if (!StringUtils.hasText(s)) {
-			return 0L;
-		}
-		try {
-			return Long.parseLong(s);
-		} catch (NumberFormatException e) {
-			return 0L;
-		}
 	}
 
 	private Map<String, Object> brokerageCountPromoterBranch(long companyId, long userId) {
@@ -460,35 +324,6 @@ public class PopularizeH5BrokerageCountReadService {
 		return 0;
 	}
 
-	public static boolean looksLikeSalesmanPageFlag(String raw) {
-		if (raw == null) {
-			return false;
-		}
-		String t = raw.trim();
-		if (t.isEmpty()) {
-			return false;
-		}
-		return !"0".equalsIgnoreCase(t);
-	}
-
-	private static long parseDistributorIdScalar(String raw) {
-		if (raw == null) {
-			return 0L;
-		}
-		String t = raw.trim();
-		if (t.isEmpty() || "0".equalsIgnoreCase(t)) {
-			return 0L;
-		}
-		if (!DIGITS_ONLY.matcher(t).matches()) {
-			return 0L;
-		}
-		try {
-			long v = Long.parseLong(t);
-			return v > 0L ? v : 0L;
-		} catch (NumberFormatException e) {
-			return 0L;
-		}
-	}
 
 	private static String summarizeFilterShape(Map<String, Object> m) {
 		if (m == null || m.isEmpty()) {

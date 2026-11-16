@@ -28,7 +28,6 @@ import cn.shopex.ecshopx.common.web.FlexibleHttpServletParameterMap;
 import cn.shopex.ecshopx.common.web.H5FrontAuthAttributes;
 import cn.shopex.ecshopx.common.web.locale.RequestMessageLocale;
 import cn.shopex.ecshopx.distribution.service.CashWithdrawalApplyService;
-import cn.shopex.ecshopx.distribution.service.CashWithdrawalSalesmanApplyService;
 import cn.shopex.ecshopx.distribution.service.CashWithdrawalWxappListService;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Collections;
@@ -56,7 +55,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class CashWithdrawalController {
 
 	private final CashWithdrawalApplyService cashWithdrawalApplyService;
-	private final CashWithdrawalSalesmanApplyService cashWithdrawalSalesmanApplyService;
 	private final CashWithdrawalWxappListService cashWithdrawalWxappListService;
 	private final MessageSource messageSource;
 	private final LangueProperties langueProperties;
@@ -64,13 +62,11 @@ public class CashWithdrawalController {
 
 	public CashWithdrawalController(
 			CashWithdrawalApplyService cashWithdrawalApplyService,
-			CashWithdrawalSalesmanApplyService cashWithdrawalSalesmanApplyService,
 			CashWithdrawalWxappListService cashWithdrawalWxappListService,
 			MessageSource messageSource,
 			LangueProperties langueProperties,
 			CompanyLanguageResolver companyLanguageResolver) {
 		this.cashWithdrawalApplyService = cashWithdrawalApplyService;
-		this.cashWithdrawalSalesmanApplyService = cashWithdrawalSalesmanApplyService;
 		this.cashWithdrawalWxappListService = cashWithdrawalWxappListService;
 		this.messageSource = messageSource;
 		this.langueProperties = langueProperties;
@@ -107,52 +103,6 @@ public class CashWithdrawalController {
 		Locale locale = messageLocale(request, null, companyId);
 		Map<String, Object> data =
 				cashWithdrawalWxappListService.getCashWithdrawalList(companyId, userId, pageObj, pageSizeObj, locale);
-		return ResponseEntity.ok(ApiResult.ok(data));
-	}
-
-	@PostMapping(
-			value = "/wxapp/salesman/applyCashWithdrawal",
-			name = "业务员佣金提现申请",
-			produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<ApiResult<Map<String, Object>>> salesmanApplyCashWithdrawal(
-			HttpServletRequest request, @FlexibleBody(required = false) Map<String, Object> body) {
-		Map<String, Object> merged = new LinkedHashMap<>(FlexibleHttpServletParameterMap.toObjectMap(request));
-		if (body != null) {
-			merged.putAll(body);
-		}
-		Map<String, Object> claims = readH5AuthClaimsMap(request);
-		long companyId = resolveCompanyId(request, claims);
-		Locale locale = messageLocale(request, body, companyId);
-		long distributorId = parsePositiveLongOrZero(merged.get("distributor_id"));
-		if (distributorId <= 0L) {
-			throw new ResourceException(
-					messageSource.getMessage(
-							"distribution.cash_withdrawal.select_distributor_first",
-							null,
-							"请选择店铺后提现",
-							locale));
-		}
-		Object moneyRaw = merged.get("money");
-		Map<String, Object> row = cashWithdrawalSalesmanApplyService.salesmanApplyCashWithdrawal(
-				companyId, distributorId, claims, moneyRaw, locale);
-		return ResponseEntity.ok(ApiResult.ok(row));
-	}
-
-	@GetMapping(value = "/wxapp/salesman/getCashWithdrawalList", name = "业务员提现申请列表")
-	public ResponseEntity<ApiResult<Map<String, Object>>> salesmanGetCashWithdrawalList(HttpServletRequest request) {
-		Map<String, Object> merged = FlexibleHttpServletParameterMap.toObjectMap(request);
-		Object pageObj = merged.get("page");
-		Object pageSizeObj = merged.get("pageSize");
-		Object distributorIdObj = merged.get("distributor_id");
-		Map<String, Object> claims = readH5AuthClaimsMap(request);
-		long companyId = resolveCompanyId(request, claims);
-		String userId = Objects.toString(claims.get("user_id"), "").trim();
-		if (!StringUtils.hasText(userId)) {
-			throw new UnauthorizedException("Unable to authenticate user.");
-		}
-		Locale locale = messageLocale(request, null, companyId);
-		Map<String, Object> data = cashWithdrawalWxappListService.salesmanGetCashWithdrawalList(
-				companyId, userId, pageObj, pageSizeObj, distributorIdObj, locale);
 		return ResponseEntity.ok(ApiResult.ok(data));
 	}
 

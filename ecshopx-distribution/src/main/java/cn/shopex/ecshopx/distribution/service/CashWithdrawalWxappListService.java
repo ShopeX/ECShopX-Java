@@ -67,40 +67,6 @@ public class CashWithdrawalWxappListService {
 		return data;
 	}
 
-	public Map<String, Object> salesmanGetCashWithdrawalList(
-			long companyId,
-			String userId,
-			Object pageRaw,
-			Object pageSizeRaw,
-			Object distributorIdRaw,
-			Locale locale) {
-		int p = validatePage(pageRaw, locale);
-		int ps = validatePageSize(pageSizeRaw, locale);
-
-		LambdaQueryWrapper<CashWithdrawal> w = new LambdaQueryWrapper<>();
-		w.eq(CashWithdrawal::getCompanyId, companyId);
-		w.eq(CashWithdrawal::getUserId, userId);
-		long distributorId = parsePositiveLongOrZero(distributorIdRaw);
-		if (distributorId > 0L) {
-			w.eq(CashWithdrawal::getDistributorId, Long.toString(distributorId));
-		}
-		w.orderByDesc(CashWithdrawal::getCreated);
-
-		Page<CashWithdrawal> page = new Page<>(p, ps);
-		cashWithdrawalMapper.selectPage(page, w);
-
-		int totalCount = (int) page.getTotal();
-		List<Map<String, Object>> list = new ArrayList<>();
-		for (CashWithdrawal cw : page.getRecords()) {
-			list.add(toListRow(cw));
-		}
-
-		Map<String, Object> data = new LinkedHashMap<>();
-		data.put("total_count", totalCount);
-		data.put("list", list);
-		return data;
-	}
-
 	private int validatePage(Object pageRaw, Locale locale) {
 		if (pageRaw == null) {
 			throw new BadRequestException(

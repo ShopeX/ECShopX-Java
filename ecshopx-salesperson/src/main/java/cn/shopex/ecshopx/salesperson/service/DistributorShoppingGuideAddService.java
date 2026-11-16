@@ -97,10 +97,6 @@ public class DistributorShoppingGuideAddService {
 
 		Map<String, Object> dist = distributorRepositoryGetInfoSimpleService.resolveDistributorForAddSalesman(
 				companyId, distributorIdParamValues);
-		if (!Boolean.TRUE.equals(dist.get("is_open_salesman"))) {
-			throw new ResourceException("店铺未开启业务员配置！");
-		}
-
 		Object didObj = dist.get("distributor_id");
 		if (!(didObj instanceof Number)) {
 			throw new ResourceException("店铺未开启业务员配置！");

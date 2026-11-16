@@ -134,10 +134,6 @@ public class WxappH5DistributorCartListService {
 	private static Map<String, Object> buildInputData(long effectiveUserId, Map<String, Object> merged) {
 		Map<String, Object> inputData = new LinkedHashMap<>();
 		inputData.put("user_id", effectiveUserId);
-		long promoter = longVal(merged.get("promoter_user_id"));
-		if (promoter != 0L) {
-			inputData.put("promoter_user_id", promoter);
-		}
 		return inputData;
 	}
 

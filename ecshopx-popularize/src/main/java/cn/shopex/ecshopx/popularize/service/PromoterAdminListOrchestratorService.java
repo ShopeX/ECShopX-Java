@@ -35,7 +35,6 @@ public class PromoterAdminListOrchestratorService {
 	private final MerchantScopeDistributorIdsReadService merchantScopeDistributorIdsReadService;
 	private final ShopSalespersonPromoterListSupportService shopSalespersonPromoterListSupportService;
 	private final PromoterListQueryService promoterListQueryService;
-	private final SalesmanBrokerageCountListQueryService salesmanBrokerageCountListQueryService;
 	private final PopularizeBrokerageCountReadService popularizeBrokerageCountReadService;
 	private final MemberAccountService memberAccountService;
 	private final PromoterListMemberWideMergeReadService promoterListMemberWideMergeReadService;
@@ -45,7 +44,6 @@ public class PromoterAdminListOrchestratorService {
 			MerchantScopeDistributorIdsReadService merchantScopeDistributorIdsReadService,
 			ShopSalespersonPromoterListSupportService shopSalespersonPromoterListSupportService,
 			PromoterListQueryService promoterListQueryService,
-			SalesmanBrokerageCountListQueryService salesmanBrokerageCountListQueryService,
 			PopularizeBrokerageCountReadService popularizeBrokerageCountReadService,
 			MemberAccountService memberAccountService,
 			PromoterListMemberWideMergeReadService promoterListMemberWideMergeReadService,
@@ -53,7 +51,6 @@ public class PromoterAdminListOrchestratorService {
 		this.merchantScopeDistributorIdsReadService = merchantScopeDistributorIdsReadService;
 		this.shopSalespersonPromoterListSupportService = shopSalespersonPromoterListSupportService;
 		this.promoterListQueryService = promoterListQueryService;
-		this.salesmanBrokerageCountListQueryService = salesmanBrokerageCountListQueryService;
 		this.popularizeBrokerageCountReadService = popularizeBrokerageCountReadService;
 		this.memberAccountService = memberAccountService;
 		this.promoterListMemberWideMergeReadService = promoterListMemberWideMergeReadService;
@@ -202,11 +199,6 @@ public class PromoterAdminListOrchestratorService {
 				long uidRow = longFrom(rowP.get("user_id"));
 				String nameSale = salespersonNameByUser.getOrDefault(uidRow, "");
 				rowP.put("nameSalePerson", nameSale);
-				if (StringUtils.hasText(nameSale)) {
-					Object un = rowP.get("username");
-					String base = un != null ? String.valueOf(un) : "";
-					rowP.put("username", base + " ( 业务员：" + nameSale + " ) ");
-				}
 			}
 		}
 		for (Map<String, Object> rowP : listRows) {
@@ -220,39 +212,6 @@ public class PromoterAdminListOrchestratorService {
 
 		List<Map<String, Object>> countDataShopList = new ArrayList<>();
 		Map<Long, Map<String, Object>> countDataShopListUser = new LinkedHashMap<>();
-
-		boolean runBrokerageAggregation =
-				distributorIdQueryTruthyForBrokerage(distributorIdRaw) || pathHasPopularizedata;
-		if (runBrokerageAggregation) {
-			LinkedHashMap<String, Object> brokerageParams = new LinkedHashMap<>();
-			brokerageParams.put("company_id", companyId);
-			long distributorIdForBrokerage = LeadingNumberParser.parseAsLong(distributorIdTrimmed);
-			if (distributorIdForBrokerage > 0L) {
-				brokerageParams.put("distributor_id", distributorIdForBrokerage);
-			}
-			if (filter.containsKey("user_id")) {
-				brokerageParams.put("user_id", filter.get("user_id"));
-			}
-			if ("merchant".equalsIgnoreCase(operatorType) && shopIds != null && !shopIds.isEmpty()) {
-				brokerageParams.put("dIds", shopIds);
-			}
-			brokerageParams.put("groupby", "distributor_id");
-
-			countDataShopList =
-					salesmanBrokerageCountListQueryService.getSalesmanBrokerageCountList(
-							brokerageParams, pageSize, page);
-			for (Map<String, Object> row : countDataShopList) {
-				if (row == null) {
-					continue;
-				}
-				Object uo = row.get("user_id");
-				if (uo == null) {
-					continue;
-				}
-				long uid = longFrom(uo);
-				countDataShopListUser.put(uid, row);
-			}
-		}
 
 		boolean earlyReturnBrokerageRowsOnly =
 				pathHasPopularizedata && (pathHasSellers || pathHasShopadmin);

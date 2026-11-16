@@ -115,7 +115,6 @@ public class BrokerageController {
 			@RequestParam(value = "brokerage_source", required = false, defaultValue = "order") String brokerageSource,
 			@RequestParam(value = "page", required = false, defaultValue = "1") String page,
 			@RequestParam(value = "pageSize", required = false, defaultValue = "10") String pageSize,
-			@RequestParam(value = "isSalesmanPage", required = false, defaultValue = "0") String isSalesmanPage,
 			@RequestParam(value = "shopName", required = false, defaultValue = "0") String shopName,
 			@RequestParam(value = "mobile", required = false, defaultValue = "0") String mobile,
 			@RequestParam(value = "order_id", required = false, defaultValue = "0") String orderId,
@@ -133,7 +132,6 @@ public class BrokerageController {
 						brokerageSource,
 						page,
 						pageSize,
-						isSalesmanPage,
 						shopName,
 						mobile,
 						orderId,
@@ -227,7 +225,6 @@ public class BrokerageController {
 	@GetMapping(value = "/promoter/brokerage/count", name = "佣金统计", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ApiResult<Map<String, Object>> brokerageCount(
 			HttpServletRequest request,
-			@RequestParam(value = "isSalesmanPage", required = false, defaultValue = "0") String isSalesmanPage,
 			@RequestParam(value = "distributor_id", required = false, defaultValue = "0") String distributorId) {
 		Map<String, Object> claims = readH5AuthClaimsMap(request);
 		long companyId = resolveCompanyId(request, claims);
@@ -236,8 +233,7 @@ public class BrokerageController {
 			throw new UnauthorizedException("Unable to authenticate user.");
 		}
 		return ApiResult.ok(
-				popularizeH5BrokerageCountReadService.brokerageCount(
-						companyId, userId, isSalesmanPage, distributorId));
+				popularizeH5BrokerageCountReadService.brokerageCount(companyId, userId, distributorId));
 	}
 
 	@GetMapping(value = "/promoter/brokerage/point_count", name = "积分佣金", produces = MediaType.APPLICATION_JSON_VALUE)

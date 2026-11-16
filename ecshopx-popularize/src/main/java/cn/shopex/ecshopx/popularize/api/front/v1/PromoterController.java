@@ -18,7 +18,6 @@ package cn.shopex.ecshopx.popularize.api.front.v1;
 
 import cn.shopex.ecshopx.common.util.DataMasking;
 import cn.shopex.ecshopx.common.annotation.DingoResponse;
-import cn.shopex.ecshopx.common.popularize.PromoterSalesmanStoreitemsQueryPort;
 import cn.shopex.ecshopx.common.annotation.FrontAuth;
 import cn.shopex.ecshopx.common.annotation.FrontNoAuth;
 import cn.shopex.ecshopx.common.core.domain.ApiResult;
@@ -43,8 +42,6 @@ import cn.shopex.ecshopx.popularize.service.PromoterFrontQrcodePngService;
 import cn.shopex.ecshopx.popularize.service.PromoterFrontIndexCountService;
 import cn.shopex.ecshopx.popularize.service.PromoterFrontPromoterChildrenListService;
 import cn.shopex.ecshopx.popularize.service.PromoterRelGoodsService;
-import cn.shopex.ecshopx.popularize.service.PromoterSalesmanCountQueryService;
-import cn.shopex.ecshopx.popularize.service.PromoterSalesmanStaticQueryService;
 import cn.shopex.ecshopx.popularize.service.PromoterUpdateInfoService;
 import cn.shopex.ecshopx.popularize.support.PopularizeQueryFlagTruthy;
 import jakarta.servlet.http.HttpServletRequest;
@@ -120,9 +117,6 @@ public class PromoterController {
 	private final PromoterFrontPromoterChildrenListService promoterFrontPromoterChildrenListService;
 	private final PopularizeSettingSaveService popularizeSettingSaveService;
 	private final MemberAccountService memberAccountService;
-	private final PromoterSalesmanCountQueryService promoterSalesmanCountQueryService;
-	private final PromoterSalesmanStaticQueryService promoterSalesmanStaticQueryService;
-	private final PromoterSalesmanStoreitemsQueryPort promoterSalesmanStoreitemsQueryPort;
 	private final PromoterFrontIndexCountService promoterFrontIndexCountService;
 	private final PromoterFrontGetPromoterInfoService promoterFrontGetPromoterInfoService;
 	private final PromoterFrontGetPromoterGoodsService promoterFrontGetPromoterGoodsService;
@@ -140,9 +134,6 @@ public class PromoterController {
 			PromoterFrontPromoterChildrenListService promoterFrontPromoterChildrenListService,
 			PopularizeSettingSaveService popularizeSettingSaveService,
 			MemberAccountService memberAccountService,
-			PromoterSalesmanCountQueryService promoterSalesmanCountQueryService,
-			PromoterSalesmanStaticQueryService promoterSalesmanStaticQueryService,
-			PromoterSalesmanStoreitemsQueryPort promoterSalesmanStoreitemsQueryPort,
 			PromoterFrontIndexCountService promoterFrontIndexCountService,
 			PromoterFrontGetPromoterInfoService promoterFrontGetPromoterInfoService,
 			PromoterFrontGetPromoterGoodsService promoterFrontGetPromoterGoodsService,
@@ -158,9 +149,6 @@ public class PromoterController {
 		this.promoterFrontPromoterChildrenListService = promoterFrontPromoterChildrenListService;
 		this.popularizeSettingSaveService = popularizeSettingSaveService;
 		this.memberAccountService = memberAccountService;
-		this.promoterSalesmanCountQueryService = promoterSalesmanCountQueryService;
-		this.promoterSalesmanStaticQueryService = promoterSalesmanStaticQueryService;
-		this.promoterSalesmanStoreitemsQueryPort = promoterSalesmanStoreitemsQueryPort;
 		this.promoterFrontIndexCountService = promoterFrontIndexCountService;
 		this.promoterFrontGetPromoterInfoService = promoterFrontGetPromoterInfoService;
 		this.promoterFrontGetPromoterGoodsService = promoterFrontGetPromoterGoodsService;
@@ -313,10 +301,7 @@ public class PromoterController {
 		if (userId <= 0L) {
 			throw new UnauthorizedException("还未授权，请授权手机号");
 		}
-		String isSalesmanPageRaw = request.getParameter("isSalesmanPage");
-		String distributorIdRaw = request.getParameter("distributor_id");
-		LinkedHashMap<String, Object> data =
-				promoterFrontIndexCountService.indexCount(companyId, userId, isSalesmanPageRaw, distributorIdRaw);
+		LinkedHashMap<String, Object> data = promoterFrontIndexCountService.indexCount(companyId, userId);
 		return ResponseEntity.ok()
 				.contentType(MediaType.APPLICATION_JSON)
 				.body(ApiResult.ok(data));
@@ -612,95 +597,6 @@ public class PromoterController {
 		Object goodsIdRaw = input.get("goods_id");
 		promoterRelGoodsService.deleteRelPromoterGoods(companyId, userId, goodsIdRaw);
 		return ResponseEntity.ok(ApiResult.ok(Map.of("status", Boolean.TRUE)));
-	}
-
-	@GetMapping(value = "/promoter/getSalesmanCount", name = "业务员统计", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<ApiResult<Map<String, Object>>> getSalesmanCount(
-			HttpServletRequest request,
-			@RequestParam(value = "date", required = false) String date,
-			@RequestParam(value = "datetype", required = false) String datetype,
-			@RequestParam(value = "distributor_id", required = false) String distributorId) {
-		Map<String, Object> claims = readH5AuthClaimsMap(request);
-		resolveCompanyId(request, claims);
-		String userIdStr = Objects.toString(claims.get("user_id"), "").trim();
-		if (!StringUtils.hasText(userIdStr)) {
-			throw new UnauthorizedException("还未授权，请授权手机号");
-		}
-		long userId;
-		try {
-			userId = Long.parseLong(userIdStr);
-		} catch (NumberFormatException e) {
-			throw new UnauthorizedException("还未授权，请授权手机号");
-		}
-		Map<String, Object> data =
-				promoterSalesmanCountQueryService.getSalesmanCount(userId, date, datetype, distributorId);
-		return ResponseEntity.ok()
-				.contentType(MediaType.APPLICATION_JSON)
-				.body(ApiResult.ok(data));
-	}
-
-	@GetMapping(value = "/promoter/getSalesmanStatic", name = "业务员业绩", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<ApiResult<List<LinkedHashMap<String, Object>>>> getSalesmanStatic(
-			HttpServletRequest request,
-			@RequestParam(value = "tab", required = false) String tab,
-			@RequestParam(value = "datetype", required = false) String datetype,
-			@RequestParam(value = "date", required = false) String date,
-			@RequestParam(value = "distributor_id", required = false) String distributorId) {
-		Map<String, Object> claims = readH5AuthClaimsMap(request);
-		resolveCompanyId(request, claims);
-		String userIdStr = Objects.toString(claims.get("user_id"), "").trim();
-		if (!StringUtils.hasText(userIdStr)) {
-			throw new UnauthorizedException("还未授权，请授权手机号");
-		}
-		long userId;
-		try {
-			userId = Long.parseLong(userIdStr);
-		} catch (NumberFormatException e) {
-			throw new UnauthorizedException("还未授权，请授权手机号");
-		}
-		List<LinkedHashMap<String, Object>> data =
-				promoterSalesmanStaticQueryService.getSalesmanStatic(userId, tab, datetype, date, distributorId);
-		return ResponseEntity.ok()
-				.contentType(MediaType.APPLICATION_JSON)
-				.body(ApiResult.ok(data));
-	}
-
-	@GetMapping(
-			value = "/promoter/getSalesmanStoreitems",
-			name = "推广店铺商品",
-			produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<ApiResult<Object>> getSalesmanStoreitems(
-			HttpServletRequest request,
-			@RequestParam(value = "page", required = false) String pageRaw,
-			@RequestParam(value = "pageSize", required = false) String pageSizeRaw,
-			@RequestParam(value = "is_default", required = false) String isDefaultRaw,
-			@RequestParam(value = "distributor_id", required = false) String distributorId) {
-		Map<String, Object> claims = readH5AuthClaimsMap(request);
-		long companyId = resolveCompanyId(request, claims);
-		String userIdStr = Objects.toString(claims.get("user_id"), "").trim();
-		if (!StringUtils.hasText(userIdStr)) {
-			throw new UnauthorizedException("还未授权，请授权手机号");
-		}
-		long userId;
-		try {
-			userId = Long.parseLong(userIdStr);
-		} catch (NumberFormatException e) {
-			throw new UnauthorizedException("还未授权，请授权手机号");
-		}
-		int page = parsePositiveIntDefault(pageRaw, 1);
-		int pageSize = parsePositiveIntDefault(pageSizeRaw, 50);
-		Object data =
-				promoterSalesmanStoreitemsQueryPort.getSalesmanStoreitems(
-						companyId,
-						userId,
-						page,
-						pageSize,
-						isDefaultRaw,
-						distributorId,
-						RequestLangTag.current(langueProperties));
-		return ResponseEntity.ok()
-				.contentType(MediaType.APPLICATION_JSON)
-				.body(ApiResult.ok(data));
 	}
 
 	private static int parsePositiveIntDefault(String raw, int defaultValue) {

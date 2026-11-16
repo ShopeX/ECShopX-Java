@@ -165,12 +165,6 @@ public class WxappOrderListFilterAssembler {
 				paramMap.containsKey("self_delivery_operator_id") && truthyParam(paramMap.get("self_delivery_operator_id"));
 
 		boolean salesManMode = false;
-		if (truthyParam(paramMap.get("promoter_user_id")) && truthyParam(paramMap.get("isSalesmanPage"))) {
-			salesManMode = true;
-			f.remove("user_id");
-			f.put("salesman_id", longVal(paramMap.get("promoter_user_id")));
-			f.put("order_source", "salesperson");
-		}
 		if (!salesManMode && !f.containsKey("distributor_id") && !selfDeliveryOpTruthy) {
 			f.put("user_id", auth.get("user_id"));
 		}

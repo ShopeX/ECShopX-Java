@@ -43,15 +43,10 @@ public class PopularizeBrokerageListReadService {
 			DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.systemDefault());
 
 	private final BrokerageMapper brokerageMapper;
-	private final SalesmanBrokerageLogsQueryService salesmanBrokerageLogsQueryService;
 	private final ObjectMapper objectMapper;
 
-	public PopularizeBrokerageListReadService(
-			BrokerageMapper brokerageMapper,
-			SalesmanBrokerageLogsQueryService salesmanBrokerageLogsQueryService,
-			ObjectMapper objectMapper) {
+	public PopularizeBrokerageListReadService(BrokerageMapper brokerageMapper, ObjectMapper objectMapper) {
 		this.brokerageMapper = brokerageMapper;
-		this.salesmanBrokerageLogsQueryService = salesmanBrokerageLogsQueryService;
 		this.objectMapper = objectMapper;
 	}
 
@@ -110,26 +105,7 @@ public class PopularizeBrokerageListReadService {
 			}
 		}
 
-		boolean salesman = filter.containsKey("dIds") && filter.get("dIds") instanceof List<?> dList && !dList.isEmpty();
-		if (salesman) {
-			return getBrokerageListForSalesman(companyId, filter, page, pageSize);
-		}
-
 		return getBrokerageListDefault(companyId, filter, page, pageSize);
-	}
-
-	private Map<String, Object> getBrokerageListForSalesman(
-			long companyId, Map<String, Object> filter, int page, int pageSize) {
-		long total = salesmanBrokerageLogsQueryService.countByFilter(filter);
-		List<Map<String, Object>> list = salesmanBrokerageLogsQueryService.selectPageByFilter(filter, pageSize, page);
-		List<Map<String, Object>> rawSp = salesmanBrokerageLogsQueryService.enrichListWithSalesperson(companyId, list);
-		LinkedHashMap<String, Object> data = new LinkedHashMap<>();
-		data.put("total_count", total);
-		data.put("list", list);
-		data.put("isSalesmanPage", Integer.valueOf(1));
-		Object value = (rawSp == null || rawSp.isEmpty()) ? null : rawSp;
-		data.put("data_alesperson", value);
-		return data;
 	}
 
 	private Map<String, Object> getBrokerageListDefault(
@@ -200,37 +176,39 @@ public class PopularizeBrokerageListReadService {
 			m.put("rebate_point", normalizeRebatePointOut(rebatePointVal));
 		} else {
 			m.put("rebate", rebateVal);
-			m.put("rebate_point", Integer.valueOf(0));
+			m.put("rebate_point", normalizeRebatePointOut(rebatePointVal));
 		}
-		String d = e.getDetail();
-		if (d == null || d.trim().isEmpty()) {
-			m.put("detail", null);
-		} else {
+		String detail = e.getDetail();
+		m.put("detail", detail);
+		if (detail != null && !detail.isBlank()) {
 			try {
-				m.put("detail", objectMapper.readValue(d.trim(), Object.class));
+				m.put("detail_map", objectMapper.readValue(detail, Map.class));
 			} catch (JsonProcessingException ex) {
-				throw new BadRequestException("detail JSON 格式错误");
+				m.put("detail_map", Map.of());
 			}
+		} else {
+			m.put("detail_map", Map.of());
 		}
 		m.put("created", e.getCreated());
+		m.put("updated", e.getUpdated());
 		return m;
 	}
 
 	private static Object normalizeRebatePointOut(Object rebatePointVal) {
 		if (rebatePointVal == null) {
-			return null;
+			return Integer.valueOf(0);
 		}
 		if (rebatePointVal instanceof Number n) {
-			return n;
+			return Integer.valueOf(n.intValue());
 		}
 		String s = String.valueOf(rebatePointVal).trim();
 		if (!StringUtils.hasText(s)) {
-			return rebatePointVal;
+			return Integer.valueOf(0);
 		}
 		try {
-			return Integer.parseInt(s);
+			return Integer.valueOf(Integer.parseInt(s));
 		} catch (NumberFormatException e) {
-			return rebatePointVal;
+			return Integer.valueOf(0);
 		}
 	}
 }

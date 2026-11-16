@@ -114,13 +114,4 @@ public class ProtocolController {
 		return ResponseEntity.ok(ApiResult.ok(data));
 	}
 
-	@GetMapping(value = "/protocolsaleman", name = "业务员协议")
-	public ResponseEntity<ApiResult<Map<String, LinkedHashMap<String, String>>>> protocolsaleman(
-			HttpServletRequest request,
-			@RequestParam(value = "country_code", required = false) String countryCode) {
-		long companyId = requirePositiveH5CompanyId(request);
-		LinkedHashMap<String, LinkedHashMap<String, String>> body =
-				shopProtocolSetService.protocolsaleman(companyId, countryCode);
-		return ResponseEntity.ok(ApiResult.ok(body));
-	}
 }

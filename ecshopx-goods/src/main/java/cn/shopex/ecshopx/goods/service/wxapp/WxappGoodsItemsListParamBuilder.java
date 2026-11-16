@@ -281,10 +281,6 @@ public class WxappGoodsItemsListParamBuilder {
 			params.put("is_tdk", "1");
 		}
 
-		String isSalesmanPage = request.getParameter("isSalesmanPage");
-		if (StringUtils.hasText(isSalesmanPage)) {
-			params.put("isSalesmanPage", isSalesmanPage.trim());
-		}
 		String storeStatus = request.getParameter("store_status");
 		if (StringUtils.hasText(storeStatus)) {
 			params.put("store_status", storeStatus.trim());
