@@ -259,6 +259,7 @@ public class WxappGoodsItemsListServiceImpl implements WxappGoodsItemsListServic
 			// ES 路径已把算好的主价写入 price；applyForRows 只补 member_*/vip_* 展示字段，不覆盖 price。
 			wxappGoodsItemsListMemberPriceApplyService.applyForRows(companyId, userId, list, acceptLang);
 			goodsItemsListPromotionEnrichmentService.enrich(list, userId);
+			restoreSalePriceWhenNoActivityPriceTag(list);
 		}
 
 		if (!list.isEmpty()) {
@@ -483,6 +484,47 @@ public class WxappGoodsItemsListServiceImpl implements WxappGoodsItemsListServic
 				}
 			}
 		}
+	}
+
+	/**
+	 * ES effectivePrice 可能含其他店限时特惠；标签 enrichment 未命中改价活动时回退销售价，避免活动价残留。
+	 */
+	static void restoreSalePriceWhenNoActivityPriceTag(List<Map<String, Object>> list) {
+		if (list == null || list.isEmpty()) {
+			return;
+		}
+		for (Map<String, Object> row : list) {
+			Object saleRaw = row.remove(GoodsSearchFacade.KEY_LIST_SALE_PRICE);
+			if (hasActivityPricePromotionTag(row)) {
+				continue;
+			}
+			row.remove("activity_price");
+			long sale = longVal(saleRaw);
+			if (sale > 0L) {
+				row.put("price", sale);
+			}
+		}
+	}
+
+	private static boolean hasActivityPricePromotionTag(Map<String, Object> row) {
+		Object raw = row.get("promotion_activity");
+		if (!(raw instanceof List<?> acts) || acts.isEmpty()) {
+			return false;
+		}
+		for (Object o : acts) {
+			if (!(o instanceof Map<?, ?> m)) {
+				continue;
+			}
+			Object tag = m.get("tag_type");
+			if (tag == null) {
+				continue;
+			}
+			String t = tag.toString();
+			if ("limited_time_sale".equals(t) || "normal".equals(t) || "single_group".equals(t)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private static boolean nonEmptyInt(Object v) {

@@ -120,6 +120,10 @@ public class MybatisSearchIndexSourceLoader implements SearchIndexSourceLoader {
 			return Optional.empty();
 		}
 		Map<Long, DistributorItems> distByItemId = loadDistributorRows(companyId, distributorId, skuRows);
+		if (distributorId > 0 && !hasGoodsCanSale(distByItemId)) {
+			// 与列表 DB hydrate（goods_can_sale）对齐：不可售店品不入索引，避免 ES total 虚高
+			return Optional.empty();
+		}
 		long hqPriceFen = priceFen(anchor.getPrice());
 		long marketPriceFen = anchor.getMarketPrice() != null ? anchor.getMarketPrice().longValue() : 0L;
 		Long distributorPriceFen = resolveDistributorPriceFen(distributorId, defaultItemId, anchor, distByItemId);
@@ -134,7 +138,7 @@ public class MybatisSearchIndexSourceLoader implements SearchIndexSourceLoader {
 		SearchIndexMemberPriceMaterializer.Buckets memberPrices =
 				memberActivityRepository.loadMemberPrices(companyId, defaultItemId, skuItemIds);
 		List<SearchIndexSource.Activity> activities =
-				memberActivityRepository.loadActivities(companyId, skuItemIds);
+				memberActivityRepository.loadActivities(companyId, distributorId, skuItemIds);
 		List<String> tagNames = resolveTagNames(companyId, defaultItemId);
 		return Optional.of(
 				SearchIndexSource.builder()
@@ -195,6 +199,15 @@ public class MybatisSearchIndexSourceLoader implements SearchIndexSourceLoader {
 			map.put(row.getItemId(), row);
 		}
 		return map;
+	}
+
+	private static boolean hasGoodsCanSale(Map<Long, DistributorItems> distByItemId) {
+		for (DistributorItems d : distByItemId.values()) {
+			if (d != null && Boolean.TRUE.equals(d.getGoodsCanSale())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private static List<SearchIndexSource.Sku> buildSkus(

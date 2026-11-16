@@ -11,10 +11,12 @@ import static org.mockito.Mockito.when;
 import cn.shopex.ecshopx.promotions.domain.MemberPrice;
 import cn.shopex.ecshopx.promotions.domain.PromotionGroupsActivity;
 import cn.shopex.ecshopx.promotions.domain.PromotionGroupsRelGoods;
+import cn.shopex.ecshopx.promotions.domain.SeckillActivity;
 import cn.shopex.ecshopx.promotions.domain.SeckillRelGoods;
 import cn.shopex.ecshopx.promotions.mapper.MemberPriceMapper;
 import cn.shopex.ecshopx.promotions.mapper.PromotionGroupsActivityMapper;
 import cn.shopex.ecshopx.promotions.mapper.PromotionGroupsRelGoodsMapper;
+import cn.shopex.ecshopx.promotions.mapper.SeckillActivityMapper;
 import cn.shopex.ecshopx.promotions.mapper.SeckillRelGoodsMapper;
 import cn.shopex.ecshopx.promotions.support.MemberPriceColumnCodec;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,6 +33,7 @@ class SearchIndexMemberActivityRepositoryTest {
 
 	@Mock private MemberPriceMapper memberPriceMapper;
 	@Mock private SeckillRelGoodsMapper seckillRelGoodsMapper;
+	@Mock private SeckillActivityMapper seckillActivityMapper;
 	@Mock private PromotionGroupsRelGoodsMapper promotionGroupsRelGoodsMapper;
 	@Mock private PromotionGroupsActivityMapper promotionGroupsActivityMapper;
 
@@ -43,6 +46,7 @@ class SearchIndexMemberActivityRepositoryTest {
 				new SearchIndexMemberActivityRepository(
 						memberPriceMapper,
 						seckillRelGoodsMapper,
+						seckillActivityMapper,
 						promotionGroupsRelGoodsMapper,
 						promotionGroupsActivityMapper,
 						objectMapper);
@@ -59,6 +63,11 @@ class SearchIndexMemberActivityRepositoryTest {
 		seckill.setActivityEndTime(200);
 		seckill.setDisabled(false);
 		when(seckillRelGoodsMapper.selectList(any())).thenReturn(List.of(seckill));
+
+		SeckillActivity seckillAct = new SeckillActivity();
+		seckillAct.setSeckillId(10L);
+		seckillAct.setSourceId(0L);
+		when(seckillActivityMapper.selectBatchIds(any())).thenReturn(List.of(seckillAct));
 
 		PromotionGroupsRelGoods groupRel = new PromotionGroupsRelGoods();
 		groupRel.setGroupsActivityId(77L);
@@ -79,6 +88,29 @@ class SearchIndexMemberActivityRepositoryTest {
 		assertThat(activities.get(0).type()).isEqualTo("limited_time_sale");
 		assertThat(activities.get(1).type()).isEqualTo("group");
 		assertThat(activities.get(1).startAt()).isEqualTo(300L);
+	}
+
+	@Test
+	void loadActivities_filtersLimitedTimeSaleByDistributorSourceId() {
+		SeckillRelGoods seckill = new SeckillRelGoods();
+		seckill.setSeckillId(10L);
+		seckill.setSeckillType("limited_time_sale");
+		seckill.setItemId(42L);
+		seckill.setActivityPrice(1200);
+		seckill.setActivityStartTime(100);
+		seckill.setActivityEndTime(200);
+		seckill.setDisabled(false);
+		when(seckillRelGoodsMapper.selectList(any())).thenReturn(List.of(seckill));
+
+		SeckillActivity seckillAct = new SeckillActivity();
+		seckillAct.setSeckillId(10L);
+		seckillAct.setSourceId(129L);
+		seckillAct.setDistributorId(",129,");
+		when(seckillActivityMapper.selectBatchIds(any())).thenReturn(List.of(seckillAct));
+		when(promotionGroupsRelGoodsMapper.selectList(any())).thenReturn(List.of());
+
+		assertThat(repository.loadActivities(1L, 289L, List.of(42L))).isEmpty();
+		assertThat(repository.loadActivities(1L, 129L, List.of(42L))).hasSize(1);
 	}
 
 	@Test

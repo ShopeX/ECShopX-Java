@@ -84,17 +84,23 @@ public class GoodsSearchFacade {
 		if (rows == null) {
 			rows = List.of();
 		}
-		Map<Long, Integer> priceByDefaultId =
-				page.hits().stream().collect(Collectors.toMap(GoodsSearchHit::defaultItemId, GoodsSearchHit::effectivePriceFen, (a, b) -> a));
-		List<Map<String, Object>> ordered = reorderAndApplyEsPrices(rows, orderedIds, priceByDefaultId);
+		Map<Long, GoodsSearchHit> hitById =
+				page.hits().stream().collect(Collectors.toMap(GoodsSearchHit::defaultItemId, h -> h, (a, b) -> a));
+		List<Map<String, Object>> ordered = reorderAndApplyEsPrices(rows, orderedIds, hitById);
 		LinkedHashMap<String, Object> out = new LinkedHashMap<>();
-		out.put("total_count", page.totalCount());
+		// ES total 可能含 DB hydrate（如门店 goods_can_sale）丢掉的文档；按本页丢失数回校正，避免 total_count > list.size
+		long droppedOnPage = Math.max(0L, (long) page.hits().size() - (long) ordered.size());
+		long adjustedTotal = Math.max((long) ordered.size(), page.totalCount() - droppedOnPage);
+		out.put("total_count", adjustedTotal);
 		out.put("list", ordered);
 		return out;
 	}
 
+	/** 列表 enrichment 未命中改价活动时，用于回退 ES 活动价污染后的主价。 */
+	public static final String KEY_LIST_SALE_PRICE = "__list_sale_price";
+
 	private static List<Map<String, Object>> reorderAndApplyEsPrices(
-			List<Map<String, Object>> rows, List<Long> orderedIds, Map<Long, Integer> priceByDefaultId) {
+			List<Map<String, Object>> rows, List<Long> orderedIds, Map<Long, GoodsSearchHit> hitById) {
 		Map<Long, Map<String, Object>> byKey = new LinkedHashMap<>();
 		for (Map<String, Object> row : rows) {
 			long key = rowDefaultItemId(row);
@@ -108,9 +114,14 @@ public class GoodsSearchFacade {
 			if (row == null) {
 				continue;
 			}
-			Integer esPrice = priceByDefaultId.get(id);
-			if (esPrice != null && esPrice > 0) {
-				row.put("price", esPrice);
+			GoodsSearchHit hit = hitById.get(id);
+			if (hit != null) {
+				if (hit.sourceDocument() != null && hit.sourceDocument().salePrice() > 0L) {
+					row.put(KEY_LIST_SALE_PRICE, hit.sourceDocument().salePrice());
+				}
+				if (hit.effectivePriceFen() > 0) {
+					row.put("price", hit.effectivePriceFen());
+				}
 			}
 			ordered.add(row);
 		}

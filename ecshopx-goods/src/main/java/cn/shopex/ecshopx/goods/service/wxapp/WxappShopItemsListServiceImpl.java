@@ -207,6 +207,7 @@ public class WxappShopItemsListServiceImpl implements WxappShopItemsListService 
 
 		wxappGoodsItemsListMemberPriceApplyService.applyForRows(companyId, authUserId, list, acceptLang);
 		goodsItemsListPromotionEnrichmentService.enrich(list, authUserId);
+		WxappGoodsItemsListServiceImpl.restoreSalePriceWhenNoActivityPriceTag(list);
 		result.put("goods_total", result.get("total_count"));
 		applyShopItemsListStoreBackfill(companyId, list);
 

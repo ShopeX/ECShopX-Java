@@ -208,13 +208,14 @@ public class WxappGoodsItemsDetailPromotionActivityService {
 			return null;
 		}
 		Map<String, Object> info = seckillActivityCreateService.buildGoodsDetailSeckillActivityInfo(act);
-		long itemDist = p1.getDistributorId() != null ? p1.getDistributorId().longValue() : 0L;
+		// PHP CheckPromotionsValid::resolveActivitySourceDistributorId：standard 详情店铺替换后用请求 distributor_id
+		long effectiveDistributorId = resolveActivitySourceDistributorId(distributorId, p1.getDistributorId());
 		long infoSource = act.getSourceId() != null ? act.getSourceId() : 0L;
-		if (itemDist != infoSource) {
+		if (effectiveDistributorId != infoSource) {
 			return null;
 		}
 		String distCsv = act.getDistributorId();
-		if (StringUtils.hasText(distCsv) && distributorId > 0) {
+		if (StringUtils.hasText(distCsv) && effectiveDistributorId > 0) {
 			boolean allowed = false;
 			for (String p : distCsv.split(",")) {
 				String t = p.trim();
@@ -222,7 +223,7 @@ public class WxappGoodsItemsDetailPromotionActivityService {
 					continue;
 				}
 				try {
-					if (Long.parseLong(t) == distributorId) {
+					if (Long.parseLong(t) == effectiveDistributorId) {
 						allowed = true;
 						break;
 					}
@@ -481,9 +482,9 @@ public class WxappGoodsItemsDetailPromotionActivityService {
 		if (limitRow == null) {
 			return null;
 		}
-		long itemDist = p1.getDistributorId() != null ? p1.getDistributorId().longValue() : 0L;
+		long effectiveDistributorId = resolveActivitySourceDistributorId(distributorId, p1.getDistributorId());
 		long limitSource = limitRow.getSourceId() != null ? limitRow.getSourceId() : 0L;
-		if (itemDist != limitSource) {
+		if (effectiveDistributorId != limitSource) {
 			return null;
 		}
 		LimitItemPromotions globalLimitRow = limitItemInfo.remove("special");
@@ -596,5 +597,16 @@ public class WxappGoodsItemsDetailPromotionActivityService {
 				.map(String::trim)
 				.filter(StringUtils::hasText)
 				.collect(Collectors.toList());
+	}
+
+	/**
+	 * Align PHP {@code CheckPromotionsValid::resolveActivitySourceDistributorId}: prefer the request
+	 * shop context (standard 模式下详情替换后的 distributor_id); fall back to item ownership when absent.
+	 */
+	static long resolveActivitySourceDistributorId(long requestDistributorId, Integer itemDistributorId) {
+		if (requestDistributorId > 0L) {
+			return requestDistributorId;
+		}
+		return itemDistributorId != null ? itemDistributorId.longValue() : 0L;
 	}
 }
