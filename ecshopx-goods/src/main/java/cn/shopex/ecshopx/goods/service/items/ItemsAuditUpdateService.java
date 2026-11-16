@@ -16,11 +16,16 @@
 
 package cn.shopex.ecshopx.goods.service.items;
 
+import cn.shopex.ecshopx.goods.domain.Items;
 import cn.shopex.ecshopx.goods.repository.ItemsRepository;
+import cn.shopex.ecshopx.goods.search.DefaultItemIdResolver;
+import cn.shopex.ecshopx.goods.search.sync.GoodsSearchIndexDirtyFanout;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -28,9 +33,12 @@ import org.springframework.util.StringUtils;
 public class ItemsAuditUpdateService {
 
 	private final ItemsRepository itemsRepository;
+	private final GoodsSearchIndexDirtyFanout goodsSearchIndexDirtyFanout;
 
-	public ItemsAuditUpdateService(ItemsRepository itemsRepository) {
+	public ItemsAuditUpdateService(
+			ItemsRepository itemsRepository, GoodsSearchIndexDirtyFanout goodsSearchIndexDirtyFanout) {
 		this.itemsRepository = itemsRepository;
+		this.goodsSearchIndexDirtyFanout = goodsSearchIndexDirtyFanout;
 	}
 
 	public void auditItems(long companyId, Map<String, Object> merged) {
@@ -38,6 +46,38 @@ public class ItemsAuditUpdateService {
 		String auditReason = nullableString(merged.get("audit_reason"));
 		ItemsRepository.GoodsIdClause clause = parseGoodsIdClause(merged.get("goods_id"));
 		itemsRepository.updateAuditFieldsByCompanyAndGoodsId(companyId, clause, auditStatus, auditReason);
+		scheduleSearchIndexUpsert(companyId, clause);
+	}
+
+	private void scheduleSearchIndexUpsert(long companyId, ItemsRepository.GoodsIdClause clause) {
+		Set<Long> defaultItemIds = new LinkedHashSet<>();
+		for (Items row : listAffectedRows(companyId, clause)) {
+			long def = DefaultItemIdResolver.resolve(row);
+			if (def > 0) {
+				defaultItemIds.add(def);
+			}
+		}
+		for (long defaultItemId : defaultItemIds) {
+			goodsSearchIndexDirtyFanout.scheduleUpsertForDefaultItem(companyId, defaultItemId);
+		}
+	}
+
+	private List<Items> listAffectedRows(long companyId, ItemsRepository.GoodsIdClause clause) {
+		if (clause instanceof ItemsRepository.GoodsIdClause.SingleId s) {
+			return itemsRepository.listByCompanyIdAndGoodsId(companyId, s.goodsId(), false);
+		}
+		if (clause instanceof ItemsRepository.GoodsIdClause.InIds in) {
+			List<Items> out = new ArrayList<>();
+			for (Long goodsId : in.goodsIds()) {
+				if (goodsId == null) {
+					continue;
+				}
+				out.addAll(itemsRepository.listByCompanyIdAndGoodsId(companyId, goodsId, false));
+			}
+			return out;
+		}
+		// IsNull / Unrestricted: avoid company-wide fanout; no targeted rows.
+		return List.of();
 	}
 
 	private static String nullableString(Object o) {

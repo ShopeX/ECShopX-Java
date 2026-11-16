@@ -22,6 +22,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
 import cn.shopex.ecshopx.goods.repository.ItemsRepository;
+import cn.shopex.ecshopx.goods.search.sync.GoodsSearchIndexDirtyFanout;
 import cn.shopex.ecshopx.promotions.service.ItemCreatePromotionGuardService;
 import cn.shopex.ecshopx.supplier.domain.SupplierItemsUpdatePatch;
 import java.util.LinkedHashMap;
@@ -48,6 +49,9 @@ class ItemsPriceStoreStatusWriteServiceSubmitAuditFilterTest {
 
 	@Mock
 	private ItemsTableLangSyncAfterMainUpdateService itemsTableLangSyncAfterMainUpdateService;
+
+	@Mock
+	private GoodsSearchIndexDirtyFanout goodsSearchIndexDirtyFanout;
 
 	@InjectMocks
 	private ItemsPriceStoreStatusWriteService service;

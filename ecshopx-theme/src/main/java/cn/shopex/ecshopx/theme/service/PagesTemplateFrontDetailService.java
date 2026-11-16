@@ -18,6 +18,7 @@ package cn.shopex.ecshopx.theme.service;
 
 import cn.shopex.ecshopx.common.companys.language.LanguageCanonicalCodes;
 import cn.shopex.ecshopx.common.config.LangueProperties;
+import cn.shopex.ecshopx.common.distribution.DistributorGetInfoSimpleByDistributorIdPort;
 import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.theme.domain.PagesTemplate;
 import cn.shopex.ecshopx.theme.domain.PagesTemplateSet;
@@ -25,6 +26,7 @@ import cn.shopex.ecshopx.theme.mapper.PagesTemplateMapper;
 import cn.shopex.ecshopx.theme.mapper.PagesTemplateSetMapper;
 import cn.shopex.ecshopx.theme.service.dto.PagesTemplateFrontDetailQuery;
 import cn.shopex.ecshopx.theme.support.DecorationParamsDeepCopy;
+import cn.shopex.ecshopx.theme.support.PagesTemplateFrontDetailResolveSupport;
 import cn.shopex.ecshopx.theme.support.PagesTemplateSetRowMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import java.util.ArrayList;
@@ -47,6 +49,7 @@ public class PagesTemplateFrontDetailService {
 	private final PagesTemplateDecoratorHandlerService pagesTemplateDecoratorHandlerService;
 	private final PagesTemplateDecoratorFilterService pagesTemplateDecoratorFilterService;
 	private final LangueProperties langueProperties;
+	private final DistributorGetInfoSimpleByDistributorIdPort distributorGetInfoSimpleByDistributorIdPort;
 
 	public PagesTemplateFrontDetailService(
 			PagesTemplateSetMapper pagesTemplateSetMapper,
@@ -57,7 +60,8 @@ public class PagesTemplateFrontDetailService {
 			PagesTemplateDecoratorMemberTagsFilterService pagesTemplateDecoratorMemberTagsFilterService,
 			PagesTemplateDecoratorHandlerService pagesTemplateDecoratorHandlerService,
 			PagesTemplateDecoratorFilterService pagesTemplateDecoratorFilterService,
-			LangueProperties langueProperties) {
+			LangueProperties langueProperties,
+			DistributorGetInfoSimpleByDistributorIdPort distributorGetInfoSimpleByDistributorIdPort) {
 		this.pagesTemplateSetMapper = pagesTemplateSetMapper;
 		this.pagesTemplateMapper = pagesTemplateMapper;
 		this.pagesTemplateSetRowMapper = pagesTemplateSetRowMapper;
@@ -67,6 +71,7 @@ public class PagesTemplateFrontDetailService {
 		this.pagesTemplateDecoratorHandlerService = pagesTemplateDecoratorHandlerService;
 		this.pagesTemplateDecoratorFilterService = pagesTemplateDecoratorFilterService;
 		this.langueProperties = langueProperties;
+		this.distributorGetInfoSimpleByDistributorIdPort = distributorGetInfoSimpleByDistributorIdPort;
 	}
 
 	public Object detail(PagesTemplateFrontDetailQuery q, String requestLocaleTag) {
@@ -84,13 +89,25 @@ public class PagesTemplateFrontDetailService {
 		pt.eq(PagesTemplate::getCompanyId, q.companyId());
 		if (q.pagesTemplateId() > 0L) {
 			pt.eq(PagesTemplate::getPagesTemplateId, q.pagesTemplateId());
-		} else if (setRow.getIndexType() == 1) {
-			pt.eq(PagesTemplate::getRegionauthId, q.regionauthId())
-					.eq(PagesTemplate::getDistributorId, 0)
-					.eq(PagesTemplate::getStatus, 1)
-					.eq(PagesTemplate::getWeappPages, nullToIndex(q.weappPages()));
 		} else {
-			pt.eq(PagesTemplate::getDistributorId, q.distributorId()).eq(PagesTemplate::getStatus, 1);
+			int indexType = setRow.getIndexType();
+			boolean virtualDistributor = isVirtualDistributorForTemplate(q.companyId(), q.distributorId());
+			boolean usePool =
+					PagesTemplateFrontDetailResolveSupport.usePlatformTemplatePool(indexType, virtualDistributor);
+			if (usePool) {
+				pt.eq(PagesTemplate::getRegionauthId, q.regionauthId())
+						.eq(PagesTemplate::getDistributorId, 0)
+						.eq(PagesTemplate::getStatus, 1)
+						.eq(
+								PagesTemplate::getWeappPages,
+								PagesTemplateFrontDetailResolveSupport.weappPagesForPlatformPoolDb(q.weappPages()));
+			} else {
+				pt.eq(PagesTemplate::getDistributorId, q.distributorId())
+						.eq(PagesTemplate::getStatus, 1)
+						.eq(
+								PagesTemplate::getWeappPages,
+								PagesTemplateFrontDetailResolveSupport.weappPagesForShopTemplateDb(q.weappPages()));
+			}
 		}
 
 		PagesTemplate templateRow = pagesTemplateMapper.selectOne(pt.last("LIMIT 1"));
@@ -196,8 +213,13 @@ public class PagesTemplateFrontDetailService {
 		return pagesTemplateSetRowMapper.toRowMap(merged, tabBarLangArg);
 	}
 
-	private static String nullToIndex(String weappPages) {
-		return weappPages == null || weappPages.isBlank() ? "index" : weappPages;
+	private boolean isVirtualDistributorForTemplate(long companyId, int distributorId) {
+		if (distributorId <= 0) {
+			return false;
+		}
+		Map<String, Object> row =
+				distributorGetInfoSimpleByDistributorIdPort.getInfoSimpleByDistributorId(companyId, distributorId);
+		return PagesTemplateFrontDetailResolveSupport.isVirtualDistributorRow(row);
 	}
 
 	private static String resolveCanonicalLangTag(String requestLang) {

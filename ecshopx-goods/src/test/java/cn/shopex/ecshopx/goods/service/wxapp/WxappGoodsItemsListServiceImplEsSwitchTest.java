@@ -35,8 +35,7 @@ import cn.shopex.ecshopx.goods.search.GoodsSearchFacade;
 import cn.shopex.ecshopx.goods.search.SearchEsProperties;
 import cn.shopex.ecshopx.goods.search.price.SearchMemberTier;
 import cn.shopex.ecshopx.goods.search.price.SearchMemberTierResolver;
-import cn.shopex.ecshopx.goods.service.ItemsCategoryDistributorIdResolver;
-import cn.shopex.ecshopx.goods.service.cart.salesperson.SalespersonCartDistributorSkuReplaceService;
+import cn.shopex.ecshopx.goods.service.wxapp.WxappStandardDistributorSkuListReplaceService;
 import cn.shopex.ecshopx.goods.service.items.ItemLogisticsStoreEnricher;
 import cn.shopex.ecshopx.goods.service.pointsmall.PointsmallFrontBrandListService;
 import cn.shopex.ecshopx.goods.service.popularize.CompanyPopularizeConfigReadService;
@@ -79,8 +78,7 @@ class WxappGoodsItemsListServiceImplEsSwitchTest {
 	@Mock private ItemsTagsRepository itemsTagsRepository;
 	@Mock private DistributorCouponListAppendService distributorCouponListAppendService;
 	@Mock private DistributorListQueryService distributorListQueryService;
-	@Mock private ItemsCategoryDistributorIdResolver itemsCategoryDistributorIdResolver;
-	@Mock private SalespersonCartDistributorSkuReplaceService salespersonCartDistributorSkuReplaceService;
+	@Mock private WxappStandardDistributorSkuListReplaceService wxappStandardDistributorSkuListReplaceService;
 	@Mock private LangueProperties langueProperties;
 	@Mock private ItemLogisticsStoreEnricher itemLogisticsStoreEnricher;
 	@Mock private SearchEsProperties searchEsProperties;
@@ -113,8 +111,7 @@ class WxappGoodsItemsListServiceImplEsSwitchTest {
 				itemsTagsRepository,
 				distributorCouponListAppendService,
 				distributorListQueryService,
-				itemsCategoryDistributorIdResolver,
-				salespersonCartDistributorSkuReplaceService,
+				wxappStandardDistributorSkuListReplaceService,
 				langueProperties,
 				itemLogisticsStoreEnricher,
 				searchEsProperties,

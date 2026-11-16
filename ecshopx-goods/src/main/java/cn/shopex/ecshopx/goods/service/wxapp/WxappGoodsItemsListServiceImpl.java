@@ -32,9 +32,7 @@ import cn.shopex.ecshopx.goods.repository.ItemCrossBorderTaxQueryRepository;
 import cn.shopex.ecshopx.goods.repository.ItemsRelTagsRepository;
 import cn.shopex.ecshopx.goods.repository.ItemsRepository;
 import cn.shopex.ecshopx.goods.repository.ItemsTagsRepository;
-import cn.shopex.ecshopx.goods.service.ItemsCategoryDistributorIdResolver;
 import cn.shopex.ecshopx.goods.service.items.ItemLogisticsStoreEnricher;
-import cn.shopex.ecshopx.goods.service.cart.salesperson.SalespersonCartDistributorSkuReplaceService;
 import cn.shopex.ecshopx.goods.search.GoodsSearchFacade;
 import cn.shopex.ecshopx.goods.search.SearchEsProperties;
 import cn.shopex.ecshopx.goods.search.price.SearchMemberTierResolver;
@@ -100,8 +98,7 @@ public class WxappGoodsItemsListServiceImpl implements WxappGoodsItemsListServic
 	private final ItemsTagsRepository itemsTagsRepository;
 	private final DistributorCouponListAppendService distributorCouponListAppendService;
 	private final DistributorListQueryService distributorListQueryService;
-	private final ItemsCategoryDistributorIdResolver itemsCategoryDistributorIdResolver;
-	private final SalespersonCartDistributorSkuReplaceService salespersonCartDistributorSkuReplaceService;
+	private final WxappStandardDistributorSkuListReplaceService wxappStandardDistributorSkuListReplaceService;
 	private final LangueProperties langueProperties;
 	private final ItemLogisticsStoreEnricher itemLogisticsStoreEnricher;
 	private final SearchEsProperties searchEsProperties;
@@ -128,8 +125,7 @@ public class WxappGoodsItemsListServiceImpl implements WxappGoodsItemsListServic
 			ItemsTagsRepository itemsTagsRepository,
 			DistributorCouponListAppendService distributorCouponListAppendService,
 			DistributorListQueryService distributorListQueryService,
-			ItemsCategoryDistributorIdResolver itemsCategoryDistributorIdResolver,
-			SalespersonCartDistributorSkuReplaceService salespersonCartDistributorSkuReplaceService,
+			WxappStandardDistributorSkuListReplaceService wxappStandardDistributorSkuListReplaceService,
 			LangueProperties langueProperties,
 			ItemLogisticsStoreEnricher itemLogisticsStoreEnricher,
 			SearchEsProperties searchEsProperties,
@@ -155,8 +151,7 @@ public class WxappGoodsItemsListServiceImpl implements WxappGoodsItemsListServic
 		this.itemsTagsRepository = itemsTagsRepository;
 		this.distributorCouponListAppendService = distributorCouponListAppendService;
 		this.distributorListQueryService = distributorListQueryService;
-		this.itemsCategoryDistributorIdResolver = itemsCategoryDistributorIdResolver;
-		this.salespersonCartDistributorSkuReplaceService = salespersonCartDistributorSkuReplaceService;
+		this.wxappStandardDistributorSkuListReplaceService = wxappStandardDistributorSkuListReplaceService;
 		this.langueProperties = langueProperties;
 		this.itemLogisticsStoreEnricher = itemLogisticsStoreEnricher;
 		this.searchEsProperties = searchEsProperties;
@@ -243,7 +238,7 @@ public class WxappGoodsItemsListServiceImpl implements WxappGoodsItemsListServic
 		}
 
 		if (!list.isEmpty()) {
-			applyStandardDistributorSkuReplaceIfNeeded(companyId, params, list);
+			wxappStandardDistributorSkuListReplaceService.applyIfNeeded(companyId, params, list);
 		}
 
 		if (defaultItemMode) {
@@ -488,32 +483,6 @@ public class WxappGoodsItemsListServiceImpl implements WxappGoodsItemsListServic
 				}
 			}
 		}
-	}
-
-	private void applyStandardDistributorSkuReplaceIfNeeded(long companyId, LinkedHashMap<String, Object> params,
-			List<Map<String, Object>> list) {
-		if (!Boolean.TRUE.equals(params.get("is_can_sale"))) {
-			return;
-		}
-		if (!"standard".equals(itemsCategoryDistributorIdResolver.resolveProductModel(companyId))) {
-			return;
-		}
-		long distributorId = resolvePrimaryDistributorIdFromParams(params.get("distributor_id"));
-		if (distributorId <= 0) {
-			return;
-		}
-		salespersonCartDistributorSkuReplaceService.apply(companyId, distributorId, list);
-		for (Map<String, Object> row : list) {
-			long store = longVal(row.get("store"));
-			row.put("v_store", store != 0 ? 1 : 0);
-		}
-	}
-
-	private static long resolvePrimaryDistributorIdFromParams(Object dist) {
-		if (dist instanceof List<?> dl && !dl.isEmpty()) {
-			return longVal(dl.get(0));
-		}
-		return longVal(dist);
 	}
 
 	private static boolean nonEmptyInt(Object v) {

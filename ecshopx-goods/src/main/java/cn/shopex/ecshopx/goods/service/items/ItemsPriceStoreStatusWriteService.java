@@ -21,6 +21,8 @@ import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.goods.domain.Items;
 import cn.shopex.ecshopx.goods.repository.ItemsPriceStoreStatusPatch;
 import cn.shopex.ecshopx.goods.repository.ItemsRepository;
+import cn.shopex.ecshopx.goods.search.DefaultItemIdResolver;
+import cn.shopex.ecshopx.goods.search.sync.GoodsSearchIndexDirtyFanout;
 import cn.shopex.ecshopx.promotions.service.ItemCreatePromotionGuardService;
 import cn.shopex.ecshopx.supplier.domain.SupplierItemsUpdatePatch;
 import java.math.BigDecimal;
@@ -28,8 +30,10 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -44,16 +48,19 @@ public class ItemsPriceStoreStatusWriteService {
 	private final ItemsRepository itemsRepository;
 	private final ItemCreatePromotionGuardService itemCreatePromotionGuardService;
 	private final ItemsTableLangSyncAfterMainUpdateService itemsTableLangSyncAfterMainUpdateService;
+	private final GoodsSearchIndexDirtyFanout goodsSearchIndexDirtyFanout;
 
 	public ItemsPriceStoreStatusWriteService(
 			SupplierItemsAdminBatchUpdateService supplierItemsAdminBatchUpdateService,
 			ItemsRepository itemsRepository,
 			ItemCreatePromotionGuardService itemCreatePromotionGuardService,
-			ItemsTableLangSyncAfterMainUpdateService itemsTableLangSyncAfterMainUpdateService) {
+			ItemsTableLangSyncAfterMainUpdateService itemsTableLangSyncAfterMainUpdateService,
+			GoodsSearchIndexDirtyFanout goodsSearchIndexDirtyFanout) {
 		this.supplierItemsAdminBatchUpdateService = supplierItemsAdminBatchUpdateService;
 		this.itemsRepository = itemsRepository;
 		this.itemCreatePromotionGuardService = itemCreatePromotionGuardService;
 		this.itemsTableLangSyncAfterMainUpdateService = itemsTableLangSyncAfterMainUpdateService;
+		this.goodsSearchIndexDirtyFanout = goodsSearchIndexDirtyFanout;
 	}
 
 	public void updateFromRequest(long companyId, String operatorTypeJwt, Map<String, Object> merged) {
@@ -81,19 +88,21 @@ public class ItemsPriceStoreStatusWriteService {
 		}
 		Long goodsId = loc.goodsIds != null && !loc.goodsIds.isEmpty() ? loc.goodsIds.get(0) : null;
 		Long itemId = loc.itemIds != null && !loc.itemIds.isEmpty() ? loc.itemIds.get(0) : null;
+		Items priceCheckRow = null;
 		if (plan.priceFenOrNull != null) {
-			Items row = itemsRepository.selectOneForPriceCheckAndPromotion(companyId, itemId, goodsId);
-			if (row == null) {
+			priceCheckRow = itemsRepository.selectOneForPriceCheckAndPromotion(companyId, itemId, goodsId);
+			if (priceCheckRow == null) {
 				throw new ResourceException("商品不存在");
 			}
 			long priceFenLong = plan.priceFenOrNull.longValue();
-			if (priceFenLong <= 0 && !Boolean.TRUE.equals(row.getIsGift())) {
+			if (priceFenLong <= 0 && !Boolean.TRUE.equals(priceCheckRow.getIsGift())) {
 				throw new ResourceException("非赠品价格须为正");
 			}
 			Map<Long, Long> priceMap = new LinkedHashMap<>();
-			priceMap.put(row.getItemId(), priceFenLong);
-			priceMap.put(row.getGoodsId(), priceFenLong);
-			itemCreatePromotionGuardService.checkItemPrice(companyId, List.of(row.getGoodsId()), priceMap);
+			priceMap.put(priceCheckRow.getItemId(), priceFenLong);
+			priceMap.put(priceCheckRow.getGoodsId(), priceFenLong);
+			itemCreatePromotionGuardService.checkItemPrice(
+					companyId, List.of(priceCheckRow.getGoodsId()), priceMap);
 		}
 		List<String> auditIn = plan.auditStatusFilterProcessing ? AUDIT_STATUS_ELIGIBLE_FOR_SUBMIT : null;
 		ItemsPriceStoreStatusPatch platformPatch = toItemsPatch(plan);
@@ -101,6 +110,36 @@ public class ItemsPriceStoreStatusWriteService {
 		if (itemId != null) {
 			itemsTableLangSyncAfterMainUpdateService.afterItemsUpdateIfLangFieldsPresent(
 					companyId, itemId, merged);
+		}
+		scheduleSearchIndexUpsert(companyId, itemId, goodsId, priceCheckRow);
+	}
+
+	private void scheduleSearchIndexUpsert(
+			long companyId, Long itemId, Long goodsId, Items priceCheckRowOrNull) {
+		Set<Long> defaultItemIds = new LinkedHashSet<>();
+		if (priceCheckRowOrNull != null) {
+			long def = DefaultItemIdResolver.resolve(priceCheckRowOrNull);
+			if (def > 0) {
+				defaultItemIds.add(def);
+			}
+		} else if (itemId != null) {
+			Items row = itemsRepository.getByItemIdAndCompany(itemId, companyId);
+			if (row != null) {
+				long def = DefaultItemIdResolver.resolve(row);
+				if (def > 0) {
+					defaultItemIds.add(def);
+				}
+			}
+		} else if (goodsId != null) {
+			for (Items row : itemsRepository.listByCompanyIdAndGoodsId(companyId, goodsId, false)) {
+				long def = DefaultItemIdResolver.resolve(row);
+				if (def > 0) {
+					defaultItemIds.add(def);
+				}
+			}
+		}
+		for (long defaultItemId : defaultItemIds) {
+			goodsSearchIndexDirtyFanout.scheduleUpsertForDefaultItem(companyId, defaultItemId);
 		}
 	}
 

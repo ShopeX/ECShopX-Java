@@ -24,6 +24,7 @@ import cn.shopex.ecshopx.goods.service.ItemsGroupGetGroupItemsService;
 import cn.shopex.ecshopx.goods.service.items.ItemsCategoryItemIdResolver;
 import cn.shopex.ecshopx.goods.service.wxapp.WxappGoodsItemsListMemberPriceApplyService;
 import cn.shopex.ecshopx.goods.service.wxapp.WxappGoodsItemsListQueryOrchestrator;
+import cn.shopex.ecshopx.goods.service.wxapp.WxappStandardDistributorSkuListReplaceService;
 import cn.shopex.ecshopx.pointsmall.domain.PointsmallItems;
 import cn.shopex.ecshopx.pointsmall.mapper.PointsmallItemsMapper;
 import cn.shopex.ecshopx.pointsmall.service.PointsmallItemsAdminListService;
@@ -72,6 +73,7 @@ public class PagesTemplateWidgetItemsService {
 	private final ActivitiesMapper activitiesMapper;
 	private final EmployeePurchaseActivityItemsPriceOverlayService
 			employeePurchaseActivityItemsPriceOverlayService;
+	private final WxappStandardDistributorSkuListReplaceService wxappStandardDistributorSkuListReplaceService;
 
 	public Map<String, Object> getWidgetItems(long companyId, String acceptLanguage, PagesTemplateWidgetItemsQuery q) {
 		return getWidgetItems(companyId, acceptLanguage, q, null);
@@ -191,6 +193,8 @@ public class PagesTemplateWidgetItemsService {
 		@SuppressWarnings("unchecked")
 		List<Map<String, Object>> list =
 				(List<Map<String, Object>>) orchestratorResult.getOrDefault("list", List.of());
+
+		wxappStandardDistributorSkuListReplaceService.applyIfNeeded(companyId, p, list);
 
 		if ("seckill".equals(dt) && !list.isEmpty() && seckillAct != null) {
 			Integer start = seckillAct.getActivityStartTime();

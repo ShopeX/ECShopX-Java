@@ -12,6 +12,7 @@ import cn.shopex.ecshopx.goods.service.ItemsGroupGetGroupItemsService;
 import cn.shopex.ecshopx.goods.service.items.ItemsCategoryItemIdResolver;
 import cn.shopex.ecshopx.goods.service.wxapp.WxappGoodsItemsListMemberPriceApplyService;
 import cn.shopex.ecshopx.goods.service.wxapp.WxappGoodsItemsListQueryOrchestrator;
+import cn.shopex.ecshopx.goods.service.wxapp.WxappStandardDistributorSkuListReplaceService;
 import cn.shopex.ecshopx.pointsmall.domain.PointsmallItems;
 import cn.shopex.ecshopx.pointsmall.mapper.PointsmallItemsMapper;
 import cn.shopex.ecshopx.pointsmall.service.PointsmallItemsAdminListService;
@@ -46,6 +47,7 @@ class PagesTemplateWidgetItemsServicePointsmallTest {
 	@Mock private PointsmallItemsAdminListService pointsmallItemsAdminListService;
 	@Mock private ActivitiesMapper activitiesMapper;
 	@Mock private EmployeePurchaseActivityItemsPriceOverlayService overlayService;
+	@Mock private WxappStandardDistributorSkuListReplaceService wxappStandardDistributorSkuListReplaceService;
 
 	private PagesTemplateWidgetItemsService service;
 
@@ -64,7 +66,8 @@ class PagesTemplateWidgetItemsServicePointsmallTest {
 						pointsmallItemsMapper,
 						pointsmallItemsAdminListService,
 						activitiesMapper,
-						overlayService);
+						overlayService,
+						wxappStandardDistributorSkuListReplaceService);
 	}
 
 	@Test
