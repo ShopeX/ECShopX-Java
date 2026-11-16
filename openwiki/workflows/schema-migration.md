@@ -1,7 +1,7 @@
 ---
 type: workflow
 title: "Workflow: Schema Changes with bin/make-migration and Flyway"
-description: "The domain-first recipe for evolving the MySQL schema in ECShopX-Java: annotate a MyBatis-Plus entity, generate a Flyway V*.sql with bin/make-migration by diffing the live database against the domain annotations, review the best-effort SQL, apply it via make-migration migrate or startup Flyway with baseline-on-migrate, and let MigrationSeedRunner seed logistics and system menus afterwards."
+description: "The domain-first recipe for evolving the MySQL schema in ECShopX-Java: annotate a MyBatis-Plus entity, generate a Flyway V*.sql with bin/make-migration by diffing the live database against the domain annotations, review the best-effort SQL, apply it via make-migration migrate or startup Flyway with baseline-on-migrate, and let MigrationSeedRunner seed logistics and system menus afterwards. Covers the shipped migration history through V00000000000008 (release 5.6.0)."
 tags: [workflow, schema-migration, flyway, make-migration, mybatis-plus, mysql, domain-entities, migration-seed-runner, baseline-on-migrate, operations]
 sources:
   - id: openwiki-source-ea70eb6c045047448e446296
@@ -30,6 +30,8 @@ sources:
     resource: repo://ecshopx-bootstrap/src/main/resources/db/migration/V00000000000006.sql
   - id: openwiki-source-ed1e2ce5fcfefbaf52c68d75
     resource: repo://ecshopx-bootstrap/src/main/resources/db/migration/V00000000000007.sql
+  - id: openwiki-source-dd409ee66cf4d3787f77d1a0
+    resource: repo://ecshopx-bootstrap/src/main/resources/db/migration/V00000000000008.sql
   - id: openwiki-source-bff0785476c76ae2215f291b
     resource: repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/config/MigrationSeedRunnerTest.java
   - id: openwiki-source-e88a654b635bd67d5ca1eb04
@@ -42,10 +44,10 @@ sources:
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/mybatis/metadata/MpTable.java
   - id: openwiki-source-f1b1aacc63642e5304668821
     resource: repo://readme.md
-generated: { by: "openwiki/0.9.0", at: "2026-11-08T17:14:16.576Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-16T17:12:44.218Z" }
 verified:
   - by: openwiki/0.9.0
-    at: 2026-11-08T17:14:16.576Z
+    at: 2026-11-16T17:12:44.218Z
 ---
 
 # Workflow: Schema Changes with bin/make-migration and Flyway
@@ -153,7 +155,7 @@ Every `CREATE TABLE` the generator emits ends with `ENGINE = InnoDB DEFAULT CHAR
 | `--allow-empty-diff` | Write the migration file even when the diff is empty | You want a timestamped placeholder that you will fill with manual SQL |
 | `-h` / `--help` | Print usage, the examples, and the doctrine-mapping note | — |
 
-`migrate` and `repair` accept **no** description or extra positional arguments — the script errors out if you pass any. Generated versions are 14-digit timestamps, so they always sort after the seven shipped migrations (`V00000000000001.sql` … `V00000000000007.sql`), which use zero-padded version numbers and therefore always apply first. See the shipped-history table in Step 4 for what each one contains.
+`migrate` and `repair` accept **no** description or extra positional arguments — the script errors out if you pass any. Generated versions are 14-digit timestamps, so they always sort after the eight shipped migrations (`V00000000000001.sql` … `V00000000000008.sql`), which use zero-padded version numbers and therefore always apply first. See the shipped-history table in Step 4 for what each one contains.
 
 ### What the diff can and cannot see
 
@@ -198,13 +200,13 @@ This invokes `./mvnw -pl ecshopx-bootstrap org.flywaydb:flyway-maven-plugin:migr
 
 **Automatic — startup migration**
 
-`spring.flyway.enabled=true` in the base `application.properties` (with `locations=classpath:db/migration`, `baseline-on-migrate=true`, `baseline-version=0`, `spring.flyway.encoding=UTF-8`), so a normally started application migrates on boot before serving traffic — startup migration is the norm, not the exception. This is what the Docker and lite install paths rely on: compose imports `docker/ecshopx.sql` first, then the Java container starts, Flyway baselines the legacy schema at 0 and applies the shipped `V00000000000001.sql`–`V00000000000007.sql` chain on top (plus any timestamped migrations you added). The base file sets this for *every* profile: the repository ships no `application-local.properties` to switch it off (that path is `.gitignore`d, despite the readme's "already includes" claim), so a local developer who wants manual control either runs `bin/make-migration migrate` themselves or overrides the flag through the usual Spring mechanisms (`--spring.flyway.enabled=false` on the command line, or the `SPRING_FLYWAY_ENABLED` environment variable).
+`spring.flyway.enabled=true` in the base `application.properties` (with `locations=classpath:db/migration`, `baseline-on-migrate=true`, `baseline-version=0`, `spring.flyway.encoding=UTF-8`), so a normally started application migrates on boot before serving traffic — startup migration is the norm, not the exception. This is what the Docker and lite install paths rely on: compose imports `docker/ecshopx.sql` first, then the Java container starts, Flyway baselines the legacy schema at 0 and applies the shipped `V00000000000001.sql`–`V00000000000008.sql` chain on top (plus any timestamped migrations you added). The base file sets this for *every* profile: the repository ships no `application-local.properties` to switch it off (that path is `.gitignore`d, despite the readme's "already includes" claim), so a local developer who wants manual control either runs `bin/make-migration migrate` themselves or overrides the flag through the usual Spring mechanisms (`--spring.flyway.enabled=false` on the command line, or the `SPRING_FLYWAY_ENABLED` environment variable).
 
 The Flyway runtime itself is a `ecshopx-bootstrap` dependency (`flyway-core` + `flyway-mysql`), which is also why the migration directory lives in that module and nowhere else.
 
 ### Shipped migration history
 
-The migration directory currently ships seven zero-padded migrations — the authoritative "applied by every install" history. They are also a gallery of what this workflow produces, from full bundle bootstraps down to single-column releases:
+The migration directory currently ships eight zero-padded migrations — the authoritative "applied by every install" history. They are also a gallery of what this workflow produces, from full bundle bootstraps down to single-column releases:
 
 | Version | Release | Contents |
 | --- | --- | --- |
@@ -215,6 +217,7 @@ The migration directory currently ships seven zero-padded migrations — the aut
 | `V00000000000005` | 5.4.4 | DigiOS direct-connect tables (`digios_api_log`, `digios_company_config`, `digios_store_mapping`), the `pos_store_account` table, `orders_normal_orders.pos_store_account_id`, `supplier_items.is_sync_platform` |
 | `V00000000000006` | 5.4.7 | Member-tag rule engine: the `members_rel_tags_audit` table, `source`/`rule_version`/`effective_at`/`updated_at` on `members_rel_tags`, `tag_code`/`tag_kind`/`rule_version` plus `uk_company_tag_code` on `members_tags`, and member-tag targeting columns on `promotions_marketing_activity`/`promotions_seckill_activity` |
 | `V00000000000007` | 5.5.0 | Merchant onboarding contact/license fields on `merchant` and `merchant_settlement_apply`, plus `uk_company_user` (`company_id`, `user_id`) on the latter |
+| `V00000000000008` | 5.6.0 | Member-task suite: `member_task`, `member_task_completion`, `member_task_reward_grant`, `member_task_user_progress`, plus goods-search synonyms (`goods_search_synonyms` with `uk_company_group_key`) and order attribution columns (`orders_normal_orders.member_task_id`, `member_task_sharer_user_id`) |
 
 Two conventions visible here: from `V00000000000004` on, each migration header carries a `-- Release: <version>` line tying the schema change to the application release it shipped with, and from `V00000000000005` on the DDL uses the exact `ENGINE = InnoDB DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci` footer that `make-migration` emits (`V00000000000003`'s predate the current generator shape — `CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci` — a reminder that hand-edited or older output survives review and is applied verbatim).
 

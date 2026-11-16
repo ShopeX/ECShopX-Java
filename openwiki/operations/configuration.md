@@ -114,8 +114,14 @@ sources:
     resource: repo://ecshopx-openapi/src/main/java/cn/shopex/ecshopx/openapi/web/OpenapiSignedRequestReplayGuard.java
   - id: openwiki-source-189b7866f8db73ca77451821
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/integration/notify/OrderDeliverySuccessNotifyWechatService.java
+  - id: openwiki-source-520855d1b9493ddf72c77d4f
+    resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/integration/popularize/OrderValidityLatestAftersaleDaysReadPortImpl.java
   - id: openwiki-source-c2e0d21be538ee1e2cb4e432
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/NormalOrderBrokerageOnFinishService.java
+  - id: openwiki-source-457873e17502181009e56712
+    resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/setting/OrderValiditySettingDefaults.java
+  - id: openwiki-source-70666a8a14ab1658f8f9bc57
+    resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/setting/OrderValiditySettingRedisReadService.java
   - id: openwiki-source-0bfae3187b4a720c922e07fc
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/config/DoumenIntlProperties.java
   - id: openwiki-source-f4f2fc3f040de90a6b782487
@@ -126,6 +132,8 @@ sources:
     resource: repo://ecshopx-popularize/src/main/java/cn/shopex/ecshopx/popularize/service/brokerage/NormalOrderFinishBrokerageCoordinator.java
   - id: openwiki-source-02c872815f7217e1d310af6f
     resource: repo://ecshopx-popularize/src/main/java/cn/shopex/ecshopx/popularize/service/BrokeragePlanCloseTimeService.java
+  - id: openwiki-source-7a7d892fd27d4064b8849b70
+    resource: repo://ecshopx-popularize/src/main/java/cn/shopex/ecshopx/popularize/service/BrokerageService.java
   - id: openwiki-source-6d549e5da4278050fc21b6ef
     resource: repo://ecshopx-popularize/src/main/java/cn/shopex/ecshopx/popularize/service/PopularizeSettingSaveService.java
   - id: openwiki-source-ac9bff6fbfacb24d146d9682
@@ -160,10 +168,10 @@ sources:
     resource: repo://ecshopx-wechat/src/main/java/cn/shopex/ecshopx/wechat/wxa/WechatOpenPlatformAuthorizerTokenService.java
   - id: openwiki-source-f1b1aacc63642e5304668821
     resource: repo://readme.md
-generated: { by: "openwiki/0.9.0", at: "2026-11-11T17:12:30.774Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-16T17:12:44.218Z" }
 verified:
   - by: openwiki/0.9.0
-    at: 2026-11-11T17:12:30.774Z
+    at: 2026-11-16T17:12:44.218Z
 ---
 
 # Configuration and Secrets Reference
@@ -480,11 +488,11 @@ DigiOS keys bind to `DigiOsProperties` (`@ConfigurationProperties(prefix = "ecsh
 |---|---|---|
 | `ecshopx.popularize.common-defaults.distribution-default-banner` / `.distribution-default-weapp` / `.distribution-default-poster` / `.qrcode-bg-img` / `.promoter-qrcode-bg-img` | yuanyuanke CDN image URLs | [Marketing](../domains/marketing.md) |
 | `ecshopx.popularize.brokerage-qrcode.uri` / `.uri-item` | `${BROKERAGE_URI:}` / `${BROKERAGE_URI_ITEM:}` | [Marketing](../domains/marketing.md) |
-| `ecshopx.popularize.brokerage-plan-close.settle-days` / `.aftersale-days` | `0` / `0` (code defaults; not listed in `application.properties`) | [Marketing](../domains/marketing.md) |
+| brokerage `plan_close_time` inputs: popularize `limit_time` + order-validity `latest_aftersale_time` (per-company settings, **not** properties keys) | `0` / `0` days | [Marketing](../domains/marketing.md) |
 
 `PopularizeSettingSaveService.applyCommonImageDefaults` coalesces these over the saved config (missing/null, and for banner/applets also empty-string, fall back to the property).
 
-The `brokerage-plan-close` pair feeds `BrokeragePlanCloseTimeService.computePlanCloseTimeEpochSec()` as `@Value("${ecshopx.popularize.brokerage-plan-close.settle-days:0}")` and `@Value("${ecshopx.popularize.brokerage-plan-close.aftersale-days:0}")`, with **`plan_close_time = now + 86400 * (settle-days + aftersale-days)`** (epoch seconds, computed from `Instant.now()` with a long-cast to avoid overflow). That timestamp is written onto unsettled brokerage rows in two places: on order confirm-receipt finish (`NormalOrderBrokerageOnFinishService` → `updatePlanCloseTime`, updating the `brokerage` rows where `is_close=false`) and at commission-row insert (`NormalOrderFinishBrokerageCoordinator` stamps each new row's `plan_close_time`). **Both keys are placeholders:** the code carries an explicit TODO that they should be replaced by the merchant-side 分销确认天数 (distribution confirmation days) / 售后时效天数 (after-sale validity days) settings, so today they are flat platform-wide day offsets — not wired to any merchant setting — and the shipped `0`/`0` default collapses `plan_close_time` to "now". Operators overriding them do so via `APP_ARGS`/env; there is no tracked line in `application.properties`.
+The brokerage **plan-close-time day offsets are no longer properties keys** — the earlier `ecshopx.popularize.brokerage-plan-close.{settle-days,aftersale-days}` `@Value` placeholders (and their TODO to wire the merchant-side 分销确认天数 / 售后时效天数 settings) were replaced by live per-company settings reads, so there is nothing to override via `APP_ARGS`/env and no tracked line in `application.properties`. `BrokeragePlanCloseTimeService.computePlanCloseTimeEpochSec(companyId)` now computes **`plan_close_time = now + 86400 × (limit_time + latest_aftersale_time)`** (epoch seconds, from `Instant.now()` with a long-cast to avoid overflow), where `limit_time` (分销确认天数) comes from the merged popularize config — the `popularizeConfig:{companyId}` Redis string read by `PopularizeSettingSaveService.getMergedPopularizeConfig`, defaulting to `0` — and `latest_aftersale_time` (售后时效天数) comes from the orders bundle's order-validity settings via the cross-bundle `OrderValidityLatestAftersaleDaysReadPort`, implemented by `OrderValiditySettingRedisReadService.readPlatformSetting` (Redis hash `order_validity_setting`, field `{companyId}`, on the companys template; default `0`). The timestamp is written onto unsettled brokerage rows on order confirm-receipt finish (`NormalOrderBrokerageOnFinishService.orderFinishBrokerage` → `updatePlanCloseTime`, updating the `brokerage` rows where `companyId`/`orderId` match and `is_close=false`). At commission-row insert the coordinator no longer stamps the computed time but a **pending sentinel** — `BrokeragePlanCloseTimeService.PLAN_CLOSE_TIME_PENDING` (`Integer.MAX_VALUE`, exposed as `pendingPlanCloseTimeForInsert()`) — so the settle-brokerage job, which selects rows with `plan_close_time <= now`, cannot close a row before confirm-receipt refreshes it; a non-positive `companyId` also yields the sentinel. With both day settings at their shipped `0` defaults `plan_close_time` still collapses to "now" at confirm-receipt, but the offsets are now per-company operator settings rather than flat platform-wide placeholders.
 
 ## Operational hazards: keys whose empty value changes behaviour
 

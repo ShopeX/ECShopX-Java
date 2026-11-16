@@ -41,6 +41,8 @@ sources:
     resource: repo://ecshopx-bootstrap/src/main/resources/db/migration/README.md
   - id: openwiki-source-ed1e2ce5fcfefbaf52c68d75
     resource: repo://ecshopx-bootstrap/src/main/resources/db/migration/V00000000000007.sql
+  - id: openwiki-source-dd409ee66cf4d3787f77d1a0
+    resource: repo://ecshopx-bootstrap/src/main/resources/db/migration/V00000000000008.sql
   - id: openwiki-source-423c7bde5a386038c2869dcc
     resource: repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/deposit/service/AdapayDepositTradeRechargeCallbackServiceIdempotencyTest.java
   - id: openwiki-source-37aab463708a3c624c0cbf7c
@@ -109,16 +111,22 @@ sources:
     resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/domain/ItemsBarcode.java
   - id: openwiki-source-2ee6a856029e10bc9a8814cb
     resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/domain/ItemsCategoryProfit.java
+  - id: openwiki-source-a60c4584012d2df89d386ea6
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/mapper/SearchIndexSourceMapper.java
   - id: openwiki-source-999488e07803c8696764656d
     resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/repository/ItemsBarcodeRepository.java
   - id: openwiki-source-d0ebab4e807db7778a10591a
     resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/repository/ItemsRepository.java
+  - id: openwiki-source-26e9034c84f38e52b64bc159
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/search/index/MybatisSearchIndexSourceLoader.java
   - id: openwiki-source-e17f98bb05b480e73ddcbb7d
     resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/ItemsCreateContext.java
   - id: openwiki-source-b7c91e3bc9e30683048b3b4a
     resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/PlatformItemsAddService.java
   - id: openwiki-source-d5db0205a21e6b21df413b16
     resource: repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/repository/ItemsBarcodeRepositoryShopScopedTest.java
+  - id: openwiki-source-ed65984a7a7370ed7a4a3265
+    resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/domain/NormalOrders.java
   - id: openwiki-source-27731f2b06169bae431088f8
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/domain/Trade.java
   - id: openwiki-source-c33f25c5adc84a836aa71b4e
@@ -141,6 +149,14 @@ sources:
     resource: repo://ecshopx-orders/src/main/resources/mapper/TradeMapper.xml
   - id: openwiki-source-c2e91ac74e3d675b702a0387
     resource: repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/orders/service/payment/OrdersTradePaymentCallbackServiceNormalOrderPaySuccessPublishProbeTest.java
+  - id: openwiki-source-0c0fa69a27916b769b8332b6
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/domain/membertask/MemberTask.java
+  - id: openwiki-source-e0c38419988ba3e4b3ec4bcc
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/domain/membertask/MemberTaskRewardGrant.java
+  - id: openwiki-source-a8194ed6dbf27dd7a581416a
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/mapper/MemberTaskMapper.java
+  - id: openwiki-source-faf6f422b95fa2fc6980d30a
+    resource: repo://ecshopx-promotions/src/main/resources/mapper/MemberTaskMapper.xml
   - id: openwiki-source-315d7afcbb0c93fcc46f287c
     resource: repo://ecshopx-reservation/src/main/java/cn/shopex/ecshopx/reservation/mapper/ReservationRecordMapper.java
   - id: openwiki-source-08d673fd8e541fb98bf63a13
@@ -163,16 +179,16 @@ sources:
     resource: repo://pom.xml
   - id: openwiki-source-f1b1aacc63642e5304668821
     resource: repo://readme.md
-generated: { by: "openwiki/0.9.0", at: "2026-11-11T17:12:30.774Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-16T17:12:44.218Z" }
 verified:
   - by: openwiki/0.9.0
-    at: 2026-11-11T17:12:30.774Z
+    at: 2026-11-16T17:12:44.218Z
 ---
 
 
 # Persistence: MySQL, MyBatis-Plus, Mappers, and Tenancy
 
-All business data in ECShopX-Java lives in **one MySQL database** (`ecshopx`) reached through **MyBatis-Plus 3.5.16** (`mybatis-plus-spring-boot3-starter`, version pinned via the `mybatis-plus.version` property in the root `pom.xml` `<properties>` block — lines 21-29, which also carry the reactor `revision` of `5.5.3` plus the shared pins `lombok 1.18.36`, `jjwt 0.12.6`, `zxing 3.5.3`, `wxjava 4.7.6-20250628.205748`, and `alipay-sdk 4.39.134.ALL` — and re-declared in `ecshopx-bom`, which imports the starter and the jsqlparser companion at the same version). There is no JPA, no separate reporting store, and no second SQL dialect: every Bundle in the reactor talks to the same schema through mapper interfaces, and Redis (see [Redis: Logical Database Isolation](redis-databases.md)) only holds caches, counters, and queue state — MySQL is the system of record. For where `domain/`, `mapper/`, and `repository/` packages sit inside a Bundle, see [Bundle Layering](../architecture/bundle-layering.md).
+All business data in ECShopX-Java lives in **one MySQL database** (`ecshopx`) reached through **MyBatis-Plus 3.5.16** (`mybatis-plus-spring-boot3-starter`, version pinned via the `mybatis-plus.version` property in the root `pom.xml` `<properties>` block — lines 21-29, which also carry the reactor `revision` of `5.6.3` plus the shared pins `lombok 1.18.36`, `jjwt 0.12.6`, `zxing 3.5.3`, `wxjava 4.7.6-20250628.205748`, and `alipay-sdk 4.39.134.ALL` — and re-declared in `ecshopx-bom`, which imports the starter and the jsqlparser companion at the same version). There is no JPA, no separate reporting store, and no second SQL dialect: every Bundle in the reactor talks to the same schema through mapper interfaces, and Redis (see [Redis: Logical Database Isolation](redis-databases.md)) only holds caches, counters, and queue state — MySQL is the system of record. For where `domain/`, `mapper/`, and `repository/` packages sit inside a Bundle, see [Bundle Layering](../architecture/bundle-layering.md).
 
 ## The connection and its two pinned values
 
@@ -215,7 +231,9 @@ Three shapes coexist, all annotated `@Mapper` and living in a `mapper` package:
 
 * **`extends BaseMapper<Entity>`** — the default. This is how nearly all mappers are declared (e.g. `TradeMapper extends BaseMapper<Trade>`, `StatisticsMapper extends BaseMapper<Statistics>`); all CRUD (`selectById`, `insert`, `update`, `delete`, `selectPage`, `selectCount`, …) comes from MyBatis-Plus and needs no SQL.
 * **`BaseMapper` + custom methods** — declare the method on the interface, implement it in `src/main/resources/mapper/<Mapper>.xml` with the same namespace and statement id. `ReservationRecordMapper` declares `countConflictingReservations`, `countRightsQuotaUsage`, `selectOccupiedResourceLevelIds`, `selectForLimitDaysWindow`, `countForLimitNumsSameDay`; the matching XML lives at `ecshopx-reservation/src/main/resources/mapper/ReservationRecordMapper.xml`. XML mapper files are found through the global property `mybatis-plus.mapper-locations=classpath*:mapper/**/*.xml` — the `classpath*:` prefix is what makes every Bundle's `resources/mapper/` directory visible from the single fat jar, without any per-Bundle registration.
-* **`BaseMapper` + annotation SQL, or annotation-only mappers** — small `@Select` scripts directly on the interface (`CartMapper.selectCartCountSummary` in `ecshopx-employee-purchase` uses a text block with a `WHERE company_id = #{companyId} AND user_id = #{userId} …` clause). Annotation-only mappers that do not extend `BaseMapper` also exist: `WxappVipGradeOrderDetailLiteMapper` (a read-only projection with `@Select`) and `AdminOrderListSourcesLookupMapper` (a `<script>` `@Select` returning a record) — both still live in a `mapper` package, so the scan finds them.
+* **`BaseMapper` + annotation SQL, or annotation-only mappers** — small `@Select` scripts directly on the interface (`CartMapper.selectCartCountSummary` in `ecshopx-employee-purchase` uses a text block with a `WHERE company_id = #{companyId} AND user_id = #{userId} …` clause). Annotation-only mappers that do not extend `BaseMapper` also exist: `WxappVipGradeOrderDetailLiteMapper` (a read-only projection with `@Select`) and `AdminOrderListSourcesLookupMapper` (a `<script>` `@Select` returning a record) — both still live in a `mapper` package, so the scan finds them. The largest annotation-SQL mapper is `ecshopx-goods`' `SearchIndexSourceMapper.selectStoreItemKeys`: a single `<script>` `@Select` that `UNION ALL`s three company-scoped branches (`distribution_distributor_items` sellable rows, shop-owned `items` rows, and the platform-pool `distributor_id = 0` `items` rows — the last branch disabled with `AND 1 = 0` when a shop filter is active), then applies keyset pagination (`(default_item_id, distributor_id)` cursor, `GROUP BY` + `ORDER BY` + `LIMIT`) to feed `MybatisSearchIndexSourceLoader.fetchPage`, which loops because materialized pages can come back short when store-item keys are orphaned. Every branch still leads with `WHERE company_id = #{companyId}` — the hand-written tenancy rule applies even to a search-index materialization query.
+
+`MemberTaskMapper` (ecshopx-promotions) is the current reference for the `BaseMapper` + XML hybrid at scale: it extends `BaseMapper<MemberTask>` for CRUD and adds `countAdminList`, `selectAdminListPage`, and `selectAdminListForExport` in `MemberTaskMapper.xml`, all sharing one `<sql id="adminListWhere">` fragment whose `<where>` block opens with `company_id = #{companyId}` and folds the display-status state machine (`draft` / `expired` / `pending_start` / `in_progress` derived from `published`, `off_shelf`, `begin_time`, `end_time` against a `#{now}` epoch-second parameter) into a reusable `displayStatusSql` fragment — so the count, the page, and the unpaged export can never disagree about filtering.
 
 There is exactly one deliberate exception to the "must live under `**.mapper`" rule: `ecshopx-dispatch`'s `FailedJobMapper` sits in the bundle's root package (`cn.shopex.ecshopx.dispatch.FailedJobMapper`), outside the scan pattern. It is wired by hand — bootstrap's `DispatchBusConfig` declares `@Bean public FailedJobMapper failedJobMapper() { return entity -> 1; }`, a **stub** that discards the insert, while the real XML insert for the `failed_jobs` table sits in `ecshopx-dispatch/src/main/resources/mapper/FailedJobMapper.xml`. Failed-job persistence is therefore a wiring point to be completed, not production-grade today; a new mapper should not copy this exception.
 
@@ -226,7 +244,7 @@ flowchart TD
         NAMEGEN["FqcnMapperBeanNameGenerator replaces dots with underscores for any class ending in Mapper"]
         LAZY["lazyInitialization true defers MapperFactoryBean creation"]
     end
-    subgraph bundles["Business Bundles (48 modules)"]
+    subgraph bundles["Business Bundles (51 modules)"]
         ORDERS["orders mapper TradeMapper extends BaseMapper of Trade plus XML"]
         GOODS["goods mapper ItemsBarcodeMapper extends BaseMapper of ItemsBarcode"]
         RES["reservation mapper ReservationRecordMapper plus XML statements"]
@@ -277,11 +295,22 @@ The same file carries the connection and migration wiring that backs the mappers
 | `spring.datasource.username` / `.password` | `ecshopx` / `ecshopx` | Dev credentials, matching the compose stacks' `MYSQL_USER`/`MYSQL_PASSWORD`. |
 | `spring.datasource.driver-class-name` | `com.mysql.cj.jdbc.Driver` | |
 | `spring.flyway.enabled` | `true` | Migrations run **at application startup**; the compose stacks re-assert `--spring.flyway.enabled=true` in `APP_ARGS`. |
-| `spring.flyway.locations` | `classpath:db/migration` | Classpath-wide: every Bundle ships a `db/migration` directory (all `.gitkeep`-only placeholders), but only `ecshopx-bootstrap/src/main/resources/db/migration` holds real SQL (`V00000000000001.sql` … `V00000000000007.sql` at the time of writing) — so schema evolution is centralized in bootstrap in practice. |
+| `spring.flyway.locations` | `classpath:db/migration` | Classpath-wide: every Bundle ships a `db/migration` directory (all `.gitkeep`-only placeholders), but only `ecshopx-bootstrap/src/main/resources/db/migration` holds real SQL (`V00000000000001.sql` … `V00000000000008.sql` at the time of writing) — so schema evolution is centralized in bootstrap in practice. |
 | `spring.flyway.baseline-on-migrate` / `.baseline-version` | `true` / `0` | Existing databases imported from `docker/ecshopx.sql` are baselined at version 0 instead of re-running historical SQL. |
 | `spring.flyway.encoding` | `UTF-8` | The migration files contain Chinese comments. |
 
-The newest migration, `V00000000000007.sql` (release `5.5.0`), extends the merchant onboarding tables: it adds `contact_name`, `main_category_selection`, `license_registered_address`, and `license_legal_representative` to `merchant`, adds `user_id` plus the same contact columns to `merchant_settlement_apply`, and enforces a unique key `uk_company_user` on `(company_id, user_id)` in `merchant_settlement_apply` — the tenant key is part of the uniqueness constraint even in DDL.
+`V00000000000007.sql` (release `5.5.0`) extends the merchant onboarding tables: it adds `contact_name`, `main_category_selection`, `license_registered_address`, and `license_legal_representative` to `merchant`, adds `user_id` plus the same contact columns to `merchant_settlement_apply`, and enforces a unique key `uk_company_user` on `(company_id, user_id)` in `merchant_settlement_apply` — the tenant key is part of the uniqueness constraint even in DDL.
+
+The newest migration, `V00000000000008.sql` (release `5.6.0`), introduces the goods search synonyms and member-task schemas, all InnoDB/utf8mb4 and all carrying `company_id`:
+
+* `goods_search_synonyms` (goods) — a company-dimension synonym group (`group_key`, `words` as a JSON array string) keyed by unique `uk_company_group_key` on `(company_id, group_key)` plus the standard `ix_company_id`; the `GoodsSearchSynonym` entity in `ecshopx-goods` is its annotated mirror.
+* `member_task` (promotions) — the member-task campaign row, indexed by `idx_member_task_company` on `(company_id, task_id)` and carrying `config_version` (comment 乐观锁, optimistic-lock column) with the time-window fields `begin_time`/`end_time` as `int` epoch seconds.
+* `member_task_completion` (promotions) — one row per task completion cycle, with indexes `idx_mtc_task_user_cycle` on `(task_id, user_id, cycle_key, voided)`, `idx_mtc_task_completed`, and `idx_mtc_task_order`.
+* `member_task_reward_grant` (promotions) — the reward-grant ledger whose unique `uk_mtrg_completion` on `completion_id` makes reward issuance idempotent per completion (see the idempotency section below).
+* `member_task_user_progress` (promotions) — accumulated progress with unique `uk_mtup_task_user` on `(task_id, user_id)`, so progress upserts key on task+user.
+* It also alters `orders_normal_orders` to add `member_task_id` and `member_task_sharer_user_id` (both `bigint NOT NULL DEFAULT 0`) — member-task attribution columns written only inside the order-create transaction; the `NormalOrders` entity Javadoc forbids back-filling them from payment or receipt flows ("下单事务写入，禁止支付/签收补写").
+
+The matching `ecshopx-promotions` domain entities (`MemberTask`, `MemberTaskCompletion`, `MemberTaskRewardGrant`, `MemberTaskUserProgress` under `domain/membertask/`) carry the same `@MpTable` index metadata, which is what keeps the generated DDL and the runtime mapping in lockstep.
 
 ## Domain entities: the schema source of truth
 

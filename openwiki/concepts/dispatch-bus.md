@@ -1,10 +1,12 @@
 ---
-type: "Reference"
-title: "Dispatch Bus (ecshopx-dispatch)"
+type: "Platform subsystem reference"
+title: "Dispatch Bus: Events, Listeners, Jobs"
+description: "The Redis-backed dispatch bus that replaces the PHP Laravel-style jobs and events: event/listener naming, job registration via DispatchRegistry, async vs after-commit fan-out, and payload conventions."
+tags: [dispatch, redis, async-jobs, events, listeners, messaging, cross-bundle]
 openwiki_generated: true
 verified:
   - by: openwiki/0.9.0
-    at: 2026-11-08T17:14:16.576Z
+    at: 2026-11-16T17:12:44.218Z
 sources:
   - id: openwiki-source-ce9ef3189183acc63c92fa79
     resource: repo://docker/ecshopx.sql
@@ -28,6 +30,10 @@ sources:
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ItemAddEventDispatchPublisherImpl.java
   - id: openwiki-source-0315455e54e2688cacf7a480
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MembersNormalOrderPaySuccessNewCustomerDispatchListenerRegistrationConfig.java
+  - id: openwiki-source-b9dd0bc143ebcf71fb7562fd
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MemberTaskNormalOrderConfirmReceiptDispatchListenerRegistrationConfig.java
+  - id: openwiki-source-fe01d17802ad55035b1d66d4
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MemberTaskNormalOrderPaySuccessDispatchListenerRegistrationConfig.java
   - id: openwiki-source-c478f226e519806efc4cefc0
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MerchantEnterSuccessNoticeDispatchPublisherImpl.java
   - id: openwiki-source-d796c74a7df3139966d43e8d
@@ -36,12 +42,20 @@ sources:
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/NormalOrderConfirmReceiptInvoiceDispatchListenerRegistrationConfig.java
   - id: openwiki-source-016cf74d94a4742fa4b94ebf
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/OperatorCreateEventDispatchPublisherImpl.java
+  - id: openwiki-source-82b6d6be2f0cf5b842bb0c22
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/OrderListExportFileJobDispatchHandler.java
+  - id: openwiki-source-a481ddefd99749977917db6e
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/OrderListExportFileJobDispatchPublisherImpl.java
   - id: openwiki-source-54c2942be6423a972467854a
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/OrdersTradeFinishNormalOrderPaySuccessBridgeDispatchListenerRegistrationConfig.java
   - id: openwiki-source-f3b71eb9d6873d40cbc6bb31
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/PosStoreAccountCreateEventDispatchPublisherImpl.java
   - id: openwiki-source-6d77f0b8aa3c2cb5cd92e0cf
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/PosStoreAccountExportDispatchPublisherImpl.java
+  - id: openwiki-source-0efb63292c0898d92c370a01
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/SearchRebuildJobDispatchPublisherImpl.java
+  - id: openwiki-source-1f09d004ecebb282a2758fcf
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/SearchRebuildJobRegistrationConfig.java
   - id: openwiki-source-f324880274cc5f35bf9d36f4
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ShuyunOpenPlatformNormalOrderDeliveryDispatchListenerRegistrationConfig.java
   - id: openwiki-source-ab29e43dc9a6e0e326d11f91
@@ -66,6 +80,8 @@ sources:
     resource: repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/dispatch/NormalOrderAddEventAsyncFanOutSupplierAndYoushuDispatchFlowTest.java
   - id: openwiki-source-a9793085d047ab70b6967780
     resource: repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/dispatch/NormalOrderCancelDispatchFlowTest.java
+  - id: openwiki-source-a89123fc85e9a8390a3b76c3
+    resource: repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/dispatch/OrderListExportFileJobDispatchFlowTest.java
   - id: openwiki-source-fab4f35115a09efd84081bf0
     resource: repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/dispatch/redis/RedisDelayedDispatchMoverTest.java
   - id: openwiki-source-3a144abbfe295534f8c70bcb
@@ -90,6 +106,8 @@ sources:
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/DispatchListener.java
   - id: openwiki-source-4cece1d0dc21f12377ecd9c8
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/EspierDispatchJobNames.java
+  - id: openwiki-source-39e681b7e63485fa9b3b7a54
+    resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/GoodsSearchDispatchJobNames.java
   - id: openwiki-source-f7687100d882f581d013877d
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/MerchantDispatchJobNames.java
   - id: openwiki-source-27bfcace5400d2804562fba2
@@ -148,8 +166,16 @@ sources:
     resource: repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/RetryPolicy.java
   - id: openwiki-source-23904875a4cada0750e03100
     resource: repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/SyncDispatchDriver.java
+  - id: openwiki-source-d06abc53183de96931fcb0be
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/search/rebuild/SearchRebuildJobHandler.java
+  - id: openwiki-source-180ad5fe96bda3a39aaa25d5
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/search/sync/GoodsSearchIndexPromotionSyncListener.java
   - id: openwiki-source-d62c639b2bab8383d20ff39e
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/config/OrdersSchedulingConfig.java
+  - id: openwiki-source-05f3dc05ce63e00c34622bd4
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/dispatch/MemberTaskNormalOrderConfirmReceiptDispatchListener.java
+  - id: openwiki-source-96557ec758d56ed3c5499e2f
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/dispatch/MemberTaskNormalOrderPaySuccessDispatchListener.java
   - id: openwiki-source-c82a31af8c44a537c660da54
     resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/dispatch/MerchantAuditSuccessNoticeJobHandler.java
   - id: openwiki-source-3fe9e16047b776b25aabd298
@@ -160,11 +186,11 @@ sources:
     resource: repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/dispatch/NormalOrderPaySuccessShuyunTradeSyncDispatchListener.java
   - id: openwiki-source-b37de949b02bec36f06a1bcc
     resource: repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/service/openplatform/OfflineBenefitConsumePushService.java
-generated: { by: "openwiki/0.9.0", at: "2026-11-08T17:14:16.576Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-16T17:12:44.218Z" }
 ---
 
 
-# Dispatch Bus (ecshopx-dispatch)
+# Dispatch Bus: Events, Listeners, Jobs
 
 The dispatch bus is ECShopX-Java's replacement for the PHP system's Laravel-style jobs and events. It is a small, deliberately explicit library module (`ecshopx-dispatch`, depending only on `ecshopx-common`, `spring-boot-starter-data-redis` and `spring-boot-starter-amqp`) that carries two kinds of messages between Bundles:
 
@@ -362,7 +388,7 @@ All message-name constants live in `ecshopx-common/src/main/java/cn/shopex/ecsho
 Two naming devices matter when reading the constants:
 
 * **Distinct bus planes for one PHP event.** `EVENT_TRADE_FINISH` (`event:291:...TradeFinishEvent`) and `EVENT_TRADE_FINISH_CSV292` (`event:292:...`) are the same PHP event class exposed under two CSV ids so different entry surfaces (gateway pay-success versus admin offline bank-transfer approval) get distinct bus message names while sharing the same listener fan-out. `DistributionDispatchEventNames` does the same with `event:281`/`event:289` and `event:282`/`event:290`.
-* **Alias constants folding several CSV ids onto one bus name.** `SalespersonDispatchJobNames` defines `SALESPERSON_ITEMS_SHELVES_JOB_CSV_JOB139_ALIAS` (and 140/141/142/144/145/146…) all pointing at `SALESPERSON_ITEMS_SHELVES_JOB` — several PHP trigger rows collapse onto one Java handler registration. `EspierDispatchJobNames` goes further with one PHP job class, `EspierBundle\Jobs\ExportFileJob`, exposed under ~20 distinct CSV ids (`job:10`, `job:14`, `job:85`, `job:131`, …), each registered as a separate bus message against the same `EspierExportFileJobDispatchHandler`.
+* **Alias constants folding several CSV ids onto one bus name.** `SalespersonDispatchJobNames` defines `SALESPERSON_ITEMS_SHELVES_JOB_CSV_JOB139_ALIAS` (and 140/141/142/144/145/146/147/149…) all pointing at `SALESPERSON_ITEMS_SHELVES_JOB` — several PHP trigger rows collapse onto one Java handler registration. `EspierDispatchJobNames` goes further with one PHP job class, `EspierBundle\Jobs\ExportFileJob`, exposed under 22 distinct CSV ids (`job:10`, `job:14`, `job:81`, `job:85`–`87`, `job:91`, `job:94`/`95`, `job:110`, `job:130`–`133`, `job:159`, `job:165`/`166`, `job:190`, `job:200`, `job:212`–`214`), each registered as a separate bus message name — most of them against `EspierExportFileJobDispatchHandler`, with `job:131` (`EXPORT_FILE_JOB_ORDER_LIST`) deliberately carved out onto `OrderListExportFileJobDispatchHandler` (see the export bullet under [Recent publisher and handler surface](#recent-publisher-and-handler-surface)).
 
 Keeping the CSV id in the string makes PHP→Java migration parity auditable at a glance; never invent a new format for a migrated message.
 
@@ -373,9 +399,9 @@ Keeping the CSV id in the string makes PHP→Java migration parity auditable at 
 | Event | Bus name | Registered listeners (bootstrap wiring) |
 | --- | --- | --- |
 | `EVENT_NORMAL_ORDER_ADD` | `event:orders:normal_order_add` | `orders.supplier_order_split_on_normal_order_add` → `youshu.orders_normal_order_add` → `thirdparty.order_add_push_marketing_center_on_normal_order_add` (the marketing-center config `@DependsOn` the youshu config; the order is pinned end-to-end by `NormalOrderAddEventAsyncFanOutSupplierAndYoushuDispatchFlowTest`) |
-| `EVENT_NORMAL_ORDER_PAY_SUCCESS` | `event:288:...NormalOrderPaySuccessEvent` | `youshu.orders_normal_order_pay_success` → `WsugcBundle\Listeners\Order` → `members.normal_order_pay_success_new_customer` (chained by `@DependsOn`), then `shuyun.open_platform.trade_sync_on_normal_order_pay_success` and `shuyun.open_platform.offline_benefit_consume_on_normal_order_pay_success` |
+| `EVENT_NORMAL_ORDER_PAY_SUCCESS` | `event:288:...NormalOrderPaySuccessEvent` | `youshu.orders_normal_order_pay_success` → `WsugcBundle\Listeners\Order` → `members.normal_order_pay_success_new_customer` (chained by `@DependsOn`), then `shuyun.open_platform.trade_sync_on_normal_order_pay_success`, `shuyun.open_platform.offline_benefit_consume_on_normal_order_pay_success`, and `promotions.member_task.normal_order_pay_success` (member-task completion evaluation, `async("default", null)`) |
 | `EVENT_NORMAL_ORDER_DELIVERY` | `event:orders:normal_order_delivery` | `youshu.orders_normal_order_delivery` → marketing-center → dm-crm (`@DependsOn` chain), plus `shuyun.open_platform.trade_sync_on_normal_order_delivery` and `digios.store_adjustment_on_normal_order_delivery` (`@Order(80)` config) |
-| `EVENT_NORMAL_ORDER_CONFIRM_RECEIPT` | `event:orders:normal_order_confirm_receipt` | `orders.listeners.OrderFinishInvoice` (SYNC, `@Order(96)`) and `youshu.orders_normal_order_confirm_receipt` (`@Order(97)`), then `thirdparty.order_confirm_receipt_push_marketing_center_...`, `thirdparty.shopex_crm.sync_confirm_receipt_order_...`, `shuyun.open_platform.trade_sync_on_normal_order_confirm_receipt` |
+| `EVENT_NORMAL_ORDER_CONFIRM_RECEIPT` | `event:orders:normal_order_confirm_receipt` | `orders.listeners.OrderFinishInvoice` (SYNC, `@Order(96)`) and `youshu.orders_normal_order_confirm_receipt` (`@Order(97)`), then `thirdparty.order_confirm_receipt_push_marketing_center_...`, `thirdparty.shopex_crm.sync_confirm_receipt_order_...`, `shuyun.open_platform.trade_sync_on_normal_order_confirm_receipt`, and `promotions.member_task.normal_order_confirm_receipt` (grants pending member-task rewards once the order is done, `async("default", null)`) |
 | `EVENT_NORMAL_ORDER_CANCEL` | `event:orders:normal_order_cancel` | `orders.normal_order_cancel_auto_pass`, `youshu.orders_normal_order_cancel` (`@DependsOn` the marketing-center cancel-push config) → `members.normal_order_cancel_new_customer` (`@DependsOn` youshu), plus `shuyun.open_platform.trade_sync_on_normal_order_cancel` and `shuyun.open_platform.offline_benefit_consume_on_normal_order_cancel` |
 | `EVENT_TRADE_FINISH` / `EVENT_TRADE_FINISH_CSV292` | `event:291` / `event:292:...TradeFinishEvent` | the synchronous bridge `orders.trade_finish_normal_order_pay_success_bridge` (`ListenerDispatchOptions.syncDefaults()`) is registered against **both** planes and re-publishes normal-order pay-success; the wider trade-finish fan-out is described in [Workflow: Checkout, Payment, Notify, and Trade-Finish Fan-out](../workflows/order-payment-flow.md) |
 | `EVENT_ORDER_PROCESS_LOG` | `event:orders:order_process_log` | `OrderProcessLogDispatchListenerRegistrationConfig` with `async("slow", null)` — one of the few listeners that moves off `default` |
@@ -391,7 +417,9 @@ The pattern "publisher interface in `ecshopx-common`, `@Component` implementatio
 * **DigiOS aftersales return adjustment event** — `DigiOsAftersalesReturnAdjustmentDispatchPublisher` (`ecshopx-common`, aligned with PHP `DigiOsStoreAdjustmentSyncDispatch::dispatchOnAftersalesReturnIfEnabled`) with `DigiOsAftersalesReturnAdjustmentDispatchPublisherImpl` in bootstrap publishing `DigiOsDispatchEventNames.EVENT_AFTERSALES_RETURN_ADJUSTMENT` (`event:digios:aftersales_return_adjustment`) as ASYNC / REDIS / null queue / platform-default retry; ids below 1 are silently dropped instead of being published. The caller is `AftersalesRefundAsyncPortImpl.scheduleDigiOsStoreAdjustmentOnAftersalesReturn` in `ecshopx-aftersales`, and `NoopDigiOsAftersalesReturnAdjustmentDispatchPublisher` in `ecshopx-common/cron/mock` exists for wiring contexts that must satisfy the dependency without touching the bus. The single listener `digios.store_adjustment_on_aftersales_return` (`DigiOsAftersalesReturnStoreAdjustmentDispatchListener` in `ecshopx-digios`) is registered by `DigiOsAftersalesReturnAdjustmentDispatchListenerRegistrationConfig` (`@Order(81)`, `async("default", null)`) and delegates to `DigiOsStoreAdjustmentSyncDispatchService.dispatchOnAftersalesReturn`.
 * **Operator create event** — `OperatorCreateEventDispatchPublisher` (`ecshopx-common`) with `OperatorCreateEventDispatchPublisherImpl` in bootstrap publishing `CompanysDispatchEventNames.EVENT_OPERATOR_CREATE` (`event:CompanysBundle\Events\OperatorCreateEvent`, the bare-PHP-FQN variant) with `DispatchOptions.eventDefaults()` — **SYNC**, in-process. `OperatorsCommandService` in `ecshopx-companys` calls it after inserting the operator row, but never inside the transaction: `scheduleOperatorCreateDispatch` registers an `afterCommit` synchronization when one is active and publishes immediately otherwise, so the SYNC facade call itself fires post-commit. Its single listener is `digios.account_sync_on_operator_create` (`OperatorCreateDigiOsAccountSyncDispatchListener` in `ecshopx-digios`), registered by `DigiOsOperatorCreateDispatchListenerRegistrationConfig` (`@Order(81)`, `async("default", null)`), which extracts `operator_id` / `operator_type` (preferring the nested `entities` map, falling back to the payload root) and delegates to `DigiOsAccountSyncDispatchService.dispatchIfEnabled` — the service only syncs operators whose type is `staff` (distributor operators are deliberately excluded) and only when DigiOS integration is enabled for the company.
 * **POS store account create event** — `PosStoreAccountCreateEventDispatchPublisher` (`ecshopx-common`) with `PosStoreAccountCreateEventDispatchPublisherImpl` in bootstrap publishing `CompanysDispatchEventNames.EVENT_POS_STORE_ACCOUNT_CREATE` (`event:companys:pos_store_account_create`) with `DispatchOptions.eventDefaults()` — i.e. **SYNC**, in-transaction, in-process. `PosStoreAccountWriteService` and `PosStoreAccountImportService` in `ecshopx-companys` call it. The constants file already names `listener:digios.account_sync_on_pos_store_account_create`, but nothing registers that listener yet, so the event is currently published with zero subscribers.
-* **POS store account export** — `PosStoreAccountExportDispatchPublisher` (defined in `ecshopx-companys`'s own `service/posaccount` package, an exception to the interface-in-common rule) with `PosStoreAccountExportDispatchPublisherImpl` in bootstrap dispatching `EspierDispatchJobNames.EXPORT_FILE_JOB` (`job:10:EspierBundle\Jobs\ExportFileJob`) as ASYNC / REDIS / `slow` queue — one of the ~20 CSV ids that all funnel into `EspierExportFileJobDispatchHandler`.
+* **POS store account export** — `PosStoreAccountExportDispatchPublisher` (defined in `ecshopx-companys`'s own `service/posaccount` package, an exception to the interface-in-common rule) with `PosStoreAccountExportDispatchPublisherImpl` in bootstrap dispatching `EspierDispatchJobNames.EXPORT_FILE_JOB` (`job:10:EspierBundle\Jobs\ExportFileJob`) as ASYNC / REDIS / `slow` queue — one of the 22 CSV ids whose registration funnels into `EspierExportFileJobDispatchHandler`.
+* **Order list / invoice / rights export** — `OrderListExportFileJobDispatchPublisher` (`ecshopx-common`) with `OrderListExportFileJobDispatchPublisherImpl` in bootstrap dispatching `EspierDispatchJobNames.EXPORT_FILE_JOB_ORDER_LIST` (`job:131:EspierBundle\Jobs\ExportFileJob`) as ASYNC / REDIS / `slow`, payload `type` + `company_id` + `operator_id` + `filter`. This is the one Espier export CSV id **not** handled by `EspierExportFileJobDispatchHandler`: `EspierExportFileJobRegistrationConfig` registers `job:131` against `OrderListExportFileJobDispatchHandler` (a bootstrap `@Component`), which branches on `payload.type` — `"invoice"` → `InvoiceExportFileJobHandler`, `"right"` → `RightsExportFileJobHandler`, anything else → `OrderExportFileJobHandler`. The generic `EspierExportFileJobDispatchHandler`, by contrast, looks the payload's `type` up in a map of injected `ExportFileJobTypeHandler` beans and only logs (missing/unknown type) instead of throwing.
+* **Goods search rebuild job** — `SearchRebuildJobDispatchPublisher` (`ecshopx-common`) with `SearchRebuildJobDispatchPublisherImpl` in bootstrap (`@Profile("!test-cron")`) dispatching `GoodsSearchDispatchJobNames.SEARCH_REBUILD_JOB` (`job:198:GoodsBundle\Jobs\SearchRebuildJob`) as ASYNC / REDIS / `slow` with either `all_companies=true` or `company_id` (+ optional `distributor_id`, optional `blue_green`); a non-positive `companyId` is rejected before enqueue. `SearchRebuildJobRegistrationConfig` registers `SearchRebuildJobHandler` (in `ecshopx-goods/search/rebuild`), which does a blue-green rebuild of all active companies for `all_companies`, a single-company blue-green rebuild when `blue_green` is set, and otherwise upserts the company into the current alias; the registration is pinned by `SearchRebuildJobRegistrationConfigTest`. Promotion writes reach the search index through a different seam: `GoodsSearchIndexPromotionSyncListener` in `ecshopx-goods` consumes Spring `SeckillActivityCommittedEvent` / `SeckillActivityEndCommittedEvent` / `PromotionGroupActivityCommittedEvent` (after-commit via `@TransactionalEventListener`) and schedules index upserts through `GoodsSearchIndexDirtyByItemIdsPort` — no dispatch message is involved on that path.
 * **Merchant notice jobs** — `MerchantDispatchJobNames` defines `job:1..4:MerchantBundle\Jobs\...` for `MerchantAuditSuccessNotice`, `MerchantAuditFailNotice`, `MerchantEnterSuccessNotice` and `MerchantResetPasswordNotice`. Each has a `*DispatchPublisherImpl` in bootstrap publishing ASYNC / REDIS / `sms` queue with `company_id` + `mobile` (+ `password` where applicable), and a handler in `ecshopx-promotions/dispatch` that calls `CompanySceneSmsSendPort.sendSceneTemplatedSms` with the matching scene key. The handlers deliberately **catch `RuntimeException` from the SMS gateway, log the masked mobile tail, and return normally** — a failing notice is acked, never retried and never recorded as a failed job, which is a conscious at-most-once choice for notification traffic given the consumption semantics above.
 
 ## When AFTER_COMMIT publishing matters
@@ -444,6 +472,8 @@ The same shape appears inside `ecshopx-dispatch` itself: `OrderProcessLogPublish
 | `ItemAddEventDispatchPublisherImplAfterCommitTest` | No publish inside the transaction, exactly one publish with the exact options after commit, immediate publish without a transaction |
 | `FinishOrderJobDispatchFlowTest`, `NormalOrderAddEventAsyncFanOutSupplierAndYoushuDispatchFlowTest` | Worked end-to-end examples: a job published to `slow` and consumed into its service; an event fanned out to two listeners and consumed into both |
 | `WithdrawJobDispatchFlowTest` | The withdraw job enqueues on `default` with `apply_id`/`company_id` and consumption invokes `WithdrawApplyService.executeHuifuWithdraw` |
+| `OrderListExportFileJobDispatchFlowTest` | The `job:131` order-list export job enqueues on `slow` with `type`/`company_id`/`operator_id`/`filter`, and consumption routes `invoice` / `right` / other `type` values to the matching export service |
+| `SearchRebuildJobRegistrationConfigTest` | The search-rebuild registration binds `SEARCH_REBUILD_JOB` to `SearchRebuildJobHandler` |
 | `MerchantAuditSuccessNoticeJobDispatchFlowTest`, `MerchantAuditFailNoticeJobDispatchFlowTest`, `MerchantEnterSuccessNoticeJobDispatchFlowTest`, `MerchantResetPasswordNoticeJobDispatchFlowTest` | The merchant notice jobs enqueue on `sms`, and the handlers swallow an SMS-gateway `RuntimeException` so the consume acks instead of failing |
 
 Beyond these, the ~200 `*DispatchFlowTest` / `*PublishProbeTest` classes under `ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/dispatch/` each pin one publisher's exact `DispatchOptions` tuple and one handler's consumption behaviour — when you change a queue, delay or retry policy, those are the tests that will tell you.

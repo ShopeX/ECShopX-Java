@@ -1,26 +1,26 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:d1aa2957d893d860257de6f798bcc2ca1169118b04fd7da27b17fd52990bf2c1",
+  "pageVersion": "sha256:b441da18f59990b7cdcf8d5d79dc467989e4d9eb132d611ede54a2620278881c",
   "claims": [
     {
       "id": "claim_f8125c36eada410396ebd177c71a5a4f",
-      "statement": "The repository is a single multi-module Maven reactor: root pom.xml declares parent cn.shopex:ecshopx with version ${revision}=5.5.3 (Java 17) under spring-boot-starter-parent:3.5.12, with 53 modules total — four infrastructure modules (ecshopx-bom, ecshopx-common, ecshopx-dispatch, ecshopx-bootstrap) and 49 business Bundles including ecshopx-digios, ecshopx-openapi, and ecshopx-shuyun — each also pinned in dependencyManagement (pom.xml L96-L337), and ecshopx-bootstrap's POM declares all 49 business Bundles.",
+      "statement": "The repository is a single multi-module Maven reactor: root pom.xml declares parent cn.shopex:ecshopx with version ${revision}=5.6.3 (Java 17) under spring-boot-starter-parent:3.5.12, with 53 modules total — four infrastructure modules (ecshopx-bom, ecshopx-common, ecshopx-dispatch, ecshopx-bootstrap) and 49 business Bundles including ecshopx-digios, ecshopx-openapi, and ecshopx-shuyun — each also pinned in dependencyManagement (pom.xml L33-L337), and ecshopx-bootstrap's POM declares all 49 business Bundles.",
       "evidence": [
         {
           "resource": "repo://ecshopx-bootstrap/pom.xml",
           "version": "repo-file-v1:sha256:7eeea16f0127993b54ba91f2a6f9978368dc28dfe27288480254aaa6ea2c0fb6"
         },
         {
-          "resource": "repo://pom.xml#L12-L29",
-          "version": "repo-lines-v1:sha256:3235241cc6d00b80d22b5fca9d7d87fdd15502e7b95422261788f6ddac47213c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhiZGY5NDQzNjg2NmE5Y2ZjYTBhYzNkNjIzMDc3ZWQwNzIxOGQ1NDFhMTQ5ZjliMDM4Y2U0MjcxYzYxNjM1ZDMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM4MGFjMjJmMDg0YjYwNjY1M2IwZGVmNzIyMmQyZTU5OTk4Mzk5NTUxMTYxN2VmZGU1MTQ1NTY2ZTAyNTY3MjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU5ZGFhYTVkNDZkZmViYWViODdmYWViMTFhMDE0Yjg0MWFlZmI0OTA3ZGE4NmMwNzU5MjAyMWU4NzRhYzE5OGUifQ"
+          "resource": "repo://pom.xml#L12-L30",
+          "version": "repo-lines-v1:sha256:63918839706d8040c771a7f3f7ab0843ec24a56c26d0975687c0225106948f87:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM4MGFjMjJmMDg0YjYwNjY1M2IwZGVmNzIyMmQyZTU5OTk4Mzk5NTUxMTYxN2VmZGU1MTQ1NTY2ZTAyNTY3MjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMwN2Q4ZmZjZTFiMDNjNzk1ZWFmYjE3MTEzYjNlM2UxNTQ5ZWQ3MGRkMWUzMTQzNTQwNWNiMjg5ZGJlNzlkZjcifQ"
         },
         {
-          "resource": "repo://pom.xml#L368-L420",
-          "version": "repo-lines-v1:sha256:6879368c739c9ca626ce8813ae273b81375bcca913317fae04c9267afa2b9a8e:eyJzZWxlY3RlZExpbmVDb3VudCI6NTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM4NDIxNWY2OTcwOGRhMzMxYTcyYmIzNzExZDkyNTBmYzM2NjNjNTIzMDUwMjBiNzU0MDRmN2I3NDlkNTFkZmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRhODEyNWNjMGMyMzRhNDE3MzE2ZTkyMjQ0NjgyMjQ3ODNlNGM2YzJiZTNkYjVkYzk1NGYxYjc3ZGQzMDVhMjkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNjODUwZmNlYTk3NTA2ZDgxMTU4ZmVkNjkwYTY4Y2FhMGM4OWVmMjBhNmZiYjQwOTMyZjM3ZTM3MDVmMDgwM2UiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg4MTk2MDQxODg5NzdhMjIxYTkxODY0NjQ3NzRlZGFkYTUxMWFlNjQxMWRkNDU1M2JjMjg0ZTNkNmJiY2UwNmUifQ"
+          "resource": "repo://pom.xml#L33-L337",
+          "version": "repo-lines-v1:sha256:0c41492f2aaf282097421193d483b374bb39b0cf64502d180bd82907945b5a16:eyJzZWxlY3RlZExpbmVDb3VudCI6MzA1LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI5YTIyYjgwNTQzMGQ4YTcwNzA4NDgwNjViYzQyYjYxODA0NjUxMWQ0Y2VmN2UzM2FhMDU3OTcxYzMxYjJmYzM2IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIwY2Y3ODlkZmI1Y2UyZTFjMTlkOTg5YzY4OTNiYTI0MTJjNTI5NTczNjBmMWM3NGI2OGM1NTNiZWEyMDVmODFjIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI1OWRhYWE1ZDQ2ZGZlYmFlYjg3ZmFlYjExYTAxNGI4NDFhZWZiNDkwN2RhODZjMDc1OTIwMjFlODc0YWMxOThlIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI3NTNiMGEyZDU5NGUyMTUyYmVlYTkxZmQwZTdkYmEwOTlkMWEzYWJlYWY3MTU2YjhlN2ZjMzYxOWUyYmRjYmUwIn0"
         },
         {
-          "resource": "repo://pom.xml#L96-L337",
-          "version": "repo-lines-v1:sha256:e163f8eed84ef774424605c15e2258219d9e5052368d4d16f6309f9e05008a4f:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQyLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJmMjU1NTBmZDkxOTQ1Mzk4YTI0NjNmZTMwNTc3YjhiNTM3NmRiZWExNDU2YjM2MDU4ODE1MDJmMzBhYzMwM2QxIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIwY2Y3ODlkZmI1Y2UyZTFjMTlkOTg5YzY4OTNiYTI0MTJjNTI5NTczNjBmMWM3NGI2OGM1NTNiZWEyMDVmODFjIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiIxZTQyNWJmNWRiYWVhMjZjMjE5OTU0NzVjMWJmYTkyMTM1YTZjYWRkNTczMzY4MzM3OTdmZDY2ZTIxNzhiY2E5IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI3NTNiMGEyZDU5NGUyMTUyYmVlYTkxZmQwZTdkYmEwOTlkMWEzYWJlYWY3MTU2YjhlN2ZjMzYxOWUyYmRjYmUwIn0"
+          "resource": "repo://pom.xml#L341-L396",
+          "version": "repo-lines-v1:sha256:e6c5753e34923c426c7edc5a09d438be707e769962d0ddf10c5a96ee14261854:eyJzZWxlY3RlZExpbmVDb3VudCI6NTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEwNDM4ZjNkY2RmYTczNDI5Nzc1OTg4YzU1OTNkYzhmMGI3MDg0N2Q5MDJmOWY5MzAyNjRiOTI5OGQ1YzdjZjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgzNmFhNTQ0ZjY3NDhkOWRkOWViZmFjYzI3MGRjMWMzOWExYzczOTA0OTdhZmZhMmIxMjk5MTg4MDEyYTMyN2YiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc1M2IwYTJkNTk0ZTIxNTJiZWVhOTFmZDBlN2RiYTA5OWQxYTNhYmVhZjcxNTZiOGU3ZmMzNjE5ZTJiZGNiZTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg1MGRlNWU5NTRmZjY4YWRmZGVlMjdhYTA1YmFkZDRlMTU2OThkMzcyY2VjMjk4NmQ1NzQ5ZWYyZDhmM2QyYzkifQ"
         }
       ]
     },
@@ -489,7 +489,7 @@
           "version": "repo-lines-v1:sha256:a9797b1017d5a3c6ad0f31587715167208e4133a12a2ed61e394f46a50ce0bc9:eyJzZWxlY3RlZExpbmVDb3VudCI6NDUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU5NGVjZWJiMTQ4YmYyOGI4MjUzNzNkZTllOWUwOTJjNWJmOGI5YWQyZTUxMTliZjZiMDNhOTgwNDFmYTkxNzciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEyZDEzYzllYjEwZTZhMDhiYTA3YWFmNTk0YzRhZTY4ZGFhNjM1MWJlZTMwZWFlM2RmOWVjYTdkMzFhZWNiMmMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjoyLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI1NGE2NGJkZTRiMGQ4Yjk0MTI0NTE1MDg4ZGI0MjhmNmNmZDJiYzRmZTJjMjJmMGVmODA4NDY0MjVkOTQ5NjEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNmMWYxOGNkY2FjYzJhNjJiMTg1NjE5MDI2OTk1ZTIwODQ0MThhMjZkNTZlZDk0MmQxMzc4ZDM2ODhmOGI0NTYifQ"
         },
         {
-          "resource": "repo://ecshopx-bootstrap/src/main/resources/seed/menu/platform_menu.json#L933-L940",
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/seed/menu/platform_menu.json#L964-L971",
           "version": "repo-lines-v1:sha256:d16545fd61b581e387e49344756bba6a6d8a75a5d5e19e5da856d823b0c2b791:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMjYwZGMzMzI1ZmU3N2U4YzMwYmEwZjY5OTk2YmU1YTgxYWNiNzgwYjNlOTJjMTc2OWI2MGQwMGFlNTY0ZGFjZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYTY4Y2MzMzVlZWUyZmU0M2I1YjRhMzY4NjUwYjA4YTM0NTYwNWFkMzM3Nzg2ZTY3NWQyMTY3MTNmNmI1Zjg4NCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjI4ZWE0YmI0MzNmZDlmZjEzZWM5NjY3ZTI1OGYwYzkxYzk2OGU5ZmU4MjQyMTYwNDlkMTU3M2ZiODUyNTAwNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjYyYjhkNjA3NjE2MWI3MjdhMjNjYTM2NDBkZjQ5MDIzZDk4MDc2MzdmYjM0ZmNkNTM4MTQ4YmY0ZWFiMmZkYSJ9"
         },
         {
@@ -629,10 +629,20 @@
           "version": "repo-lines-v1:sha256:67428756f6fa9310d3734dbb87b2c50488a271ccf09daa4cc60c0f40351ea878:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4MzA4ZTg1ZGY4MTQ1YmZiZGNhNDlmZTNiMjM5MzAyOTk0YTBiNWRlNTFkZWFmODBjY2U5MGRmM2ExNjVkNWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4MzA4ZTg1ZGY4MTQ1YmZiZGNhNDlmZTNiMjM5MzAyOTk0YTBiNWRlNTFkZWFmODBjY2U5MGRmM2ExNjVkNWMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVjM2YwYzUxZTc4MzQxZDU4NzQ2NGIxZTA3MGY0YzJlZGMyMTM5YTY1ZTZmOTc0NGU2OGFiN2M2NGMwZDRmM2IiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc0YjM2YTdjOWE1YjMzZTUzMGI1M2RhMzQzYTk3Y2JiNDQzMjI1NWQ0ZTkxODYwZGJiMTkyNzI2YmI3NjlmZDEifQ"
         }
       ]
+    },
+    {
+      "id": "claim_d264cc3633de47038d7c08bdd5b9ddad",
+      "statement": "The Flyway schema head is V00000000000008.sql (release 5.6.0): it creates goods_search_synonyms (with uk_company_group_key on company_id+group_key), the four member-task tables member_task, member_task_completion, member_task_reward_grant (uk_mtrg_completion on completion_id) and member_task_user_progress (uk_mtup_task_user on task_id+user_id), and adds member_task_id and member_task_sharer_user_id attribution columns to orders_normal_orders.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/db/migration/V00000000000008.sql",
+          "version": "repo-file-v1:sha256:be2b0de1e5a189fbce10abd28cb85a1b1f47d3089d0d2d58362fecea27bdb5fd"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.9.0",
-    "at": "2026-11-11T17:12:30.774Z"
+    "at": "2026-11-16T17:12:44.218Z"
   }
 }

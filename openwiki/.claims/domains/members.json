@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:82835c164f6660b580e0d1080a89ccbeb7f5b5e0ffd984dde7cb7f029727596c",
+  "pageVersion": "sha256:76931f8f5d52dd9f83df9bd256a5796a100a328efe60b7140bbb015a2dbdcf2f",
   "claims": [
     {
       "id": "claim_a77f54208d174b0c866c7d5de18e4130",
@@ -48,7 +48,7 @@
       "evidence": [
         {
           "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/account/MemberAccountService.java",
-          "version": "repo-file-v1:sha256:af01679bee4dc7d023fd5bf2582ed3fdef6f71a146ed724901909d0d03d22cec"
+          "version": "repo-file-v1:sha256:0e44c9c31caadd57f1a3ed59d33d886424767be08c348c21dab108dff73781ed"
         },
         {
           "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/h5/H5JwtUserLoginInfoEnrichService.java",
@@ -151,26 +151,38 @@
           "version": "repo-file-v1:sha256:ac8d9a50f19837b5ff408d7524ac6f505d080d040a2489f3ac1bbbfab9535d11"
         },
         {
-          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/account/MemberAccountService.java#L381-L404",
-          "version": "repo-lines-v1:sha256:cde6746d54b13053f2bc03469f3ce1ced037f2be985565011c8746f4c2972d28:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRiYjA3NDNmNzVhMDMzZTM2Yjc4NDU1YzI5ODE2ZWM1NjgwYWIzMjNhNDFkZGQwMDk5N2Q2ZTEyOWZjYzgxNDUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZhMmEzYjc2ZTEyY2UxNTM3OWQwNWYyODY5ZGM0ODMyZGU3NTg5MDUzYjQ5YmZmMjM3ZTQyNWM3MjM3ODAxNTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImEwY2I4ZDNmYjYwYzgwZjI1Yzk4NjJlMzE3OWZlNjFhNTY5MmFkNTQzYWEyMWM1MjhkZDlmNGJhMjZhZTI0NjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU3NjVmOGQwYjkxMDEzMDVjMTdjMGQ2NjJiOTg5N2ZjZWE1Njc4MzAyOTFjMGY2MDdkOGNmNmIzNmIzMGNlMzUifQ"
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/account/MemberAccountService.java#L383-L407",
+          "version": "repo-lines-v1:sha256:2a5fe3308235316fbbfc11968d0cb3e512b5ca6ee05ce24db1bafb2d9c5a0f7e:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRiYjA3NDNmNzVhMDMzZTM2Yjc4NDU1YzI5ODE2ZWM1NjgwYWIzMjNhNDFkZGQwMDk5N2Q2ZTEyOWZjYzgxNDUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZhMmEzYjc2ZTEyY2UxNTM3OWQwNWYyODY5ZGM0ODMyZGU3NTg5MDUzYjQ5YmZmMjM3ZTQyNWM3MjM3ODAxNTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImEwY2I4ZDNmYjYwYzgwZjI1Yzk4NjJlMzE3OWZlNjFhNTY5MmFkNTQzYWEyMWM1MjhkZDlmNGJhMjZhZTI0NjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU3NjVmOGQwYjkxMDEzMDVjMTdjMGQ2NjJiOTg5N2ZjZWE1Njc4MzAyOTFjMGY2MDdkOGNmNmIzNmIzMGNlMzUifQ"
         }
       ]
     },
     {
       "id": "claim_b045ae4a7f13484c84b8ddecdc001580",
-      "statement": "The CreateMemberSuccess payload contract is stable across all registration paths — company_id, user_id, mobile, openid, wxa_appid, inviter_id, distributor_id, source_id, monitor_id, salesperson_id, if_register_promotion — where if_register_promotion is forced false when the tenant's member_logout_config.new_rights is off and a members_delete_record row exists for that mobile (a deregistered member does not regain new-member rights).",
+      "statement": "The CreateMemberSuccess payload contract is stable across all registration paths — company_id, user_id, mobile, openid, wxa_appid, inviter_id, distributor_id, source_id, monitor_id, salesperson_id, if_register_promotion, member_task_id — where if_register_promotion is forced false when the tenant's member_logout_config.new_rights is off and a members_delete_record row exists for that mobile (a deregistered member does not regain new-member rights), and member_task_id is the member-task attribution id copied from the registration extras (0 when absent) for the promotions invite_register listener.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/account/MemberAccountService.java#L370-L378",
-          "version": "repo-lines-v1:sha256:de9110ff737aadb88f034b95e5bd57124356a9cd4e0c5f243c6bf44e3e60a7db:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZmRiOGJjYzJjYmFiMTFjYTcxZDMyODk3MGU2N2RlY2ExOTNhNzc2ZGViZDQwY2YyMDU0NzdhNWNkZDAwMDdlYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjRlZmM0OTQxOGQyNmRjZjEyOWIyMmE2YWEyMTEwOGNlZWMzNzY3N2EzMmQwOGU5ZDVmZWUzNWRkYTY2YmI5ZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDk1ODlkYmFhNWM5Yjg3OTFhOGUyNmNiOTk0ZWYwMTc4YWQ1YzgxYzM4MWUwYzE4ZjdlZmQ3OTk5NGQ5YzFiOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTc2ODFjNmE5YTIyMGQ4ZWUwZDA4NmU0ODQwNzZiZmFjYjFmOGI1YzNiOGMwOGYwNWQ3ODJhMWIyMmFiNTZmNCJ9"
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/account/MemberAccountService.java#L1989-L2018",
+          "version": "repo-lines-v1:sha256:de9e2d0f01154770371476b053218d4a93dad532d35a5290773107ac2b10de18:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU2ODA2ZjE1NWM1YWMxYWUyNzIyY2EwNmYyYWM5Y2FkY2I4ODFiOTEyM2NiNjI0YTNjMTA0NzViNDQ0OWRjMmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI3YWY1ZDBlMGM5YmMzZmRmY2IwYmNhZTk1ZTU2Nzg4NzBlMDIwODU5MDE1ZGFiYmQwYWQ5Njg1N2Q5MmU2MDIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI3ZDg2Nzk0NTQ5OWM2ZDk3YjNlODlmNmJmMDQ4ZWU1ZjYyNzc2MTNmNzAwZjc0OThkYzhjYmI4ZDBiNmU3MzAifQ"
         },
         {
-          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/account/MemberAccountService.java#L381-L404",
-          "version": "repo-lines-v1:sha256:cde6746d54b13053f2bc03469f3ce1ced037f2be985565011c8746f4c2972d28:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRiYjA3NDNmNzVhMDMzZTM2Yjc4NDU1YzI5ODE2ZWM1NjgwYWIzMjNhNDFkZGQwMDk5N2Q2ZTEyOWZjYzgxNDUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZhMmEzYjc2ZTEyY2UxNTM3OWQwNWYyODY5ZGM0ODMyZGU3NTg5MDUzYjQ5YmZmMjM3ZTQyNWM3MjM3ODAxNTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImEwY2I4ZDNmYjYwYzgwZjI1Yzk4NjJlMzE3OWZlNjFhNTY5MmFkNTQzYWEyMWM1MjhkZDlmNGJhMjZhZTI0NjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU3NjVmOGQwYjkxMDEzMDVjMTdjMGQ2NjJiOTg5N2ZjZWE1Njc4MzAyOTFjMGY2MDdkOGNmNmIzNmIzMGNlMzUifQ"
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/account/MemberAccountService.java#L2490-L2530",
+          "version": "repo-lines-v1:sha256:b4f2ecd1183a3f702e05fcc58bf30c0866d0a88a00c9bf4765b4cc72756cb4a8:eyJzZWxlY3RlZExpbmVDb3VudCI6NDEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEwZTUxYWFkOGE1ZTRjMDM2MmU4NDAyYmM5NWQxNGJkM2U5YmZkNzUwOTA3MmE1NGFkY2U3MGZkYjAxOTk1YTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI1NjQyYTMyN2Y0NDYwMzM1MmYxYmNlY2ZhYzA0MDQwMTMyMjJlMDQ1M2NhNDZmYjlmMTQ4M2NhNjY3MmE0YjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE2NmI4ODI0NGI0OGQ5MDliMjlmMDk1ZDlmOTNkNGJiMDhjMTlkZmYyNDNhYjEyZDhhZmViZDg2MjllMmZjNDYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMyYjVkYzk0ZWFkNTg3MjllM2I2MmY3ZWMyMWUzZjViMzNmNzEyYTQ0MDA1ZWQ2ZDEyM2MzNjEyNWMyOTYyZDUifQ"
         },
         {
-          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/account/MemberAccountService.java#L414-L435",
-          "version": "repo-lines-v1:sha256:f813cfda936809dfafdcee2b1c90bdda2b2b27ce822a5565e6ef297fc7ad884c:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUyNDkwMmExNTQwZGE5MTY2M2U2MDkwOTczYzIxMGYyNzQ4NjFhZDFjNzgzM2Y1ZTExNWIwMzhiMzdhZmM0OTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjEyODhiOTlmNTNlNDBiYjYzMzBlYWFiMDA2MGJkNTRlODgwMWIxM2UyNzJhYTdlMzdiZTY4MjFiZTIzMzc5MWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZkNjE3ZjI4NWQxZWIyMGNhNTliZjA1N2VmYmE3MWFlY2Q4OGFjMmY2MDljZmEyNzY2YWIwYTk2OTU4NTEzOTkifQ"
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/account/MemberAccountService.java#L372-L408",
+          "version": "repo-lines-v1:sha256:6f4767609b6810c4ffb31450a626d26a7ae088b0c92d598b3be4b484daa80619:eyJzZWxlY3RlZExpbmVDb3VudCI6MzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZkYjhiY2MyY2JhYjExY2E3MWQzMjg5NzBlNjdkZWNhMTkzYTc3NmRlYmQ0MGNmMjA1NDc3YTVjZGQwMDA3ZWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ5NTg5ZGJhYTVjOWI4NzkxYThlMjZjYjk5NGVmMDE3OGFkNWM4MWMzODFlMGMxOGY3ZWZkNzk5OTRkOWMxYjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI4OTUzZWQwMDEzNzAyNTk4MTM3MGQzNDhkMjQyNmUwNDAzNmY4ODI2MGJjZWI0MTU0ODhiMTE1YTMxOTVmOWIifQ"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/account/MemberAccountService.java#L414-L439",
+          "version": "repo-lines-v1:sha256:886765d448b2855da48769edf70e7db10ce50cb95509de100f56fbf02f3a3efb:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA0ZmUwZjY5NDk2MzJhMzg0OTM3MDlkNzFiZmU2MGNiNDQ4NDIzOGUyOGFhMWEzNDNjYWEwMTNmNjZlOTI5MzUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI3ZDg2Nzk0NTQ5OWM2ZDk3YjNlODlmNmJmMDQ4ZWU1ZjYyNzc2MTNmNzAwZjc0OThkYzhjYmI4ZDBiNmU3MzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjVlNjkzNTI0MWM2YTI4YzRiNzEyMmFiNzBlOTg4OTRiMjQ1MjlkZDlmNWYwZDg2OGIzMzMxNGMxOTlkYzcwZmIifQ"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/account/MemberAccountService.java#L452-L459",
+          "version": "repo-lines-v1:sha256:c4db8b153c72c55b1598ddccb2c6b8e555ab10bb9528358d230dfd6e7d30007e:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTYxOGU3OTUwNzYzOGI0ZjBlYzVmZTQwNDFmZmZiNTUzOWQyNjFmMjMyMTlhY2JmYWM2MDc1MDdjY2E4MjkwYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjhhODU1MWI5MzQ1NDUzNmIwYTdjYmU0OTA2MTMyYTA5Nzk3MTYyYWViMTdlZTc2MTdmMzliZTk3N2I3OThiNCJ9"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/account/MemberAccountService.java#L615-L636",
+          "version": "repo-lines-v1:sha256:6c5c5f1bd0742556e2fb36ea00fd8512570e9f496485b19879bc980301fc7383:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkyYTE5ZTI1OWI2NWIwN2Y5MWI2MTcyODgyYmE5Zjk0NWQ5N2ZmNTgyMDEyODU4M2M0ODVhMWI0MTAyNDA2YzUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJjMmExOTEyMjBmMmVjMzNiYmY4ZjM0MGY1MGJhNWYyMmZiMzU2OTU0ZjY1MmVlMmU2MzgzZmRlOTk5M2IwN2YiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg4Y2M4MWEwZjA1ZmFhNmU3NzE0MGQ1OWNkZmEzNGM2MzNkNzE4NTEyM2UwYzZmMWY1M2NiMGU4Yjg3NzEwNzYifQ"
         }
       ]
     },
@@ -221,8 +233,8 @@
       "statement": "Each MemberAccountService registration path (createMemberForWxappBind, createMemberLocalAutoRegister, registerShuyunMember, creatMemberForH5Post) also adds the userId to the daily active Redis set Member:<companyId>:<yyyyMMdd> in its afterCommit, and createMemberLocalAutoRegister enqueues a BindSalseperson job when work_userid and channel=1 — or the DM-CRM variant enqueueBindSalsepersonAfterDmMemberCreate when DmCrmSettingReadPort.isPointIntegrationOpen(companyId).",
       "evidence": [
         {
-          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/account/MemberAccountService.java#L381-L435",
-          "version": "repo-lines-v1:sha256:8844962d34a316532b4e1f634b617c12f9aa8e144d6931bb235aa7eb3c41f0ec:eyJzZWxlY3RlZExpbmVDb3VudCI6NTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRiYjA3NDNmNzVhMDMzZTM2Yjc4NDU1YzI5ODE2ZWM1NjgwYWIzMjNhNDFkZGQwMDk5N2Q2ZTEyOWZjYzgxNDUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImEwY2I4ZDNmYjYwYzgwZjI1Yzk4NjJlMzE3OWZlNjFhNTY5MmFkNTQzYWEyMWM1MjhkZDlmNGJhMjZhZTI0NjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZkNjE3ZjI4NWQxZWIyMGNhNTliZjA1N2VmYmE3MWFlY2Q4OGFjMmY2MDljZmEyNzY2YWIwYTk2OTU4NTEzOTkifQ"
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/account/MemberAccountService.java#L383-L438",
+          "version": "repo-lines-v1:sha256:1f846bdfd240bfda058dcd4f81ace3d68eb48dee2a691b5c6565864e040bcc85:eyJzZWxlY3RlZExpbmVDb3VudCI6NTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRiYjA3NDNmNzVhMDMzZTM2Yjc4NDU1YzI5ODE2ZWM1NjgwYWIzMjNhNDFkZGQwMDk5N2Q2ZTEyOWZjYzgxNDUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImEwY2I4ZDNmYjYwYzgwZjI1Yzk4NjJlMzE3OWZlNjFhNTY5MmFkNTQzYWEyMWM1MjhkZDlmNGJhMjZhZTI0NjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZkNjE3ZjI4NWQxZWIyMGNhNTliZjA1N2VmYmE3MWFlY2Q4OGFjMmY2MDljZmEyNzY2YWIwYTk2OTU4NTEzOTkifQ"
         }
       ]
     },
@@ -344,7 +356,7 @@
       "evidence": [
         {
           "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/account/MemberAccountService.java",
-          "version": "repo-file-v1:sha256:af01679bee4dc7d023fd5bf2582ed3fdef6f71a146ed724901909d0d03d22cec"
+          "version": "repo-file-v1:sha256:0e44c9c31caadd57f1a3ed59d33d886424767be08c348c21dab108dff73781ed"
         }
       ]
     },
@@ -845,8 +857,8 @@
       "statement": "MemberAccountService.createMemberLocalAutoRegister, on the new-member branch, resolves inviter_id/source_id/monitor_id/latest_source_id/latest_monitor_id from the request extras (persisting each on the members row only when positive), then runs the promoter/distribution side-effect pipeline in-transaction — AdminMemberCreatePromoterSideEffectPort.createForNewMember(companyId, userId, mobilePlain, gradeId), AdminMemberCreateDistributorUserSideEffectPort.createData(companyId, userId, distributorId, salespersonId, inviterId), and insertShopRelMemberIfAbsent when distributor_id > 0 — before building the create-member-success eventData (including if_register_promotion) and registering the after-commit synchronization guarded by BadRequestException(\"createMemberLocalAutoRegister requires active transaction synchronization\"); the existing-member branch skips this pipeline entirely (update-only, is_new=0/1 for upload members, no publish).",
       "evidence": [
         {
-          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/account/MemberAccountService.java#L460-L660",
-          "version": "repo-lines-v1:sha256:f89ef1df35e7b4f89a0922ceb23c025b7a47090e313d079851b3a2a81a8df379:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAxLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJlYWUwY2YwM2ZiMGMyM2QxYTEwYWZiNjE2ZmMzMmJkMWVkMWJmM2FhN2EzZDUxNDdkM2RhZDcwNTEyZTVmMzNlIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIwNGZlMGY2OTQ5NjMyYTM4NDkzNzA5ZDcxYmZlNjBjYjQ0ODQyMzhlMjhhYTFhMzQzY2FhMDEzZjY2ZTkyOTM1IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI2MWFmOTM2ZGQ0YjMyMDc3NzE3MGM3YjA3YmU2YjZhODQ3NzkxMWIwZTc4OTY0NmUzODI5OTRjY2U3NDg2YTM2IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJjYzNkNjI2NDE4Y2UwNzNlNTg1ODkwNWFiNjRhZGQ5ODZjZTY3YTgzMzM3MTg1MDA1ZTU5ZjI0NDM1MmNiZWNiIn0"
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/account/MemberAccountService.java",
+          "version": "repo-file-v1:sha256:0e44c9c31caadd57f1a3ed59d33d886424767be08c348c21dab108dff73781ed"
         }
       ]
     },
@@ -883,7 +895,7 @@
       "statement": "createMemberLocalAutoRegister registers a TransactionSynchronization (guarded by isSynchronizationActive(), else BadRequestException \"createMemberLocalAutoRegister requires active transaction synchronization\") whose afterCommit runs, in order: publish of event:members:create_member_success with the stable eleven-key payload, a sharedRedis daily-active set add Member:<companyId>:<yyyyMMdd>, and the bind-salesperson enqueue; because publish and enqueue both live inside afterCommit, a transaction rollback suppresses both — pinned by the two rollback tests in MemberAccountServiceCreateMemberLocalAutoRegisterDispatchTest (real DataSourceTransactionManager over H2, mocked publishers verify never()).",
       "evidence": [
         {
-          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/account/MemberAccountService.java#L622-L650",
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/account/MemberAccountService.java#L633-L661",
           "version": "repo-lines-v1:sha256:1487ad9d88b464c3ded8a466f3616054557d2c797488428c2c05f1c230687f57:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEwZGY4MWIwNDZmNTgwNjU5MzhkNDk0ZWFlMTJlNTdjMDQwMmRlZTU1NjYwZjYwZDM2MDk0NjA2OGVlYzIzYzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk3ODUwNDg3NjkyYzgwZjVjY2JiYjlkMmFiNjRiZTM2NTBjMzgzM2VlMjc2NDc4NjlmNjkxMzZmMDYzM2YyNGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImVmOGM3ZTQ1MDM2Y2JlZTI0ZDE4MDcxOTI2Y2JiNDNlZmNhMjk5MjBhYTQxY2VhNWNhNWZiYTczNWQ2NWU1NDUifQ"
         },
         {
@@ -901,7 +913,7 @@
       "statement": "The bind-salesperson enqueue in createMemberLocalAutoRegister's afterCommit fires only when the extras' work_userid is non-blank after trim and channel parses to 1 (lenient Number-or-String parsing); channel=2 or a blank work_userid enqueues neither BindSalseperson job — pinned by the dispatch test's channel-not-1 and blank-work_userid cases.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/account/MemberAccountService.java#L631-L649",
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/account/MemberAccountService.java#L642-L660",
           "version": "repo-lines-v1:sha256:f419f6d14742175b8bcf9b70d3af5bdc1a8204016a90cc02b4f3895344a97594:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgyN2Y0ODE2YWQyMDczOWUwY2VmYjAzZGJhNmRiODg4ZTM1ODExMDExYmYwY2E0M2RkMjNlNDlhNWVjNDQzZGYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI2OTE4Nzk1ZDQ1YjhmZGY1NjI5ZDFmZmJjMDUxM2IxNGE2OTIzZWQxYmIzZmEwOWNlMWMxYTgyZDRjOGE5NTkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU3MDM5MTBkMmE3ZDg1OTNlNzQ1MTc5NTc1YTA2M2UxNWQzZmNiOGRjYzM2NzhmOTYxMDJmN2M2OTRjZDAzZDAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ1ZDdlMWZkMzA4ZjI3M2IwOTgzMjFjYWNkOWQ3MTVkMzAzNTE1NDU5YzU1MGYwM2Y5YjkxZTI0NGEzMzUyMzMifQ"
         },
         {
@@ -923,7 +935,7 @@
           "version": "repo-lines-v1:sha256:bd20873de873c9bde73debda697840058f1052da75e77ad70bd067264fd68c30:eyJzZWxlY3RlZExpbmVDb3VudCI6ODAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFlZGViNTIzOTlhNTA1OGFlNGZhZTQxN2MwMWZjYzhlNTlmYWM0MjdjNDVmODJjYTQyOTczODljYWRjZDhmMDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
         },
         {
-          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/account/MemberAccountService.java#L633-L648",
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/account/MemberAccountService.java#L644-L659",
           "version": "repo-lines-v1:sha256:bb96493f91ae8dd75a7d11f3806083ad530e68d1c4d63a91309396564b7eecb0:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVkODM1YTc1MjI4OTAyNzhjNDQ3NjgzMTQxN2QwZmUxODQ0NDdlMzI3NDZlZTg2NjNlOTM3MmQ1OWRiZGM4MWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxN2U2Yzk0ODU1ZWE3MWRjYThiMjczMzM2MzFjZGJlNmQyYmE5N2VhNzg1YWNjOTJlNTQyN2I2ZDhmYjJlZTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNmNGQxNjIyZDRhMTEwZWQxNjJjM2FjN2M3MGJlMzNjODFjMjkwZDM5NWMxOGVlMmYwNThmZDE4NDNkZDU0OWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU4NzQyN2UzNDZmMzQ5OGQyODBlMTY3MDAzNjc5MmU1YTAxMjkxMjNiYWM3ZGEwMzE1ZTQ5NjU2YjIwYzE2NWIifQ"
         },
         {
@@ -931,10 +943,78 @@
           "version": "repo-lines-v1:sha256:4eeef1538900050e2ea5fe71a6af548dc2e09e757faf22819843e83f94b83b5c:eyJzZWxlY3RlZExpbmVDb3VudCI6NDUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ0OGEzNDdhMjViODc2Nzc1ZDk3MWE1OTFmZjk5NGY2OWZjMmNjNDRjNGNjMzZlNGQ3Y2QyZDIyMzMxNGMxNDYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZhYmNmZTBmZjY2ZGIyN2NkNGFmNzIwZWQzZmExNTQ2NDhkOGFjY2QyZWNhNmMzMjk4Mzg0MGRjZTJkZWRlZWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ0MzVkM2M1NThmNDhjMWE4Y2U3MTlhMDQ2YzJkN2EzMTZiZDA3NGQyYWZlMWI5ZDg1MjIwZGY2M2Q0OWRkYjQifQ"
         }
       ]
+    },
+    {
+      "id": "claim_f7e4047e30974ec6a47fea78fa20147e",
+      "statement": "Bootstrap registers two member-task dispatch bridges from members' lifecycle events into the promotions member-task engine: listener:promotions.member_task.invite_register on event:members:create_member_success (@Order(22), asyncDefaults) → CreateMemberSuccessMemberTaskInviteRegisterDispatchListener → MemberTaskInviteRegisterCompletionService.apply, and listener:promotions.member_task.update_member_success on event:members:update_member_success (default queue) → MemberTaskUpdateMemberSuccessDispatchListener → MemberTaskProfileCompletionService.apply; with these, create_member_success has ten bootstrap listeners and update_member_success has two (the new one plus the crm.crm-sync-gated Shopex CRM sync).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MemberTaskCreateMemberSuccessDispatchListenerRegistrationConfig.java",
+          "version": "repo-file-v1:sha256:258a5f675b6ea7cffee4f50c10d152642ee09cf406f984ed1e4edaa4ed780e07"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MemberTaskUpdateMemberSuccessDispatchListenerRegistrationConfig.java",
+          "version": "repo-file-v1:sha256:8a7253e5a68d7e86845ef84443dc60c075999c1b128ca0ef8ec85c63eeb3e38e"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ShopexCrmUpdateMemberSuccessDispatchListenerRegistrationConfig.java",
+          "version": "repo-file-v1:sha256:8ffcac2dac1a727ac96769bfaece01bc3ef8303b33d5191294109245909b12e2"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/MembersDispatchEventNames.java",
+          "version": "repo-file-v1:sha256:4fc3b1b4a57b0bb725277f703c3ac4f65550acae4abd8ca28eb934ece061f845"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/dispatch/CreateMemberSuccessMemberTaskInviteRegisterDispatchListener.java",
+          "version": "repo-file-v1:sha256:3e67d2e93da46e68e363d645d9df4ff612e9028a353fe9ad342ac24e0b96a870"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/dispatch/MemberTaskUpdateMemberSuccessDispatchListener.java",
+          "version": "repo-file-v1:sha256:0ea20073bfffac01653a73f66af12499335045926e9127f71908370e443b7169"
+        }
+      ]
+    },
+    {
+      "id": "claim_23425927fca540c49db1bc37bae2d310",
+      "statement": "MemberTaskInviteRegisterCompletionService.apply is @Transactional and returns early unless company_id, user_id (the invitee) and member_task_id are all positive and inviter_id is positive and different from the invitee; it loads the task via MemberTaskInProgressTasks.loadInProgressTask(companyId, taskId, \"invite_register\", now) (published, not off-shelf, inside its begin/end window), skips a frequency_type=once task the inviter already completed and any task with an existing non-voided completion for this invitee, and otherwise runs MemberTaskImmediateCompletionService.tryComplete(task, inviterUserId, 0, inviteeUserId, now) — the completion belongs to the inviter, attributed to the invitee.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/membertask/MemberTaskInviteRegisterCompletionService.java#L49-L93",
+          "version": "repo-lines-v1:sha256:23e51fd1598e678beec157afdd62ae3271aa07d80fb5147c1d7745d95adbc78d:eyJzZWxlY3RlZExpbmVDb3VudCI6NDUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ1MzFjZjY1MDI4Y2VkMTYzYzQwMDE2NmI2Y2EzYmU1MzNhOWM3MDMwN2U0MjUxNTI2Yjc5MWRmNDgxOGJjZTciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA0NDhlNmE1NmYyMGM0ODIxNTk1MzE2MzUxMGRhN2RhYWVjMzlhMzhlNWY4OWVlMjg3OTc1NTUxYzBhYWZmMmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJiMWQxMDM4OTIwZmEzZGFiOGMzYTRlZDI1YWQ4NTBmNGJmZWQ4ZTE1ZjkxZDA3ZGEwOWI2NzZjY2NiNGFmMjcifQ"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/test/java/cn/shopex/ecshopx/promotions/service/membertask/MemberTaskInviteRegisterCompletionServiceTest.java",
+          "version": "repo-file-v1:sha256:9ed0b69f405f302257fdfbd849c7558ee1b32d34744434fc007e89beb0a3fb5c"
+        }
+      ]
+    },
+    {
+      "id": "claim_97122b9a7f544cab821c99ca2801f8de",
+      "statement": "MemberTaskProfileCompletionService.apply (the update_member_success listener) completes a tenant's in-progress type_detail=profile tasks only when the member's profile satisfies MemberTaskProfileCompleteness.isComplete — every enabled-and-required field from loadOpenMemberInfoFields must have a value (default fields from the member row, custom fields from members_info.other_params.custom_data) — and each completion inserts the MemberTaskCompletion (cycle_key=once, DuplicateKeyException idempotent) plus a pending MemberTaskRewardGrant snapshotting task.reward_config before granting immediately via MemberTaskRewardGrantService.grantPendingImmediateForCompletion.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/membertask/MemberTaskProfileCompleteness.java",
+          "version": "repo-file-v1:sha256:79a7c1b4a301d5e10b6c84e60dad03da3b360b798fab761d338f2c756da4a7a0"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/membertask/MemberTaskProfileCompletionService.java#L51-L143",
+          "version": "repo-lines-v1:sha256:aadc3a1a0e31e964b3da4ccaf392441e4042d6b71eb71c66a09231e39aa1aaac:eyJzZWxlY3RlZExpbmVDb3VudCI6OTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ3MWNkYzA3ODgyNDM2YjNlZGQ5MTIwYTJjZWU4Y2NkYTY3YjYxMGNiODQ1Njk0ZjBkZTkzOTA1ZjNkNTA5MzEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFjZTk5NjUzMmU1ZDBiNTg3NmRiY2Q1N2EzZDc2OWI2YTY0MDU5YjBmMjg0NmM1MTU4MTRiZmQ4MjdkY2ViZWYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ1OWYxN2I5YmUwMzlhYWRjMzVhN2Y4NWNiNDk2YzVlZTZmMmIyZWNjNjNiMGM4YjY5OWRlMGFlYzA0MjQxMDYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjE0NzczNmVjZTM5YjVlMzM4Yjk0ZWYzZDA1OWMxNWJjNWZlMjU2YTEwNzU1YzFjYTE1ZDFhYmY0NThlMmYzZmUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_818ed5aaa3ac4f488f3a5d9cf522a0f5",
+      "statement": "WxappMemberDeleteMemberService.deleteMembersInTx (DELETE /wxapp/member, confirmed branch) is @Transactional: it unbinds the member from the Shuyun open platform (or the OEM-Shuyun ShuyunMemberUnbindPort fallback), deletes the member's wechat_users rows per association unionid, then the members_associations/members_address/members_info/members rows, reconciles system tags with SOURCE_DISABLE, disables the promoter and deletes the vip-grade rel via H5WxappMemberDeleteDisablePromoterPort/H5WxappMemberDeleteVipGradeRelPort, and finally inserts the members_delete_record row with the fixed-encrypted mobile — the row that makes the next registration of that mobile lose if_register_promotion; deletion is refused up front while H5WxappMemberDeleteIncompleteOrdersPort reports incomplete normal orders, and any non-ResourceException failure is rethrown as ResourceException(\"注销失败\").",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/h5/WxappMemberDeleteMemberService.java",
+          "version": "repo-file-v1:sha256:269f5f70ede53c751a95d681cf04f454be4b9459aee8a4461ab165b657517444"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.9.0",
-    "at": "2026-11-11T17:12:30.774Z"
+    "at": "2026-11-16T17:12:44.218Z"
   }
 }

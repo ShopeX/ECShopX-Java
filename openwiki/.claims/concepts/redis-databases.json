@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:8aaab82cd35b35790e14d31778b790897de588e34198f04adfe0efce5c2f4377",
+  "pageVersion": "sha256:6372eea27b4201a028cd2bf152a64a44078a4b3b0930ab473453afd92d87a215",
   "claims": [
     {
       "id": "claim_42c913eebfc94dd384ba446f036982f6",
@@ -661,10 +661,52 @@
           "version": "repo-lines-v1:sha256:bc986b8b8c3a783f6baa73fe620609ad70f86a0e718eb87448e0accd5d0b4033:eyJzZWxlY3RlZExpbmVDb3VudCI6MTA3LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI0YmExYjFmMGQ5Mzk1NzQyZTIxNmY3MWM5ZTkwYzhmYjlhYTZiNDI5NmFhYTRjZTdjYzA1Yzk2ZWE1Yjg3YmFmIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI2N2NkYTgyZGE2MDYyMzhlMDVlNjIzOTk1NjljNWVlMDM5OTM0MTk2NDhhZTVkNDNhMmJmOGNkNjM0N2Y4MjYzIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiIyN2EyOWYxNzY2ZDVmNTRjOTljM2NjNTZjMTJhYzA0OGUyNzE3YzEyOGVhN2Q1YWUxYjEwZDQ3MGUwOTZkNTM4IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIwNWM3MTVkNjhjNWFiNTM4ZDlmYTEyMDRjNTk0N2NlYTRiMjU0NmJhZGZlZjM1NDRkODExZmRhNWIyYmNiMTg0In0"
         }
       ]
+    },
+    {
+      "id": "claim_28b9e52079f449319ed247a1b3d49256",
+      "statement": "The daily new-member set Member:<companyId>:<yyyyMMdd> is written on the shared DB but read on the companys DB, a cross-DB split that agrees only because both selectors default to 0: member-creation paths (MemberAccountService.createMemberForWxappBind / createMemberLocalAutoRegister / registerShuyunMember / creatMemberForH5Post, and AdminMemberCreateMemberService.addDailyMemberActiveRedisSet) SADD the new userId inside an afterCommit synchronization via sharedStringRedisTemplate, while OpenapiSalespersonMemberNumIncreaseService adds the same key (plus a per-salesperson Member:Salesperson:<id>:Company:<companyId>:<yyyyMMdd> set) through an unqualified @Primary (companys) template; the readers — CompanysMemberStatisticsService.getMemberStatistics filling the today slot of the dashboard member_data block (CompanysDashboardStatisticsService) and the CompanysStatisticsService record-statistics path via CompanysRecordStatisticsRedisPortImpl (@Profile(\"!test-cron\"), delegating to companysRedisTemplate, which SCARDs the set and EXPIREATs it 3 days out) — both run against ecshopx.redis.companys.database. Repointing either selector without the other makes today's newAddMember read 0 and archives zeros into the statistics table, silently, because a missing set SCARDs to 0.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/CompanysStatisticsService.java#L181-L201",
+          "version": "repo-lines-v1:sha256:3842a5f6f67cce4b4f8b45e4f9ecef8ab0824ce73d5b166eda3dbbe374fe6506:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJlMGQ0MjQyYTY3Y2M2ZjU5NTc4NzY5N2UwY2FjODNiNjYyMjFhZjg5MjFkZTFiYzQyOTI4MGM1YTg0NmYxYzUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI2OGY3NWE4ODA1ODE1MTFjNDVjZWM5MGRlZDFiMjdhN2U0NmVlZjlmZDg1NDUyNDNiMDgwMGJjZGVmZWIwOWYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg3MjA1YTQ5ZmU5ZmI0ODM0ODE2ODM4NmUxZGM2M2I0NWYxYmU3NWUyNTg3ZTc3NjZlYzg3MTViY2Q4MGMxN2UiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM1NWY1ZTEyOGFiMWUzZGRkMDc1YTg5ODQ5OTcyNDkzYzBkYmE4YzRmNGQzYWU3NzA0YWFmOThiNWQwMDQ1MDgifQ"
+        },
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/statistics/CompanysDashboardStatisticsService.java#L124-L127",
+          "version": "repo-lines-v1:sha256:72de6c52690033b04e587b1b5a6e4c0a7a5f1cf8e4c4816757243de8ef01e63f:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYWJlNjBiNjhkZjg3NTFmNzBiMzg1YWU1YzgyYTYxYWExMGQyNjA4MzIzMDBlZGQ1Yzg2ZTIyOWE5ZDEyN2YzYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjEzOGM1YWU4MzE1YWI0NjQxNGJhODlmNzdkNTkwYTNkNGY2NGU0OWFhMzM3NWI5MTYyOTI2OTE2N2Q2MTRkMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzcxMTYwNGExMDIwNTk2ZWQxNTAwMDYwMDViNDJkODQ1MDA3YzM0ZDk5ODZhZmJiNmNmMDEyYTFlNjUxODIyMSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/statistics/CompanysMemberStatisticsService.java#L36-L44",
+          "version": "repo-lines-v1:sha256:82d8a799657249ff357c8f4bcf4ea992649e868d21025e3de64242452d72b699:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZmNmYWI0ZjBkOTI5NGVmNTNiZWNkMTUyYWUxYzk2YjA1OGIwZjFhMjYzZGY2MTM5ODA5NjI5YWFhOWI4OTI4NiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjc2MWIzNDRiOTUzNjM1N2JiM2ZkMWQyOWM1YzIzNWU5Y2RlOGQxMTkzNWFmMzZkMjllNDIyMzUxMzU5M2I2OCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMTg3MjE4ZDU2ZTI3MDBhYjE2ZmIwYzEyMjAyNjRjNGU3MWMwMzI5MTJkN2QyMjA4YTlmNWQ0MGJmZmI5MmViZSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/statistics/CompanysMemberStatisticsService.java#L96-L101",
+          "version": "repo-lines-v1:sha256:cc1a9280336dbc1b0a7ef3659b14b4fc1d5339fd5667a2e0e904a70f24d6210d:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEzYjhmZmMwNzY2ZjVjMTM1NzBiYmZkOTU4MTQ3YzViZTk1NWNmZWY0YTUwMmRiNzIzYWMxMDcwZjQyNTQ2YSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNTg5YTBiYTViNjRiNmVmYjVkZDEyNTYwYTllY2U1NWM2MzM3YjQ1Zjk3MmRkNzhlYWE3NWQyNzA4YjAwYjY0ZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTMzYWJiOWQ4MTBiNjUzNzk0YmE1NjJjZmYzYjZjMjZiODQzNWQxOGUyMTVhZTFiODc5MWNkMzZjNTY1MDY0MiJ9"
+        },
+        {
+          "resource": "repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/statistics/CompanysRecordStatisticsRedisPortImpl.java#L33-L53",
+          "version": "repo-lines-v1:sha256:68767487ee588066448888351e113630cbee8dc410170c09be1c617703ee7fb2:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU2MmU2NGVhZWE3YTBmY2JiZTZhM2QxOGYxNTk0OTFmYmJmNDM1ZGM2MjQ3YWY1NWI4OTZhYzEyYjI3NTdlNDUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNlZTUxOWYwYzBlMmMyNWFlZWJlZWIxNGYzNmZmNDVjNDA3NjZkYzA4Y2JiMGVjNWJkNTMwZDkzMmVmNzY5NTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ0ZDUyYTE0ZDZkNDU3MjY1NTExN2NhYzIzZGFhMzAwZjc2ZGYyYThlMzJkYzE3MjZiZDcyZGE1MzViOWRjMjYifQ"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/account/MemberAccountService.java#L2517-L2534",
+          "version": "repo-lines-v1:sha256:fa02c7dae668f142b902303923bfe0fbcae88f8003288008b3702a752f165f83:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhhYzAxNGM4OWZkNmQ1NzYzNTgzZjgzNDM4NGRlNzBlZTBlN2M3NzcwNjNmMDY1YjI1NzVhNDNlZDMyOTcxNzIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg4MjBlZWYwODRmMmU4ZWY0N2RmZGNjMDA3MzUwM2NkYzIwYWIxOGQ2ZWE2NmMxNTc0ZjA4N2U0MzhhMWU5ZjAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNkMGNiYzkyZjcwZTNkMjllN2E0ZTc0MDVkYmE3NDFiYzIyNTllMDQzNDkzM2M0MTI3ODZhMTg0YTM5OTRmYmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNhNGU1ZjJlMzQzNWY1MzcwODFlNGZkNWU4M2U5ZDIzZGYxODQ0M2MxN2ZkMDgwZDM5NzAyMjVlNmU3YTkwYjYifQ"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/account/MemberAccountService.java#L400-L407",
+          "version": "repo-lines-v1:sha256:7eac1598bfb8ea3d617856d0c36a6fc57d46ad92487dbdc6a48b03932c95bee0:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzY5MGZjZjE3NmU2ZmE1ZTAyZGYxMDg2ZmQzOTNkYzFiZjU0Yzc0M2IxYTAyOGNiYWM4M2QxZGViZTc0YzJiNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNmEyYTNiNzZlMTJjZTE1Mzc5ZDA1ZjI4NjlkYzQ4MzJkZTc1ODkwNTNiNDliZmYyMzdlNDI1YzcyMzc4MDE1NCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiY2ZhZmZmZTdjMWE3OGUyMDNmNjU5NjVkMmUwNTE5NGNjMTRhYTFmZTg5ZDcyN2JmNTk5MjA4NmEwNjZhZmFhNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTc2NWY4ZDBiOTEwMTMwNWMxN2MwZDY2MmI5ODk3ZmNlYTU2NzgzMDI5MWMwZjYwN2Q4Y2Y2YjM2YjMwY2UzNSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/admin/AdminMemberCreateMemberService.java#L561-L566",
+          "version": "repo-lines-v1:sha256:2cf53fd10e20bd74518810d4af8c4bc7e508eba13cff721a00beaaf996a3e5fa:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNzk4NTIyMGZiNWNiMTQ4ZWFiNDQ3ODlkMzRhYTY2M2E2MGQ2N2JjMTUwZGIyMjg4ZmUzMWI0OWU3YTVkNGUxNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiY2JkYjI1Y2ZjNWIwODRmZjRiNjM0YzMzNTZlY2RmMGNmMDJhMzc0NzgwYWZmMjBjZDRmODFkZmVmZjIwY2E1OSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMmYxNTgwOTg4NzljOTRkNGU3ZmJjZWMzNjQ3ZWUwMzYyYjM1YWE4NmU5MGM0NWIyZmRlMmI2NjBlMWI4NjlmYiJ9"
+        },
+        {
+          "resource": "repo://ecshopx-salesperson/src/main/java/cn/shopex/ecshopx/salesperson/service/OpenapiSalespersonMemberNumIncreaseService.java#L40-L63",
+          "version": "repo-lines-v1:sha256:de2ccc8f55aaeb9f5505ce32b81f32626a7bbc6c4016fe3857acc184b7b12f86:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE4MmVhYmNkZjYwZjE0YzRkZTY0YWUyNDhiZDY0ZWE2ZGY5ODQ2NTQyM2YxNDNhMjU1ZjIyZWQwMTg3ZTJkMDQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQwMzk5NDVmNzEzY2VjY2MyYTJiZTk4MWFiNWM1ZWVhMzdmOTVmOTc2OWU1NzVjZDhlZDlhOWZjYmFmZGYwNmEifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.9.0",
-    "at": "2026-11-11T17:12:30.774Z"
+    "at": "2026-11-16T17:12:44.218Z"
   }
 }

@@ -8,6 +8,8 @@ sources:
     resource: repo://.gitignore
   - id: openwiki-source-7050bfe0cde098993d6b2bce
     resource: repo://ecshopx-adapay/src/main/java/cn/shopex/ecshopx/adapay/service/callback/handler/AdapayCallbackPaymentHandler.java
+  - id: openwiki-source-fe01d17802ad55035b1d66d4
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MemberTaskNormalOrderPaySuccessDispatchListenerRegistrationConfig.java
   - id: openwiki-source-fd94d375300df90e9a5bdcb1
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/OrdersTradeFinishDispatchPublisherBeansConfig.java
   - id: openwiki-source-cc0af63e7b93bd7afc7164f3
@@ -20,6 +22,8 @@ sources:
     resource: repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/dispatch/WxappPaymentTradeFinishSmsNotifySyncDispatchFlowTest.java
   - id: openwiki-source-e3f608a3254de204f775497c
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/OrdersTradeFinishDispatchPublisher.java
+  - id: openwiki-source-525f411196f69ffde3619763
+    resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/order/normal/OrderCreateMemberTaskExtendPort.java
   - id: openwiki-source-68b9a0e3c776f0fe8beabd26
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/payment/PaymentSubjectDistributorIdPort.java
   - id: openwiki-source-c9890b49121b99230c30246e
@@ -42,6 +46,8 @@ sources:
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/dispatch/OrdersTradeFinishNormalOrderPaySuccessBridgeDispatchListener.java
   - id: openwiki-source-863ce4338f295783b77f3eeb
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/dispatch/TradeFinishCountBrokerageDispatchListener.java
+  - id: openwiki-source-520855d1b9493ddf72c77d4f
+    resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/integration/popularize/OrderValidityLatestAftersaleDaysReadPortImpl.java
   - id: openwiki-source-0f82b454b43d90e72507a58c
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/alipay/AlipayNotifyOrderSidePortImpl.java
   - id: openwiki-source-f451eeaaacd8448e25e3c13a
@@ -132,10 +138,26 @@ sources:
     resource: repo://ecshopx-popularize/src/test/java/cn/shopex/ecshopx/popularize/service/brokerage/NormalOrderFinishBrokerageCoordinatorPidResolutionTest.java
   - id: openwiki-source-fe66b244c874bead512c2f16
     resource: repo://ecshopx-popularize/src/test/java/cn/shopex/ecshopx/popularize/service/brokerage/TradeFinishCountBrokerageUpgradePromoterGradeEnqueueTest.java
-generated: { by: "openwiki/0.9.0", at: "2026-11-11T17:12:30.774Z" }
+  - id: openwiki-source-919cf58b30566a4b65b65cf6
+    resource: repo://ecshopx-popularize/src/test/java/cn/shopex/ecshopx/popularize/service/BrokeragePlanCloseTimeServiceTest.java
+  - id: openwiki-source-96557ec758d56ed3c5499e2f
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/dispatch/MemberTaskNormalOrderPaySuccessDispatchListener.java
+  - id: openwiki-source-c5b8df576330143391adb514
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/membertask/MemberTaskCheckoutService.java
+  - id: openwiki-source-32a5d903e184ea38178ee090
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/membertask/MemberTaskOrderReadPortImpl.java
+  - id: openwiki-source-85611b67a4376b9044dd97e5
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/membertask/MemberTaskPaySuccessService.java
+  - id: openwiki-source-c3474a1a316de685a0163938
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/membertask/MemberTaskRefundVoidService.java
+  - id: openwiki-source-c21f65c1feeeecc0dc409697
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/membertask/MemberTaskShareOrderService.java
+  - id: openwiki-source-e019cc3e9005230a3f221fb7
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/membertask/MemberTaskTotalSpendService.java
+generated: { by: "openwiki/0.9.0", at: "2026-11-16T17:12:44.218Z" }
 verified:
   - by: openwiki/0.9.0
-    at: 2026-11-11T17:12:30.774Z
+    at: 2026-11-16T17:12:44.218Z
 ---
 
 # Workflow: Checkout, Payment, Notify, and Trade-Finish Fan-out
@@ -754,8 +776,61 @@ transaction, `@Transactional(rollbackFor = Exception.class)`):
   (ASYNC+REDIS, `RetryPolicy.platformDefault()`), whose own listeners are
   youshu (`listener:youshu.orders_normal_order_pay_success`),
   wsugc (`listener:WsugcBundle\Listeners\Order`),
-  shuyun open-platform trade-sync and offline-benefit-consume, and
-  employee-purchase behaviour-log — all async `default`.
+  shuyun open-platform trade-sync and offline-benefit-consume,
+  employee-purchase behaviour-log, and the member-task attribution listener
+  (below) — all async `default`.
+
+#### Member-task attribution on `event:288`
+
+`MemberTaskNormalOrderPaySuccessDispatchListener`
+(`listener:promotions.member_task.normal_order_pay_success`, registered by
+`MemberTaskNormalOrderPaySuccessDispatchListenerRegistrationConfig` on the
+`event:288` plane, async `default`) is the promotions bundle's pay-success
+consumer. `MemberTaskPaySuccessService.apply` keys only on
+`company_id`/`order_id`, loads the order through
+`MemberTaskOrderReadPort` (promotions-side read of
+`orders_normal_orders`, another port inversion) and skips unless the row
+carries a positive `member_task_id` — the attribution written at checkout.
+For an attributed order it re-loads the task, requires it to still be
+`IN_PROGRESS`, and branches on `type_detail`:
+
+* **`total_spend`** → `MemberTaskTotalSpendService.onPaySuccess`: skips an
+  order already processed (completion rows are keyed on
+  `(task_id, order_id)`), accumulates the member's spend progress by
+  `total_fee`, and writes a completion + pending reward grant only when the
+  cumulative progress reaches the task rule's amount threshold.
+* **`share_order`** → `MemberTaskShareOrderService.onPaySuccess`: requires a
+  positive `member_task_sharer_user_id` different from the buyer, and writes
+  the completion (with `invitee_user_id` = the buyer) and the reward grant
+  for the **sharer**, not the buyer.
+* **everything else** (`first_order`, generic purchase tasks) → the inline
+  branch: an active `once`-frequency completion already recorded skips; the
+  order's `total_fee` must match the task's `MemberTaskPurchaseRule` amount
+  threshold; then a `MemberTaskCompletion` (cycle key `once`) and a
+  `pending` `MemberTaskRewardGrant` are inserted in one `@Transactional`,
+  with `DuplicateKeyException` on either insert treated as idempotent
+  re-delivery.
+
+Grants close out through `MemberTaskRewardGrantService`: when the task rule
+needs receipt (`needReceipt`), the grant stays `pending` until the order
+reaches `DONE` with an `end_time` (`grantPendingIfOrderDone`, trigger
+`PAY_SUCCESS_AFTER_DONE`); otherwise `grantPendingImmediate` fires right
+away. Refunds unwind the same state — the twin
+`MemberTaskTradeRefundFinishDispatchListener` →
+`MemberTaskRefundVoidService` voids the pending completion/grant (and for
+`total_spend` deducts the refunded amount from the accumulated progress) on
+the trade-refund-finish plane. The attribution columns themselves are
+validated and written **before** any payment: `MemberTaskCheckoutService`
+implements the `OrderCreateMemberTaskExtendPort` hook, which both
+transactional runners invoke from `preparePricingSnapshot`
+(`applyBeforePersist`); it re-checks the task is purchasable (published,
+in its time window, not already completed for `once`-frequency non-share
+tasks — otherwise checkout fails with 当前任务不可用于下单 / 您已完成该任务), and
+`OrderCreatePersistencePortImpl.persistOrder` persists `member_task_id` /
+`member_task_sharer_user_id` onto the `NormalOrders` row (the sharer id is
+zeroed when it equals the buyer, so self-shares never attribute). The
+pay-success pin lives in `MemberTaskPaySuccessServiceTest`
+(`ecshopx-promotions`).
 
 ### The notification listeners and their gates
 
@@ -799,18 +874,26 @@ transaction, `@Transactional(rollbackFor = Exception.class)`):
   unparseable `company_id`/`order_id` (`listener_skip invalid_ids`), loads
   `NormalOrders` by id and skips on order-not-found or a company mismatch
   between the payload and the order row, and invokes
-  `NormalOrderBrokerageOnFinishService.orderFinishBrokerage` inside a
-  `catch (Throwable)` that only logs at warn — a brokerage failure never
-  propagates back into the trade-finish fan-out.
-  `orderFinishBrokerage` is the shared finish-flow brokerage entry (also used
-  by confirm receipt, batch finish and ziti write-off): it publishes the
-  ASYNC+REDIS
+  `NormalOrderBrokerageOnFinishService.orderFinishBrokerageOnTradePaySuccess`
+  inside a `catch (Throwable)` that only logs at warn — a brokerage failure
+  never propagates back into the trade-finish fan-out.
+  `NormalOrderBrokerageOnFinishService` has **two entries into the same
+  coordinator**, split by lifecycle stage. The trade-pay-success entry
+  `orderFinishBrokerageOnTradePaySuccess` (the one this fan-out calls) only
+  writes the commission: it converts the loaded order into a
+  `NormalOrderBrokerageFinishInput` (`user_id`, `order_class`, `total_fee`,
+  `commission_fee`) and calls the popularize bundle's
+  `NormalOrderFinishBrokerageCoordinator` through the `ecshopx-common`
+  interface (the port inversion keeps `ecshopx-orders` free of a popularize
+  dependency) — deliberately **without** publishing the confirm-receipt
+  event or touching `plan_close_time`. The order-finish entry
+  `orderFinishBrokerage` (used by confirm receipt, batch finish and ziti
+  write-off) publishes the ASYNC+REDIS
   `EVENT_NORMAL_ORDER_CONFIRM_RECEIPT`
-  (`event:orders:normal_order_confirm_receipt`) event, calls the popularize
-  bundle's `NormalOrderFinishBrokerageCoordinator` through the
-  `ecshopx-common` interface (the port inversion keeps `ecshopx-orders` free
-  of a popularize dependency), and then back-fills `plan_close_time` on any
-  still-unsettled brokerage rows via
+  (`event:orders:normal_order_confirm_receipt`) event, runs the same
+  coordinator call (which re-hits the idempotency guard and no-ops when the
+  pay-success leg already wrote the row), and then back-fills
+  `plan_close_time` on any still-unsettled brokerage rows via
   `BrokeragePlanCloseTimeService.updatePlanCloseTime`. Inside one explicit
   `TransactionTemplate` (REQUIRED), the coordinator skips when
   `open_popularize` is off for the company, when a brokerage row already
@@ -822,12 +905,16 @@ transaction, `@Transactional(rollbackFor = Exception.class)`):
   **parent promoter's `user_id`** — `source=order`, `is_close=false`,
   `price` = the order base (`total_fee`, or `commission_fee` when the config
   ratio type is `profit`), `rebate` = base × the merged
-  `popularize_ratio.first_level.ratio`, and a **non-null `plan_close_time`**
-  computed at insert by
-  `BrokeragePlanCloseTimeService.computePlanCloseTimeEpochSec()` (now +
-  86400 × (`ecshopx.popularize.brokerage-plan-close.settle-days` +
-  `aftersale-days`, both defaulting to 0 until the merchant-side
-  分销确认天数/售后时效天数 settings land — see the TODO in the class). It then
+  `popularize_ratio.<type>.first_level.ratio` (`type` = `order_money` by
+  default, or `profit`), and `plan_close_time` set to the
+  **`PLAN_CLOSE_TIME_PENDING` sentinel** (`Integer.MAX_VALUE`) that
+  `BrokeragePlanCloseTimeService.pendingPlanCloseTimeForInsert()` returns —
+  a placeholder so the settle-brokerage job never closes a row before the
+  order completes. The real epoch value is only stamped at order finish by
+  `updatePlanCloseTime` = order-finish time + 86400 × (the promotion config
+  `limit_time` + the platform order-validity `latest_aftersale_time` in
+  days, the latter read from orders through the
+  `OrderValidityLatestAftersaleDaysReadPort` port inversion). It then
   increments the parent promoter's statistics
   (`PopularizeBrokerageStatisticsIncrementService.add` with
   `item_total_price`, `rebate_total` and `no_close_rebate`, inserting the
@@ -836,7 +923,8 @@ transaction, `@Transactional(rollbackFor = Exception.class)`):
   (`UpgradePromoterGradeJobDispatchPublisher.enqueueUpgradePromoterGrade` →
   `dispatchJob` ASYNC+REDIS with `{company_id, user_id}`) for the parent —
   so the popularize bundle owns the actual brokerage write while orders only
-  triggers it. The pid-keyed insert, the statistics increment and the
+  triggers it, and settlement timing is deferred until the order actually
+  completes. The pid-keyed insert, the statistics increment and the
   once-per-row grade enqueue are pinned by
   `NormalOrderFinishBrokerageCoordinatorPidResolutionTest` and
   `TradeFinishCountBrokerageUpgradePromoterGradeEnqueueTest`
@@ -988,7 +1076,9 @@ check, distributor check, format, `assertDepositBalance`) but stops after the
 **non-transactional pricing half**
 `ShopadminNormalOrderCreateTransactionalRunner.preparePricingSnapshot`
 (cross-border identity, point-deduct formatting, markdown, pre-persist
-enrichment). It then pre-assigns the `order_id`
+enrichment, and the `OrderCreateMemberTaskExtendPort` hook that validates and
+stamps the member-task attribution — see the member-task subsection under the
+pay-success bridge). It then pre-assigns the `order_id`
 (`NormalOrderNumericIdService.generate(userId)`, `pay_type` defaulting to
 `pos` when neither orderData nor params carry one) and writes a
 `ShopadminDeferredOrderSnapshot` through `ShopadminDeferredOrderCache.saveWaitPay`
@@ -1067,7 +1157,10 @@ runs under the `shopadmin:deferred:lock:{orderId}` Redis lock
    `OrderCreateInventoryPort.minusStores` →
    `OrderCreatePostCommitPortImpl.runAfterOrderInsert` — the same
    cart-emptying, points-deduction and OPL writes as the wxapp create, with
-   the preassigned `order_id` reused), then
+   the preassigned `order_id` reused; `persistOrder` also persists the
+   `member_task_id`/`member_task_sharer_user_id` attribution columns stamped
+   in the pricing half, which is what the `event:288` member-task listener
+   later reads), then
    `OrdersTradeFinishNormalOrderPaySuccessApplyService.markPayedIfNeeded` is
    invoked **directly** with the snake_case trade row (the same method the
    pay-success bridge listener calls — shopadmin-class orders jump straight
@@ -1328,7 +1421,9 @@ downstream port:
   resolved through the buyer promoter's `pid`, and the buyer's `is_buy` is
   flipped) and
   `TradeFinishCountBrokerageUpgradePromoterGradeEnqueueTest` (exactly one
-  `enqueueUpgradePromoterGrade` per inserted first-level row).
+  `enqueueUpgradePromoterGrade` per inserted first-level row); the
+  plan-close-time computation and the update scope are pinned by
+  `BrokeragePlanCloseTimeServiceTest` in the same bundle.
 * `TradePayFinishStatisticsEventSyncDispatchFlowTest` — `trade_state=NOTPAY`
   and unknown `trade_source_type` skip statistics; a normal SUCCESS payload
   records once.

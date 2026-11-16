@@ -1,11 +1,11 @@
 ---
 type: workflow
 title: "Workflow: Adding a Dispatch Event, Job, or Cron Handler"
-description: Step-by-step recipe for the most common cross-cutting change in ECShopX-Java — adding a message-name constant to ecshopx-common, declaring the publisher interface, implementing it in bootstrap with the right DispatchOptions, writing the handler in the owning Bundle, registering it from a bootstrap RegistrationConfig, and pinning the wiring with a DispatchFlowTest or PublishProbeTest; refreshed with the DigiOs normal-order-delivery and members create-member-success new-customer listener configs and the bspay withdraw job; plus the XXL-JOB cron-handler variant and when a cron tick should publish a bus job instead of doing the work inline.
+description: Step-by-step recipe for the most common cross-cutting change in ECShopX-Java — adding a message-name constant to ecshopx-common, declaring the publisher interface, implementing it in bootstrap with the right DispatchOptions, writing the handler in the owning Bundle, registering it from a bootstrap RegistrationConfig, and pinning the wiring with a DispatchFlowTest or PublishProbeTest; refreshed with the DigiOs normal-order-delivery and members create-member-success new-customer listener configs, the bspay withdraw job, and the goods search-rebuild job (a cron-fed typed publisher whose handler runs a multi-shape Elasticsearch index rebuild); plus the XXL-JOB cron-handler variant and when a cron tick should publish a bus job instead of doing the work inline.
 tags: [workflow, dispatch-bus, events, jobs, publisher, registration-config, dispatch-options, xxl-job, cron, testing, checklist]
 verified:
   - by: openwiki/0.9.0
-    at: 2026-11-08T17:14:16.576Z
+    at: 2026-11-16T17:12:44.218Z
 sources:
   - id: openwiki-source-5532b49a7a4a389ccc73ab43
     resource: repo://docker/tables_xxl_job.sql
@@ -19,6 +19,8 @@ sources:
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/DispatchBusConfig.java
   - id: openwiki-source-0388cb94d8b3aa21ae7dd1cf
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/EmployeePurchaseNormalOrderPaySuccessDispatchListenerRegistrationConfig.java
+  - id: openwiki-source-9a85049b1f77681fcfd3609f
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/EspierExportFileJobRegistrationConfig.java
   - id: openwiki-source-225eace12759f1e8a45e5306
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/FinishOrderJobDispatchPublisherImpl.java
   - id: openwiki-source-6154c1d27f3b807ac0dd5b04
@@ -35,6 +37,10 @@ sources:
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/OrdersTradeFinishNormalOrderPaySuccessBridgeDispatchListenerRegistrationConfig.java
   - id: openwiki-source-d796c7580c722f9e3c2011f9
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ReservationExpireCancelDispatchPublisherImpl.java
+  - id: openwiki-source-0efb63292c0898d92c370a01
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/SearchRebuildJobDispatchPublisherImpl.java
+  - id: openwiki-source-1f09d004ecebb282a2758fcf
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/SearchRebuildJobRegistrationConfig.java
   - id: openwiki-source-ebbcd0aeec7940f4f0465f31
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ShuyunOpenPlatformCreateMemberSuccessDispatchListenerRegistrationConfig.java
   - id: openwiki-source-6794b7e88ab1775f38c31571
@@ -53,6 +59,8 @@ sources:
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/YoushuCreateMemberSuccessDispatchListenerRegistrationConfig.java
   - id: openwiki-source-3d0c0c6b436f236966202fd7
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/YoushuNormalOrderPaySuccessDispatchListenerRegistrationConfig.java
+  - id: openwiki-source-b9b1651363b4603c4dcc94fb
+    resource: repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/config/SearchRebuildJobRegistrationConfigTest.java
   - id: openwiki-source-5ccbdc81db33602d8a455023
     resource: repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/dispatch/FinishOrderJobDispatchFlowTest.java
   - id: openwiki-source-cc3c4c6c0c8cbb67dd53502e
@@ -63,14 +71,20 @@ sources:
     resource: repo://ecshopx-bspay/src/main/java/cn/shopex/ecshopx/bspay/api/admin/v1/WithdrawController.java
   - id: openwiki-source-9cec63ff30d61ff6b8bbb144
     resource: repo://ecshopx-bspay/src/main/java/cn/shopex/ecshopx/bspay/dispatch/WithdrawJobHandler.java
+  - id: openwiki-source-5774ff51fa02cae43026659d
+    resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/cron/mock/NoopSearchRebuildJobDispatchPublisher.java
   - id: openwiki-source-a83d6cc5a617f803669492e1
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/BsPayBundleDispatchJobNames.java
   - id: openwiki-source-d22ac4f871b34ef2bb48837e
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/DispatchHandler.java
   - id: openwiki-source-832686468dd7258cd6b8ddeb
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/DispatchListener.java
+  - id: openwiki-source-4cece1d0dc21f12377ecd9c8
+    resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/EspierDispatchJobNames.java
   - id: openwiki-source-809e54f4e38e5137797c41dd
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/FinishOrderJobDispatchPublisher.java
+  - id: openwiki-source-39e681b7e63485fa9b3b7a54
+    resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/GoodsSearchDispatchJobNames.java
   - id: openwiki-source-be75b67e34085afc534d075b
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/MembersBundleDispatchJobNames.java
   - id: openwiki-source-6b2ede0314feff760dc5d597
@@ -81,6 +95,8 @@ sources:
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/OrdersDispatchEventNames.java
   - id: openwiki-source-5ecb22a008c7475c40eec372
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/OrdersDispatchJobNames.java
+  - id: openwiki-source-ba9e83fb52a551988c93b793
+    resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/SearchRebuildJobDispatchPublisher.java
   - id: openwiki-source-ab72bd482510bb3bca15def9
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/WithdrawJobDispatchPublisher.java
   - id: openwiki-source-a550e1d77a0ca4d6e88b0ca6
@@ -101,8 +117,16 @@ sources:
     resource: repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/redis/RedisDispatchListener.java
   - id: openwiki-source-2390d3481999c0547b93beca
     resource: repo://ecshopx-dispatch/src/main/java/cn/shopex/ecshopx/dispatch/RetryPolicy.java
+  - id: openwiki-source-0bb845d502f3fb8cbdc5c113
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/cron/ScheduleGoodsSearchRebuildHandler.java
+  - id: openwiki-source-ad916be12b605c2e4737848c
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/cron/testcfg/CronTestMockConfig.java
   - id: openwiki-source-88ec1f3b183f82614525e4d6
     resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/dispatch/ItemAddEventDispatchPublisher.java
+  - id: openwiki-source-d06abc53183de96931fcb0be
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/search/rebuild/SearchRebuildJobHandler.java
+  - id: openwiki-source-b82b5293cc853319938ea8e0
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/GoodsSearchRebuildCronService.java
   - id: openwiki-source-d1ae183c81bdc1fdae2f0ac4
     resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/dispatch/CreateMemberSuccessNewCustomerDispatchListener.java
   - id: openwiki-source-d72b1aefaba3b3b4fbda25c4
@@ -133,12 +157,12 @@ sources:
     resource: repo://ecshopx-youshu/src/main/java/cn/shopex/ecshopx/youshu/dispatch/NormalOrderPaySuccessYoushuDispatchListener.java
   - id: openwiki-source-f1b1aacc63642e5304668821
     resource: repo://readme.md
-generated: { by: "openwiki/0.9.0", at: "2026-11-08T17:14:16.576Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-16T17:12:44.218Z" }
 ---
 
 # Workflow: Adding a Dispatch Event, Job, or Cron Handler
 
-Almost every feature that crosses a Bundle boundary — "order paid, notify half a dozen other domains", "admin requested an export", "time to finish shipped orders" — lands on the same six-file change. This page is the checklist for it, worked twice end to end: once for an **event** (`EVENT_NORMAL_ORDER_PAY_SUCCESS`, published by orders, consumed by youshu/shuyun(×2)/wsugc/members/employee-purchase) and once for a **job** (`FINISH_ORDER_JOB`, published by a cron tick, consumed by orders itself). Newer registrations referenced throughout — the members `EVENT_CREATE_MEMBER_SUCCESS` new-customer listener, the DigiOs `EVENT_NORMAL_ORDER_DELIVERY` store-adjustment listener, and the bspay `WITHDRAW_JOB` — follow exactly the same recipe and are called out at the step they exemplify. A third variant — the XXL-JOB cron handler that often *triggers* such a job — is covered at the end.
+Almost every feature that crosses a Bundle boundary — "order paid, notify half a dozen other domains", "admin requested an export", "time to finish shipped orders", "rebuild the search index nightly" — lands on the same six-file change. This page is the checklist for it, worked twice end to end: once for an **event** (`EVENT_NORMAL_ORDER_PAY_SUCCESS`, published by orders, consumed by youshu/shuyun(×2)/wsugc/members/employee-purchase) and once for a **job** (`FINISH_ORDER_JOB`, published by a cron tick, consumed by orders itself). Newer registrations referenced throughout — the members `EVENT_CREATE_MEMBER_SUCCESS` new-customer listener, the DigiOs `EVENT_NORMAL_ORDER_DELIVERY` store-adjustment listener, the bspay `WITHDRAW_JOB`, and the goods `SEARCH_REBUILD_JOB` (a typed cron-fed publisher whose handler runs a multi-shape Elasticsearch index rebuild) — follow exactly the same recipe and are called out at the step they exemplify. A third variant — the XXL-JOB cron handler that often *triggers* such a job — is covered at the end.
 
 For the *why* behind the layering (why the interface lives in `ecshopx-common` and the implementation in `ecshopx-bootstrap`), read [Cross-Bundle Ports and Wiring in Bootstrap](../architecture/cross-bundle-communication.md). For the runtime being wired, read [Dispatch Bus](../concepts/dispatch-bus.md).
 
@@ -190,14 +214,14 @@ ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/<Domain>DispatchE
 ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/<Domain>DispatchJobNames.java     (jobs)
 ```
 
-These are `final` classes with a private constructor, one family per owning Bundle — `OrdersDispatchEventNames` / `OrdersDispatchJobNames`, `GoodsDispatchEventNames` / `GoodsBundleDispatchJobNames`, `MembersDispatchEventNames` / `MembersBundleDispatchJobNames`, `BsPayBundleDispatchJobNames`, and so on. The constant is the single source of truth shared by the publisher impl (step 3) and the registration config (step 5); never inline the string in either.
+These are `final` classes with a private constructor, one family per owning Bundle (or one per sub-domain when a Bundle's surface is large) — `OrdersDispatchEventNames` / `OrdersDispatchJobNames`, `GoodsDispatchEventNames` / `GoodsBundleDispatchJobNames` / `GoodsSearchDispatchJobNames`, `MembersDispatchEventNames` / `MembersBundleDispatchJobNames`, `BsPayBundleDispatchJobNames`, `EspierDispatchJobNames`, and so on. The constant is the single source of truth shared by the publisher impl (step 3) and the registration config (step 5); never inline the string in either.
 
 **Naming scheme** (keep the CSV id so PHP→Java migration parity stays auditable at a glance):
 
 | Prefix | Form | Examples |
 | --- | --- | --- |
 | `event:` | `event:<csvId>:<PhpBundle>\Events\<EventClass>` when a legacy PHP event exists, else `event:<bundle>:<snake_case>` | `event:288:OrdersBundle\Events\NormalOrderPaySuccessEvent`, `event:orders:normal_order_add`, `event:members:create_member_success` |
-| `job:` | `job:<csvId>:<PhpBundle>\Jobs\<JobClass>` | `job:128:OrdersBundle\Jobs\FinishOrderJob`, `job:93:BsPayBundle\Jobs\WithdrawJob` |
+| `job:` | `job:<csvId>:<PhpBundle>\Jobs\<JobClass>` | `job:128:OrdersBundle\Jobs\FinishOrderJob`, `job:93:BsPayBundle\Jobs\WithdrawJob`, `job:198:GoodsBundle\Jobs\SearchRebuildJob` |
 | `listener:` | legacy PHP listener FQN (optionally `@method`), or a dotted descriptive name for Java-first listeners | `listener:WsugcBundle\Listeners\Order`, `listener:HfPayBundle\Listeners\HfpayTradeRecordListener@paySuccess`, `listener:youshu.orders_normal_order_pay_success`, `listener:shuyun.open_platform.trade_sync_on_normal_order_pay_success`, `listener:digios.store_adjustment_on_normal_order_delivery`, `listener:members.create_member_success_new_customer`, `listener:thirdparty.order_add_push_marketing_center_on_normal_order_add` |
 
 The dotted Java-first listener names follow `<consumer-bundle>[.<sub-domain>].<action>_on_<event-snake>` (a shorter `<bundle>.<action>` form such as `listener:members.create_member_success_new_customer` is also in use) — recent additions include the shuyun `trade.sync` / offline-benefit and digios store-adjustment listeners, so reuse that grammar instead of inventing a new one. Note the employee-purchase pay-success config is the one place that still inlines its listener string (`listener:employeepurchase.normal_order_pay_success_behavior_log`) rather than referencing a constant — don't copy that; add a constant.
@@ -215,10 +239,15 @@ public static final String EVENT_NORMAL_ORDER_PAY_SUCCESS =
 public static final String FINISH_ORDER_JOB = "job:128:OrdersBundle\\Jobs\\FinishOrderJob";
 ```
 
+```java
+// ecshopx-common/.../dispatch/GoodsSearchDispatchJobNames.java
+public static final String SEARCH_REBUILD_JOB = "job:198:GoodsBundle\\Jobs\\SearchRebuildJob";
+```
+
 Two devices you may need:
 
 * **Distinct bus planes for one PHP event.** If two entry surfaces must fan out to the same listeners but need distinguishable bus names, add a second constant (e.g. `EVENT_TRADE_FINISH` = `event:291:…` and `EVENT_TRADE_FINISH_CSV292` = `event:292:…`, both consumed by the same listener registrations).
-* **Alias constants folding several CSV ids onto one handler.** `MembersBundleDispatchJobNames` defines `BIND_SALSEPERSON_JOB` (job:185), `BIND_SALSEPERSON_JOB_DM_MEMBER_REGISTER` (job:186) and `BIND_SALSEPERSON_JOB_WXAPP_BIND_SALESPERSON` (job:194) — three PHP trigger rows that collapse onto one Java handler, registered three times by `BindSalsepersonJobRegistrationConfig`.
+* **Alias constants folding several CSV ids onto one handler.** `MembersBundleDispatchJobNames` defines `BIND_SALSEPERSON_JOB` (job:185), `BIND_SALSEPERSON_JOB_DM_MEMBER_REGISTER` (job:186) and `BIND_SALSEPERSON_JOB_WXAPP_BIND_SALESPERSON` (job:194) — three PHP trigger rows that collapse onto one Java handler, registered three times by `BindSalsepersonJobRegistrationConfig`. `EspierDispatchJobNames` takes this further: twenty-one distinct `job:<csvId>:EspierBundle\Jobs\ExportFileJob` constants, each a different legacy export trigger, all converging on `EspierExportFileJobDispatchHandler` in step 5.
 
 ---
 
@@ -244,7 +273,7 @@ public interface FinishOrderJobDispatchPublisher {
 }
 ```
 
-`ecshopx-common` is the only module every Bundle depends on, so this is the only place a producer Bundle and an arbitrary consumer Bundle can share a contract without a new Maven edge. The producer (orders, in both worked examples) injects *only this interface* and stays ignorant of who listens. Prefer a typed signature over a raw map when the payload is fixed — `WithdrawJobDispatchPublisher.enqueueWithdrawJob(long applyId, long companyId)`, `ItemAddEventDispatchPublisher.schedulePublishAfterCommit(long itemId, long companyId)` and `GenerateOutfitJobDispatchPublisher.enqueueGenerateOutfit(...)` show the typed variant, with the map built by the impl (note the typed interface itself may live in the owning Bundle — `ItemAddEventDispatchPublisher` sits in `ecshopx-goods/goods/dispatch` — while the impl stays in bootstrap).
+`ecshopx-common` is the only module every Bundle depends on, so this is the only place a producer Bundle and an arbitrary consumer Bundle can share a contract without a new Maven edge. The producer (orders, in both worked examples) injects *only this interface* and stays ignorant of who listens. Prefer a typed signature over a raw map when the payload is fixed — `WithdrawJobDispatchPublisher.enqueueWithdrawJob(long applyId, long companyId)`, `ItemAddEventDispatchPublisher.schedulePublishAfterCommit(long itemId, long companyId)`, `GenerateOutfitJobDispatchPublisher.enqueueGenerateOutfit(...)` and `SearchRebuildJobDispatchPublisher.enqueueAllCompanies()` / `enqueueCompany(long companyId)` show the typed variant, with the map built by the impl (note the typed interface itself may live in the owning Bundle — `ItemAddEventDispatchPublisher` sits in `ecshopx-goods/goods/dispatch` — while the impl stays in bootstrap).
 
 A minority of Bundles that already declare `ecshopx-dispatch` at compile scope (orders, aftersales, chinaums-pay, members, companys, reservation, popularize, wsugc, third-party and payment) may put the interface in their own `dispatch/` package instead (`members/dispatch/BindSalsepersonJobDispatchPublisher`; `shopexai` — which depends only on common — does the same). The implementation still lives in bootstrap. Use the common package unless the interface is genuinely single-consumer.
 
@@ -324,6 +353,41 @@ public class WithdrawJobDispatchPublisherImpl implements WithdrawJobDispatchPubl
 }
 ```
 
+A second typed job publisher — `SearchRebuildJobDispatchPublisherImpl` — is the cron-fed counterpart: the trigger is the nightly `goods-search-rebuild` XXL-JOB tick (via `GoodsSearchRebuildCronService`), the queue is `slow` (a full Elasticsearch reindex is heavy batch work), and it carries the `@Profile("!test-cron")` guard. Its two typed entry points encode the payload-shape fork the handler later switches on — `enqueueAllCompanies()` emits `all_companies=true`, `enqueueCompany(long)` validates the id is positive and emits `company_id`:
+
+```java
+// ecshopx-bootstrap/.../config/SearchRebuildJobDispatchPublisherImpl.java
+@Component
+@Profile("!test-cron")
+public class SearchRebuildJobDispatchPublisherImpl implements SearchRebuildJobDispatchPublisher {
+
+    @Override
+    public void enqueueAllCompanies() {
+        LinkedHashMap<String, Object> payload = new LinkedHashMap<>();
+        payload.put("all_companies", true);
+        dispatch(payload);
+    }
+
+    @Override
+    public void enqueueCompany(long companyId) {
+        if (companyId <= 0L) {
+            throw new IllegalArgumentException("company_id must be positive");
+        }
+        LinkedHashMap<String, Object> payload = new LinkedHashMap<>();
+        payload.put("company_id", companyId);
+        dispatch(payload);
+    }
+
+    private void dispatch(Map<String, Object> payload) {
+        dispatchFacade.dispatchJob(
+                GoodsSearchDispatchJobNames.SEARCH_REBUILD_JOB,
+                payload,
+                new DispatchOptions(DispatchMode.ASYNC, DispatchDriverType.REDIS, "slow", null,
+                        RetryPolicy.platformDefault()));
+    }
+}
+```
+
 `DispatchOptions` is a record with five components — `mode`, `driverOverride`, `queue`, `delay`, `retryPolicy` — plus three factories (`jobDefaults()` = ASYNC/null/null/null/platformDefault, `eventDefaults()` = SYNC/null/null/null/platformDefault, `oplQueuedAfterCommit()` = ASYNC/REDIS/null/null/platformDefault).
 
 ### Choosing the tuple
@@ -342,7 +406,7 @@ Note the asymmetry: `mode == SYNC` forces `driverType` to `SYNC` regardless of `
 | Queue | Drained per poll | Intended load | Worked examples |
 | --- | --- | --- | --- |
 | `default` (also the fallback for null/blank) | 1 message | Interactive, low-latency work | the six pay-success listeners (youshu, shuyun ×2, wsugc, members, employee-purchase), `WithdrawJobDispatchPublisherImpl` (admin audit-approve → Huifu payout), `ReservationExpireCancelDispatchPublisherImpl` |
-| `slow` | up to `dispatch.redis.slow.batch-size` (default 20) | Heavy batch work | `FinishOrderJobDispatchPublisherImpl`, `ConsumptionOrderJobDispatchPublisherImpl`, file exports, `OrderProcessLogDispatchListenerRegistrationConfig` |
+| `slow` | up to `dispatch.redis.slow.batch-size` (default 20) | Heavy batch work | `FinishOrderJobDispatchPublisherImpl`, `SearchRebuildJobDispatchPublisherImpl` (ES index rebuild), `ConsumptionOrderJobDispatchPublisherImpl`, file exports, `OrderProcessLogDispatchListenerRegistrationConfig` |
 | `sms` | up to the same batch size | Notification traffic | `MerchantResetPasswordNoticeDispatchPublisherImpl`, aliyunsms jobs |
 
 One knob (`dispatch.redis.slow.batch-size`) governs both the `slow` and `sms` drain loops. Splitting SMS onto its own list keeps a notification burst from starving the slow lane and vice versa, but the throughput ceiling is shared.
@@ -384,7 +448,7 @@ SYNC-mode events already run inside the transaction by construction, so the wrap
 
 ### The `test-cron` profile guard
 
-Queue-feeder publishers that a cron tick drives are annotated `@Profile("!test-cron")` (`FinishOrderJobDispatchPublisherImpl`, `ConsumptionOrderJobDispatchPublisherImpl`). Under the `test-cron` profile — activated at runtime by the PHP→Java migration diff orchestrator, not by unit tests — each cron-owning Bundle's `cron/testcfg/CronTestMockConfig` (which lives in **`src/main`**) installs `@Bean @Primary` No-op replacements so cron runs during schema-diff comparison do not write Redis, call third parties or enqueue real bus jobs. If your new publisher is cron-fed, add the `@Profile("!test-cron")` guard and a matching No-op. Publishers that only fire from a controller (the `WithdrawJobDispatchPublisherImpl` case) have no cron path and carry no guard.
+Queue-feeder publishers that a cron tick drives are annotated `@Profile("!test-cron")` (`FinishOrderJobDispatchPublisherImpl`, `SearchRebuildJobDispatchPublisherImpl`, `ConsumptionOrderJobDispatchPublisherImpl`). Under the `test-cron` profile — activated at runtime by the PHP→Java migration diff orchestrator, not by unit tests — each cron-owning Bundle's `cron/testcfg/CronTestMockConfig` (which lives in **`src/main`**) installs `@Bean @Primary` No-op replacements so cron runs during schema-diff comparison do not write Redis, call third parties or enqueue real bus jobs — for search-rebuild, `ecshopx-goods`' `CronTestMockConfig` swaps in `NoopSearchRebuildJobDispatchPublisher`, which just logs and counts calls. If your new publisher is cron-fed, add the `@Profile("!test-cron")` guard and a matching No-op. Publishers that only fire from a controller (the `WithdrawJobDispatchPublisherImpl` case) have no cron path and carry no guard.
 
 ---
 
@@ -396,6 +460,8 @@ Queue-feeder publishers that a cron tick drives are annotated `@Profile("!test-c
 <bundle>/src/main/java/cn/shopex/ecshopx/<bundle>/dispatch/<Thing>JobHandler.java        (jobs)
 <bundle>/src/main/java/cn/shopex/ecshopx/<bundle>/dispatch/<Thing>DispatchListener.java  (event listeners)
 ```
+
+The `dispatch/` package is the convention, not a rule — a handler that exists only to feed one domain service may live beside that service instead (`SearchRebuildJobHandler` sits in `ecshopx-goods/goods/search/rebuild` next to `SearchRebuildService`). What is not negotiable is that the class lives in the **owning Bundle**, never in bootstrap or common.
 
 Both functional interfaces live in `ecshopx-common`, so the consuming Bundle needs no `ecshopx-dispatch` edge:
 
@@ -434,6 +500,7 @@ Conventions:
 * **No business logic.** The handler parses and validates the payload (with lenient `Number`/`String` coercion, as `NormalOrderPaySuccessYoushuDispatchListener.requireLong` does) and delegates to a `@Service` (`FinishOrderJobService`, `YoushuNormalOrderPaySuccessSrDataSyncService`). `WithdrawJobHandler` is the strict validation reference — it throws `BadRequestException("apply_id required")` / `("company_id required")` unless both arrive as `Number`, then delegates to `WithdrawApplyService.executeHuifuWithdraw(applyId, companyId)`. One handler per job; one listener per (event, consumer-Bundle) pair.
 * **Normalize `payload == null` to `Map.of()`** in the handler, not the caller.
 * **Guard, do not skip silently** when required fields are missing — `BindSalsepersonJobHandler` returns early only for genuinely optional records; `NormalOrderPaySuccessYoushuDispatchListener` throws. The narrow exception is a best-effort enrichment listener that cannot fix anything by failing: `CreateMemberSuccessNewCustomerDispatchListener` returns silently when `company_id`/`user_id` extract to ≤ 0 and otherwise calls `NewCustomerTagReconcileService.reconcile(companyId, userId, SOURCE_REGISTER)`.
+* **Multi-shape payloads are parsed by the handler, not split into several jobs.** `SearchRebuildJobHandler` (the consumer for `SEARCH_REBUILD_JOB`, in `ecshopx-goods/goods/search/rebuild`) switches on the payload: `all_companies=true` re-lists every non-disabled, non-expired company from the `companys` table and blue-green rebuilds them all; a bare `company_id` (what the cron path publishes) upserts that company's goods into the current ES alias via `SearchRebuildService.reindexCompanyIntoAlias`, with optional `distributor_id` scope; `blue_green=true` runs a full single-company blue-green rebuild that swaps the site-wide alias (flagged 慎用 in the Javadoc). It tolerates `Boolean`/`Number`/`String` truthy forms and lenient numeric coercion, throws `IllegalArgumentException` for a missing/invalid `company_id`, and wraps `IOException` in `UncheckedIOException` so a failed rebuild marks the bus job failed.
 * A listener may itself be a publisher: `OrdersTradeFinishNormalOrderPaySuccessBridgeDispatchListener` is a **sync** trade-finish listener that marks mall normal orders paid and then calls `NormalOrderPaySuccessDispatchPublisher.publish`, chaining one event into another inside the same call stack.
 * **Idempotence is mandatory.** Redis-path consumption is at-most-once and the attempt counter does not advance, so a handler must tolerate re-delivery in the delayed-mover worst case and must leave a durable trace of terminal failure (`failed_jobs`, whose mapper is currently stubbed in `DispatchBusConfig`).
 
@@ -486,7 +553,8 @@ Invariants and ordering:
 * **Uniqueness is enforced at startup.** `InMemoryDispatchRegistry.registerJob` throws `IllegalStateException("duplicate job handler: …")` for a second job with the same message name; `registerEventListener` throws for a duplicate `(messageName, listenerName)` pair. Fail-fast wiring, no silent override.
 * **A missing registration is silent, not an error.** An event with no listeners simply has no consumers; a job published without a handler fails only when consumed (NPE inside the runtime). Step 6 is what catches this.
 * **Ordering matters when a listener must register after another.** Add `@Order(n)` on the config class (`@Order(26)` on the members create-member-success new-customer config, `@Order(77)` on the trade-finish bridge, `@Order(80)` on the DigiOs delivery config, `@Order(97)` on the order-process-log listener) or `@DependsOn("youshuNormalOrderPaySuccessDispatchListenerRegistrationConfig")` (`WsugcNormalOrderPaySuccessDispatchListenerRegistrationConfig`). Registration order is the fan-out order for SYNC events.
-* **Several bus names, one handler** is legal and used: `BindSalsepersonJobRegistrationConfig` registers the same handler against job:185, job:186 and job:194; the bridge config registers the same listener on both trade-finish planes.
+* **Several bus names, one handler** is legal and used: `BindSalsepersonJobRegistrationConfig` registers the same handler against job:185, job:186 and job:194; the bridge config registers the same listener on both trade-finish planes. The extreme case is `EspierExportFileJobRegistrationConfig`, whose `@PostConstruct` registers the same `EspierExportFileJobDispatchHandler` against **twenty-one** distinct `EspierDispatchJobNames` export constants plus `OrderListExportFileJobDispatchHandler` against `EXPORT_FILE_JOB_ORDER_LIST` — legacy PHP gave every export its own CSV id and bus name, and Java keeps all of them routable through one registration method.
+* The plain one-job-one-handler form remains the default for a genuinely new job — `SearchRebuildJobRegistrationConfig` is the current minimal example, a `@PostConstruct` that does exactly one `dispatchRegistry.registerJob(GoodsSearchDispatchJobNames.SEARCH_REBUILD_JOB, searchRebuildJobHandler)`.
 * **One event, many listener configs.** `EVENT_NORMAL_ORDER_PAY_SUCCESS` currently has six (youshu, shuyun trade-sync, shuyun offline-benefit-consume, wsugc, members new-customer, employee-purchase), each `async("default", null)`, each in its own config class. `EVENT_CREATE_MEMBER_SUCCESS` is the other big plane — nine configs (youshu, shopex-crm, members notice, members new-customer, register-point, datacube register-num, promotions ×2, shuyun open-platform) across the `default` and `slow` lanes.
 
 ---
@@ -511,7 +579,7 @@ A `*DispatchFlowTest` lives in bootstrap (which sees both publisher impls and ha
 5. Publish with the production `DispatchOptions` tuple (or through the real bootstrap publisher impl), then assert the captured `DispatchMessage` — `messageName`, `queue`, `delay`, `listenerName`, payload fields, retry policy.
 6. Feed the captured message into a real `DispatchConsumerRuntime` and `verify` the terminal service received the payload.
 
-`FinishOrderJobDispatchFlowTest` (job), `WithdrawJobDispatchFlowTest` (a newer, two-test job flow that also pins the `apply_id` payload key and the `default` queue) and `NormalOrderPaySuccessYoushuEventAsyncBusDispatchFlowTest` (event) are the shapes to copy. For a listener whose only logic is payload extraction, a plain Mockito unit test such as `CreateMemberSuccessNewCustomerDispatchListenerTest` — `onEvent` with valid ids calls `reconcile(7L, 99L, SOURCE_REGISTER)`, invalid ids produce no interactions — is sufficient on the consumer side. A `*PublishProbeTest` lives in the producer Bundle and runs the real service with mocked mappers plus a mocked `DispatchFacade`, pinning the message name, payload fields and exact `DispatchOptions` — usually across a fake `PlatformTransactionManager` that fires `afterCommit` synchronizations on commit. `OfflinePaymentDoCheckServiceNormalOrderPaySuccessPublishProbeTest` (orders) and `ItemAddEventDispatchPublisherImplAfterCommitTest` (bootstrap) are the references. Expect to touch **one publish-side probe and one consume-side test** when you change a payload field.
+`FinishOrderJobDispatchFlowTest` (job), `WithdrawJobDispatchFlowTest` (a newer, two-test job flow that also pins the `apply_id` payload key and the `default` queue) and `NormalOrderPaySuccessYoushuEventAsyncBusDispatchFlowTest` (event) are the shapes to copy. For a listener whose only logic is payload extraction, a plain Mockito unit test such as `CreateMemberSuccessNewCustomerDispatchListenerTest` — `onEvent` with valid ids calls `reconcile(7L, 99L, SOURCE_REGISTER)`, invalid ids produce no interactions — is sufficient on the consumer side. When a full flow test is overkill, a targeted registration-pinning test such as `SearchRebuildJobRegistrationConfigTest` — construct the config with a mocked `DispatchRegistry` and handler, invoke the `@PostConstruct` method, verify `registerJob` was called with exactly `GoodsSearchDispatchJobNames.SEARCH_REBUILD_JOB` — catches the wrong-constant or forgotten-registration wiring bug at a fraction of the cost. A `*PublishProbeTest` lives in the producer Bundle and runs the real service with mocked mappers plus a mocked `DispatchFacade`, pinning the message name, payload fields and exact `DispatchOptions` — usually across a fake `PlatformTransactionManager` that fires `afterCommit` synchronizations on commit. `OfflinePaymentDoCheckServiceNormalOrderPaySuccessPublishProbeTest` (orders) and `ItemAddEventDispatchPublisherImplAfterCommitTest` (bootstrap) are the references. Expect to touch **one publish-side probe and one consume-side test** when you change a payload field.
 
 **Run them with the narrowest command** (see [Testing Conventions and Verification](../testing.md)):
 
@@ -520,6 +588,9 @@ A `*DispatchFlowTest` lives in bootstrap (which sees both publisher impls and ha
 ./mvnw -pl ecshopx-bootstrap test -Dtest=FinishOrderJobDispatchFlowTest
 ./mvnw -pl ecshopx-bootstrap test -Dtest=WithdrawJobDispatchFlowTest
 ./mvnw -pl ecshopx-bootstrap test -Dtest=NormalOrderPaySuccessYoushuEventAsyncBusDispatchFlowTest
+
+# a registration-pinning test (lighter alternative to a full flow test)
+./mvnw -pl ecshopx-bootstrap test -Dtest=SearchRebuildJobRegistrationConfigTest
 
 # the consumer-side listener unit test (lives in the owning bundle)
 ./mvnw -pl ecshopx-members test -Dtest=CreateMemberSuccessNewCustomerDispatchListenerTest
@@ -586,7 +657,7 @@ Checklist for a new cron handler:
 
 1. Ensure the Bundle's POM has `com.xuxueli:xxl-job-core` `2.5.0` on the compile classpath (orders, payment, aftersales, adapay, aliyunsms, community, companys, data-cube, espier, hfpay, kaquan, point, popularize, selfservice, system-link, theme and bootstrap declare it directly; `promotions` and `youshu` currently get it transitively).
 2. Create `cron/Schedule<Thing>Handler.java` following the template, delegating to a service method.
-3. **Register the job in the XXL-JOB admin console** — executor group `ecshopx-executor`, `BEAN` mode, JobHandler = the short name, a CRON expression, and the usual `FIRST` / `SERIAL_EXECUTION` / `DO_NOTHING` settings. There is **no code-side registration**: the `@XxlJob` short name must equal the `executor_handler` of an `xxl_job_info` row or the handler never fires. The seed SQL (`docker/tables_xxl_job.sql`, 69 job definitions including `finish-orders` at `0 0 3 * * ? *`) runs only on first database initialisation; new jobs added later are created through the console.
+3. **Register the job in the XXL-JOB admin console** — executor group `ecshopx-executor`, `BEAN` mode, JobHandler = the short name, a CRON expression, and the usual `FIRST` / `SERIAL_EXECUTION` / `DO_NOTHING` settings. There is **no code-side registration**: the `@XxlJob` short name must equal the `executor_handler` of an `xxl_job_info` row or the handler never fires. The seed SQL (`docker/tables_xxl_job.sql`, 70 job definitions including `finish-orders` at `0 0 3 * * ? *` and the most recent row, `goods-search-rebuild`, at `0 0 1 * * ? *`) runs only on first database initialisation; new jobs added later are created through the console.
 4. If the work should run on the bus, follow steps 1–6 above for the dispatch job this handler publishes.
 5. Add the per-handler Mockito test pinning the alert-and-rethrow contract — `ScheduleFinishOrdersHandlerTest` asserts: success → service called once, no `CronAlertEvent`, an INFO log containing the short name, the count and the cost; failure → `execute()` rethrows, exactly one `CronAlertEvent` with `handlerShortName` equal to the short name, an ERROR log containing the short name and `failed`.
 
@@ -614,11 +685,11 @@ xxl-job-admin (CRON 0 0 3 * * ? *)
   → FinishOrderJobService.execute() → FinishOrderBatchService
 ```
 
-Other examples: `consumption-orders` (payload `orderType=normal, pageSize=100`, skipped under the OEM flag `ecshopx.request-field.oem-shuyun=true`), `send-member-point`, and `schedule-refund` (the only cron handler that uses dispatch *delays*, staggering one job per refund by `60*n+1` seconds).
+Other examples: `consumption-orders` (payload `orderType=normal, pageSize=100`, skipped under the OEM flag `ecshopx.request-field.oem-shuyun=true`), `send-member-point`, `schedule-refund` (the only cron handler that uses dispatch *delays*, staggering one job per refund by `60*n+1` seconds), and `goods-search-rebuild` — the only queue-feeder that publishes **several jobs per tick**: `ScheduleGoodsSearchRebuildHandler` → `GoodsSearchRebuildCronService.enqueueRebuildForActiveCompanies()` no-ops with `0` when Elasticsearch is disabled (`ecshopx.search.es.enabled=false`), otherwise it lists every non-disabled, non-expired company and calls `SearchRebuildJobDispatchPublisher.enqueueCompany(companyId)` once per company (ASYNC / REDIS / `slow`), logging `enqueuedCompanies=` as the result count. The seeded `xxl_job_info` row 70 runs it nightly at `0 0 1 * * ? *`.
 
 **Direct workers** — the handler's service does the batch inline, synchronously, inside the trigger call and returns the processed count. `cancel-orders` → `NormalOrderCronService.scheduleCancelOrders()` is the reference: it counts expired `NOTPAY` orders, pages through them 20 at a time, batch-updates status and runs the restore fan-out per order, returning the cancelled count that ends up in the INFO log.
 
-Choose a **queue-feeder** when the batch is heavy, unbounded or would hold a long transaction; choose a **direct worker** when the work is cheap, self-contained and idempotent. Never let one cron tick become a long unbounded transaction. Note also that dispatch-queue draining depends on `@EnableScheduling` supplied by bundle configs (`OrdersSchedulingConfig`, `DoumenIntlPaymentSchedulingConfig`, `SelfserviceSchedulingConfig`, `ShuyunOpenPlatformConfiguration`) — the bus does not enable scheduling itself, so a deployment without those bundles silently stops draining queues while XXL-JOB handlers keep firing.
+Choose a **queue-feeder** when the batch is heavy, unbounded or would hold a long transaction — and when the per-item work is itself heavy, publish one job *per item* (the search-rebuild shape: N company reindexes → N slow-queue messages, each retried and drained independently) rather than one monolithic job; choose a **direct worker** when the work is cheap, self-contained and idempotent. Never let one cron tick become a long unbounded transaction. Note also that dispatch-queue draining depends on `@EnableScheduling` supplied by bundle configs (`OrdersSchedulingConfig`, `DoumenIntlPaymentSchedulingConfig`, `SelfserviceSchedulingConfig`, `ShuyunOpenPlatformConfiguration`) — the bus does not enable scheduling itself, so a deployment without those bundles silently stops draining queues while XXL-JOB handlers keep firing.
 
 ---
 
@@ -626,12 +697,12 @@ Choose a **queue-feeder** when the batch is heavy, unbounded or would hold a lon
 
 | # | Step | File | Worked example (event) | Worked example (job) |
 | --- | --- | --- | --- | --- |
-| 1 | Message-name constant | `ecshopx-common/.../common/dispatch/<Domain>Dispatch(Event\|Job)Names.java` | `EVENT_NORMAL_ORDER_PAY_SUCCESS` = `event:288:OrdersBundle\Events\NormalOrderPaySuccessEvent` | `FINISH_ORDER_JOB` = `job:128:OrdersBundle\Jobs\FinishOrderJob`; `WITHDRAW_JOB` = `job:93:BsPayBundle\Jobs\WithdrawJob` |
-| 2 | Publisher interface | `ecshopx-common/.../common/dispatch/<Thing>DispatchPublisher.java` | `NormalOrderPaySuccessDispatchPublisher.publish(Map)` | `FinishOrderJobDispatchPublisher.publish(Map)`; `WithdrawJobDispatchPublisher.enqueueWithdrawJob(long, long)` |
-| 3 | Publisher impl + options | `ecshopx-bootstrap/.../config/<Thing>DispatchPublisherImpl.java` | ASYNC / REDIS / null queue / null delay / platformDefault, `publishEvent` | ASYNC / REDIS / `"slow"` / null delay / platformDefault, `dispatchJob`, `@Profile("!test-cron")`; withdraw: ASYNC / REDIS / `"default"` / null / platformDefault, no profile guard |
-| 4 | Handler / listener | `<bundle>/.../dispatch/<Thing>JobHandler.java` or `<Thing>DispatchListener.java` | `NormalOrderPaySuccessYoushuDispatchListener.onEvent` | `FinishOrderJobHandler.handle` → `FinishOrderJobService`; `WithdrawJobHandler.handle` → `WithdrawApplyService.executeHuifuWithdraw` |
-| 5 | Registration config | `ecshopx-bootstrap/.../config/<Thing>RegistrationConfig.java` | `registerEventListener(EVENT_…, LISTENER_…, async("default", null), listener)` | `registerJob(FINISH_ORDER_JOB, handler)`; `WithdrawJobRegistrationConfig.registerWithdrawJob` |
-| 6 | Tests | `ecshopx-bootstrap/.../dispatch/<Thing>DispatchFlowTest.java` + producer `<Service><Thing>PublishProbeTest` | `NormalOrderPaySuccessYoushuEventAsyncBusDispatchFlowTest` + `OfflinePaymentDoCheckServiceNormalOrderPaySuccessPublishProbeTest` | `FinishOrderJobDispatchFlowTest`; `WithdrawJobDispatchFlowTest` |
+| 1 | Message-name constant | `ecshopx-common/.../common/dispatch/<Domain>Dispatch(Event\|Job)Names.java` | `EVENT_NORMAL_ORDER_PAY_SUCCESS` = `event:288:OrdersBundle\Events\NormalOrderPaySuccessEvent` | `FINISH_ORDER_JOB` = `job:128:OrdersBundle\Jobs\FinishOrderJob`; `WITHDRAW_JOB` = `job:93:BsPayBundle\Jobs\WithdrawJob`; `SEARCH_REBUILD_JOB` = `job:198:GoodsBundle\Jobs\SearchRebuildJob` |
+| 2 | Publisher interface | `ecshopx-common/.../common/dispatch/<Thing>DispatchPublisher.java` | `NormalOrderPaySuccessDispatchPublisher.publish(Map)` | `FinishOrderJobDispatchPublisher.publish(Map)`; `WithdrawJobDispatchPublisher.enqueueWithdrawJob(long, long)`; `SearchRebuildJobDispatchPublisher.enqueueAllCompanies()` / `enqueueCompany(long)` |
+| 3 | Publisher impl + options | `ecshopx-bootstrap/.../config/<Thing>DispatchPublisherImpl.java` | ASYNC / REDIS / null queue / null delay / platformDefault, `publishEvent` | ASYNC / REDIS / `"slow"` / null delay / platformDefault, `dispatchJob`, `@Profile("!test-cron")` (finish-order, search-rebuild); withdraw: ASYNC / REDIS / `"default"` / null / platformDefault, no profile guard |
+| 4 | Handler / listener | `<bundle>/.../dispatch/<Thing>JobHandler.java` or `<Thing>DispatchListener.java` | `NormalOrderPaySuccessYoushuDispatchListener.onEvent` | `FinishOrderJobHandler.handle` → `FinishOrderJobService`; `WithdrawJobHandler.handle` → `WithdrawApplyService.executeHuifuWithdraw`; `SearchRebuildJobHandler.handle` → `SearchRebuildService` (lives in `goods/search/rebuild`) |
+| 5 | Registration config | `ecshopx-bootstrap/.../config/<Thing>RegistrationConfig.java` | `registerEventListener(EVENT_…, LISTENER_…, async("default", null), listener)` | `registerJob(FINISH_ORDER_JOB, handler)`; `WithdrawJobRegistrationConfig.registerWithdrawJob`; `SearchRebuildJobRegistrationConfig.registerSearchRebuildJob`; `EspierExportFileJobRegistrationConfig` (21 names → one handler) |
+| 6 | Tests | `ecshopx-bootstrap/.../dispatch/<Thing>DispatchFlowTest.java` + producer `<Service><Thing>PublishProbeTest` | `NormalOrderPaySuccessYoushuEventAsyncBusDispatchFlowTest` + `OfflinePaymentDoCheckServiceNormalOrderPaySuccessPublishProbeTest` | `FinishOrderJobDispatchFlowTest`; `WithdrawJobDispatchFlowTest`; `SearchRebuildJobRegistrationConfigTest` (registration-pinning) |
 | 7 (cron only) | Cron handler + admin job row + No-op | `<bundle>/.../cron/Schedule<Thing>Handler.java`, `xxl_job_info` row, `cron/testcfg/CronTestMockConfig` | — | `ScheduleFinishOrdersHandler` (`finish-orders`), seeded row, `NoopFinishOrderJobDispatchPublisher` |
 | newest registrations | DigiOs + members listeners | `ecshopx-bootstrap/.../config/DigiOsNormalOrderDeliveryAdjustmentDispatchListenerRegistrationConfig.java`, `MembersCreateMemberSuccessNewCustomerDispatchListenerRegistrationConfig.java` | DigiOs: `EVENT_NORMAL_ORDER_DELIVERY` × `LISTENER_DIGIOS_STORE_ADJUSTMENT_ON_NORMAL_ORDER_DELIVERY`, `@Order(80)`; members: `EVENT_CREATE_MEMBER_SUCCESS` × `LISTENER_MEMBERS_CREATE_MEMBER_SUCCESS_NEW_CUSTOMER`, `@Order(26)` | — |
 

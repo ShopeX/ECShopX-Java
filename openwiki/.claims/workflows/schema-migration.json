@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:36f9aedc660e10cd2d07a6be2acef107825f467cc255d79e52bf22a28b001028",
+  "pageVersion": "sha256:2f1827d82921e64c3e6bc0e37853cc3a29cef08896b20c7bc68ff72755b789f8",
   "claims": [
     {
       "id": "claim_b8ceba57f1bf4c6ab0f63586c6f4164a",
@@ -232,7 +232,7 @@
     },
     {
       "id": "claim_bc3a84d1f5c646a6af9a8bd968cfa0f6",
-      "statement": "Flyway (flyway-core + flyway-mysql) is a dependency of the ecshopx-bootstrap module only, which is why all migration SQL lives in ecshopx-bootstrap/src/main/resources/db/migration; the directory ships seven zero-padded migrations V00000000000001.sql through V00000000000007.sql that sort before any generated 14-digit-timestamp migration: V00000000000001 (the bundle-bootstrap mixed CREATE/ALTER chain over the legacy schema), V00000000000002 (member signin activity tables), V00000000000003 (cloud-warehouse flags plus six item/outside-item multi-language dictionary tables), V00000000000004 (other_product_materials on items and supplier_items), V00000000000005 (DigiOS direct-connect tables, pos_store_account, and related columns), V00000000000006 (member-tag rule engine: members_rel_tags_audit plus tag/promotion columns), and V00000000000007 (merchant onboarding contact/license columns plus uk_company_user on merchant_settlement_apply); from V00000000000004 on, each migration header carries a -- Release: <version> line tying the schema change to its application release.",
+      "statement": "Flyway (flyway-core + flyway-mysql) is a dependency of the ecshopx-bootstrap module only, which is why all migration SQL lives in ecshopx-bootstrap/src/main/resources/db/migration; the directory ships eight zero-padded migrations V00000000000001.sql through V00000000000008.sql that sort before any generated 14-digit-timestamp migration: V00000000000001 (the bundle-bootstrap mixed CREATE/ALTER chain over the legacy schema), V00000000000002 (member signin activity tables), V00000000000003 (cloud-warehouse flags plus six item/outside-item multi-language dictionary tables), V00000000000004 (other_product_materials on items and supplier_items), V00000000000005 (DigiOS direct-connect tables, pos_store_account, and related columns), V00000000000006 (member-tag rule engine: members_rel_tags_audit plus tag/promotion columns), V00000000000007 (merchant onboarding contact/license columns plus uk_company_user on merchant_settlement_apply), and V00000000000008 (member-task suite: member_task/member_task_completion/member_task_reward_grant/member_task_user_progress, goods_search_synonyms with uk_company_group_key, and order attribution columns on orders_normal_orders); from V00000000000004 on, each migration header carries a -- Release: <version> line tying the schema change to its application release (V00000000000008 is release 5.6.0).",
       "evidence": [
         {
           "resource": "repo://ecshopx-bootstrap/pom.xml#L237-L244",
@@ -265,6 +265,10 @@
         {
           "resource": "repo://ecshopx-bootstrap/src/main/resources/db/migration/V00000000000007.sql#L1-L20",
           "version": "repo-lines-v1:sha256:a77677165428dd8385909331ae94eeddea84519d1a36df02f8f0ecac7ed9aea0:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAwNmRlMmY3MTZiYmMyMDQzODRkNTBlMjcyNjQ1NzY1MjM1MTc0YjdmZDhlMjU1ZTFhMjJiOGFlYTNhZGEwNDAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1Nzk0NWRiZDViOGY0MDJkZDFhMTA3Nzk5Yjg5NWNhNmUwZjUxNzk1ZTgwNmRlMDQ5ZDI5MzJhNGQwYjQ2NTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/db/migration/V00000000000008.sql#L1-L97",
+          "version": "repo-lines-v1:sha256:be2b0de1e5a189fbce10abd28cb85a1b1f47d3089d0d2d58362fecea27bdb5fd:eyJzZWxlY3RlZExpbmVDb3VudCI6OTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc3OTFkNTBkZWMzZGMxOGMzNTYwMTBiY2M4NDc0ZmRmYjdlNjQ1OWI4NjNiOTk5NDdiNjIyZGFhZWIwOGM0MDIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ4OGYxNmY2Nzk0YjAxMDJhNDE3NjYwMWUyZGY3ZTQ4ZGE4Y2U5MmM4NmZkNjM5MjJjNjgxMGNlOWViZjYzNTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
         }
       ]
     },
@@ -311,6 +315,6 @@
   ],
   "verification": {
     "by": "openwiki/0.9.0",
-    "at": "2026-11-08T17:14:16.576Z"
+    "at": "2026-11-16T17:12:44.218Z"
   }
 }

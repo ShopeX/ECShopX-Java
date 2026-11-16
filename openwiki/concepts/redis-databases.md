@@ -1,7 +1,7 @@
 ---
 type: "Reference"
 title: "Redis Database Layout"
-description: "How ECShopX-Java splits one Redis instance into logical databases via hand-built LettuceConnectionFactory beans in MultiRedisConfig, which @Qualifier template holds sessions, carts, captcha/SMS/email verification codes, rate-limit counters, pickup QR codes, goods-arrival subscriptions, operator fast-buy state, tenant settings, counters, snapshots and locks, the shop-protocol hashes with their MySQL repopulation fallback (ECX-11114), and the per-environment DB-index selectors."
+description: "How ECShopX-Java splits one Redis instance into logical databases via hand-built LettuceConnectionFactory beans in MultiRedisConfig, which @Qualifier template holds sessions, carts, captcha/SMS/email verification codes, rate-limit counters, pickup QR codes, goods-arrival subscriptions, operator fast-buy state, tenant settings, counters, snapshots and locks, the shop-protocol hashes with their MySQL repopulation fallback (ECX-11114), the shared-vs-companys cross-DB splits on deposit counters and daily member sets, and the per-environment DB-index selectors."
 tags: [redis, lettuce, configuration, infrastructure, rate-limiting]
 sources:
   - id: openwiki-source-ea70eb6c045047448e446296
@@ -34,6 +34,8 @@ sources:
     resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/domain/ProtocolUpdateLog.java
   - id: openwiki-source-3fe260ad41b93a3fc9fce4f7
     resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/activation/CompanysActivationService.java
+  - id: openwiki-source-1b582fbef9b4a0c802ba4062
+    resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/CompanysStatisticsService.java
   - id: openwiki-source-fb11e56e003a1604d7d9ab7a
     resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/operatorcart/OperatorShopFastBuyRedisService.java
   - id: openwiki-source-f50731f28feb2d6ae59fa996
@@ -48,6 +50,10 @@ sources:
     resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/statistics/CompanysDashboardStatisticsService.java
   - id: openwiki-source-d92c6d18e8d95be008173828
     resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/statistics/CompanysDepositDayRechargeRedisReader.java
+  - id: openwiki-source-fad0c785a901787d80a5155a
+    resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/statistics/CompanysMemberStatisticsService.java
+  - id: openwiki-source-d862b4066556ecefbb904046
+    resource: repo://ecshopx-companys/src/main/java/cn/shopex/ecshopx/companys/service/statistics/CompanysRecordStatisticsRedisPortImpl.java
   - id: openwiki-source-d3b97c69d28e1a6595fca2a7
     resource: repo://ecshopx-companys/src/test/java/cn/shopex/ecshopx/companys/service/protocol/ShopProtocolSetServiceGetFallbackTest.java
   - id: openwiki-source-a21a234d49d44d9efb0c39df
@@ -108,6 +114,10 @@ sources:
     resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/operatorcart/OperatorCartFastBuyFacadeImpl.java
   - id: openwiki-source-778e65e2605539903dcbcc1f
     resource: repo://ecshopx-hfpay/src/main/java/cn/shopex/ecshopx/hfpay/service/payment/HfPayOrderApplyIdGenerator.java
+  - id: openwiki-source-d72b1aefaba3b3b4fbda25c4
+    resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/account/MemberAccountService.java
+  - id: openwiki-source-7c400c0b1409ab648b83856b
+    resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/admin/AdminMemberCreateMemberService.java
   - id: openwiki-source-03a7f358ce9fb661e2ca984b
     resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/GoodsArrivalSubscribeMatchService.java
   - id: openwiki-source-6ced3d2bfe3c421ea3098928
@@ -142,12 +152,14 @@ sources:
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/setting/OrderValiditySettingRedisReadService.java
   - id: openwiki-source-f001aacf275d7f911110e26c
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/settings/WxpayPaymentSettingWriter.java
+  - id: openwiki-source-44c8df51c6e87a47a62011f3
+    resource: repo://ecshopx-salesperson/src/main/java/cn/shopex/ecshopx/salesperson/service/OpenapiSalespersonMemberNumIncreaseService.java
   - id: openwiki-source-8d94eb289e06a9eb2bcb9a68
     resource: repo://ecshopx-third-party/src/main/java/cn/shopex/ecshopx/thirdparty/service/prism/ShopexPrismSmsSignClient.java
-generated: { by: "openwiki/0.9.0", at: "2026-11-11T17:12:30.774Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-16T17:12:44.218Z" }
 verified:
   - by: openwiki/0.9.0
-    at: 2026-11-11T17:12:30.774Z
+    at: 2026-11-16T17:12:44.218Z
 ---
 
 # Redis Database Layout
@@ -301,6 +313,15 @@ The member-facing legal protocols (registration agreement, privacy policy, accou
   * If the DB has no rows either, nothing is written back — the read simply answers empty (the request still degrades to the default titles via `applyDefaultProtocolTitle`, and drafts attach as empty lists via `attachDraftSubstructure`).
 
 The operational consequence of ECX-11114 is the inverse of the settings family: **flushing the companys DB does not permanently lose published protocol content** — the next read for each (company, country, type) repopulates the hash from `companys_protocol_update_log` — but it *does* destroy any unpublished drafts (the `<type>_draft` fields exist only in Redis) and turns the flush into a burst of one extra `SELECT` per requested type/company until the hashes are warm again. `ShopProtocolSetServiceGetFallbackTest` pins the contract: empty hash + DB row → repopulated and rewritten to Redis; populated hash → zero mapper calls and zero writes; empty hash + empty DB → no write-back; single-type blank field → per-type `selectOne` fallback and rewrite.
+
+## Daily member-registration sets: a shared-DB writer, companys-DB readers
+
+`Member:<companyId>:<yyyyMMdd>` is a **daily set of new-member user ids**, and it is the page's other cross-DB split (alongside the deposit counters below):
+
+* **Writers (shared DB).** Every member-creation path that completes a transaction adds the new `userId` to the set inside an `afterCommit` synchronization, so the counter only moves once the MySQL rows are durable: `MemberAccountService.createMemberForWxappBind`, `createMemberLocalAutoRegister`, `registerShuyunMember` and the H5 `creatMemberForH5Post` path all call `sharedStringRedisTemplate.opsForSet().add("Member:" + companyId + ":" + ymd, …)` in `afterCommit` (the H5 path only when `includeDailyRedisSet` is set). `AdminMemberCreateMemberService` does the same via its `addDailyMemberActiveRedisSet` helper (also `sharedStringRedisTemplate`), and `OpenapiSalespersonMemberNumIncreaseService` adds the same key on salesperson-recruited registration — plus a per-salesperson `Member:Salesperson:<salespersonId>:Company:<companyId>:<yyyyMMdd>` set — through an **unqualified** `StringRedisTemplate`, i.e. the `@Primary` companys DB.
+* **Readers (companys DB).** `CompanysMemberStatisticsService.getMemberStatistics` — wired with the explicitly qualified `companysRedisTemplate` — SCARDs the `Member:` set (plus `MemberCard:<companyId>:vip/svip:<yyyyMMdd>`) to fill the *today* slot of the dashboard `member_data` block returned by `CompanysDashboardStatisticsService`; earlier days come from the MySQL `statistics` table. The `CompanysStatisticsService` record-statistics cron also reads the same sets through `CompanysRecordStatisticsRedisPort`, whose production implementation (`CompanysRecordStatisticsRedisPortImpl`, `@Profile("!test-cron")`) delegates to the companys template, SCARDs the set and `EXPIREAT`s it 3 days out while persisting the day row to `statistics`.
+
+The operational trap is the same shape as the deposit split: the writes land in `spring.data.redis.database` (default 0) but the reads run against `ecshopx.redis.companys.database` (default 0). They agree under the shipped defaults, so `newAddMember` for today is correct; if a deployment repoints *either* the companys or the shared selector without the other, the dashboard's today member count silently reads 0 while the cron archives zeros into `statistics` — with no error, because a missing set simply SCARDs to 0.
 
 ## Counters and the deposit DB split
 

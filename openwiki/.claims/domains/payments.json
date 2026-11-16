@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:49a48f6477edd4c2055514402c8b81158f50296e0fe259a9baac3497f1330272",
+  "pageVersion": "sha256:7681a32dfe693848c0f85f9160d7a5ab8b4380fdd1815ee6c768305f6cfa8fe6",
   "claims": [
     {
       "id": "claim_2ff2e0400aa34a0da54b075e69d8f8fe",
@@ -919,10 +919,70 @@
           "version": "repo-lines-v1:sha256:b645dd73cf4dbf286506029470d05240a582398b50c7b9eaa59d87d90a2a4d21:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlmOGJhZGZlMDhlNDZmNjhhMmFlZDBhNmQyNzE3Y2Q0OTllMmY5ZmE1Mjk0YjJiNTkwMTlhMjZmMmI3ZjA0ZTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgzOTQ3ZTc3YmM5NTY3OGM3YTI1MTI0OGI1OWUxN2M5ZmNmNDNjMTNhMzhjMWQ2ZjFmZDk1NWVjZWQ2YWE2MGMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRkNzk5NjEzOWY1MzQyMzE3MGVkZmEyM2NiZGNiMDhjN2UwYThmNDU3YTkwZjRmMGVkZWI3NzM4ODYzNTQyOTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMzYmMyOTQyN2ZlNzU3ZDAyMWM0YmIzOTk1YTNjNjk4MjA5YjBiMmIwMTVkZmM5MzY3ZDM3OGU1ZTc3OGNmYTgifQ"
         }
       ]
+    },
+    {
+      "id": "claim_e008012eeefc48a2af10d23d58d46758",
+      "statement": "The admin GET /api/v1/trade/payment/setting endpoint delegates to PaymentSettingReadService.getPaymentSetting, which mirrors the save fan-out across wxpay, alipay, paypal, point_pay, hfpay, adapay, offline_pay, chinaumspay, bspay, icbcpay, and doumen_intl, reading each channel's Redis setting and returning an empty JSON array body when the config is absent.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/api/admin/v1/PaymentController.java#L93-L107",
+          "version": "repo-lines-v1:sha256:5363ca77a935598b80150b9f206a34aed93cae60f4ea6aab2be00ae206569a39:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEyZWZiMmQ2NDNhMWZjNjU4MDYxMjE0NmIyYTczNjg3N2Y1NGJhYmQ5NTRiOWE4MzJmMDUyZTQwZTEwNWNlMWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFkNzRjNjliZTZkOTRlZjIxOGUzOWM0NWY2YjcwZDRmYmM5ZjFiYmQyYTJiYzUzMjhhMzQ0Y2Y4MTkzODhjYmUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImYxYmYwMjkwOTc2NDU0MzlkMDgwZGJiYmM0OTJiYzIzN2FhNDFjZGUwM2NlZDg0MWU5NmUyOWFhN2QzMGE5M2QiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjVjM2YwYzUxZTc4MzQxZDU4NzQ2NGIxZTA3MGY0YzJlZGMyMTM5YTY1ZTZmOTc0NGU2OGFiN2M2NGMwZDRmM2IifQ"
+        },
+        {
+          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/admin/PaymentSettingReadService.java#L83-L178",
+          "version": "repo-lines-v1:sha256:0fd3abd95fd79b36f6a538aa15e9b544ec940d91b1d62e7b4e92b04b056dc311:eyJzZWxlY3RlZExpbmVDb3VudCI6OTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU0Y2Q2NTYzNzhhYzNkZTMxNjc1ZDkyNTMyY2Y0ODcyMTBkOGJjYmQ1ZGIyNWE1Yzc3OWY0ZjE1MTFlMjFmZWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJkNDljZTJmNGU2NmYxZDcyMzAwODkzYmUyYTg2NGNlNzYyZDg0NzQ0ZDA2MjFjNDg5OTY2MTc4ZDlhZjlhNDYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBhNmQzMTA3MzhlMzkxNWMxOGFhZGQ1MmQyZjQ2N2VmY2IwNTg3YzY5Yjg1MGEyNmMwNTEyZGJkNGQ0YWY0YzUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRjN2Y3OWU0ZDBkNTcxZDhmNzE3YjAzY2I3OWNhZTQ5MTc3MmQwNjU5NmY5ZTcxYjk2OWZmMTUxYTM2MmU4NDEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b9783dfd75d44bd6a3f6150013303b56",
+      "statement": "PaymentSettingReadService re-applies the ECX-10856 distributor access guard in read mode: a distributor operator whose request distributor_id is missing, invalid, or different from their JWT id is soft-denied with an empty body shaped like a missing config, and any non-zero target distributor must belong to the company.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/admin/PaymentSettingDistributorAccessGuard.java#L46-L64",
+          "version": "repo-lines-v1:sha256:7aba10f4c9e230e32f2f7dd04c046eb66f4758b4bf8f9efd0bfb71850f26c43d:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE5MjU2NDJkYjM0MmUyMDkxZTRhNjAwMjc2Y2E3NTk1ZGI2OTcxZmRjMTJmNjZmOTgyMTZlMmNhOTI2NzQ2YjQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJjYWM1OTYxZTk0NGIwOGE2OWZhZGMyOWQyZmQyYzdhMTQxZmY2MzY1OWI0NjgzMWE1MDFmNjRjMDFmNTllM2MifQ"
+        },
+        {
+          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/admin/PaymentSettingReadService.java#L84-L98",
+          "version": "repo-lines-v1:sha256:3fd151748e976b851a0cf540641791458b8fa9f5b9bfa4f1ad0ecdaaff679b7e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM0MTU4YmRkNDc3YTBiZWNjNjM5MjM4ODdiOWMxZDc5NWUzN2RjNjA3OTNmN2RmNzQ0MThhYzQzMTQwZmQ0OTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZhYjg1MjNjOTViNzYzZmM2ZGNkODViZjQyMzc5ZmEyZDc4NDY5MWY0ZTdiYThiODUwYWQ4MWY5NGZiZGZhYTAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM5MjQyNTQ0MzU1MzZjYTJkNjdjNzhiYzE5ZDI0NmMyMWNhNjZhYjY0YzY3YzNjYmEwMmYxMTRiODg4MmM2YjgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImYzMWRkMzlkOWI5YzBmMzEwMjdhYWNhOGUyNGM1M2VjM2YwYjhjZjk2MDIzZTIwM2FjZDczMWVlNDliZjUyZWIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_fe9b702565e541eeb83b56359e4f8c7f",
+      "statement": "The admin wxpay setting read enriches the Redis-stored PEM bodies in place via WxpayPaymentSettingAdminReadSupport, adding cert_name/cert_key_name (apiclient_cert.pem/apiclient_key.pem) and legacy cert_url/cert_key_url paths under /data/httpd/storage/app/wechatPayment/{merchant_id}/ for PHP console parity, without changing what is stored in Redis.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/settings/WxpayPaymentSettingAdminReadSupport.java#L37-L56",
+          "version": "repo-lines-v1:sha256:7e554fa368e254cfb426628d26605c9fb09a21f917f017d583eabf8c2eb50854:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE5YzkxMWM5NDdiY2ZmMTYyMGY2MDUxN2VmMjQ2YTk2YzY1M2ZlMmFmM2ExMDVjM2Q1MWVkNTYyNGQwMDBkZWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRlOTE5MWI2ZWI0NmRjZWExNGVkOWEzNjkyNzI4MzcwOTk4NWY1NTI2MGJiYTkwMWI1ZTM3MDYwZmE3ZmZhNTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-payment/src/test/java/cn/shopex/ecshopx/payment/service/settings/WxpayPaymentSettingAdminReadSupportTest.java",
+          "version": "repo-file-v1:sha256:6011849acd1d2c2c91e41b59295bb6eeff6c728732e8979c5da3375296f0ac37"
+        }
+      ]
+    },
+    {
+      "id": "claim_478f64a48a52490ab3050490a1c13fc8",
+      "statement": "PaymentSettingReadService per-channel read behaviors: point_pay is diverted to PointMemberRuleReadService; hfpay loads through the common HfPayPaymentSettingApplyPort; offline_pay overlays pay_name from a per-language override key; icbcpay defaults is_open=true when no setting exists; chinaumspay resolves its subKey (dealer_{operatorId}, distributor_{distributorId}, or platform); paypal falls back to the platform bucket when the distributor bucket is empty; doumen_intl returns the masked reader view with X-SecretKey reduced to **** plus last 4 chars.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/admin/PaymentSettingInputResolver.java#L110-L138",
+          "version": "repo-lines-v1:sha256:7672a9b5ee16a8008e3bc89a535498d516958fce846c6af6e6cb1fa30aea4f0f:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI0ZDM0MGM4ZmRjZDBmMzdjNzY5NTZjYWRiNTlkZjEyMjFlMzE1NWUxMTMzZDVlMzFlYmFhZDc0YjUzMTRiOTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ1MzFjZjY1MDI4Y2VkMTYzYzQwMDE2NmI2Y2EzYmU1MzNhOWM3MDMwN2U0MjUxNTI2Yjc5MWRmNDgxOGJjZTciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJmMzZlY2U5NTUxNzAyNDhiMzk0OGRkZWU1MzUyZjQ1NDNhZGFhOGQzZThiNzExZWM3MjU2MmQ4N2UyZTUyYjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJiMWQxMDM4OTIwZmEzZGFiOGMzYTRlZDI1YWQ4NTBmNGJmZWQ4ZTE1ZjkxZDA3ZGEwOWI2NzZjY2NiNGFmMjcifQ"
+        },
+        {
+          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/admin/PaymentSettingReadService.java#L99-L171",
+          "version": "repo-lines-v1:sha256:ad50d03b4833c0c5fa5c23362055e471562ea5f011525b3b87808796014b5b8f:eyJzZWxlY3RlZExpbmVDb3VudCI6NzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVkMjcyNmJiMDBkNTAyOTQ4MzYwYmMxMDQzZGIyOTY0MzdlNjY5OGJlMDlhNzRlZTVmMzcwNzgzZWFhODgzNmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwOTc3NzE5OWM2ODdjOTliZDIzODMyMjFmNjkyN2MxYjBhZDg0ZDM4NzdjOWIyZjEyMTViMWQxNzRiNjU2MDAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU3MjI1MTAzMTg1OGExZDYzYWRjMDA3ZDFhZTBjMTcyMjQ5MTExMjQ5MjlhMWI0MzFkNzA2MjM5NTNhNzQxY2IiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkwOWYzNjA3YjM2ZjJmNzQ0NDdkMjU5ZGRiMTM5MWNhOTgzZjE5ZDgwZmFlNmJhNWNlNmRhZWNlZDQ4NmE5NGUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/settings/DoumenIntlPaymentSettingReader.java#L45-L90",
+          "version": "repo-lines-v1:sha256:3f8fb0c607cb9c0e10742c0d22e8d9fb4d8e0b6b22e471c84c36b296ab4f7945:eyJzZWxlY3RlZExpbmVDb3VudCI6NDYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU3Y2M3NzYxZGM3MjM1MTRjNTRkZDAyMWYzMmZjNDg1MDJlZjQ5YzNiZmMzOGU3M2I2Yjc1ZmJiYTNmMDUxZGEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJhZTdjY2YxZjQ3MGNiN2I2MjIzMTJmN2FjM2Q2YzY5YzgyNzNjNTc1MWJlNjc2ZjE0YWIxMzJkMTg1NjBhYjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.9.0",
-    "at": "2026-11-09T03:34:48.355Z"
+    "at": "2026-11-16T17:12:44.218Z"
   }
 }

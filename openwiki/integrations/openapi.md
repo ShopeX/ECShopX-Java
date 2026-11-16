@@ -119,7 +119,7 @@ sources:
 generated: { by: "openwiki/0.9.0", at: "2026-11-06T17:22:02.968Z" }
 verified:
   - by: openwiki/0.9.0
-    at: 2026-11-06T17:22:02.968Z
+    at: 2026-11-16T17:12:44.218Z
 ---
 
 # OpenAPI Gateway (ecshopx-openapi)

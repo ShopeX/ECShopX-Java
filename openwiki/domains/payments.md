@@ -184,6 +184,10 @@ sources:
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/admin/HfpayVersionStatusService.java
   - id: openwiki-source-4477d3022af654a0036c3021
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/admin/PaymentSettingDistributorAccessGuard.java
+  - id: openwiki-source-c72eb5ae94197cee7d8cd95a
+    resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/admin/PaymentSettingInputResolver.java
+  - id: openwiki-source-ed0269c939dbdee0b3597658
+    resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/admin/PaymentSettingReadService.java
   - id: openwiki-source-e8869ad80079db04fe535a80
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/admin/PaymentSettingSaveService.java
   - id: openwiki-source-64fa255fa9b2b100903e0ba4
@@ -214,6 +218,10 @@ sources:
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/orderrefund/StandardOnlinePayAftersalesRefundExecutor.java
   - id: openwiki-source-9e4ae9aa6e977090eae5591e
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/orderrefund/WxpaySecapiAftersalesRefundRunner.java
+  - id: openwiki-source-a27e78ad268775828024b56e
+    resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/settings/DoumenIntlPaymentSettingReader.java
+  - id: openwiki-source-1cf69cd720b324e168878371
+    resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/settings/WxpayPaymentSettingAdminReadSupport.java
   - id: openwiki-source-613e1c5a4c8c4b56b663371c
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/WechatBatchTransferQueryHttp.java
   - id: openwiki-source-83a104415dc6c0126c3677c4
@@ -232,10 +240,12 @@ sources:
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/support/DoumenIntlStatusMapper.java
   - id: openwiki-source-c95fb5887e03d45919d723b1
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/support/PaymentSettingRedisKeys.java
-generated: { by: "openwiki/0.9.0", at: "2026-11-09T03:34:48.355Z" }
+  - id: openwiki-source-c22500e47f140b51f7a05897
+    resource: repo://ecshopx-payment/src/test/java/cn/shopex/ecshopx/payment/service/settings/WxpayPaymentSettingAdminReadSupportTest.java
+generated: { by: "openwiki/0.9.0", at: "2026-11-16T17:12:44.218Z" }
 verified:
   - by: openwiki/0.9.0
-    at: 2026-11-09T03:34:48.355Z
+    at: 2026-11-16T17:12:44.218Z
 ---
 
 # Payments and Channels
@@ -317,9 +327,19 @@ Bspay and adapay bypass these ports — their callback orchestrators call their 
 
 ## Channel settings: the admin API and the Redis layout
 
-`PaymentController` (`/api/v1/trade/payment`) is the admin surface: `POST /setting` (route alias `trade.payment.setting.set`), `GET /setting`, `GET /open-status`, `GET /list`, `GET /hfpayversionstatus`, `GET /rsakey` (RSA keypair generation). `PaymentSettingSaveService.setPaymentSetting` fans out to per-channel writers (wxpay, alipay, paypal, hfpay, adapay, offline_pay, chinaumspay, bspay, icbcpay, doumen_intl) after one cross-cutting check; `point_pay` is diverted entirely to `PointMemberRuleSaveService.savePointPayFirstOnly`.
+`PaymentController` (`/api/v1/trade/payment`) is the admin surface: `POST /setting` (route alias `trade.payment.setting.set`), `GET /setting` (`trade.payment.setting.get`), `GET /open-status`, `GET /list`, `GET /hfpayversionstatus`, `GET /rsakey` (RSA keypair generation). `PaymentSettingSaveService.setPaymentSetting` fans out to per-channel writers (wxpay, alipay, paypal, hfpay, adapay, offline_pay, chinaumspay, bspay, icbcpay, doumen_intl) after one cross-cutting check; `point_pay` is diverted entirely to `PointMemberRuleSaveService.savePointPayFirstOnly`.
 
-The cross-cutting check is `PaymentSettingDistributorAccessGuard` (ECX-10856/10863), which gates settings read/write by company ownership and store-operator JWT scope: a `distributor` operator is forced to their JWT `distributor_id` (a request for any other distributor id, or a missing/invalid one, is `无权限`), while an HQ operator keeps the request distributor id; any non-zero target distributor must belong to the company, proven via `DistributorGetInfoSimpleByDistributorIdPort`. Only after the guard passes does `DoumenIntlMutualExclusionService.validateBeforeSave` run, then the per-channel writer.
+The cross-cutting check is `PaymentSettingDistributorAccessGuard` (ECX-10856/10863), which gates settings read/write by company ownership and store-operator JWT scope: a `distributor` operator is forced to their JWT `distributor_id` (a write for any other distributor id, or a missing/invalid one, is `无权限`), while an HQ operator keeps the request distributor id; any non-zero target distributor must belong to the company, proven via `DistributorGetInfoSimpleByDistributorIdPort`. Only after the guard passes does `DoumenIntlMutualExclusionService.validateBeforeSave` run, then the per-channel writer.
+
+### The read side: `PaymentSettingReadService`
+
+`GET /setting` delegates to `PaymentSettingReadService.getPaymentSetting`, the mirror of the save fan-out. It re-runs the same guard in read mode (`mayRead`): a `distributor` operator whose request `distributor_id` is missing, invalid, or different from their JWT id gets a **soft deny** — an empty `[]` body shaped exactly like a missing config, rather than an error (ECX-10856) — and any non-zero target must still belong to the company. After the gate, the read fans out per channel against the same Redis keys the writers produce:
+
+* `wxpay` / `alipay` / `paypal` read the `(distributorId?) + {channel}PaymentSetting: + sha1(companyId)` buckets. The **wxpay read is enriched in place** by `WxpayPaymentSettingAdminReadSupport.enrichAdminDisplayFields` (PHP parity for certificate re-display): because Redis stores only the PEM bodies, the read adds `cert_name`/`cert_key_name` (`apiclient_cert.pem`/`apiclient_key.pem`) and legacy `cert_url`/`cert_key_url` paths under `/data/httpd/storage/app/wechatPayment/{merchant_id}/` whenever the corresponding credential is present and non-placeholder — without changing what is stored. Probe: `WxpayPaymentSettingAdminReadSupportTest`.
+* `point_pay` never touches Redis here either — it returns `PointMemberRuleReadService.getPointRule(companyId, countryCode)`.
+* `hfpay` loads through the common `HfPayPaymentSettingApplyPort.loadForAdminPaymentSettingGet`, not a direct key read.
+* `offline_pay` reads the per-language key and then overlays `pay_name` from the `{companyId}_lang_pay_name_offline_pay:{lang}` override when set; `icbcpay` defaults to `is_open=true` when no setting exists; `chinaumspay` resolves its `subKey` (`dealer_{operatorId}` for dealer operators, else `distributor_{distributorId}`, else platform) via `PaymentSettingInputResolver.resolveChinaumsSubKey` before building the key; `paypal` falls back to the platform (`0`) bucket when the requested distributor bucket is empty; `doumen_intl` returns the **masked** reader view (`DoumenIntlPaymentSettingReader.getMasked` — `X-SecretKey` reduced to `****` + last 4 chars).
+* Every channel except `icbcpay` serializes an absent/empty config as an empty JSON array `[]` (`emptyPaymentSettingBodyOrArray`) to match the legacy admin contract; an unknown `pay_type` throws `暂时不支持`.
 
 All channel credentials live in Redis, never in the orders tables. The key grammar (`PaymentSettingRedisKeys`, on the **companys** Redis unless noted):
 
@@ -525,6 +545,7 @@ Every handler follows the same envelope: run the service method, log cost, and o
 
 ## Focused tests
 
+* `WxpayPaymentSettingAdminReadSupportTest` — the admin GET cert display-field enrichment (names/legacy URLs only when PEM bodies are present).
 * `DoumenIntlMutualExclusionServiceTest`, `DoumenIntlPaymentSettingWriterTest`, `DoumenIntlSignatureTest`, `DoumenIntlTokenRedisStoreTest`, `DoumenIntlPaymentServiceTest` — doumen config lifecycle, signature math, token storage.
 * `StandardOnlinePayAftersalesRefundExecutor{Wechat,Alipay,Bspay}OrderProcessLogDispatchPublishProbeTest` — the OPL publish envelope per runner.
 * `WechatPayServiceTest` + `ScheduleQueryMerchantPaymentHandlerTest` — batch-transfer status mapping (FINISHED/CLOSED, success_num), scene fan-out.

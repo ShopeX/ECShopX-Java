@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:8bc7f39fe77c5f38858f79d881acaa5aa0ac2030645c71ba1691e1199ac96c01",
+  "pageVersion": "sha256:c32ce0a800cf07bacef94caa7c6e5175b48d6eb1507e7df482989cf1194d0624",
   "claims": [
     {
       "id": "claim_10d8ee8441894b5fa577c80a982ea348",
@@ -677,10 +677,38 @@
           "version": "repo-lines-v1:sha256:5364f9becc2a64d70b15f4bb574a2a4f05322142f09b88a7cc2f4170722f4c26:eyJzZWxlY3RlZExpbmVDb3VudCI6NTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZjA5MjM1NjQzNjY4NDI3YTBhODYxZTM4MjI4ZDdkOTE3NWZmZTE1YTlmYzNiZWNhYTdiMzg1ZGEwNTViZDIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ4Y2ExZjY0MjRiMDMyYzExYzQxMzQ0NDAyMWM3NGM0NTY1YjRkM2FkMGZmZWM4ZjNmOTEwMTE2Zjk1OGQwNjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
         }
       ]
+    },
+    {
+      "id": "claim_a14350a35ec9434f9bdfc2013084fcf8",
+      "statement": "goods/api/admin/v1/SearchSynonymController demonstrates the plain-envelope admin controller variant: it stacks only @AdminAuth @ShopLog on the class (no @DingoResponse, no @Activated), reads company_id directly from the OPERATOR_JWT_USER_DATA request attribute (throwing UnauthorizedException(\"未登录\") when absent, which renders as a plain 401 ApiResult rather than a Dingo envelope), and validates group_key / words / path ids with BadRequestException (→ plain 400 ApiResult).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/api/admin/v1/SearchSynonymController.java#L37-L60",
+          "version": "repo-lines-v1:sha256:918e5309e95d93c80ea4f259dacf11a3cda40bbaf307d5d7691697889ac9497d:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE3MGIyNmI3ODA4YTdmMzExMTNmNTIzM2VlNzFiZGQzNWFmOGE4NDE2NmQ4ZjNmMTZkYWQ5YTI0YTJjNjQ4MWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk5MTE5ZWEwZGU4ZWI2ZTJiZmY3MjBmNmJlYmVlMjk2YmFmM2UzNWYwZjk4MTA1NGU2NTAzZDRiYWY2YzllYWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM2NDliODI0ZjYzMmU5ZjU2ODczZjk5NGU2YWI1NDdlNTBjZjI5MjhjODIxZGVmZDJhZTZhODI1NjdlZTZkOWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkzMTA5YzIzODc0Yjc2NWIwOGM4MTQ0NjJlMWQ1NGNkM2JhMTY4MGQ2NzIwYTRlNjhmOTJmZjIwNzBjYmU4YzQifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/api/admin/v1/SearchSynonymController.java#L99-L119",
+          "version": "repo-lines-v1:sha256:08f27eb15f1b2dbf29f9de1c6375318e094ddcb4b86aef0ff8fc8abfdce7aa74:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIyNGRhZGJlNjkwN2JlODc0ZWU1Y2UwZTNjZDQ5ZTYzODY4YmQ4M2E1YzBhYmIyZTExZTZiMWE5MTc4MjQ1ZTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYyMmM0NmZmMWE4YzU0N2E1NzI0MzY5MmIyZDUyZDMxMTdhN2U5NzU5MzljYjYxYzFlODMwMzhmMGExZTU3OWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQyZWVlMDUxMGYyNTNmNTM0ODE0NWI5ZjhlZjJiN2JmYWFmM2NlZTJkMDZkMzM4OWY4ZjNmNmQ5YWQ0NWQ3YjcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_0c0dab1b601746f9ab827d27dff8f544",
+      "statement": "SearchSynonymController.replace is a narrower variant of the merged-params idiom: it takes the @FlexibleBody map as the entire parameter map with no FlexibleHttpServletParameterMap.toObjectMap merge (falling back to Map.of() for a null body) — acceptable only for admin routes whose PHP route never carried meaningful query/form parameters — whereas front controllers like WxappOrderController.createNewOrder merge toObjectMap first and let the body win via putAll.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/api/admin/v1/SearchSynonymController.java#L62-L84",
+          "version": "repo-lines-v1:sha256:833e723e5d0e0d5693115d9c27a449ee5d65b999614993c61adde30cff121de5:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIyYzFlZWVjMGZmNTIwODZjMGU2Yzg0OTdlZjNkMzdmZjgxNGE0MGJlM2M1Yzg1MDU1NTQ4MDFjOTcyMjM5YjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY5Y2NkOTFhYjAwNzRiYjc3MTk5ZmE3MDMyNDlmYmQyYzc1YjY3ODQyODU0OTQ3ZmFjNmNjNGFhZDk2MjUzNzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRmNGYwYThmNzlmZTgzMGZiNWUzNGZmNDBmNmNlY2ZkMDg1MTQ3NGUxN2JmZDg5Y2ZlOTU4MGY5ZTc3YTZmNGIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU0NThhNzM5ODllNzllMmQzZTA3ZjY3YTc2MzM5MTg4MjdlZWU5ZmVjZTY2YTQ4ZDNhNzljMzQyNmU1NmM4ODMifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/api/front/v1/WxappOrderController.java#L1248-L1259",
+          "version": "repo-lines-v1:sha256:d550196bcf81b88e06dd5cf19488ae317a05c5276d9bd01e41aeef3274390a12:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM5ZjE0MmNlYzQxN2FhODIzMDBiZjgwMDQ1ZTI2NDc2ZWE5MzJlOWJjOTkxODA2NjJhZTMxMzhmYjc2NmMyMzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjljNTBmNTI3MjdjMGE3NjczOTE5ZWFjOTA4OTlmM2IxYzkzZjBkMTRhZjY3ODJkMGMwYzZkNzQyODVmYTY5YzYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjczNzVkZWVmYjQ1NzhkMzI5M2YzMGIyOWYyZjYzY2U2ZmUyYzBhMzMxM2JjZTdjOTFlNTQzYTkwM2M5ZjQ1MmEifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.9.0",
-    "at": "2026-11-08T17:14:16.576Z"
+    "at": "2026-11-16T17:12:44.218Z"
   }
 }

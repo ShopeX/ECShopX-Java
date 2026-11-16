@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:9b3b5201fafd344a65246bacf8fa2038995c853d0916ede851fe4283dba3c7bb",
+  "pageVersion": "sha256:1273585eb558ad89a3157e9e21f985a03d81c63512002b064a604ce39fae382e",
   "claims": [
     {
       "id": "claim_ae96d6b59b654529b0df4341da13897d",
@@ -525,10 +525,98 @@
           "version": "repo-lines-v1:sha256:aba7df57d4a3f0dc0026c1c9afa9a65ed3c689bdb49013bc5e0651fef9fa099c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQyMzY4YTc0OTE0OWU3YjcxZjY3YjI2NzU0ZGZiOGQzZTJlMzljNmRiZTAzMzQ1ZjQyMDhjODc2NzgwNWNiZDciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVhZGRlZTkxYjViYjExYmQwN2ZkN2YzMDUwMDVmM2Q4MDkzY2IyOWQ3ZGU3YjEyNDE4NTA0MDI4MjIyMTgxYmQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQwMzk5NDVmNzEzY2VjY2MyYTJiZTk4MWFiNWM1ZWVhMzdmOTVmOTc2OWU1NzVjZDhlZDlhOWZjYmFmZGYwNmEifQ"
         }
       ]
+    },
+    {
+      "id": "claim_e13655f129774323b2de94698314af23",
+      "statement": "Besides the canonical api/open route, the front controller QrcodeController (base /api/v1/h5app/wxapp, @FrontNoAuth + Dingo envelope) exposes the compatibility alias GET /api/v1/h5app/wxapp/wechatAuth/wxapp/qrcode.png for mini-program versions that concatenate the API root with the PHP relative path; it delegates to the same WxappLegacyQrcodePngService, so both routes produce identical PNGs.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-wechat/src/main/java/cn/shopex/ecshopx/wechat/api/front/v1/QrcodeController.java#L66-L77",
+          "version": "repo-lines-v1:sha256:370cebb7468c55e6aa35f4b097b2f5d2fe49a4486abd791ba19b98dfd8fcb9fc:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNjZmM3OWQ3NmJmZmZkOTllNzlhYzllNjg3NjYxZjdjNGUxNDFkZjFlZmIyY2QyNzExYmE3MWM4ZWFlNTQyZWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNmMjllYWYzMjcxZjA5NDIxMTk1OTA2MjYyN2Y4M2Y4Y2RmNjI1ZjBhM2MyMzBkMDJmM2Y5YmY2NmFiMzIzOWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM1YTA0YTdlMmYzYzIwYmRmMWVkYzBlYzhmZjhiNzI3NmU1YmU0MDg0ZGFhZTg0ZmM2ZjJmNzVlNjlkNzBmM2QiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjgxYTU5ODU1N2I5NGNkYjgxNTM2Yjg4MDk2MWRlZWZlYWU5OTI5MTY0ZDY4ODQ4YzNmNGM5OTdhMWFjNWNjYjcifQ"
+        },
+        {
+          "resource": "repo://ecshopx-wechat/src/main/java/cn/shopex/ecshopx/wechat/api/open/WxappLegacyQrcodeController.java#L27-L42",
+          "version": "repo-lines-v1:sha256:7d72478b1b32630b36b1e61bb2d0d839d80c8b36380a73ec18b61d5640bc9fc1:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM0NzNkMDJkZGZjZjdiNmVjYWJhMWEzZmJkZDg4MmY2YmUxMjdlMDMxY2I2Zjg5ZGE2YTYwMWQ3ZTQwM2VmZTkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYzOTRiOTdjMTU3ZjNhZjA0OWVhNjFkMGY2N2U2M2JiNzQxNWU2OTViZDBlMTk3NzlkNTQ0NmY2YTE1MTZmNjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_81af74694e154bc186ce620802fe4e20",
+      "statement": "GET /api/v1/h5app/wxapp/pcqrcode (PcQrcodeService) renders a promotional mini-program code by resolving the company's yykweishop wechat_weapp row (ResourceException 没有开通小程序 when none), guarding that the authorizer is still bind-scoped to the company (BadRequestException 小程序未绑定 code 400001 otherwise), then calling WxaUnlimitedQrcodeClient and returning the image as a data:image/jpg;base64, string; the scene is cid=<companyId> plus truthy optional id/uid/dtid (a raw \"0\" counts as absent), and the page defaults to pages/index, switching to pages/item/espier-detail when an item id is present without an explicit pages param.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-wechat/src/main/java/cn/shopex/ecshopx/wechat/api/front/v1/QrcodeController.java#L80-L94",
+          "version": "repo-lines-v1:sha256:311ca8529798715a4cdbcf03208beabf3c980410f06c3155bb7f62efb0132cd2:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY5ZWM3NzViN2IyODU3ODQ3YzhlN2M3ZTQ3MDIzYzMxNmYzYWNhMDY3ZmZhZTEyZjM2NzA0NGQzMjQxY2Y3NDIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM3OTgxMDNlOTQwNzY5NGVjNzQ5NjI4NTA3OTY5MWZkMjAzNjc2MmIwMDU4NjA0MWJhYTI1MGYxZGVjMjc0NDAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImMyMTgzNGQ4N2UwMWIzMzk5MDk0MzkyNWU5M2U3YWRjMTBmZmFhMWY4MWMyYzY5Yjg0ZmQyMjYyNDdmNjE4NGYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk1Y2Y1YTY5MTNiNzk5OTE0MjIxMmViZjA1Nzc0MzI0OWI1YTAyYzk5NzRkMDc1YzM3NmNhZDYzMGE4NDBjNzgifQ"
+        },
+        {
+          "resource": "repo://ecshopx-wechat/src/main/java/cn/shopex/ecshopx/wechat/service/PcQrcodeService.java#L42-L104",
+          "version": "repo-lines-v1:sha256:9ea6ebf8888ca9250bbd5d1d14cc522ffff88f6a4851d0bb327630e00b4a1851:eyJzZWxlY3RlZExpbmVDb3VudCI6NjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjEwODAxYmQ1OTU1NGNmNmQ1YWVhZTc3NzY2ODc0NWMzNjEyMjljOTUyNTA4ZDRiZmE4ZDRiNzVjMjA1OTAzNjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-wechat/src/main/java/cn/shopex/ecshopx/wechat/service/WxaAuthorizerAppIdByTemplateService.java#L61-L68",
+          "version": "repo-lines-v1:sha256:f5b928152f9174d3b68fac08d345141daabd8ed3f38c0fc104cc0f368d7c327c:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzBmZmE5NmExN2Q4NzRhZmQyNDhiNjAwYzExZWM4ODU1YTMyN2ExMjQ4NDkwZGEwODNhOTIyM2Y3MjhmMDgyMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzQ0NjhkODdhOTc1MTM4OTgzNDhlOWM4MjY4MDk3YmU0YWFkYTBhODgzZWU4MjJlZjgxMWRiMTVlMDQ1ZDFkMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjM4NGZjMTNjYzcxMWRmZjUwMTljNTVjODBiZGEyZGViNzRhOWE1YzUyZWI1M2ExOTY2OGFiOWY3YWZmYjI0MCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNjBlMGNkNDk3NTIyNTEzZTAwZGRjYzczMGU5ZGE2MjMwNTVmYjg4YmFlNGFlNzEwNDdhYzE0YmQ0YjkzODA1ZSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_f6ca089913d2486094587b573b60c749",
+      "statement": "GET /api/v1/h5app/wxapp/pcloginqrcode (PcLoginQrcodeService) is the PC web-login handshake: it mints a Hashids token from a per-second counter on the members Redis template (member:oauth:login:times:<epoch>), stores {exp, time, status:0} JSON under member:oauth:login:<token>, and returns {base64Image, access_token} for the mini-program page others/pages/auth/index with scene cid=<companyId>&t=<token>; by default the payload expires in 120 s while the Redis key lives 3,720 s, and a positive ecshopx.wechat.pc-wxcode-login-seconds overrides both.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-wechat/src/main/java/cn/shopex/ecshopx/wechat/api/front/v1/QrcodeController.java#L96-L103",
+          "version": "repo-lines-v1:sha256:8ad48625df3b02d7da377d857904c1655d3230ef7f84f685373f17d7fce298a3:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjRlZmM0OTQxOGQyNmRjZjEyOWIyMmE2YWEyMTEwOGNlZWMzNzY3N2EzMmQwOGU5ZDVmZWUzNWRkYTY2YmI5ZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOGQ2NjRmZTNlYjk1M2E3MDM4ZGJhNjE3NjlkYjE2N2ZhZDVhYjhjOGE5MGQ3ZmRhZTMxMTMyYjgyY2M4MWFhYyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNWY4NGQ4MmU0YTBlMmU5ZTcyNzdiN2U4OWU1ZjNiOTc1MWFhNjFkYTBlYTZkNzEzYTk3YmM5NGQ3MDc1MGE5YSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-wechat/src/main/java/cn/shopex/ecshopx/wechat/service/PcLoginQrcodeService.java#L58-L108",
+          "version": "repo-lines-v1:sha256:dc6c11ada0054bef6889d6a95d15f9e180653484e8f0960c2e9567e96e6a6310:eyJzZWxlY3RlZExpbmVDb3VudCI6NTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU4ZWQyZDNiNGE2OTE3NzlkZDllMzEwZGE1YWZmMzk4MGQ5YmU3OTcwM2FkM2U2MjcyNzQwMjZhMzU0MjAyODEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNlNGZlMjJmZmRhYjRlMzczYTkzNTIxNmZlMzE3ZDEwYjNhM2JmYzU5NDM2MjVkZDRmNDcyMTcyMTkyMzU2MjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFkMzZkODg4ZGZkNmE2ZmM3ODk3ODFlOTMyZmZmMmNjZDQ2NGRiNzYwM2RmOTNhMmJhY2M3YTg4M2YxZWJmYzkifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_cae17d94d06947e0ad918c0cfc168699",
+      "statement": "Both PC qrcode endpoints resolve company_id in priority order from the H5 auth request attributes, then the H5 JWT claims, then the company_id query parameter, and throw UnauthorizedException (无权访问该API,非法访问！) when none yields a positive long.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-wechat/src/main/java/cn/shopex/ecshopx/wechat/api/front/v1/QrcodeController.java#L106-L143",
+          "version": "repo-lines-v1:sha256:d5c52abb70a09aa39e0365202f32ec52cf7acdbc92d4e01ab6fd6f92c89b40ee:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJkZGRlY2Q1NjZmNDYzNjg3YTQ3ZTIwMDIxMWI3OGM1ZmFmMTk1YTc2YTVlODU3NDM0MDRjNDg0ZjZiZjc5NTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_c022072674e84cc097e75c0d49e59c72",
+      "statement": "WechatAuthQueryService is the shared read facade over wechat_authorization whose lookup methods deliberately degrade on DataAccessException (warn log + null/empty/false treated as not bound); service-account queries filter bind_status='bind' + service_type_info=2 (with getAuthorizerAppidForWoaQuery binding the raw company_id string for PHP parity), mini-program queries filter service_type_info=3, and binding guards add deleted_at IS NULL; the strict variant requireWechatAuthWithAliasForKf raises the 400001 rebind ResourceException for the Kf admin surface, and getAuthorizerInfo prefers the JWT appid, falls back to the company's bound 服务号, parses the business_info/miniprograminfo JSON columns, and merges menu_type from super-admin's ShopMenuService.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-wechat/src/main/java/cn/shopex/ecshopx/wechat/service/WechatAuthQueryService.java#L222-L272",
+          "version": "repo-lines-v1:sha256:b22aea7bbecd885257f4549a9081363e0bb9dba276e9f216d7b20087f10811b4:eyJzZWxlY3RlZExpbmVDb3VudCI6NTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM5OTMzMGY1Mjg2ZmJiZTIzMzFiOTYzNjE2OWJlNmJhOTY5MjI3NTA0OTE2NTA3Njc5MTVhOGU5MWQzNTUzY2UiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI4ODQxZGVkODMwNmE4YTI2Y2RhNWFhZmIxMmMzYjgwZWE1Y2IwYTEyYWE3ZTM1OWJkZjBmZjRlZWE2MzdhN2UiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRiZThhYjgyODllNmZmM2I5OWE0NmI2NTBhZTIzMDY2MDQxMGFmNjU2ODVhNGJmYmE5MDVkMGNmOTc3MmRmMzkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU3MGUzYzZmMWRiZGI3NWI0NGNjOTI4ZTc5Zjc1NDc5ZDVmNzBkN2MxNDc1NGE5ZWFkMmE2MTg0ZjNhNjYyOTIifQ"
+        },
+        {
+          "resource": "repo://ecshopx-wechat/src/main/java/cn/shopex/ecshopx/wechat/service/WechatAuthQueryService.java#L53-L66",
+          "version": "repo-lines-v1:sha256:7b73f7b5696a953844175013798a646edb414b97eb83375a0c5e834dbec659ec:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ3MTRjYWRhYmVhMmE5MDYzODFmOGM4ODQxNmJmYjkyNmViMGNhMGQxYzY3OTZjMWY1OGQzZmQzYzAxNjFhMzgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRhNDM1ZjM3MGMwMWJiNTE3ZWQzODlhZmIyZWZlYWI4N2EwY2E3NGY2YmJiNmQ3N2IwMjdlOTZmMWFiMDk1MTkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ2YjgyZWY0ZDY5ZWYzN2ZhMDFmNzVmOGNlZjY2MWI0MjliNGFiMzJmMTU1MDA4YzUyMjg5OTU1NDY4YTM4NWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjE4NDA0MGFmYTVlZGNmYmNjMDdlOTQ2YzE0NTUxMzRhMmVhNzYxYjFkMWI1OWIzYmM1ZDU0NDQxMTdiZmI1ZGYifQ"
+        },
+        {
+          "resource": "repo://ecshopx-wechat/src/main/java/cn/shopex/ecshopx/wechat/service/WechatAuthQueryService.java#L68-L149",
+          "version": "repo-lines-v1:sha256:6541f6c1deb80c678a2da4c2517ae07dcd4396f72686f7886251994dadade4ba:eyJzZWxlY3RlZExpbmVDb3VudCI6ODIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM3N2UyYjExNDIzZTJlZWZlODczMjcyN2M2MTVmMTNkNjcyYTlhMzg0ZWFmZDlkMmZhZjNjNDJiZTkwN2JlN2MiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhjNDFiMzYyZTQ0YmI4Njc3OGE3ZTI3MmE1MWExODE3OWFkNGI0YjQzZDAwMjExNGRlOWJhOGMwZjdkMDA0YzkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImYzN2YxZjAxNmUzMmUwN2Q0ZTgxZTg2YzhhODYwOTY3MDk3ZjdhODkxOGIxYWQzODcxZjI3ZWY0ZjIyM2UwY2YifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_f68139aaea03465bae84875975b75298",
+      "statement": "The wechat bundle's own dispatch handler SendTemplateMessageJobHandler consumes template-message job payloads by resolving the tenant's bound service account via WechatAuthQueryService.getAuthorizerAppidForWoaQuery and sending through WoaMpTemplateMessageClient; it skips silently when no service account is bound and swallows any RuntimeException into a debug log so the dispatch job never fails on notify errors.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-wechat/src/main/java/cn/shopex/ecshopx/wechat/dispatch/SendTemplateMessageJobHandler.java#L41-L60",
+          "version": "repo-lines-v1:sha256:843d37a57df03a5a6268c662408e1a4ac7c2cf2a34dbbb24025e36ee8d2082f7:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwOGNjMTVkMDc1NGI2ZjIxZjcxZTBiMDNiOWRkNzg2YmM5ODgwMDNiMmI1NzU2NGM2MDUwYTgwMjI1MTdjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIwMDAwZTc0OWJkZTdkN2VkNmZhODBiZGZmYTQ5ZjNmOWMyOTVjMmIyMTA2ZDllNGZlNTE3ZDBmMzc5ZWMzOWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRlMDZkZjlhNzhkNzNlMTNmYzc2NmFhYzYzZWEzODM5NjIyMDNhZDBlNzU2YTMxOTAxYjZjOTZlZWQxNDk1NzcifQ"
+        },
+        {
+          "resource": "repo://ecshopx-wechat/src/main/java/cn/shopex/ecshopx/wechat/service/WechatAuthQueryService.java#L83-L107",
+          "version": "repo-lines-v1:sha256:e9e599b6f77a95f28e013de12c06db280046d07f811df7c205b725725e64012a:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhlZGNlZDVjNGFhYjg5YmVlMDA3YjQxYzA4OGFhMTkxYTFkZmNhM2JkYzcxZDFmZDU2NGMzMGJhNDE4NmI3Y2YiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk4ZTIyN2VjMzU5NzEyMTlmMGRhMzkxNTExNWQ5NWZjYmFkNWZhYTQzMDQwMjQ3OGY4ZGI2Mjc5MTY2YmQ5YTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjE2MWJiMTAwMzA3MTkxYTk2ZjhiYzkxZTJjYmExZWJiZTY5ZDc2YjgwOWViNjdiMWU5MTU3ZTcxNTZkNGM5YTUifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.9.0",
-    "at": "2026-11-06T17:22:02.968Z"
+    "at": "2026-11-16T17:12:44.218Z"
   }
 }

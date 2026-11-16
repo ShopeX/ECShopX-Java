@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:61a4feb53e2148fc70049425d29693d92a0b0dc3fed2d0f8756b1935961d7361",
+  "pageVersion": "sha256:1b936492714e9b218bf386cff05f43ee002b63ce3119313f535c93c3360efdb3",
   "claims": [
     {
       "id": "claim_ff2c038ec9504e308a0b383bcde7b674",
@@ -645,10 +645,28 @@
           "version": "repo-file-v1:sha256:32ae54f33fd7033eb886b8b7f31e353e885d48984cb6022c63e80202008c33d9"
         }
       ]
+    },
+    {
+      "id": "claim_db475bd972f0432dae200d2e78e62541",
+      "statement": "The admin detail response from AftersalesAdminDetailService.buildFullDetailFromMainRow is finalized by AftersalesAdminDetailPhpParityApplier.apply(out) — a stateless @Component whose only caller is the detail service — which mutates the assembled map in place as the last step to match legacy PHP response shapes: id-ish fields on the main head, detail rows, refund_info, order_info (also app_info.order_info) and distributor_info are stringified (null → \"0\"); integral Number fee_rate/weight/cur_fee_rate are coerced to int; order_info.act_id becomes null when zero, third_params defaults to [], and item_fee/total_fee/market_fee/cur_pay_fee become numeric strings; blank or \"{}\" app_pay_type_desc falls back to 微信小程序; PHP-suppressed keys (coupon_discount_desc, member_discount_desc, original_order_id, item add_service_info/type/up_share_points, distributor merchant_name/source_from) are removed; and empty-map supplier_name becomes \"\", empty-string offline_aftersales_distributor_id becomes null, numeric review_status becomes boolean.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/service/AftersalesAdminDetailPhpParityApplier.java",
+          "version": "repo-file-v1:sha256:dbb2ca30f21b225b063b2a277669350e06dc9a24b6f6e77557781a6d6b41df86"
+        },
+        {
+          "resource": "repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/service/AftersalesAdminDetailService.java#L276-L282",
+          "version": "repo-lines-v1:sha256:adae162801e701f34ae0123bb46fdb9ab48d24c14eb5893a6521f51547481f67:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiN2Y5Y2Q0YzBjNDAyY2ViZmZiNmJjMjVlOTBmODdlZjEyZGM4ZDc1YjYzZGZmZTEwZTAyZjllMDU1ZjA3Y2IyMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODExYWQ2ZDZmMGZmYTRjOGU5NmVhNGU4ZTEwYjM3Y2I4NzM3YWUwZDNiZDZiYzNkZWNlMzk5MDYxMzY0YjlhOCJ9"
+        },
+        {
+          "resource": "repo://ecshopx-aftersales/src/test/java/cn/shopex/ecshopx/aftersales/service/AftersalesAdminDetailDistributorScopeTest.java#L82-L94",
+          "version": "repo-lines-v1:sha256:fac20791e6e6b422bb10d2d6d474e9c2e7c48bfdda034f218b99988f7c039dac:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZjOWRkZjE0NWUwNjMzZDRlM2I4YmFjZTMyMGI3YmMxMDgxZjdmYThiMzNiYzM1ODczMDljM2Q0NDA5YTFlNDkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMxODE4OWRjOTBkODVjNDgxZDE5NDE1ZGFjMzU3Y2M3MDFjNWVmZTUzMTdlZmNiNzFlNDk3OTE5ZDNkNDg1NTciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc4ZGMxNDgxZTQzNTc4MTIzZDg1NTQzM2VmY2IzY2JkYzhkOGViNGRmZmQxZWMyZDViOTI1YzVkZDdkZmQxNmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM3MGM5OGI1YTc4M2MzZjhlNDA4NDZhOWMxZmU3YWIwOTJhNjFmYzZjYzI2NGZiN2QwNTZiMWZhYTZmNmJjMjkifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.9.0",
-    "at": "2026-11-08T17:14:16.576Z"
+    "at": "2026-11-16T17:12:44.218Z"
   }
 }
