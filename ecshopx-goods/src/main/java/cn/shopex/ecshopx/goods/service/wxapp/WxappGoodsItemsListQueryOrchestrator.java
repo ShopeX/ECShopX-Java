@@ -380,7 +380,8 @@ public class WxappGoodsItemsListQueryOrchestrator {
 	}
 
 	/**
-	 * standard + 有效 distributor_id：一律按门店上架表（{@code goods_can_sale}）过滤，不区分总店/非总店。
+	 * standard + 有效 distributor_id：按门店上架表（{@code goods_can_sale}）过滤，并包含店铺自有商品
+	 * （{@code items.distributor_id}），不区分总店/非总店。
 	 * 非 standard 或未开启 {@code is_can_sale}：仍按 items.distributor_id 直滤。
 	 */
 	private void applyDistributorRepoFilter(long companyId, LinkedHashMap<String, Object> p, LinkedHashMap<String, Object> repo) {

@@ -120,8 +120,9 @@ public class MybatisSearchIndexSourceLoader implements SearchIndexSourceLoader {
 			return Optional.empty();
 		}
 		Map<Long, DistributorItems> distByItemId = loadDistributorRows(companyId, distributorId, skuRows);
-		if (distributorId > 0 && !hasGoodsCanSale(distByItemId)) {
-			// 与列表 DB hydrate（goods_can_sale）对齐：不可售店品不入索引，避免 ES total 虚高
+		boolean storeOwned = isStoreOwnedAnchor(distributorId, anchor);
+		if (distributorId > 0 && !hasGoodsCanSale(distByItemId) && !storeOwned) {
+			// 与列表 DB 门店范围对齐：上架表可售或店铺自有；其它不可售店品不入索引
 			return Optional.empty();
 		}
 		long hqPriceFen = priceFen(anchor.getPrice());
@@ -210,6 +211,12 @@ public class MybatisSearchIndexSourceLoader implements SearchIndexSourceLoader {
 		return false;
 	}
 
+	private static boolean isStoreOwnedAnchor(long distributorId, Items anchor) {
+		return distributorId > 0
+				&& anchor.getDistributorId() != null
+				&& anchor.getDistributorId().longValue() == distributorId;
+	}
+
 	private static List<SearchIndexSource.Sku> buildSkus(
 			List<Items> skuRows, Map<Long, DistributorItems> distByItemId, long distributorId) {
 		List<SearchIndexSource.Sku> skus = new ArrayList<>(skuRows.size());
@@ -221,10 +228,14 @@ public class MybatisSearchIndexSourceLoader implements SearchIndexSourceLoader {
 			String approveStatus = item.getApproveStatus() != null ? item.getApproveStatus() : "instock";
 			if (distributorId > 0) {
 				DistributorItems dist = distByItemId.get(item.getItemId());
-				if (dist == null) {
+				if (dist != null) {
+					store = dist.getStore() != null ? dist.getStore() : 0L;
+				} else if (item.getDistributorId() != null
+						&& item.getDistributorId().longValue() == distributorId) {
+					store = item.getStore() != null ? item.getStore().longValue() : 0L;
+				} else {
 					continue;
 				}
-				store = dist.getStore() != null ? dist.getStore() : 0L;
 			} else {
 				store = item.getStore() != null ? item.getStore().longValue() : 0L;
 			}
@@ -268,7 +279,7 @@ public class MybatisSearchIndexSourceLoader implements SearchIndexSourceLoader {
 	 */
 	private static long resolveSales(
 			long distributorId, long defaultItemId, Items anchor, Map<Long, DistributorItems> distByItemId) {
-		if (distributorId > 0) {
+		if (distributorId > 0 && !distByItemId.isEmpty()) {
 			DistributorItems spuDist = distByItemId.get(defaultItemId);
 			if (spuDist != null && spuDist.getSales() != null && spuDist.getSales() > 0) {
 				return spuDist.getSales();

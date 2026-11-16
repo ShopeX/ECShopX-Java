@@ -577,17 +577,29 @@ public class ItemsListQueryRepository {
 		long distributorId = didObj instanceof Number n ? n.longValue() : Long.parseLong(String.valueOf(didObj));
 		Object cidObj = p.get(KEY_COMPANY_ID);
 		long companyId = cidObj instanceof Number n ? n.longValue() : Long.parseLong(String.valueOf(cidObj));
-		StringBuilder sql = new StringBuilder();
-		sql.append("EXISTS (SELECT 1 FROM distribution_distributor_items d WHERE d.item_id = items.item_id");
-		sql.append(" AND d.company_id = ").append(companyId);
-		sql.append(" AND d.distributor_id = ").append(distributorId);
+		Boolean goodsCanSale = null;
 		if (p.containsKey(KEY_DIST_REL_VIRT_GOODS_CAN_SALE)) {
 			Object g = p.get(KEY_DIST_REL_VIRT_GOODS_CAN_SALE);
-			boolean v = g instanceof Boolean b ? b : Boolean.parseBoolean(String.valueOf(g));
-			sql.append(" AND d.goods_can_sale = ").append(v ? 1 : 0);
+			goodsCanSale = g instanceof Boolean b ? b : Boolean.parseBoolean(String.valueOf(g));
 		}
-		sql.append(")");
-		w.apply(sql.toString());
+		w.apply(distributorRelVirtualExistsSql(companyId, distributorId, goodsCanSale));
+	}
+
+	/**
+	 * 门店范围：店铺自有商品（{@code items.distributor_id}）或上架表关联（可选 {@code goods_can_sale}）。
+	 * 与购物车「店有或有关联」语义对齐，避免加盟店自有货在传门店 ID 时被上架表 EXISTS 单独过滤掉。
+	 */
+	static String distributorRelVirtualExistsSql(long companyId, long distributorId, Boolean goodsCanSaleOrNull) {
+		StringBuilder sql = new StringBuilder();
+		sql.append("(items.distributor_id = ").append(distributorId);
+		sql.append(" OR EXISTS (SELECT 1 FROM distribution_distributor_items d WHERE d.item_id = items.item_id");
+		sql.append(" AND d.company_id = ").append(companyId);
+		sql.append(" AND d.distributor_id = ").append(distributorId);
+		if (goodsCanSaleOrNull != null) {
+			sql.append(" AND d.goods_can_sale = ").append(Boolean.TRUE.equals(goodsCanSaleOrNull) ? 1 : 0);
+		}
+		sql.append("))");
+		return sql.toString();
 	}
 
 	/**
