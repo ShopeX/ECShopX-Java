@@ -843,6 +843,22 @@ public class WxappH5CartListService {
 					}
 				}
 			}
+			long shopId = longObj(shop.get("shop_id"));
+			if (shopId > 0L) {
+				List<Map<String, Object>> giftMaps = new ArrayList<>();
+				for (Map<String, Object> act : activities) {
+					Object giftsRaw = act.get("gifts");
+					if (!(giftsRaw instanceof List<?> gl)) {
+						continue;
+					}
+					for (Object g : gl) {
+						if (g instanceof Map<?, ?>) {
+							giftMaps.add((Map<String, Object>) g);
+						}
+					}
+				}
+				checkoutCartDistributorStoreOverlayService.applyForSkuMaps(companyId, shopId, giftMaps);
+			}
 			List<Map<String, Object>> adjusted =
 					giftActivityStoreAdjustService.adjustGiftActivities(
 							companyId, receiptType, activities, cartLines);

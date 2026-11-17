@@ -21,6 +21,7 @@ import cn.shopex.ecshopx.goods.service.distributor.DistributorItemSkuInfoForStor
 import java.util.List;
 import java.util.Map;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 /**
  * 结算购物车行店铺库存覆盖，对齐 PHP {@code DistributorItemsService::replaceItemInfo}：
@@ -54,27 +55,65 @@ public class CheckoutCartDistributorStoreOverlayService {
 			if (shopId <= 0L || itemId <= 0L) {
 				continue;
 			}
-			DistributorItems di = distributorItemSkuInfoForStoreService.findRow(companyId, itemId, shopId);
-			if (di == null) {
-				continue;
-			}
-			boolean totalStore = Boolean.TRUE.equals(di.getIsTotalStore());
-			line.put("is_total_store", totalStore);
-			if (totalStore) {
-				continue;
-			}
 			Map<String, Object> sku = skuByItem != null ? skuByItem.get(itemId) : null;
-			int platformStore = sku != null ? intVal(sku.get("store"), 0) : intVal(line.get("store"), 0);
-			String approve = stringVal(line.get("approve_status"));
-			if ("onsale".equals(approve) || "offline_sale".equals(approve)) {
-				line.put("logistics_store", platformStore);
+			applyOne(companyId, shopId, itemId, line, sku, false);
+		}
+	}
+
+	/**
+	 * 满赠/加价购等已加载的平台 SKU map：按店铺关联叠店仓（与结算主品 {@link #applyForLines} 规则一致）。
+	 * {@code distributorId&lt;=0} 或无关联行时不改写。缺 {@code approve_status} 时仍写入 {@code logistics_store}。
+	 */
+	public void applyForSkuMaps(long companyId, long distributorId, List<Map<String, Object>> skuMaps) {
+		if (skuMaps == null || skuMaps.isEmpty() || companyId <= 0L || distributorId <= 0L) {
+			return;
+		}
+		for (Map<String, Object> row : skuMaps) {
+			if (row == null) {
+				continue;
 			}
-			if (di.getStore() != null) {
-				line.put("store", di.getStore().intValue());
+			long itemId = longVal(row.get("item_id"), 0L);
+			if (itemId <= 0L) {
+				continue;
 			}
-			if (di.getPrice() != null && di.getPrice() > 0L) {
-				line.put("price", di.getPrice().intValue());
-			}
+			applyOne(companyId, distributorId, itemId, row, null, true);
+		}
+	}
+
+	private void applyOne(
+			long companyId,
+			long distributorId,
+			long itemId,
+			Map<String, Object> target,
+			Map<String, Object> skuFallback,
+			boolean writeLogisticsWhenApproveMissing) {
+		DistributorItems di = distributorItemSkuInfoForStoreService.findRow(companyId, itemId, distributorId);
+		if (di == null) {
+			return;
+		}
+		boolean totalStore = Boolean.TRUE.equals(di.getIsTotalStore());
+		target.put("is_total_store", totalStore);
+		if (totalStore) {
+			return;
+		}
+		int platformStore =
+				skuFallback != null ? intVal(skuFallback.get("store"), 0) : intVal(target.get("store"), 0);
+		String approve = stringVal(target.get("approve_status"));
+		if (!StringUtils.hasText(approve) && skuFallback != null) {
+			approve = stringVal(skuFallback.get("approve_status"));
+		}
+		boolean writeLogistics =
+				"onsale".equals(approve)
+						|| "offline_sale".equals(approve)
+						|| (writeLogisticsWhenApproveMissing && !StringUtils.hasText(approve));
+		if (writeLogistics) {
+			target.put("logistics_store", platformStore);
+		}
+		if (di.getStore() != null) {
+			target.put("store", di.getStore().intValue());
+		}
+		if (di.getPrice() != null && di.getPrice() > 0L) {
+			target.put("price", di.getPrice().intValue());
 		}
 	}
 

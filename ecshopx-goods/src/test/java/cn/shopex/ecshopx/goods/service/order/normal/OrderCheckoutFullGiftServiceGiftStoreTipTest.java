@@ -10,6 +10,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import cn.shopex.ecshopx.common.order.normal.NormalOrderCreateParams;
+import cn.shopex.ecshopx.goods.service.cart.wxapp.CheckoutCartDistributorStoreOverlayService;
 import cn.shopex.ecshopx.goods.service.items.ItemAvailableStoreResolver;
 import cn.shopex.ecshopx.goods.service.items.ItemsCategoryPathByItemService;
 import java.util.ArrayList;
@@ -37,6 +38,9 @@ class OrderCheckoutFullGiftServiceGiftStoreTipTest {
 	private ItemsCategoryPathByItemService itemsCategoryPathByItemService;
 
 	@Mock
+	private CheckoutCartDistributorStoreOverlayService checkoutCartDistributorStoreOverlayService;
+
+	@Mock
 	private StringRedisTemplate companysRedisTemplate;
 
 	@Mock
@@ -51,6 +55,7 @@ class OrderCheckoutFullGiftServiceGiftStoreTipTest {
 						giftActivityStoreAdjustService,
 						itemAvailableStoreResolver,
 						itemsCategoryPathByItemService,
+						checkoutCartDistributorStoreOverlayService,
 						companysRedisTemplate);
 		when(companysRedisTemplate.opsForHash()).thenReturn(hashOperations);
 		when(hashOperations.get(anyString(), anyString())).thenReturn(null);

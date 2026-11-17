@@ -17,6 +17,7 @@
 package cn.shopex.ecshopx.goods.service.order.normal;
 
 import cn.shopex.ecshopx.common.order.normal.NormalOrderCreateParams;
+import cn.shopex.ecshopx.goods.service.cart.wxapp.CheckoutCartDistributorStoreOverlayService;
 import cn.shopex.ecshopx.goods.service.items.ItemsCategoryPathByItemService;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -31,9 +32,13 @@ import org.springframework.util.StringUtils;
 public class OrderCheckoutPlusBuyService {
 
 	private final ItemsCategoryPathByItemService itemsCategoryPathByItemService;
+	private final CheckoutCartDistributorStoreOverlayService checkoutCartDistributorStoreOverlayService;
 
-	public OrderCheckoutPlusBuyService(ItemsCategoryPathByItemService itemsCategoryPathByItemService) {
+	public OrderCheckoutPlusBuyService(
+			ItemsCategoryPathByItemService itemsCategoryPathByItemService,
+			CheckoutCartDistributorStoreOverlayService checkoutCartDistributorStoreOverlayService) {
 		this.itemsCategoryPathByItemService = itemsCategoryPathByItemService;
+		this.checkoutCartDistributorStoreOverlayService = checkoutCartDistributorStoreOverlayService;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -74,6 +79,14 @@ public class OrderCheckoutPlusBuyService {
 				continue;
 			}
 			Map<String, Object> itemInfo = new LinkedHashMap<>((Map<String, Object>) plusItemRaw);
+			long distributorId = longVal(od.get("distributor_id"), 0L);
+			if (distributorId <= 0L) {
+				distributorId = longVal(od.get("shop_id"), 0L);
+			}
+			if (distributorId > 0L) {
+				checkoutCartDistributorStoreOverlayService.applyForSkuMaps(
+						companyId, distributorId, List.of(itemInfo));
+			}
 			Set<Long> activityItemIds = parseItemIdSet(activityData.get("activity_item_ids"));
 			List<Map<String, Object>> activityItems = new ArrayList<>();
 			List<Map<String, Object>> remaining = new ArrayList<>();
