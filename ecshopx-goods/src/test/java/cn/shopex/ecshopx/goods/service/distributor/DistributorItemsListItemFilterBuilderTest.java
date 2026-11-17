@@ -10,6 +10,7 @@ import cn.shopex.ecshopx.goods.service.items.ItemStoreService;
 import cn.shopex.ecshopx.goods.service.items.ItemsCategoryItemIdResolver;
 import cn.shopex.ecshopx.supplier.repository.SupplierOperatorQueryRepository;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -157,5 +158,28 @@ class DistributorItemsListItemFilterBuilderTest {
 		assertFalse(filter.containsKey(ItemsListQueryRepository.KEY_ITEM_SOURCE_SUPPLIER_MODE));
 		assertFalse(filter.containsKey(ItemsListQueryRepository.KEY_ITEM_SOURCE_NON_SUPPLIER_MODE));
 		assertTrue(filter.containsKey("is_default_true"));
+	}
+
+	/** Regression: GET item_id[]=… becomes List via FlexibleHttpServletParameterMap; must not parse List#toString(). */
+	@Test
+	void build_itemIdAsQueryArrayList_setsItemIdOrDefaultIds() {
+		Map<String, Object> merged = new HashMap<>();
+		merged.put("distributor_id", 129L);
+		merged.put("item_id", List.of("8242", "8240", "8238"));
+
+		Map<String, Object> filter = sut.build(38L, merged).orElseThrow();
+
+		assertEquals(List.of(8242L, 8240L, 8238L), filter.get(ItemsListQueryRepository.KEY_ITEM_ID_OR_DEFAULT_IDS));
+	}
+
+	@Test
+	void build_itemIdAsCsvString_setsItemIdOrDefaultIds() {
+		Map<String, Object> merged = new HashMap<>();
+		merged.put("distributor_id", 129L);
+		merged.put("item_id", "8242,8240");
+
+		Map<String, Object> filter = sut.build(38L, merged).orElseThrow();
+
+		assertEquals(List.of(8242L, 8240L), filter.get(ItemsListQueryRepository.KEY_ITEM_ID_OR_DEFAULT_IDS));
 	}
 }
