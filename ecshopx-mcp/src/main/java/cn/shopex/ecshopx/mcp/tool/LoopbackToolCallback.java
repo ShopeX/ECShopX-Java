@@ -36,6 +36,9 @@ public final class LoopbackToolCallback implements ToolCallback {
 	public String call(String toolInput, ToolContext toolContext) {
 		String argsJson = normalizeArgs(toolInput);
 		ToolResult result = executor.execute(declaration, argsJson, ToolAuthContext.getBearer());
+		if (result.isError()) {
+			throw new LoopbackToolExecutionException(result.text());
+		}
 		return result.text();
 	}
 
