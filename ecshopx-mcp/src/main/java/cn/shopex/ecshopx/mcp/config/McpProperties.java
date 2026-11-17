@@ -27,5 +27,7 @@ public class McpProperties {
 	public static class Dcr {
 
 		private int rateLimitPerMinute = 30;
+
+		private boolean trustForwardedHeaders = false;
 	}
 }

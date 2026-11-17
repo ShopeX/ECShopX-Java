@@ -30,7 +30,7 @@ class DynamicClientRegistrationControllerTest {
 		OAuthClientRegistry registry = new InMemoryOAuthClientRegistry();
 		DcrRateLimiter rateLimiter = new DcrRateLimiter(mcpProperties);
 		mockMvc = MockMvcBuilders
-				.standaloneSetup(new DynamicClientRegistrationController(registry, rateLimiter))
+				.standaloneSetup(new DynamicClientRegistrationController(registry, rateLimiter, mcpProperties))
 				.build();
 	}
 
@@ -96,5 +96,22 @@ class DynamicClientRegistrationControllerTest {
 		JsonNode json = objectMapper.readTree(third.getResponse().getContentAsString());
 		assertNotNull(json.get("error"));
 		assertTrue(json.get("error").asText().contains("rate"));
+	}
+
+	@Test
+	void registerRateLimitIgnoresSpoofedXForwardedForByDefault() throws Exception {
+		mcpProperties.getDcr().setRateLimitPerMinute(2);
+		String body = """
+				{"redirect_uris": ["https://b.example/cb"]}
+				""";
+		mockMvc.perform(post("/api/mcp/oauth/register").contentType(MediaType.APPLICATION_JSON).content(body))
+				.andExpect(status().isCreated());
+		mockMvc.perform(post("/api/mcp/oauth/register").contentType(MediaType.APPLICATION_JSON).content(body))
+				.andExpect(status().isCreated());
+		mockMvc.perform(post("/api/mcp/oauth/register")
+						.header("X-Forwarded-For", "203.0.113.99")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(body))
+				.andExpect(status().isTooManyRequests());
 	}
 }

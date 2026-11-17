@@ -1,5 +1,6 @@
 package cn.shopex.ecshopx.mcp.auth.oauth;
 
+import cn.shopex.ecshopx.mcp.config.McpProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -22,9 +23,13 @@ public class DynamicClientRegistrationController {
 
 	private final DcrRateLimiter rateLimiter;
 
-	public DynamicClientRegistrationController(OAuthClientRegistry clientRegistry, DcrRateLimiter rateLimiter) {
+	private final McpProperties mcpProperties;
+
+	public DynamicClientRegistrationController(
+			OAuthClientRegistry clientRegistry, DcrRateLimiter rateLimiter, McpProperties mcpProperties) {
 		this.clientRegistry = clientRegistry;
 		this.rateLimiter = rateLimiter;
+		this.mcpProperties = mcpProperties;
 	}
 
 	@PostMapping(value = "/register", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -59,10 +64,12 @@ public class DynamicClientRegistrationController {
 		return body;
 	}
 
-	private static String clientIp(HttpServletRequest request) {
-		String forwarded = request.getHeader("X-Forwarded-For");
-		if (forwarded != null && !forwarded.isBlank()) {
-			return forwarded.split(",")[0].trim();
+	private String clientIp(HttpServletRequest request) {
+		if (mcpProperties.getDcr().isTrustForwardedHeaders()) {
+			String forwarded = request.getHeader("X-Forwarded-For");
+			if (forwarded != null && !forwarded.isBlank()) {
+				return forwarded.split(",")[0].trim();
+			}
 		}
 		return request.getRemoteAddr();
 	}
