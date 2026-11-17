@@ -33,7 +33,7 @@ public class LoopbackToolExecutor {
 		this(loopbackClient, new ObjectMapper());
 	}
 
-	LoopbackToolExecutor(ApiLoopbackClient loopbackClient, ObjectMapper objectMapper) {
+	public LoopbackToolExecutor(ApiLoopbackClient loopbackClient, ObjectMapper objectMapper) {
 		this.loopbackClient = loopbackClient;
 		this.objectMapper = objectMapper;
 	}

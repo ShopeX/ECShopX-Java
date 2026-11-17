@@ -18,4 +18,6 @@ public class McpProperties {
 	private Duration connectTimeout = Duration.ofSeconds(5);
 
 	private Duration readTimeout = Duration.ofSeconds(30);
+
+	private String smokePath = "/api/v1/pos/auth/me";
 }

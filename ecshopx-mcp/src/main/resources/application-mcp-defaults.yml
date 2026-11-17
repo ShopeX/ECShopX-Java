@@ -1,0 +1,16 @@
+# ECShopX MCP defaults (loaded early via McpEnvironmentDefaultsPostProcessor).
+# Optional override in bootstrap: spring.config.import=optional:classpath:application-mcp-defaults.yml
+spring:
+  ai:
+    mcp:
+      server:
+        protocol: STREAMABLE
+        name: ecshopx-mcp
+        version: 0.1.0
+        capabilities:
+          tool: true
+          resource: false
+          prompt: false
+          completion: false
+        streamable-http:
+          mcp-endpoint: /api/mcp
