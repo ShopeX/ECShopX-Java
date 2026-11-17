@@ -18,6 +18,15 @@ class AuthorizationCodeStoreTest {
 	}
 
 	@Test
+	void peekDoesNotRemoveValidCode() {
+		AuthorizationCodeStore store = new AuthorizationCodeStore();
+		String code = store.issue("c", "http://localhost/cb", "ch", "S256", TokenKind.MEMBER, "jwt");
+		assertTrue(store.peek(code).isPresent());
+		assertTrue(store.peek(code).isPresent());
+		assertTrue(store.consume(code).isPresent());
+	}
+
+	@Test
 	void consumeIsSingleUse() {
 		AuthorizationCodeStore store = new AuthorizationCodeStore();
 		String code = store.issue("c", "http://localhost/cb", "ch", "S256", TokenKind.MEMBER, "jwt");

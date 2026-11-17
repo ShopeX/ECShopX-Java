@@ -110,6 +110,38 @@ class TokenControllerTest {
 	}
 
 	@Test
+	void authorizationCodeWrongClientIdDoesNotConsumeCode() throws Exception {
+		OAuthClientRegistration other =
+				registry.register(List.of("http://localhost:5173/callback"), "wrong", "none");
+		String challenge = s256(VERIFIER);
+		String jwt = jwtWithExp(System.currentTimeMillis() / 1000L + 3600);
+		String code = codeStore.issue(
+				clientId, redirectUri, challenge, "S256", TokenKind.OPERATOR, jwt);
+
+		mockMvc.perform(post("/api/mcp/oauth/token")
+						.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+						.param("grant_type", "authorization_code")
+						.param("code", code)
+						.param("client_id", other.clientId())
+						.param("redirect_uri", redirectUri)
+						.param("code_verifier", VERIFIER))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.error").value("invalid_grant"));
+
+		assertTrue(codeStore.peek(code).isPresent(), "code must remain after client mismatch");
+
+		mockMvc.perform(post("/api/mcp/oauth/token")
+						.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+						.param("grant_type", "authorization_code")
+						.param("code", code)
+						.param("client_id", clientId)
+						.param("redirect_uri", redirectUri)
+						.param("code_verifier", VERIFIER))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.access_token").value(jwt));
+	}
+
+	@Test
 	void authorizationCodeRejectsWrongVerifier() throws Exception {
 		String challenge = s256(VERIFIER);
 		String code = codeStore.issue(
@@ -124,6 +156,7 @@ class TokenControllerTest {
 						.param("code_verifier", VERIFIER + "x"))
 				.andExpect(status().isBadRequest())
 				.andExpect(jsonPath("$.error").value("invalid_grant"));
+		assertTrue(codeStore.peek(code).isPresent(), "code must remain after PKCE failure");
 	}
 
 	@Test

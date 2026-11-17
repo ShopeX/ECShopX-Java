@@ -46,7 +46,7 @@ public class AuthorizationCodeStore {
 		return code;
 	}
 
-	public Optional<StoredAuthorizationCode> find(String code) {
+	public Optional<StoredAuthorizationCode> peek(String code) {
 		StoredAuthorizationCode stored = codes.get(code);
 		if (stored == null) {
 			return Optional.empty();
@@ -56,6 +56,10 @@ public class AuthorizationCodeStore {
 			return Optional.empty();
 		}
 		return Optional.of(stored);
+	}
+
+	public Optional<StoredAuthorizationCode> find(String code) {
+		return peek(code);
 	}
 
 	public Optional<StoredAuthorizationCode> consume(String code) {

@@ -78,7 +78,7 @@ public class TokenController {
 			return oauthError("invalid_request", ex.getMessage());
 		}
 
-		Optional<AuthorizationCodeStore.StoredAuthorizationCode> storedOpt = authorizationCodeStore.consume(code);
+		Optional<AuthorizationCodeStore.StoredAuthorizationCode> storedOpt = authorizationCodeStore.peek(code);
 		if (storedOpt.isEmpty()) {
 			return oauthError("invalid_grant", "Authorization code is invalid or expired");
 		}
@@ -97,7 +97,12 @@ public class TokenController {
 			return oauthError("invalid_grant", "PKCE verification failed");
 		}
 
-		return tokenResponse(stored.businessJwt(), stored.tokenKind());
+		Optional<AuthorizationCodeStore.StoredAuthorizationCode> consumed = authorizationCodeStore.consume(code);
+		if (consumed.isEmpty()) {
+			return oauthError("invalid_grant", "Authorization code is invalid or expired");
+		}
+
+		return tokenResponse(consumed.get().businessJwt(), consumed.get().tokenKind());
 	}
 
 	private ResponseEntity<Map<String, Object>> exchangeRefreshToken(String refreshToken) {
