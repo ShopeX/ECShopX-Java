@@ -20,4 +20,12 @@ public class McpProperties {
 	private Duration readTimeout = Duration.ofSeconds(30);
 
 	private String smokePath = "/api/v1/pos/auth/me";
+
+	private Dcr dcr = new Dcr();
+
+	@Data
+	public static class Dcr {
+
+		private int rateLimitPerMinute = 30;
+	}
 }
