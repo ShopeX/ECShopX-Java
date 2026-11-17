@@ -131,6 +131,10 @@
 		</dependency>
 		<dependency>
 			<groupId>cn.shopex</groupId>
+			<artifactId>ecshopx-mcp</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>cn.shopex</groupId>
 			<artifactId>ecshopx-merchant</artifactId>
 		</dependency>
 		<dependency>
