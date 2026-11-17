@@ -11,7 +11,19 @@ import java.util.concurrent.ConcurrentMap;
 @Component
 public class AuthorizationCodeStore {
 
+	static final long DEFAULT_TTL_SECONDS = 600L;
+
+	private final long ttlSeconds;
+
 	private final ConcurrentMap<String, StoredAuthorizationCode> codes = new ConcurrentHashMap<>();
+
+	public AuthorizationCodeStore() {
+		this(DEFAULT_TTL_SECONDS);
+	}
+
+	AuthorizationCodeStore(long ttlSeconds) {
+		this.ttlSeconds = Math.max(1L, ttlSeconds);
+	}
 
 	public String issue(
 			String clientId,
@@ -35,11 +47,26 @@ public class AuthorizationCodeStore {
 	}
 
 	public Optional<StoredAuthorizationCode> find(String code) {
-		return Optional.ofNullable(codes.get(code));
+		StoredAuthorizationCode stored = codes.get(code);
+		if (stored == null) {
+			return Optional.empty();
+		}
+		if (isExpired(stored)) {
+			codes.remove(code);
+			return Optional.empty();
+		}
+		return Optional.of(stored);
 	}
 
 	public Optional<StoredAuthorizationCode> consume(String code) {
-		return Optional.ofNullable(codes.remove(code));
+		Optional<StoredAuthorizationCode> found = find(code);
+		found.ifPresent(s -> codes.remove(code));
+		return found;
+	}
+
+	private boolean isExpired(StoredAuthorizationCode stored) {
+		long now = System.currentTimeMillis() / 1000L;
+		return now - stored.issuedAt() >= ttlSeconds;
 	}
 
 	public record StoredAuthorizationCode(

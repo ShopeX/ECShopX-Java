@@ -5,6 +5,17 @@ final class OAuthAuthorizeSupport {
 	private OAuthAuthorizeSupport() {
 	}
 
+	static boolean isS256ChallengeMethod(String method) {
+		String effective = (method == null || method.isBlank()) ? "S256" : method.trim();
+		return "S256".equalsIgnoreCase(effective);
+	}
+
+	static void assertS256ChallengeMethod(String method) {
+		if (!isS256ChallengeMethod(method)) {
+			throw new IllegalArgumentException("code_challenge_method must be S256");
+		}
+	}
+
 	static OAuthClientRegistration requireClient(OAuthClientRegistry registry, String clientId) {
 		return registry.findByClientId(clientId)
 				.orElseThrow(() -> new IllegalArgumentException("Unknown client_id"));

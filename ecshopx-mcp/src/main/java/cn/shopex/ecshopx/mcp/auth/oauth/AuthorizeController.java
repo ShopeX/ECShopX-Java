@@ -48,6 +48,7 @@ public class AuthorizeController {
 			@RequestParam(required = false, defaultValue = "S256") String code_challenge_method) {
 		try {
 			assertAuthorizeParams(response_type, client_id, redirect_uri, code_challenge);
+			OAuthAuthorizeSupport.assertS256ChallengeMethod(code_challenge_method);
 			OAuthClientRegistration registration = OAuthAuthorizeSupport.requireClient(clientRegistry, client_id);
 			OAuthAuthorizeSupport.assertRedirectUriRegistered(registration, redirect_uri);
 		}
@@ -80,6 +81,7 @@ public class AuthorizeController {
 				client_id, redirect_uri, state, code_challenge, code_challenge_method, token_kind, null);
 		try {
 			assertAuthorizeParams(response_type, client_id, redirect_uri, code_challenge);
+			OAuthAuthorizeSupport.assertS256ChallengeMethod(code_challenge_method);
 			OAuthClientRegistration registration = OAuthAuthorizeSupport.requireClient(clientRegistry, client_id);
 			OAuthAuthorizeSupport.assertRedirectUriRegistered(registration, redirect_uri);
 		}

@@ -66,6 +66,17 @@ class AuthorizeControllerTest {
 	}
 
 	@Test
+	void getAuthorizeRejectsPlainPkceMethod() throws Exception {
+		mockMvc.perform(get("/api/mcp/oauth/authorize")
+						.param("response_type", "code")
+						.param("client_id", clientId)
+						.param("redirect_uri", "http://localhost:5173/callback")
+						.param("code_challenge", "challenge")
+						.param("code_challenge_method", "plain"))
+				.andExpect(status().isBadRequest());
+	}
+
+	@Test
 	void getAuthorizeReturnsHtmlForValidClient() throws Exception {
 		mockMvc.perform(get("/api/mcp/oauth/authorize")
 						.param("response_type", "code")

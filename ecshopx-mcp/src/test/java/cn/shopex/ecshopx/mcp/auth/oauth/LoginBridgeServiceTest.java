@@ -103,6 +103,45 @@ class LoginBridgeServiceTest {
 	}
 
 	@Test
+	void operatorRefreshReadsAuthorizationHeader() throws Exception {
+		server.enqueue(new MockResponse()
+				.setResponseCode(200)
+				.setHeader("Authorization", "Bearer op.refreshed")
+				.setBody("{\"code\":200,\"msg\":\"success\",\"data\":{\"result\":true}}"));
+
+		LoginBridgeService.RefreshResult result = loginBridge.refresh(TokenKind.OPERATOR, "op.old");
+
+		assertTrue(result.success());
+		assertEquals("op.refreshed", result.jwt());
+
+		RecordedRequest req = server.takeRequest();
+		assertEquals("GET", req.getMethod());
+		assertEquals("/api/v1/token/refresh", req.getPath());
+		assertEquals("Bearer op.old", req.getHeader("Authorization"));
+	}
+
+	@Test
+	void memberRefreshUsesH5Path() throws Exception {
+		server.enqueue(new MockResponse()
+				.setResponseCode(200)
+				.setHeader("Authorization", "Bearer mem.refreshed")
+				.setBody("{\"code\":200}"));
+
+		LoginBridgeService.RefreshResult result = loginBridge.refresh(TokenKind.MEMBER, "mem.old");
+
+		assertTrue(result.success());
+		RecordedRequest req = server.takeRequest();
+		assertEquals("/api/v1/h5app/wxapp/token/refresh", req.getPath());
+	}
+
+	@Test
+	void posRefreshRejectedWithoutLoopback() {
+		LoginBridgeService.RefreshResult result = loginBridge.refresh(TokenKind.POS, "pos.jwt");
+		assertFalse(result.success());
+		assertEquals(0, server.getRequestCount());
+	}
+
+	@Test
 	void non2xxResponseIsFailure() {
 		server.enqueue(new MockResponse().setResponseCode(401).setBody("{\"code\":401,\"msg\":\"fail\"}"));
 

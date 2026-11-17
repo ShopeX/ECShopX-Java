@@ -7,6 +7,7 @@ import cn.shopex.ecshopx.mcp.loopback.LoopbackResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -30,6 +31,27 @@ public class LoginBridgeService {
 		String body = buildLoginBody(tokenKind, credentials);
 		LoopbackResponse response = loopbackClient.execute(new LoopbackRequest("POST", path, null, null, body));
 		return parseLoginResponse(response);
+	}
+
+	public RefreshResult refresh(TokenKind tokenKind, String bearerJwt) {
+		if (tokenKind == TokenKind.POS) {
+			return RefreshResult.failure("POS tokens cannot be refreshed");
+		}
+		if (!StringUtils.hasText(bearerJwt)) {
+			return RefreshResult.failure("refresh_token is empty");
+		}
+		String path = refreshPath(tokenKind);
+		Map<String, String> headers = Map.of(HttpHeaders.AUTHORIZATION, "Bearer " + bearerJwt.trim());
+		LoopbackResponse response = loopbackClient.execute(new LoopbackRequest("GET", path, null, headers, null));
+		return parseRefreshResponse(response);
+	}
+
+	static String refreshPath(TokenKind tokenKind) {
+		return switch (tokenKind) {
+			case OPERATOR -> "/api/v1/token/refresh";
+			case MEMBER -> "/api/v1/h5app/wxapp/token/refresh";
+			case POS -> throw new IllegalArgumentException("POS has no refresh endpoint");
+		};
 	}
 
 	static String loginPath(TokenKind tokenKind) {
@@ -76,6 +98,20 @@ public class LoginBridgeService {
 		}
 	}
 
+	RefreshResult parseRefreshResponse(LoopbackResponse response) {
+		if (response.status() < 200 || response.status() >= 300) {
+			return RefreshResult.failure("Refresh failed (HTTP " + response.status() + ")");
+		}
+		String authorization = response.header(HttpHeaders.AUTHORIZATION);
+		if (authorization != null && authorization.regionMatches(true, 0, "Bearer ", 0, 7)) {
+			String jwt = authorization.substring(7).trim();
+			if (StringUtils.hasText(jwt)) {
+				return RefreshResult.success(jwt);
+			}
+		}
+		return RefreshResult.failure("Refresh response did not contain a token");
+	}
+
 	LoginResult parseLoginResponse(LoopbackResponse response) {
 		if (response.status() < 200 || response.status() >= 300) {
 			return LoginResult.failure("Login failed (HTTP " + response.status() + ")");
@@ -98,6 +134,17 @@ public class LoginBridgeService {
 		}
 		catch (JsonProcessingException ex) {
 			return LoginResult.failure("Unable to parse login response");
+		}
+	}
+
+	public record RefreshResult(boolean success, String jwt, String errorMessage) {
+
+		public static RefreshResult success(String jwt) {
+			return new RefreshResult(true, jwt, null);
+		}
+
+		public static RefreshResult failure(String message) {
+			return new RefreshResult(false, null, message);
 		}
 	}
 

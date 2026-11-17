@@ -13,6 +13,7 @@ import org.springframework.web.client.RestClient;
 import java.net.http.HttpClient;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class ApiLoopbackClient {
@@ -71,7 +72,14 @@ public class ApiLoopbackClient {
 			try (var in = clientResponse.getBody()) {
 				body = new String(in.readAllBytes(), StandardCharsets.UTF_8);
 			}
-			return new LoopbackResponse(clientResponse.getStatusCode().value(), body);
+			Map<String, String> responseHeaders = new LinkedHashMap<>();
+			clientResponse.getHeaders().forEach((name, values) -> {
+				if (name == null || values == null || values.isEmpty()) {
+					return;
+				}
+				responseHeaders.put(name, String.join(",", values));
+			});
+			return new LoopbackResponse(clientResponse.getStatusCode().value(), body, responseHeaders);
 		});
 	}
 
