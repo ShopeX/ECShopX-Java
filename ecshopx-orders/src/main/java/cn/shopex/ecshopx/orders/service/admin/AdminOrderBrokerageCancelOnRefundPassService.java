@@ -16,28 +16,23 @@
 
 package cn.shopex.ecshopx.orders.service.admin;
 
-import cn.shopex.ecshopx.popularize.domain.Brokerage;
-import cn.shopex.ecshopx.popularize.mapper.BrokerageMapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import cn.shopex.ecshopx.popularize.service.BrokerageCancelOnOrderService;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AdminOrderBrokerageCancelOnRefundPassService {
 
-	private final BrokerageMapper brokerageMapper;
+	private final BrokerageCancelOnOrderService brokerageCancelOnOrderService;
 
-	public AdminOrderBrokerageCancelOnRefundPassService(BrokerageMapper brokerageMapper) {
-		this.brokerageMapper = brokerageMapper;
+	public AdminOrderBrokerageCancelOnRefundPassService(
+			BrokerageCancelOnOrderService brokerageCancelOnOrderService) {
+		this.brokerageCancelOnOrderService = brokerageCancelOnOrderService;
 	}
 
+	/**
+	 * 退款通过取消订单时冲销分销佣金，对齐 PHP {@code brokerageBycancelOrder}。
+	 */
 	public void closeBrokerageForCanceledOrder(long companyId, long orderId) {
-		if (companyId <= 0L || orderId <= 0L) {
-			return;
-		}
-		int now = (int) (System.currentTimeMillis() / 1000L);
-		LambdaUpdateWrapper<Brokerage> w = new LambdaUpdateWrapper<>();
-		w.eq(Brokerage::getCompanyId, companyId).eq(Brokerage::getOrderId, String.valueOf(orderId));
-		w.set(Brokerage::getIsClose, Boolean.TRUE).set(Brokerage::getUpdated, now);
-		brokerageMapper.update(null, w);
+		brokerageCancelOnOrderService.brokerageByCancelOrder(companyId, orderId);
 	}
 }
