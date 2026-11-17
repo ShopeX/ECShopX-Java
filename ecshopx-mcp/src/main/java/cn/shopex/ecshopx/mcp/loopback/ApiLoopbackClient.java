@@ -90,8 +90,12 @@ public class ApiLoopbackClient {
 	}
 
 	static void validatePath(String path) {
-		if (!StringUtils.hasText(path) || !path.startsWith("/") || path.contains("://")) {
-			throw new IllegalArgumentException("Invalid loopback path: must start with '/' and must not contain '://'");
+		if (!StringUtils.hasText(path)
+				|| !path.startsWith("/")
+				|| path.startsWith("//")
+				|| path.contains("://")) {
+			throw new IllegalArgumentException(
+					"Invalid loopback path: must start with '/' and must not be authority-relative or contain '://'");
 		}
 	}
 }

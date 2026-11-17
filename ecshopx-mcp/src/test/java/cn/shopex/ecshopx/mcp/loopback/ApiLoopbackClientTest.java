@@ -51,4 +51,13 @@ class ApiLoopbackClientTest {
 		assertThrows(IllegalArgumentException.class, () -> client.execute(
 				new LoopbackRequest("GET", "/http://evil/api", Map.of(), Map.of(), null)));
 	}
+
+	@Test
+	void rejectsAuthorityRelativePath() {
+		McpProperties props = new McpProperties();
+		props.setApiBaseUrl("http://localhost:8080");
+		ApiLoopbackClient client = new ApiLoopbackClient(props, RestClient.builder());
+		assertThrows(IllegalArgumentException.class, () -> client.execute(
+				new LoopbackRequest("GET", "//evil.example/api", Map.of(), Map.of(), null)));
+	}
 }
