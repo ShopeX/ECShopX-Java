@@ -89,6 +89,9 @@ public class PosJwtAuthenticationFilter extends OncePerRequestFilter {
 	@Override
 	protected boolean shouldNotFilter(HttpServletRequest request) {
 		String path = request.getServletPath();
+		if (McpOAuthAnonymousPathSupport.matches(path)) {
+			return true;
+		}
 		if ("POST".equalsIgnoreCase(request.getMethod()) && "/api/v1/pos/auth/login".equals(path)) {
 			return true;
 		}

@@ -82,7 +82,9 @@ public class MiddlewareWebMvcConfigurer implements WebMvcConfigurer {
 						"/api/v1/operator/basic",
 						"/api/v1/operator/credential",
 						"/api/v1/third/saascert/cert/validate",
-						"/api/v1/third/saascert/matrix/callback/**")
+						"/api/v1/third/saascert/matrix/callback/**",
+						"/api/mcp",
+						"/api/mcp/oauth/**")
 				.order(10);
 		registry.addInterceptor(frontNoAuthInterceptor)
 				.addPathPatterns("/api/**")

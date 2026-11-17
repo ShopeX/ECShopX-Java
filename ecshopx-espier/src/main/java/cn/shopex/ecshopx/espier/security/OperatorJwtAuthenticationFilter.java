@@ -204,6 +204,10 @@ public class OperatorJwtAuthenticationFilter extends OncePerRequestFilter {
 		if (path != null && path.startsWith("/api/openapi")) {
 			return true;
 		}
+		// MCP OAuth / RFC 8414 / PRM：匿名可达；/api/mcp 业务报文由 McpBearerAuthFilter 保护
+		if (McpOAuthAnonymousPathSupport.matches(path)) {
+			return true;
+		}
 		// 微信 legacy 开放路径（小程序码、支付/开放平台回调等）：不携带运营 JWT
 		if (path != null && path.startsWith("/wechatAuth/")) {
 			return true;
