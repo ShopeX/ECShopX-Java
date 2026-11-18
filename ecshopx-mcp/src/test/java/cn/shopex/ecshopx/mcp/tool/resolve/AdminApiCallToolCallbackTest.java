@@ -2,10 +2,12 @@ package cn.shopex.ecshopx.mcp.tool.resolve;
 
 import cn.shopex.ecshopx.mcp.config.McpProperties;
 import cn.shopex.ecshopx.mcp.loopback.ApiLoopbackClient;
+import cn.shopex.ecshopx.mcp.tool.ToolAuthContext;
 import cn.shopex.ecshopx.mcp.tool.catalog.MenuApiCatalog;
 import cn.shopex.ecshopx.mcp.tool.catalog.MenuApiCatalogLoader;
 import cn.shopex.ecshopx.mcp.tool.catalog.MenuApiCatalogs;
 import cn.shopex.ecshopx.mcp.tool.catalog.MenuApiEntry;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -85,6 +87,54 @@ class AdminApiCallToolCallbackTest {
 			assertEquals("/api/v1/orders?page=1", api.getPath());
 			assertFalse(api.getRequestUrl().queryParameterNames().contains("confirm"));
 			assertFalse(api.getRequestUrl().queryParameterNames().contains("force"));
+		}
+		finally {
+			server.shutdown();
+		}
+	}
+
+	@Test
+	void successfulGetWithForceBypassesDisjointMenu() throws Exception {
+		MockWebServer server = new MockWebServer();
+		server.enqueue(new MockResponse().setResponseCode(200).setBody("{\"items\":[]}"));
+		server.start();
+		ToolAuthContext.setBearer("test-jwt");
+		try {
+			AdminApiCallToolCallback cb = callbackWithServer(server, MenuApiCatalogLoader.loadClasspath());
+			String result = cb.call("{\"method\":\"GET\",\"path\":\"/api/v1/orders\",\"force\":true}");
+			assertTrue(result.contains("items"));
+
+			RecordedRequest api = server.takeRequest();
+			assertEquals("GET", api.getMethod());
+			assertEquals("/api/v1/orders", api.getPath());
+			assertEquals("Bearer test-jwt", api.getHeader("Authorization"));
+			assertFalse(api.getRequestUrl().queryParameterNames().contains("confirm"));
+			assertFalse(api.getRequestUrl().queryParameterNames().contains("force"));
+		}
+		finally {
+			ToolAuthContext.clear();
+			server.shutdown();
+		}
+	}
+
+	@Test
+	void successfulWriteStripsConfirmAndForceFromBody() throws Exception {
+		MockWebServer server = new MockWebServer();
+		server.enqueue(new MockResponse().setResponseCode(200).setBody("{\"ok\":true}"));
+		server.start();
+		try {
+			AdminApiCallToolCallback cb = callbackWithServer(server, MenuApiCatalogLoader.loadClasspath());
+			String result = cb.call(
+					"{\"method\":\"PUT\",\"path\":\"/api/v1/remarks/{orderId}\",\"orderId\":\"42\",\"remark\":\"note\",\"confirm\":true,\"force\":true}");
+			assertTrue(result.contains("ok"));
+
+			RecordedRequest api = server.takeRequest();
+			assertEquals("PUT", api.getMethod());
+			assertEquals("/api/v1/remarks/42", api.getPath());
+			JsonNode body = MAPPER.readTree(api.getBody().readUtf8());
+			assertFalse(body.has("confirm"));
+			assertFalse(body.has("force"));
+			assertEquals("note", body.get("remark").asText());
 		}
 		finally {
 			server.shutdown();
