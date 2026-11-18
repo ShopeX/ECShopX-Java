@@ -17,6 +17,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class LoginBridgeServiceTest {
@@ -48,7 +49,7 @@ class LoginBridgeServiceTest {
 
 		LoginBridgeService.LoginResult result = loginBridge.login(
 				TokenKind.OPERATOR,
-				Map.of("username", "admin", "password", "secret", "logintype", "localadmin"));
+				Map.of("username", "admin", "password", "secret", "logintype", "merchant"));
 
 		assertTrue(result.success());
 		assertEquals("op.jwt", result.jwt());
@@ -59,47 +60,36 @@ class LoginBridgeServiceTest {
 		JsonNode body = objectMapper.readTree(req.getBody().readUtf8());
 		assertEquals("admin", body.path("username").asText());
 		assertEquals("secret", body.path("password").asText());
-		assertEquals("localadmin", body.path("logintype").asText());
+		assertEquals("merchant", body.path("logintype").asText());
 	}
 
 	@Test
-	void posLoginReadsTokenField() throws Exception {
-		server.enqueue(jsonOk("{\"token\":\"pos.jwt\",\"employee_no\":\"E001\"}"));
+	void operatorLoginDefaultsLogintypeToAdmin() throws Exception {
+		server.enqueue(jsonOk("{\"token\":\"op.jwt\"}"));
 
 		LoginBridgeService.LoginResult result = loginBridge.login(
-				TokenKind.POS, Map.of("employee_no", "E001", "password", "pwd"));
+				TokenKind.OPERATOR, Map.of("username", "a", "password", "b"));
 
 		assertTrue(result.success());
-		assertEquals("pos.jwt", result.jwt());
-
-		RecordedRequest req = server.takeRequest();
-		assertEquals("/api/v1/pos/auth/login", req.getPath());
+		JsonNode body = objectMapper.readTree(server.takeRequest().getBody().readUtf8());
+		assertEquals("admin", body.path("logintype").asText());
 	}
 
 	@Test
-	void memberLoginUsesH5PathAndRejectsFalseToken() throws Exception {
-		server.enqueue(jsonOk("{\"token\":false}"));
-
-		LoginBridgeService.LoginResult result = loginBridge.login(
-				TokenKind.MEMBER,
-				Map.of("company_id", "1", "username", "13800000000", "password", "pwd", "auth_type", "local"));
-
-		assertFalse(result.success());
-
-		RecordedRequest req = server.takeRequest();
-		assertEquals("/api/v1/h5app/wxapp/login", req.getPath());
+	void rejectsUnsupportedLogintype() {
+		assertThrows(IllegalArgumentException.class,
+				() -> loginBridge.login(TokenKind.OPERATOR,
+						Map.of("username", "a", "password", "b", "logintype", "member")));
+		assertEquals(0, server.getRequestCount());
 	}
 
 	@Test
-	void memberLoginExtractsJwtFromDataToken() throws Exception {
-		server.enqueue(jsonOk("{\"token\":\"mem.jwt\"}"));
-
-		LoginBridgeService.LoginResult result = loginBridge.login(
-				TokenKind.MEMBER,
-				Map.of("company_id", "1", "username", "13800000000", "password", "pwd"));
-
-		assertTrue(result.success());
-		assertEquals("mem.jwt", result.jwt());
+	void rejectsNonOperatorIdentity() {
+		assertThrows(IllegalArgumentException.class,
+				() -> loginBridge.login(TokenKind.POS, Map.of("employee_no", "E001", "password", "pwd")));
+		assertThrows(IllegalArgumentException.class,
+				() -> loginBridge.refresh(TokenKind.MEMBER, "mem.jwt"));
+		assertEquals(0, server.getRequestCount());
 	}
 
 	@Test
@@ -118,27 +108,6 @@ class LoginBridgeServiceTest {
 		assertEquals("GET", req.getMethod());
 		assertEquals("/api/v1/token/refresh", req.getPath());
 		assertEquals("Bearer op.old", req.getHeader("Authorization"));
-	}
-
-	@Test
-	void memberRefreshUsesH5Path() throws Exception {
-		server.enqueue(new MockResponse()
-				.setResponseCode(200)
-				.setHeader("Authorization", "Bearer mem.refreshed")
-				.setBody("{\"code\":200}"));
-
-		LoginBridgeService.RefreshResult result = loginBridge.refresh(TokenKind.MEMBER, "mem.old");
-
-		assertTrue(result.success());
-		RecordedRequest req = server.takeRequest();
-		assertEquals("/api/v1/h5app/wxapp/token/refresh", req.getPath());
-	}
-
-	@Test
-	void posRefreshRejectedWithoutLoopback() {
-		LoginBridgeService.RefreshResult result = loginBridge.refresh(TokenKind.POS, "pos.jwt");
-		assertFalse(result.success());
-		assertEquals(0, server.getRequestCount());
 	}
 
 	@Test

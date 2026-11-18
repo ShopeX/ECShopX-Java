@@ -34,7 +34,8 @@ public final class McpOAuthAnonymousPathSupport {
 		if ("/api/mcp".equals(servletPath) || servletPath.startsWith("/api/mcp/")) {
 			return true;
 		}
-		if (WELL_KNOWN_AUTHORIZATION_SERVER.equals(servletPath)) {
+		if (WELL_KNOWN_AUTHORIZATION_SERVER.equals(servletPath)
+				|| servletPath.startsWith(WELL_KNOWN_AUTHORIZATION_SERVER + "/")) {
 			return true;
 		}
 		return servletPath.equals(WELL_KNOWN_PROTECTED_RESOURCE)

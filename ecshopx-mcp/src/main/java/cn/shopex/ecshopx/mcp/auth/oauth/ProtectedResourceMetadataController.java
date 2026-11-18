@@ -20,7 +20,13 @@ public class ProtectedResourceMetadataController {
 	}
 
 	@GetMapping(
-			value = {"/.well-known/oauth-protected-resource", "/.well-known/oauth-protected-resource/mcp"},
+			value = {
+				"/.well-known/oauth-protected-resource",
+				"/.well-known/oauth-protected-resource/mcp",
+				// Cursor / RFC 9728 path-appended form when resource is .../api/mcp
+				"/.well-known/oauth-protected-resource/api/mcp",
+				"/api/mcp/.well-known/oauth-protected-resource"
+			},
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> metadata() {
 		Map<String, Object> body = new LinkedHashMap<>();

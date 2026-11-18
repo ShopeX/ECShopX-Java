@@ -14,8 +14,15 @@ import org.springframework.util.StringUtils;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * Bridges MCP OAuth to admin Operator login/refresh only (ecshopx-admin scope).
+ */
 @Service
 public class LoginBridgeService {
+
+	private static final String OPERATOR_LOGIN_PATH = "/api/v1/operator/login";
+
+	private static final String OPERATOR_REFRESH_PATH = "/api/v1/token/refresh";
 
 	private final ApiLoopbackClient loopbackClient;
 
@@ -27,68 +34,51 @@ public class LoginBridgeService {
 	}
 
 	public LoginResult login(TokenKind tokenKind, Map<String, String> credentials) {
-		String path = loginPath(tokenKind);
-		String body = buildLoginBody(tokenKind, credentials);
-		LoopbackResponse response = loopbackClient.execute(new LoopbackRequest("POST", path, null, null, body));
+		requireOperator(tokenKind);
+		String body = buildOperatorLoginBody(credentials);
+		LoopbackResponse response = loopbackClient.execute(
+				new LoopbackRequest("POST", OPERATOR_LOGIN_PATH, null, null, body));
 		return parseLoginResponse(response);
 	}
 
 	public RefreshResult refresh(TokenKind tokenKind, String bearerJwt) {
-		if (tokenKind == TokenKind.POS) {
-			return RefreshResult.failure("POS tokens cannot be refreshed");
-		}
+		requireOperator(tokenKind);
 		if (!StringUtils.hasText(bearerJwt)) {
 			return RefreshResult.failure("refresh_token is empty");
 		}
-		String path = refreshPath(tokenKind);
 		Map<String, String> headers = Map.of(HttpHeaders.AUTHORIZATION, "Bearer " + bearerJwt.trim());
-		LoopbackResponse response = loopbackClient.execute(new LoopbackRequest("GET", path, null, headers, null));
+		LoopbackResponse response = loopbackClient.execute(
+				new LoopbackRequest("GET", OPERATOR_REFRESH_PATH, null, headers, null));
 		return parseRefreshResponse(response);
 	}
 
 	static String refreshPath(TokenKind tokenKind) {
-		return switch (tokenKind) {
-			case OPERATOR -> "/api/v1/token/refresh";
-			case MEMBER -> "/api/v1/h5app/wxapp/token/refresh";
-			case POS -> throw new IllegalArgumentException("POS has no refresh endpoint");
-		};
+		requireOperator(tokenKind);
+		return OPERATOR_REFRESH_PATH;
 	}
 
 	static String loginPath(TokenKind tokenKind) {
-		return switch (tokenKind) {
-			case OPERATOR -> "/api/v1/operator/login";
-			case POS -> "/api/v1/pos/auth/login";
-			case MEMBER -> "/api/v1/h5app/wxapp/login";
-		};
+		requireOperator(tokenKind);
+		return OPERATOR_LOGIN_PATH;
 	}
 
-	private String buildLoginBody(TokenKind tokenKind, Map<String, String> credentials) {
+	private String buildOperatorLoginBody(Map<String, String> credentials) {
 		Map<String, Object> body = new LinkedHashMap<>();
-		switch (tokenKind) {
-			case OPERATOR -> {
-				putIfPresent(body, "username", credentials.get("username"));
-				putIfPresent(body, "password", credentials.get("password"));
-				String logintype = credentials.get("logintype");
-				body.put("logintype", StringUtils.hasText(logintype) ? logintype : "localadmin");
-			}
-			case POS -> {
-				putIfPresent(body, "employee_no", credentials.get("employee_no"));
-				putIfPresent(body, "password", credentials.get("password"));
-			}
-			case MEMBER -> {
-				putIfPresent(body, "company_id", credentials.get("company_id"));
-				putIfPresent(body, "username", credentials.get("username"));
-				putIfPresent(body, "password", credentials.get("password"));
-				String authType = credentials.get("auth_type");
-				body.put("auth_type", StringUtils.hasText(authType) ? authType : "local");
-				putIfPresent(body, "check_type", credentials.get("check_type"));
-			}
-		}
+		putIfPresent(body, "username", credentials.get("username"));
+		putIfPresent(body, "password", credentials.get("password"));
+		String logintype = OperatorLoginTypes.normalize(credentials.get("logintype"));
+		body.put("logintype", logintype);
 		try {
 			return objectMapper.writeValueAsString(body);
 		}
 		catch (JsonProcessingException ex) {
 			throw new IllegalArgumentException("unable to serialize login body", ex);
+		}
+	}
+
+	private static void requireOperator(TokenKind tokenKind) {
+		if (tokenKind != TokenKind.OPERATOR) {
+			throw new IllegalArgumentException("ecshopx-admin MCP only supports OPERATOR identity");
 		}
 	}
 

@@ -14,7 +14,15 @@ public final class McpPublicUrls {
 	}
 
 	public static String resourceMetadataUrl(McpProperties properties) {
-		return publicBase(properties) + "/.well-known/oauth-protected-resource";
+		String path = properties.getMcpPath();
+		if (!StringUtils.hasText(path)) {
+			path = "/api/mcp";
+		}
+		if (!path.startsWith("/")) {
+			path = "/" + path;
+		}
+		// Point clients at the path-appended PRM document (RFC 9728) for /api/mcp resources.
+		return publicBase(properties) + "/.well-known/oauth-protected-resource" + path;
 	}
 
 	public static String mcpResourceUrl(McpProperties properties) {

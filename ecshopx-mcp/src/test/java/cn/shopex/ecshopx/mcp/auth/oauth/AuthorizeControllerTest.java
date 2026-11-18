@@ -85,7 +85,18 @@ class AuthorizeControllerTest {
 						.param("code_challenge", "challenge"))
 				.andExpect(status().isOk())
 				.andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
-				.andExpect(content().string(org.hamcrest.Matchers.containsString("MCP OAuth")));
+				.andExpect(content().string(org.hamcrest.Matchers.containsString("请登录")))
+				.andExpect(content().string(org.hamcrest.Matchers.containsString("ecxbg.jpg")))
+				.andExpect(content().string(org.hamcrest.Matchers.containsString("name=\"logintype\"")))
+				.andExpect(content().string(org.hamcrest.Matchers.containsString("value=\"merchant\"")))
+				.andExpect(content().string(org.hamcrest.Matchers.containsString(">超级管理员<")))
+				.andExpect(content().string(org.hamcrest.Matchers.containsString(">平台管理员<")))
+				.andExpect(content().string(org.hamcrest.Matchers.containsString(">店员<")))
+				.andExpect(content().string(org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("value=\"dealer\""))))
+				.andExpect(content().string(org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString(">经销商<"))))
+				.andExpect(content().string(org.hamcrest.Matchers.containsString("Powered by shopex")))
+				.andExpect(content().string(org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("门店 POS"))))
+				.andExpect(content().string(org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("会员 MEMBER"))));
 	}
 
 	@Test
@@ -99,7 +110,7 @@ class AuthorizeControllerTest {
 						.param("client_id", clientId)
 						.param("redirect_uri", "http://localhost:5173/callback")
 						.param("code_challenge", "challenge")
-						.param("token_kind", "OPERATOR")
+						.param("logintype", "distributor")
 						.param("username", "admin")
 						.param("password", "pwd"))
 				.andExpect(status().isFound())
@@ -128,10 +139,25 @@ class AuthorizeControllerTest {
 						.param("client_id", clientId)
 						.param("redirect_uri", "http://localhost:5173/callback")
 						.param("code_challenge", "challenge")
-						.param("token_kind", "OPERATOR")
+						.param("logintype", "admin")
 						.param("username", "admin")
 						.param("password", "bad"))
 				.andExpect(status().isOk())
 				.andExpect(content().string(org.hamcrest.Matchers.containsString("invalid credentials")));
+	}
+
+	@Test
+	void postLoginRejectsUnknownLogintype() throws Exception {
+		mockMvc.perform(post("/api/mcp/oauth/authorize/login")
+						.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+						.param("response_type", "code")
+						.param("client_id", clientId)
+						.param("redirect_uri", "http://localhost:5173/callback")
+						.param("code_challenge", "challenge")
+						.param("logintype", "member")
+						.param("username", "admin")
+						.param("password", "pwd"))
+				.andExpect(status().isOk())
+				.andExpect(content().string(org.hamcrest.Matchers.containsString("Unsupported logintype")));
 	}
 }

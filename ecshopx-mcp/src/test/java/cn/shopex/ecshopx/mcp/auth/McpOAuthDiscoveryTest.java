@@ -60,6 +60,13 @@ class McpOAuthDiscoveryTest {
 	}
 
 	@Test
+	void protectedResourceMetadataAtApiMcpPathSuffix() throws Exception {
+		discoveryMvc.perform(get("/.well-known/oauth-protected-resource/api/mcp"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.resource").value("https://mcp.example.com/api/mcp"));
+	}
+
+	@Test
 	void authorizationServerMetadata() throws Exception {
 		discoveryMvc.perform(get("/.well-known/oauth-authorization-server"))
 				.andExpect(status().isOk())
@@ -74,6 +81,13 @@ class McpOAuthDiscoveryTest {
 	}
 
 	@Test
+	void authorizationServerMetadataAtApiMcpPathSuffix() throws Exception {
+		discoveryMvc.perform(get("/.well-known/oauth-authorization-server/api/mcp"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.issuer").value("https://mcp.example.com"));
+	}
+
+	@Test
 	void mcpBearerAuthFilterReturns401WithoutAuthorization() throws Exception {
 		McpBearerAuthFilter filter = new McpBearerAuthFilter(mcpProperties);
 		MockHttpServletRequest request = new MockHttpServletRequest("POST", "/api/mcp");
@@ -81,7 +95,7 @@ class McpOAuthDiscoveryTest {
 		filter.doFilter(request, response, new MockFilterChain());
 		assertEquals(401, response.getStatus());
 		assertEquals(
-				"Bearer realm=\"mcp\", resource_metadata=\"https://mcp.example.com/.well-known/oauth-protected-resource\"",
+				"Bearer realm=\"mcp\", resource_metadata=\"https://mcp.example.com/.well-known/oauth-protected-resource/api/mcp\"",
 				response.getHeader("WWW-Authenticate"));
 	}
 

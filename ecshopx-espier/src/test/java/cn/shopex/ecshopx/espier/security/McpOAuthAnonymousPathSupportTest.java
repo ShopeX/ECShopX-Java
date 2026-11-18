@@ -18,7 +18,9 @@ class McpOAuthAnonymousPathSupportTest {
 	void matchesWellKnownPaths() {
 		assertTrue(McpOAuthAnonymousPathSupport.matches("/.well-known/oauth-protected-resource"));
 		assertTrue(McpOAuthAnonymousPathSupport.matches("/.well-known/oauth-protected-resource/mcp"));
+		assertTrue(McpOAuthAnonymousPathSupport.matches("/.well-known/oauth-protected-resource/api/mcp"));
 		assertTrue(McpOAuthAnonymousPathSupport.matches("/.well-known/oauth-authorization-server"));
+		assertTrue(McpOAuthAnonymousPathSupport.matches("/.well-known/oauth-authorization-server/api/mcp"));
 	}
 
 	@Test

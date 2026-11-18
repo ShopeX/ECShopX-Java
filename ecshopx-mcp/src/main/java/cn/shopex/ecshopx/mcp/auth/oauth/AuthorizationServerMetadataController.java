@@ -19,7 +19,13 @@ public class AuthorizationServerMetadataController {
 		this.mcpProperties = mcpProperties;
 	}
 
-	@GetMapping(value = "/.well-known/oauth-authorization-server", produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(
+			value = {
+				"/.well-known/oauth-authorization-server",
+				"/.well-known/oauth-authorization-server/api/mcp",
+				"/api/mcp/.well-known/oauth-authorization-server"
+			},
+			produces = MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> metadata() {
 		String base = McpPublicUrls.publicBase(mcpProperties);
 		Map<String, Object> body = new LinkedHashMap<>();
