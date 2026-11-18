@@ -21,6 +21,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -38,6 +39,7 @@ import cn.shopex.ecshopx.common.dispatch.ThirdPartyTradeAftersalesCancelSaasErpD
 import cn.shopex.ecshopx.common.dispatch.ThirdPartyTradeAftersalesSaasErpDispatchPublisher;
 import cn.shopex.ecshopx.common.dispatch.WdtErpTradeAfterSaleDispatchPublisher;
 import cn.shopex.ecshopx.common.exception.ForbiddenException;
+import cn.shopex.ecshopx.common.port.aftersales.AftersalesAgreedCouponRestorePort;
 import cn.shopex.ecshopx.common.port.aftersales.AftersalesBrokeragePort;
 import cn.shopex.ecshopx.common.port.order.JushuitanSettingReadPort;
 import cn.shopex.ecshopx.common.port.order.NormalOrderLeftAftersalesWritePort;
@@ -143,6 +145,7 @@ class AftersalesRefundConfirmServiceScopeTest {
 						wdtErpTradeAfterSaleBusPayloadBuilder,
 						thirdPartyTradeAftersalesCancelSaasErpDispatchPublisher,
 						thirdPartyTradeAftersalesSaasErpDispatchPublisher,
+						mock(AftersalesAgreedCouponRestorePort.class),
 						posOrderDocAccessPort,
 						aftersalesRefuseWxaNotifyService);
 	}

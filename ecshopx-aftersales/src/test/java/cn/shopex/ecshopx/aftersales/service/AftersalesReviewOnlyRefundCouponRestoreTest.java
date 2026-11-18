@@ -170,7 +170,8 @@ class AftersalesReviewOnlyRefundCouponRestoreTest {
 						thirdPartyTradeAftersalesCancelSaasErpDispatchPublisher,
 						thirdPartyTradeAftersalesSaasErpDispatchPublisher,
 						tradeAftersalesDispatchPublisher,
-						aftersalesAgreedCouponRestorePort);
+						aftersalesAgreedCouponRestorePort,
+						mock(AftersalesRefuseWxaNotifyService.class));
 
 		Map<String, Object> param = new LinkedHashMap<>();
 		param.put("company_id", companyId);
@@ -292,7 +293,8 @@ class AftersalesReviewOnlyRefundCouponRestoreTest {
 						thirdPartyTradeAftersalesCancelSaasErpDispatchPublisher,
 						thirdPartyTradeAftersalesSaasErpDispatchPublisher,
 						tradeAftersalesDispatchPublisher,
-						aftersalesAgreedCouponRestorePort);
+						aftersalesAgreedCouponRestorePort,
+						mock(AftersalesRefuseWxaNotifyService.class));
 
 		Map<String, Object> param = new LinkedHashMap<>();
 		param.put("company_id", companyId);

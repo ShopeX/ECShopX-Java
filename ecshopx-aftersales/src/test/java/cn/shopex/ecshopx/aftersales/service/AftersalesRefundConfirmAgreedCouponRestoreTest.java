@@ -23,6 +23,7 @@ import cn.shopex.ecshopx.aftersales.wdterp.WdtErpTradeAfterSaleBusPayloadBuilder
 import cn.shopex.ecshopx.common.dispatch.JushuitanTradeAftersalesDispatchPublisher;
 import cn.shopex.ecshopx.common.dispatch.ThirdPartyTradeAftersalesCancelSaasErpDispatchPublisher;
 import cn.shopex.ecshopx.common.dispatch.ThirdPartyTradeAftersalesSaasErpDispatchPublisher;
+import cn.shopex.ecshopx.common.auth.PosOrderDocAccessPort;
 import cn.shopex.ecshopx.common.dispatch.WdtErpTradeAfterSaleDispatchPublisher;
 import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.common.port.aftersales.AftersalesAgreedCouponRestorePort;
@@ -153,7 +154,9 @@ class AftersalesRefundConfirmAgreedCouponRestoreTest {
 						new WdtErpTradeAfterSaleBusPayloadBuilder(),
 						mock(ThirdPartyTradeAftersalesCancelSaasErpDispatchPublisher.class),
 						mock(ThirdPartyTradeAftersalesSaasErpDispatchPublisher.class),
-						aftersalesAgreedCouponRestorePort);
+						aftersalesAgreedCouponRestorePort,
+						mock(PosOrderDocAccessPort.class),
+						mock(AftersalesRefuseWxaNotifyService.class));
 
 		Map<String, Object> param = new LinkedHashMap<>();
 		param.put("company_id", 1L);
@@ -212,7 +215,9 @@ class AftersalesRefundConfirmAgreedCouponRestoreTest {
 						new WdtErpTradeAfterSaleBusPayloadBuilder(),
 						mock(ThirdPartyTradeAftersalesCancelSaasErpDispatchPublisher.class),
 						mock(ThirdPartyTradeAftersalesSaasErpDispatchPublisher.class),
-						aftersalesAgreedCouponRestorePort);
+						aftersalesAgreedCouponRestorePort,
+						mock(PosOrderDocAccessPort.class),
+						mock(AftersalesRefuseWxaNotifyService.class));
 
 		Map<String, Object> param = new LinkedHashMap<>();
 		param.put("company_id", 1L);
@@ -292,7 +297,9 @@ class AftersalesRefundConfirmAgreedCouponRestoreTest {
 						new WdtErpTradeAfterSaleBusPayloadBuilder(),
 						mock(ThirdPartyTradeAftersalesCancelSaasErpDispatchPublisher.class),
 						mock(ThirdPartyTradeAftersalesSaasErpDispatchPublisher.class),
-						aftersalesAgreedCouponRestorePort);
+						aftersalesAgreedCouponRestorePort,
+						mock(PosOrderDocAccessPort.class),
+						mock(AftersalesRefuseWxaNotifyService.class));
 
 		Map<String, Object> param = new LinkedHashMap<>();
 		param.put("company_id", 1L);
