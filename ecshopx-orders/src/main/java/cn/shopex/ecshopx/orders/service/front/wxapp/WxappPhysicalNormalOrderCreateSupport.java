@@ -17,6 +17,7 @@
 package cn.shopex.ecshopx.orders.service.front.wxapp;
 
 import cn.shopex.ecshopx.common.exception.ResourceException;
+import cn.shopex.ecshopx.common.order.OrderReceiverDetailAddressRules;
 import cn.shopex.ecshopx.orders.service.normal.create.NormalOrderCreateState;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Map;
@@ -55,8 +56,11 @@ public class WxappPhysicalNormalOrderCreateSupport {
 		state.getParams().put("is_online_order", Boolean.TRUE);
 		if ("service".equals(orderTypeSlug)) {
 			validateServiceOrderNeedParams(state.getParams());
-		} else if ("normal".equals(orderTypeSlug) || "normal_pointsmall".equals(orderTypeSlug)) {
-			validateNormalOrderReceiverBeforeCart(state.getParams());
+		} else {
+			OrderReceiverDetailAddressRules.assertDetailAddressNoEmojiWhenLogistics(state.getParams());
+			if ("normal".equals(orderTypeSlug) || "normal_pointsmall".equals(orderTypeSlug)) {
+				validateNormalOrderReceiverBeforeCart(state.getParams());
+			}
 		}
 		HttpServletRequest request = ctx.getRequest();
 		return wxappNormalOrderCreateOrchestrator.create(state, request, orderTypeSlug);

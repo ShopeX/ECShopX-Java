@@ -17,6 +17,7 @@
 package cn.shopex.ecshopx.orders.service.normal.shopadmin;
 
 import cn.shopex.ecshopx.common.exception.ResourceException;
+import cn.shopex.ecshopx.common.order.OrderReceiverDetailAddressRules;
 import cn.shopex.ecshopx.common.order.normal.OrderCheckoutCartPort;
 import cn.shopex.ecshopx.common.order.normal.OrderCreateDistributorCheckPort;
 import cn.shopex.ecshopx.common.order.normal.OrderCreateFormatDataPort;
@@ -63,6 +64,7 @@ public class ShopadminNormalOrderCreateOrchestrator {
 
 	public Map<String, Object> create(NormalOrderCreateState state, HttpServletRequest request) {
 		assertKnownOrderType(state);
+		OrderReceiverDetailAddressRules.assertDetailAddressNoEmojiWhenLogistics(state.getParams());
 		orderCreateNeedParamsPort.validate(state);
 		orderCheckoutCartPort.fillItemsFromOperatorCart(state, request);
 		orderCreateItemCheckPort.check(state);
