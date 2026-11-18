@@ -83,6 +83,7 @@ public class TurntableActivityListService {
 		}
 
 		Long count = luckyDrawActivityMapper.selectCount(wrapper);
+		applyListOrder(wrapper, now, status);
 		Page<LuckyDrawActivity> pageReq = new Page<>(page, pageSize, false);
 		Page<LuckyDrawActivity> pageResult = luckyDrawActivityMapper.selectPage(pageReq, wrapper);
 
@@ -159,5 +160,27 @@ public class TurntableActivityListService {
 			return "";
 		}
 		return raw.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_");
+	}
+
+	private static boolean hasLifecycleStatusFilter(String status) {
+		return Objects.equals(status, "notstart")
+				|| Objects.equals(status, "expire")
+				|| Objects.equals(status, "online");
+	}
+
+	/** 无 status 筛选：进行中 → 未开始 → 已结束，组内 created 倒序；有 status 仅 created 倒序。 */
+	private static void applyListOrder(LambdaQueryWrapper<LuckyDrawActivity> wrapper, long now, String status) {
+		if (hasLifecycleStatusFilter(status)) {
+			wrapper.orderByDesc(LuckyDrawActivity::getCreated);
+			return;
+		}
+		wrapper.last(
+				"ORDER BY CASE WHEN begin_time <= "
+						+ now
+						+ " AND end_time > "
+						+ now
+						+ " THEN 0 WHEN begin_time > "
+						+ now
+						+ " THEN 1 ELSE 2 END, created DESC");
 	}
 }
