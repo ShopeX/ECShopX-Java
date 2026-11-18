@@ -30,14 +30,18 @@
 	</select>
 
 	<select id="selectGroupedByMobilePage" resultType="cn.shopex.ecshopx.distribution.mapper.DistributorWhiteListMobileAggRow">
-		SELECT w.mobile AS mobile,
+		SELECT MIN(w.id) AS id,
+			MIN(w.company_id) AS companyId,
+			MIN(w.created) AS created,
+			MAX(w.updated) AS updated,
 			MAX(w.username) AS username,
+			w.mobile AS mobile,
 			GROUP_CONCAT(DISTINCT w.distributor_id ORDER BY w.distributor_id SEPARATOR ',') AS distributorIdCsv
 		FROM distribution_distributor_white_list w
 		WHERE
 		<include refid="whiteListWhere"/>
 		GROUP BY w.mobile
-		ORDER BY w.mobile ASC
+		ORDER BY MAX(w.updated) DESC, w.mobile ASC
 		LIMIT #{offset}, #{limit}
 	</select>
 

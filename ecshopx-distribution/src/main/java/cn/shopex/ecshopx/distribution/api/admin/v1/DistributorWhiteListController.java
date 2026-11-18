@@ -229,6 +229,9 @@ public class DistributorWhiteListController {
 
 	private static int parseListPageSize(Map<String, Object> merged) {
 		Object raw = merged != null ? merged.get("page_size") : null;
+		if (raw == null && merged != null) {
+			raw = merged.get("pageSize");
+		}
 		if (raw == null) {
 			return 10;
 		}

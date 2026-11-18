@@ -55,11 +55,19 @@ public class DistributorWhiteListExportQueryService {
 
 	public List<DistributorWhiteListListRow> listGroupedByMobileWithoutPageSizeLimit(
 			DistributorWhiteListExportFilter filter) {
+		return listGroupedByMobilePage(filter, 1, Integer.MAX_VALUE);
+	}
+
+	public List<DistributorWhiteListListRow> listGroupedByMobilePage(
+			DistributorWhiteListExportFilter filter, int page, int pageSize) {
 		if (filter.shopNotFound()) {
 			return List.of();
 		}
+		int safePage = Math.max(1, page);
+		int safePageSize = Math.max(1, pageSize);
+		int offset = (safePage - 1) * safePageSize;
 		List<DistributorWhiteListMobileAggRow> raw =
-				distributorWhiteListExportMapper.selectGroupedByMobileAll(filter);
+				distributorWhiteListExportMapper.selectGroupedByMobilePage(filter, offset, safePageSize);
 		if (raw.isEmpty()) {
 			return List.of();
 		}

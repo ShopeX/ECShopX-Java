@@ -51,7 +51,7 @@ public class DistributorWhiteListListService {
 						companyId, operatorType, jwtDistributorId, merged);
 		long total = distributorWhiteListExportQueryService.countGroupedByMobile(filter);
 		List<DistributorWhiteListListRow> rows =
-				distributorWhiteListExportQueryService.listGroupedByMobileWithoutPageSizeLimit(filter);
+				distributorWhiteListExportQueryService.listGroupedByMobilePage(filter, page, pageSize);
 		List<Map<String, Object>> list = new ArrayList<>(rows.size());
 		for (DistributorWhiteListListRow row : rows) {
 			Map<String, Object> item = new LinkedHashMap<>();
