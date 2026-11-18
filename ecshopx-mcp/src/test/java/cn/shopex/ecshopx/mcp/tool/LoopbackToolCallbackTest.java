@@ -35,7 +35,7 @@ class LoopbackToolCallbackTest {
 		props.setApiBaseUrl(server.url("/").toString().replaceAll("/$", ""));
 		LoopbackToolExecutor executor = new LoopbackToolExecutor(
 				new ApiLoopbackClient(props, RestClient.builder()));
-		HttpToolDeclaration declaration = new HttpToolDeclaration(
+		HttpToolDeclaration declaration = HttpToolDeclaration.read(
 				"mcp_smoke_get", "Smoke GET", "{}", "GET", "/api/v1/pos/auth/me");
 		ToolCallback toolCallback = ToolDeclarationRegistrar.toToolCallback(declaration, executor);
 		return (LoopbackToolCallback) toolCallback;

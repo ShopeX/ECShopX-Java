@@ -20,7 +20,7 @@ class LoopbackToolExecutorTest {
 		server.enqueue(new MockResponse().setResponseCode(403).setBody("{\"message\":\"denied\"}"));
 		server.start();
 		LoopbackToolExecutor executor = executorFor(server);
-		HttpToolDeclaration declGetMe = new HttpToolDeclaration(
+		HttpToolDeclaration declGetMe = HttpToolDeclaration.read(
 				"mcp_smoke_get",
 				"Smoke GET",
 				"{}",
@@ -39,7 +39,7 @@ class LoopbackToolExecutorTest {
 		server.enqueue(new MockResponse().setResponseCode(200).setBody("{\"userId\":1}"));
 		server.start();
 		LoopbackToolExecutor executor = executorFor(server);
-		HttpToolDeclaration decl = new HttpToolDeclaration(
+		HttpToolDeclaration decl = HttpToolDeclaration.read(
 				"mcp_smoke_get", "Smoke GET", "{}", "GET", "/api/v1/pos/auth/me");
 		ToolResult result = executor.execute(decl, "{}", "Bearer tok");
 		assertFalse(result.isError());
@@ -55,7 +55,7 @@ class LoopbackToolExecutorTest {
 		server.enqueue(new MockResponse().setResponseCode(200).setBody("ok"));
 		server.start();
 		LoopbackToolExecutor executor = executorFor(server);
-		HttpToolDeclaration decl = new HttpToolDeclaration(
+		HttpToolDeclaration decl = HttpToolDeclaration.read(
 				"get_item", "Get item", "{}", "GET", "/api/v1/items/{id}");
 		executor.execute(decl, "{\"id\":\"99\"}", null);
 		RecordedRequest req = server.takeRequest();
