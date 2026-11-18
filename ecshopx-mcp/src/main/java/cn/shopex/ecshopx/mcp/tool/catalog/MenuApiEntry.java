@@ -34,7 +34,7 @@ public record MenuApiEntry(
 				|| permissions.stream().anyMatch(p -> p.toLowerCase().contains(q));
 	}
 
-	boolean intersectsMenuKeys(Set<String> menuKeys) {
+	public boolean intersectsMenuKeys(Set<String> menuKeys) {
 		if (menuKeys == null || menuKeys.isEmpty()) {
 			return false;
 		}

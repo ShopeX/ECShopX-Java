@@ -5,7 +5,11 @@ import cn.shopex.ecshopx.mcp.tool.AdminFixedTools;
 import cn.shopex.ecshopx.mcp.tool.HttpToolDeclaration;
 import cn.shopex.ecshopx.mcp.tool.LoopbackToolExecutor;
 import cn.shopex.ecshopx.mcp.tool.ToolDeclarationRegistrar;
+import cn.shopex.ecshopx.mcp.tool.catalog.MenuApiCatalog;
+import cn.shopex.ecshopx.mcp.tool.catalog.MenuApiCatalogLoader;
 import cn.shopex.ecshopx.mcp.tool.grant.MemberCouponGrantToolCallback;
+import cn.shopex.ecshopx.mcp.tool.resolve.AdminApiCallToolCallback;
+import cn.shopex.ecshopx.mcp.tool.resolve.MenuApisResolveToolCallback;
 import cn.shopex.ecshopx.mcp.tool.smoke.McpSmokeTools;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.ai.tool.StaticToolCallbackProvider;
@@ -41,8 +45,17 @@ public class McpServerConfiguration {
 	}
 
 	@Bean
+	@ConditionalOnMissingBean
+	MenuApiCatalog menuApiCatalog() {
+		return MenuApiCatalogLoader.loadClasspath();
+	}
+
+	@Bean
 	ToolCallbackProvider mcpLoopbackToolCallbackProvider(
-			LoopbackToolExecutor loopbackToolExecutor, McpProperties mcpProperties) {
+			LoopbackToolExecutor loopbackToolExecutor,
+			ApiLoopbackClient apiLoopbackClient,
+			MenuApiCatalog menuApiCatalog,
+			McpProperties mcpProperties) {
 		List<HttpToolDeclaration> declarations = new ArrayList<>();
 		declarations.add(McpSmokeTools.smokeDeclaration(mcpProperties));
 		declarations.addAll(AdminFixedTools.allDeclarations());
@@ -51,6 +64,8 @@ public class McpServerConfiguration {
 			callbacks.add(ToolDeclarationRegistrar.toToolCallback(declaration, loopbackToolExecutor));
 		}
 		callbacks.add(new MemberCouponGrantToolCallback(loopbackToolExecutor, mcpProperties));
+		callbacks.add(new MenuApisResolveToolCallback(menuApiCatalog, apiLoopbackClient));
+		callbacks.add(new AdminApiCallToolCallback(menuApiCatalog, apiLoopbackClient));
 		return new StaticToolCallbackProvider(callbacks.toArray(ToolCallback[]::new));
 	}
 
