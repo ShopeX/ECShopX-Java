@@ -37,7 +37,7 @@ public final class MenuApiCatalog {
 		String m = method.toUpperCase(Locale.ROOT);
 		List<MenuApiEntry> hits = new ArrayList<>();
 		for (MenuApiEntry entry : entries) {
-			if (entry.method().equalsIgnoreCase(m) && entry.path().equals(path)) {
+			if (entry.method().equalsIgnoreCase(m) && entry.path().equalsIgnoreCase(path)) {
 				hits.add(entry);
 			}
 		}

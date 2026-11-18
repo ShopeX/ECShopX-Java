@@ -13,9 +13,9 @@ class MenuApiCatalogLoaderTest {
 	@Test
 	void loadsOrdersAndPermissionEntries() {
 		MenuApiCatalog catalog = MenuApiCatalogLoader.loadClasspath();
-		assertFalse(catalog.findByRouteOrPermission("tradenormalorders").isEmpty()
-				|| catalog.findByRouteOrPermission("/api/v1/orders").isEmpty()
-				|| catalog.findByRouteOrPermission("permission").isEmpty());
+		assertFalse(catalog.findByRouteOrPermission("tradenormalorders").isEmpty());
+		assertFalse(catalog.findByRouteOrPermission("/api/v1/orders").isEmpty());
+		assertFalse(catalog.findByRouteOrPermission("permission").isEmpty());
 		List<MenuApiEntry> orders = catalog.findByMethodAndPath("GET", "/api/v1/orders");
 		assertFalse(orders.isEmpty());
 	}
