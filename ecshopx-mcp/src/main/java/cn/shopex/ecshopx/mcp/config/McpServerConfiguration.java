@@ -1,6 +1,7 @@
 package cn.shopex.ecshopx.mcp.config;
 
 import cn.shopex.ecshopx.mcp.loopback.ApiLoopbackClient;
+import cn.shopex.ecshopx.mcp.tool.AdminFixedTools;
 import cn.shopex.ecshopx.mcp.tool.HttpToolDeclaration;
 import cn.shopex.ecshopx.mcp.tool.LoopbackToolExecutor;
 import cn.shopex.ecshopx.mcp.tool.ToolDeclarationRegistrar;
@@ -17,6 +18,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.web.client.RestClient;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Configuration
@@ -38,8 +40,10 @@ public class McpServerConfiguration {
 	@Bean
 	ToolCallbackProvider mcpLoopbackToolCallbackProvider(
 			LoopbackToolExecutor loopbackToolExecutor, McpProperties mcpProperties) {
-		HttpToolDeclaration smoke = McpSmokeTools.smokeDeclaration(mcpProperties);
-		return ToolDeclarationRegistrar.provider(List.of(smoke), loopbackToolExecutor);
+		List<HttpToolDeclaration> declarations = new ArrayList<>();
+		declarations.add(McpSmokeTools.smokeDeclaration(mcpProperties));
+		declarations.addAll(AdminFixedTools.allDeclarations());
+		return ToolDeclarationRegistrar.provider(declarations, loopbackToolExecutor);
 	}
 
 	@Bean
