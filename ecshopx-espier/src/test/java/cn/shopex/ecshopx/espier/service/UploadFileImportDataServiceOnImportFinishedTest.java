@@ -63,7 +63,8 @@ class UploadFileImportDataServiceOnImportFinishedTest {
 						new ObjectMapper(),
 						registry,
 						fileStorageService,
-						platformTransactionManager);
+						platformTransactionManager,
+						List.of());
 
 		LinkedHashMap<String, Object> uploadFileInfo = new LinkedHashMap<>();
 		uploadFileInfo.put("id", 7001L);

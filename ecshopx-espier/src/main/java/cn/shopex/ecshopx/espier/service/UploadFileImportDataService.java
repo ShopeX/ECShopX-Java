@@ -159,6 +159,7 @@ public class UploadFileImportDataService {
 					new ArrayList<>(errorHeaderTitles),
 					storagePath,
 					companyId,
+					requestFileType,
 					table);
 			return;
 		}
