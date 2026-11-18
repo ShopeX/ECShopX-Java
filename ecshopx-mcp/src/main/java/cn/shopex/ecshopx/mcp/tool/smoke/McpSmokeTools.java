@@ -14,7 +14,7 @@ public final class McpSmokeTools {
 	}
 
 	public static HttpToolDeclaration smokeDeclaration(McpProperties properties) {
-		return new HttpToolDeclaration(
+		return HttpToolDeclaration.read(
 				TOOL_NAME,
 				"Smoke loopback GET to verify MCP bearer forwarding",
 				INPUT_SCHEMA,

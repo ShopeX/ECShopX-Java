@@ -26,6 +26,8 @@ public class LoopbackToolExecutor {
 
 	private static final Pattern PATH_PLACEHOLDER = Pattern.compile("\\{([^}]+)}");
 
+	private static final Set<String> RESERVED_ARG_KEYS = Set.of("confirm", "force");
+
 	private final ApiLoopbackClient loopbackClient;
 	private final ObjectMapper objectMapper;
 
@@ -41,6 +43,7 @@ public class LoopbackToolExecutor {
 	public ToolResult execute(HttpToolDeclaration declaration, String argsJson, String bearerToken) {
 		String effectiveBearer = resolveBearer(bearerToken);
 		Map<String, Object> args = parseArgs(argsJson);
+		validateGuards(declaration, args);
 		Set<String> pathKeys = pathPlaceholderKeys(declaration.pathTemplate());
 		String path = resolvePath(declaration.pathTemplate(), args, pathKeys);
 		Map<String, ?> query = buildQuery(declaration.method(), args, pathKeys);
@@ -79,6 +82,22 @@ public class LoopbackToolExecutor {
 			return bearerToken;
 		}
 		return ToolAuthContext.getBearer();
+	}
+
+	private static void validateGuards(HttpToolDeclaration declaration, Map<String, Object> args) {
+		for (String key : declaration.requiredArgs()) {
+			Object v = args.get(key);
+			if (v == null || (v instanceof String s && !StringUtils.hasText(s))) {
+				throw new IllegalArgumentException("Missing required argument: " + key);
+			}
+		}
+		if (declaration.requireConfirm() && !isTruthyTrue(args.get("confirm"))) {
+			throw new IllegalArgumentException("confirm=true is required for tool: " + declaration.name());
+		}
+	}
+
+	private static boolean isTruthyTrue(Object confirm) {
+		return Boolean.TRUE.equals(confirm) || "true".equalsIgnoreCase(String.valueOf(confirm));
 	}
 
 	private Map<String, Object> parseArgs(String argsJson) {
@@ -121,7 +140,7 @@ public class LoopbackToolExecutor {
 		}
 		Map<String, Object> query = new LinkedHashMap<>();
 		args.forEach((key, value) -> {
-			if (!pathKeys.contains(key) && value != null) {
+			if (!pathKeys.contains(key) && !RESERVED_ARG_KEYS.contains(key) && value != null) {
 				query.put(key, value);
 			}
 		});
@@ -134,7 +153,7 @@ public class LoopbackToolExecutor {
 		}
 		Map<String, Object> body = new LinkedHashMap<>();
 		args.forEach((key, value) -> {
-			if (!pathKeys.contains(key) && value != null) {
+			if (!pathKeys.contains(key) && !RESERVED_ARG_KEYS.contains(key) && value != null) {
 				body.put(key, value);
 			}
 		});
