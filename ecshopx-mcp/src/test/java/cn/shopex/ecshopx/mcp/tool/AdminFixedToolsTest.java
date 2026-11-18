@@ -1,10 +1,14 @@
 package cn.shopex.ecshopx.mcp.tool;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -39,17 +43,37 @@ class AdminFixedToolsTest {
 		assertEquals("/api/v1/goods/itemstoreupdate", byName.get("goods_item_stock_update").pathTemplate());
 	}
 
-	@Test
-	void p2MarketingReadToolsUseExpectedPaths() {
+	static Stream<Arguments> p2MarketingToolNameAndPath() {
+		return Stream.of(
+				Arguments.of("marketing_activities_search", "/api/v1/marketing/getlist"),
+				Arguments.of("marketing_activity_items_search", "/api/v1/marketing/getItemList"),
+				Arguments.of("seckill_activities_search", "/api/v1/promotions/seckillactivity/getlist"),
+				Arguments.of("community_activities_search", "/api/v1/community/list"),
+				Arguments.of("coupons_search", "/api/v1/discountcard/list"),
+				Arguments.of("coupons_effective_search", "/api/v1/effectiveDiscountcard/list"),
+				Arguments.of("coupon_get", "/api/v1/discountcard/get"),
+				Arguments.of("coupon_holders_search", "/api/v1/discountcard/detail/list"),
+				Arguments.of("coupon_grant_logs_search", "/api/v1/promotions/activity/give"),
+				Arguments.of("coupon_grant_error_logs_search", "/api/v1/promotions/activity/give/{id}"),
+				Arguments.of("coupon_grant_setting_get", "/api/v1/discountcard/couponGrantSetting"));
+	}
+
+	@ParameterizedTest
+	@MethodSource("p2MarketingToolNameAndPath")
+	void p2MarketingReadToolsUseExpectedPaths(String toolName, String expectedPath) {
 		Map<String, HttpToolDeclaration> byName = AdminFixedTools.allDeclarations().stream()
 				.collect(Collectors.toMap(HttpToolDeclaration::name, d -> d, (a, b) -> a));
-		assertEquals("/api/v1/marketing/getlist", byName.get("marketing_activities_search").pathTemplate());
-		assertEquals("/api/v1/marketing/getItemList", byName.get("marketing_activity_items_search").pathTemplate());
-		assertEquals("/api/v1/promotions/seckillactivity/getlist",
-				byName.get("seckill_activities_search").pathTemplate());
-		assertEquals("/api/v1/discountcard/list", byName.get("coupons_search").pathTemplate());
-		assertEquals("/api/v1/promotions/activity/give/{id}",
-				byName.get("coupon_grant_error_logs_search").pathTemplate());
-		assertFalse(byName.get("coupons_search").requireConfirm());
+		HttpToolDeclaration decl = byName.get(toolName);
+		assertEquals(expectedPath, decl.pathTemplate());
+		assertEquals("GET", decl.method());
+		assertFalse(decl.requireConfirm());
+	}
+
+	@Test
+	void memberCouponGrantIsNotInFixedDeclarations() {
+		List<String> names = AdminFixedTools.allDeclarations().stream()
+				.map(HttpToolDeclaration::name)
+				.toList();
+		assertFalse(names.contains("member_coupon_grant"));
 	}
 }

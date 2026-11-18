@@ -21,6 +21,26 @@ class MemberCouponGrantGuardTest {
 	private static final ObjectMapper MAPPER = new ObjectMapper();
 
 	@Test
+	void rejectsMissingConfirm() {
+		McpProperties props = new McpProperties();
+		MemberCouponGrantToolCallback cb = new MemberCouponGrantToolCallback(
+				new LoopbackToolExecutor(new ApiLoopbackClient(props, RestClient.builder())), props);
+		assertThrows(IllegalArgumentException.class,
+				() -> cb.call("{\"userids\":[1],\"couponsids\":[2]}"));
+		assertThrows(IllegalArgumentException.class,
+				() -> cb.call("{\"confirm\":false,\"userids\":[1],\"couponsids\":[2]}"));
+	}
+
+	@Test
+	void rejectsEmptyCouponsids() {
+		McpProperties props = new McpProperties();
+		MemberCouponGrantToolCallback cb = new MemberCouponGrantToolCallback(
+				new LoopbackToolExecutor(new ApiLoopbackClient(props, RestClient.builder())), props);
+		assertThrows(IllegalArgumentException.class,
+				() -> cb.call("{\"confirm\":true,\"userids\":[1],\"couponsids\":[]}"));
+	}
+
+	@Test
 	void rejectsEmptyOrOversizedUserids() {
 		McpProperties props = new McpProperties();
 		props.setCouponGrantMaxRecipients(2);
