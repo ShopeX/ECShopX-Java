@@ -8,7 +8,6 @@ import cn.shopex.ecshopx.mcp.tool.catalog.MenuApiCatalogLoader;
 import cn.shopex.ecshopx.mcp.tool.grant.MemberCouponGrantToolCallback;
 import cn.shopex.ecshopx.mcp.tool.resolve.AdminApiCallToolCallback;
 import cn.shopex.ecshopx.mcp.tool.resolve.MenuApisResolveToolCallback;
-import cn.shopex.ecshopx.mcp.tool.smoke.McpSmokeTools;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.ai.tool.ToolCallback;
@@ -25,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class McpServerConfigurationTest {
 
 	@Test
-	void loopbackProviderRegistersSmokeFixedGrantResolveAndCall() {
+	void loopbackProviderRegistersFixedGrantResolveAndCall() {
 		McpProperties properties = new McpProperties();
 		ApiLoopbackClient loopbackClient = new ApiLoopbackClient(properties, RestClient.builder());
 		LoopbackToolExecutor executor = new LoopbackToolExecutor(loopbackClient, new ObjectMapper());
@@ -37,7 +36,7 @@ class McpServerConfigurationTest {
 				.map(def -> def.name())
 				.collect(Collectors.toSet());
 
-		assertTrue(names.contains(McpSmokeTools.TOOL_NAME));
+		assertFalse(names.contains("mcp_smoke_get"));
 		assertTrue(names.contains(MemberCouponGrantToolCallback.TOOL_NAME));
 		assertTrue(names.contains(MenuApisResolveToolCallback.TOOL_NAME));
 		assertTrue(names.contains(AdminApiCallToolCallback.TOOL_NAME));
@@ -49,7 +48,7 @@ class McpServerConfigurationTest {
 		assertFalse(names.contains("distributor_basic_update"));
 
 		int fixedCount = AdminFixedTools.allDeclarations().size();
-		assertEquals(1 + fixedCount + 3, names.size());
-		assertEquals(1 + fixedCount + 3, callbacks.size());
+		assertEquals(fixedCount + 3, names.size());
+		assertEquals(fixedCount + 3, callbacks.size());
 	}
 }

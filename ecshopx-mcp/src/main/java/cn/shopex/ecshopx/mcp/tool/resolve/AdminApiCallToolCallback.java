@@ -56,7 +56,12 @@ public final class AdminApiCallToolCallback implements ToolCallback {
 		this.objectMapper = objectMapper;
 		this.toolDefinition = DefaultToolDefinition.builder()
 				.name(TOOL_NAME)
-				.description("Call admin API by catalog method/path with menu and risk guards")
+				.description("""
+						Call a catalog-registered admin API via loopback. path must be the catalog template \
+						(e.g. /api/v1/order/{order_id}) starting with /api/v1/, plus path args as top-level fields. \
+						Prefer fixed tools when they exist. write-risk needs confirm=true; destructive is blocked. \
+						force=true only skips menu∩catalog check — still requires catalog hit and confirm for writes. \
+						Prefer member_coupon_grant for bulk give.""")
 				.inputSchema(INPUT_SCHEMA)
 				.build();
 	}

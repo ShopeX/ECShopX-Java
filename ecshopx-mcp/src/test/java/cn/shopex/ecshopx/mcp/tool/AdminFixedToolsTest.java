@@ -97,6 +97,7 @@ class AdminFixedToolsTest {
 				"member_get",
 				"goods_items_search",
 				"distributor_info_get",
+				"shops_list",
 				"supplier_orders_search",
 				"datacube_goods_get"), names);
 	}
@@ -126,6 +127,8 @@ class AdminFixedToolsTest {
 				"goods_item_status_update",
 				"goods_item_stock_update",
 				"distributor_info_get",
+				"shops_list",
+				"shop_select",
 				"supplier_orders_search",
 				"datacube_goods_get",
 				"marketing_activities_search",

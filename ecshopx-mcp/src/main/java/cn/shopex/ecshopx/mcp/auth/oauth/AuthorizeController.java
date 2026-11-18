@@ -1,8 +1,6 @@
 package cn.shopex.ecshopx.mcp.auth.oauth;
 
 import cn.shopex.ecshopx.mcp.auth.TokenKind;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
@@ -14,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -28,15 +27,23 @@ public class AuthorizeController {
 
 	private final AuthorizePageRenderer pageRenderer;
 
+	private final DistributorShopSelectionService shopSelectionService;
+
+	private final PendingDistributorAuthStore pendingDistributorAuthStore;
+
 	public AuthorizeController(
 			OAuthClientRegistry clientRegistry,
 			LoginBridgeService loginBridgeService,
 			AuthorizationCodeStore authorizationCodeStore,
-			AuthorizePageRenderer pageRenderer) {
+			AuthorizePageRenderer pageRenderer,
+			DistributorShopSelectionService shopSelectionService,
+			PendingDistributorAuthStore pendingDistributorAuthStore) {
 		this.clientRegistry = clientRegistry;
 		this.loginBridgeService = loginBridgeService;
 		this.authorizationCodeStore = authorizationCodeStore;
 		this.pageRenderer = pageRenderer;
+		this.shopSelectionService = shopSelectionService;
+		this.pendingDistributorAuthStore = pendingDistributorAuthStore;
 	}
 
 	@GetMapping(produces = MediaType.TEXT_HTML_VALUE)
@@ -106,18 +113,103 @@ public class AuthorizeController {
 			return badRequestHtml(baseView, login.errorMessage());
 		}
 
+		if ("distributor".equalsIgnoreCase(normalizedLogintype)) {
+			return completeDistributorLogin(
+					client_id, redirect_uri, state, code_challenge, code_challenge_method, login.jwt(), baseView);
+		}
+
+		return redirectWithCode(client_id, redirect_uri, state, code_challenge, code_challenge_method, login.jwt());
+	}
+
+	@PostMapping(value = "/select-shop", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+	public ResponseEntity<String> selectShop(
+			@RequestParam String pending_id,
+			@RequestParam String set_distributor_id) {
+		var pendingOpt = pendingDistributorAuthStore.peek(pending_id);
+		if (pendingOpt.isEmpty()) {
+			return ResponseEntity.badRequest().body(escapePlain("选店会话已过期，请重新登录授权"));
+		}
+		PendingDistributorAuthStore.PendingAuth pending = pendingOpt.get();
+		long distributorId;
+		try {
+			distributorId = Long.parseLong(set_distributor_id.trim());
+		}
+		catch (NumberFormatException ex) {
+			return shopSelectHtml(pending_id, pending.shops(), "请选择有效店铺");
+		}
+		boolean allowed = pending.shops().stream().anyMatch(s -> s.distributorId() == distributorId);
+		if (!allowed) {
+			return shopSelectHtml(pending_id, pending.shops(), "无权选择该店铺");
+		}
+		DistributorShopSelectionService.SelectResult selected =
+				shopSelectionService.selectShop(pending.businessJwt(), distributorId);
+		if (!selected.success()) {
+			return shopSelectHtml(pending_id, pending.shops(), selected.errorMessage());
+		}
+		pendingDistributorAuthStore.consume(pending_id);
+		return redirectWithCode(
+				pending.clientId(),
+				pending.redirectUri(),
+				pending.state(),
+				pending.codeChallenge(),
+				pending.codeChallengeMethod(),
+				pending.businessJwt());
+	}
+
+	private ResponseEntity<String> completeDistributorLogin(
+			String clientId,
+			String redirectUri,
+			String state,
+			String codeChallenge,
+			String codeChallengeMethod,
+			String jwt,
+			AuthorizePageRenderer.AuthorizeViewModel baseView) {
+		DistributorShopSelectionService.ListResult listed = shopSelectionService.listShops(jwt);
+		if (!listed.success()) {
+			return badRequestHtml(baseView, listed.errorMessage());
+		}
+		List<PendingDistributorAuthStore.ShopOption> shops = listed.shops();
+		if (shops.isEmpty()) {
+			return badRequestHtml(baseView, "该账号没有可管理的店铺");
+		}
+		if (shops.size() == 1) {
+			DistributorShopSelectionService.SelectResult selected =
+					shopSelectionService.selectShop(jwt, shops.get(0).distributorId());
+			if (!selected.success()) {
+				return badRequestHtml(baseView, selected.errorMessage());
+			}
+			return redirectWithCode(clientId, redirectUri, state, codeChallenge, codeChallengeMethod, jwt);
+		}
+		String pendingId = pendingDistributorAuthStore.put(PendingDistributorAuthStore.PendingAuth.create(
+				clientId, redirectUri, state, codeChallenge, codeChallengeMethod, jwt, shops));
+		return shopSelectHtml(pendingId, shops, null);
+	}
+
+	private ResponseEntity<String> redirectWithCode(
+			String clientId,
+			String redirectUri,
+			String state,
+			String codeChallenge,
+			String codeChallengeMethod,
+			String jwt) {
 		String code = authorizationCodeStore.issue(
-				client_id,
-				RedirectUriPolicy.validateOne(redirect_uri),
-				code_challenge,
-				code_challenge_method,
+				clientId,
+				RedirectUriPolicy.validateOne(redirectUri),
+				codeChallenge,
+				codeChallengeMethod,
 				TokenKind.OPERATOR,
-				login.jwt());
+				jwt);
 		String location = OAuthAuthorizeSupport.appendQuery(
-				RedirectUriPolicy.validateOne(redirect_uri), code, state);
-		return ResponseEntity.status(HttpStatus.FOUND)
-				.header(HttpHeaders.LOCATION, location)
-				.build();
+				RedirectUriPolicy.validateOne(redirectUri), code, state);
+		String html = pageRenderer.renderSuccess(new AuthorizePageRenderer.SuccessViewModel(location));
+		return htmlOk(html);
+	}
+
+	private ResponseEntity<String> shopSelectHtml(
+			String pendingId, List<PendingDistributorAuthStore.ShopOption> shops, String error) {
+		String html = pageRenderer.renderShopSelect(
+				new AuthorizePageRenderer.ShopSelectViewModel(pendingId, shops, error));
+		return htmlOk(html);
 	}
 
 	private ResponseEntity<String> badRequestHtml(AuthorizePageRenderer.AuthorizeViewModel base, String error) {

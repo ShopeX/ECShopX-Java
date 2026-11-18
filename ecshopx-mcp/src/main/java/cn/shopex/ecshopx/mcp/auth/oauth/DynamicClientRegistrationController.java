@@ -1,6 +1,7 @@
 package cn.shopex.ecshopx.mcp.auth.oauth;
 
 import cn.shopex.ecshopx.mcp.config.McpProperties;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -74,6 +75,7 @@ public class DynamicClientRegistrationController {
 		return request.getRemoteAddr();
 	}
 
+	@JsonIgnoreProperties(ignoreUnknown = true)
 	record DcrRequest(
 			@JsonProperty("redirect_uris") List<String> redirectUris,
 			@JsonProperty("client_name") String clientName,

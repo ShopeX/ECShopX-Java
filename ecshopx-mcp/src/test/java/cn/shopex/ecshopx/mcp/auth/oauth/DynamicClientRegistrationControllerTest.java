@@ -80,6 +80,24 @@ class DynamicClientRegistrationControllerTest {
 	}
 
 	@Test
+	void registerIgnoresUnknownOauthMetadataFieldsFromCursor() throws Exception {
+		mockMvc.perform(post("/api/mcp/oauth/register")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content("""
+						{
+						  "redirect_uris": ["http://127.0.0.1:8787/callback"],
+						  "client_name": "Cursor",
+						  "token_endpoint_auth_method": "none",
+						  "grant_types": ["authorization_code", "refresh_token"],
+						  "response_types": ["code"],
+						  "scope": "openid"
+						}
+						"""))
+				.andExpect(status().isCreated())
+				.andExpect(jsonPath("$.client_id").isNotEmpty());
+	}
+
+	@Test
 	void registerReturns429WhenRateLimited() throws Exception {
 		mcpProperties.getDcr().setRateLimitPerMinute(2);
 		String body = """

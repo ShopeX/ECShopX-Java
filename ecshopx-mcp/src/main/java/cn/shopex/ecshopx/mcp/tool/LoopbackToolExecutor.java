@@ -42,7 +42,7 @@ public class LoopbackToolExecutor {
 
 	public ToolResult execute(HttpToolDeclaration declaration, String argsJson, String bearerToken) {
 		String effectiveBearer = resolveBearer(bearerToken);
-		Map<String, Object> args = parseArgs(argsJson);
+		Map<String, Object> args = AdminToolArgNormalizer.normalize(declaration.name(), parseArgs(argsJson));
 		validateGuards(declaration, args);
 		Set<String> pathKeys = pathPlaceholderKeys(declaration.pathTemplate());
 		String path = resolvePath(declaration.pathTemplate(), args, pathKeys);

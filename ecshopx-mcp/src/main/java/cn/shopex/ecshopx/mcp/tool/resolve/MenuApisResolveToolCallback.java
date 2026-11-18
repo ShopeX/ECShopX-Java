@@ -42,7 +42,12 @@ public final class MenuApisResolveToolCallback implements ToolCallback {
 		this.objectMapper = objectMapper;
 		this.toolDefinition = DefaultToolDefinition.builder()
 				.name(TOOL_NAME)
-				.description("Resolve catalog API entries visible under current operator menus")
+				.description("""
+						Resolve menu-api-catalog entries visible under current operator menus. \
+						Provide at least one of: permission/route (English menu keys or catalog path \
+						template like /api/v1/orders), or query (substring over catalog path/routes/permissions — \
+						Chinese menu titles usually miss). Empty [] means no intersection, not a transport error. \
+						Prefer fixed tools when available; else use returned method/path (templates) with admin_api_call.""")
 				.inputSchema(INPUT_SCHEMA)
 				.build();
 	}

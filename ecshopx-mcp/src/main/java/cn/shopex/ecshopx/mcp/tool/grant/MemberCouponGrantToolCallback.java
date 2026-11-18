@@ -26,11 +26,13 @@ public final class MemberCouponGrantToolCallback implements ToolCallback {
 	public static final String TOOL_NAME = "member_coupon_grant";
 
 	private static final String INPUT_SCHEMA = """
-			{"type":"object","properties":{"userids":{"type":"array","items":{}},"couponsids":{"type":"array","items":{}},"confirm":{"type":"boolean"}},"required":["userids","couponsids","confirm"],"additionalProperties":true}""";
+			{"type":"object","properties":{"userids":{"type":"array","items":{"type":"integer"},"description":"member user_id list"},"couponsids":{"type":"array","items":{"type":"integer"},"description":"discount card_id list"},"confirm":{"type":"boolean"}},"required":["userids","couponsids","confirm"],"additionalProperties":true}""";
 
 	private static final HttpToolDeclaration GRANT_DECLARATION = new HttpToolDeclaration(
 			TOOL_NAME,
-			"Grant coupons to members; requires confirm=true and bounded userids list",
+			"Grant coupons to members via POST /promotions/activity/give. Requires confirm=true. "
+					+ "userids = member user_id; couponsids = card_id. Recipient count capped by "
+					+ "ecx.mcp.couponGrantMaxRecipients (default 50). Prefer this over admin_api_call.",
 			INPUT_SCHEMA,
 			"POST",
 			"/api/v1/promotions/activity/give",

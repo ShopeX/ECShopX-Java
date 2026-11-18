@@ -21,8 +21,8 @@ class LoopbackToolExecutorTest {
 		server.start();
 		LoopbackToolExecutor executor = executorFor(server);
 		HttpToolDeclaration declGetMe = HttpToolDeclaration.read(
-				"mcp_smoke_get",
-				"Smoke GET",
+				"probe_get",
+				"Probe GET",
 				"{}",
 				"GET",
 				"/api/v1/pos/auth/me");
@@ -40,7 +40,7 @@ class LoopbackToolExecutorTest {
 		server.start();
 		LoopbackToolExecutor executor = executorFor(server);
 		HttpToolDeclaration decl = HttpToolDeclaration.read(
-				"mcp_smoke_get", "Smoke GET", "{}", "GET", "/api/v1/pos/auth/me");
+				"probe_get", "Probe GET", "{}", "GET", "/api/v1/pos/auth/me");
 		ToolResult result = executor.execute(decl, "{}", "Bearer tok");
 		assertFalse(result.isError());
 		assertTrue(result.text().contains("userId"));
@@ -60,6 +60,42 @@ class LoopbackToolExecutorTest {
 		executor.execute(decl, "{\"id\":\"99\"}", null);
 		RecordedRequest req = server.takeRequest();
 		assertEquals("/api/v1/items/99", req.getPath());
+		server.shutdown();
+	}
+
+	@Test
+	void ordersSearchInjectsAdminUiDefaultsIntoQuery() throws Exception {
+		MockWebServer server = new MockWebServer();
+		server.enqueue(new MockResponse().setResponseCode(200).setBody("{\"list\":[]}"));
+		server.start();
+		LoopbackToolExecutor executor = executorFor(server);
+		HttpToolDeclaration decl = HttpToolDeclaration.read(
+				"orders_search", "orders", "{}", "GET", "/api/v1/orders");
+		executor.execute(decl, "{\"status\":\"notship\"}", "Bearer t");
+		RecordedRequest req = server.takeRequest();
+		String path = req.getPath();
+		assertTrue(path.contains("order_status=notship"));
+		assertTrue(path.contains("order_type=normal"));
+		assertTrue(path.contains("order_class_exclude="));
+		assertTrue(path.contains("pageSize=20"));
+		assertFalse(path.contains("?status=") || path.contains("&status="));
+		server.shutdown();
+	}
+
+	@Test
+	void goodsItemsSearchInjectsPhysicalListDefaults() throws Exception {
+		MockWebServer server = new MockWebServer();
+		server.enqueue(new MockResponse().setResponseCode(200).setBody("{\"list\":[]}"));
+		server.start();
+		LoopbackToolExecutor executor = executorFor(server);
+		HttpToolDeclaration decl = HttpToolDeclaration.read(
+				"goods_items_search", "goods", "{}", "GET", "/api/v1/goods/items");
+		executor.execute(decl, "{}", "Bearer t");
+		RecordedRequest req = server.takeRequest();
+		String path = req.getPath();
+		assertTrue(path.contains("item_type=normal"));
+		assertTrue(path.contains("page=1"));
+		assertTrue(path.contains("pageSize=20"));
 		server.shutdown();
 	}
 

@@ -36,7 +36,7 @@ class LoopbackToolCallbackTest {
 		LoopbackToolExecutor executor = new LoopbackToolExecutor(
 				new ApiLoopbackClient(props, RestClient.builder()));
 		HttpToolDeclaration declaration = HttpToolDeclaration.read(
-				"mcp_smoke_get", "Smoke GET", "{}", "GET", "/api/v1/pos/auth/me");
+				"probe_get", "Probe GET", "{}", "GET", "/api/v1/pos/auth/me");
 		ToolCallback toolCallback = ToolDeclarationRegistrar.toToolCallback(declaration, executor);
 		return (LoopbackToolCallback) toolCallback;
 	}

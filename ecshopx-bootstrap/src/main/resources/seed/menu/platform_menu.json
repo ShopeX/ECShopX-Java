@@ -8182,5 +8182,36 @@
       "ja-JP": "操作ログ",
       "ru-RU": "Журнал операций"
     }
+  },
+  {
+    "shopmenu_id": 787,
+    "company_id": 0,
+    "name": "MCP 设置",
+    "url": "/setting/systemsetting/mcp-setting",
+    "sort": 20,
+    "is_menu": true,
+    "pid": 646,
+    "apis": "setting.mcp.get\nsetting.mcp.set",
+    "icon": null,
+    "is_show": true,
+    "alias_name": "mcpsetting",
+    "version": 1,
+    "disabled": false,
+    "created": 1792035297,
+    "updated": 1792035297,
+    "level": 3,
+    "parent_name": "系统配置",
+    "isChildrenMenu": false,
+    "menu_type": [
+      "all"
+    ],
+    "name_lang": {
+      "zh-CN": "MCP 设置",
+      "en-CN": "MCP Settings",
+      "ar-SA": "إعدادات MCP",
+      "zh-TW": "MCP 設置",
+      "ja-JP": "MCP設定",
+      "ru-RU": "Настройки MCP"
+    }
   }
 ]
