@@ -276,7 +276,8 @@ public class GoodsItemsListFacadeService {
 					companyId, onsaleDistributorId, rows, true);
 		}
 		boolean exposePlatformStore =
-				onsaleDistributorId > 0L
+				!itemsCategoryDistributorIdResolver.isBbcPlatformMenuType(companyId)
+						&& onsaleDistributorId > 0L
 						&& distributorPlatformStoreBuyGateService.isEnabled(companyId, onsaleDistributorId);
 		OnsalePlatformStoreSupport.appendPlatformStoreForOnsaleSkuList(rows, exposePlatformStore);
 
