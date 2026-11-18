@@ -5,8 +5,13 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import cn.shopex.ecshopx.mcp.tool.grant.MemberCouponGrantToolCallback;
+import cn.shopex.ecshopx.mcp.tool.resolve.AdminApiCallToolCallback;
+import cn.shopex.ecshopx.mcp.tool.resolve.MenuApisResolveToolCallback;
+
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -75,5 +80,59 @@ class AdminFixedToolsTest {
 				.map(HttpToolDeclaration::name)
 				.toList();
 		assertFalse(names.contains("member_coupon_grant"));
+	}
+
+	@Test
+	void p0ReadToolNamesMatchDesign() {
+		Set<String> names = AdminFixedTools.p0Reads().stream()
+				.map(HttpToolDeclaration::name)
+				.collect(Collectors.toSet());
+		assertEquals(Set.of(
+				"menus_list",
+				"orders_search",
+				"order_get",
+				"order_process_list",
+				"refunds_search",
+				"members_search",
+				"member_get",
+				"goods_items_search",
+				"distributor_info_get",
+				"supplier_orders_search",
+				"datacube_goods_get"), names);
+	}
+
+	@Test
+	void toolNamesCoverCatalogDesign() {
+		Set<String> names = AdminFixedTools.allDeclarations().stream()
+				.map(HttpToolDeclaration::name)
+				.collect(Collectors.toSet());
+		names.add(MemberCouponGrantToolCallback.TOOL_NAME);
+		names.add(MenuApisResolveToolCallback.TOOL_NAME);
+		names.add(AdminApiCallToolCallback.TOOL_NAME);
+
+		assertTrue(names.containsAll(Set.of(
+				"menus_list",
+				"orders_search",
+				"order_get",
+				"order_process_list",
+				"order_remark_update",
+				"order_cancel",
+				"order_ship",
+				"refunds_search",
+				"refund_audit",
+				"members_search",
+				"member_get",
+				"goods_items_search",
+				"goods_item_status_update",
+				"goods_item_stock_update",
+				"distributor_info_get",
+				"supplier_orders_search",
+				"datacube_goods_get",
+				"marketing_activities_search",
+				"coupons_search",
+				MemberCouponGrantToolCallback.TOOL_NAME)));
+
+		assertFalse(names.contains("member_tag_or_remark_update"));
+		assertFalse(names.contains("distributor_basic_update"));
 	}
 }

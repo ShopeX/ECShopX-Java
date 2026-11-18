@@ -50,8 +50,7 @@ public class McpServerConfiguration {
 		return MenuApiCatalogLoader.loadClasspath();
 	}
 
-	@Bean
-	ToolCallbackProvider mcpLoopbackToolCallbackProvider(
+	static List<ToolCallback> buildLoopbackToolCallbacks(
 			LoopbackToolExecutor loopbackToolExecutor,
 			ApiLoopbackClient apiLoopbackClient,
 			MenuApiCatalog menuApiCatalog,
@@ -66,6 +65,17 @@ public class McpServerConfiguration {
 		callbacks.add(new MemberCouponGrantToolCallback(loopbackToolExecutor, mcpProperties));
 		callbacks.add(new MenuApisResolveToolCallback(menuApiCatalog, apiLoopbackClient));
 		callbacks.add(new AdminApiCallToolCallback(menuApiCatalog, apiLoopbackClient));
+		return callbacks;
+	}
+
+	@Bean
+	ToolCallbackProvider mcpLoopbackToolCallbackProvider(
+			LoopbackToolExecutor loopbackToolExecutor,
+			ApiLoopbackClient apiLoopbackClient,
+			MenuApiCatalog menuApiCatalog,
+			McpProperties mcpProperties) {
+		List<ToolCallback> callbacks = buildLoopbackToolCallbacks(
+				loopbackToolExecutor, apiLoopbackClient, menuApiCatalog, mcpProperties);
 		return new StaticToolCallbackProvider(callbacks.toArray(ToolCallback[]::new));
 	}
 
