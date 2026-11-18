@@ -256,7 +256,8 @@ public class AftersalesShopPartialCancelCreateService {
 		refund.setUserId(userId);
 		refund.setShopId(shopId);
 		refund.setDistributorId(distributorId);
-		refund.setRefundType("0");
+		// 部分取消未发货：退款单归「售前」(refund_type=1)，与整单取消售前退款一致；仍挂 aftersales_bn 供售后单关联
+		refund.setRefundType("1");
 		refund.setRefundChannel(refundChannel);
 		refund.setRefundStatus("READY");
 		refund.setRefundFee(totalRefundFee);

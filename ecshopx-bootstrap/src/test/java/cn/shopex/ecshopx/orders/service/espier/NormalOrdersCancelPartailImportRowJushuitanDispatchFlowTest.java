@@ -60,6 +60,8 @@ import cn.shopex.ecshopx.orders.mapper.NormalOrdersItemsMapper;
 import cn.shopex.ecshopx.orders.mapper.NormalOrdersMapper;
 import cn.shopex.ecshopx.orders.mapper.OrderAssociationsMapper;
 import cn.shopex.ecshopx.orders.service.admin.AdminNormalOrderPartialCancelService;
+import cn.shopex.ecshopx.orders.service.admin.PartialDeliveryFulfillmentReconcileService;
+import cn.shopex.ecshopx.orders.service.admin.PlatformSelfSubCancelSupport;
 import cn.shopex.ecshopx.orders.service.setting.OrderValiditySettingRedisReadService;
 import cn.shopex.ecshopx.supplier.mapper.SupplierOrderMapper;
 import java.util.ArrayList;
@@ -252,7 +254,9 @@ class NormalOrdersCancelPartailImportRowJushuitanDispatchFlowTest {
 						mock(SupplierOrderMapper.class),
 						aftersalesCreate,
 						validity,
-						mock(SendAfterSaleWaitDealNoticeJobDispatchPublisher.class));
+						mock(SendAfterSaleWaitDealNoticeJobDispatchPublisher.class),
+						mock(PlatformSelfSubCancelSupport.class),
+						mock(PartialDeliveryFulfillmentReconcileService.class));
 
 		NormalOrdersCancelUploadImportRowService importRowService =
 				new NormalOrdersCancelUploadImportRowService(
@@ -419,7 +423,9 @@ class NormalOrdersCancelPartailImportRowJushuitanDispatchFlowTest {
 						mock(SupplierOrderMapper.class),
 						aftersalesCreate,
 						validity,
-						mock(SendAfterSaleWaitDealNoticeJobDispatchPublisher.class));
+						mock(SendAfterSaleWaitDealNoticeJobDispatchPublisher.class),
+						mock(PlatformSelfSubCancelSupport.class),
+						mock(PartialDeliveryFulfillmentReconcileService.class));
 
 		NormalOrdersCancelUploadImportRowService importRowService =
 				new NormalOrdersCancelUploadImportRowService(
@@ -566,7 +572,9 @@ class NormalOrdersCancelPartailImportRowJushuitanDispatchFlowTest {
 						mock(SupplierOrderMapper.class),
 						aftersalesCreate,
 						validity,
-						mock(SendAfterSaleWaitDealNoticeJobDispatchPublisher.class));
+						mock(SendAfterSaleWaitDealNoticeJobDispatchPublisher.class),
+						mock(PlatformSelfSubCancelSupport.class),
+						mock(PartialDeliveryFulfillmentReconcileService.class));
 
 		NormalOrdersCancelUploadImportRowService importRowService =
 				new NormalOrdersCancelUploadImportRowService(
