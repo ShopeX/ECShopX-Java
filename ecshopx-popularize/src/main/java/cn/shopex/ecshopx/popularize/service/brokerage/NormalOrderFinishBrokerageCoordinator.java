@@ -27,7 +27,10 @@ import cn.shopex.ecshopx.popularize.service.PopularizeBrokerageStatisticsIncreme
 import cn.shopex.ecshopx.popularize.service.PopularizeSettingSaveService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Instant;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,6 +55,8 @@ public class NormalOrderFinishBrokerageCoordinator
 
 	private static final String BROKERAGE_FIRST_LEVEL = "first_level";
 	private static final String ORDER_SOURCE = "order";
+
+	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
 	private final PlatformTransactionManager platformTransactionManager;
 	private final BrokerageMapper brokerageMapper;
@@ -154,7 +159,9 @@ public class NormalOrderFinishBrokerageCoordinator
 					Map<String, Object> cfg = popularizeSettingSaveService.getMergedPopularizeConfig(companyId);
 					long orderBaseMinor = resolveOrderBaseMinorForRatio(cfg, order);
 					double ratioPercent = resolveFirstLevelRatioPercent(cfg);
-					int rebateMinor = (int) Math.min(Integer.MAX_VALUE, Math.round(orderBaseMinor * ratioPercent / 100.0d));
+					String ratioType = resolveRatioType(cfg);
+					RatesResult rates = computeRates(order, orderBaseMinor, ratioPercent, ratioType);
+					int rebateMinor = rates.rebateMinor();
 					if (rebateMinor <= 0) {
 						log.info(
 								"{} skip rebate_zero companyId={} orderId={} orderBaseMinor={} ratioPercent={}",
@@ -178,7 +185,7 @@ public class NormalOrderFinishBrokerageCoordinator
 					row.setCommissionType("money");
 					row.setRebate(rebateMinor);
 					row.setRebatePoint("money");
-					row.setDetail("{}");
+					row.setDetail(rates.detailJson());
 					row.setIsClose(false);
 					row.setPlanCloseTime(brokeragePlanCloseTimeService.pendingPlanCloseTimeForInsert());
 					row.setCreated(nowSec);
@@ -305,4 +312,75 @@ public class NormalOrderFinishBrokerageCoordinator
 			}
 		}
 	}
+
+	private static String resolveRatioType(Map<String, Object> cfg) {
+		Object prObj = cfg.get("popularize_ratio");
+		if (!(prObj instanceof Map<?, ?> prMap)) {
+			return "order_money";
+		}
+		@SuppressWarnings("unchecked")
+		Map<String, Object> popularizeRatio = (Map<String, Object>) prMap;
+		Object t = popularizeRatio.get("type");
+		return t == null ? "order_money" : String.valueOf(t).trim();
+	}
+
+	/**
+	 * Aligns with PHP {@code popularizeRates}: when lines exist, sum per-item round(fee * ratio/100);
+	 * always persist {@code rebate_detail} for aftersales clawback.
+	 */
+	private static RatesResult computeRates(
+			NormalOrderBrokerageFinishInput order,
+			long orderBaseMinor,
+			double ratioPercent,
+			String ratioType) {
+		List<NormalOrderBrokerageFinishInput.Line> lines = order.lines();
+		Map<String, Object> detail = new LinkedHashMap<>();
+		detail.put("ratio_type", ratioType);
+		detail.put("ratio", ratioPercent);
+		detail.put("total_fee", orderBaseMinor);
+		detail.put("cost_fee", 0);
+		Map<String, Object> rebateDetail = new LinkedHashMap<>();
+		int rebateSum;
+		if (lines == null || lines.isEmpty()) {
+			rebateSum =
+					(int) Math.min(Integer.MAX_VALUE, Math.round(orderBaseMinor * ratioPercent / 100.0d));
+		} else {
+			long sum = 0L;
+			for (NormalOrderBrokerageFinishInput.Line line : lines) {
+				if (line == null || line.itemId() <= 0L || line.num() <= 0) {
+					continue;
+				}
+				double rate = line.feeRate() <= 0d ? 1.0d : line.feeRate();
+				long lineTotal = Math.round(line.totalFeeMinor() * rate);
+				long lineCost = Math.round(line.costFeeMinor() * rate);
+				long lineRebate = Math.round(lineTotal * ratioPercent / 100.0d);
+				if (lineRebate < 0L) {
+					lineRebate = 0L;
+				}
+				sum += lineRebate;
+				Map<String, Object> item = new LinkedHashMap<>();
+				item.put("item_id", line.itemId());
+				item.put("cost_fee", lineCost);
+				item.put("total_fee", lineTotal);
+				item.put("item_num", line.num());
+				item.put("rebate", lineRebate);
+				item.put("item_ratio", ratioPercent);
+				item.put("desc", "单品通用配置返佣");
+				rebateDetail.put(String.valueOf(line.itemId()), item);
+			}
+			rebateSum = (int) Math.min(Integer.MAX_VALUE, sum);
+		}
+		detail.put("rebate_detail", rebateDetail);
+		return new RatesResult(rebateSum, writeDetailJson(detail));
+	}
+
+	private static String writeDetailJson(Map<String, Object> detail) {
+		try {
+			return OBJECT_MAPPER.writeValueAsString(detail);
+		} catch (Exception e) {
+			return "{\"rebate_detail\":{}}";
+		}
+	}
+
+	private record RatesResult(int rebateMinor, String detailJson) {}
 }

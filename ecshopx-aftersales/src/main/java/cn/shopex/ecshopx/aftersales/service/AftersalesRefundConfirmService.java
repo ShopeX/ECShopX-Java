@@ -377,27 +377,11 @@ public class AftersalesRefundConfirmService {
 		if (mu == 0) {
 			throw new ResourceException("需要退款的售后单不存在");
 		}
-		LambdaUpdateWrapper<AftersalesDetail> duw =
-				new LambdaUpdateWrapper<AftersalesDetail>()
-						.eq(AftersalesDetail::getCompanyId, companyId)
-						.eq(AftersalesDetail::getAftersalesBn, aftersalesBn);
-		if (reject) {
-			duw.set(AftersalesDetail::getAftersalesStatus, 3).set(AftersalesDetail::getProgress, 3);
-		} else {
-			duw.set(AftersalesDetail::getAftersalesStatus, 2).set(AftersalesDetail::getProgress, 4);
-		}
-		duw.set(AftersalesDetail::getUpdateTime, now);
 		List<AftersalesDetail> detailRows =
 				aftersalesDetailMapper.selectList(
 						new LambdaQueryWrapper<AftersalesDetail>()
 								.eq(AftersalesDetail::getCompanyId, companyId)
 								.eq(AftersalesDetail::getAftersalesBn, aftersalesBn));
-		if (!detailRows.isEmpty()) {
-			int du = aftersalesDetailMapper.update(null, duw);
-			if (du == 0) {
-				throw new ResourceException("需要退款的售后单不存在");
-			}
-		}
 		if (reject) {
 			Map<String, Object> logMap = new LinkedHashMap<>();
 			logMap.put("order_id", orderId);
@@ -432,6 +416,7 @@ public class AftersalesRefundConfirmService {
 			logMap.put("detail", refundAgreeOrderProcessLogDetail(bnLabel));
 			logMap.put("params", new LinkedHashMap<>(param));
 			orderProcessLogPublishPort.publish(logMap);
+			// 对齐 PHP：先冲销再把明细标为 status=2，避免 completedNum 含本次
 			for (AftersalesDetail d : detailRows) {
 				Map<String, Object> bp = new LinkedHashMap<>();
 				bp.put("company_id", companyId);
@@ -439,6 +424,22 @@ public class AftersalesRefundConfirmService {
 				bp.put("item_id", d.getItemId() == null ? 0L : d.getItemId());
 				bp.put("num", d.getNum() == null ? 0 : d.getNum());
 				aftersalesBrokeragePort.brokerageByAftersales(bp);
+			}
+		}
+		LambdaUpdateWrapper<AftersalesDetail> duw =
+				new LambdaUpdateWrapper<AftersalesDetail>()
+						.eq(AftersalesDetail::getCompanyId, companyId)
+						.eq(AftersalesDetail::getAftersalesBn, aftersalesBn);
+		if (reject) {
+			duw.set(AftersalesDetail::getAftersalesStatus, 3).set(AftersalesDetail::getProgress, 3);
+		} else {
+			duw.set(AftersalesDetail::getAftersalesStatus, 2).set(AftersalesDetail::getProgress, 4);
+		}
+		duw.set(AftersalesDetail::getUpdateTime, now);
+		if (!detailRows.isEmpty()) {
+			int du = aftersalesDetailMapper.update(null, duw);
+			if (du == 0) {
+				throw new ResourceException("需要退款的售后单不存在");
 			}
 		}
 		Map<String, Object> erpPayload = new LinkedHashMap<>(aftersalesToSnakeMap(aftersales));

@@ -25,8 +25,13 @@ import cn.shopex.ecshopx.dispatch.DispatchMode;
 import cn.shopex.ecshopx.dispatch.DispatchOptions;
 import cn.shopex.ecshopx.dispatch.RetryPolicy;
 import cn.shopex.ecshopx.orders.domain.NormalOrders;
+import cn.shopex.ecshopx.orders.domain.NormalOrdersItems;
+import cn.shopex.ecshopx.orders.mapper.NormalOrdersItemsMapper;
 import cn.shopex.ecshopx.popularize.service.BrokeragePlanCloseTimeService;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import org.springframework.stereotype.Service;
 
@@ -47,14 +52,17 @@ public class NormalOrderBrokerageOnFinishService {
 	private final NormalOrderFinishBrokerageCoordinator normalOrderFinishBrokerageCoordinator;
 	private final BrokeragePlanCloseTimeService brokeragePlanCloseTimeService;
 	private final DispatchFacade dispatchFacade;
+	private final NormalOrdersItemsMapper normalOrdersItemsMapper;
 
 	public NormalOrderBrokerageOnFinishService(
 			NormalOrderFinishBrokerageCoordinator normalOrderFinishBrokerageCoordinator,
 			BrokeragePlanCloseTimeService brokeragePlanCloseTimeService,
-			DispatchFacade dispatchFacade) {
+			DispatchFacade dispatchFacade,
+			NormalOrdersItemsMapper normalOrdersItemsMapper) {
 		this.normalOrderFinishBrokerageCoordinator = normalOrderFinishBrokerageCoordinator;
 		this.brokeragePlanCloseTimeService = brokeragePlanCloseTimeService;
 		this.dispatchFacade = dispatchFacade;
+		this.normalOrdersItemsMapper = normalOrdersItemsMapper;
 	}
 
 	/** 支付成功：仅写佣；计划结算时间在订单完成后刷新。 */
@@ -62,9 +70,7 @@ public class NormalOrderBrokerageOnFinishService {
 		if (companyId <= 0L || orderId <= 0L || order == null) {
 			return;
 		}
-		NormalOrderBrokerageFinishInput finishInput =
-				new NormalOrderBrokerageFinishInput(
-						order.getUserId(), order.getOrderClass(), order.getTotalFee(), order.getCommissionFee());
+		NormalOrderBrokerageFinishInput finishInput = buildFinishInput(companyId, orderId, order);
 		normalOrderFinishBrokerageCoordinator.onNormalOrderFinishBrokerage(companyId, orderId, finishInput);
 	}
 
@@ -73,12 +79,45 @@ public class NormalOrderBrokerageOnFinishService {
 		if (companyId <= 0L || orderId <= 0L || order == null) {
 			return;
 		}
-		NormalOrderBrokerageFinishInput finishInput =
-				new NormalOrderBrokerageFinishInput(
-						order.getUserId(), order.getOrderClass(), order.getTotalFee(), order.getCommissionFee());
+		NormalOrderBrokerageFinishInput finishInput = buildFinishInput(companyId, orderId, order);
 		publishNormalOrderConfirmReceiptEvent(companyId, orderId);
 		normalOrderFinishBrokerageCoordinator.onNormalOrderFinishBrokerage(companyId, orderId, finishInput);
 		brokeragePlanCloseTimeService.updatePlanCloseTime(companyId, orderId);
+	}
+
+	private NormalOrderBrokerageFinishInput buildFinishInput(
+			long companyId, long orderId, NormalOrders order) {
+		return new NormalOrderBrokerageFinishInput(
+				order.getUserId(),
+				order.getOrderClass(),
+				order.getTotalFee(),
+				order.getCommissionFee(),
+				loadOrderLines(companyId, orderId));
+	}
+
+	private List<NormalOrderBrokerageFinishInput.Line> loadOrderLines(long companyId, long orderId) {
+		List<NormalOrdersItems> items =
+				normalOrdersItemsMapper.selectList(
+						new LambdaQueryWrapper<NormalOrdersItems>()
+								.eq(NormalOrdersItems::getCompanyId, companyId)
+								.eq(NormalOrdersItems::getOrderId, orderId));
+		if (items == null || items.isEmpty()) {
+			return List.of();
+		}
+		List<NormalOrderBrokerageFinishInput.Line> lines = new ArrayList<>(items.size());
+		for (NormalOrdersItems item : items) {
+			if (item == null || item.getItemId() == null || item.getItemId() <= 0L) {
+				continue;
+			}
+			int num = item.getNum() == null ? 0 : item.getNum();
+			long totalFee = item.getTotalFee() == null ? 0L : item.getTotalFee().longValue();
+			long costFee = item.getCostFee() == null ? 0L : item.getCostFee().longValue();
+			double feeRate = item.getFeeRate() == null ? 1.0d : item.getFeeRate().doubleValue();
+			lines.add(
+					new NormalOrderBrokerageFinishInput.Line(
+							item.getItemId(), num, totalFee, costFee, feeRate));
+		}
+		return lines;
 	}
 
 	private void publishNormalOrderConfirmReceiptEvent(long companyId, long orderId) {
