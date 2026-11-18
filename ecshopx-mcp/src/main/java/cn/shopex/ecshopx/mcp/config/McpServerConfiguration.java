@@ -5,8 +5,11 @@ import cn.shopex.ecshopx.mcp.tool.AdminFixedTools;
 import cn.shopex.ecshopx.mcp.tool.HttpToolDeclaration;
 import cn.shopex.ecshopx.mcp.tool.LoopbackToolExecutor;
 import cn.shopex.ecshopx.mcp.tool.ToolDeclarationRegistrar;
+import cn.shopex.ecshopx.mcp.tool.grant.MemberCouponGrantToolCallback;
 import cn.shopex.ecshopx.mcp.tool.smoke.McpSmokeTools;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.ai.tool.StaticToolCallbackProvider;
+import org.springframework.ai.tool.ToolCallback;
 import org.springframework.ai.tool.ToolCallbackProvider;
 import cn.shopex.ecshopx.mcp.auth.McpBearerAuthFilter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -43,7 +46,12 @@ public class McpServerConfiguration {
 		List<HttpToolDeclaration> declarations = new ArrayList<>();
 		declarations.add(McpSmokeTools.smokeDeclaration(mcpProperties));
 		declarations.addAll(AdminFixedTools.allDeclarations());
-		return ToolDeclarationRegistrar.provider(declarations, loopbackToolExecutor);
+		List<ToolCallback> callbacks = new ArrayList<>();
+		for (HttpToolDeclaration declaration : declarations) {
+			callbacks.add(ToolDeclarationRegistrar.toToolCallback(declaration, loopbackToolExecutor));
+		}
+		callbacks.add(new MemberCouponGrantToolCallback(loopbackToolExecutor, mcpProperties));
+		return new StaticToolCallbackProvider(callbacks.toArray(ToolCallback[]::new));
 	}
 
 	@Bean

@@ -13,6 +13,7 @@ public final class AdminFixedTools {
 		List<HttpToolDeclaration> list = new ArrayList<>();
 		list.addAll(p0Reads());
 		list.addAll(p1Writes());
+		list.addAll(p2MarketingReads());
 		return list;
 	}
 
@@ -83,5 +84,35 @@ public final class AdminFixedTools {
 						"""
 						{"type":"object","properties":{"item_id":{"type":"string"},"confirm":{"type":"boolean"}},"required":["confirm"],"additionalProperties":true}""",
 						"PUT", "/api/v1/goods/itemstoreupdate", true, Set.of()));
+	}
+
+	static List<HttpToolDeclaration> p2MarketingReads() {
+		String pageSchema = """
+				{"type":"object","properties":{"page":{"type":"integer"},"pageSize":{"type":"integer"},"page_size":{"type":"integer"}},"additionalProperties":true}""";
+		String idPageSchema = """
+				{"type":"object","properties":{"id":{"type":"string"},"page":{"type":"integer"},"pageSize":{"type":"integer"},"page_size":{"type":"integer"}},"additionalProperties":true}""";
+		return List.of(
+				HttpToolDeclaration.read("marketing_activities_search", "Search marketing activities", pageSchema,
+						"GET", "/api/v1/marketing/getlist"),
+				HttpToolDeclaration.read("marketing_activity_items_search", "Search marketing activity items",
+						pageSchema, "GET", "/api/v1/marketing/getItemList"),
+				HttpToolDeclaration.read("seckill_activities_search", "Search seckill activities", pageSchema,
+						"GET", "/api/v1/promotions/seckillactivity/getlist"),
+				HttpToolDeclaration.read("community_activities_search", "Search community activities", pageSchema,
+						"GET", "/api/v1/community/list"),
+				HttpToolDeclaration.read("coupons_search", "Search discount cards / coupons", pageSchema, "GET",
+						"/api/v1/discountcard/list"),
+				HttpToolDeclaration.read("coupons_effective_search", "Search effective discount cards", pageSchema,
+						"GET", "/api/v1/effectiveDiscountcard/list"),
+				HttpToolDeclaration.read("coupon_get", "Get coupon / discount card detail", pageSchema, "GET",
+						"/api/v1/discountcard/get"),
+				HttpToolDeclaration.read("coupon_holders_search", "Search coupon holders", pageSchema, "GET",
+						"/api/v1/discountcard/detail/list"),
+				HttpToolDeclaration.read("coupon_grant_logs_search", "Search coupon grant logs", pageSchema, "GET",
+						"/api/v1/promotions/activity/give"),
+				HttpToolDeclaration.read("coupon_grant_error_logs_search", "Search coupon grant error logs by grant id",
+						idPageSchema, "GET", "/api/v1/promotions/activity/give/{id}"),
+				HttpToolDeclaration.read("coupon_grant_setting_get", "Get coupon grant settings", pageSchema, "GET",
+						"/api/v1/discountcard/couponGrantSetting"));
 	}
 }

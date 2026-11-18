@@ -38,4 +38,18 @@ class AdminFixedToolsTest {
 		assertEquals("/api/v1/goods/itemstatusupdate", byName.get("goods_item_status_update").pathTemplate());
 		assertEquals("/api/v1/goods/itemstoreupdate", byName.get("goods_item_stock_update").pathTemplate());
 	}
+
+	@Test
+	void p2MarketingReadToolsUseExpectedPaths() {
+		Map<String, HttpToolDeclaration> byName = AdminFixedTools.allDeclarations().stream()
+				.collect(Collectors.toMap(HttpToolDeclaration::name, d -> d, (a, b) -> a));
+		assertEquals("/api/v1/marketing/getlist", byName.get("marketing_activities_search").pathTemplate());
+		assertEquals("/api/v1/marketing/getItemList", byName.get("marketing_activity_items_search").pathTemplate());
+		assertEquals("/api/v1/promotions/seckillactivity/getlist",
+				byName.get("seckill_activities_search").pathTemplate());
+		assertEquals("/api/v1/discountcard/list", byName.get("coupons_search").pathTemplate());
+		assertEquals("/api/v1/promotions/activity/give/{id}",
+				byName.get("coupon_grant_error_logs_search").pathTemplate());
+		assertFalse(byName.get("coupons_search").requireConfirm());
+	}
 }

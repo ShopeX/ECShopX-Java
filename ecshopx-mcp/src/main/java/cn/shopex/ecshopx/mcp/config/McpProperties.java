@@ -21,6 +21,8 @@ public class McpProperties {
 
 	private String smokePath = "/api/v1/pos/auth/me";
 
+	private int couponGrantMaxRecipients = 50;
+
 	private Dcr dcr = new Dcr();
 
 	@Data
