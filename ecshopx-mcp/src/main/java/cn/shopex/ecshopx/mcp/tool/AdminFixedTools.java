@@ -2,6 +2,7 @@ package cn.shopex.ecshopx.mcp.tool;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public final class AdminFixedTools {
 
@@ -11,7 +12,7 @@ public final class AdminFixedTools {
 	public static List<HttpToolDeclaration> allDeclarations() {
 		List<HttpToolDeclaration> list = new ArrayList<>();
 		list.addAll(p0Reads());
-		// later tasks append writes / marketing / grant
+		list.addAll(p1Writes());
 		return list;
 	}
 
@@ -42,5 +43,45 @@ public final class AdminFixedTools {
 						"GET", "/api/v1/supplier/get_order_list"),
 				HttpToolDeclaration.read("datacube_goods_get", "Get goods datacube", pageSchema,
 						"GET", "/api/v1/datacube/goodsdata"));
+	}
+
+	static List<HttpToolDeclaration> p1Writes() {
+		return List.of(
+				new HttpToolDeclaration(
+						"order_remark_update",
+						"Update order seller/internal remarks; requires confirm=true",
+						"""
+						{"type":"object","properties":{"orderId":{"type":"string"},"remark":{"type":"string"},"confirm":{"type":"boolean"}},"required":["orderId","confirm"],"additionalProperties":true}""",
+						"PUT", "/api/v1/remarks/{orderId}", true, Set.of("orderId")),
+				new HttpToolDeclaration(
+						"order_cancel",
+						"Cancel an unshipped order; requires confirm=true",
+						"""
+						{"type":"object","properties":{"order_id":{"type":"string"},"cancel_reason":{"type":"string"},"confirm":{"type":"boolean"}},"required":["order_id","confirm"],"additionalProperties":true}""",
+						"POST", "/api/v1/order/{order_id}/cancel", true, Set.of("order_id")),
+				new HttpToolDeclaration(
+						"order_ship",
+						"Ship order via POST /delivery; requires order_id (or API-equivalent) and confirm=true",
+						"""
+						{"type":"object","properties":{"order_id":{"type":"string"},"confirm":{"type":"boolean"}},"required":["order_id","confirm"],"additionalProperties":true}""",
+						"POST", "/api/v1/delivery", true, Set.of("order_id")),
+				new HttpToolDeclaration(
+						"refund_audit",
+						"Audit aftersales refund via refundCheck; requires confirm=true",
+						"""
+						{"type":"object","properties":{"aftersales_bn":{"type":"string"},"confirm":{"type":"boolean"}},"required":["confirm"],"additionalProperties":true}""",
+						"POST", "/api/v1/aftersales/refundCheck", true, Set.of()),
+				new HttpToolDeclaration(
+						"goods_item_status_update",
+						"Update goods item shelf status; requires confirm=true",
+						"""
+						{"type":"object","properties":{"item_id":{"type":"string"},"confirm":{"type":"boolean"}},"required":["confirm"],"additionalProperties":true}""",
+						"PUT", "/api/v1/goods/itemstatusupdate", true, Set.of()),
+				new HttpToolDeclaration(
+						"goods_item_stock_update",
+						"Update goods item stock; requires confirm=true",
+						"""
+						{"type":"object","properties":{"item_id":{"type":"string"},"confirm":{"type":"boolean"}},"required":["confirm"],"additionalProperties":true}""",
+						"PUT", "/api/v1/goods/itemstoreupdate", true, Set.of()));
 	}
 }
