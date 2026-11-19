@@ -169,7 +169,7 @@ public class ArticleUpdateService {
 
 		Map<String, Object> langSource = buildLangSource(params, entity, requestLang);
 		Map<String, String> langBag = buildLangBag(langSource);
-		if (!langueProperties.isDefaultLang(requestLang) && !langBag.isEmpty()) {
+		if (!langBag.isEmpty()) {
 			commonLangModWriteService.updateLangData(
 					(int) companyId, langBag, TABLE_LANG, (int) articleId, MODULE_LANG, requestLang);
 		}
