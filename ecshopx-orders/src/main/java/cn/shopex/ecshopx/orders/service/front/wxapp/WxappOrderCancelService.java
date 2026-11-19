@@ -140,7 +140,8 @@ public class WxappOrderCancelService {
 
 		String cancelReason = trimToEmpty(params.get("cancel_reason"));
 		String otherReason = trimToEmpty(params.get("other_reason"));
-		String reasonText = firstNonBlank(cancelReason, otherReason);
+		// PHP AbstractNormalOrder::getCancelInfo — other_reason overrides preset cancel_reason.
+		String reasonText = StringUtils.hasText(otherReason) ? otherReason : cancelReason;
 
 		long userIdForRow = longVal(params.get("user_id"));
 		String mobile = stringVal(params.get("mobile"));
@@ -162,16 +163,6 @@ public class WxappOrderCancelService {
 		}
 		return adminNormalOrderPartialCancelService.execute(
 				companyId, "buyer", 0L, 0L, userIdForRow, orderIdNum, reasonText);
-	}
-
-	private static String firstNonBlank(String a, String b) {
-		if (StringUtils.hasText(a)) {
-			return a;
-		}
-		if (StringUtils.hasText(b)) {
-			return b;
-		}
-		return "";
 	}
 
 	private static String trimToEmpty(Object v) {

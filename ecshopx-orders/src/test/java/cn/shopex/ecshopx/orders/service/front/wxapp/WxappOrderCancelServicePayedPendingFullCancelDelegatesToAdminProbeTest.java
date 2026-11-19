@@ -117,6 +117,48 @@ class WxappOrderCancelServicePayedPendingFullCancelDelegatesToAdminProbeTest {
 	}
 
 	@Test
+	void other_reason_overrides_preset_cancel_reason_when_both_present() {
+		OrderAssociations assoc = payedPendingAssoc();
+		when(orderAssociationsMapper.selectOne(any())).thenReturn(assoc);
+		when(adminNormalOrderFullCancelService.execute(
+						eq(1L),
+						eq("buyer"),
+						eq(0L),
+						eq(0L),
+						eq(99L),
+						eq("13900000000"),
+						eq(200L),
+						eq("1212212"),
+						any(),
+						eq("buyer")))
+				.thenReturn(Map.of("ok", true));
+
+		Map<String, Object> merged = new LinkedHashMap<>();
+		merged.put("order_id", "200");
+		merged.put("cancel_reason", "其他");
+		merged.put("other_reason", "1212212");
+		Map<String, Object> auth = new LinkedHashMap<>();
+		auth.put("company_id", 1L);
+		auth.put("user_id", 99L);
+		auth.put("mobile", "13900000000");
+
+		wxappOrderCancelService.cancelOrder(httpServletRequest, merged, auth);
+
+		verify(adminNormalOrderFullCancelService, times(1))
+				.execute(
+						eq(1L),
+						eq("buyer"),
+						eq(0L),
+						eq(0L),
+						eq(99L),
+						eq("13900000000"),
+						eq(200L),
+						eq("1212212"),
+						any(),
+						eq("buyer"));
+	}
+
+	@Test
 	void payed_pending_delivery_chief_cancel_delegates_to_admin_normal_order_full_cancel_execute() {
 		OrderAssociations assoc = payedPendingAssoc();
 		assoc.setUserId(50L);
