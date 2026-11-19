@@ -355,7 +355,7 @@ public class GoodsItemsCsvExportService {
 		fillProfitCells(row, it, plat.profitByItemId().get(itemId));
 		row.put("approve_status", approveStatusCn(it.getApproveStatus()));
 
-		if ("supplier".equalsIgnoreCase(ctx.itemSource()) && it.getSupplierId() != null && it.getSupplierId() > 0) {
+		if (it.getSupplierId() != null && it.getSupplierId() > 0) {
 			row.put("supplier_name", supplierNamesByOperatorId.getOrDefault(it.getSupplierId(), ""));
 		}
 
@@ -897,16 +897,13 @@ public class GoodsItemsCsvExportService {
 		return out;
 	}
 
-	private LinkedHashMap<String, String> buildTitleMapForPlatform(String itemSource, List<MemberCardGrade> memberGrades,
+	static LinkedHashMap<String, String> buildTitleMapForPlatform(String itemSource, List<MemberCardGrade> memberGrades,
 			List<VipGrade> vipGrades) {
 		LinkedHashMap<String, String> titles = new LinkedHashMap<>();
 		titles.put("item_main_category", "管理分类");
 		titles.put("item_name", "商品名称");
 		titles.put("goods_bn", "SPU编码");
 		titles.put("item_bn", "SKU编码");
-		if (StringUtils.hasText(itemSource) && "supplier".equalsIgnoreCase(itemSource.trim())) {
-			titles.put("supplier_name", "供应商名称");
-		}
 		titles.put("brief", "简介");
 		titles.put("price", "销售价");
 		titles.put("market_price", "市场价");
@@ -941,6 +938,7 @@ public class GoodsItemsCsvExportService {
 		titles.put("profit", "拉新分润");
 		titles.put("popularize_profit", "推广分润");
 		titles.put("approve_status", "商品状态");
+		titles.put("supplier_name", "所属供应商");
 		return titles;
 	}
 
