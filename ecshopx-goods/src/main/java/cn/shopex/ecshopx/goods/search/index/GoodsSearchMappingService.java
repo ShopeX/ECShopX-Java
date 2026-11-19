@@ -217,6 +217,17 @@ public class GoodsSearchMappingService {
 		props.put("category_ids", scalar("long"));
 		props.put("approve_status", scalar("keyword"));
 		props.put("audit_status", scalar("keyword"));
+		props.put("item_type", scalar("keyword"));
+		props.put("is_gift", scalar("boolean"));
+		props.put("is_default", scalar("boolean"));
+		props.put("brand_id", scalar("long"));
+		props.put("type", scalar("integer"));
+		props.put("regions_id", scalar("keyword"));
+		props.put("rebate", scalar("integer"));
+		props.put("rebate_type", scalar("keyword"));
+		props.put("goods_id", scalar("long"));
+		props.put("store_listable", scalar("boolean"));
+		props.put("item_distributor_id", scalar("long"));
 		return props;
 	}
 

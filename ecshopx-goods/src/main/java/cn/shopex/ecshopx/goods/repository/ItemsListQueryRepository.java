@@ -209,6 +209,20 @@ public class ItemsListQueryRepository {
 		return rows.stream().map(Items::getDefaultItemId).filter(Objects::nonNull).filter(id -> id > 0).distinct().collect(Collectors.toList());
 	}
 
+	/** ES 回表：只按公司与商品 ID 取行，不再套列表筛选。 */
+	public List<Items> selectByCompanyAndItemIds(long companyId, List<Long> itemIds) {
+		if (itemIds == null || itemIds.isEmpty()) {
+			return List.of();
+		}
+		List<Long> ids = itemIds.stream().filter(Objects::nonNull).filter(id -> id > 0).distinct().toList();
+		if (ids.isEmpty()) {
+			return List.of();
+		}
+		LambdaQueryWrapper<Items> w = Wrappers.lambdaQuery();
+		w.eq(Items::getCompanyId, companyId).in(Items::getItemId, ids);
+		return mapper.selectList(w);
+	}
+
 	public long countByParams(Map<String, Object> p) {
 		LambdaQueryWrapper<Items> w = buildWrapper(p);
 		long c = mapper.selectCount(w);

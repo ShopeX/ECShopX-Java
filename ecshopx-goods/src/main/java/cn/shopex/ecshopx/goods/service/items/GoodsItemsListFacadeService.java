@@ -719,6 +719,28 @@ public class GoodsItemsListFacadeService {
 	}
 
 	/**
+	 * ES 已按列表条件分页后的回表：只加载这些商品 ID 的展示行，不再套 {@code item_type}、赠品、默认规格、门店可售等筛选。
+	 *
+	 * @param skipDealListStore 标准店可售列表原先走上架表关联，不改写行内库存；与旧查询保持同一展示口径
+	 */
+	public List<Map<String, Object>> wxappHydrateItemsByIds(
+			long companyId, List<Long> itemIds, boolean skipDealListStore, String acceptLanguageHeader) {
+		List<Items> items = itemsListQueryRepository.selectByCompanyAndItemIds(companyId, itemIds);
+		List<Map<String, Object>> rows = items.stream().map(GoodsItemsListRowMapper::toRow).collect(Collectors.toList());
+		LinkedHashMap<String, Object> enrichment = new LinkedHashMap<>();
+		if (skipDealListStore) {
+			enrichment.put(ItemsListQueryRepository.KEY_DIST_REL_VIRT_JOIN, Boolean.TRUE);
+		}
+		applyWxappDealListStoreIfNeeded(companyId, enrichment, rows);
+		applyWxappFrontDisplayStore(companyId, rows);
+		itemsSkuListAssembler.applyTypeLabels(rows);
+		String lang = StringUtils.hasText(acceptLanguageHeader) ? acceptLanguageHeader.trim() : "zh-CN";
+		itemsListMultiLangApplier.applyToRows(companyId, lang, rows);
+		itemsMedicineService.applyMedicineDataToRows(companyId, rows);
+		return rows;
+	}
+
+	/**
 	 * 微信小程序商品列表（默认商品维度）：查询、聚合库存与规格标签、多语言、药品字段；不执行后台列表用的 {@link GoodsItemsListEnrichmentService#enrichAll}。
 	 */
 	public Map<String, Object> wxappQueryDefaultItemList(long companyId, Map<String, Object> repoParams, int page, int pageSize,

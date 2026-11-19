@@ -137,7 +137,60 @@ final class GoodsSearchEsQueryBuilder {
 				filters.add(QueryBuilders.terms(t -> t.field("category_ids").terms(tv -> tv.value(vals))));
 			}
 		}
+		appendListFilters(filters, q);
 		return filters;
+	}
+
+	private static void appendListFilters(List<Query> filters, GoodsSearchQuery q) {
+		GoodsSearchListFilter list = q.listFilter();
+		if (StringUtils.hasText(list.itemType())) {
+			filters.add(QueryBuilders.term(t -> t.field("item_type").value(list.itemType())));
+		}
+		if (list.gift() != null) {
+			boolean gift = list.gift();
+			filters.add(QueryBuilders.term(t -> t.field("is_gift").value(gift)));
+		}
+		if (list.defaultItem() != null) {
+			boolean defaultItem = list.defaultItem();
+			filters.add(QueryBuilders.term(t -> t.field("is_default").value(defaultItem)));
+		}
+		if (list.brandId() != null) {
+			long brandId = list.brandId();
+			filters.add(QueryBuilders.term(t -> t.field("brand_id").value(brandId)));
+		}
+		if (list.itemCrossType() != null) {
+			long itemCrossType = list.itemCrossType();
+			filters.add(QueryBuilders.term(t -> t.field("type").value(itemCrossType)));
+		}
+		if (list.excludeCrossBorder()) {
+			filters.add(QueryBuilders.bool(b -> b.mustNot(QueryBuilders.term(t -> t.field("type").value(1)))));
+		}
+		if (StringUtils.hasText(list.regionsId())) {
+			filters.add(QueryBuilders.term(t -> t.field("regions_id").value(list.regionsId())));
+		}
+		if (list.rebate() != null) {
+			long rebate = list.rebate();
+			filters.add(QueryBuilders.term(t -> t.field("rebate").value(rebate)));
+		}
+		if (!list.rebateTypes().isEmpty()) {
+			List<FieldValue> vals = list.rebateTypes().stream().map(FieldValue::of).toList();
+			filters.add(QueryBuilders.terms(t -> t.field("rebate_type").terms(tv -> tv.value(vals))));
+		}
+		if (!list.goodsIds().isEmpty()) {
+			List<FieldValue> vals = list.goodsIds().stream().map(FieldValue::of).toList();
+			filters.add(QueryBuilders.terms(t -> t.field("goods_id").terms(tv -> tv.value(vals))));
+		}
+		if (Boolean.TRUE.equals(list.storeListable())) {
+			filters.add(QueryBuilders.term(t -> t.field("store_listable").value(true)));
+		}
+		if (list.matchItemDistributorId()) {
+			filters.add(QueryBuilders.term(t -> t.field("item_distributor_id").value(q.distributorId())));
+		}
+		if ("positive".equals(list.storeStatus())) {
+			filters.add(QueryBuilders.term(t -> t.field("has_stock").value(true)));
+		} else if ("zero".equals(list.storeStatus())) {
+			filters.add(QueryBuilders.term(t -> t.field("has_stock").value(false)));
+		}
 	}
 
 	/** 供单测断言 filter 数量与关键词模式。 */

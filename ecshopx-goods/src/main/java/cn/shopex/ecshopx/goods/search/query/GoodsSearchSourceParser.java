@@ -51,10 +51,40 @@ final class GoodsSearchSourceParser {
 				longVal(src.get("sort")),
 				longVal(src.get("sales")),
 				longVal(src.get("listed_at")),
-				mp,
-				parseSkus(src.get("skus")),
-				parseActivities(src.get("activities")));
-	}
+			mp,
+					parseSkus(src.get("skus")),
+					parseActivities(src.get("activities")),
+					parseListAttrs(src));
+		}
+
+		private static GoodsSearchDocument.ListAttrs parseListAttrs(Map<String, Object> src) {
+			return new GoodsSearchDocument.ListAttrs(
+					str(src.get("item_type")),
+					boolVal(src.get("is_gift")),
+					boolVal(src.get("is_default")),
+					longVal(src.get("brand_id")),
+					(int) longVal(src.get("type")),
+					str(src.get("regions_id")),
+					(int) longVal(src.get("rebate")),
+					str(src.get("rebate_type")),
+					longVal(src.get("goods_id")),
+					boolVal(src.get("store_listable")),
+					longVal(src.get("item_distributor_id")));
+		}
+
+		private static boolean boolVal(Object v) {
+			if (v instanceof Boolean b) {
+				return b;
+			}
+			if (v instanceof Number n) {
+				return n.intValue() != 0;
+			}
+			if (v == null) {
+				return false;
+			}
+			String s = v.toString().trim();
+			return "1".equals(s) || "true".equalsIgnoreCase(s);
+		}
 
 	@SuppressWarnings("unchecked")
 	private static GoodsSearchDocument.MemberPrices parseMemberPrices(Object raw) {

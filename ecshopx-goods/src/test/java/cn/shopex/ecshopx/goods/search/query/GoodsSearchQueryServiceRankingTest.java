@@ -158,7 +158,8 @@ class GoodsSearchQueryServiceRankingTest {
 				1,
 				10,
 				TIER,
-				0L);
+				0L,
+				GoodsSearchListFilter.none());
 	}
 
 	private static String searchRequestToJson(SearchRequest request) {

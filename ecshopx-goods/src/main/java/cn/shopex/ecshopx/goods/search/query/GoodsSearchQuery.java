@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Objects;
 import org.springframework.util.StringUtils;
 
-/** 前台商品列表 ES 查询参数（与 wxapp 列表编排参数对齐的子集）。 */
+/** 前台商品列表 ES 查询参数。列表硬过滤与微信小程序默认商品列表的数据库条件对齐。 */
 public record GoodsSearchQuery(
 		long companyId,
 		long distributorId,
@@ -38,9 +38,22 @@ public record GoodsSearchQuery(
 		int page,
 		int pageSize,
 		SearchMemberTier tier,
-		long nowEpochSec) {
+		long nowEpochSec,
+		GoodsSearchListFilter listFilter) {
+
+	/** 标准店可售：回表前由编排写入，查询时过滤 {@code store_listable}。 */
+	public static final String PARAM_ES_STORE_LISTABLE = "__es_store_listable";
+
+	/** 非标准店或未开启可售：按商品自身 {@code items.distributor_id} 过滤。 */
+	public static final String PARAM_ES_ITEM_DISTRIBUTOR_EQ = "__es_item_distributor_eq";
 
 	public static final int MAX_WINDOW = 5000;
+
+	public GoodsSearchQuery {
+		if (listFilter == null) {
+			listFilter = GoodsSearchListFilter.none();
+		}
+	}
 
 	public GoodsSearchQuery withKeywords(String newKeywords) {
 		return new GoodsSearchQuery(
@@ -57,7 +70,8 @@ public record GoodsSearchQuery(
 				page,
 				pageSize,
 				tier,
-				nowEpochSec);
+				nowEpochSec,
+				listFilter);
 	}
 
 	public boolean hasPriceFilter() {
@@ -103,6 +117,7 @@ public record GoodsSearchQuery(
 		Integer priceMin = toIntObj(params.get("price|gte"));
 		Integer priceMax = toIntObj(params.get("price|lte"));
 		String goodsSort = params.get("goodsSort") != null ? params.get("goodsSort").toString().trim() : "";
+		GoodsSearchListFilter listFilter = listFilterFromParams(params);
 		return new GoodsSearchQuery(
 				companyId,
 				distributorId,
@@ -117,7 +132,94 @@ public record GoodsSearchQuery(
 				page,
 				pageSize,
 				tier,
-				System.currentTimeMillis() / 1000L);
+				System.currentTimeMillis() / 1000L,
+				listFilter);
+	}
+
+	private static GoodsSearchListFilter listFilterFromParams(LinkedHashMap<String, Object> params) {
+		String itemType = textOrNull(params.get("item_type"));
+		Boolean gift = params.containsKey("is_gift") ? truthyOne(params.get("is_gift")) : null;
+		Boolean defaultItem = Boolean.TRUE.equals(params.get("is_default")) ? Boolean.TRUE : null;
+		Long brandId = null;
+		Integer brand = toIntObj(params.get("brand_id"));
+		if (brand != null && brand != 0) {
+			brandId = brand.longValue();
+		}
+		Integer itemCrossType = params.containsKey("type") ? toIntObj(params.get("type")) : null;
+		boolean excludeCrossBorder = Boolean.TRUE.equals(params.get("__salesperson_exclude_type_1"));
+		String regionsId = textOrNull(params.get("regions_id"));
+		Integer rebate = params.containsKey("rebate") ? toIntObj(params.get("rebate")) : null;
+		List<String> rebateTypes = stringList(params.get("rebate_type"));
+		List<Long> goodsIds = longList(params.get("goods_id"));
+		Boolean storeListable = Boolean.TRUE.equals(params.get(PARAM_ES_STORE_LISTABLE)) ? Boolean.TRUE : null;
+		boolean matchItemDistributorId = Boolean.TRUE.equals(params.get(PARAM_ES_ITEM_DISTRIBUTOR_EQ));
+		String storeStatus = textOrNull(params.get("store_status"));
+		if (storeStatus != null && !"positive".equals(storeStatus) && !"zero".equals(storeStatus)) {
+			storeStatus = null;
+		}
+		return new GoodsSearchListFilter(
+				itemType,
+				gift,
+				defaultItem,
+				brandId,
+				itemCrossType,
+				excludeCrossBorder,
+				regionsId,
+				rebate,
+				rebateTypes,
+				goodsIds,
+				storeListable,
+				matchItemDistributorId,
+				storeStatus);
+	}
+
+	private static String textOrNull(Object v) {
+		if (v == null) {
+			return null;
+		}
+		String s = v.toString().trim();
+		return StringUtils.hasText(s) ? s : null;
+	}
+
+	private static boolean truthyOne(Object v) {
+		if (v instanceof Boolean b) {
+			return b;
+		}
+		if (v instanceof Number n) {
+			return n.intValue() == 1;
+		}
+		if (v == null) {
+			return false;
+		}
+		String s = v.toString().trim();
+		return "1".equals(s) || "true".equalsIgnoreCase(s);
+	}
+
+	private static List<String> stringList(Object raw) {
+		if (!(raw instanceof List<?> list) || list.isEmpty()) {
+			return List.of();
+		}
+		List<String> out = new ArrayList<>();
+		for (Object o : list) {
+			if (o != null && StringUtils.hasText(o.toString())) {
+				out.add(o.toString().trim());
+			}
+		}
+		return List.copyOf(out);
+	}
+
+	private static List<Long> longList(Object raw) {
+		if (!(raw instanceof List<?> list) || list.isEmpty()) {
+			return List.of();
+		}
+		List<Long> out = new ArrayList<>();
+		for (Object o : list) {
+			long v = longVal(o);
+			if (v > 0) {
+				out.add(v);
+			}
+		}
+		return List.copyOf(out);
 	}
 
 	private static List<Long> mergeIdAllowList(LinkedHashMap<String, Object> params) {
@@ -136,15 +238,6 @@ public record GoodsSearchQuery(
 				var catSet = catIds.stream().filter(Objects::nonNull).collect(java.util.stream.Collectors.toSet());
 				idOrDef.removeIf(id -> !catSet.contains(id));
 			}
-		}
-		String tagIdStr = params.get("tag_id") != null ? params.get("tag_id").toString().trim() : "";
-		if (StringUtils.hasText(tagIdStr)) {
-			// tag 交集已在编排层写入 item_id；此处仅透传已有 item_id 列表
-		}
-		@SuppressWarnings("unchecked")
-		List<Long> goodsIds = (List<Long>) params.get("goods_id");
-		if (goodsIds != null && !goodsIds.isEmpty() && idOrDef.isEmpty()) {
-			// goods_id 过滤在 hydrate 阶段由 DB 承接；ES 路径下 promoter 场景会预置 goods_id
 		}
 		if (idOrDef.isEmpty()) {
 			return List.of();

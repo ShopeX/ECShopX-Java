@@ -220,7 +220,7 @@ public class WxappGoodsItemsListServiceImpl implements WxappGoodsItemsListServic
 				result = wxappGoodsItemsListQueryOrchestrator.emptyWxappItemListForSalesmanGate(salesmanGate);
 			} else if (searchEsProperties.isEnabled()) {
 				Map<String, Object> esResult = queryDefaultItemListViaEs(companyId, userId, page, pageSize,
-						orchestrationParams, effectiveParamsForNewFilter, acceptLang);
+						effectiveParamsForNewFilter, acceptLang);
 				if (esResult != null) {
 					result = esResult;
 				} else {
@@ -305,16 +305,20 @@ public class WxappGoodsItemsListServiceImpl implements WxappGoodsItemsListServic
 			long userId,
 			int page,
 			int pageSize,
-			LinkedHashMap<String, Object> orchestrationParams,
 			LinkedHashMap<String, Object> effectiveBusinessParams,
 			String acceptLang) {
 		LinkedHashMap<String, Object> effective = new LinkedHashMap<>(effectiveBusinessParams);
 		effective.remove("__keyword_default_item_ids");
 		applyTagItemIdConstraint(companyId, effective);
+		if (wxappGoodsItemsListQueryOrchestrator.usesStandardStoreCanSaleFilter(companyId, effective)) {
+			effective.put(GoodsSearchQuery.PARAM_ES_STORE_LISTABLE, Boolean.TRUE);
+		} else if (effective.containsKey("distributor_id")) {
+			effective.put(GoodsSearchQuery.PARAM_ES_ITEM_DISTRIBUTOR_EQ, Boolean.TRUE);
+		}
 		try {
 			var tier = searchMemberTierResolver.resolve(companyId, userId);
 			GoodsSearchQuery query = GoodsSearchQuery.fromWxappParams(companyId, effective, page, pageSize, tier);
-			return goodsSearchFacade.queryListWithHydration(companyId, orchestrationParams, query, acceptLang);
+			return goodsSearchFacade.queryListWithHydration(companyId, query, acceptLang);
 		} catch (GoodsSearchEsException e) {
 			if (searchEsProperties.isLikeFallback()) {
 				log.warn("goods list ES fallback to DB companyId={}", companyId);

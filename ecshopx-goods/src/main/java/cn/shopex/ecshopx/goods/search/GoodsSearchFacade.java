@@ -53,10 +53,7 @@ public class GoodsSearchFacade {
 	 * @throws GoodsSearchEsException ES 不可用且未走 fallback 时由上层处理
 	 */
 	public Map<String, Object> queryListWithHydration(
-			long companyId,
-			LinkedHashMap<String, Object> orchestrationParams,
-			GoodsSearchQuery query,
-			String acceptLanguage) {
+			long companyId, GoodsSearchQuery query, String acceptLanguage) {
 		GoodsSearchPageResult page;
 		try {
 			page = queryService.search(query);
@@ -71,16 +68,9 @@ public class GoodsSearchFacade {
 			return empty;
 		}
 		List<Long> orderedIds = page.hits().stream().map(GoodsSearchHit::defaultItemId).toList();
-		LinkedHashMap<String, Object> hydrateParams = new LinkedHashMap<>(orchestrationParams);
-		hydrateParams.remove("__keyword_default_item_ids");
-		hydrateParams.put("item_id", new ArrayList<>(orderedIds));
-		hydrateParams.put(WxappGoodsItemsListQueryOrchestrator.KEY_INTERNAL_LIST_PAGE, 1);
-		hydrateParams.put(
-				WxappGoodsItemsListQueryOrchestrator.KEY_INTERNAL_LIST_PAGE_SIZE, Math.min(50, Math.max(orderedIds.size(), 1)));
-		hydrateParams.put(WxappGoodsItemsListQueryOrchestrator.KEY_INTERNAL_ACCEPT_LANGUAGE, acceptLanguage);
-		Map<String, Object> dbPage = listQueryOrchestrator.queryItemListData(companyId, hydrateParams, List.of());
-		@SuppressWarnings("unchecked")
-		List<Map<String, Object>> rows = (List<Map<String, Object>>) dbPage.get("list");
+		boolean skipDealListStore = Boolean.TRUE.equals(query.listFilter().storeListable());
+		List<Map<String, Object>> rows = listQueryOrchestrator.hydrateWxappItemsByIds(
+				companyId, orderedIds, skipDealListStore, acceptLanguage);
 		if (rows == null) {
 			rows = List.of();
 		}
@@ -88,10 +78,7 @@ public class GoodsSearchFacade {
 				page.hits().stream().collect(Collectors.toMap(GoodsSearchHit::defaultItemId, h -> h, (a, b) -> a));
 		List<Map<String, Object>> ordered = reorderAndApplyEsPrices(rows, orderedIds, hitById);
 		LinkedHashMap<String, Object> out = new LinkedHashMap<>();
-		// ES total 可能含 DB hydrate（如门店 goods_can_sale）丢掉的文档；按本页丢失数回校正，避免 total_count > list.size
-		long droppedOnPage = Math.max(0L, (long) page.hits().size() - (long) ordered.size());
-		long adjustedTotal = Math.max((long) ordered.size(), page.totalCount() - droppedOnPage);
-		out.put("total_count", adjustedTotal);
+		out.put("total_count", page.totalCount());
 		out.put("list", ordered);
 		return out;
 	}
@@ -103,10 +90,10 @@ public class GoodsSearchFacade {
 			List<Map<String, Object>> rows, List<Long> orderedIds, Map<Long, GoodsSearchHit> hitById) {
 		Map<Long, Map<String, Object>> byKey = new LinkedHashMap<>();
 		for (Map<String, Object> row : rows) {
-			long key = rowDefaultItemId(row);
-			if (key > 0) {
-				byKey.put(key, row);
-			}
+			putRowKey(byKey, longVal(row.get("item_id")), row);
+		}
+		for (Map<String, Object> row : rows) {
+			putRowKey(byKey, longVal(row.get("default_item_id")), row);
 		}
 		List<Map<String, Object>> ordered = new ArrayList<>(orderedIds.size());
 		for (Long id : orderedIds) {
@@ -130,12 +117,10 @@ public class GoodsSearchFacade {
 		return ordered;
 	}
 
-	private static long rowDefaultItemId(Map<String, Object> row) {
-		Object def = row.get("default_item_id");
-		if (def != null) {
-			return longVal(def);
+	private static void putRowKey(Map<Long, Map<String, Object>> byKey, long id, Map<String, Object> row) {
+		if (id > 0 && !byKey.containsKey(id)) {
+			byKey.put(id, row);
 		}
-		return longVal(row.get("item_id"));
 	}
 
 	private static long longVal(Object v) {

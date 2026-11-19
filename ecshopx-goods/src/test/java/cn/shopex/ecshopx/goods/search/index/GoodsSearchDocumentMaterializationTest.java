@@ -69,7 +69,8 @@ class GoodsSearchDocumentMaterializationTest {
 				1L,
 				new GoodsSearchDocument.MemberPrices(Map.of(), Map.of()),
 				List.of(),
-				List.of());
+				List.of(),
+				GoodsSearchDocument.ListAttrs.empty());
 		Map<String, Object> es = GoodsSearchIndexRepository.toEsSource(doc);
 		assertThat(es.get("item_name_pinyin")).isEqualTo("shanyuehuwaishuangjianbao");
 		assertThat(es.get("item_name_py")).isEqualTo("syhwsjb");

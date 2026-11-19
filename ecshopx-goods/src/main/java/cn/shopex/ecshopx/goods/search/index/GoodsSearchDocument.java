@@ -43,7 +43,8 @@ public record GoodsSearchDocument(
 		long listedAt,
 		MemberPrices memberPrices,
 		List<Sku> skus,
-		List<Activity> activities) {
+		List<Activity> activities,
+		ListAttrs listAttrs) {
 
 	private static final Set<String> SELLABLE_SKU_STATUSES = Set.of("onsale", "only_show");
 
@@ -53,6 +54,28 @@ public record GoodsSearchDocument(
 
 	public record Activity(
 			String type, long activityId, long activityPrice, long startAt, long endAt, int priority) {}
+
+	/**
+	 * 与微信小程序默认商品列表的数据库筛选列对齐，供 ES filter 使用。
+	 * {@code storeListable}：店铺自有，或该默认商品在上架表 {@code goods_can_sale = 1}。
+	 */
+	public record ListAttrs(
+			String itemType,
+			boolean gift,
+			boolean defaultItem,
+			long brandId,
+			int itemCrossType,
+			String regionsId,
+			int rebate,
+			String rebateType,
+			long goodsId,
+			boolean storeListable,
+			long itemDistributorId) {
+
+		public static ListAttrs empty() {
+			return new ListAttrs("", false, false, 0L, 0, "", 0, "", 0L, false, 0L);
+		}
+	}
 
 	/** 任一 SKU {@code store > 0} 且处于前台可售状态则为 true。 */
 	public boolean hasStock() {

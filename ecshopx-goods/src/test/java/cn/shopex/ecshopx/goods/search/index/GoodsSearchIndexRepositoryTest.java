@@ -52,7 +52,8 @@ class GoodsSearchIndexRepositoryTest {
 				1_600_000_000L,
 				new GoodsSearchDocument.MemberPrices(Map.of(), Map.of()),
 				List.of(),
-				List.of());
+				List.of(),
+				GoodsSearchDocument.ListAttrs.empty());
 		Map<String, Object> src = GoodsSearchIndexRepository.toEsSource(doc);
 		assertThat(src)
 				.containsEntry("sort", 7L)

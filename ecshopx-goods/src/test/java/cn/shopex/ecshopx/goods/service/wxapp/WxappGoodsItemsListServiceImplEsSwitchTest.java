@@ -141,7 +141,7 @@ class WxappGoodsItemsListServiceImplEsSwitchTest {
 
 		service.execute(1L, 0L, request);
 
-		verify(goodsSearchFacade, never()).queryListWithHydration(anyLong(), any(), any(), any());
+		verify(goodsSearchFacade, never()).queryListWithHydration(anyLong(), any(), any());
 		verify(wxappGoodsItemsListParamBuilder).build(request, 1L, 0L, false);
 		verify(wxappGoodsItemsListQueryOrchestrator).queryItemListData(eq(1L), any(), any());
 	}
@@ -163,7 +163,7 @@ class WxappGoodsItemsListServiceImplEsSwitchTest {
 		LinkedHashMap<String, Object> row = new LinkedHashMap<>();
 		row.put("item_id", 99L);
 		row.put("price", 100);
-		when(goodsSearchFacade.queryListWithHydration(anyLong(), any(), any(), any()))
+		when(goodsSearchFacade.queryListWithHydration(anyLong(), any(), any()))
 				.thenReturn(Map.of("total_count", 1L, "list", List.of(row)));
 		when(companyDefaultCurrencyService.getCur(anyLong())).thenReturn(new cn.shopex.ecshopx.companys.domain.CurrencyExchangeRate());
 		when(companyPopularizeConfigReadService.readWxappPromoterConfigSlice(anyLong())).thenReturn(Map.of());
@@ -171,7 +171,7 @@ class WxappGoodsItemsListServiceImplEsSwitchTest {
 		service.execute(1L, 0L, request);
 
 		verify(wxappGoodsItemsListParamBuilder).build(request, 1L, 0L, true);
-		verify(goodsSearchFacade).queryListWithHydration(eq(1L), any(), any(), any());
+		verify(goodsSearchFacade).queryListWithHydration(eq(1L), any(), any());
 		verify(wxappGoodsItemsListQueryOrchestrator, never()).queryItemListData(anyLong(), any(), any());
 		verify(wxappGoodsItemsListMemberPriceApplyService).applyForRows(eq(1L), eq(0L), any(), any());
 	}
@@ -191,7 +191,7 @@ class WxappGoodsItemsListServiceImplEsSwitchTest {
 				.thenReturn(new LinkedHashMap<>(params));
 		stubOpenSalesmanGate();
 		when(searchMemberTierResolver.resolve(1L, 0L)).thenReturn(new SearchMemberTier("normal", 1L, 100, "默认"));
-		when(goodsSearchFacade.queryListWithHydration(anyLong(), any(), any(), any()))
+		when(goodsSearchFacade.queryListWithHydration(anyLong(), any(), any()))
 				.thenReturn(Map.of("total_count", 0L, "list", List.of()));
 		when(companyDefaultCurrencyService.getCur(anyLong())).thenReturn(new cn.shopex.ecshopx.companys.domain.CurrencyExchangeRate());
 		when(companyPopularizeConfigReadService.readWxappPromoterConfigSlice(anyLong())).thenReturn(Map.of());
@@ -219,7 +219,7 @@ class WxappGoodsItemsListServiceImplEsSwitchTest {
 
 		service.execute(1L, 0L, request);
 
-		verify(goodsSearchFacade, never()).queryListWithHydration(anyLong(), any(), any(), any());
+		verify(goodsSearchFacade, never()).queryListWithHydration(anyLong(), any(), any());
 		verify(wxappGoodsItemsListQueryOrchestrator, never()).queryItemListData(anyLong(), any(), any());
 		verify(wxappGoodsItemsListQueryOrchestrator).emptyWxappItemListForSalesmanGate(emptyGate);
 	}

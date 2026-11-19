@@ -60,7 +60,8 @@ class GoodsSearchQueryServiceTest {
 	void withSynonymExpandedKeywords_feedsEsQueryBuilder() {
 		SearchMemberTier tier = new SearchMemberTier("normal", 1L, 100, "默认");
 		GoodsSearchQuery q = new GoodsSearchQuery(
-				10L, 0L, "手机", List.of(), List.of(), List.of("onsale"), "approved", null, null, "", 1, 10, tier, 0L);
+				10L, 0L, "手机", List.of(), List.of(), List.of("onsale"), "approved", null, null, "", 1, 10, tier, 0L,
+				GoodsSearchListFilter.none());
 		when(synonymKeywordExpander.expand(10L, "手机")).thenReturn("手机 移动电话");
 
 		GoodsSearchQueryService service = new GoodsSearchQueryService(
@@ -73,10 +74,44 @@ class GoodsSearchQueryServiceTest {
 	}
 
 	@Test
+	void fromWxappParams_putsFormerDbFiltersIntoEsQuery() {
+		LinkedHashMap<String, Object> params = new LinkedHashMap<>();
+		params.put("distributor_id", 269L);
+		params.put("item_type", "normal");
+		params.put("is_gift", 0);
+		params.put("is_default", Boolean.TRUE);
+		params.put("brand_id", 7);
+		params.put("type", 0);
+		params.put("regions_id", "310");
+		params.put("rebate", 1);
+		params.put("rebate_type", List.of("default"));
+		params.put("goods_id", List.of(11L, 12L));
+		params.put("store_status", "positive");
+		params.put(GoodsSearchQuery.PARAM_ES_STORE_LISTABLE, Boolean.TRUE);
+		SearchMemberTier tier = new SearchMemberTier("normal", 1L, 100, "默认");
+		GoodsSearchQuery q = GoodsSearchQuery.fromWxappParams(38L, params, 4, 10, tier);
+		String json = GoodsSearchEsQueryBuilder.queryToJson(
+				GoodsSearchEsQueryBuilder.buildRootQuery(q, new SearchEsProperties()));
+		assertThat(json).contains("\"item_type\"");
+		assertThat(json).contains("normal");
+		assertThat(json).contains("\"is_gift\"");
+		assertThat(json).contains("\"is_default\"");
+		assertThat(json).contains("\"store_listable\"");
+		assertThat(json).contains("\"brand_id\"");
+		assertThat(json).contains("\"goods_id\"");
+		assertThat(json).contains("\"has_stock\"");
+		assertThat(json).contains("\"rebate_type\"");
+		assertThat(q.listFilter().gift()).isFalse();
+		assertThat(q.listFilter().defaultItem()).isTrue();
+		assertThat(q.listFilter().goodsIds()).containsExactly(11L, 12L);
+	}
+
+	@Test
 	void esQueryBuilder_keywordModeAndHardFilters() {
 		SearchMemberTier tier = new SearchMemberTier("normal", 1L, 100, "默认");
 		GoodsSearchQuery q = new GoodsSearchQuery(
-				10L, 0L, "ab", List.of(), List.of("100"), List.of("onsale"), "approved", null, null, "", 1, 10, tier, 0L);
+				10L, 0L, "ab", List.of(), List.of("100"), List.of("onsale"), "approved", null, null, "", 1, 10, tier, 0L,
+				GoodsSearchListFilter.none());
 		assertThat(GoodsSearchEsQueryBuilder.isKeywordMode(q)).isTrue();
 		assertThat(GoodsSearchEsQueryBuilder.hardFilterCount(q)).isGreaterThanOrEqualTo(4);
 	}
@@ -96,7 +131,8 @@ class GoodsSearchQueryServiceTest {
 		int eff = new SearchEffectivePriceCalculator().effectivePriceFen(doc, tier, 1_700_000_000L);
 		assertThat(eff).isEqualTo(1500);
 		GoodsSearchQuery q = new GoodsSearchQuery(
-				1L, 0L, null, List.of(), List.of(), List.of("onsale"), "approved", 1400, 1600, "", 1, 10, tier, 0L);
+				1L, 0L, null, List.of(), List.of(), List.of("onsale"), "approved", 1400, 1600, "", 1, 10, tier, 0L,
+				GoodsSearchListFilter.none());
 		assertThat(q.hasPriceFilter()).isTrue();
 		assertThat(eff).isBetween(q.priceMinFen(), q.priceMaxFen());
 	}

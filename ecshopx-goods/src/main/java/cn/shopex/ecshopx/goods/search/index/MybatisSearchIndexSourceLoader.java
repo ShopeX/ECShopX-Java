@@ -141,6 +141,7 @@ public class MybatisSearchIndexSourceLoader implements SearchIndexSourceLoader {
 		List<SearchIndexSource.Activity> activities =
 				memberActivityRepository.loadActivities(companyId, distributorId, skuItemIds);
 		List<String> tagNames = resolveTagNames(companyId, defaultItemId);
+		SearchIndexSource.ListAttrs attrs = listAttrs(anchor, distributorId, distByItemId);
 		return Optional.of(
 				SearchIndexSource.builder()
 						.companyId(companyId)
@@ -164,6 +165,7 @@ public class MybatisSearchIndexSourceLoader implements SearchIndexSourceLoader {
 						.memberPriceVipGrade(memberPrices.vipGrade())
 						.skus(skus)
 						.activities(activities)
+						.listAttrs(attrs)
 						.build());
 	}
 
@@ -209,6 +211,31 @@ public class MybatisSearchIndexSourceLoader implements SearchIndexSourceLoader {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * 与列表 SQL {@code items.distributor_id = 店 OR 该默认商品行 goods_can_sale = 1} 一致。
+	 * 不用同组其它 SKU 的可售标记，避免 ES 召回后被数据库默认商品条件丢掉。
+	 */
+	private static SearchIndexSource.ListAttrs listAttrs(
+			Items anchor, long distributorId, Map<Long, DistributorItems> distByItemId) {
+		DistributorItems anchorDist = anchor.getItemId() != null ? distByItemId.get(anchor.getItemId()) : null;
+		boolean anchorCanSale = anchorDist != null && Boolean.TRUE.equals(anchorDist.getGoodsCanSale());
+		boolean storeOwned = isStoreOwnedAnchor(distributorId, anchor);
+		boolean storeListable = distributorId <= 0 || storeOwned || anchorCanSale;
+		long itemDistributorId = anchor.getDistributorId() != null ? anchor.getDistributorId().longValue() : 0L;
+		return new SearchIndexSource.ListAttrs(
+				anchor.getItemType() != null ? anchor.getItemType() : "",
+				Boolean.TRUE.equals(anchor.getIsGift()),
+				Boolean.TRUE.equals(anchor.getIsDefault()),
+				anchor.getBrandId() != null ? anchor.getBrandId().longValue() : 0L,
+				anchor.getType() != null ? anchor.getType() : 0,
+				anchor.getRegionsId() != null ? anchor.getRegionsId() : "",
+				anchor.getRebate() != null ? anchor.getRebate() : 0,
+				anchor.getRebateType() != null ? anchor.getRebateType() : "",
+				anchor.getGoodsId() != null ? anchor.getGoodsId() : 0L,
+				storeListable,
+				itemDistributorId);
 	}
 
 	private static boolean isStoreOwnedAnchor(long distributorId, Items anchor) {

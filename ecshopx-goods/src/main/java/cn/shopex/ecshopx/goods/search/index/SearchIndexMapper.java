@@ -36,6 +36,7 @@ public class SearchIndexMapper {
 		GoodsSearchDocument.MemberPrices memberPrices = new GoodsSearchDocument.MemberPrices(
 				copyPositivePrices(src.memberPriceGrade()),
 				copyPositivePrices(src.memberPriceVipGrade()));
+		SearchIndexSource.ListAttrs attrs = src.listAttrs() != null ? src.listAttrs() : SearchIndexSource.ListAttrs.empty();
 		return new GoodsSearchDocument(
 				id,
 				src.companyId(),
@@ -56,7 +57,19 @@ public class SearchIndexMapper {
 				src.listedAt(),
 				memberPrices,
 				skus,
-				activities);
+				activities,
+				new GoodsSearchDocument.ListAttrs(
+						nullToEmpty(attrs.itemType()),
+						attrs.gift(),
+						attrs.defaultItem(),
+						attrs.brandId(),
+						attrs.itemCrossType(),
+						nullToEmpty(attrs.regionsId()),
+						attrs.rebate(),
+						nullToEmpty(attrs.rebateType()),
+						attrs.goodsId(),
+						attrs.storeListable(),
+						attrs.itemDistributorId()));
 	}
 
 	private static long resolveSalePriceFen(SearchIndexSource src) {

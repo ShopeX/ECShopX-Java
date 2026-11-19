@@ -34,7 +34,8 @@ class GoodsSearchMappingServiceTest {
 				"company_id", "distributor_id", "default_item_id",
 				"item_name", "item_name_pinyin", "item_name_py",
 				"brief_pinyin", "tags_pinyin",
-				"sale_price", "sort", "member_prices", "skus", "activities", "has_stock");
+				"sale_price", "sort", "member_prices", "skus", "activities", "has_stock",
+				"item_type", "is_gift", "is_default", "store_listable", "goods_id", "item_distributor_id");
 		@SuppressWarnings("unchecked")
 		Map<String, Object> namePy = (Map<String, Object>) props.get("item_name_pinyin");
 		assertThat(namePy.get("analyzer")).isEqualTo("goods_pinyin_index");

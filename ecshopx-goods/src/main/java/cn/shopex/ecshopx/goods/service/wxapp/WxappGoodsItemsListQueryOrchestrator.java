@@ -116,6 +116,22 @@ public class WxappGoodsItemsListQueryOrchestrator {
 		return work;
 	}
 
+	/**
+	 * 标准商品模型且请求带 {@code is_can_sale} 时，列表按门店上架可售过滤；否则按商品自身店铺 ID 过滤。
+	 */
+	public boolean usesStandardStoreCanSaleFilter(long companyId, Map<String, Object> params) {
+		if (params == null || !Boolean.TRUE.equals(params.get("is_can_sale"))) {
+			return false;
+		}
+		return "standard".equals(itemsCategoryDistributorIdResolver.resolveProductModel(companyId));
+	}
+
+	/** ES 命中后的展示回表，不再重复列表筛选。 */
+	public List<Map<String, Object>> hydrateWxappItemsByIds(
+			long companyId, List<Long> itemIds, boolean skipDealListStore, String acceptLanguage) {
+		return goodsItemsListFacadeService.wxappHydrateItemsByIds(companyId, itemIds, skipDealListStore, acceptLanguage);
+	}
+
 	/** 与 {@link #queryItemListData} 中导购门闸判定一致，供 ES 路径在查询前短路。 */
 	public WxappItemsListSalesmanGateResult resolveSalesmanGateForWxappItemList(long companyId,
 			LinkedHashMap<String, Object> orchestrationParams) {

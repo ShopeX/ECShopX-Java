@@ -46,12 +46,32 @@ public record SearchIndexSource(
 		Map<Long, Long> memberPriceGrade,
 		Map<Long, Long> memberPriceVipGrade,
 		List<Sku> skus,
-		List<Activity> activities) {
+		List<Activity> activities,
+		ListAttrs listAttrs) {
 
 	public record Sku(long skuId, long store, String approveStatus) {}
 
 	public record Activity(
 			String type, long activityId, long activityPrice, long startAt, long endAt, Integer priority) {}
+
+	/** 与 {@link GoodsSearchDocument.ListAttrs} 同形，物化时从默认商品行写入。 */
+	public record ListAttrs(
+			String itemType,
+			boolean gift,
+			boolean defaultItem,
+			long brandId,
+			int itemCrossType,
+			String regionsId,
+			int rebate,
+			String rebateType,
+			long goodsId,
+			boolean storeListable,
+			long itemDistributorId) {
+
+		public static ListAttrs empty() {
+			return new ListAttrs("", false, false, 0L, 0, "", 0, "", 0L, false, 0L);
+		}
+	}
 
 	public static Builder builder() {
 		return new Builder();
@@ -79,6 +99,7 @@ public record SearchIndexSource(
 		private Map<Long, Long> memberPriceVipGrade = new HashMap<>();
 		private List<Sku> skus = new ArrayList<>();
 		private List<Activity> activities = new ArrayList<>();
+		private ListAttrs listAttrs = ListAttrs.empty();
 
 		public Builder companyId(long companyId) {
 			this.companyId = companyId;
@@ -185,6 +206,11 @@ public record SearchIndexSource(
 			return this;
 		}
 
+		public Builder listAttrs(ListAttrs listAttrs) {
+			this.listAttrs = listAttrs != null ? listAttrs : ListAttrs.empty();
+			return this;
+		}
+
 		public SearchIndexSource build() {
 			return new SearchIndexSource(
 					companyId,
@@ -207,7 +233,8 @@ public record SearchIndexSource(
 					Collections.unmodifiableMap(new HashMap<>(memberPriceGrade)),
 					Collections.unmodifiableMap(new HashMap<>(memberPriceVipGrade)),
 					List.copyOf(skus),
-					List.copyOf(activities));
+					List.copyOf(activities),
+					listAttrs);
 		}
 	}
 }

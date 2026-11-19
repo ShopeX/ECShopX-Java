@@ -98,6 +98,18 @@ public class GoodsSearchIndexRepository {
 		root.put("sales", doc.sales());
 		root.put("listed_at", doc.listedAt());
 		root.put("has_stock", doc.hasStock());
+		GoodsSearchDocument.ListAttrs attrs = doc.listAttrs() != null ? doc.listAttrs() : GoodsSearchDocument.ListAttrs.empty();
+		root.put("item_type", attrs.itemType());
+		root.put("is_gift", attrs.gift());
+		root.put("is_default", attrs.defaultItem());
+		root.put("brand_id", attrs.brandId());
+		root.put("type", attrs.itemCrossType());
+		root.put("regions_id", attrs.regionsId());
+		root.put("rebate", attrs.rebate());
+		root.put("rebate_type", attrs.rebateType());
+		root.put("goods_id", attrs.goodsId());
+		root.put("store_listable", attrs.storeListable());
+		root.put("item_distributor_id", attrs.itemDistributorId());
 		root.put("member_prices", toMemberPrices(doc.memberPrices()));
 		root.put("skus", toSkus(doc.skus()));
 		root.put("activities", toActivities(doc.activities()));
