@@ -352,8 +352,6 @@ public class WxappOrderController {
 			@PathVariable("order_id") String orderId,
 			@RequestParam(name = "invoice_list", required = false, defaultValue = "0") String invoiceList,
 			@RequestParam(name = "from", required = false, defaultValue = "front_list") String from,
-			@RequestParam(name = "promoter_user_id", required = false, defaultValue = "") String promoterUserId,
-			@RequestParam(name = "isSalesmanPage", required = false, defaultValue = "") String isSalesmanPage,
 			@RequestParam(name = "prescription_order_random", required = false, defaultValue = "")
 					String prescriptionOrderRandom) {
 		Object rawAuth = request.getAttribute(WxappMemberAuthAttributes.REQUEST_ATTR);
@@ -376,8 +374,6 @@ public class WxappOrderController {
 						orderId,
 						invoiceList,
 						from,
-						promoterUserId,
-						isSalesmanPage,
 						selfDeliveryOperatorIdParam,
 						prescriptionOrderRandom);
 		return ResponseEntity.ok(ApiResult.ok(data));
@@ -446,8 +442,6 @@ public class WxappOrderController {
 			@RequestParam(name = "status", required = false) String status,
 			@RequestParam(name = "is_distribution", required = false) String isDistribution,
 			@RequestParam(name = "distributor_id", required = false) String distributorId,
-			@RequestParam(name = "promoter_user_id", required = false) String promoterUserId,
-			@RequestParam(name = "isSalesmanPage", required = false) String isSalesmanPage,
 			@RequestParam(name = "is_rate", required = false) String isRate) {
 		Object rawAuth = request.getAttribute(WxappMemberAuthAttributes.REQUEST_ATTR);
 		if (rawAuth == null) {

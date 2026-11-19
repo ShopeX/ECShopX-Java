@@ -30,6 +30,7 @@ import cn.shopex.ecshopx.common.dispatch.JushuitanTradeAftersalesDispatchPublish
 import cn.shopex.ecshopx.common.dispatch.TradeRefundDispatchPublisher;
 import cn.shopex.ecshopx.common.dispatch.WdtErpTradeAfterSaleDispatchPublisher;
 import cn.shopex.ecshopx.common.exception.ResourceException;
+import cn.shopex.ecshopx.common.port.aftersales.AftersalesAgreedCouponRestorePort;
 import cn.shopex.ecshopx.common.port.order.OrderNormalOrderHeaderReadPort;
 import cn.shopex.ecshopx.common.port.order.OrderNormalOrderItemsReadPort;
 import cn.shopex.ecshopx.common.port.order.OrderProcessLogPublishPort;
@@ -43,6 +44,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -54,6 +57,8 @@ import org.springframework.util.StringUtils;
 
 @Service
 public class AftersalesShopPartialCancelCreateService {
+
+	private static final Logger log = LoggerFactory.getLogger(AftersalesShopPartialCancelCreateService.class);
 
 	private final AftersalesMapper aftersalesMapper;
 	private final AftersalesDetailMapper aftersalesDetailMapper;
@@ -70,6 +75,7 @@ public class AftersalesShopPartialCancelCreateService {
 	private final WdtErpTradeAfterSaleBusPayloadBuilder wdtErpTradeAfterSaleBusPayloadBuilder;
 	private final TradeRefundDispatchPublisher tradeRefundDispatchPublisher;
 	private final AftersalesRefundEntityTradeRefundPayloadMapper tradeRefundPayloadMapper;
+	private final AftersalesAgreedCouponRestorePort aftersalesAgreedCouponRestorePort;
 
 	public AftersalesShopPartialCancelCreateService(
 			AftersalesMapper aftersalesMapper,
@@ -86,7 +92,8 @@ public class AftersalesShopPartialCancelCreateService {
 			WdtErpTradeAfterSaleDispatchPublisher wdtErpTradeAfterSaleDispatchPublisher,
 			WdtErpTradeAfterSaleBusPayloadBuilder wdtErpTradeAfterSaleBusPayloadBuilder,
 			@Qualifier("tradeRefundAsyncFanOut") TradeRefundDispatchPublisher tradeRefundDispatchPublisher,
-			AftersalesRefundEntityTradeRefundPayloadMapper tradeRefundPayloadMapper) {
+			AftersalesRefundEntityTradeRefundPayloadMapper tradeRefundPayloadMapper,
+			AftersalesAgreedCouponRestorePort aftersalesAgreedCouponRestorePort) {
 		this.aftersalesMapper = aftersalesMapper;
 		this.aftersalesDetailMapper = aftersalesDetailMapper;
 		this.aftersalesRefundMapper = aftersalesRefundMapper;
@@ -102,6 +109,7 @@ public class AftersalesShopPartialCancelCreateService {
 		this.wdtErpTradeAfterSaleBusPayloadBuilder = wdtErpTradeAfterSaleBusPayloadBuilder;
 		this.tradeRefundDispatchPublisher = tradeRefundDispatchPublisher;
 		this.tradeRefundPayloadMapper = tradeRefundPayloadMapper;
+		this.aftersalesAgreedCouponRestorePort = aftersalesAgreedCouponRestorePort;
 	}
 
 	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
@@ -248,7 +256,8 @@ public class AftersalesShopPartialCancelCreateService {
 		refund.setUserId(userId);
 		refund.setShopId(shopId);
 		refund.setDistributorId(distributorId);
-		refund.setRefundType("0");
+		// 部分取消未发货：退款单归「售前」(refund_type=1)，与整单取消售前退款一致；仍挂 aftersales_bn 供售后单关联
+		refund.setRefundType("1");
 		refund.setRefundChannel(refundChannel);
 		refund.setRefundStatus("READY");
 		refund.setRefundFee(totalRefundFee);
@@ -392,6 +401,17 @@ public class AftersalesShopPartialCancelCreateService {
 				.set(AftersalesDetail::getAftersalesStatus, 1)
 				.set(AftersalesDetail::getUpdateTime, now);
 		aftersalesDetailMapper.update(null, du);
+
+		try {
+			long oid = a.getOrderId() == null ? 0L : a.getOrderId();
+			aftersalesAgreedCouponRestorePort.restoreOnRefundAgreed(companyId, oid);
+		} catch (RuntimeException ex) {
+			log.debug(
+					"[autoApproveOnlyRefund] coupon restore failed companyId={} aftersalesBn={}",
+					companyId,
+					aftersalesBn,
+					ex);
+		}
 
 		Map<String, Object> log = new LinkedHashMap<>();
 		log.put("order_id", a.getOrderId());

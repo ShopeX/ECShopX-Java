@@ -133,6 +133,12 @@ public class AdminNormalOrderDeliveryCoreService {
 		this.normalOrderDeliveryDispatchPublisher = normalOrderDeliveryDispatchPublisher;
 	}
 
+	public void deliverUploadWholeRemaining(Map<String, Object> params, OrderAssociations assoc) {
+		params.put("delivery_type", "batch");
+		params.put("upload_remaining", "1");
+		deliveryNormalPhysical(params, assoc, "normal");
+	}
+
 	@Transactional(rollbackFor = Exception.class)
 	public void deliveryNormalPhysical(
 			Map<String, Object> params, OrderAssociations assoc, @SuppressWarnings("unused") String effectiveOrderType) {
@@ -638,13 +644,38 @@ public class AdminNormalOrderDeliveryCoreService {
 					throw new ResourceException("供应商商品请由供应商发货");
 				}
 			}
+			boolean uploadRemaining =
+					"1".equals(String.valueOf(params.getOrDefault("upload_remaining", "")));
+			if (uploadRemaining && lines.isEmpty()) {
+				throw new ResourceException("订单商品明细不存在");
+			}
 			for (NormalOrdersItems it : lines) {
+				int num = it.getNum() == null ? 0 : it.getNum();
+				int sent = it.getDeliveryItemNum() == null ? 0 : it.getDeliveryItemNum();
+				int cancelled = it.getCancelItemNum() == null ? 0 : it.getCancelItemNum();
+				int shipQty = num;
+				if (uploadRemaining) {
+					shipQty = Math.max(0, num - sent - cancelled);
+					if (shipQty <= 0) {
+						continue;
+					}
+				}
 				OrdersDeliveryItems di = baseDeliveryItem(companyId, orderId, supplierId, now, it);
+				di.setNum(shipQty);
 				deliveryItems.add(di);
-				fullyShipped.add(it.getId());
-				itemNums.add(new DeliveryItemNum(it.getId(), it.getNum() == null ? 0 : it.getNum()));
-				canAftersales += Math.max(it.getNum() == null ? 0 : it.getNum(), 0);
-				noticeRows.add(itemToNoticeMap(it));
+				int newSent = uploadRemaining ? sent + shipQty : num;
+				if (!uploadRemaining || newSent + cancelled >= num) {
+					fullyShipped.add(it.getId());
+				}
+				itemNums.add(new DeliveryItemNum(it.getId(), newSent));
+				canAftersales += Math.max(shipQty, 0);
+				Map<String, Object> notice = new LinkedHashMap<>();
+				notice.put("item_name", it.getItemName());
+				notice.put("num", shipQty);
+				noticeRows.add(notice);
+			}
+			if (uploadRemaining && deliveryItems.isEmpty()) {
+				throw new ResourceException("没有可发货的商品");
 			}
 		} else {
 			for (Map<String, Object> val : sepParsed) {
@@ -680,7 +711,8 @@ public class AdminNormalOrderDeliveryCoreService {
 				}
 				int orderNum = info.getNum() == null ? 0 : info.getNum();
 				int sent = info.getDeliveryItemNum() == null ? 0 : info.getDeliveryItemNum();
-				int remain = orderNum - sent;
+				int cancelled = info.getCancelItemNum() == null ? 0 : info.getCancelItemNum();
+				int remain = orderNum - sent - cancelled;
 				if (num > remain) {
 					throw new ResourceException(
 							"订单号为" + orderId + "的订单,发货商品数量" + num + "大于购买数量" + remain);
@@ -697,7 +729,7 @@ public class AdminNormalOrderDeliveryCoreService {
 				di.setCreated(now);
 				di.setUpdated(now);
 				deliveryItems.add(di);
-				if (orderNum - (sent + num) == 0) {
+				if (sent + num + cancelled >= orderNum) {
 					fullyShipped.add(orderItemsId);
 				}
 				itemNums.add(new DeliveryItemNum(orderItemsId, sent + num));

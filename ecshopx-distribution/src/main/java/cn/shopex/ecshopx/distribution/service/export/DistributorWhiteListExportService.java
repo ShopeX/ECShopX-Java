@@ -99,10 +99,15 @@ public class DistributorWhiteListExportService {
 			distributorIds = List.of(jwtDistributorId);
 		}
 
-		boolean mobileFilterActive = merged != null && merged.containsKey("search_mobile");
+		boolean mobileFilterActive =
+				merged != null && (merged.containsKey("search_mobile") || merged.containsKey("mobile"));
 		String mobileValue = "";
 		if (mobileFilterActive) {
-			mobileValue = Objects.toString(merged.get("search_mobile"), "");
+			if (merged.containsKey("search_mobile")) {
+				mobileValue = Objects.toString(merged.get("search_mobile"), "");
+			} else {
+				mobileValue = Objects.toString(merged.get("mobile"), "");
+			}
 		}
 
 		String usernamePrefix = null;

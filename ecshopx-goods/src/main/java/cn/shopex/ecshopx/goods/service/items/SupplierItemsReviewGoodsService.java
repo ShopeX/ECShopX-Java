@@ -98,9 +98,50 @@ public class SupplierItemsReviewGoodsService
 		supplierItemsRepository.updateAuditByGoodsId(
 				companyId, supplierGoods.getGoodsId(), new SupplierItemsAuditPatch(auditStatus, auditDate, auditReason));
 
+		if ("rejected".equals(auditStatus)) {
+			resetSyncedPoolsAudit(companyId, supplierGoods.getGoodsId(), auditReason, auditDate);
+		}
+
 		params.put("supplier_id", supplierGoods.getSupplierId());
 		params.put("goods_id", supplierGoods.getGoodsId());
 		params.put("is_market", supplierGoods.getIsMarket());
+	}
+
+	/**
+	 * 已同步到平台商品池、店铺商品池的副本，审核拒绝后重置审核状态。
+	 * 与供应商修改商品后回写商品池一致：只改审核字段，销售状态保持不变，前台因非 approved 不再售卖，再次审核通过后需重新同步。
+	 */
+	private void resetSyncedPoolsAudit(long companyId, Long supplierGoodsId, String auditReason, int auditDate) {
+		if (supplierGoodsId == null || supplierGoodsId <= 0L) {
+			return;
+		}
+		List<SupplierItems> skus = supplierItemsRepository.listByCompanyIdAndGoodsId(companyId, supplierGoodsId);
+		if (skus == null || skus.isEmpty()) {
+			return;
+		}
+		List<Long> supplierItemIds = skus.stream()
+				.map(SupplierItems::getItemId)
+				.filter(Objects::nonNull)
+				.filter(id -> id > 0L)
+				.distinct()
+				.toList();
+		if (supplierItemIds.isEmpty()) {
+			return;
+		}
+		List<Items> linked = itemsRepository.listByCompanyIdAndSupplierItemIds(companyId, supplierItemIds);
+		if (linked == null || linked.isEmpty()) {
+			return;
+		}
+		List<Long> itemIds = linked.stream()
+				.map(Items::getItemId)
+				.filter(Objects::nonNull)
+				.filter(id -> id > 0L)
+				.distinct()
+				.toList();
+		if (itemIds.isEmpty()) {
+			return;
+		}
+		itemsRepository.updateAuditByCompanyAndItemIds(companyId, itemIds, "rejected", auditReason, auditDate);
 	}
 
 	@Override

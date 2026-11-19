@@ -160,12 +160,12 @@ public class ItemsCategoryQueryService {
 	 * 店铺推广分类：不写 {@code is_show_front}，业务员多店维度与主类目回退与前台类目列表策略对齐，响应字段单独裁剪。
 	 */
 	public List<Map<String, Object>> getWxappPromoterCategoryList(long companyId, long userId, String isMainCategoryRaw,
-			String distributorIdRaw, String isSalesmanPageRaw, String countryCode, long jwtDistributorId) {
+			String distributorIdRaw, String countryCode, long jwtDistributorId) {
 		LinkedHashMap<String, Object> filter = new LinkedHashMap<>();
 		filter.put("company_id", companyId);
 		WxappItemsListSalesmanDistributorResolveService.PromoterCategoryDistributorResolution r =
-				wxappItemsListSalesmanDistributorResolveService.resolvePromoterCategoryDistributorFilter(companyId, userId,
-						isSalesmanPageRaw, distributorIdRaw);
+				wxappItemsListSalesmanDistributorResolveService.resolvePromoterCategoryDistributorFilter(
+						companyId, userId, distributorIdRaw);
 		if (r.skipPlatformJwtDistributorMerge()) {
 			filter.put("promoter_skip_jwt_distributor_merge", Boolean.TRUE);
 		}

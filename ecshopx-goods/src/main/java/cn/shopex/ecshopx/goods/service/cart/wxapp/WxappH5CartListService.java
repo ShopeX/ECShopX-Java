@@ -304,9 +304,6 @@ public class WxappH5CartListService {
 			long buyUserId) {
 		assertInjected();
 		long effectiveUserId = authUserId;
-		if (promoterUserId != 0L && buyUserId != 0L) {
-			effectiveUserId = buyUserId;
-		}
 		assertShopTypeSupportedForList(shopType == null ? "" : shopType.trim());
 
 		LambdaQueryWrapper<Cart> outerWrapper = Wrappers.lambdaQuery();
@@ -418,9 +415,6 @@ public class WxappH5CartListService {
 		w.eq(Cart::getCompanyId, companyId)
 				.eq(Cart::getUserId, effectiveUserId)
 				.eq(Cart::getShopType, shopType);
-		if (promoterUserId != 0L && buyUserId != 0L) {
-			w.eq(Cart::getPromoterUserId, promoterUserId);
-		}
 		if (isShopScreen != 0 || shopId > 0L) {
 			w.eq(Cart::getShopId, shopId);
 		}
@@ -843,6 +837,22 @@ public class WxappH5CartListService {
 					}
 				}
 			}
+			long shopId = longObj(shop.get("shop_id"));
+			if (shopId > 0L) {
+				List<Map<String, Object>> giftMaps = new ArrayList<>();
+				for (Map<String, Object> act : activities) {
+					Object giftsRaw = act.get("gifts");
+					if (!(giftsRaw instanceof List<?> gl)) {
+						continue;
+					}
+					for (Object g : gl) {
+						if (g instanceof Map<?, ?>) {
+							giftMaps.add((Map<String, Object>) g);
+						}
+					}
+				}
+				checkoutCartDistributorStoreOverlayService.applyForSkuMaps(companyId, shopId, giftMaps);
+			}
 			List<Map<String, Object>> adjusted =
 					giftActivityStoreAdjustService.adjustGiftActivities(
 							companyId, receiptType, activities, cartLines);
@@ -987,12 +997,6 @@ public class WxappH5CartListService {
 		q.put(WxappGoodsItemsListQueryOrchestrator.KEY_INTERNAL_ACCEPT_LANGUAGE, "zh-CN");
 		if (StringUtils.hasText(userDevice)) {
 			q.put("user_device", userDevice);
-		}
-		if (inputData != null && inputData.get("promoter_user_id") != null) {
-			Object p = inputData.get("promoter_user_id");
-			if (longObj(p) != 0L) {
-				q.put("promoter_user_id", p);
-			}
 		}
 		Map<String, Object> pack = wxappGoodsItemsListQueryOrchestrator.querySkuItemsList(companyId, q, List.of());
 		@SuppressWarnings("unchecked")

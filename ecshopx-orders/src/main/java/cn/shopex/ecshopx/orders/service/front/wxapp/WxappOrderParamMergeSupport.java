@@ -85,7 +85,6 @@ public final class WxappOrderParamMergeSupport {
 		p.put("isNostores", intInput(p.get("isNostores"), 0));
 		String receipt = stringVal(p.get("receipt_type"));
 		p.put("receipt_type", StringUtils.hasText(receipt) ? receipt.trim() : "logistics");
-		p.put("isSalesmanPage", intInput(merged.get("isSalesmanPage"), 0));
 		if (merged.containsKey("promoter_user_id")) {
 			p.put("promoter_user_id", longVal(merged.get("promoter_user_id")));
 		}

@@ -40,6 +40,8 @@ sources:
     resource: repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/port/AftersalesApplyAsyncPort.java
   - id: openwiki-source-1b49107fc9cfdb499cba6515
     resource: repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/port/AftersalesRefundAsyncPort.java
+  - id: openwiki-source-4f20353a7ef6421dd5de8b7d
+    resource: repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/service/AftersalesAdminDetailPhpParityApplier.java
   - id: openwiki-source-5bbe8d86eeb556e63192094e
     resource: repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/service/AftersalesAdminDetailService.java
   - id: openwiki-source-26ab558d7b478afa213dffef
@@ -150,10 +152,10 @@ sources:
     resource: repo://ecshopx-payment/src/main/java/cn/shopex/ecshopx/payment/service/orderrefund/StandardOnlinePayAftersalesRefundExecutor.java
   - id: openwiki-source-98c73d78d3aa799fe0ab640f
     resource: repo://ecshopx-system-link/src/main/java/cn/shopex/ecshopx/systemlink/service/jushuitan/JushuitanTradeAftersalesNotificationProcessor.java
-generated: { by: "openwiki/0.9.0", at: "2026-11-08T17:14:16.576Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-16T17:12:44.218Z" }
 verified:
   - by: openwiki/0.9.0
-    at: 2026-11-08T17:14:16.576Z
+    at: 2026-11-16T17:12:44.218Z
 ---
 
 # Aftersales Domain (ecshopx-aftersales)
@@ -254,6 +256,10 @@ Admin aftersales surfaces must stay inside the operator JWT's store scope, resol
 * **List-scope clamping**: `AftersalesAdminListService` (list **and** `/aftersales/logExport`, which reuses the same filter builder) intersects the requested `distributor_id`/`distributorIds` filter with the JWT scope; an unauthorized or empty intersection is **clamped** to the JWT store set (never silently dropped to an unscoped query), and an empty effective scope short-circuits to an empty result/export. `AftersalesRefundListService` applies the same clamp to `GET /refund` and `GET /refund/logExport`; when the JWT carries a scope, a `distributor_id` condition always reaches the SQL wrapper.
 * **Refund detail**: `AftersalesRefundListService.getRefundsDetail` (`GET /refund/detail/{refund_bn}`, ECX-10922, PHP `AftersalesDistributorGate::assertOwnStoreAftersales` parity) throws `ResourceException("无权操作该售后单")` when the refund row's `distributor_id` falls outside the JWT scope.
 
+### Admin detail PHP-parity normalization (`AftersalesAdminDetailPhpParityApplier`)
+
+The admin detail response assembled by `AftersalesAdminDetailService.buildFullDetailFromMainRow` is finished by `AftersalesAdminDetailPhpParityApplier.apply(out)` — a stateless `@Component` whose only caller is the detail service (wired directly in its test). It mutates the map in place as the last step so the JSON matches legacy PHP response shapes exactly: id-ish fields on the main head, `detail` rows, `refund_info`, `order_info` (also `app_info.order_info`) and `distributor_info` are **stringified** (`null` → `"0"`); integral `Number` values (`fee_rate`, `weight`, `cur_fee_rate`) are coerced to `int`; `order_info.act_id` becomes `null` when zero/`"0"`, `order_info.third_params` defaults to `[]`, and `item_fee`/`total_fee`/`market_fee`/`cur_pay_fee` become numeric strings; a blank or `"{}"` `app_pay_type_desc` falls back to `微信小程序`; PHP-suppressed keys are removed (`coupon_discount_desc`, `member_discount_desc`, `original_order_id`, plus item `add_service_info`/`type`/`up_share_points` and distributor `merchant_name`/`source_from`); and per-PHP quirks, an empty-map `supplier_name` becomes `""`, an empty-string `offline_aftersales_distributor_id` becomes `null`, and numeric `review_status` becomes a boolean.
+
 ### Front wxapp (`/api/v1/h5app`)
 
 `POST /wxapp/aftersales` (apply), `GET /wxapp/aftersales` (list), `GET /wxapp/aftersales/info` (detail), `POST /wxapp/aftersales/sendback` (member sendback, single or batch via `aftersales_data` array), `POST /wxapp/aftersales/close` (member close), and `GET /wxapp/aftersales/remind/detail`. `POST /wxapp/aftersales/modify` is a stub that returns an empty 200 — kept for PHP URL compatibility.
@@ -322,8 +328,7 @@ Batch-capable (the batch branch forces `operator_type` to `"pos"` or `"admin"` p
 
 Transaction: approve → refund `AUDIT_SUCCESS` + channel + optional fee/point/freight overrides, aftersales status 2 / progress 4, brokerage rollback per detail line, process log; reject → refund `REFUSE`, status 3 / progress 3 with `refuse_reason` = the normalized memo, `addLeftAftersalesNum`, process log. Both arms publish the in-tx SaaS-ERP update/cancel pair and call `AftersalesRefuseWxaNotifyService.sendByStatus` with the freshly updated status, still inside the transaction.
 
-<!-- openwiki: broken internal link [#aftersalesrefundasyncport-abstraction] heading anchor "aftersalesrefundasyncport-abstraction" does not exist in /openwiki/domains/aftersales.md. Fix the href or restore the target, then delete this comment. -->
-The job dispatchers are **not** injected directly: all deferred jobs go through the `AftersalesRefundAsyncPort` interface (`port/`, impl `AftersalesRefundAsyncPortImpl` in `integration/` — see [below](#aftersalesrefundasyncport-abstraction)). The `afterCommit` callback reloads the persisted row, then — approve: `scheduleOrderRefundComplete` → Jushuitan bus payload → `JushuitanTradeAftersalesSyncSpringEvent` → WDT bus payload → `scheduleInvoiceRed` (the reloaded row map, **not** the request); reject: Jushuitan bus payload + the sync Spring event only (no OrderRefundComplete, no WDT, no InvoiceRed). Unlike `AftersalesReviewService`'s approve-only guard, refundCheck's `registerPostCommitCallbacks` does **not** check `isSynchronizationActive()` before registering — with no active synchronization the whole `afterCommit` arm silently never fires, a behavioral asymmetry that matters when calling this service outside a transactional boundary.
+The job dispatchers are **not** injected directly: all deferred jobs go through the `AftersalesRefundAsyncPort` interface (`port/`, impl `AftersalesRefundAsyncPortImpl` in `integration/` — see [below](#the-aftersalesrefundasyncport-abstraction)). The `afterCommit` callback reloads the persisted row, then — approve: `scheduleOrderRefundComplete` → Jushuitan bus payload → `JushuitanTradeAftersalesSyncSpringEvent` → WDT bus payload → `scheduleInvoiceRed` (the reloaded row map, **not** the request); reject: Jushuitan bus payload + the sync Spring event only (no OrderRefundComplete, no WDT, no InvoiceRed). Unlike `AftersalesReviewService`'s approve-only guard, refundCheck's `registerPostCommitCallbacks` does **not** check `isSynchronizationActive()` before registering — with no active synchronization the whole `afterCommit` arm silently never fires, a behavioral asymmetry that matters when calling this service outside a transactional boundary.
 
 `RefundCheckOrderRefundCompletePostCommitProbeTest` — a Mockito fixture with a hand-rolled `PlatformTransactionManager` that fires `afterCommit` — pins this with a mocked `AftersalesRefundAsyncPort`: the approve path (in order: SaaS-ERP update publish → exactly one `scheduleOrderRefundComplete` → one Jushuitan publish → one Jushuitan sync event → one WDT publish → one `scheduleInvoiceRed`, and never the cancel-SaaS-ERP publish) and the reject path (never `scheduleOrderRefundComplete`/`scheduleInvoiceRed`/WDT; one Jushuitan publish + one Jushuitan sync event + the cancel-SaaS-ERP publish). It also pins the order-process-log payloads: reject logs `operator_type "user"` (operator_id from `user_id` param, 0 when absent), approve logs `operator_type "admin"` with operator_id preferring the aftersales row's `user_id` over the request's `operator_id`, with `refunds_memo`/`refund_memo` normalization.
 
@@ -542,6 +547,7 @@ Caption: the four aftersales tables. `orders_normal_orders.left_aftersales_num` 
 * `RefundCheckOrderRefundCompletePostCommitProbeTest` — refundCheck approve schedules `OrderRefundComplete` exactly once after commit (via a mocked `AftersalesRefundAsyncPort`) with the full post-commit publish order (SaaS-ERP update in-tx → `scheduleOrderRefundComplete` → Jushuitan → sync event → WDT → `scheduleInvoiceRed`); reject never schedules it/InvoiceRed/WDT and publishes Jushuitan + sync event + cancel-SaaS-ERP only; also pins the reject/approve order-process-log payloads (operator types and ids, `refund_memo`/`refunds_memo` normalization).
 * `AftersalesRefuseWxaNotifyServiceTest` — scene mapping and fee formatting for the `aftersalesRefuse` WXA subscribe message.
 * `AftersalesRefundServiceScheduleRefundTest` — schedule query shape (`AUDIT_SUCCESS` + epoch floor) and same-order delay ramp.
+* `AftersalesAdminDetailDistributorScopeTest` also wires the real `AftersalesAdminDetailPhpParityApplier` into the detail service, so the admin detail map passes through PHP-parity normalization in every detail-path test.
 * `AftersalesRefundJobServiceTest` + `DefaultAftersalesRefundJobSideEffects*Test` — job branch decisions (offline skip, no-aftersalesBn path, channel hint, finish writes).
 * `AftersalesShopPartialCancelAutoApproveOnlyRefundPostCommitJobsProbeTest`, `...CreateServiceTradeRefundDispatchProbeTest`, `...WdtErpAfterSalePublishProbeTest` — partial-cancel post-commit fan-out.
 * `AftersalesServiceCloseAftersales*ProbeTest`, `...ScheduleAutoRefuseTest`, `...ScheduleDoneAftersalesTest` — close/auto-refuse/done semantics.

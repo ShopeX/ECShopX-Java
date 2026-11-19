@@ -120,6 +120,8 @@ sources:
     resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/web/interceptor/MiddlewareWebMvcConfigurer.java
   - id: openwiki-source-cb7b1b089af43117147fa9fd
     resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/web/interceptor/ShopLogInterceptor.java
+  - id: openwiki-source-6bdeef913b704b5b1ce19fa9
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/api/admin/v1/SearchSynonymController.java
   - id: openwiki-source-80077d2f69a839e9693e1a07
     resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/api/front/v1/MembersController.java
   - id: openwiki-source-cc41dee55bf05e6db3079efb
@@ -172,10 +174,10 @@ sources:
     resource: repo://ecshopx-salesperson/src/main/java/cn/shopex/ecshopx/salesperson/web/QywxSalespersonAuthInterceptor.java
   - id: openwiki-source-37308fb144b4036f8384abe8
     resource: repo://ecshopx-salesperson/src/main/java/cn/shopex/ecshopx/salesperson/web/ShopSalespersonFrontRequestMerge.java
-generated: { by: "openwiki/0.9.0", at: "2026-11-08T17:14:16.576Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-16T17:12:44.218Z" }
 verified:
   - by: openwiki/0.9.0
-    at: 2026-11-08T17:14:16.576Z
+    at: 2026-11-16T17:12:44.218Z
 ---
 
 # HTTP Request Lifecycle, Auth, and Response Conventions
@@ -339,7 +341,7 @@ Every interceptor starts its `preHandle` with the same two guards: skip unless t
 | `@DingoResponse` | `GlobalExceptionHandler` + module advices | Not auth: selects the legacy PHP error envelope per endpoint (see [Response and error conventions](#response-and-error-conventions)). | none |
 | `@OpenapiResponse` | `OpenapiResponseBodyAdvice` (openapi Bundle) | Wraps returns in the PHP OpenAPI envelope — see [OpenAPI Integration](../integrations/openapi.md). | none |
 
-The typical admin controller stacks them: `@DingoResponse(...) @AdminAuth @ShopLog` on the class, `@Activated(routeAlias = "trade.setting.set")` on individual methods (see `orders/api/admin/v1/TradeSettingController`). Front controllers use `@FrontNoAuth` on the class and `@FrontAuth` on the subset of methods that require login (`WxappPaymentController` does exactly this).
+The typical admin controller stacks them: `@DingoResponse(...) @AdminAuth @ShopLog` on the class, `@Activated(routeAlias = "trade.setting.set")` on individual methods (see `orders/api/admin/v1/TradeSettingController`). Front controllers use `@FrontNoAuth` on the class and `@FrontAuth` on the subset of methods that require login (`WxappPaymentController` does exactly this). A recent admin variant skips `@DingoResponse` and `@Activated` entirely — plain `ApiResult` envelopes and direct reads of the operator claims map: `goods/api/admin/v1/SearchSynonymController` (`@AdminAuth @ShopLog` on the class, `/api/v1/goods/search/synonyms`) reads `company_id` out of `OPERATOR_JWT_USER_DATA` itself, throws `UnauthorizedException("未登录")` when the attribute is absent (→ plain 401 `ApiResult`, not a Dingo envelope), and validates `group_key` / `words` / path ids with `BadRequestException` (→ plain 400). New internal endpoints with no PHP twin should copy this variant (see [Choosing a style for a new endpoint](#choosing-a-style-for-a-new-endpoint)).
 
 ### `FrontNoAuthInterceptor`: anonymous tenant resolution
 
@@ -413,7 +415,7 @@ public ResponseEntity<ApiResult<Map<String, Object>>> payment(
 }
 ```
 
-The idiom reproduces PHP/Laravel's `$request->merge()` semantics: **query/form parameters form the base map, and the parsed body overrides on key conflicts** (`putAll`). Because `toObjectMap` reads the servlet parameter map (query + form) while `@FlexibleBody` supplies the JSON body, a JSON POST still sees its query string; a form POST sees its fields once. GET handlers use the same base map without a body (`doPayment` above). The salesperson Bundle has a small local variant (`ShopSalespersonFrontRequestMerge`) with the same "parameters first, body wins" rule.
+The idiom reproduces PHP/Laravel's `$request->merge()` semantics: **query/form parameters form the base map, and the parsed body overrides on key conflicts** (`putAll`). Because `toObjectMap` reads the servlet parameter map (query + form) while `@FlexibleBody` supplies the JSON body, a JSON POST still sees its query string; a form POST sees its fields once. GET handlers use the same base map without a body (`doPayment` above). The salesperson Bundle has a small local variant (`ShopSalespersonFrontRequestMerge`) with the same "parameters first, body wins" rule. `WxappOrderController` repeats the same merge in every mutating handler (e.g. `createNewOrder`, `getOrderFreightFeeInfo`). A narrower sibling idiom exists for admin endpoints whose PHP route only ever received a body: `SearchSynonymController.replace` takes the `@FlexibleBody` map **as** the parameter map with no `toObjectMap` merge (falling back to `Map.of()` for a null body) — acceptable only when the route has no meaningful query/form parameters to honor.
 
 `resolveH5Auth` in the same controller shows the second half of the idiom: identity comes from request attributes, not parameters — it prefers the wxapp session attribute, then `h5AuthClaims`, backfills `company_id` from `h5CompanyId`, then from the merged params, and only throws `UnauthorizedException` when no source produced a positive company id.
 
@@ -484,7 +486,7 @@ Auth failures never reach `GlobalExceptionHandler` — the interceptors/filters 
 
 ### Choosing a style for a new endpoint
 
-* **New internal/admin endpoints with no PHP twin:** plain `ApiResult` — omit `@DingoResponse` entirely.
+* **New internal/admin endpoints with no PHP twin:** plain `ApiResult` — omit `@DingoResponse` entirely (and skip `@Activated` when the endpoint needs no menu/distributor scoping; read the operator claims from `OPERATOR_JWT_USER_DATA` directly, as `goods/api/admin/v1/SearchSynonymController` does).
 * **Migrated endpoints whose PHP frontend parses `data.message` / `data.status_code`:** `@DingoResponse(resource = DINGO, badRequest = DINGO_400 or DINGO_422, unauthorized = true)`, matching what the legacy route returned. Look at the sibling controllers in the same Bundle (e.g. `TradeSettingController` for admin, `WxappPaymentController` for front) and copy their attribute values.
 * **OpenAPI `/api/openapi/**` endpoints:** `@OpenapiResponse`, never `@DingoResponse` — see [OpenAPI Integration](../integrations/openapi.md).
 

@@ -52,6 +52,39 @@ class AftersalesRefundJobServiceTest {
 	}
 
 	@Test
+	@DisplayName("offline_pay 且有售后单号：标 SUCCESS 并写售后完成，不调线上退款")
+	void offlinePayWithAftersalesBn_marksSuccessAndFinishes() {
+		AftersalesRefund r = base(1L, 1L);
+		r.setPayType("offline_pay");
+		r.setAftersalesBn(99L);
+		r.setRefundChannel("original");
+		when(aftersalesRefundMapper.selectOne(any(QueryWrapper.class))).thenReturn(r);
+
+		assertThat(jobService.handle(new AftersalesRefundQueueMessage(1L, 1L, 3L))).isTrue();
+
+		InOrder inOrder = inOrder(sideEffects);
+		inOrder.verify(sideEffects).updateRefundToSuccess(r);
+		inOrder.verify(sideEffects).updateAftersaleFinished(r);
+		verify(sideEffects, never()).doOnlineRefund(any());
+		verify(sideEffects, never()).applyOfflineChannelHintFromOrder(any());
+	}
+
+	@Test
+	@DisplayName("offline_pay 且无售后单号：直接返回")
+	void offlinePayWithoutAftersalesBn_returnsWithoutFinish() {
+		AftersalesRefund r = base(1L, 1L);
+		r.setPayType("offline_pay");
+		r.setAftersalesBn(0L);
+		when(aftersalesRefundMapper.selectOne(any(QueryWrapper.class))).thenReturn(r);
+
+		assertThat(jobService.handle(new AftersalesRefundQueueMessage(1L, 1L, 3L))).isTrue();
+
+		verify(sideEffects, never()).doOnlineRefund(any());
+		verify(sideEffects, never()).updateRefundToSuccess(any());
+		verify(sideEffects, never()).updateAftersaleFinished(any());
+	}
+
+	@Test
 	@DisplayName("§3.2-4 offline_pay → true，无 doOnline 支付外呼")
 	void offlinePay_true_noOnlineRefund() {
 		AftersalesRefund r = base(1L, 1L);

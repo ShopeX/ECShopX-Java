@@ -291,7 +291,7 @@ public class NormalMasterOrderExportCsvService {
 		row.put("receiver_city", nz(o.getReceiverCity()));
 		row.put("receiver_district", nz(o.getReceiverDistrict()));
 		row.put("receiver_address", clearSpecialChars(receiverAddress));
-		row.put("delivery_status", deliveryDone ? "已发货" : "未发货");
+		row.put("delivery_status", mapDeliveryStatus(nz(o.getDeliveryStatus())));
 		row.put("delivery_time", deliveryDone ? formatEpoch(o.getDeliveryTime()) : "0");
 		row.put("delivery_code", deliveryDone ? nz(o.getDeliveryCode()) + "\t" : "");
 		row.put("delivery_corp", deliveryDone ? nz(o.getDeliveryCorp()) : "");
@@ -617,6 +617,16 @@ public class NormalMasterOrderExportCsvService {
 			return b.trim();
 		}
 		return "";
+	}
+
+	static String mapDeliveryStatus(String deliveryStatus) {
+		if ("DONE".equals(deliveryStatus)) {
+			return "已发货";
+		}
+		if ("PARTAIL".equals(deliveryStatus)) {
+			return "部分发货";
+		}
+		return "未发货";
 	}
 
 	private static String formatOrderIdCell(String orderIdStr) {

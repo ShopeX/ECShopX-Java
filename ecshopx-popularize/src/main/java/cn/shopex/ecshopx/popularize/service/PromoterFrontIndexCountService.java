@@ -16,7 +16,6 @@
 
 package cn.shopex.ecshopx.popularize.service;
 
-import cn.shopex.ecshopx.common.exception.BadRequestException;
 import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.popularize.domain.Brokerage;
 import cn.shopex.ecshopx.popularize.domain.Promoter;
@@ -26,54 +25,36 @@ import cn.shopex.ecshopx.popularize.mapper.BrokerageMapper;
 import cn.shopex.ecshopx.popularize.mapper.PromoterBrokerageStatisticsMapper;
 import cn.shopex.ecshopx.popularize.mapper.PromoterMapper;
 import cn.shopex.ecshopx.popularize.mapper.TaskBrokerageCountMapper;
-import cn.shopex.ecshopx.popularize.support.PopularizeQueryFlagTruthy;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 @Service
 public class PromoterFrontIndexCountService {
 
-	private static final Pattern DIGITS_ONLY = Pattern.compile("^[0-9]+$");
-
 	private final BrokerageMapper brokerageMapper;
 	private final PromoterBrokerageStatisticsMapper promoterBrokerageStatisticsMapper;
 	private final TaskBrokerageCountMapper taskBrokerageCountMapper;
-	private final SalesmanBrokerageCountListQueryService salesmanBrokerageCountListQueryService;
 	private final PromoterFrontPromoterChildrenListService promoterFrontPromoterChildrenListService;
-	private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 	private final PromoterMapper promoterMapper;
 
 	public PromoterFrontIndexCountService(
 			BrokerageMapper brokerageMapper,
 			PromoterBrokerageStatisticsMapper promoterBrokerageStatisticsMapper,
 			TaskBrokerageCountMapper taskBrokerageCountMapper,
-			SalesmanBrokerageCountListQueryService salesmanBrokerageCountListQueryService,
 			PromoterFrontPromoterChildrenListService promoterFrontPromoterChildrenListService,
-			NamedParameterJdbcTemplate namedParameterJdbcTemplate,
 			PromoterMapper promoterMapper) {
 		this.brokerageMapper = brokerageMapper;
 		this.promoterBrokerageStatisticsMapper = promoterBrokerageStatisticsMapper;
 		this.taskBrokerageCountMapper = taskBrokerageCountMapper;
-		this.salesmanBrokerageCountListQueryService = salesmanBrokerageCountListQueryService;
 		this.promoterFrontPromoterChildrenListService = promoterFrontPromoterChildrenListService;
-		this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
 		this.promoterMapper = promoterMapper;
 	}
 
-	public LinkedHashMap<String, Object> indexCount(
-			long companyId,
-			long userId,
-			String isSalesmanPageRaw,
-			String distributorIdRaw) {
+	public LinkedHashMap<String, Object> indexCount(long companyId, long userId) {
 		Promoter promoterRow =
 				promoterMapper.selectOne(
 						new LambdaQueryWrapper<Promoter>()
@@ -140,23 +121,6 @@ public class PromoterFrontIndexCountService {
 		return data;
 	}
 
-	private static void applyDistributorIdToFilterCount(
-			LinkedHashMap<String, Object> filterCount, String distributorIdRaw) {
-		if (!PopularizeQueryFlagTruthy.isTruthyForH5QueryFlag(distributorIdRaw)) {
-			return;
-		}
-		String t = distributorIdRaw.strip();
-		if (!DIGITS_ONLY.matcher(t).matches()) {
-			throw new BadRequestException("distributor_id 格式不正确");
-		}
-		long v = Long.parseLong(t);
-		if (v <= 0L) {
-			throw new BadRequestException("distributor_id 格式不正确");
-		}
-		filterCount.remove("dIds");
-		filterCount.put("distributor_id", Long.valueOf(v));
-	}
-
 	private static int toBoundedInt(long c) {
 		if (c > Integer.MAX_VALUE) {
 			return Integer.MAX_VALUE;
@@ -172,37 +136,6 @@ public class PromoterFrontIndexCountService {
 			return 0;
 		}
 		return toBoundedInt(v.longValue());
-	}
-
-	private List<Long> loadSalespersonShopIds(long companyId, long userId) {
-		String sql =
-				"SELECT shop_id FROM shop_salesperson WHERE company_id = :companyId AND user_id = :userId LIMIT 1000";
-		MapSqlParameterSource p =
-				new MapSqlParameterSource()
-						.addValue("companyId", companyId)
-						.addValue("userId", (int) userId);
-		List<Map<String, Object>> rows = namedParameterJdbcTemplate.queryForList(sql, p);
-		List<Long> out = new ArrayList<>();
-		for (Map<String, Object> row : rows) {
-			Object sid = row.get("shop_id");
-			if (sid == null) {
-				continue;
-			}
-			long val;
-			if (sid instanceof Number n) {
-				val = n.longValue();
-			} else {
-				try {
-					val = Long.parseLong(String.valueOf(sid).trim());
-				} catch (NumberFormatException e) {
-					continue;
-				}
-			}
-			if (val > 0L) {
-				out.add(val);
-			}
-		}
-		return out;
 	}
 
 	private static Map<String, Object> firstRow(List<Map<String, Object>> rows) {
@@ -232,7 +165,7 @@ public class PromoterFrontIndexCountService {
 			return n.longValue();
 		}
 		String s = String.valueOf(v).trim();
-		if (!StringUtils.hasText(s)) {
+		if (s.isEmpty()) {
 			return 0L;
 		}
 		try {
@@ -250,23 +183,5 @@ public class PromoterFrontIndexCountService {
 			return n.intValue();
 		}
 		return 0;
-	}
-
-	private static Object rebateTotalFromSalesmanAggregate(Object rebateSum) {
-		if (rebateSum == null) {
-			return null;
-		}
-		if (rebateSum instanceof Number n) {
-			return Integer.valueOf(n.intValue());
-		}
-		String s = String.valueOf(rebateSum).trim();
-		if (!StringUtils.hasText(s)) {
-			return null;
-		}
-		try {
-			return Integer.valueOf((int) Long.parseLong(s));
-		} catch (NumberFormatException e) {
-			return null;
-		}
 	}
 }

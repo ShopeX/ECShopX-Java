@@ -54,16 +54,26 @@ sources:
     resource: repo://ecshopx-third-party/src/main/java/cn/shopex/ecshopx/thirdparty/service/workwechat/WorkWechatCorpMessageSendHttpService.java
   - id: openwiki-source-d815d709e167c6a76fc4f5b6
     resource: repo://ecshopx-wechat/pom.xml
+  - id: openwiki-source-2126cb75c2bd25b4056f637b
+    resource: repo://ecshopx-wechat/src/main/java/cn/shopex/ecshopx/wechat/api/front/v1/QrcodeController.java
   - id: openwiki-source-0faf211cd4710387baf9c288
     resource: repo://ecshopx-wechat/src/main/java/cn/shopex/ecshopx/wechat/api/open/WechatOpenPlatformMessageCallbackController.java
   - id: openwiki-source-4a45b8522d5a5e9782931f61
     resource: repo://ecshopx-wechat/src/main/java/cn/shopex/ecshopx/wechat/api/open/WxappLegacyQrcodeController.java
+  - id: openwiki-source-0f1604182e70cfca0c3527d2
+    resource: repo://ecshopx-wechat/src/main/java/cn/shopex/ecshopx/wechat/dispatch/SendTemplateMessageJobHandler.java
   - id: openwiki-source-66de745d040de7e936d4a34b
     resource: repo://ecshopx-wechat/src/main/java/cn/shopex/ecshopx/wechat/mp/OfficialAccountUserTagMemberService.java
   - id: openwiki-source-4eb97a27b819ea5e522f0f65
     resource: repo://ecshopx-wechat/src/main/java/cn/shopex/ecshopx/wechat/openapi/OpenapiWxappShareIdRedisService.java
+  - id: openwiki-source-297dd0b3aff5252cadd4c519
+    resource: repo://ecshopx-wechat/src/main/java/cn/shopex/ecshopx/wechat/service/PcLoginQrcodeService.java
+  - id: openwiki-source-4a31370920377960f8456d8b
+    resource: repo://ecshopx-wechat/src/main/java/cn/shopex/ecshopx/wechat/service/PcQrcodeService.java
   - id: openwiki-source-ce40011266219e7d1063aa84
     resource: repo://ecshopx-wechat/src/main/java/cn/shopex/ecshopx/wechat/service/WechatAuthBindService.java
+  - id: openwiki-source-0d9c4e95ceaf971a6391184c
+    resource: repo://ecshopx-wechat/src/main/java/cn/shopex/ecshopx/wechat/service/WechatAuthQueryService.java
   - id: openwiki-source-bf27ff967c416af51d88cb9e
     resource: repo://ecshopx-wechat/src/main/java/cn/shopex/ecshopx/wechat/service/wxa/SuperadminWxappTemplateMetadataService.java
   - id: openwiki-source-e1acc095131fd000b689bc8b
@@ -86,6 +96,8 @@ sources:
     resource: repo://ecshopx-wechat/src/main/java/cn/shopex/ecshopx/wechat/service/wxa/WxaUploadWxaService.java
   - id: openwiki-source-e93a86076b3be831ed762065
     resource: repo://ecshopx-wechat/src/main/java/cn/shopex/ecshopx/wechat/service/wxa/WxaWeappPublishOrchestrationService.java
+  - id: openwiki-source-1e744f2bb64d241dfc5d1aad
+    resource: repo://ecshopx-wechat/src/main/java/cn/shopex/ecshopx/wechat/service/WxaAuthorizerAppIdByTemplateService.java
   - id: openwiki-source-c871343763df1a82a0493867
     resource: repo://ecshopx-wechat/src/main/java/cn/shopex/ecshopx/wechat/service/WxaCardUsedTemplateSendNoOp.java
   - id: openwiki-source-d575a9bfd5764815c0b422fc
@@ -136,10 +148,10 @@ sources:
     resource: repo://ecshopx-work-wechat/src/test/java/cn/shopex/ecshopx/workwechat/service/WorkWechatVerifyDomainFileServiceCompanyScopeTest.java
   - id: openwiki-source-2355f81d7cf522f8dbdaabd4
     resource: repo://pom.xml
-generated: { by: "openwiki/0.9.0", at: "2026-11-06T17:22:02.968Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-16T17:12:44.218Z" }
 verified:
   - by: openwiki/0.9.0
-    at: 2026-11-06T17:22:02.968Z
+    at: 2026-11-16T17:12:44.218Z
 ---
 
 # WeChat Ecosystem (ecshopx-wechat, ecshopx-work-wechat)
@@ -265,6 +277,10 @@ The heart of `ecshopx-wechat` is `WxaWeappPublishOrchestrationService`, driven b
 
 `wechat_weapp` tracks the state machine: `audit_status` 0 success / 1 fail / 2 in-review / 3 pending-submit, `release_status` 0/1, plus `reason`, `audit_time`, `template_id`, `template_ver`, `release_ver`. `WxaTryReleaseService.tryRelease` (route `POST /wxa/tryrelease`) polls `getLatestAuditstatus`: status 1 → `WeappProcessAuditForTryReleaseService.applyAuditRejected` records the reason; status 2 → still in review; otherwise it calls `releaseMiniProgramIgnoring85052` and `applyReleased` marks `audit_status=0`, `release_status=1`, `release_ver=template_ver`. The admin surface also exposes `undocodeaudit` and `revertcoderelease` with their own state transitions in `WeappProcessAuditForTryReleaseService`.
 
+### `WechatAuthQueryService`: the read side of `wechat_authorization`
+
+`WechatAuthQueryService` is the bundle's shared read facade over `wechat_authorization`, consumed well beyond the auth controllers — the Kf (customer-service) admin services, `WechatOpenUserPlatformService`, the OAuth redirect services, popularize's promoter qrcode flows, companys' `OperatorBasicUserService`, and wechat's own dispatch handler `SendTemplateMessageJobHandler`. Its semantics matter because callers rely on the failures being silent: every lookup catches `DataAccessException`, logs a warn, and degrades to "not bound" (null/Optional.empty/false) rather than failing the request. The shape of each query encodes the table's invariants: company-scoped service-account resolution filters `bind_status='bind'` + `service_type_info=2` (`getAuthorizerAppid`, plus `getAuthorizerAppidForWoaQuery` which binds the raw company-id string exactly as PHP did for the WOA template-message job); mini-program resolution filters `service_type_info=3`; binding guards (`isAuthorizerAppidBoundToCompany`, `isMiniProgramWxaBoundToCompany`) add `deleted_at IS NULL`. `requireWechatAuthWithAliasForKf` is the strict variant — blank appid → `BadRequestException`, missing row → `ResourceException` with the 400001 rebind code — used by the Kf admin surface. `getAuthorizerInfo(companyId, authorizerAppidFromJwt)` assembles the admin authorizer-info view (account fields plus parsed `business_info`/`miniprograminfo` JSON columns), preferring the JWT's appid and falling back to the company's bound 服务号 (PHP `getBasicUserById` parity), and merges `menu_type` from `ecshopx-super-admin`'s `ShopMenuService` (`menu_type_str`, else the product-model key). The dispatch handler uses `getAuthorizerAppidForWoaQuery` to find the tenant's service account before sending a WOA template message, skipping silently when unbound.
+
 ### Template metadata: DB first, properties fallback, Redis domain merge
 
 `SuperadminWxappTemplateMetadataService.resolveTemplateRow` resolves a template key to the `{template_id, version, desc, tag, domain, ...}` row used by commit and audit:
@@ -298,11 +314,17 @@ The port pattern keeps the dependency direction one-way: orders, promotions, and
 
 `WxappLegacyQrcodeController` (Javadoc: 对齐 PHP `WechatBundle\Http\Controllers\Qrcode@getQrcode`) serves the PHP-compatible QR endpoint. `WxappLegacyQrcodePngService.generateQrcodePng`: resolve the wxa appid (from `appid` param, or `company_id` + `temp_name` — default `yykweishop` — through `WeappAuthorizerAppidRepository.findAuthorizerAppid` on `wechat_weapp`); copy all query params except the excluded set (`appname`, `appsecret`, `appid`, `company_id`, `temp_name`, `page`) into a scene map (renaming `distributor_id` → `dtid`); store the JSON scene under a fresh PHP-style `share_id` in Redis (`<companyId>_<shareId>`, 30-day TTL, `OpenapiWxappShareIdRedisService`); then generate the unlimited code with `scene` carrying only the share_id. The page defaults to `pages/index`, or `pages/goodsdetail` when an `id` param is present and `page` is absent. The companion read side is front `GET /api/v1/h5app/wxapp/getbyshareid` (`WxappGetByShareIdService`), which decodes the same Redis key and enriches a `gu` (salesperson) marker with distributor/salesperson data via `WxappShareByShareIdSalespersonPort` (implemented by distribution/salesperson side). `WxappLegacyQrcodePngServiceTest` and `WxaUploadWxaCodeUnlimitServiceTest` pin both ends.
 
+Some mini-program versions concatenate the API root with the PHP relative path, so the front `QrcodeController` also exposes the alias `GET /api/v1/h5app/wxapp/wechatAuth/wxapp/qrcode.png` delegating to the same `WxappLegacyQrcodePngService` — the canonical route remains the `api/open` one.
+
 ## Admin and front surfaces
 
 The bundle's controllers follow the standard split ([Bundle Layering](../architecture/bundle-layering.md)): `api/front/v1`, `api/admin/v1` and the unauthenticated `api/open` package, under `@DingoResponse` envelopes ([Request Lifecycle](../architecture/request-lifecycle.md)).
 
-**Front** (`WxappController`, base `/api/v1/h5app`, all routes `@FrontNoAuth` + Dingo envelopes): `POST /wxapp/oauthlogin` (oauth login check), `POST /wxapp/getopenid` (openid+unionid), `GET /wxapp/oauth/getredirecturl` and the `oauth/getopenid`/`login/authorize`/`login/valid` OAuth trio, `POST /wxapp/urllink` / `urlschema`, `GET /wxapp/pageparams/setting`, `GET /wxapp/share/setting`, `GET /wxapp/newtemplate` (subscribe-message templates, promotions port), `GET /wxapp/membercenter/setting`, `GET /wxapp/common/setting` (aggregated storefront config — implemented for wechat by bootstrap's `WxappCommonSettingFacadeImpl` to avoid the wechat↔companys/im Maven cycle, see [Cross-Bundle Communication](../architecture/cross-bundle-communication.md)), `GET /wxapp/cartremind/setting`, `GET /wxapp/getbyshareid`, and the `pagestemplate/*` template-info routes.
+**Front** (`WxappController`, base `/api/v1/h5app`, all routes `@FrontNoAuth` + Dingo envelopes): `POST /wxapp/oauthlogin` (oauth login check), `POST /wxapp/getopenid` (openid+unionid), `GET /wxapp/oauth/getredirecturl` and the `oauth/getopenid`/`login/authorize`/`login/valid` OAuth trio, `POST /wxapp/urllink` / `urlschema`, `GET /wxapp/pageparams/setting`, `GET /wxapp/share/setting`, `GET /wxapp/newtemplate` (subscribe-message templates, promotions port), `GET /wxapp/membercenter/setting`, `GET /wxapp/common/setting` (aggregated storefront config — implemented for wechat by bootstrap's `WxappCommonSettingFacadeImpl` to avoid the wechat↔companys/im Maven cycle, see [Cross-Bundle Communication](../architecture/cross-bundle-communication.md)), `GET /wxapp/cartremind/setting`, `GET /wxapp/getbyshareid`, and the `pagestemplate/*` template-info routes. A second front controller, `QrcodeController` (base `/api/v1/h5app/wxapp`, also `@FrontNoAuth` + Dingo), owns the qrcode trio: the `/wechatAuth/wxapp/qrcode.png` compat alias (above) plus the two PC-code endpoints below.
+
+### PC QR codes: `pcqrcode` and `pcloginqrcode`
+
+`GET /api/v1/h5app/wxapp/pcqrcode` (`PcQrcodeService.getPcQrcode`) renders a promotional mini-program code: it resolves the company's `yykweishop` `wechat_weapp` row via `WxaAuthorizerAppIdByTemplateService.requireAuthorizerAppidForPcLogin` (failing with `没有开通小程序` when the company never opened a mini program), re-checks the authorizer is still `bind`-scoped to the company (`WechatAuthQueryService.isAuthorizerAppidBoundToCompany` → `BadRequestException("小程序未绑定，请重新绑定", 400001)` otherwise), then calls `WxaUnlimitedQrcodeClient` and returns the PNG as a `data:image/jpg;base64,` string. The scene is `cid=<companyId>` plus the truthy optional `id`/`uid`/`dtid` (a raw value of `"0"` counts as absent); the page defaults to `pages/index`, becomes `pages/item/espier-detail` when an item `id` is present without `pages`, and an explicit `pages` param wins. `GET /api/v1/h5app/wxapp/pcloginqrcode` (`PcLoginQrcodeService`) is the PC web-login handshake: it mints a Hashids token from a per-second Redis counter (`member:oauth:login:times:<epoch>` on the members Redis template), stores `{exp, time, status:0}` under `member:oauth:login:<token>` and returns `{base64Image, access_token: <token>}` for the `others/pages/auth/index` page with scene `cid=<companyId>&t=<token>`. Without config the token payload expires after 120 s while the Redis key lives 3,720 s; a positive `ecshopx.wechat.pc-wxcode-login-seconds` overrides both (payload exp = now + cfg, key TTL = cfg). Both endpoints require a `company_id` resolvable from the H5 auth attributes, the JWT claims, or the query string, in that order — all absent → `UnauthorizedException("无权访问该API,非法访问！")`.
 
 **Admin** (`@AdminAuth`): `AuthorizedController` (`/api/v1/wechat`: `pre_auth_url`, `bind`, unbind/query), `WxaController` (`/api/v1`: the `/wxa/*` publish surface listed above plus `/wechat/offiaccountcodeforever` permanent official-account QR), `WxappTemplateController` (`/api/v1/wxappTemplate`), `WxappStatsController` (`/api/v1/wxa/stats`, datacube visit/summary/retain/portrait), `StatsController` (`/api/v1/wechat/stats`), `OpenController` (`/api/v1/wechat` open-platform account bind/unbind via `WechatOpenPlatformAccountClient`), `MenuController`/`MaterialController`/`KfController`/`MessageReplyController` (`/api/v1/wechat` official-account menus, materials, customer-service, auto-reply), `CustomizePageController` (`/api/v1/wxa`).
 
@@ -390,8 +412,9 @@ All keys are documented in `ecshopx-bootstrap/src/main/resources/application.pro
 | `ecshopx.work-wechat.dis-workwechat-h5-auth-uri` | `${DIS_WORKWECHAT_H5_AUTHURI:}` | H5 OAuth callback base URI |
 | `ecshopx.thirdparty.work-wechat.corp-app.http-enabled` | unset → NoOp | master switch for real WeCom message/send and access_token HTTP; default NoOp sends nothing |
 | `ecshopx.wechat.wxa-card-template-send.enabled` | `true` | selects the bootstrap real card/coupon subscribe-message send (`matchIfMissing`); `false` activates the wechat-side `WxaCardUsedTemplateSendNoOp` discard |
+| `ecshopx.wechat.pc-wxcode-login-seconds` | unset → exp 120 s / key TTL 3,720 s | positive override for the PC login-qrcode token expiry and Redis key TTL |
 
-Redis layout ([Redis Databases](../concepts/redis-databases.md)): work-wechat config and the wxa template domain keys live on the shared template; the wechat-named logical DB (`ecshopx.redis.wechat.database`) backs the wechat `StringRedisTemplate` (menu tree, timescard codes). Legacy QR `share_id` scenes use `<companyId>_<shareId>` with a 2,592,000-second (30-day) TTL on the shared template.
+Redis layout ([Redis Databases](../concepts/redis-databases.md)): work-wechat config and the wxa template domain keys live on the shared template; the wechat-named logical DB (`ecshopx.redis.wechat.database`) backs the wechat `StringRedisTemplate` (menu tree, timescard codes). Legacy QR `share_id` scenes use `<companyId>_<shareId>` with a 2,592,000-second (30-day) TTL on the shared template; the PC login-qrcode state (`member:oauth:login:<token>`, `member:oauth:login:times:*`) lives on the **members** Redis template, since the login poll/confirm side is owned by members.
 
 ## Where the responsibility ends
 

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:93f9f57b5f16aa8d3014bbdc125f453ce037a8146209df9f5dbec51226d89296",
+  "pageVersion": "sha256:299cf61ac63bf4b7b1db2a33531aef6e1d8285ba347a8cefb6a832fe95d3f866",
   "claims": [
     {
       "id": "claim_1f618faf51234a25a7a90fd65c384347",
@@ -40,7 +40,7 @@
       "evidence": [
         {
           "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties",
-          "version": "repo-file-v1:sha256:eb1782a8d4a3c9f883c0fe6b4242d22ae063301e668ee15a0546d8191e8f57c2"
+          "version": "repo-file-v1:sha256:4645c64c41b062e1a933583d0c92b5eeec2e165dd5d960bbd27d90cfacc280d8"
         },
         {
           "resource": "repo://ecshopx-system-link/src/main/java/cn/shopex/ecshopx/systemlink/wdterp/WdtErpInventoryPortImpl.java#L44-L53",
@@ -98,19 +98,31 @@
     },
     {
       "id": "claim_9110aa655c25430ca1515741b0b15b01",
-      "statement": "`event:thirdparty:trade_refund_finish` is published SYNC and carries four sync listeners: Marketing Center push, DmCrm, Shuyun open-platform refund sync, and Shuyun trade re-sync (`shuyun.open_platform.refund_sync_on_trade_refund_finish` plus the trade_sync re-push).",
+      "statement": "`event:thirdparty:trade_refund_finish` is published SYNC (DispatchOptions.eventDefaults via bootstrap's TradeRefundFinishEventDispatchPublisherImpl) and carries four sync listeners — Marketing Center push, DmCrm, Shuyun open-platform refund sync (`shuyun.open_platform.refund_sync_on_trade_refund_finish`) and the Shuyun trade.sync re-push (`shuyun.open_platform.trade_sync_on_trade_refund_finish`) — plus a fifth listener `listener:promotions.member_task.trade_refund_finish` (constant in ThirdPartyDispatchEventNames) registered ASYNC on the default queue by MemberTaskTradeRefundFinishDispatchListenerRegistrationConfig, which reverses member-task rewards on refund.",
       "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MemberTaskTradeRefundFinishDispatchListenerRegistrationConfig.java#L38-L45",
+          "version": "repo-lines-v1:sha256:02c9a20b1e137085ad9a4176efb62afe8b60c2a10a0c634c28197495773a144a:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDRjYzNmMmMwYmE5MjM2YjY4ZDc5Zjc1ZWUyZmQ0YmM4NjliZWQ5MjhlOWYzOWZhY2M1NTFlOWU4YTQ4NGM1ZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDUxYWYzY2IxMjY4ODlkMGU2NjMxMWI1MDU5ZjRhZDQwYjk3MDU2M2E3OTk1Nzg0ZGFkZGM3M2U2MTI3ZmYyOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSJ9"
+        },
         {
           "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ShuyunOpenPlatformTradeRefundFinishDispatchListenerRegistrationConfig.java#L38-L45",
           "version": "repo-lines-v1:sha256:92a20f99882dbc783ae32c820bc2b9094ba1ef13da81bb4a77d19ac2fbca9145:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDRjYzNmMmMwYmE5MjM2YjY4ZDc5Zjc1ZWUyZmQ0YmM4NjliZWQ5MjhlOWYzOWZhY2M1NTFlOWU4YTQ4NGM1ZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDUxYWYzY2IxMjY4ODlkMGU2NjMxMWI1MDU5ZjRhZDQwYjk3MDU2M2E3OTk1Nzg0ZGFkZGM3M2U2MTI3ZmYyOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSJ9"
         },
         {
-          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ThirdPartyTradeRefundFinishDispatchListenerRegistrationConfig.java#L43-L55",
-          "version": "repo-lines-v1:sha256:72949b0247d30a4f7842ccfc6408e012b17fcc9ef5aa38a2f676ca549a3ccad6:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ0Y2MzZjJjMGJhOTIzNmI2OGQ3OWY3NWVlMmZkNGJjODY5YmVkOTI4ZTlmMzlmYWNjNTUxZTllOGE0ODRjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI0OGFjYWUxYTMyNTFhMjAyOThiZjQwZGQ5NDRmODhmZWVhM2QzZjkyMDg0MDI4ZDY5MmQ4ODdiOTIxYjFjMTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ShuyunOpenPlatformTradeRefundFinishTradeSyncDispatchListenerRegistrationConfig.java#L38-L45",
+          "version": "repo-lines-v1:sha256:467b17ebcd12a810b5690109d398df7737c9e00d5eb1404315566beabe533433:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDRjYzNmMmMwYmE5MjM2YjY4ZDc5Zjc1ZWUyZmQ0YmM4NjliZWQ5MjhlOWYzOWZhY2M1NTFlOWU4YTQ4NGM1ZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDUxYWYzY2IxMjY4ODlkMGU2NjMxMWI1MDU5ZjRhZDQwYjk3MDU2M2E3OTk1Nzg0ZGFkZGM3M2U2MTI3ZmYyOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSJ9"
         },
         {
-          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/ThirdPartyDispatchEventNames.java",
-          "version": "repo-file-v1:sha256:640bceecec26976a554301302e8e541b61f6617716b9ed69b563c390cab43f06"
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ThirdPartyTradeRefundFinishDispatchListenerRegistrationConfig.java#L41-L55",
+          "version": "repo-lines-v1:sha256:6e53d37b2b37fb526ce210aee72e35cf1b2f37d5bd495407d7a6400627b511db:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM1NjZjNWZkODExNmI5ODNiOGNhZThhMDk4ZTkwZWNlMTE2ZDdjMmM0MjU4NjU0MjdjMzc1ZGJlZWMzOTIyZDciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/TradeRefundFinishEventDispatchPublisherImpl.java#L36-L41",
+          "version": "repo-lines-v1:sha256:89c04dec74125aded2a85b92e62fba5c9d83b37e0e5d667bcd8afcab21debf4c:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNGRiYzM1MjA4N2RiMGIxNmU4NGIzZjc0M2EzM2ZkY2NjNmMwYjEzNjI4ODRmODAzY2MwYTM0MTNmNTQ4MjVjMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTY4NzM4NjhkYTVjYWVkMjFjOWZkZjY5ODYyYjBkYTU0MDY5ZWNkZjE4ODJjMjE2NTM1NmM3NGY1YTdkMWQwMyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/ThirdPartyDispatchEventNames.java#L31-L43",
+          "version": "repo-lines-v1:sha256:61d83fdce59545595b77bb08350f57fa6794e84f73038dfef27c2b09d7436a57:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNlYzlhYjQxZTBhZTNjNjgyNTQzZDIwNWU0MDY2MjQzNjNhMDZlZTEzN2JiZDM0YTQ5MjU4ZDBmYzcxNzQwZTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNmZjlmYmEwYzhjM2JhYzFiY2I1ZmVjNTNmMGFkMTEyMzMwOWI0ZmEyYTcyZTdjZTFiMzM4MmUxZmQ5MjMwYTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRkNTZhNjdiMDcxNzNkNmY3NzZjMDQyZDA4NzU2YTdjM2RlZWE3MzcyZjQwYmY4OWMzMTU3MTEzNTBiMGQwYWQifQ"
         }
       ]
     },
@@ -412,7 +424,7 @@
       "evidence": [
         {
           "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties",
-          "version": "repo-file-v1:sha256:eb1782a8d4a3c9f883c0fe6b4242d22ae063301e668ee15a0546d8191e8f57c2"
+          "version": "repo-file-v1:sha256:4645c64c41b062e1a933583d0c92b5eeec2e165dd5d960bbd27d90cfacc280d8"
         },
         {
           "resource": "repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/config/DigiOsProperties.java",
@@ -763,10 +775,24 @@
           "version": "repo-lines-v1:sha256:f45600e3810d72e541c7db50878681fd8b424e787a99f8f6733e8031d18efcbf:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk0NWJhOTE1OTJiYTJiNTliYjg3OGYwMGMxMWUwZTc4MGMzY2RjNDZkYTQyZmVmYTIxMDFjN2ExYmE3M2Y0MzIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcwMWQ5ZDhkNjQxNWI2MWU0NWI5ZTc5MWI3ZTUxMzI2ZWUzZWRjMTY4MzEyZTEwNDllYzBmYjc0MGI4ZGFmODYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjgyZGVjZGQ4MjFlOTViYWFhODEwY2U5YmI5MTI3ODEwOTkxNzE3MGEwZjVjNWI2OTJkODQ4YjRmMmVkMjAxZjYifQ"
         }
       ]
+    },
+    {
+      "id": "claim_74521b90376f4f3a8a34acefe5e2c599",
+      "statement": "The async member-task listener on the refund-finish plane hands the payload to `MemberTaskRefundVoidService.apply` (ecshopx-promotions), which no-ops without `company_id`/`order_id`/`refund_success_time`, then reverses member-task rewards for the refunded order: `total_spend` tasks delegate to `MemberTaskTotalSpendService.onRefund`, while other tasks void the `member_task_completion` row (`voided=1`, `void_reason=refund`) and cancel the still-`pending` reward grant when the remaining amount (`total_fee − refunded_fee`) no longer meets the task's purchase rule.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/dispatch/MemberTaskTradeRefundFinishDispatchListener.java#L38-L45",
+          "version": "repo-lines-v1:sha256:c1e959c80c13053f15e5e3ec5ec5fb604aab27667210661822e00c631847be84:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTM2ZWFhNTk2NTY0NDI1MTcxNmVjODU5MTZhMDQ0ODc5ODRlZWQwMWZlYTM4NmQ3YzA1Yjk1NjU0MGJiOTJkMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTY4NzM4NjhkYTVjYWVkMjFjOWZkZjY5ODYyYjBkYTU0MDY5ZWNkZjE4ODJjMjE2NTM1NmM3NGY1YTdkMWQwMyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/membertask/MemberTaskRefundVoidService.java#L58-L146",
+          "version": "repo-lines-v1:sha256:249ffad3e761837ac4dd2cbc1c4ee52660242eef0665ecec1461eb882bdb4a94:eyJzZWxlY3RlZExpbmVDb3VudCI6ODksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNjMjZjM2QzM2MzNTBhZjY4NzM5MDRlMDJiNjkzYjRiMjZmZDMwZGY1ZjZhYjgyOGQ0NDM2Njc5Y2Y2ZTkzNjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZkNjIwZTZhOThlYTY0NmFmNGQyMDNkYWVlMGRjN2ViOThlZDJmMGVhOTNiYzY0NTFlMDY5MzI1ZTRkYmRkYmQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc3MjQwNGU2ZDUwMzNhMzIzOGFmOTMwZTgzM2M2MjhjYzNkYmQ3YjZmMTk0NzllZmQ5ZjhlYTJhMmQzN2NmYTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMxNmE4ZDQxZjU4NWMzNmZhZTU5NGFiOTk4ZDM5ZjkxNTI3N2EyMTVkNmM1NzJlNmQwNzFjZDY0MmQ2MzRjYzYifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.9.0",
-    "at": "2026-11-11T17:12:30.774Z"
+    "at": "2026-11-16T17:12:44.218Z"
   }
 }

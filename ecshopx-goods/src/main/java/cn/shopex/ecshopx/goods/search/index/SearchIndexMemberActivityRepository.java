@@ -19,10 +19,12 @@ package cn.shopex.ecshopx.goods.search.index;
 import cn.shopex.ecshopx.promotions.domain.MemberPrice;
 import cn.shopex.ecshopx.promotions.domain.PromotionGroupsActivity;
 import cn.shopex.ecshopx.promotions.domain.PromotionGroupsRelGoods;
+import cn.shopex.ecshopx.promotions.domain.SeckillActivity;
 import cn.shopex.ecshopx.promotions.domain.SeckillRelGoods;
 import cn.shopex.ecshopx.promotions.mapper.MemberPriceMapper;
 import cn.shopex.ecshopx.promotions.mapper.PromotionGroupsActivityMapper;
 import cn.shopex.ecshopx.promotions.mapper.PromotionGroupsRelGoodsMapper;
+import cn.shopex.ecshopx.promotions.mapper.SeckillActivityMapper;
 import cn.shopex.ecshopx.promotions.mapper.SeckillRelGoodsMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -43,6 +45,7 @@ public class SearchIndexMemberActivityRepository {
 
 	private final MemberPriceMapper memberPriceMapper;
 	private final SeckillRelGoodsMapper seckillRelGoodsMapper;
+	private final SeckillActivityMapper seckillActivityMapper;
 	private final PromotionGroupsRelGoodsMapper promotionGroupsRelGoodsMapper;
 	private final PromotionGroupsActivityMapper promotionGroupsActivityMapper;
 	private final ObjectMapper objectMapper;
@@ -50,11 +53,13 @@ public class SearchIndexMemberActivityRepository {
 	public SearchIndexMemberActivityRepository(
 			MemberPriceMapper memberPriceMapper,
 			SeckillRelGoodsMapper seckillRelGoodsMapper,
+			SeckillActivityMapper seckillActivityMapper,
 			PromotionGroupsRelGoodsMapper promotionGroupsRelGoodsMapper,
 			PromotionGroupsActivityMapper promotionGroupsActivityMapper,
 			ObjectMapper objectMapper) {
 		this.memberPriceMapper = memberPriceMapper;
 		this.seckillRelGoodsMapper = seckillRelGoodsMapper;
+		this.seckillActivityMapper = seckillActivityMapper;
 		this.promotionGroupsRelGoodsMapper = promotionGroupsRelGoodsMapper;
 		this.promotionGroupsActivityMapper = promotionGroupsActivityMapper;
 		this.objectMapper = objectMapper;
@@ -90,25 +95,48 @@ public class SearchIndexMemberActivityRepository {
 	}
 
 	public List<SearchIndexSource.Activity> loadActivities(long companyId, Collection<Long> skuItemIds) {
+		return loadActivities(companyId, 0L, skuItemIds);
+	}
+
+	/**
+	 * @param distributorId 店品文档的店铺上下文；与列表/详情一致，仅索引 {@code source_id} 匹配的秒杀/限时特惠
+	 */
+	public List<SearchIndexSource.Activity> loadActivities(
+			long companyId, long distributorId, Collection<Long> skuItemIds) {
 		if (CollectionUtils.isEmpty(skuItemIds)) {
 			return List.of();
 		}
 		List<SearchIndexSource.Activity> out = new ArrayList<>();
-		out.addAll(mapSeckillActivities(companyId, skuItemIds));
+		out.addAll(mapSeckillActivities(companyId, distributorId, skuItemIds));
 		out.addAll(mapGroupActivities(companyId, skuItemIds));
 		return List.copyOf(out);
 	}
 
-	private List<SearchIndexSource.Activity> mapSeckillActivities(long companyId, Collection<Long> skuItemIds) {
+	private List<SearchIndexSource.Activity> mapSeckillActivities(
+			long companyId, long distributorId, Collection<Long> skuItemIds) {
 		List<SeckillRelGoods> rows =
 				seckillRelGoodsMapper.selectList(
 						new LambdaQueryWrapper<SeckillRelGoods>()
 								.eq(SeckillRelGoods::getCompanyId, companyId)
 								.in(SeckillRelGoods::getItemId, skuItemIds)
 								.eq(SeckillRelGoods::getDisabled, false));
+		if (rows.isEmpty()) {
+			return List.of();
+		}
+		Set<Long> seckillIds = new HashSet<>();
+		for (SeckillRelGoods rel : rows) {
+			if (rel.getSeckillId() != null && rel.getSeckillId() > 0) {
+				seckillIds.add(rel.getSeckillId());
+			}
+		}
+		Map<Long, SeckillActivity> seckillById = loadSeckillById(seckillIds);
 		List<SearchIndexSource.Activity> mapped = new ArrayList<>(rows.size());
 		for (SeckillRelGoods rel : rows) {
 			if (rel.getSeckillId() == null || rel.getActivityPrice() == null) {
+				continue;
+			}
+			SeckillActivity act = seckillById.get(rel.getSeckillId());
+			if (!passesSeckillShopScope(act, distributorId)) {
 				continue;
 			}
 			String indexType = seckillTypeToIndexType(rel.getSeckillType());
@@ -126,6 +154,59 @@ public class SearchIndexMemberActivityRepository {
 							indexType, rel.getSeckillId(), priceFen, startAt, endAt, null));
 		}
 		return mapped;
+	}
+
+	private Map<Long, SeckillActivity> loadSeckillById(Set<Long> seckillIds) {
+		if (seckillIds.isEmpty()) {
+			return Map.of();
+		}
+		List<SeckillActivity> list = seckillActivityMapper.selectBatchIds(seckillIds);
+		if (list == null || list.isEmpty()) {
+			return Map.of();
+		}
+		Map<Long, SeckillActivity> out = new HashMap<>();
+		for (SeckillActivity a : list) {
+			if (a != null && a.getSeckillId() != null) {
+				out.put(a.getSeckillId(), a);
+			}
+		}
+		return out;
+	}
+
+	/** Align list/detail：活动 source_id 必须等于店品 distributorId。 */
+	static boolean passesSeckillShopScope(SeckillActivity act, long distributorId) {
+		if (act == null) {
+			return false;
+		}
+		long sourceId = act.getSourceId() != null ? act.getSourceId() : 0L;
+		if (sourceId != distributorId) {
+			return false;
+		}
+		String distCsv = act.getDistributorId();
+		if (!StringUtils.hasText(distCsv)) {
+			return true;
+		}
+		boolean any = false;
+		boolean hit = false;
+		for (String p : distCsv.split(",")) {
+			if (!StringUtils.hasText(p)) {
+				continue;
+			}
+			try {
+				long id = Long.parseLong(p.trim());
+				if (id < 0L) {
+					continue;
+				}
+				any = true;
+				if (id == distributorId) {
+					hit = true;
+					break;
+				}
+			} catch (NumberFormatException ignored) {
+				// skip
+			}
+		}
+		return !any || hit;
 	}
 
 	private static String seckillTypeToIndexType(String seckillType) {

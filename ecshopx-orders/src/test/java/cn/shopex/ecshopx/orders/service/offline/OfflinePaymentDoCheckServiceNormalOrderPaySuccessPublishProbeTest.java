@@ -150,7 +150,8 @@ class OfflinePaymentDoCheckServiceNormalOrderPaySuccessPublishProbeTest {
 						mock(cn.shopex.ecshopx.orders.mapper.NormalOrdersItemsMapper.class),
 						orderAssociationsMapper,
 						mock(cn.shopex.ecshopx.supplier.mapper.SupplierOrderMapper.class),
-						mock(cn.shopex.ecshopx.orders.service.setting.OrderValiditySettingRedisReadService.class));
+						mock(cn.shopex.ecshopx.orders.service.setting.OrderValiditySettingRedisReadService.class),
+						mock(cn.shopex.ecshopx.common.dispatch.ThirdPartyTradeUpdateDispatchPublisher.class));
 		OrdersTradeFinishNormalOrderPaySuccessBridgeDispatchListener bridge =
 				new OrdersTradeFinishNormalOrderPaySuccessBridgeDispatchListener(
 						applyService, normalOrderPaySuccessDispatchPublisher);

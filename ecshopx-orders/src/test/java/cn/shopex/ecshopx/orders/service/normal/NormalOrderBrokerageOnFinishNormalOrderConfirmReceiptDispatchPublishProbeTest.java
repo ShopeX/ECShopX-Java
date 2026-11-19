@@ -15,6 +15,7 @@ import cn.shopex.ecshopx.dispatch.DispatchMode;
 import cn.shopex.ecshopx.dispatch.DispatchOptions;
 import cn.shopex.ecshopx.dispatch.RetryPolicy;
 import cn.shopex.ecshopx.orders.domain.NormalOrders;
+import cn.shopex.ecshopx.orders.mapper.NormalOrdersItemsMapper;
 import cn.shopex.ecshopx.popularize.service.BrokeragePlanCloseTimeService;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,6 +43,9 @@ class NormalOrderBrokerageOnFinishNormalOrderConfirmReceiptDispatchPublishProbeT
 	@Mock
 	private DispatchFacade dispatchFacade;
 
+	@Mock
+	private NormalOrdersItemsMapper normalOrdersItemsMapper;
+
 	@Captor
 	private ArgumentCaptor<Map<String, Object>> payloadCaptor;
 
@@ -49,8 +53,12 @@ class NormalOrderBrokerageOnFinishNormalOrderConfirmReceiptDispatchPublishProbeT
 
 	@BeforeEach
 	void setUp() {
-		underTest = new NormalOrderBrokerageOnFinishService(
-				normalOrderFinishBrokerageCoordinator, brokeragePlanCloseTimeService, dispatchFacade);
+		underTest =
+				new NormalOrderBrokerageOnFinishService(
+						normalOrderFinishBrokerageCoordinator,
+						brokeragePlanCloseTimeService,
+						dispatchFacade,
+						normalOrdersItemsMapper);
 	}
 
 	@Test

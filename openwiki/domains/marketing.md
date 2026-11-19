@@ -1,8 +1,8 @@
 ---
 type: domain-reference
 title: Marketing and Loyalty Domains (promotions, kaquan, point, pointsmall, deposit, employee-purchase)
-description: The six bundles that run promotions, coupons, member grades, points, stored value and internal purchase — promotions owns the central WXA subscribe sender (WxaTemplateMsgActivityRemindSendService) that the order/member/aftersales notice ports funnel into plus the four merchant lifecycle SMS notice job handlers, targets full-crowd marketing activities and limited-time-sale seckills at member crowds via member_tag_ids/member_tag_mode matched by MemberCrowdMatcher against the members system-tag subsystem, kaquan runs the coupon add/edit/delete fan-out to youshu and DM card-template sync behind the seckill cross-promotion guard and the trade-finish consume-card listener, point/pointsmall keep the point ledger and point-mall catalog, deposit handles recharge callbacks with Redis balance counters, and employee-purchase enforces per-item limits plus passphrase participation with a Redis quota and compensating rollback.
-tags: [promotions, coupons, kaquan, points, deposit, pointsmall, employee-purchase, vip-grade, membercard, seckill, group-buying, turntable, member-crowd, member-tags, dispatch-bus, xxl-job, youshu, dm-crm, shuyun, redis, wxa-subscribe, notice-template, merchant-notice, scene-sms]
+description: The six bundles that run promotions, coupons, member grades, points, stored value and internal purchase — promotions owns the central WXA subscribe sender (WxaTemplateMsgActivityRemindSendService) that the order/member/aftersales notice ports funnel into plus the four merchant lifecycle SMS notice job handlers, targets full-crowd marketing activities and limited-time-sale seckills at member crowds via member_tag_ids/member_tag_mode matched by MemberCrowdMatcher against the members system-tag subsystem, kaquan runs the coupon add/edit/delete fan-out to youshu and DM card-template sync behind the seckill cross-promotion guard and the trade-finish consume-card listener, point/pointsmall keep the point ledger and point-mall catalog, deposit handles recharge callbacks with Redis balance counters, employee-purchase enforces per-item limits plus passphrase participation with a Redis quota and compensating rollback, and the member-task subsystem (member_task / completion / reward_grant / user_progress tables) drives order-pay-success, confirm-receipt, refund-void, sign-in, browse, favorite, profile and invite-register completion flows with an export-file job chain and promotion-driven search-index upserts.
+tags: [promotions, coupons, kaquan, points, deposit, pointsmall, employee-purchase, vip-grade, membercard, seckill, group-buying, turntable, member-crowd, member-tags, member-task, dispatch-bus, xxl-job, youshu, dm-crm, shuyun, redis, wxa-subscribe, notice-template, merchant-notice, scene-sms]
 sources:
   - id: openwiki-source-5532b49a7a4a389ccc73ab43
     resource: repo://docker/tables_xxl_job.sql
@@ -22,6 +22,18 @@ sources:
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/LuckyDrawLogExportFileJobDispatchPublisherImpl.java
   - id: openwiki-source-f735ec49b9c44f12ddfd9380
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MemberCreateSuccessWxaNoticePortAdapter.java
+  - id: openwiki-source-8a2357faf9bbab59f216656d
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MemberTaskCreateMemberSuccessDispatchListenerRegistrationConfig.java
+  - id: openwiki-source-0572157a61534d3ef9ae078e
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MemberTaskExportFileJobDispatchPublisherImpl.java
+  - id: openwiki-source-b9dd0bc143ebcf71fb7562fd
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MemberTaskNormalOrderConfirmReceiptDispatchListenerRegistrationConfig.java
+  - id: openwiki-source-fe01d17802ad55035b1d66d4
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MemberTaskNormalOrderPaySuccessDispatchListenerRegistrationConfig.java
+  - id: openwiki-source-2f5877465c358cc0186f88a0
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MemberTaskTradeRefundFinishDispatchListenerRegistrationConfig.java
+  - id: openwiki-source-82e669c06760295ebd25c836
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MemberTaskUpdateMemberSuccessDispatchListenerRegistrationConfig.java
   - id: openwiki-source-d509da31208e1ec0585096a4
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MerchantAuditFailNoticeDispatchPublisherImpl.java
   - id: openwiki-source-45c8686af2edc3eb9acbb015
@@ -50,6 +62,8 @@ sources:
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/YoushuCouponDeleteDispatchListenerRegistrationConfig.java
   - id: openwiki-source-5fa06726791cc6e49cd3c0e1
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/YoushuCouponEditDispatchListenerRegistrationConfig.java
+  - id: openwiki-source-dd409ee66cf4d3787f77d1a0
+    resource: repo://ecshopx-bootstrap/src/main/resources/db/migration/V00000000000008.sql
   - id: openwiki-source-217cbf177df2b236074d3354
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/DepositDispatchJobNames.java
   - id: openwiki-source-4cece1d0dc21f12377ecd9c8
@@ -98,6 +112,10 @@ sources:
     resource: repo://ecshopx-employee-purchase/src/main/java/cn/shopex/ecshopx/employeepurchase/service/passphrase/EmployeePurchasePassphraseOrderService.java
   - id: openwiki-source-c2729e93ea3152c526088aba
     resource: repo://ecshopx-employee-purchase/src/main/java/cn/shopex/ecshopx/employeepurchase/service/passphrase/PassphraseParticipateQuotaRedisService.java
+  - id: openwiki-source-4e6988cb06b02cce0aa1ed3a
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/integration/GoodsSearchIndexDirtyByItemIdsPortImpl.java
+  - id: openwiki-source-180ad5fe96bda3a39aaa25d5
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/search/sync/GoodsSearchIndexPromotionSyncListener.java
   - id: openwiki-source-ada41197214cde55617f05e9
     resource: repo://ecshopx-kaquan/src/main/java/cn/shopex/ecshopx/kaquan/cron/ScheduleCancelExpiredCardHandler.java
   - id: openwiki-source-600e4ea0328dd246225c66ef
@@ -130,6 +148,8 @@ sources:
     resource: repo://ecshopx-kaquan/src/test/java/cn/shopex/ecshopx/kaquan/service/discount/UserDiscountConsumCardServiceRedeemLockTest.java
   - id: openwiki-source-18eb84839691a1b04713667c
     resource: repo://ecshopx-kaquan/src/test/java/cn/shopex/ecshopx/kaquan/service/discount/UserDiscountReceiveCardServiceStockLockTest.java
+  - id: openwiki-source-877cf2c3ecb4a9b80215e744
+    resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/itemsfav/MemberItemsFavAddService.java
   - id: openwiki-source-71f800dcbe73d59f7d04af1d
     resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/systemtag/MemberAudienceTagValidator.java
   - id: openwiki-source-e2cfac4ae8d1079dfdd55c73
@@ -188,6 +208,8 @@ sources:
     resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/dispatch/LuckyDrawLogExportFileJobTypeHandler.java
   - id: openwiki-source-66c52b930b0d9f8257c44eab
     resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/dispatch/MemberSigninReminderSendJobHandler.java
+  - id: openwiki-source-6ee32e412bc3f81a8ce0811b
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/dispatch/MemberTaskExportFileJobTypes.java
   - id: openwiki-source-f319f9a59b760735453704eb
     resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/dispatch/MerchantAuditFailNoticeJobHandler.java
   - id: openwiki-source-93c5d4cbdf601357962f51f5
@@ -200,6 +222,12 @@ sources:
     resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/dispatch/WxopenTemplateSendJobHandler.java
   - id: openwiki-source-b3828a74cbd4026b3753a944
     resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/domain/MarketingActivity.java
+  - id: openwiki-source-f3c559005ea0554ff7031eea
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/domain/membertask/MemberTaskDisplayStatus.java
+  - id: openwiki-source-868345025ddc931b4130f5c6
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/domain/membertask/MemberTaskTypeCatalog.java
+  - id: openwiki-source-9608425b1951d4cc344ddac7
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/domain/membertask/MemberTaskUserTaskStatusResolver.java
   - id: openwiki-source-9fb7652211aef52d87e5e564
     resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/domain/SeckillActivity.java
   - id: openwiki-source-938551220f592a8b8a5593ae
@@ -224,6 +252,8 @@ sources:
     resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/bargain/UserBargainCreateUserBargainService.java
   - id: openwiki-source-85d2a029de21b47f91ec9f00
     resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/event/SeckillActivityEndCommittedEventListener.java
+  - id: openwiki-source-94fd65778d0eb48ae64a87dd
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/export/MemberTaskCompletionExportAsyncService.java
   - id: openwiki-source-a882b5ab0346ea9c26b469f3
     resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/export/TurntableLuckyDrawLogExportAsyncService.java
   - id: openwiki-source-e4c922e72677fd8b23ccc255
@@ -236,6 +266,36 @@ sources:
     resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/MarketingActivityDeleteService.java
   - id: openwiki-source-cb2b7addb001cd6797084578
     resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/MarketingActivityPostCommitJobsService.java
+  - id: openwiki-source-a2af8c50f21db5c60ad9944a
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/membertask/MemberTaskAudiencePolicy.java
+  - id: openwiki-source-c5b8df576330143391adb514
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/membertask/MemberTaskCheckoutService.java
+  - id: openwiki-source-0b572f09436ff3bd38796abc
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/membertask/MemberTaskCouponGrantPortImpl.java
+  - id: openwiki-source-e1ff7de56ea58723b99fffcd
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/membertask/MemberTaskFrontListService.java
+  - id: openwiki-source-3f808b5a58147aff3bc46cb8
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/membertask/MemberTaskGrantRetryService.java
+  - id: openwiki-source-d25a168946e116cc877f2e8d
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/membertask/MemberTaskImmediateCompletionService.java
+  - id: openwiki-source-933efaf0c18f59fa7d94c63b
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/membertask/MemberTaskLifecycleService.java
+  - id: openwiki-source-85611b67a4376b9044dd97e5
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/membertask/MemberTaskPaySuccessService.java
+  - id: openwiki-source-28d97725eaa615b0ed2bc3e0
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/membertask/MemberTaskPointGrantPortImpl.java
+  - id: openwiki-source-c3474a1a316de685a0163938
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/membertask/MemberTaskRefundVoidService.java
+  - id: openwiki-source-c38f355e6d3ed96c94c1745f
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/membertask/MemberTaskRewardGrantService.java
+  - id: openwiki-source-b8226ef141a423dd9ed86a0c
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/membertask/MemberTaskSaveService.java
+  - id: openwiki-source-c21f65c1feeeecc0dc409697
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/membertask/MemberTaskShareOrderService.java
+  - id: openwiki-source-e019cc3e9005230a3f221fb7
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/membertask/MemberTaskTotalSpendService.java
+  - id: openwiki-source-8e0184bf33d1d8b0dddffadd
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/membertask/MemberTaskUserProgressService.java
   - id: openwiki-source-ae51f93730a6461308576ba6
     resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/PackagePromotionCancelService.java
   - id: openwiki-source-651361cdae3ee0d7fb74d79c
@@ -292,27 +352,27 @@ sources:
     resource: repo://ecshopx-youshu/src/main/java/cn/shopex/ecshopx/youshu/dispatch/YoushuCouponAddDispatchListener.java
   - id: openwiki-source-85bb1daa315e1ca3fb4a215d
     resource: repo://ecshopx-youshu/src/main/java/cn/shopex/ecshopx/youshu/service/YoushuCouponAddSrDataSyncService.java
-generated: { by: "openwiki/0.9.0", at: "2026-11-08T17:14:16.576Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-16T17:12:44.218Z" }
 verified:
   - by: openwiki/0.9.0
-    at: 2026-11-09T03:34:48.355Z
+    at: 2026-11-16T17:12:44.218Z
 ---
 
 # Marketing and Loyalty Domains
 
 Six bundles own everything that makes a member spend, return and stay: **`ecshopx-promotions`** (营销与促销活动域) runs marketing activities, seckill, group-buying, turntable, bargain, member sign-in, SMS template sends and — as a service to the whole reactor — the central WeChat mini-program subscribe-message sender and the merchant lifecycle SMS notice jobs; **`ecshopx-kaquan`** (卡券域) owns coupons / discount cards / exchange cards / VIP membercard grades; **`ecshopx-point`** (积分域) keeps the member point ledger; **`ecshopx-pointsmall`** (积分商城域) is the point-mall item catalog; **`ecshopx-deposit`** (储值域) keeps the stored-value ledger; **`ecshopx-employee-purchase`** (员工内购域) runs internal-purchase activities with per-item limits and passphrases. Each bundle follows the standard split ([Bundle Layering](../architecture/bundle-layering.md)): `api/admin/v1` + `api/front/v1` controllers, `service/` orchestration, `dispatch/` job handlers and event listeners, `cron/` XXL-JOB handlers, `integration/` port impls for other bundles, `domain/` + `mapper/` persistence. Dispatch publishers are interfaces in `ecshopx-common` (e.g. `KaquanDispatchEventNames`, `PromotionsDispatchJobNames`, `PointBundleDispatchJobNames`, `DepositDispatchJobNames`) with the `DispatchFacade`-backed implementations in `ecshopx-bootstrap/config` — the standard cross-bundle wiring ([Cross-Bundle Communication](../architecture/cross-bundle-communication.md), [Dispatch Bus](../concepts/dispatch-bus.md)).
 
-The bundles meet the order domain at two places documented on the order-payment-flow page: **pay success / doPayment** (points deducted or deposit consumed at `OrdersPaymentDoPaymentService`) and **trade finish** (the `event:291/292:OrdersBundle\Events\TradeFinishEvent` fan-out, where kaquan consumes used coupons and orders register order-bonus points on a later cron).
+The bundles meet the order domain at two places documented on the order-payment-flow page: **pay success / doPayment** (points deducted or deposit consumed at `OrdersPaymentDoPaymentService`) and **trade finish** (the `event:291/292:OrdersBundle\Events\TradeFinishEvent` fan-out, where kaquan consumes used coupons and orders register order-bonus points on a later cron). They also meet it on the **member-task attribution** path (`orders_normal_orders.member_task_id` / `member_task_sharer_user_id`), where the orders bundle persists a task attribution at create time and promotions later completes/voids task rewards from the pay-success, confirm-receipt and refund-finish events.
 
-## ecshopx-promotions — marketing activities, seckill, group-buying, turntable, bargain
+## ecshopx-promotions — marketing activities, seckill, group-buying, turntable, bargain, member tasks
 
 ### What it owns
 
-The `marketing_activity` table (`MarketingActivity`, 满减满折 full-reduction / full-discount rules with `discount_config` JSON, `marketing_type`, `use_bound` scope, `begin_time`/`end_time`, `status`) plus its item/gift/category satellites; the automated member-marketing `promotion_activity` table (`PromotionActivity`) for the five schedule types — `member_birthday`, `member_anniversary`, `member_day`, `member_upgrade`, `member_vip_upgrade`; seckill activities (`SeckillActivityCreateService`, guarded by `MarketingActivityCrossPromotionGuardService`); group-buying (`PromotionGroupsActivityCreateService`, `PromotionGroupsTeamService`); turntable lucky-draw (`TurntableScheduleService`, `TurntableDrawRecoverService`); bargain (`UserBargainCreateUserBargainService`, `UserBargainCreateBargainLogService`); specific-crowd discounts; package promotions; member sign-in; SMS templates (`SmsController`, `AliTemplateController`, `WxaTemplateController`). It also owns the **WXA notice-template catalog** — `promotions_notice_template` (`WxaNoticeTemplate`: `template_name`, `scenes_name`, `template_id`, `content`, `is_open`, `send_time_desc`) seeded from the 13 scene definitions in `WxaTemplateSceneDefinitions` — and therefore the central WXA subscribe sender described below, which every other bundle's member-notify port funnels into.
+The `marketing_activity` table (`MarketingActivity`, 满减满折 full-reduction / full-discount rules with `discount_config` JSON, `marketing_type`, `use_bound` scope, `begin_time`/`end_time`, `status`) plus its item/gift/category satellites; the automated member-marketing `promotion_activity` table (`PromotionActivity`) for the five schedule types — `member_birthday`, `member_anniversary`, `member_day`, `member_upgrade`, `member_vip_upgrade`; seckill activities (`SeckillActivityCreateService`, guarded by `MarketingActivityCrossPromotionGuardService`); group-buying (`PromotionGroupsActivityCreateService`, `PromotionGroupsTeamService`); turntable lucky-draw (`TurntableScheduleService`, `TurntableDrawRecoverService`); bargain (`UserBargainCreateUserBargainService`, `UserBargainCreateBargainLogService`); specific-crowd discounts; package promotions; member sign-in; SMS templates (`SmsController`, `AliTemplateController`, `WxaTemplateController`); and the **member-task subsystem** (`member_task` / `member_task_completion` / `member_task_reward_grant` / `member_task_user_progress`, seeded by Flyway `V00000000000008`). It also owns the **WXA notice-template catalog** — `promotions_notice_template` (`WxaNoticeTemplate`: `template_name`, `scenes_name`, `template_id`, `content`, `is_open`, `send_time_desc`) seeded from the 13 scene definitions in `WxaTemplateSceneDefinitions` — and therefore the central WXA subscribe sender described below, which every other bundle's member-notify port funnels into.
 
 ### Admin/front REST
 
-21 admin controllers — central is `MarketingActivityController` (`POST /marketing/create`, `DELETE /marketing/delete`, `PUT /marketing/update`, `GET /marketing/getlist|getinfo|getItemList`), plus `ActivityPromotionsController` (the automated member-marketing activities), `GivePromotionsController` (manual coupon give), `SeckillActivityController`, `PromotionGroupsActivityController`, `TurntableController`, `BargainPromotionsController`, `LimitPromotionsController`, `PackagePromotionsController`, `SpecificCrowdDiscountController`, `MemberSignInController` / `CheckInController`, `RegisterPromotionsController` (registration gift), `ExtraPointActivityController` / `ExtraPointActivityPutController`, `PointupvaluationActivityController`, `RecommendLikeController`, `RegisterController`, `SmsController`, `AliTemplateController` (`/api/v1/ali/notice`) and `WxaTemplateController` (`/api/v1/wxa/notice/templates` — lists and opens the WXA notice scenes). 15 front controllers under `/api/v1/h5app/wxapp/...` serve the member-facing activity, seckill, group, turntable, bargain, sign-in and template-message surfaces.
+21 admin controllers — central is `MarketingActivityController` (`POST /marketing/create`, `DELETE /marketing/delete`, `PUT /marketing/update`, `GET /marketing/getlist|getinfo|getItemList`), plus `ActivityPromotionsController` (the automated member-marketing activities), `GivePromotionsController` (manual coupon give), `SeckillActivityController`, `PromotionGroupsActivityController`, `TurntableController`, `BargainPromotionsController`, `LimitPromotionsController`, `PackagePromotionsController`, `SpecificCrowdDiscountController`, `MemberSignInController` / `CheckInController`, `RegisterPromotionsController` (registration gift), `ExtraPointActivityController` / `ExtraPointActivityPutController`, `PointupvaluationActivityController`, `RecommendLikeController`, `RegisterController`, `SmsController`, `AliTemplateController` (`/api/v1/ali/notice`) and `WxaTemplateController` (`/api/v1/wxa/notice/templates` — lists and opens the WXA notice scenes). The admin member-task controller `MemberTasksController` (`/api/v1/promotions/member-tasks`) is detailed in its own section below. 15 front controllers under `/api/v1/h5app/wxapp/...` serve the member-facing activity, seckill, group, turntable, bargain, sign-in and template-message surfaces.
 
 ### The create/update pipeline and its post-commit fan-out
 
@@ -426,7 +486,77 @@ Every handler logs cost, publishes `CronAlertEvent` on failure and rethrows ([Sc
 
 ### Dispatch listeners (member lifecycle)
 
-`EVENT_CREATE_MEMBER_SUCCESS` (`event:members:create_member_success`) fans out to three promotions listeners registered in bootstrap (`PromotionsCreateMemberSuccessDispatchListenerRegistrationConfig` etc.): `CreateMemberSuccessPromotionsDispatchListener` (gated on `if_register_promotion` → `CreateMemberSuccessRegisterPromotionExecutionService.executionMarketingAfterMemberCreate`), `CreateMemberSuccessRegisterPointDispatchListener` (listener name `listener:members.register_point` → point bundle registration gift) and `CreateMemberSuccessSendMembercardDispatchListener` (kaquan membercard). `CreateItemSuccessPromotionsDispatchListener` and `ItemTagEditSuccessPromotionsDispatchListener` react to goods item-create/tag-edit events to maintain promotion indexes; `BargainHelpPayTradeFinishDispatchListener` reacts to trade finish to finish a bargain. All use `ListenerDispatchOptions.asyncDefaults()` (default queue).
+`EVENT_CREATE_MEMBER_SUCCESS` (`event:members:create_member_success`) fans out to three promotions listeners registered in bootstrap (`PromotionsCreateMemberSuccessDispatchListenerRegistrationConfig` etc.): `CreateMemberSuccessPromotionsDispatchListener` (gated on `if_register_promotion` → `CreateMemberSuccessRegisterPromotionExecutionService.executionMarketingAfterMemberCreate`), `CreateMemberSuccessRegisterPointDispatchListener` (listener name `listener:members.register_point` → point bundle registration gift) and `CreateMemberSuccessSendMembercardDispatchListener` (kaquan membercard). A fourth promotions listener — `CreateMemberSuccessMemberTaskInviteRegisterDispatchListener` (`listener:promotions.member_task.invite_register`) — belongs to the member-task subsystem below. `CreateItemSuccessPromotionsDispatchListener` and `ItemTagEditSuccessPromotionsDispatchListener` react to goods item-create/tag-edit events to maintain promotion indexes; `BargainHelpPayTradeFinishDispatchListener` reacts to trade finish to finish a bargain. All use `ListenerDispatchOptions.asyncDefaults()` (default queue).
+
+### Member tasks — task types, completion / grant / progress tables, and the reward pipeline
+
+The member-task subsystem (ECX-10420/10422/10431/10433/10434/10467, H1–H3) turns marketing goals into per-member tasks whose completion is paid out in points and/or coupons. It owns four tables seeded by Flyway `V00000000000008`: `member_task` (the activity definition), `member_task_completion` (one row per completed task/cycle, keyed by `cycle_key`), `member_task_reward_grant` (one row per completion, the idempotent grant ledger), and `member_task_user_progress` (the running `amount_fen` accumulator for `total_spend`). The orders table gains two attribution columns — `member_task_id` and `member_task_sharer_user_id` — written at order-create time.
+
+#### Task types and the catalog
+
+`MemberTaskTypeCatalog` pins the known pairs. Four categories — `newcomer` (新人任务), `purchase` (购买), `share` (分享裂变), `behavior` (会员行为) — each with detail codes:
+
+| category | detail | trigger |
+| --- | --- | --- |
+| `newcomer` | `first_order` | first paid order |
+| `newcomer` | `profile` | member profile update completes required fields |
+| `purchase` | `single_spend` | one paid order ≥ `amount_fen` |
+| `purchase` | `total_spend` | cumulative paid spend reaches `amount_fen` |
+| `share` | `share_order` | a shared friend pays an order |
+| `share` | `invite_register` | an invited friend registers |
+| `behavior` | `sign_in` | one successful sign-in inside the window |
+| `behavior` | `browse` | browse-report matches page + stay threshold |
+| `behavior` | `favorite` | favoriting an item in the configured set |
+
+`MemberTaskSaveService.create` rejects any pair not in the catalog (`任务类型无效`). `MemberTaskPurchaseTypes.usesPurchaseRule` marks the four order-driven types (`first_order` / `single_spend` / `total_spend` / `share_order`) as requiring a `rule_config` with `need_receipt` + `amount_fen` (+ optional `goods_scope` = `unlimited|items|category`, `item_ids` / `category_ids` / `distributor_ids`); `share_order` and `invite_register` additionally require `share_cover` / `share_title` / `share_jump_page`; `browse` requires `page` and validates `stay_seconds`; `profile` and `sign_in` accept no rule fields. Reward config requires at least one of `points` or `coupon_id`. Frequency is `once` or `cycle` (`daily` / `weekly` / `monthly`); audience is `unlimited`, `visible` or `hidden` with `audience_tag_ids` (JSON array) and `audience_tag_combine` (`intersection` / `union`).
+
+#### Admin lifecycle and the optimistic-lock edit rule
+
+`MemberTasksController` (`@AdminAuth @ShopLog`, base `/api/v1/promotions`) exposes `GET/POST /member-tasks`, `PUT /member-tasks/{taskId}`, `POST /member-tasks/{taskId}/publish`, `POST /member-tasks/{taskId}/off-shelf`, `POST /member-tasks/{taskId}/grants/{grantId}/retry`, plus `GET .../completions`, `GET .../stats`, `GET .../export` and `GET /member-tasks/export-overview`. `MemberTaskSaveService.update` only edits rows whose derived display status is `draft` (`仅待发布状态可编辑`), forces `type_category` / `type_detail` immutable, and applies an **optimistic `config_version` lock** — the client must send the current `config_version`, a mismatch is `任务配置已被他人修改，请刷新后重试`, and the update is conditioned on the same version so a concurrent edit loses the race. `MemberTaskLifecycleService.publish` only publishes a draft whose `end_time` is still in the future (`任务已过期，无法发布` / `仅待发布状态可发布`); `offShelf` is only allowed from `pending_start` / `in_progress` (`当前状态不可下架`). `MemberTaskDisplayStatus.resolve` derives `draft` / `pending_start` / `in_progress` / `expired` from `published` / `off_shelf` / `begin_time` / `end_time` — `off_shelf=1` always wins as `expired`.
+
+#### Completion flow — one completion row, one grant row, one pay-out
+
+Every task type funnels into the same pattern: validate the gate → insert a `member_task_completion` row (`cycle_key` = `once` or the Asia/Shanghai cycle key from `MemberTaskCycleKey` — `yyyy-MM-dd`, ISO `yyyy-Www`, or `yyyy-MM`) → insert the paired `member_task_reward_grant` row (`status=pending`, `reward_snapshot` = the task's `reward_config` JSON) → dispatch the grant. `MemberTaskImmediateCompletionService.tryComplete` is the shared write+grant leg for non-order tasks; the purchase/share types write the same pair from `MemberTaskPaySuccessService` / `MemberTaskTotalSpendService` / `MemberTaskShareOrderService`.
+
+`MemberTaskRewardGrantService.executeGrant` is the idempotent payout core: it claims the grant with a conditional `UPDATE member_task_reward_grant SET status='granted' ... WHERE grant_id=? AND status='pending'` — a zero-row claim means `ALREADY_GRANTED`, so concurrent triggers for the same completion pay out exactly once. On success it applies the reward snapshot (`points` → `MemberTaskPointGrantPortImpl` → `PointMemberAddPointService.addPointForNormalOrderBonus(..., "会员任务奖励")`; `coupon_id` → `MemberTaskCouponGrantPortImpl` → `UserDiscountReceiveCardService.receiveCard` with the member's mobile, throwing `会员手机号为空，无法发券` when blank). On any exception it flips the grant to `status=failed` with the error message and returns `FAILED` — the completion row stays, so the admin retry surface (`MemberTaskGrantRetryService.retry`, `POST .../grants/{grantId}/retry`) can re-drive the same grant row after a `failed`→`pending` reset with `retry_count+1`.
+
+#### Event listeners and the receipt gate
+
+The purchase/share types ride the order event plane:
+
+| event | listener | purpose |
+| --- | --- | --- |
+| `event:288:…NormalOrderPaySuccessEvent` | `MemberTaskNormalOrderPaySuccessDispatchListener` → `MemberTaskPaySuccessService.apply` | complete `first_order` / `single_spend`, accumulate `total_spend`, attribute `share_order` |
+| `event:orders:normal_order_confirm_receipt` | `MemberTaskNormalOrderConfirmReceiptDispatchListener` → `MemberTaskRewardGrantService.grantPendingIfOrderDone(..., CONFIRM_RECEIPT)` | release receipt-gated pending grants once the order is DONE |
+| `event:thirdparty:trade_refund_finish` | `MemberTaskTradeRefundFinishDispatchListener` → `MemberTaskRefundVoidService.apply` | void completions whose refund breaks the amount rule |
+
+All three are registered in bootstrap with `ListenerDispatchOptions.async("default", null)`. The behavior/profile/invite types use their own legs: sign-in calls `MemberTaskSignInCompletionService.onSignInSuccess` synchronously from `UserSignFrontSignInService`; browse rides the C-side `POST /api/v1/h5app/wxapp/promotion/member-tasks/browse-report` into `MemberTaskBrowseCompletionService`; favorite enters through `MemberTaskOnItemFavoritePortImpl` (called from `MemberItemsFavAddService` in members); profile completion rides `event:members:update_member_success` via `MemberTaskUpdateMemberSuccessDispatchListener` → `MemberTaskProfileCompletionService`; invite-register rides `event:members:create_member_success` via `CreateMemberSuccessMemberTaskInviteRegisterDispatchListener` → `MemberTaskInviteRegisterCompletionService`.
+
+The receipt gate lives in `rule_config.need_receipt`. When false, the pay-success leg grants immediately (`PAY_SUCCESS_IMMEDIATE`). When true, the grant stays `pending` until either the pay-success path already sees the order DONE with `end_time>0` (`PAY_SUCCESS_AFTER_DONE`) or the confirm-receipt listener fires (`CONFIRM_RECEIPT`) — `grantPendingIfOrderDone` re-loads the order and skips with `SKIPPED_GATE` unless `orderStatus=DONE` and `end_time>0`.
+
+#### Attribution, refund void and the progress ledger
+
+`MemberTaskCheckoutService` (the promotions impl of `OrderCreateMemberTaskExtendPort`, invoked from the wxapp and shopadmin order-create runners) stamps `member_task_id` / `member_task_sharer_user_id` onto the order data after validating the task is in-progress and — for `once` frequency non-share types — that the member has no active completion (`您已完成该首单任务` / `您已完成该任务`). `MemberTaskShareOrderService` only credits the **sharer** (`member_task_sharer_user_id`), never the buyer, and skips self-shares.
+
+`MemberTaskTotalSpendService` owns the cumulative leg: each attributed pay-success adds `total_fee` fen into `member_task_user_progress.amount_fen` under a `FOR UPDATE` row lock (`MemberTaskUserProgressService.addAmountFen`, insert-on-duplicate fall back to reselect), and a completion is written once the running total reaches `amount_fen`. `MemberTaskRefundVoidService` runs the reverse: `total_spend` refunds deduct from the same accumulator (`deductAmountFen`) and void the pending completion when the total drops below the threshold; the single-shot types (`first_order` / `single_spend` / `share_order`) instead re-check `matchesRemainingAfterRefund(total_fee, refunded_fee)` and void only when the remainder no longer meets the rule. Voiding is a conditional `UPDATE member_task_completion SET voided=1 ... WHERE completion_id=? AND voided=0` plus a matching `pending→cancelled` grant flip — a grant that already left `pending` (granted/failed) is never touched.
+
+#### Front surface and audience filtering
+
+`MemberTasksFrontController` (`@FrontAuth`, base `/api/v1/h5app/wxapp/promotion/member-tasks`) serves `GET /` (list), `GET /participations` (history) and `POST /browse-report`. `MemberTaskFrontListService.list` loads the member's tag ids through `MemberTaskMemberTagReadPortImpl` (members `member_rel_tags`) and applies `MemberTaskAudiencePolicy.visibleToUser`: `unlimited` (or blank) shows everyone, `visible` requires the member to match the configured tags (`union` = any hit, `intersection` = all hits), `hidden` inverts the match. Each row's `user_task_status` is derived from the completion + grant pair by `MemberTaskUserTaskStatusResolver` (`pending` → `PENDING_REWARD`, `granted` → `REWARDED`, `failed` → `REWARD_FAILED`, `cancelled` → back to `TODO`), and non-`in_progress` tasks with a `TODO` status are dropped from the list entirely.
+
+#### Exports
+
+Two CSV export legs ride the shared export-file bus as `job:200:EspierBundle\Jobs\ExportFileJob` (distinct from the turntable `job:159`): `GET /member-tasks/{taskId}/export` (`MemberTaskCompletionExportService.exportCompletions` → `type=export_member_task_completion`, filter `{task_id, datapass_block, grant_status}`) and `GET /member-tasks/export-overview` (`MemberTaskOverviewExportService.exportOverview` → `type=export_member_task_overview`, carrying the admin list filters). The bootstrap publisher (`MemberTaskExportFileJobDispatchPublisherImpl`) enqueues ASYNC/REDIS on the **slow** queue (SYNC under `local`); bootstrap's `EspierExportFileJobDispatchHandler` fans out to `MemberTaskExportFileJobTypeHandler` / `MemberTaskOverviewExportFileJobTypeHandler` → `MemberTaskExportFileJobHandler` / overview handler → `MemberTaskCompletionExportAsyncService` / `MemberTaskOverviewExportAsyncService`. The completion export pages rows 100 at a time, batch-resolves member nicknames via `MemberAccountService.listMemberSummariesByUserIds`, prepends a preamble (task name, id, time range, completion count, distinct users) and writes the finished file through `ExportCsvFileService` + `ExportLogCreateService` under type `export_member_task_completion`; an empty result or a failed upload is a silent no-op.
+
+### Promotion-driven search-index sync
+
+`GoodsSearchIndexPromotionSyncListener` (goods bundle, `search/sync/`) closes the loop between promotion writes and the goods search index. It listens to three Spring events and, for each, resolves the affected item ids and calls `GoodsSearchIndexDirtyByItemIdsPort.scheduleUpsertForItemIds` (impl `GoodsSearchIndexDirtyByItemIdsPortImpl`, which resolves each SKU id to its `default_item_id` via `DefaultItemIdResolver` and fans out one upsert per default item through `GoodsSearchIndexDirtyFanout`):
+
+* `SeckillActivityCommittedEvent` (`@EventListener`) — reindex the seckill's item ids on create/update.
+* `SeckillActivityEndCommittedEvent` (`@TransactionalEventListener(AFTER_COMMIT)`) — re-resolve the item ids from `seckill_rel_goods` at end time and reindex.
+* `PromotionGroupActivityCommittedEvent` (`@TransactionalEventListener(AFTER_COMMIT)`) — re-resolve from `promotion_groups_rel_goods` and reindex.
+
+Every call is wrapped in a try/catch that logs at warn and never rethrows, so a search-index outage can never roll back a promotion write. This is deliberately in the goods bundle (which already depends on promotions via Maven) so the search sync stays next to the index-owning code.
 
 ### WXA subscribe messaging — the central sender owned by promotions
 
@@ -464,8 +594,7 @@ Caption: the central WXA subscribe pipeline — every skip is a silent success, 
 * **Terminal send** — `WxJavaMaRuntime.ma(authorizerAppid)` resolves the access token (direct-secret mini-programs from `wechat_auth`, open-platform authorizers via `WechatOpenPlatformAuthorizerTokenService`) and posts `{touser, template_id, page, data}` to `WxMaApiUrlConstants.Subscribe.SUBSCRIBE_MSG_SEND_URL`; a non-zero `errcode` is logged at debug and ignored.
 * **Tolerant by contract** — the whole method catches `RuntimeException`, logs at debug and returns `true` (mirroring the legacy PHP notifier): a broken template, missing Weapp row, serialize error or WeChat outage never fails the business flow that triggered the notice.
 
-<!-- openwiki: broken internal link [../workflows/member-notify-fanout.md] file "../workflows/member-notify-fanout.md" does not exist. Fix the href or restore the target, then delete this comment. -->
-**Who funnels in.** Promotions `integration/` implements other bundles' common ports: `OrderDeliverySuccessWxaSubscribeSendAdapter` (orders `orderDeliverySucc`, forced — built by `OrderDeliverySuccessNotifyWechatService`, which resolves the recipient via `OrderTradeMiniProgramRecipientLookupPort` and falls back to the order title for the item name, and which is swapped for `OrderDeliverySuccessNotifyNoOp` when `ecshopx.orders.delivery-success-notify.enabled=false`) and `TradeFinishPaymentSuccWxaSubscribeSendAdapter` (orders `paymentSucc`, delayed); `GoodsArrivalWxaSubscribeSendAdapter` (members `goodsArrivalNotice`, forced, built by `ItemStoreGoodsArrivalWxaTemplateOrchestrator` with `page_query_str id=<itemId>`); `AftersalesRefuseWxaSubscribeSendAdapter` (forced) and `AftersalesSuccessWxaSubscribeSendAdapter` (delayed). Four further adapters live in bootstrap `config/` because the implementation needs beans from several bundles: `MemberCreateSuccessWxaNoticePortAdapter` (`memberCreateSucc`, delayed), `ReservationFinishSuccWxaTemplatePortImpl` (delayed), `SendPayOrdersRemindWxaTemplatePortImpl` (`payOrdersRemind`, forced) and `WxaCardUsedTemplateSendPortImpl` — the `@Primary` impl of wechat's `WxaCardUsedTemplateSendPort` for scenes `userGetCardSucc` / `registrationResultNotice` (forced; `cardUsedSucc` is deliberately not in the scene definitions, and `WxaCardUsedTemplateSendNoOp` wins when `ecshopx.wechat.wxa-card-template-send.enabled=false`). Inside promotions, `MemberSignInReminderPushService` calls the sender directly for the daily sign-in reminder (scene `member_signin_reminder`, forced, armed through the delayed `job:member-signin-reminder-send` dispatch job and `MemberSigninReminderSendJobHandler`, which *rethrows* so the platform retry policy applies), and selfservice's `SendRegistrationWxRemindJobHandler` publishes `job:11` rows directly for `registrationActivityNotice` reminders (one per passed registration record, `page_query_str record_id=<id>`). The complete fan-out — every producer, port, toggle and the delayed path — is traced on the [Member and Merchant Notification Fan-out](../workflows/member-notify-fanout.md) page.
+**Who funnels in.** Promotions `integration/` implements other bundles' common ports: `OrderDeliverySuccessWxaSubscribeSendAdapter` (orders `orderDeliverySucc`, forced — built by `OrderDeliverySuccessNotifyWechatService`, which resolves the recipient via `OrderTradeMiniProgramRecipientLookupPort` and falls back to the order title for the item name, and which is swapped for `OrderDeliverySuccessNotifyNoOp` when `ecshopx.orders.delivery-success-notify.enabled=false`) and `TradeFinishPaymentSuccWxaSubscribeSendAdapter` (orders `paymentSucc`, delayed); `GoodsArrivalWxaSubscribeSendAdapter` (members `goodsArrivalNotice`, forced, built by `ItemStoreGoodsArrivalWxaTemplateOrchestrator` with `page_query_str id=<itemId>`); `AftersalesRefuseWxaSubscribeSendAdapter` (forced) and `AftersalesSuccessWxaSubscribeSendAdapter` (delayed). Four further adapters live in bootstrap `config/` because the implementation needs beans from several bundles: `MemberCreateSuccessWxaNoticePortAdapter` (`memberCreateSucc`, delayed), `ReservationFinishSuccWxaTemplatePortImpl` (delayed), `SendPayOrdersRemindWxaTemplatePortImpl` (`payOrdersRemind`, forced) and `WxaCardUsedTemplateSendPortImpl` — the `@Primary` impl of wechat's `WxaCardUsedTemplateSendPort` for scenes `userGetCardSucc` / `registrationResultNotice` (forced; `cardUsedSucc` is deliberately not in the scene definitions, and `WxaCardUsedTemplateSendNoOp` wins when `ecshopx.wechat.wxa-card-template-send.enabled=false`). Inside promotions, `MemberSignInReminderPushService` calls the sender directly for the daily sign-in reminder (scene `member_signin_reminder`, forced, armed through the delayed `job:member-signin-reminder-send` dispatch job and `MemberSigninReminderSendJobHandler`, which *rethrows* so the platform retry policy applies), and selfservice's `SendRegistrationWxRemindJobHandler` publishes `job:11` rows directly for `registrationActivityNotice` reminders (one per passed registration record, `page_query_str record_id=<id>`).
 
 ### Merchant lifecycle notice jobs — a cross-bundle placement
 
@@ -657,6 +786,8 @@ The order-side quota consumption is deliberately **after commit** and idempotent
 | merchant → promotions SMS | audit success/fail, enter success, reset password → `job:1`–`job:4` on the sms queue → promotions `Merchant*NoticeJobHandler` → `CompanySceneSmsSendPort` | merchant lifecycle |
 | DM ↔ kaquan | card-template webhook topics create/modify/delete standard cards; add/edit/delete propagate out to youshu listeners | card sync |
 | orders → employee-purchase | checkout/create/restore ports; `event:288` pay-success behavior log | order lifecycle |
+| orders → member-task | `OrderCreateMemberTaskExtendPort` stamps `member_task_id` / `member_task_sharer_user_id`; `event:288` pay-success completes/accumulates; `normal_order_confirm_receipt` releases receipt-gated grants; `trade_refund_finish` voids broken completions | order lifecycle |
+| members → member-task | `event:members:update_member_success` → `profile` completion; `event:members:create_member_success` → `invite_register` completion; `MemberItemsFavAddService` → `favorite` completion | member behavior |
 
 ## Invariants and failure semantics
 
@@ -681,6 +812,8 @@ The order-side quota consumption is deliberately **after commit** and idempotent
 * **Employee-purchase restore is once-per-transaction-per-order** — the `pass_refund` double-restore hazard is closed by the transaction resource guard and the prepaid `restored_prepaid_fee` watermark.
 * **Per-member coupon consumption failures are isolated** — one bad coupon code logs and continues to the next.
 * **recover-turntable-processing has no seeded xxl_job_info row** — the handler exists but will not fire until the job is created in the XXL-JOB console.
+* **Member-task grants are claimed, never retried by accident** — a grant row is moved `pending→granted` by a conditional `grant_id + status=pending` update before any reward is applied; a zero-row update means another worker already claimed it (`ALREADY_GRANTED`), a downstream failure flips the same row to `failed` with `error_message` for admin retry, and a refund-driven void only touches a grant still in `pending` (never `granted`).
+* **Member-task completion is idempotent per order and per cycle** — the completion insert is protected by `DuplicateKeyException` (`uk_mtrg_completion` on the grant, plus the once/cycle uniqueness enforced in code), so a replayed pay-success or a second browse/favorite report in the same cycle is a silent no-op; `total_spend` progress is accumulated under a `FOR UPDATE` row lock on `member_task_user_progress` so concurrent order pays cannot double-count.
 
 ## Focused tests
 
@@ -710,6 +843,7 @@ The order-side quota consumption is deliberately **after commit** and idempotent
 * `TurntableLogCountServiceScopeTest` / `TurntableLuckyDrawLogListServiceScopeTest` — every turntable log query carries `(company_id, act_id)`: a foreign `act_id` returns zero/empty without paging, and the page query keeps the company filter.
 * `TurntableLuckyDrawLogExportAsyncServiceTest` — the export's status filter equals `VISIBLE_IN_DRAW_LOG` (`SUCCESS`/`GRANT_FAILED`, never `PROCESSING`/`COST_FAILED`) and the scope is company+activity; `TurntableLuckyDrawLogExportServiceDispatchTest` — exactly one publisher enqueue with `supplier_id=0` for a non-supplier operator; `LuckyDrawLogExportFileJobDispatchFlowTest` (bootstrap) — `job:159` on the slow queue (SYNC under `local`), payload shape and the router→`runExport` context hand-off.
 * `UserBargainCreateUserBargainServiceCompanyScopeTest` — ECX-10934: a foreign-company or null-company bargain activity rejects with the same not-exist message and never inserts a `user_bargains` row, while an own-company enroll inserts; `UserBargainsBargainLogIdentityTest` — ECX-10876: unauthenticated help is `UnauthorizedException` and body-supplied helper identity is overwritten by the claims; `UserBargainCreateBargainLogServiceBargainSmsDispatchTest` — the floor-reaching help publishes the bargain-finish SMS job after commit.
+* Member-task tests: `MemberTaskSaveServiceTest` — create/update validation, type immutability, the `config_version` optimistic lock and the draft-only edit gate; `MemberTaskLifecycleServiceTest` — publish/off-shelf display-state gates; `MemberTaskPaySuccessServiceTest` — the pay-success grant dispatch (immediate vs receipt-gated, `total_spend` accumulation, once-frequency skip, duplicate-order guard); `MemberTaskRewardGrantServiceTest` — the conditional `pending→granted` claim (zero-row = `ALREADY_GRANTED`) and the failure path that flips to `failed` without losing the completion; `MemberTaskRefundVoidServiceTest` / `MemberTaskTotalSpendServiceTest` — refund-driven void and progress deduct semantics; `MemberTaskGrantRetryServiceTest` — admin retry only on `failed` grants with `retry_count+1`; `MemberTaskFrontListServiceTest` / `MemberTaskAudiencePolicyTest` / `MemberTaskUserTaskStatusResolver` coverage — audience visibility, cycle-key status resolution and the front-list `TODO` drop rule; `MemberTaskCheckoutServiceTest` — order-create attribution stamping and the once-completion rejection.
 * `UserDiscountReceiveCardServiceStockLockTest` (kaquan) — ECX-10897: the card row is locked before the stock check, and a full stock inserts nothing; `UserDiscountConsumCardServiceRedeemLockTest` — ECX-10899: the conditional consume update must hit a redeemable status, and a miss records no success.
 
 ## Related pages
@@ -718,9 +852,7 @@ The order-side quota consumption is deliberately **after commit** and idempotent
 * [Scheduling (XXL-Job)](../concepts/scheduling-xxljob.md) — cron entrypoints, the alert-and-rethrow template and the `recover-turntable-processing` seeding gap.
 * [Redis Databases](../concepts/redis-databases.md) — why deposit counters and the passphrase participation quota use `sharedStringRedisTemplate` while pointsmall item store uses the companys DB.
 * [Cross-Bundle Communication](../architecture/cross-bundle-communication.md) — why the coupon/point/deposit/WXA-notice publishers are common interfaces with bootstrap impls, and why merchant notice handlers live in promotions.
-* [Orders Domain](orders.md) — the other half of every flow above: `OrdersPaymentDoPaymentService`, trade finish, auto-cancel crons, pointsmall order lifecycle, delivery-success notify.
-* [Members Domain](members.md) — member create success, grades and consumption totals feeding the upgrade events, goods-arrival subscription notices, and the system-tag subsystem (`member_tags` / `member_rel_tags`, reserved codes, `MemberSystemTagSeedService`) that member-crowd targeting matches against.
+* [Orders Domain](orders.md) — the other half of every flow above: `OrdersPaymentDoPaymentService`, trade finish, auto-cancel crons, pointsmall order lifecycle, delivery-success notify, and the order-create port that stamps `member_task_id` / `member_task_sharer_user_id`.
+* [Members Domain](members.md) — member create success, grades and consumption totals feeding the upgrade events, goods-arrival subscription notices, the system-tag subsystem (`member_tags` / `member_rel_tags`, reserved codes, `MemberSystemTagSeedService`) that member-crowd targeting matches against, and the favorite-add service that drives member-task `favorite` completion.
 * [Stores and Merchants](stores-and-merchants.md) — distributor scoping of coupon issue and activity goods, and the merchant audit/enter/reset-password lifecycle that publishes the notice jobs handled here.
-<!-- openwiki: broken internal link [../workflows/member-notify-fanout.md] file "../workflows/member-notify-fanout.md" does not exist. Fix the href or restore the target, then delete this comment. -->
-* [Workflow: Member and Merchant Notification Fan-out](../workflows/member-notify-fanout.md) — every producer, common port, adapter and enable/NoOp toggle behind the central WXA subscribe sender, plus the merchant SMS leg.
-* [Workflow: Checkout, Payment, Notify, and Trade-Finish Fan-out](../workflows/order-payment-flow.md) — the order pay-success and trade-finish planes that register points, consume cards and deduct deposit.
+* [Workflow: Checkout, Payment, Notify, and Trade-Finish Fan-out](../workflows/order-payment-flow.md) — the order pay-success and trade-finish planes that register points, consume cards, deduct deposit and fire the member-task pay-success / confirm-receipt / refund-finish events.

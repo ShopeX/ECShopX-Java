@@ -17,11 +17,10 @@
 package cn.shopex.ecshopx.popularize.service.export;
 
 import cn.shopex.ecshopx.espier.service.ExportCsvFileService;
-import cn.shopex.ecshopx.popularize.service.SalesmanBrokerageLogsQueryService;
+import cn.shopex.ecshopx.popularize.service.PopularizeBrokerageListReadService;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -40,15 +39,14 @@ public class PopularizeOrderCsvExportService {
 			DateTimeFormatter.ofPattern("yyyyMMddHHmmss").withZone(SHANGHAI);
 	private static final DateTimeFormatter CREATED_CELL =
 			DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(SHANGHAI);
-	private static final DateTimeFormatter CREATED_LOCAL = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-	private final SalesmanBrokerageLogsQueryService salesmanBrokerageLogsQueryService;
+	private final PopularizeBrokerageListReadService popularizeBrokerageListReadService;
 	private final ExportCsvFileService exportCsvFileService;
 
 	public PopularizeOrderCsvExportService(
-			SalesmanBrokerageLogsQueryService salesmanBrokerageLogsQueryService,
+			PopularizeBrokerageListReadService popularizeBrokerageListReadService,
 			ExportCsvFileService exportCsvFileService) {
-		this.salesmanBrokerageLogsQueryService = salesmanBrokerageLogsQueryService;
+		this.popularizeBrokerageListReadService = popularizeBrokerageListReadService;
 		this.exportCsvFileService = exportCsvFileService;
 	}
 
@@ -58,7 +56,18 @@ public class PopularizeOrderCsvExportService {
 		LinkedHashMap<String, Object> work = new LinkedHashMap<>(filter);
 		work.remove("datapass_block");
 
-		long total = salesmanBrokerageLogsQueryService.countByFilter(work);
+		String userIdRaw = work.get("user_id") != null ? String.valueOf(work.get("user_id")) : null;
+		String isCloseRaw = work.get("is_close") != null ? String.valueOf(work.get("is_close")) : null;
+		Object dIds = work.get("dIds");
+		String distributorIdRaw = null;
+		if (dIds instanceof List<?> list && !list.isEmpty()) {
+			distributorIdRaw = String.valueOf(list.get(0));
+		}
+
+		Map<String, Object> probe =
+				popularizeBrokerageListReadService.getBrokerageList(
+						companyId, "1", "1", userIdRaw, isCloseRaw, distributorIdRaw);
+		long total = longFrom(probe.get("total_count"));
 		if (total <= 0L) {
 			return Optional.empty();
 		}
@@ -69,12 +78,19 @@ public class PopularizeOrderCsvExportService {
 		LinkedHashMap<String, String> title = buildOrderExportTitle();
 
 		for (int page = 1; page <= totalPage; page++) {
-			List<Map<String, Object>> rows =
-					salesmanBrokerageLogsQueryService.selectPageByFilter(work, limit, page);
+			Map<String, Object> pageData =
+					popularizeBrokerageListReadService.getBrokerageList(
+							companyId,
+							String.valueOf(page),
+							String.valueOf(limit),
+							userIdRaw,
+							isCloseRaw,
+							distributorIdRaw);
+			@SuppressWarnings("unchecked")
+			List<Map<String, Object>> rows = (List<Map<String, Object>>) pageData.get("list");
 			if (rows == null || rows.isEmpty()) {
 				continue;
 			}
-			salesmanBrokerageLogsQueryService.enrichListWithSalesperson(companyId, rows);
 			for (Map<String, Object> row : rows) {
 				allRows.add(mapRowToCsv(row));
 			}
@@ -108,13 +124,13 @@ public class PopularizeOrderCsvExportService {
 	private static Map<String, String> mapRowToCsv(Map<String, Object> row) {
 		LinkedHashMap<String, String> m = new LinkedHashMap<>();
 		m.put("order_id", row.get("order_id") == null ? "" : String.valueOf(row.get("order_id")));
-		m.put("title", emptyIfNull(row.get("title")));
-		m.put("store_name", emptyIfNull(row.get("store_name")));
-		m.put("distributor_id", formatLongCell(row.get("distributor_id")));
-		m.put("username", emptyIfNull(row.get("username")));
-		m.put("mobile", emptyIfNull(row.get("mobile")));
+		m.put("title", "");
+		m.put("store_name", "");
+		m.put("distributor_id", "");
+		m.put("username", "");
+		m.put("mobile", "");
 		m.put("price", centToYuanPlain(row.get("price")));
-		m.put("total_fee", centToYuanPlain(row.get("total_fee")));
+		m.put("total_fee", "");
 		m.put("brokerage_type", row.get("brokerage_type") == null ? "" : String.valueOf(row.get("brokerage_type")));
 		m.put("commission_type", emptyIfNull(row.get("commission_type")));
 		m.put("is_close", formatIsClose(row.get("is_close")));
@@ -124,17 +140,6 @@ public class PopularizeOrderCsvExportService {
 
 	private static String emptyIfNull(Object v) {
 		return v == null ? "" : String.valueOf(v).trim();
-	}
-
-	private static String formatLongCell(Object v) {
-		if (v == null) {
-			return "";
-		}
-		if (v instanceof Number n) {
-			return String.valueOf(n.longValue());
-		}
-		String t = String.valueOf(v).trim();
-		return t;
 	}
 
 	private static String centToYuanPlain(Object v) {
@@ -164,18 +169,6 @@ public class PopularizeOrderCsvExportService {
 		if (v instanceof Number n) {
 			long sec = n.longValue();
 			return CREATED_CELL.format(Instant.ofEpochSecond(sec));
-		}
-		if (v instanceof java.sql.Timestamp ts) {
-			return CREATED_CELL.format(ts.toInstant());
-		}
-		if (v instanceof java.util.Date d) {
-			return CREATED_CELL.format(d.toInstant());
-		}
-		if (v instanceof LocalDateTime ldt) {
-			return ldt.atZone(ZoneId.systemDefault()).withZoneSameInstant(SHANGHAI).format(CREATED_LOCAL);
-		}
-		if (v instanceof java.time.Instant ins) {
-			return CREATED_CELL.format(ins);
 		}
 		return String.valueOf(v);
 	}

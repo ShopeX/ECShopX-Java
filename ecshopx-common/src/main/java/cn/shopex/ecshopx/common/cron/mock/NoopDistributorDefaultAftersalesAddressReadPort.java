@@ -37,4 +37,14 @@ public class NoopDistributorDefaultAftersalesAddressReadPort implements Distribu
 				Arrays.toString(new Object[] {companyId, distributorId}));
 		return Optional.empty();
 	}
+
+	@Override
+	public Optional<Long> findDefaultLogisticsReturnAddressId(long companyId, long distributorId) {
+		int n = callCount.incrementAndGet();
+		log.info(
+				"[cron-mock][getaftersales-read-default-logistics-address] called#{}, args={}",
+				n,
+				Arrays.toString(new Object[] {companyId, distributorId}));
+		return Optional.empty();
+	}
 }

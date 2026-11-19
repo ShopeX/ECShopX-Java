@@ -44,27 +44,7 @@ public class WxappOrderDetailSalespromoterService {
 		long promoterUserId = longVal(orderAssocRow.get("promoter_user_id"));
 		orderInfo.put("promoter_user_id", promoterUserId > 0L ? promoterUserId : 0L);
 
-		long distributorId = longVal(orderInfo.get("distributor_id"));
-		Map<String, Object> distributorInfo =
-				adminOrderDetailDistributionSupportPort.getDistributorInfoSimple(companyId, String.valueOf(distributorId));
-		boolean openSalesman = truthy(distributorInfo.get("is_open_salesman"));
-
-		Map<String, Object> salespersonInfo;
-		long outPromoter = promoterUserId;
-		if (promoterUserId > 0L && openSalesman) {
-			salespersonInfo =
-					new LinkedHashMap<>(
-							adminOrderDetailSalespersonLookupPort.loadSalespersonForOrderDetail(companyId, promoterUserId));
-			if (salespersonInfo.isEmpty() || longVal(salespersonInfo.get("user_id")) <= 0L) {
-				salespersonInfo = emptySalesperson();
-				outPromoter = 0L;
-			}
-		} else {
-			salespersonInfo = emptySalesperson();
-			outPromoter = 0L;
-		}
-		orderInfo.put("promoter_user_id", outPromoter);
-		orderInfo.put("salespersonInfo", salespersonInfo);
+		orderInfo.put("salespersonInfo", emptySalesperson());
 	}
 
 	private static Map<String, Object> emptySalesperson() {

@@ -16,6 +16,9 @@
 
 package cn.shopex.ecshopx.espier.service;
 
+import cn.shopex.ecshopx.common.espier.upload.EspierImportBatchResult;
+import cn.shopex.ecshopx.common.espier.upload.EspierImportBatchSink;
+import cn.shopex.ecshopx.common.espier.upload.EspierImportRowError;
 import cn.shopex.ecshopx.common.exception.BadRequestException;
 import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.espier.service.upload.EspierUploadFileHandler;
@@ -25,6 +28,7 @@ import cn.shopex.ecshopx.espier.service.upload.EspierUploadTableHandler;
 import cn.shopex.ecshopx.espier.storage.FileStorageService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,13 +49,15 @@ public class UploadFileImportDataService {
 	private final EspierUploadFileHandlerRegistry registry;
 	private final FileStorageService fileStorageService;
 	private final TransactionTemplate rowTransactionTemplate;
+	private final Map<String, EspierImportBatchSink> batchSinks;
 
 	public UploadFileImportDataService(
 			UploadeFileRepository uploadeFileRepository,
 			ObjectMapper objectMapper,
 			EspierUploadFileHandlerRegistry registry,
 			FileStorageService fileStorageService,
-			PlatformTransactionManager platformTransactionManager) {
+			PlatformTransactionManager platformTransactionManager,
+			List<EspierImportBatchSink> batchSinkBeans) {
 		this.uploadeFileRepository = uploadeFileRepository;
 		this.objectMapper = objectMapper;
 		this.registry = registry;
@@ -59,6 +65,21 @@ public class UploadFileImportDataService {
 		TransactionTemplate rowTx = new TransactionTemplate(platformTransactionManager);
 		rowTx.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
 		this.rowTransactionTemplate = rowTx;
+		this.batchSinks = indexBatchSinks(batchSinkBeans);
+	}
+
+	private static Map<String, EspierImportBatchSink> indexBatchSinks(List<EspierImportBatchSink> sinks) {
+		if (sinks == null || sinks.isEmpty()) {
+			return Map.of();
+		}
+		HashMap<String, EspierImportBatchSink> m = new HashMap<>();
+		for (EspierImportBatchSink s : sinks) {
+			String t = s.supportedFileType();
+			if (m.put(t, s) != null) {
+				throw new IllegalStateException("duplicate EspierImportBatchSink for file_type: " + t);
+			}
+		}
+		return m;
 	}
 
 	public void handleImportData(
@@ -95,6 +116,54 @@ public class UploadFileImportDataService {
 		List<String> errorHeaderTitles = exportHeaderTitleColumns == null || exportHeaderTitleColumns.isEmpty()
 				? new ArrayList<>(table.getHeaderTitle(companyId, relationId).all().keySet())
 				: exportHeaderTitleColumns;
+
+		EspierImportBatchSink batchSink = batchSinks.get(requestFileType);
+		if (batchSink != null) {
+			try {
+				EspierImportBatchResult batchResult =
+						batchSink.acceptRows(
+								ctx.companyId(),
+								ctx.operatorId(),
+								ctx.distributorId(),
+								ctx.supplierId(),
+								ctx.merchantId(),
+								params,
+								ctx.operatorType());
+				successLine = batchResult.successLine();
+				for (EspierImportRowError failure : batchResult.errors()) {
+					errorLine++;
+					Map<String, Object> rawRow = failure.row();
+					List<Object> err = alignedErrRow(errCells(rawRow), errorHeaderTitles);
+					Object excelRow = rawRow.get("__excel_row__");
+					err.add(excelRow == null ? 0 : excelRow);
+					err.add(failure.message());
+					errorlog.add(err);
+				}
+			} catch (Exception ex) {
+				for (Map<String, Object> rawRow : params) {
+					errorLine++;
+					List<Object> err = alignedErrRow(errCells(rawRow), errorHeaderTitles);
+					Object excelRow = rawRow.get("__excel_row__");
+					err.add(excelRow == null ? 0 : excelRow);
+					err.add(ex.getMessage());
+					errorlog.add(err);
+					log.debug("import batch error: {}", ex.toString());
+				}
+			}
+			mergeFinishState(
+					id,
+					sort,
+					successLine,
+					errorLine,
+					errorlog,
+					new ArrayList<>(errorHeaderTitles),
+					storagePath,
+					companyId,
+					requestFileType,
+					table);
+			return;
+		}
+
 		for (Map<String, Object> rawRow : params) {
 			Map<String, Object> fileRowData = rowForHandle(rawRow);
 			try {

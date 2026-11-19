@@ -1,12 +1,18 @@
 package cn.shopex.ecshopx.goods.service.order.normal;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import cn.shopex.ecshopx.common.order.normal.NormalOrderCreateParams;
+import cn.shopex.ecshopx.goods.service.cart.wxapp.CheckoutCartDistributorStoreOverlayService;
 import cn.shopex.ecshopx.goods.service.items.ItemAvailableStoreResolver;
 import cn.shopex.ecshopx.goods.service.items.ItemsCategoryPathByItemService;
 import java.util.ArrayList;
@@ -34,6 +40,9 @@ class OrderCheckoutFullGiftServiceItemOrderTest {
 	private ItemsCategoryPathByItemService itemsCategoryPathByItemService;
 
 	@Mock
+	private CheckoutCartDistributorStoreOverlayService checkoutCartDistributorStoreOverlayService;
+
+	@Mock
 	private StringRedisTemplate companysRedisTemplate;
 
 	@Mock
@@ -48,6 +57,7 @@ class OrderCheckoutFullGiftServiceItemOrderTest {
 						giftActivityStoreAdjustService,
 						itemAvailableStoreResolver,
 						itemsCategoryPathByItemService,
+						checkoutCartDistributorStoreOverlayService,
 						companysRedisTemplate);
 	}
 
@@ -111,6 +121,80 @@ class OrderCheckoutFullGiftServiceItemOrderTest {
 		assertEquals("gift", out.get(1).get("order_item_type"));
 		assertEquals(7894L, out.get(2).get("item_id"));
 		assertEquals("normal", out.get(2).get("order_item_type"));
+	}
+
+	@Test
+	void applyGiftActivities_shopIndependentStore_overlaysBeforeAdjustAndKeepsIsTotalStoreFalse() {
+		when(companysRedisTemplate.opsForHash()).thenReturn(hashOperations);
+		when(hashOperations.get(anyString(), anyString())).thenReturn(null);
+		doAnswer(
+						inv -> {
+							@SuppressWarnings("unchecked")
+							List<Map<String, Object>> maps = inv.getArgument(2);
+							for (Map<String, Object> m : maps) {
+								m.put("is_total_store", false);
+								m.put("store", 901);
+								m.put("logistics_store", 0);
+							}
+							return null;
+						})
+				.when(checkoutCartDistributorStoreOverlayService)
+				.applyForSkuMaps(eq(38L), eq(129L), anyList());
+		when(giftActivityStoreAdjustService.adjustSingleGift(anyLong(), anyString(), any(), any()))
+				.thenAnswer(
+						inv -> {
+							@SuppressWarnings("unchecked")
+							Map<String, Object> gift = inv.getArgument(2);
+							assertEquals(901, gift.get("store"));
+							assertFalse(Boolean.TRUE.equals(gift.get("is_total_store")));
+							return intVal(gift.get("gift_num")) > 0;
+						});
+
+		List<Map<String, Object>> items = new ArrayList<>();
+		items.add(mainItem(6784L, "睡袋", 1));
+
+		Map<String, Object> od = new LinkedHashMap<>();
+		od.put("company_id", 38L);
+		od.put("user_id", 278L);
+		od.put("order_id", "OID");
+		od.put("distributor_id", 129L);
+		od.put("shop_id", 129L);
+		od.put("mobile", "15601636091");
+		od.put("receipt_type", "logistics");
+		od.put("items", items);
+		od.put("discount_fee", 0);
+		od.put("item_fee", 52000L);
+		od.put("items_promotion", new ArrayList<>());
+
+		Map<String, Object> gift = new LinkedHashMap<>();
+		gift.put("item_id", 8116L);
+		gift.put("item_name", "「GTX」溪谷漫步透气徒步鞋");
+		gift.put("gift_num", 1);
+		gift.put("price", 0);
+		gift.put("store", 0);
+
+		Map<String, Object> activity = new LinkedHashMap<>();
+		activity.put("activity_id", 462L);
+		activity.put("activity_item_ids", List.of(6784L));
+		activity.put("gifts", List.of(gift));
+		activity.put(
+				"discount_desc",
+				Map.of("type", "full_gift", "id", 462, "info", "满赠", "max_limit", Long.MAX_VALUE));
+
+		NormalOrderCreateParams p = new NormalOrderCreateParams();
+		p.setOrderData(od);
+		p.getParams().put("receipt_type", "logistics");
+
+		service.applyGiftActivitiesFromCheckoutMeta(p, Map.of("gift_activity", List.of(activity)));
+
+		verify(checkoutCartDistributorStoreOverlayService).applyForSkuMaps(eq(38L), eq(129L), anyList());
+		@SuppressWarnings("unchecked")
+		List<Map<String, Object>> out = (List<Map<String, Object>>) od.get("items");
+		assertEquals(2, out.size());
+		assertEquals("gift", out.get(1).get("order_item_type"));
+		assertEquals(8116L, out.get(1).get("item_id"));
+		assertEquals(false, out.get(1).get("is_total_store"));
+		assertEquals(129L, out.get(1).get("distributor_id"));
 	}
 
 	private static Map<String, Object> mainItem(long itemId, String name, int num) {

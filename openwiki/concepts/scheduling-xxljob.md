@@ -4,6 +4,22 @@ title: "Scheduled Jobs: XXL-JOB Executor and Cron Handlers"
 description: "How ECShopX-Java runs scheduled work: one XxlJobSpringExecutor bean (appname ecshopx-executor, port 19999) auto-registers against a separately deployed XXL-JOB 2.5.0 admin whose xxl_job schema is seeded from docker/tables_xxl_job.sql; each Bundle contributes cron/Schedule*Handler classes with @XxlJob short names that delegate to services, log cost, publish CronAlertEvent on failure and rethrow — and many of them simply publish a dispatch-bus job."
 tags: [scheduling, xxl-job, cron, executor, cron-alert-event, dispatch-bus, operations]
 sources:
+  - id: openwiki-src-goods-search-rebuild-handler
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/cron/ScheduleGoodsSearchRebuildHandler.java
+  - id: openwiki-src-goods-search-rebuild-cron-service
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/GoodsSearchRebuildCronService.java
+  - id: openwiki-src-search-rebuild-job-handler
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/search/rebuild/SearchRebuildJobHandler.java
+  - id: openwiki-src-search-rebuild-publisher-impl
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/SearchRebuildJobDispatchPublisherImpl.java
+  - id: openwiki-src-search-rebuild-registration
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/SearchRebuildJobRegistrationConfig.java
+  - id: openwiki-src-goods-search-job-names
+    resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/GoodsSearchDispatchJobNames.java
+  - id: openwiki-src-goods-search-es-properties
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/search/SearchEsProperties.java
+  - id: openwiki-src-goods-cron-test-mock-config
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/cron/testcfg/CronTestMockConfig.java
   - id: openwiki-src-bspay-withdraw-handler
     resource: repo://ecshopx-bspay/src/main/java/cn/shopex/ecshopx/bspay/dispatch/WithdrawJobHandler.java
   - id: openwiki-src-espier-posstore-export
@@ -66,6 +82,8 @@ sources:
     resource: repo://ecshopx-bootstrap/src/main/resources/application.properties
   - id: openwiki-source-98ab8cb10fd8d8dd443624ef
     resource: repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/config/ConsumptionOrderJobDispatchPublisherImplTest.java
+  - id: openwiki-source-b9b1651363b4603c4dcc94fb
+    resource: repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/config/SearchRebuildJobRegistrationConfigTest.java
   - id: openwiki-source-e006ea843bbf4bea72d155e9
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/cron/event/CronAlertEvent.java
   - id: openwiki-source-a83d6cc5a617f803669492e1
@@ -74,6 +92,8 @@ sources:
     resource: repo://ecshopx-data-cube/src/main/java/cn/shopex/ecshopx/datacube/cron/ScheduleDailyStatisticsHandler.java
   - id: openwiki-source-2e497b6cef2850b658815ddb
     resource: repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/cron/ScheduleDeleteErrorFileHandler.java
+  - id: openwiki-source-418a764976cc07a563f09f07
+    resource: repo://ecshopx-goods/pom.xml
   - id: openwiki-source-ada41197214cde55617f05e9
     resource: repo://ecshopx-kaquan/src/main/java/cn/shopex/ecshopx/kaquan/cron/ScheduleCancelExpiredCardHandler.java
   - id: openwiki-source-b7dcff664cf84bf48b27267a
@@ -122,10 +142,10 @@ sources:
     resource: repo://ecshopx-youshu/src/main/java/cn/shopex/ecshopx/youshu/cron/ScheduleAddOrderSumHandler.java
   - id: openwiki-source-f1b1aacc63642e5304668821
     resource: repo://readme.md
-generated: { by: "openwiki/0.9.0", at: "2026-11-06T17:22:02.968Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-16T17:12:44.218Z" }
 verified:
   - by: openwiki/0.9.0
-    at: 2026-11-06T17:22:02.968Z
+    at: 2026-11-16T17:12:44.218Z
 ---
 
 # Scheduled Jobs: XXL-JOB Executor and Cron Handlers
@@ -170,15 +190,15 @@ The executor **auto-registers** with the admin (the seeded `xxl_job_group` row u
 The admin runs as its own container (`xuxueli/xxl-job-admin:2.5.0`) against a dedicated `xxl_job` MySQL schema. `docker/tables_xxl_job.sql` provisions that schema end to end:
 
 * the eight XXL-JOB tables — `xxl_job_info` (job definitions: schedule type/conf, route and block strategies, misfire strategy, handler name, trigger status), `xxl_job_log` (per-run trigger/handle codes and alarm status), `xxl_job_log_report`, `xxl_job_logglue`, `xxl_job_registry` (executor auto-registration), `xxl_job_group`, `xxl_job_user`, `xxl_job_lock`;
-* seed data: the executor group `ecshopx-executor` (auto-registration), the console user `admin` / `123456` (MD5 `e10adc3949ba59abbe56e057f20f883e`, role 1 = administrator — these are the credentials the readme documents for the console), and **69 job definitions** for job group 1.
+* seed data: the executor group `ecshopx-executor` (auto-registration), the console user `admin` / `123456` (MD5 `e10adc3949ba59abbe56e057f20f883e`, role 1 = administrator — these are the credentials the readme documents for the console), and **70 job definitions** for job group 1.
 
-Every seeded job is a `BEAN`-mode job (executor handler = a Spring bean method, no GLUE code) with `schedule_type=CRON`, `executor_route_strategy=FIRST`, `executor_block_strategy=SERIAL_EXECUTION`, `misfire_strategy=DO_NOTHING` and `trigger_status=1` (running). Frequencies range from every minute (`cancel-orders`, `0 * * * * ? *`) through every 5–10 minutes (`enable-theme-template`, `schedule-refund`, `wechat-query-merchant-payment`) to fixed daily slots (`finish-orders` at 03:00, `chinaums-division-transfer-sftp` at 18:00).
+Every seeded job is a `BEAN`-mode job (executor handler = a Spring bean method, no GLUE code) with `schedule_type=CRON`, `executor_route_strategy=FIRST`, `executor_block_strategy=SERIAL_EXECUTION`, `misfire_strategy=DO_NOTHING` and `trigger_status=1` (running). Frequencies range from every minute (`cancel-orders`, `0 * * * * ? *`) through every 5–10 minutes (`enable-theme-template`, `schedule-refund`, `wechat-query-merchant-payment`) to fixed daily slots (`finish-orders` at 03:00, `chinaums-division-transfer-sftp` at 18:00). The 70th and most recent seed row is `goods-search-rebuild` (id 70, 商品搜索索引全量同步, `0 0 1 * * ? *` — a full goods search-index resync every night at 01:00), added together with the `ecshopx-goods` handler of the same name.
 
 **The binding rule that matters:** the `@XxlJob` short name in code must equal the `executor_handler` value of an `xxl_job_info` row, or the handler will simply never fire — there is no code-side job registration. The seed covers the migrated handler set, but it is not a guaranteed mirror of the code: `ecshopx-promotions`' `recover-turntable-processing` handler exists in code with no seeded job row, and so does `ecshopx-members`' newer `member-system-tag-birthday-this-month` handler (added after the seed) — both must be created in the admin console before they run. Equally, the seed SQL only executes on first database initialisation (MySQL `docker-entrypoint-initdb.d`, mounted as `00-tables_xxl_job.sql` *before* the business `10-ecshopx.sql` in both compose stacks); re-importing requires recreating the volume, and new jobs added after initialisation are registered through the console, not through code.
 
 ## The handler template
 
-All 73 `@XxlJob` handler methods across 19 Bundles follow one shape. `orders/cron/ScheduleFinishOrdersHandler` is the canonical example:
+All 74 `@XxlJob` handler methods across 20 Bundles follow one shape. `orders/cron/ScheduleFinishOrdersHandler` is the canonical example:
 
 ```java
 @Slf4j
@@ -242,6 +262,7 @@ Grep `@XxlJob` across the Bundles and the handlers cluster into recurring famili
 | SMS (Aliyun) | aliyunsms | `aliyunsms-query-sign-audit-status`, `aliyunsms-query-template-audit-status`, `aliyunsms-query-sms-send-detail`, `aliyunsms-update-task`, `aliyunsms-run-task` |
 | Points, coupons, engagement, theming | point, popularize, kaquan, community, selfservice, theme | `send-member-point`, `settle-brokerage`, `cancel-expired-card`, `finish-community-activity`, `send-wx-remind-msg`, `enable-theme-template` |
 | File hygiene | espier | `delete-error-file`, `delete-history-file` |
+| Search index maintenance | goods | `goods-search-rebuild` |
 | ERP / external system sync | system-link | `sync-wdt-logistics`, `sync-wdt-inventory` |
 | Analytics upload | youshu | `youshu-order-sum`, `youshu-add-wxapp-visit-page`, `youshu-add-wxapp-visit-distribution` |
 
@@ -264,6 +285,7 @@ A cron handler is the *time-driven entry point*; the [dispatch bus](dispatch-bus
 * `consumption-orders` → `scheduleConsumptionOrders()` publishes `CONSUMPTION_ORDER_JOB` (`job:129:...ConsumptionOrderJob`) on `slow` with payload `orderType=normal, pageSize=100` (member-level accumulation for upgrades). Under the OEM flag `ecshopx.request-field.oem-shuyun=true` it logs and returns `0` without publishing.
 * `send-member-point` → the handler's only collaborator is `SendMemberPointJobDispatchPublisher.enqueueSendMemberPointJob()`, which dispatches `SEND_MEMBER_POINT_JOB` on `slow`.
 * `schedule-refund` → `AftersalesRefundService.scheduleRefund()` selects `AUDIT_SUCCESS` refunds and publishes **one job per refund** with staggered delays (0 s for the first refund of an order, `60*n+1` s for repeats) to spread the refund spike — the only cron handler that uses dispatch *delays* rather than immediate enqueue.
+* `goods-search-rebuild` → `GoodsSearchRebuildCronService.enqueueRebuildForActiveCompanies()` is the newest queue-feeder and the only one that publishes **several jobs per tick**: it no-ops (returns `0`, publishing nothing) when Elasticsearch is off (`ecshopx.search.es.enabled=false`, the repo default), otherwise it lists every non-disabled, non-expired company from the `companys` table and enqueues one `SEARCH_REBUILD_JOB` (`job:198:GoodsBundle\Jobs\SearchRebuildJob`, `ASYNC` / `REDIS` / queue `slow`, no delay) per company via bootstrap's `SearchRebuildJobDispatchPublisherImpl`; the handler logs `enqueuedCompanies=` as its result count.
 
 **Direct workers.** The handler's service does the batch inline, synchronously, inside the trigger call. `cancel-orders` → `NormalOrderCronService.scheduleCancelOrders()` is the reference: it counts expired `NOTPAY` orders (`auto_cancel_time` within 60 s, excluding `offline_pay` and `point`), then pages through them 20 at a time (`PAGE_SIZE = 20`), batch-updating the main and association orders to `CANCEL` and, per order, running the restore fan-out — invoice cancellation, supplier-order cancellation, marketing join-count decrement (Redis), points and upoints return, order process logs via the `OrderProcessLogPublishPort`, a marketing dispatch event published after-commit when a transaction is active, employee-purchase restore, per-item inventory and purchase-limit restores, limited-time-sale quota restores, and coupon/directed-promotion restore — returning the cancelled count that ends up in the handler's INFO log. `cancel-offlinepay-orders` is the same shape specialised for offline-transfer orders (it also sets `offline_payment.check_status = 9`, guarded per order so one failure does not abort the batch).
 
@@ -278,11 +300,12 @@ The handlers above are the *trigger* side. The work they fan out to is consumed 
 * **Finish-order job** — `ecshopx-orders/.../dispatch/FinishOrderJobHandler` implements `DispatchHandler` and forwards the (possibly null) payload to `FinishOrderJobService.execute(...)`. That service first runs the order-completion batch via `FinishOrderBatchService.runEquivalentToFinishOrderJobHandle()`, then runs `SleepingUserTagReconcileService.executeDaily()` to reconcile each company's sleeping-member system tag; a sleeping-tag failure is only logged (`[finish-orders] sleeping-user tag reconcile failed after batch`) and never fails the bus job, and if the batch itself throws, the reconcile is skipped. Ordering and isolation are pinned by `FinishOrderJobServiceTest`, and the end-to-end slow-queue flow is pinned by bootstrap's `FinishOrderJobDispatchFlowTest`.
 * **Withdraw dispatch** — `ecshopx-bspay/.../dispatch/WithdrawJobHandler` implements `DispatchHandler` directly. It validates `apply_id` and `company_id` from the payload (throwing `BadRequestException` when either is missing or not a `Number`) and calls `WithdrawApplyService.executeHuifuWithdraw(applyId, companyId)`. Bootstrap registers it in `WithdrawJobRegistrationConfig` under `BsPayBundleDispatchJobNames.WITHDRAW_JOB`.
 * **Export-file jobs** — `ecshopx-espier/.../dispatch/PosStoreAccountExportFileJobTypeHandler` implements the narrower `ExportFileJobTypeHandler` (which adds `exportType()`). It builds the CSV rows and headers, exports via `ExportCsvFileService`, then writes a finish log through `ExportLogCreateService`. Bootstrap's `EspierExportFileJobDispatchHandler` collects every `ExportFileJobTypeHandler` bean into a `type → handler` map (rejecting duplicate export types at startup) and routes each incoming export job by its `payload["type"]` — so one dispatch job name fans out to many export implementations.
+* **Search-rebuild job** — the `goods-search-rebuild` tick is consumed by `ecshopx-goods`' `SearchRebuildJobHandler`, a plain `DispatchHandler` registered in bootstrap's `SearchRebuildJobRegistrationConfig` under `GoodsSearchDispatchJobNames.SEARCH_REBUILD_JOB`. The payload selects the shape: `all_companies=true` re-lists every active company and blue-green rebuilds them all; a bare `company_id` (what the cron path publishes) upserts that company's goods into the current alias via `SearchRebuildService.reindexCompanyIntoAlias`, with an optional `distributor_id` scope; `blue_green=true` runs a full single-company blue-green rebuild that swaps the site-wide alias (marked 慎用 — use with care — in the Javadoc). `IOException` is wrapped in `UncheckedIOException` so a failed rebuild marks the bus job failed.
 * **Notice jobs** — `ecshopx-promotions` ships a family of four merchant-notice `DispatchHandler`s — `MerchantAuditSuccessNoticeJobHandler`, `MerchantAuditFailNoticeJobHandler`, `MerchantEnterSuccessNoticeJobHandler`, `MerchantResetPasswordNoticeJobHandler` — all deliberately fire-and-forget: each sends a scene-templated SMS via `CompanySceneSmsSendPort.sendSceneTemplatedSms(...)` but **catches `RuntimeException` and only logs a warning** (with the mobile number masked to its last four digits) instead of rethrowing. Bootstrap registers the audit-success one in `MerchantAuditSuccessNoticeJobRegistrationConfig` under `MerchantDispatchJobNames.MERCHANT_AUDIT_SUCCESS_NOTICE`. This is the opposite failure posture from a cron handler: a notification failure must not mark the bus job failed.
 
 ### The `test-cron` profile
 
-The queue-feeder publishers in bootstrap are annotated `@Profile("!test-cron")` (e.g. `FinishOrderJobDispatchPublisherImpl`, `ConsumptionOrderJobDispatchPublisherImpl`), and each Bundle that owns cron side effects ships a `cron/testcfg/CronTestMockConfig` — annotated `@Profile("test-cron")` and living in **`src/main`**, because the profile is activated at runtime by the PHP→Java migration diff orchestrator, not by unit tests. Under that profile the config installs `@Bean @Primary` No-op replacements for the dispatch publishers (finish/consumption/invoice/statement/export jobs) and for side-effect ports (ChinaUMS SFTP, HfPay settings, member-consumption Redis, turntable counters), so cron runs during schema-diff comparison do not write Redis, call third parties or enqueue real bus jobs.
+The queue-feeder publishers in bootstrap are annotated `@Profile("!test-cron")` (e.g. `FinishOrderJobDispatchPublisherImpl`, `ConsumptionOrderJobDispatchPublisherImpl`), and each Bundle that owns cron side effects ships a `cron/testcfg/CronTestMockConfig` — annotated `@Profile("test-cron")` and living in **`src/main`**, because the profile is activated at runtime by the PHP→Java migration diff orchestrator, not by unit tests. Under that profile the config installs `@Bean @Primary` No-op replacements for the dispatch publishers (finish/consumption/invoice/statement/export jobs, plus `NoopSearchRebuildJobDispatchPublisher` in `ecshopx-goods`' `CronTestMockConfig`) and for side-effect ports (ChinaUMS SFTP, HfPay settings, member-consumption Redis, turntable counters), so cron runs during schema-diff comparison do not write Redis, call third parties or enqueue real bus jobs.
 
 ## Configuration and operations
 
@@ -298,7 +321,7 @@ The queue-feeder publishers in bootstrap are annotated `@Profile("!test-cron")` 
 
 ## Extension point: adding a cron handler
 
-1. Ensure the Bundle's POM has `com.xuxueli:xxl-job-core` `2.5.0` on the compile classpath. Most cron-owning bundles declare it directly (orders, payment, aftersales, adapay, aliyunsms, community, companys, data-cube, espier, hfpay, kaquan, point, popularize, selfservice, system-link, theme, plus bootstrap); `promotions` and `youshu` currently get it transitively through peer dependencies.
+1. Ensure the Bundle's POM has `com.xuxueli:xxl-job-core` `2.5.0` on the compile classpath. Most cron-owning bundles declare it directly (orders, payment, aftersales, adapay, aliyunsms, community, companys, data-cube, espier, hfpay, kaquan, members, point, popularize, selfservice, system-link, theme, plus bootstrap); `goods`, `promotions` and `youshu` currently get it transitively through peer dependencies.
 2. Create `<bundle>/src/main/java/.../<bundle>/cron/Schedule<Thing>Handler.java` following the template above, delegating to a service method. Pick a unique kebab-case short name.
 3. Register the job in the XXL-JOB admin console: executor group `ecshopx-executor`, `BEAN` mode, JobHandler = the short name, a CRON expression, and the usual `FIRST` / `SERIAL_EXECUTION` / `DO_NOTHING` settings. There is no code-side registration and the seed SQL will not be re-applied to an existing database.
 4. If the work should run on the bus, depend on (or add) the `ecshopx-common` publisher interface, implement it in bootstrap with the exact `DispatchOptions` tuple, and add the matching `*RegistrationConfig` — see [Workflow: Adding a Dispatch Event, Job, or Cron Handler](../workflows/add-event-or-job.md) and [Dispatch Bus](dispatch-bus.md).
@@ -314,7 +337,7 @@ Each handler ships with a mirror test class (e.g. `orders/cron/ScheduleFinishOrd
 
 Publisher-impl tests in bootstrap (e.g. `ConsumptionOrderJobDispatchPublisherImplTest`) pin the exact dispatch tuple of the queue-feeder path — message name `CONSUMPTION_ORDER_JOB`, `ASYNC` / `REDIS` / queue `slow` / null delay / platform default retry — and the null-payload guard. These are the tests that break when someone changes a queue, a short name or swallows an exception.
 
-Downstream service tests pin the semantics the handler only triggers: `FinishOrderJobServiceTest` pins the batch-then-sleeping-tag ordering and the isolation of a sleeping-tag failure from the bus job's success, `FinishOrderJobDispatchFlowTest` (bootstrap) pins the slow-queue tuple and consumer wiring end to end, and `BirthdayThisMonthReconcileServiceTest` pins the first-of-month gate and the attach/detach reconcile contract of the `member-system-tag-birthday-this-month` handler.
+Downstream service tests pin the semantics the handler only triggers: `FinishOrderJobServiceTest` pins the batch-then-sleeping-tag ordering and the isolation of a sleeping-tag failure from the bus job's success, `FinishOrderJobDispatchFlowTest` (bootstrap) pins the slow-queue tuple and consumer wiring end to end, `SearchRebuildJobRegistrationConfigTest` pins that the search-rebuild consumer is registered under `GoodsSearchDispatchJobNames.SEARCH_REBUILD_JOB`, and `BirthdayThisMonthReconcileServiceTest` pins the first-of-month gate and the attach/detach reconcile contract of the `member-system-tag-birthday-this-month` handler. Note the `goods-search-rebuild` handler and its cron service are currently the one cron pair without a mirror test — the only coverage is the bootstrap registration test.
 
 ## Related pages
 

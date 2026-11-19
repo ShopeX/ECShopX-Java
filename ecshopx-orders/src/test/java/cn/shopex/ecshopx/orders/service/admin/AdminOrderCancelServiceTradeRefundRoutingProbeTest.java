@@ -40,8 +40,7 @@ class AdminOrderCancelServiceTradeRefundRoutingProbeTest {
 						supplierOrderMapper,
 						orderCancelReasonConfig,
 						full,
-						partial,
-						mock(PlatformSelfSubCancelSupport.class), mock(cn.shopex.ecshopx.common.auth.PosOrderDocAccessPort.class));
+						partial);
 
 		OrderAssociations assoc = new OrderAssociations();
 		assoc.setCompanyId(1L);
@@ -102,8 +101,7 @@ class AdminOrderCancelServiceTradeRefundRoutingProbeTest {
 						supplierOrderMapper,
 						orderCancelReasonConfig,
 						full,
-						partial,
-						mock(PlatformSelfSubCancelSupport.class), mock(cn.shopex.ecshopx.common.auth.PosOrderDocAccessPort.class));
+						partial);
 
 		OrderAssociations assoc = new OrderAssociations();
 		assoc.setCompanyId(1L);
@@ -148,8 +146,7 @@ class AdminOrderCancelServiceTradeRefundRoutingProbeTest {
 						supplierOrderMapper,
 						orderCancelReasonConfig,
 						full,
-						partial,
-						mock(PlatformSelfSubCancelSupport.class), mock(cn.shopex.ecshopx.common.auth.PosOrderDocAccessPort.class));
+						partial);
 
 		OrderAssociations assoc = new OrderAssociations();
 		assoc.setCompanyId(1L);
@@ -198,21 +195,19 @@ class AdminOrderCancelServiceTradeRefundRoutingProbeTest {
 	}
 
 	@Test
-	void cancelOrder_whenMainPartailWithRemainingUnshipped_usesFullCancelForShop() {
+	void cancelOrder_whenMainPartailWithRemainingUnshipped_usesPartialCancelForShop() {
 		OrderAssociationsMapper orderAssociationsMapper = mock(OrderAssociationsMapper.class);
 		SupplierOrderMapper supplierOrderMapper = mock(SupplierOrderMapper.class);
 		OrderCancelReasonConfig orderCancelReasonConfig = new OrderCancelReasonConfig();
 		AdminNormalOrderFullCancelService full = mock(AdminNormalOrderFullCancelService.class);
 		AdminNormalOrderPartialCancelService partial = mock(AdminNormalOrderPartialCancelService.class);
-		PlatformSelfSubCancelSupport platformSupport = mock(PlatformSelfSubCancelSupport.class);
 		AdminOrderCancelService svc =
 				new AdminOrderCancelService(
 						orderAssociationsMapper,
 						supplierOrderMapper,
 						orderCancelReasonConfig,
 						full,
-						partial,
-						platformSupport, mock(cn.shopex.ecshopx.common.auth.PosOrderDocAccessPort.class));
+						partial);
 
 		OrderAssociations assoc = new OrderAssociations();
 		assoc.setCompanyId(1L);
@@ -222,61 +217,44 @@ class AdminOrderCancelServiceTradeRefundRoutingProbeTest {
 		assoc.setOrderType("normal");
 		assoc.setDeliveryStatus("PARTAIL");
 		when(orderAssociationsMapper.selectOne(any())).thenReturn(assoc);
-		when(platformSupport.isShopRemainingFullCancelScope(1L, 5353493000105097L, "PARTAIL"))
-				.thenReturn(true);
 
-		when(full.execute(
-						eq(1L),
-						eq("shop"),
-						eq(3L),
-						eq(0L),
-						eq(101L),
-						eq("13811112222"),
-						eq(5353493000105097L),
-						anyString(),
-						anyMap(),
-						eq("shop")))
-				.thenReturn(Map.of("cancel_id", "91"));
+		when(partial.execute(eq(1L), eq("shop"), eq(3L), eq(0L), eq(101L), eq(5353493000105097L), anyString()))
+				.thenReturn(Map.of("aftersales_bn", 9002L));
 
-		ArgumentCaptor<Map<String, Object>> paramsCaptor =
-				ArgumentCaptor.forClass((Class<Map<String, Object>>) (Class<?>) Map.class);
 		Map<String, Object> out =
 				svc.cancelOrder(1L, "shop", 3L, "5353493000105097", Map.of("cancel_reason", 1));
 
-		assertThat(out).containsEntry("cancel_id", "91");
-		verify(full, times(1))
+		assertThat(out).containsEntry("aftersales_bn", 9002L);
+		verify(partial, times(1))
+				.execute(eq(1L), eq("shop"), eq(3L), eq(0L), eq(101L), eq(5353493000105097L), anyString());
+		verify(full, never())
 				.execute(
-						eq(1L),
-						eq("shop"),
-						eq(3L),
-						eq(0L),
-						eq(101L),
-						eq("13811112222"),
-						eq(5353493000105097L),
+						anyLong(),
 						anyString(),
-						paramsCaptor.capture(),
-						eq("shop"));
-		assertThat(paramsCaptor.getValue())
-				.containsEntry(PlatformSelfSubCancelSupport.SHOP_REMAINING_FULL_CANCEL_PARAM, true);
-		verify(partial, never()).execute(anyLong(), anyString(), anyLong(), anyLong(), anyLong(), anyLong(), anyString());
+						anyLong(),
+						anyLong(),
+						anyLong(),
+						anyString(),
+						anyLong(),
+						anyString(),
+						anyMap(),
+						anyString());
 	}
 
 	@Test
-	void cancelOrder_whenMainPartailButPlatformSelfPending_usesFullCancelForPlatformScope() {
+	void cancelOrder_whenMainPartailWithPlatformSelfRemaining_usesPartialCancelForShop() {
 		OrderAssociationsMapper orderAssociationsMapper = mock(OrderAssociationsMapper.class);
 		SupplierOrderMapper supplierOrderMapper = mock(SupplierOrderMapper.class);
 		OrderCancelReasonConfig orderCancelReasonConfig = new OrderCancelReasonConfig();
 		AdminNormalOrderFullCancelService full = mock(AdminNormalOrderFullCancelService.class);
 		AdminNormalOrderPartialCancelService partial = mock(AdminNormalOrderPartialCancelService.class);
-		PlatformSelfSubCancelSupport platformSupport = mock(PlatformSelfSubCancelSupport.class);
 		AdminOrderCancelService svc =
 				new AdminOrderCancelService(
 						orderAssociationsMapper,
 						supplierOrderMapper,
 						orderCancelReasonConfig,
 						full,
-						partial,
-						platformSupport, mock(cn.shopex.ecshopx.common.auth.PosOrderDocAccessPort.class));
+						partial);
 
 		OrderAssociations assoc = new OrderAssociations();
 		assoc.setCompanyId(1L);
@@ -286,41 +264,27 @@ class AdminOrderCancelServiceTradeRefundRoutingProbeTest {
 		assoc.setOrderType("normal");
 		assoc.setDeliveryStatus("PARTAIL");
 		when(orderAssociationsMapper.selectOne(any())).thenReturn(assoc);
-		when(platformSupport.isShopRemainingFullCancelScope(1L, 5353014000135097L, "PARTAIL")).thenReturn(true);
 
-		when(full.execute(
-						eq(1L),
-						eq("shop"),
-						eq(3L),
-						eq(0L),
-						eq(101L),
-						eq("13811112222"),
-						eq(5353014000135097L),
-						anyString(),
-						anyMap(),
-						eq("shop")))
-				.thenReturn(Map.of("cancel_id", "88"));
+		when(partial.execute(eq(1L), eq("shop"), eq(3L), eq(0L), eq(101L), eq(5353014000135097L), anyString()))
+				.thenReturn(Map.of("aftersales_bn", 9003L));
 
-		ArgumentCaptor<Map<String, Object>> paramsCaptor =
-				ArgumentCaptor.forClass((Class<Map<String, Object>>) (Class<?>) Map.class);
 		Map<String, Object> out =
 				svc.cancelOrder(1L, "shop", 3L, "5353014000135097", Map.of("cancel_reason", 1));
 
-		assertThat(out).containsEntry("cancel_id", "88");
-		verify(full, times(1))
+		assertThat(out).containsEntry("aftersales_bn", 9003L);
+		verify(partial, times(1))
+				.execute(eq(1L), eq("shop"), eq(3L), eq(0L), eq(101L), eq(5353014000135097L), anyString());
+		verify(full, never())
 				.execute(
-						eq(1L),
-						eq("shop"),
-						eq(3L),
-						eq(0L),
-						eq(101L),
-						eq("13811112222"),
-						eq(5353014000135097L),
+						anyLong(),
 						anyString(),
-						paramsCaptor.capture(),
-						eq("shop"));
-		assertThat(paramsCaptor.getValue())
-				.containsEntry(PlatformSelfSubCancelSupport.SHOP_REMAINING_FULL_CANCEL_PARAM, true);
-		verify(partial, never()).execute(anyLong(), anyString(), anyLong(), anyLong(), anyLong(), anyLong(), anyString());
+						anyLong(),
+						anyLong(),
+						anyLong(),
+						anyString(),
+						anyLong(),
+						anyString(),
+						anyMap(),
+						anyString());
 	}
 }

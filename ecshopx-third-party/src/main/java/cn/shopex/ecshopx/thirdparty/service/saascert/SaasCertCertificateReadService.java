@@ -75,7 +75,7 @@ public class SaasCertCertificateReadService {
 			forNode.put("cert_id", certId);
 			forNode.put("node_id", nodeId);
 			forNode.put("token", token);
-			forNode.put("company_id", companyId);
+			forNode.put("company_id", String.valueOf(companyId));
 			try {
 				String json = objectMapper.writeValueAsString(forNode);
 				prismRedisTemplate.opsForValue().set(nodeRedisKey(nodeId), json);
@@ -88,10 +88,16 @@ public class SaasCertCertificateReadService {
 		data.put("cert_id", certId);
 		data.put("node_id", nodeId);
 		if (StringUtils.hasText(nodeId)) {
-			data.put("company_id", companyId);
+			data.put("company_id", String.valueOf(companyId));
 		}
 		data.put("shopex_uid", shopexUid);
 		return data;
+	}
+
+	public void deleteCertSetting(long companyId) {
+		String shopexUid =
+				companyPassportUidByCompanyIdPort.findPassportUid(companyId).orElse("").trim();
+		prismRedisTemplate.delete(certRedisKey(shopexUid, companyId));
 	}
 
 	private static String textOrEmpty(JsonNode n, String field) {

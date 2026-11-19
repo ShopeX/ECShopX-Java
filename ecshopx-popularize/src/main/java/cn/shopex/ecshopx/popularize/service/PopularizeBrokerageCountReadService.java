@@ -42,13 +42,8 @@ public class PopularizeBrokerageCountReadService {
 
 	private final PromoterBrokerageStatisticsMapper promoterBrokerageStatisticsMapper;
 
-	private final SalesmanBrokerageCountListQueryService salesmanBrokerageCountListQueryService;
-
-	public PopularizeBrokerageCountReadService(
-			PromoterBrokerageStatisticsMapper promoterBrokerageStatisticsMapper,
-			SalesmanBrokerageCountListQueryService salesmanBrokerageCountListQueryService) {
+	public PopularizeBrokerageCountReadService(PromoterBrokerageStatisticsMapper promoterBrokerageStatisticsMapper) {
 		this.promoterBrokerageStatisticsMapper = promoterBrokerageStatisticsMapper;
-		this.salesmanBrokerageCountListQueryService = salesmanBrokerageCountListQueryService;
 	}
 
 	public Map<String, Object> brokerageCount(long companyId, String userIdRaw, String distributorIdRaw) {
@@ -86,19 +81,6 @@ public class PopularizeBrokerageCountReadService {
 			}
 		}
 
-		Map<String, Object> countDataShop;
-		if (distributorPresent) {
-			Map<String, Object> filter = new LinkedHashMap<>();
-			filter.put("dIds", List.of(distributorId));
-			if (userIdPresent) {
-				filter.put("user_id", userId);
-			}
-			countDataShop = salesmanBrokerageCountListQueryService.getSalesmanBrokerageCountAggregate(filter);
-			log.debug("brokerageCount distributor_id={}", distributorId);
-		} else {
-			countDataShop = null;
-		}
-
 		Map<String, Object> countData;
 		if (userIdPresent) {
 			countData = loadPromoterCount(companyId, userId);
@@ -106,13 +88,10 @@ public class PopularizeBrokerageCountReadService {
 			countData = loadCompanyCount(companyId);
 		}
 
-		if (!distributorPresent) {
-			LinkedHashMap<String, Object> shop = new LinkedHashMap<>();
-			shop.put("rebate_sum_noclose", longOrZero(countData.get("noCloseRebate")));
-			shop.put("price_sum", longOrZero(countData.get("itemTotalPrice")));
-			shop.put("rebate_sum", longOrZero(countData.get("rebateTotal")));
-			countDataShop = shop;
-		}
+		LinkedHashMap<String, Object> countDataShop = new LinkedHashMap<>();
+		countDataShop.put("rebate_sum_noclose", longOrZero(countData.get("noCloseRebate")));
+		countDataShop.put("price_sum", longOrZero(countData.get("itemTotalPrice")));
+		countDataShop.put("rebate_sum", longOrZero(countData.get("rebateTotal")));
 
 		LinkedHashMap<String, Object> data = new LinkedHashMap<>();
 		data.put("payedRebate", longOrZero(countData.get("payedRebate")));

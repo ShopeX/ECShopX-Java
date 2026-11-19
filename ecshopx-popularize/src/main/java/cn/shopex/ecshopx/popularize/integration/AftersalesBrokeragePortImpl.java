@@ -17,21 +17,56 @@
 package cn.shopex.ecshopx.popularize.integration;
 
 import cn.shopex.ecshopx.common.port.aftersales.AftersalesBrokeragePort;
+import cn.shopex.ecshopx.popularize.service.BrokerageAftersalesClawbackService;
 import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component("aftersalesBrokeragePortImpl")
 public class AftersalesBrokeragePortImpl implements AftersalesBrokeragePort {
 
-	private static final Logger log = LoggerFactory.getLogger(AftersalesBrokeragePortImpl.class);
+	private final BrokerageAftersalesClawbackService brokerageAftersalesClawbackService;
+
+	public AftersalesBrokeragePortImpl(BrokerageAftersalesClawbackService brokerageAftersalesClawbackService) {
+		this.brokerageAftersalesClawbackService = brokerageAftersalesClawbackService;
+	}
 
 	@Override
 	public void brokerageByAftersales(Map<String, Object> params) {
-		log.info("brokerageByAftersales placeholder company_id={} order_id={} item_id={}",
-				params == null ? null : params.get("company_id"),
-				params == null ? null : params.get("order_id"),
-				params == null ? null : params.get("item_id"));
+		if (params == null || params.isEmpty()) {
+			return;
+		}
+		long companyId = longVal(params.get("company_id"));
+		long orderId = longVal(params.get("order_id"));
+		long itemId = longVal(params.get("item_id"));
+		int num = intVal(params.get("num"));
+		brokerageAftersalesClawbackService.brokerageByAftersales(companyId, orderId, itemId, num);
+	}
+
+	private static long longVal(Object v) {
+		if (v == null) {
+			return 0L;
+		}
+		if (v instanceof Number n) {
+			return n.longValue();
+		}
+		try {
+			return Long.parseLong(String.valueOf(v).trim());
+		} catch (NumberFormatException e) {
+			return 0L;
+		}
+	}
+
+	private static int intVal(Object v) {
+		if (v == null) {
+			return 0;
+		}
+		if (v instanceof Number n) {
+			return n.intValue();
+		}
+		try {
+			return Integer.parseInt(String.valueOf(v).trim());
+		} catch (NumberFormatException e) {
+			return 0;
+		}
 	}
 }

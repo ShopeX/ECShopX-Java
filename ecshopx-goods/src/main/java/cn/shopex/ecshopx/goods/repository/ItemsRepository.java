@@ -788,6 +788,26 @@ public class ItemsRepository {
 	}
 
 	/**
+	 * 已同步到平台商品池、店铺商品池的副本，审核结果回写。
+	 * 与供应商编辑后重置商品池审核状态一致：只改审核字段，不改销售状态。
+	 */
+	public void updateAuditByCompanyAndItemIds(
+			long companyId, Collection<Long> itemIds, String auditStatus, String auditReason, int auditDate) {
+		if (itemIds == null || itemIds.isEmpty()) {
+			return;
+		}
+		int now = (int) (System.currentTimeMillis() / 1000L);
+		LambdaUpdateWrapper<Items> u = new LambdaUpdateWrapper<>();
+		u.eq(Items::getCompanyId, companyId)
+				.in(Items::getItemId, itemIds)
+				.set(Items::getAuditStatus, auditStatus)
+				.set(Items::getAuditReason, auditReason != null ? auditReason : "")
+				.set(Items::getAuditDate, auditDate)
+				.set(Items::getUpdated, now);
+		mapper.update(null, u);
+	}
+
+	/**
 	 * 供应商编辑回写已关联商品（平台池 + 店铺副本）：仅更新 PHP {@code createItems} 白名单字段。
 	 */
 	public void updateLinkedItemsOnSupplierEdit(long companyId, Collection<Long> itemIds, SupplierLinkedItemsSyncPatch patch) {

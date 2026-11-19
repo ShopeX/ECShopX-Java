@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:1b4d54927c111c4815583ad15edf44e3b009fbd73e604e5015cf07bb40717e98",
+  "pageVersion": "sha256:e845054b3002e2875bdd0cba0d44ac454a4f9ec54a9b3bce446791ee02721b32",
   "claims": [
     {
       "id": "claim_939c9eac23bd4d77a826ca9431a5ae9f",
@@ -378,11 +378,19 @@
     },
     {
       "id": "claim_50cef91022824233a0ef852875a55d87",
-      "statement": "On trade finish, NormalOrderFinishBrokerageCoordinator.onNormalOrderFinishBrokerage computes first-level brokerage inside a programmatic TransactionTemplate (PROPAGATION_REQUIRED): it skips unless the company's open_popularize setting is literal-true, is idempotent per (company_id, order_id) via an existence count on popularize_brokerage, requires the buyer to be a promoter whose pid resolves to a same-company parent promoter row with a positive user_id and is_promoter=1, computes the rebate as order base (totalFee for order_money, commissionFee for profit per the merged popularize_ratio config) × first_level ratio percent rounded and capped at Integer.MAX_VALUE fen, inserts a first_level brokerage row with user_id=parent promoter user and a non-null plan_close_time from BrokeragePlanCloseTimeService.computePlanCloseTimeEpochSec(), increments the parent promoter's popularize_brokerage_statistics (item_total_price/rebate_total/no_close_rebate), marks the buyer promoter is_buy=1, enqueues the promoter grade-upgrade job, and emits temporary [popularize-trade-finish] INFO diagnostics (ECX-11089).",
+      "statement": "On trade finish, NormalOrderFinishBrokerageCoordinator.onNormalOrderFinishBrokerage computes first-level brokerage inside a programmatic TransactionTemplate (PROPAGATION_REQUIRED): it skips unless the company's open_popularize setting is literal-true, is idempotent per (company_id, order_id) via an existence count on popularize_brokerage, requires the buyer to be a promoter whose pid resolves to a same-company parent promoter row with a positive user_id and is_promoter=1, computes the rebate as order base (totalFee for order_money, commissionFee for profit per the merged popularize_ratio config) × first_level ratio percent rounded and capped at Integer.MAX_VALUE fen, inserts a first_level brokerage row with user_id=parent promoter user and plan_close_time set to the PLAN_CLOSE_TIME_PENDING (Integer.MAX_VALUE) placeholder via pendingPlanCloseTimeForInsert(), increments the parent promoter's popularize_brokerage_statistics (item_total_price/rebate_total/no_close_rebate), marks the buyer promoter is_buy=1, enqueues the promoter grade-upgrade job, and emits temporary [popularize-trade-finish] INFO diagnostics (ECX-11089).",
       "evidence": [
         {
-          "resource": "repo://ecshopx-popularize/src/main/java/cn/shopex/ecshopx/popularize/service/brokerage/NormalOrderFinishBrokerageCoordinator.java#L65-L200",
-          "version": "repo-lines-v1:sha256:2f2cbde696ba15363d6e9c79dbcf08f2374114e708c628e799587f571dcf2a77:eyJzZWxlY3RlZExpbmVDb3VudCI6MTM2LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI2ZWQ3YjEyYzEyNDg2MDlmZDcwMGE4ODhhY2VlY2IxMjg1YTRjZTk0ZTA0Y2E3MTgwMTU0ZjYwMmVjYjIzNWU5IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI4ZDU1NTkyODMyOTVkYWQ1MzQxNGRmMDhmMTFjNThkY2Y1YjAyZWEwNDk2NTM4Nzc5YzYzNDQ5NWNjOGVjMGZkIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiIwMzYwODc5YWY4YTU0MTdkODE2MzM0NGFmYWQ3NzE3MmFlODI2M2UyZjBjNGZiZTE2Y2I0MTY0YmFiZTZkMjZmIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJmZDQ4ZDU1MDU2MDY0NjRmMDIyMDIwYzFmNjBjNGQzNjQyOWY0MzcwNGNkNTA5NjIzYzRlNjBmMjdiOThhNGMwIn0"
+          "resource": "repo://ecshopx-popularize/src/main/java/cn/shopex/ecshopx/popularize/service/BrokeragePlanCloseTimeService.java#L50-L65",
+          "version": "repo-lines-v1:sha256:aef65e4752934f7d3ad7e462611fa8c4bfa9d72276b1ff06369c48e3455c1998:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcwZTIxMzBhMDA3MTY4Mzg4MzdmZmRhMzZlYmVhZWY1ODdhZTBiZTE1NzdiMGNmMGZmZGNjZWQ0NDAxZmQ2OGEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk4OThjMWVkNjAxZGQzZTYxYWQ1YmVmOTY0OWQ1YTEwN2NiYTQ2NDAzZDhjMzdhMDU3YWE4YmZkMzhmYjU3MTIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZiNjQ0NjYyYzgzMDUzOTBjYjg0OGRhYmZiODQzM2MyNTRjOTMwYTY2Y2Q0Nzk3NTQ1NmQ2NDJmMmU4ZmYzYTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY5MDZhODliNzA4ZDRlOWRmY2JjOWNmYjM0ZTdiM2U0Yjc1NjNmYmNhODA4NTJmNTEzY2ZlZGVkODAyOGFkY2EifQ"
+        },
+        {
+          "resource": "repo://ecshopx-popularize/src/main/java/cn/shopex/ecshopx/popularize/service/brokerage/NormalOrderFinishBrokerageCoordinator.java#L84-L205",
+          "version": "repo-lines-v1:sha256:893a6e617b7e3a1b136d283f3d4907580a931a15406c79a6d0b08c57a328955b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIyLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI2NzdlYzZhMmUwN2Y0ZjI3ZGJjNmVlZDIxMzFmMThmY2I2MzhhZDE4MDgyMmE5NjhlNWIxNWRmYjY2NzQ5NGNhIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJlYjljNjNjNjA5Mzg2NjQzZjk0YjQxZmQ4Y2I0ODFmMmZjMzZkNDU3ZTRkYjY4ZDdhZDhhNzk4OWQwMTg3YzJmIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI3OGFjNDQ4ZmM2ZTdiNmQ3OWJjNzFlZTc3ODE1ZGNiZDZlYzUyZDZhYzQ0ZGQyYWEzNTUxZmIzOGYzNmMyYjY4IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJkNjBhNjMyZmZhNDg5ZGQ1ZmJhNDZhNGUyZDA0NDI5NDMwYzcyZjZhODcyN2E2MjQzOWNhNGY1OWUwZDljMjg2In0"
+        },
+        {
+          "resource": "repo://ecshopx-popularize/src/test/java/cn/shopex/ecshopx/popularize/service/BrokeragePlanCloseTimeServiceTest.java#L53-L58",
+          "version": "repo-lines-v1:sha256:e6bc89e296ab83cb157e473bd4a82fe8531fd36df808f99312cac77b0876ea1e:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNzgzZGExZWM5MWI4ZjFhNTZhOTU5MzczZjc5ZTVhZjUxN2U0NTEwOGNlZmMxZGVkZTQxMTIyMDg1NDJkZGI0YyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSJ9"
         },
         {
           "resource": "repo://ecshopx-popularize/src/test/java/cn/shopex/ecshopx/popularize/service/brokerage/NormalOrderFinishBrokerageCoordinatorPidResolutionTest.java",
@@ -575,7 +583,7 @@
           "version": "repo-file-v1:sha256:1954f97a7d587e1fc75efc70def429f55190e99805ce6339c32a2e036aa59ede"
         },
         {
-          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/upload/EspierUploadHandlerBeans.java#L183-L189",
+          "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/upload/EspierUploadHandlerBeans.java#L179-L185",
           "version": "repo-lines-v1:sha256:9e7ecc38e58fea605c10ebfbf70acf0c4218c4acd977c2b07ea0e224b4df2fcb:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjgzNjhhYTBmOWIxYjg1ZTFmNzQyYTMzOGRjNWFkYTFiYTZjZWY0YTYzNGRlMTEwNTIxNjMyYjJlYmJiNzhmNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNGE2Y2FlOTEzZThlMzU2MzJlOWJkNWE4ZmJjOTgxNTNkYTJmMjAyYTVhZTc1YjdkYWZlZjc2YmQ3OWFhY2FiZiJ9"
         },
         {
@@ -885,7 +893,7 @@
           "version": "repo-lines-v1:sha256:9ddfa2934c90e5308259891aa412e0fa721df6169ac044509e084508471f6c23:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzY0Yjc3NzgxZDczYTg2NjNkYjliNGY3MWM3NDJkYzQ0MjBmYmRhMTc3OGJhZWI3NmU0YTYyYTFiZmYwNzk0NiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYjJlNzU0MDk0MmY1ZTBiYzQ1ZGU5MWQzMTQ5MjU0YzllZTk3MjI1ODI3MTA3ZDU4NTM4YjNkN2Y3MGI0Y2UzMiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjIxNjc5MGM4Y2I0YTlmY2UxNWI4YzJmZjhkZTU5NjNmNTA3MzIwNWMxZGVjZGRmMTM4MzM2YTg5YWNmZTYxOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTdhMjZlNTBiZjNlMjBmOGI3MWQ2NDI0ZGFiZTlhMGVhNTQ4MjZlYjBiYjllZDI2YzNlYWQ4MTQ4NmU5YWE2NSJ9"
         },
         {
-          "resource": "repo://ecshopx-bootstrap/src/main/resources/seed/menu/platform_menu.json#L937-L941",
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/seed/menu/platform_menu.json#L968-L972",
           "version": "repo-lines-v1:sha256:3d3dc24662c7dd7f04bf3e35ce419ee1b6ff36735859caef418737b6649e2224:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjVmNzVmMTcxOTczYzU4MjNkN2VhM2ZkZjU0YzZiYjVkZGY2Mzg5ZGE4YTcxZWIzMzlmODgzMWJlMDE3NmNkMiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzMxZmJlNTdkYzYxMDk4ZWQ0YzE3ZThiM2M3YWQ1ZTE1OTllYjJlNTUxOWM3Y2E0NzM2ZmY0ZmI5YjBlYWRkZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTgyZTg0MWVlZTc2MDAzZTA3NWY5OGY2MWUzMDBmYmQ4YWU1OGM4YzlkOGIwYzViY2VhY2RhNmFhMzAzMjRmOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZmMxNjVlZjI5MGUxZjQ2NmU0Y2M4YzNjYjBkNTQ4NjgxZmE4YjZjOTFjMzJhZTVjODE0ODJhNGFlZWU1NjI1MiJ9"
         },
         {
@@ -903,7 +911,7 @@
           "version": "repo-lines-v1:sha256:425a4fd7b96eed072b6b34c6b9fb791109309cee488a3b7b61c20a7ad832c070:eyJzZWxlY3RlZExpbmVDb3VudCI6NDEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE4NTRiN2YzMjEzZDA2ZTkzMjFjYTcxNjE4MmI0NGU5NzczZTUzZDI0ZjhmZDQ0ZWI0NmRiYjhlM2JiOTEwOWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
         },
         {
-          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/PlatformItemsDeleteService.java#L118-L118",
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/PlatformItemsDeleteService.java#L122-L122",
           "version": "repo-lines-v1:sha256:665771e1353dc0c39c7d74d1f0d5f4baf57c9ee23d9e33d7808a698c0f9cea23:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjY1NzcxZTEzNTNkYzBjMzljN2Q3NGQxZjBkNWY0YmFmNTdjOWVlMjNkOWUzM2Q3ODA4YTY5OGMwZjljZWEyMyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjY1NzcxZTEzNTNkYzBjMzljN2Q3NGQxZjBkNWY0YmFmNTdjOWVlMjNkOWUzM2Q3ODA4YTY5OGMwZjljZWEyMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjFmMTRiZTQzMzU0NmI3MmFhZjg4MTM3NDczNGFkYjM1NjAyZjk1N2ViODJjY2ExMmQ3MmEyNWRiZTdhMjc4ZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOGVkNTQ4NDhhYjg1NmQxZGI0ZGExYjg3ODUwZGUzNTBjNWNiZDViZGFkZmJkYTIyN2FmNWEyMTNlYzVhOTRiMyJ9"
         },
         {
@@ -924,11 +932,19 @@
     },
     {
       "id": "claim_1e0f0fe1559e43e48b5f7c42644211e9",
-      "statement": "BrokeragePlanCloseTimeService.computePlanCloseTimeEpochSec returns now + 86400 × (settleDays + aftersaleDays), where both day counts come from ecshopx.popularize.brokerage-plan-close.{settle-days,aftersale-days}, default to 0, and carry a TODO to source them from merchant settings (分销确认天数/售后时效天数); the coordinator uses it so inserted brokerage rows always have a non-null plan_close_time, and updatePlanCloseTime back-fills the same value onto un-closed rows for (company_id, order_id).",
+      "statement": "BrokeragePlanCloseTimeService.computePlanCloseTimeEpochSec returns now + 86400 × (limit_time + latest_aftersale_time), where limit_time comes from the merged popularize config (PopularizeSettingSaveService.getMergedPopularizeConfig) and latest_aftersale_time comes from the platform order-validity settings via the orders-bundle OrderValidityLatestAftersaleDaysReadPort implementation (unparseable values fall back to 0); a non-positive company_id instead returns the pending placeholder. updatePlanCloseTime stamps this value onto the un-closed brokerage rows for (company_id, order_id), and the coordinator inserts new rows with the PLAN_CLOSE_TIME_PENDING placeholder so they are never null nor prematurely closed before order completion.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-popularize/src/main/java/cn/shopex/ecshopx/popularize/service/BrokeragePlanCloseTimeService.java#L35-L70",
-          "version": "repo-lines-v1:sha256:fcb70d34bf5397e0e42ee1435b0a15f6040bc8c1b29082716df8f1a7ced9c03f:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkxZjY4NDRkYzcyNTNhYjI5YmI3ZWEzMWI5Yjk4YzJmNGNhNDNhN2Q4NDNhNGUyYjFkMTAzZjFlYzM5M2I4NjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdlZDgyY2ViZDk0NmQ2OTZkNzZkZjc3MTg5NGQ3M2U3NTliMWE4NmY2MzllMzM1OWUwZmJiMDU2MjZkM2YyZjYifQ"
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/integration/popularize/OrderValidityLatestAftersaleDaysReadPortImpl.java",
+          "version": "repo-file-v1:sha256:942847422a47df129d1d00f0aab067f91f7a0fd6ff0231f0f1b62551811db30e"
+        },
+        {
+          "resource": "repo://ecshopx-popularize/src/main/java/cn/shopex/ecshopx/popularize/service/BrokeragePlanCloseTimeService.java#L58-L96",
+          "version": "repo-lines-v1:sha256:cc56df0d0551cac78031155728eb91c0d2da7d189c6b77ef16deba46ad3741f6:eyJzZWxlY3RlZExpbmVDb3VudCI6MzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVkOWQ4Y2EyYmNhNmJiZDE2YjU5Y2JmNTJiNDM1ZDNlNzY3NjA3MTk4NjQ1Njc0YTdjN2ZiOGMyZTA1NjA2YTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZWZjNDk0MThkMjZkY2YxMjliMjJhNmFhMjExMDhjZWVjMzc2NzdhMzJkMDhlOWQ1ZmVlMzVkZGE2NmJiOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZmZDE0NzVlYzE4OTRiZWExNTg4NTc4MWYyZTkzYzU4YWRmZjM1ZmFkZGYwYmE4YjgxOGFkMjAwNGNhNmRmNzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjUwMDUyZGY3ZWU4ZTY5ODAxOWU2ZmY0NDI3Njc5MTQ4ODRlMDg2OGIzZDg3NjgzNjc5NGVhZmZiZTU5ZmU3YjQifQ"
+        },
+        {
+          "resource": "repo://ecshopx-popularize/src/test/java/cn/shopex/ecshopx/popularize/service/BrokeragePlanCloseTimeServiceTest.java#L40-L51",
+          "version": "repo-lines-v1:sha256:af313b1b2e35a1a0115e0b3bd2c2ea400e3e3d2cd445d8cac5bbca3075a1c379:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQwMDkwMDZiZjYzYmRmNDc3NmVkNTYyMDgzNWZmZmRiN2IwODE3OTBiYjAwYmZiYTUzMjNlNjdhZDFlOWM1MzciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM1Y2NjNWMxMjY3YTEzMTFlNWZmNTNjNTU1NGRlNGMyZGEyZmE1NjkzYTc4ZTYyODUzYmQ1ZTZmNjVhMjkzNTciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFlOTUyZjIxNDA2NmFiOWMxMWU1NGY5MjkwMmNhNDM4Yzc4OGMzYTc3ODU0YTZmMzFlMjExYmVlYzlkMDg0NmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFlOTUyZjIxNDA2NmFiOWMxMWU1NGY5MjkwMmNhNDM4Yzc4OGMzYTc3ODU0YTZmMzFlMjExYmVlYzlkMDg0NmUifQ"
         }
       ]
     },
@@ -988,21 +1004,55 @@
     },
     {
       "id": "claim_d5b4ce85f5cc40c4ab767fc5beabf179",
-      "statement": "The orders bundle drives first-level brokerage: NormalOrderBrokerageOnFinishService.orderFinishBrokerage builds NormalOrderBrokerageFinishInput (userId, orderClass, totalFee, commissionFee), publishes the normal-order confirm-receipt event, calls the common-port NormalOrderFinishBrokerageCoordinator implemented in ecshopx-popularize, then back-fills plan_close_time via BrokeragePlanCloseTimeService.updatePlanCloseTime; it is invoked by the trade-finish paths (confirm-receipt after-commit, batch finish, ziti write-offs, and the TradeFinishCountBrokerage bus listener which skips pay_type=point trades).",
+      "statement": "The orders bundle drives first-level brokerage through two NormalOrderBrokerageOnFinishService entry methods that both build NormalOrderBrokerageFinishInput (userId, orderClass, totalFee, commissionFee) and call the common-port NormalOrderFinishBrokerageCoordinator implemented in ecshopx-popularize: orderFinishBrokerage (order completion — confirm-receipt after-commit, batch finish, ziti write-offs) additionally publishes the normal-order confirm-receipt event and back-fills plan_close_time via BrokeragePlanCloseTimeService.updatePlanCloseTime, whereas orderFinishBrokerageOnTradePaySuccess (trade pay-success — the TradeFinishCountBrokerage bus listener, which skips pay_type=point trades) runs only the coordinator so the inserted row keeps the pending plan_close_time placeholder until a completion path refreshes it.",
       "evidence": [
         {
           "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/brokerage/TradeFinishCountBrokerageBusService.java#L45-L95",
-          "version": "repo-lines-v1:sha256:403c177d1b1f6dc2f59216689912f831295043459b0cd7215194ad2ac3b4d9f4:eyJzZWxlY3RlZExpbmVDb3VudCI6NTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBiODhiZWNlMjY3YzM4Nzg0NjhmMDViYTdkMzEyYzkwMTBhOTNlNjQ5ZGFjNmFkZTliOGVmYWQ3Mzg1Y2EwMjUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZjMDBkYzAyYjY0OTg0OGE0NzU5N2IwMGM5Y2Y3ZTdlN2YyNjA2YzFlOGZmNDc3NzFmOGEyM2ExYmI5YjA2MDUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU4NzE5MmExN2EwYzRmZTUzMzE5Y2MyOGEwNWYzNjY0YmY2NjM5MGZhMjc0OGM1NDRjMTFlNGU0MGQwNjg2ZTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNmOTEzZjA5Zjc4MDZhYjBlOWVmYzk5NmUyMGQyOTM0Y2IxZjJiM2JiZmI2OTczODM1MDUzM2U2MDAwNGRhNGQifQ"
+          "version": "repo-lines-v1:sha256:2d34a2d8bb18f3c5773ed5117427b0db3fc5a79c4a50c608359233d1f5a1fdb3:eyJzZWxlY3RlZExpbmVDb3VudCI6NTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBiODhiZWNlMjY3YzM4Nzg0NjhmMDViYTdkMzEyYzkwMTBhOTNlNjQ5ZGFjNmFkZTliOGVmYWQ3Mzg1Y2EwMjUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZjMDBkYzAyYjY0OTg0OGE0NzU5N2IwMGM5Y2Y3ZTdlN2YyNjA2YzFlOGZmNDc3NzFmOGEyM2ExYmI5YjA2MDUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU4NzE5MmExN2EwYzRmZTUzMzE5Y2MyOGEwNWYzNjY0YmY2NjM5MGZhMjc0OGM1NDRjMTFlNGU0MGQwNjg2ZTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNmOTEzZjA5Zjc4MDZhYjBlOWVmYzk5NmUyMGQyOTM0Y2IxZjJiM2JiZmI2OTczODM1MDUzM2U2MDAwNGRhNGQifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/finish/FinishOrderBatchService.java#L182-L182",
+          "version": "repo-lines-v1:sha256:79319012cd6be754baa8b130d3d8abbf811cea31c8e8d4ac419333e914774c6c:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNzkzMTkwMTJjZDZiZTc1NGJhYThiMTMwZDNkOGFiYmY4MTFjZWEzMWM4ZThkNGFjNDE5MzMzZTkxNDc3NGM2YyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzkzMTkwMTJjZDZiZTc1NGJhYThiMTMwZDNkOGFiYmY4MTFjZWEzMWM4ZThkNGFjNDE5MzMzZTkxNDc3NGM2YyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzBlOWQ0MWZmY2ExMWI2ZmQxMzQ0YTBlODM5ZjFhNjg3OWUxZjE4YzU4NjM2MmY1YzAyYmY3YTJiZmQxMDk2MSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTA4NjQ0MjRiMzFiMTNiMDE0MDE3MzdlOGMyNzk2YzNhNTY2ZTU4M2FiMjI0MWYyMTYzYjA0ZmRmNTBlMmE0NiJ9"
         },
         {
           "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/NormalOrderBrokerageOnFinishService.java#L60-L81",
-          "version": "repo-lines-v1:sha256:231de51ee7b0d6089de4c706071910ebca27d96d20d596aadf8eab3e65268fe9:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkwYzZhYWFhZWJhMTQ3NjMzNTRlNmVlNjFmZGEwMWI4NmY2MjQwYjMyMWVmNzc2N2M2MThiOGY4NTMyMDk4OTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE0ZGJiNjE0NzA1MDU0NGY0NDhmYjk2ZmIxZmNkMmYyODE3MjQxY2ZkZGYxNTVjM2M4MzRjZTA3YjM4YTljMTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+          "version": "repo-lines-v1:sha256:459202761a374195eff689827417776dfe3a89d824faee1f0afd8788c77957f1:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgzMGRiMWY4NjJiYjMwYTYxOGI5OGNmNjU3ODgzZGE1ZDE2NGQ5YjgzY2M2ZjNhODE4NDhjNTAxMzMyZTlhNzgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk5NmU2MjNhYTE1ZjNkOTliYTUyMjkyMWYxZmZhNzU1NDA2OWY0NWI1Nzg2YWQ5ZGRiMDBhOTlkNjhmNjgzMGIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE0ZGJiNjE0NzA1MDU0NGY0NDhmYjk2ZmIxZmNkMmYyODE3MjQxY2ZkZGYxNTVjM2M4MzRjZTA3YjM4YTljMTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZkM2FmZDI0NDdiMDM3Y2JiMjM5N2YzYTk1MzYxODliMTgyMjExMDZhNDBiNmRlYzA3MzcyYzg0NGYxMjczNzAifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/NormalOrderConfirmReceiptAfterCommitService.java#L88-L88",
+          "version": "repo-lines-v1:sha256:540ef252aa19acf762a7b56ddad7e7ce71c5ed66693f05bac59d49c60a22b257:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTQwZWYyNTJhYTE5YWNmNzYyYTdiNTZkZGFkN2U3Y2U3MWM1ZWQ2NjY5M2YwNWJhYzU5ZDQ5YzYwYTIyYjI1NyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTQwZWYyNTJhYTE5YWNmNzYyYTdiNTZkZGFkN2U3Y2U3MWM1ZWQ2NjY5M2YwNWJhYzU5ZDQ5YzYwYTIyYjI1NyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDc4ODhhNmIxMzEzZmQ0YzRjZmE5NDc2OWM2NjVhNmM3MjNlZGQ0ZDAxYTM4ZWVkMzBhNTMyMTgwMGExZmI3YyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDYzYTU2NTYzZWZhYzViMDFlODk4N2IxN2E4MjJlNWI3MzBiYTg3YzRjOTY3YjRmNjFlNDM0M2EyYmM0MmFmMyJ9"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/NormalOrderZitiWriteoffService.java#L313-L313",
+          "version": "repo-lines-v1:sha256:aeefb4ce5f5be73cc751cb8bcfdace73ecc48bf27da3ea92503ab3d4645f5138:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYWVlZmI0Y2U1ZjViZTczY2M3NTFjYjhiY2ZkYWNlNzNlY2M0OGJmMjdkYTNlYTkyNTAzYWIzZDQ2NDVmNTEzOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYWVlZmI0Y2U1ZjViZTczY2M3NTFjYjhiY2ZkYWNlNzNlY2M0OGJmMjdkYTNlYTkyNTAzYWIzZDQ2NDVmNTEzOCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMjhiNTJjNGI1NzAzMjdkZmQ1ZGZiYzgyYzllZGZmZmEwMzJkOTVjY2ExOWQ1ZDA2Zjk5ODc3NjNkYzg2MmNiZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODUzYjM4ZmNhZDgzODFmMTU3Y2UxZTI5OGM1MjI3ZjIzOWNmODQ3MzMyZTZhOWRjZTYxMWJkMzIxMWE5NThkNCJ9"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/serviceorder/ServiceOrderZitiWriteoffService.java#L148-L148",
+          "version": "repo-lines-v1:sha256:bb8a03e13c88feddea3beb6b15e38d739990ed77d9f059fec015329d897f8889:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYmI4YTAzZTEzYzg4ZmVkZGVhM2JlYjZiMTVlMzhkNzM5OTkwZWQ3N2Q5ZjA1OWZlYzAxNTMyOWQ4OTdmODg4OSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYmI4YTAzZTEzYzg4ZmVkZGVhM2JlYjZiMTVlMzhkNzM5OTkwZWQ3N2Q5ZjA1OWZlYzAxNTMyOWQ4OTdmODg4OSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiODg3ODEzM2E4OWVmMDIyOWY1OTIwZDQ5ODU1NTk1NDI3MGU2NmM2ZWNiM2IzZjhkYTdmMWRkMTM1YTQxY2VjOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDVjMWQzMmJmNjUzMTJjNGE1NzM4MTVhMGFmYTM0MGI2YTM3YWRhMWI0MzVlMjAyNzRiOTUzNTQ2MmQ3YzdmNSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_d633928f29d743a28517c2040adad453",
+      "statement": "Storefront template detail resolves its pool via PagesTemplateFrontDetailResolveSupport: usePlatformTemplatePool returns the platform pool (distributor_id=0) when index_type==1 (headquarters) or index_type==2 with a virtual store (distributor_self truthy via isVirtualDistributorRow), otherwise the shop's own pool; the shop pool maps a blank/index weapp_pages to distributor_index while the platform pool keeps index, and a request with an explicit bogus pages_template_id throws 模版ID错误.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-theme/src/main/java/cn/shopex/ecshopx/theme/service/PagesTemplateFrontDetailService.java#L84-L112",
+          "version": "repo-lines-v1:sha256:c43dfbf75942a329f8cfb53a3fed1c9f26a35580e3ec1a77b5ed0876d2fd3f32:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgzOGJlZGYzZDVhYjY2NDUyZDlhZTBlMmJkYzJhZmY1MWQ2ZWMyMzY3NGI2YjRhMTRhYmEwZWFiYTRlZTVmYTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRlNmUzMWI2ZjM0YThmMWE1OWQxOTQ5NTRiYTQ1MjIyMTYyNjc1MzcxOTU1NDliNmJkZGVhMmJjMzg3ZDE4YTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ4NDRjZTk5MjIxZGNmOGZiNjM0MWQ1MzhkNGZkOWEwNGEwZmNmMGQwMzFkY2ZkYTk4NjQxZDc1NTg0NDgxMjIifQ"
+        },
+        {
+          "resource": "repo://ecshopx-theme/src/main/java/cn/shopex/ecshopx/theme/support/PagesTemplateFrontDetailResolveSupport.java",
+          "version": "repo-file-v1:sha256:51dc2bc38f7b784e6713e7cc19d2cdea9f60e07e831e564496923da335ee22a0"
+        },
+        {
+          "resource": "repo://ecshopx-theme/src/test/java/cn/shopex/ecshopx/theme/support/PagesTemplateFrontDetailResolveSupportTest.java",
+          "version": "repo-file-v1:sha256:c9e27da9a9acaf3efc9bddb25dcfc5cb672525c288eecc5682e1991ccc70924a"
         }
       ]
     }
   ],
   "verification": {
     "by": "openwiki/0.9.0",
-    "at": "2026-11-11T17:12:30.774Z"
+    "at": "2026-11-16T17:12:44.218Z"
   }
 }

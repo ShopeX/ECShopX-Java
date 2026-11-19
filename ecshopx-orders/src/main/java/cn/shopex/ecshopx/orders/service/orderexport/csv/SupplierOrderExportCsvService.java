@@ -30,6 +30,8 @@ import cn.shopex.ecshopx.orders.mapper.OrdersDeliveryMapper;
 import cn.shopex.ecshopx.orders.mapper.TradeMapper;
 import cn.shopex.ecshopx.orders.service.orderexport.support.NormalOrderExportDistributorLookupService;
 import cn.shopex.ecshopx.orders.service.orderexport.support.OrderExportSupplierOrderQuerySupport;
+import cn.shopex.ecshopx.orders.service.supplier.SupplierOrderListRowMaps;
+import cn.shopex.ecshopx.orders.service.supplier.SupplierOrderStatusMessageService;
 import cn.shopex.ecshopx.supplier.domain.SupplierOrder;
 import cn.shopex.ecshopx.supplier.mapper.SupplierOrderMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -102,6 +104,7 @@ public class SupplierOrderExportCsvService {
 	private final NormalOrderExportDistributorLookupService distributorLookupService;
 	private final ExportCsvFileService exportCsvFileService;
 	private final ObjectMapper objectMapper;
+	private final SupplierOrderStatusMessageService supplierOrderStatusMessageService;
 
 	public SupplierOrderExportCsvService(
 			SupplierOrderMapper supplierOrderMapper,
@@ -112,7 +115,8 @@ public class SupplierOrderExportCsvService {
 			NormalOrdersItemsMapper normalOrdersItemsMapper,
 			NormalOrderExportDistributorLookupService distributorLookupService,
 			ExportCsvFileService exportCsvFileService,
-			ObjectMapper objectMapper) {
+			ObjectMapper objectMapper,
+			SupplierOrderStatusMessageService supplierOrderStatusMessageService) {
 		this.supplierOrderMapper = supplierOrderMapper;
 		this.ordersDeliveryMapper = ordersDeliveryMapper;
 		this.tradeMapper = tradeMapper;
@@ -122,6 +126,7 @@ public class SupplierOrderExportCsvService {
 		this.distributorLookupService = distributorLookupService;
 		this.exportCsvFileService = exportCsvFileService;
 		this.objectMapper = objectMapper;
+		this.supplierOrderStatusMessageService = supplierOrderStatusMessageService;
 	}
 
 	public Optional<Map<String, String>> export(long companyId, LinkedHashMap<String, Object> filter) {
@@ -254,7 +259,7 @@ public class SupplierOrderExportCsvService {
 		row.put(
 				"order_class",
 				ORDER_CLASS_LABELS.getOrDefault(nz(o.getOrderClass()), nz(o.getOrderClass())));
-		row.put("order_status", resolveOrderStatusMsg(o));
+		row.put("order_status", resolveOrderStatusMsg(o, supplierOrderStatusMessageService));
 		row.put("receipt_type", nz(o.getReceiptType()));
 		row.put("ziti_status", nz(o.getZitiStatus()));
 		row.put("receiver_name", nz(o.getReceiverName()));
@@ -371,43 +376,15 @@ public class SupplierOrderExportCsvService {
 		return out;
 	}
 
-	static String resolveOrderStatusMsg(SupplierOrder order) {
-		String orderStatus = nz(order.getOrderStatus());
-		String deliveryStatus = nz(order.getDeliveryStatus());
-		return switch (orderStatus) {
-			case "WAIT_GROUPS_SUCCESS" -> "等待成团";
-			case "NOTPAY" -> "待支付";
-			case "WAIT_PAID_CONFIRM" -> "支付待确认";
-			case "PAYED" -> {
-				if ("PARTAIL".equals(deliveryStatus)) {
-					yield "部分发货";
-				} else if ("DONE".equals(deliveryStatus)) {
-					yield "待收货";
-				} else {
-					yield "待发货";
-				}
-			}
-			case "REVIEW_PASS" -> {
-				if ("PARTAIL".equals(deliveryStatus)) {
-					yield "部分出库";
-				} else {
-					yield "审核完成,待出库";
-				}
-			}
-			case "CANCEL" -> {
-				if ("DONE".equals(deliveryStatus)) {
-					yield "已关闭";
-				} else {
-					yield "已取消";
-				}
-			}
-			case "WAIT_BUYER_CONFIRM" -> "待收货";
-			case "DONE" -> "已完成";
-			case "REFUND_PROCESS" -> "退款处理中";
-			case "REFUND_SUCCESS" -> "已退款";
-			case "PART_PAYMENT" -> "部分付款";
-			default -> "订单异常:" + orderStatus;
-		};
+	/**
+	 * Same labels as the supplier order list ({@code order_status_msg}), including cancel, pickup, and ERP review.
+	 */
+	static String resolveOrderStatusMsg(
+			SupplierOrder order, SupplierOrderStatusMessageService statusMessageService) {
+		Map<String, Object> row = SupplierOrderListRowMaps.toRow(order);
+		row.putIfAbsent("prescription_status", 0);
+		row.putIfAbsent("diagnosis_data", null);
+		return statusMessageService.getOrderStatusMsgForSupplier(row);
 	}
 
 	private static String mapDeliveryStatus(String deliveryStatus) {

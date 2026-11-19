@@ -192,13 +192,12 @@ public class CategoryController {
 	public ResponseEntity<ApiResult<List<Map<String, Object>>>> getPromoterCategoryList(HttpServletRequest request,
 			@RequestParam(name = "is_main_category", required = false) String isMainCategory,
 			@RequestParam(name = "distributor_id", required = false) String distributorIdRaw,
-			@RequestParam(name = "isSalesmanPage", required = false) String isSalesmanPage,
 			@RequestParam(name = "country_code", required = false, defaultValue = "zh-CN") String countryCode) {
 		long companyId = parseCompanyIdFromRequest(request);
 		long userId = parseOptionalUserIdFromRequest(request);
 		long jwtDistributorId = parseJwtDistributorIdFromRequest(request);
 		List<Map<String, Object>> data = itemsCategoryQueryService.getWxappPromoterCategoryList(companyId, userId,
-				isMainCategory, distributorIdRaw, isSalesmanPage, countryCode, jwtDistributorId);
+				isMainCategory, distributorIdRaw, countryCode, jwtDistributorId);
 		return ResponseEntity.ok(ApiResult.ok(data));
 	}
 

@@ -1,9 +1,31 @@
 ---
 type: operations-guide
-title: "Deployment: Compose, Full Dev, and Lite Offline"
-description: "How ECShopX-Java is run: the unified ecshopx-app container (OpenResty nginx + Java :18080 + Nuxt SSR :3000 behind host vhosts admin/h5/pc), the four-service compose stacks (mysql, redis, xxl-job-admin, ecshopx-app), the full-development path dev-setup.sh + docker-compose.dev.yml, the lite offline path pack.sh + docker-lite/deploy.sh with a prebuilt jar and dist bundles, and the install.sh --full/--lite bootstrap that hands off to each."
-tags: [deployment, docker, compose, install, docker-lite, offline, nginx, openresty, nuxt, xxl-job, operations]
+title: "Deployment: Compose, Full Dev, Lite Offline, and Source Release"
+description: "How ECShopX-Java is built, deployed and released: the unified ecshopx-app container (OpenResty nginx + Java :18080 + Nuxt SSR :3000 behind host vhosts admin/h5/pc), the four-service compose stacks (mysql, redis, xxl-job-admin, ecshopx-app), the full-development path dev-setup.sh + docker-compose.dev.yml, the lite offline path pack.sh + docker-lite/deploy.sh with a prebuilt jar and dist bundles, the install.sh --full/--lite bootstrap, the runtime base image (pinned Temurin 17 JRE + Node 22 + OpenResty) and CDN image-bundle distribution, plus the maintainer-side .shopex/release pipeline (version bump, release Flyway migration, demo menu sync, per-commit mirror replay with TBID stripping and tag-tree reconcile)."
+tags: [deployment, docker, compose, install, docker-lite, offline, nginx, openresty, nuxt, xxl-job, release, mirror-sync, operations]
 sources:
+  - id: openwiki-source-8d97ee4f01b863aec4fd30ad
+    resource: repo://.agents/skills/shopex-ecx-release/SKILL.md
+  - id: openwiki-source-65dac41f361c6975817ca021
+    resource: repo://.shopex/release.json
+  - id: openwiki-source-115d01ea75830ba819ba40df
+    resource: repo://.shopex/release/bump-version.mjs
+  - id: openwiki-source-6a3c19ac1ed3c1bbd8f219ad
+    resource: repo://.shopex/release/commit-and-tag.mjs
+  - id: openwiki-source-f80984ccbcef9ddce7df7c22
+    resource: repo://.shopex/release/generate-release-migration.mjs
+  - id: openwiki-source-efb428099643ed7a67bc40a3
+    resource: repo://.shopex/release/lib/config.mjs
+  - id: openwiki-source-2c9e8c5c036c1eafb0c40c46
+    resource: repo://.shopex/release/lib/mysql-admin.mjs
+  - id: openwiki-source-c694a7296372b70fcb1bb06c
+    resource: repo://.shopex/release/mirror-sync.mjs
+  - id: openwiki-source-df1195557023b4d672037acc
+    resource: repo://.shopex/release/push-origin.mjs
+  - id: openwiki-source-40c050e0073b3055d7d460d3
+    resource: repo://.shopex/release/sync-demo-menus.mjs
+  - id: openwiki-source-eac4c651cd2cdad79ff9d603
+    resource: repo://.shopex/release/validate-config.mjs
   - id: openwiki-source-828d24ee9ccc8738afe410fb
     resource: repo://deploy.sh
   - id: openwiki-source-7d78e4d7cb28579f5500ea6c
@@ -36,14 +58,26 @@ sources:
     resource: repo://docker/build-runtime-base.sh
   - id: openwiki-source-5d96982c9381f5803addc932
     resource: repo://docker/Dockerfile.app
+  - id: openwiki-source-18a65740d9d64bda3b5d453b
+    resource: repo://docker/Dockerfile.demo
   - id: openwiki-source-e5fb425f2c27dd229bff7fb2
     resource: repo://docker/Dockerfile.runtime
+  - id: openwiki-source-eaaf82aa7204ea766134bcbc
+    resource: repo://docker/elasticsearch/docker-compose.yml
+  - id: openwiki-source-e1b21f957444f00ca3f5a339
+    resource: repo://docker/elasticsearch/Dockerfile
   - id: openwiki-source-267047b17ca6745093870177
     resource: repo://docker/install-docker-images.sh
   - id: openwiki-source-961b5c8b2a67cb53fc6b1d36
     resource: repo://docker/install-open-source-stat.sh
   - id: openwiki-source-adec17adc22127bd37d68f66
     resource: repo://docker/install-secrets.sh
+  - id: openwiki-source-c5df506231245544b145a4c9
+    resource: repo://docker/java-entrypoint.sh
+  - id: openwiki-source-cd27b2471274b0a820eeb94f
+    resource: repo://docker/java-nginx.conf
+  - id: openwiki-source-4e9390f5bc1b51d2a6792c89
+    resource: repo://docker/pack-docker-images-bundle.sh
   - id: openwiki-source-89b43138f8e75edb4615495b
     resource: repo://ecshopx-bootstrap/src/main/resources/application.properties
   - id: openwiki-source-03ffc32a0ca502ab67c54b25
@@ -56,17 +90,18 @@ sources:
     resource: repo://readme.md
 verified:
   - by: openwiki/0.9.0
-    at: 2026-11-11T17:12:30.774Z
-generated: { by: "openwiki/0.9.0", at: "2026-11-11T17:12:30.774Z" }
+    at: 2026-11-16T17:12:44.218Z
+generated: { by: "openwiki/0.9.0", at: "2026-11-16T17:12:44.218Z" }
 ---
 
-# Deployment: Compose, Full Dev, and Lite Offline
+# Deployment: Compose, Full Dev, Lite Offline, and Source Release
 
 ECShopX-Java ships as **one Spring Boot jar** (`ecshopx-bootstrap`) that must be surrounded by MySQL, Redis and an XXL-JOB admin console before it does anything useful. The repository's deployment story is therefore entirely about assembling that neighbourhood reproducibly, and it does so through three operator entrypoints that all converge on the same runtime topology (see [System Overview](../architecture/overview.md)):
 
-* **Full development** — `./dev-setup.sh` (or `bash install.sh --full`) clones and builds the three sibling frontend repositories, imports the runtime images, and starts `docker-compose.dev.yml`, whose `ecshopx-app` image is **built on the fly** by a Maven stage in `docker/Dockerfile.app` (project version **5.5.3**, set as `${revision}` in the root `pom.xml`).
+* **Full development** — `./dev-setup.sh` (or `bash install.sh --full`) clones and builds the three sibling frontend repositories, imports the runtime images, and starts `docker-compose.dev.yml`, whose `ecshopx-app` image is **built on the fly** by a Maven stage in `docker/Dockerfile.app` (project version **5.6.3**, set as `${revision}` in the root `pom.xml`).
 * **Lite offline** — `docker-lite/pack.sh` (root wrapper `./pack.sh`) produces a customer tarball containing the prebuilt jar and prebuilt frontend artifacts; `docker-lite/deploy.sh` (root wrapper `./deploy.sh`, or `bash install.sh --lite`) starts `docker-lite/docker-compose.yml` **without ever invoking Maven, npm or pnpm on the target machine**.
 * **Self-hosted jar** — `./mvnw -pl ecshopx-bootstrap -am package` then `java -jar … --spring.profiles.active=local`; outside the scope of this page (covered by [Configuration](configuration.md)).
+* **Source release & mirror sync** — the maintainer-side pipeline under `.shopex/release/` (demo menu sync → release Flyway migration → version bump → tag → push → per-commit replay onto the public GitHub/Gitee mirrors with `[TBID:…]` stripped and a final tag-tree reconcile), documented below.
 
 > **A documentation drift worth knowing before you read the readme.** The English readme's "Docker Deployment (Recommended)" section still describes a one-click `docker compose up -d` at the repository root with a service named `ecshopx-java` built from `docker/Dockerfile`, and lists the XXL-Job console at `http://localhost:9080/xxl-job-admin`. The current working tree contains **no root `docker-compose.yml` and no `docker/Dockerfile`** — only `docker-compose.dev.yml` and `docker-lite/docker-compose.yml`, and `docker/Dockerfile.app` / `docker/Dockerfile.runtime`. The single-app-container redesign documented in `docker-lite/README.md` explicitly records that the separate `gateway` and `ecshopx-web-frontend` services were removed. Both real compose stacks publish the XXL admin on host port **8080** (`XXL_HOST_PORT`, overridable); `9080` survives only as the `xxl.job.admin.addresses` default in `application.properties` for self-hosted runs. Trust the compose files and the scripts, not that readme section.
 
@@ -237,7 +272,7 @@ The comparison from `docker-lite/README.md`:
 3. **Admin**: `npm run build:b2c` → renamed `dist-b2c`, then `build:bbc` → `dist-bbc` (both modes ship in one tarball).
 4. **Mobile**: `APP_PLATFORM=standard npm run build:h5` → `dist-b2c`, `APP_PLATFORM=platform` → `dist-bbc` (each contains `h5/`).
 5. **PC**: `pnpm install --config.dangerouslyAllowAllBuilds=true && pnpm build` under `CI=true` and `NUXT_TELEMETRY_DISABLED=1` → `.output`.
-6. **Validate + tar.** `release_validate_prebuilt_artifacts` checks `dist-b2c/index.html`, `dist-bbc/index.html`, `dist-{b2c,bbc}/h5`, `.output/server/index.mjs` **and** `.output/server/node_modules` (Nitro's production deps must ship or SSR fails). `pack.sh` reads the version (currently **5.5.3**, from `${revision}`) from `pom.xml` via `release_read_product_version` (`docker-lite/lib/common.sh`) with `sed` only — the comment is explicit that lite tooling must not invoke host `mvn`/`java` — resolving CI-friendly `${revision}` placeholders, and `release_build_tarball` (`docker-lite/lib/package.sh`) writes `ecshopx-java-<version>.tar.gz` containing the **four project roots** with excludes `/node_modules/`, `.git/`, `*.log`, `.DS_Store`, `._*`, `dist-release`, existing `ecshopx-*.tar.gz` / `ecshopx-java-*.tar.gz`, `.env`, and (unanchored) `target/`. The rooted `/node_modules/` exclude is deliberate: it strips project-root deps but keeps `ECShopX-Java_Web/.output/server/node_modules`. The transient `dist` dirs are dropped (only `dist-b2c`/`dist-bbc` ship), and packaging fails if the jar or `docker-lite/docker-compose.yml` are missing from the staging tree.
+6. **Validate + tar.** `release_validate_prebuilt_artifacts` checks `dist-b2c/index.html`, `dist-bbc/index.html`, `dist-{b2c,bbc}/h5`, `.output/server/index.mjs` **and** `.output/server/node_modules` (Nitro's production deps must ship or SSR fails). `pack.sh` reads the version (currently **5.6.3**, from `${revision}`) from `pom.xml` via `release_read_product_version` (`docker-lite/lib/common.sh`) with `sed` only — the comment is explicit that lite tooling must not invoke host `mvn`/`java` — resolving CI-friendly `${revision}` placeholders, and `release_build_tarball` (`docker-lite/lib/package.sh`) writes `ecshopx-java-<version>.tar.gz` containing the **four project roots** with excludes `/node_modules/`, `.git/`, `*.log`, `.DS_Store`, `._*`, `dist-release`, existing `ecshopx-*.tar.gz` / `ecshopx-java-*.tar.gz`, `.env`, and (unanchored) `target/`. The rooted `/node_modules/` exclude is deliberate: it strips project-root deps but keeps `ECShopX-Java_Web/.output/server/node_modules`. The transient `dist` dirs are dropped (only `dist-b2c`/`dist-bbc` ship), and packaging fails if the jar or `docker-lite/docker-compose.yml` are missing from the staging tree.
 7. `--with-images` additionally prefetches the CDN image bundle into `docker-lite/images/` so the tarball can carry it.
 
 ### `deploy.sh` — on the customer machine
@@ -271,9 +306,34 @@ The comparison from `docker-lite/README.md`:
 
 Repo defaults are **dev-only**: `rootpassword` / `ecshopx` / `redispassword` / an empty `JWT_SECRET` in `application.properties`. `.env` files are git-ignored at the root and under `docker-lite/`. See [Configuration](configuration.md) for the full key map.
 
+## Source release and mirror sync: `.shopex/release/`
+
+`pack.sh` ships the **runtime artifact**; the `.shopex/release/*.mjs` Node scripts ship the **source release** itself — bumping `${revision}`, tagging, pushing, and publishing the repository to the public mirrors. They are maintainer tooling (orchestrated by the `shopex-ecx-release` skill as `prepare-master → sync-demo-menus → generate-release-migration → bump-version → commit-and-tag → push-origin → mirror-sync`), not customer deployment tooling, and they deliberately never touch docker-lite packaging.
+
+Configuration is two files merged deep (`release.local.json` wins): committed `.shopex/release.json` carries `demoBaseUrl`, the `githubPath` / `giteePath` local mirror checkouts, the `excludePaths` filter, and non-secret MySQL coordinates; git-ignored `.shopex/release.local.json` (from `release.local.json.example`) carries `demoUsername` / `demoPassword` and `mysql.password`. `loadReleaseConfig` refuses to run without the secrets file, and `validate-config.mjs` checks everything up front.
+
+The pipeline, in order:
+
+1. **`prepare-master.mjs`** — requires a clean working tree, fetches origin, checks out `master`, fast-forwards to `origin/master`.
+2. **`sync-demo-menus.mjs`** — logs in to the demo deployment (`{demoBaseUrl}/api/v1/operator/login`, `logintype: localadmin`) and downloads the six versioned shop menus (`/api/v1/shopmenu/down?version=N` → base64-decoded JSON), rewriting the seed files `ecshopx-bootstrap/src/main/resources/seed/menu/{platform,it,shop,dealer,merchant,supplier}_menu.json` — so every release ships menu seeds that match the live demo.
+3. **`generate-release-migration.mjs`** — creates a scratch database (`ecshopx_release_<version>`), imports the baseline `docker/ecshopx.sql`, runs `bin/make-migration migrate` then `bin/make-migration release` to diff the JPA-model schema against it, **dedupes** the generated statements against every existing `V*.sql` in `db/migration`, renames the survivor to the next sequential `V<N>.sql`, and drops the scratch DB (on failure paths too, via an `exit` hook). Prints `{"migration": "<path>"|null, "dropped": true}`; `null` means no schema changes, and the release proceeds without a migration file.
+4. **`bump-version.mjs`** — rewrites `<revision>` in the root `pom.xml` and **refuses non-increasing plain `x.y.z` versions**, so a mis-typed target fails before anything is tagged. (This is why the running tree above reads 5.6.3.)
+5. **`commit-and-tag.mjs`** — stages `pom.xml`, the menu seed directory and the optional migration file, commits `[TBID:<tbid>] release: bump version to <version>`, and creates the annotated tag named exactly `<version>` (no `v` prefix), refusing if it already exists.
+6. **`push-origin.mjs`** — pushes `master` and the tag to the private origin; refuses to push from any branch but `master`.
+7. **`mirror-sync.mjs --target github|gitee --version <ver> [--from <tag>]`** — publishes to the public mirrors in two passes. First it **replays** every commit from the previous version tag (auto-detected, or `--from`) up to the release tag onto the mirror checkout, one commit at a time, preserving author/committer identity and dates, **stripping `[TBID:…]`** from messages, and skipping commits whose entire diff is inside `excludePaths` (agent tooling, CI configs, `.shopex/` itself, `AGENTS.md`, … — anything that must never be public). Then, regardless of replay fidelity, it **reconciles**: `git archive <version>` the private release tree and `rsync -a --delete --exclude-from=…` it over the mirror, committing any residual diff as `chore: reconcile public tree for <version>`. The mirror therefore always ends up file-identical to the release tag minus `excludePaths`, even if the per-commit replay drifted. It finishes by tagging `<version>` and pushing branch + tag. Hard preconditions: the mirror worktree must be clean and the tag must not already exist there; `--reconcile-only` redoes just the archive/rsync/tag pass and force-updates an existing tag.
+
+Operational boundary recorded by the skill: if the origin push fails, no mirror work happens; if a mirror fails, the already-pushed origin commit/tag is **not** rolled back; a dirty worktree aborts rather than stashing.
+
+## Companion images: dev Elasticsearch and the Java-only demo
+
+Two images sit outside the compose topology above:
+
+* **`docker/elasticsearch/`** — a dev-only goods-search Elasticsearch. The `Dockerfile` extends `docker.elastic.co/elasticsearch/elasticsearch:8.15.5` with the `analysis-ik` 8.15.5 Chinese-analyzer plugin installed from a URL at build time, and `docker-compose.yml` runs it as `ecshopx/elasticsearch-ik:8.15.5` (container `ecshopx-dev-elasticsearch`), single-node, **all X-Pack security disabled**, published on `${ES_HOST_PORT:-9200}` with an `es-data` volume and a `curl 127.0.0.1:9200` healthcheck. Its own header says it plainly: *security off — do not expose publicly*. Nothing in the main stacks depends on it.
+* **`docker/Dockerfile.demo`** — a Java-only variant of the app image: Maven builder (private-registry `maven:3.9-eclipse-temurin-17`) onto an Alpine Temurin 17 JRE + OpenResty, with **no Node, no Nuxt and no frontends**. `docker/java-entrypoint.sh` starts Java on container `SERVER_PORT=8080` (deliberately overriding the Undertow default) and gates OpenResty on a `127.0.0.1:8080` readiness poll; `docker/java-nginx.conf` reverse-proxies listener **18080** to that Java. It pins `LANG/LC_ALL=C.UTF-8` because Alpine has no locale data (otherwise JDK 17 derives ASCII and Chinese data corrupts) and installs `fontconfig` + `ttf-dejavu` for headless AWT (captcha/QR/barcode rendering). No compose file references it — it is built manually — and its header comment still says `docker/Dockerfile.java`, drift from a rename.
+
 ## Image distribution: one CDN bundle, `docker load`, no registry pull
 
-`docker/install-docker-images.sh` (sourced by both `dev-setup.sh` and `docker-lite/lib/images.sh`) implements a single rule: **all runtime images arrive as one gzip'd `docker save` bundle** from `DOCKER_IMAGES_BUNDLE_URL` (default `https://shopex-onex-yundian-image.yuanyuanke.cn/ecx-java-docker-image-base/ecx-java-docker-images.zip`) and are imported with `gunzip -c FILE | docker load`. `install_download_file` is resumable-ish (skips an existing non-empty file, `.partial` temp then atomic `mv`, `curl --retry 3` or `wget`). The bundle must contain the tags listed in `docker-lite/images.env`: `ecshopx-java:17-node22-openresty` (runtime base / lite app image), `maven:3.9-eclipse-temurin-17` (compile), `mysql:8.0`, `redis:7-alpine`, `xuxueli/xxl-job-admin:2.5.0`. `pack.sh --with-images` prefetches the same bundle into `docker-lite/images/` for fully air-gapped installs; both image dirs are git-ignored for `*.tar`/`*.zip`.
+`docker/install-docker-images.sh` (sourced by both `dev-setup.sh` and `docker-lite/lib/images.sh`) implements a single rule: **all runtime images arrive as one gzip'd `docker save` bundle** from `DOCKER_IMAGES_BUNDLE_URL` (default `https://shopex-onex-yundian-image.yuanyuanke.cn/ecx-java-docker-image-base/ecx-java-docker-images.zip`) and are imported with `gunzip -c FILE | docker load`. `install_download_file` is resumable-ish (skips an existing non-empty file, `.partial` temp then atomic `mv`, `curl --retry 3` or `wget`). The bundle must contain the tags listed in `docker-lite/images.env`: `ecshopx-java:17-node22-openresty` (runtime base / lite app image), `maven:3.9-eclipse-temurin-17` (compile), `mysql:8.0`, `redis:7-alpine`, `xuxueli/xxl-job-admin:2.5.0`. `pack.sh --with-images` prefetches the same bundle into `docker-lite/images/` for fully air-gapped installs; both image dirs are git-ignored for `*.tar`/`*.zip`. The release-side counterpart is `docker/pack-docker-images-bundle.sh`: it `docker save | gzip`s exactly the five tags from `docker-lite/images.env` into `docker/images/ecx-java-docker-images.zip` (the `.zip` extension is historical — the payload is gzip'd docker-save, OCI or legacy layout, both load through the same `gunzip | docker load` pipeline), verifies the archive's `index.json`/`repositories` after writing, and is what gets uploaded to the CDN behind `DOCKER_IMAGES_BUNDLE_URL`.
 
 ## Telemetry: the open-source install stat
 
@@ -291,6 +351,9 @@ Both installers end `show_success_info` with `report_open_source_install_stat` f
 | `docker/install-secrets.sh` | Shared secrets/post-start helper library (above). |
 | `docker/install-docker-images.sh` | CDN bundle download + `docker load`. |
 | `docker/install-open-source-stat.sh` | The anonymous install-stat reporter (above). |
+| `docker/Dockerfile.demo` + `docker/java-entrypoint.sh` + `docker/java-nginx.conf` | Java-only demo image (Alpine, no Node/Nuxt/frontends; OpenResty :18080 → Java :8080). |
+| `docker/elasticsearch/` | Dev-only ES 8.15.5 + analysis-ik compose service for goods search; security disabled, never expose publicly. |
+| `docker/pack-docker-images-bundle.sh` | Release-side packer of the CDN image bundle (`docker save` of the five `images.env` tags → gzip). |
 | `docker/maven-settings.xml` | Aliyun Central/public mirrors for the builder stage (China/CDN-restricted hosts). |
 | `docker/tools/bcrypt-hash.js` + `bcrypt.min.js` | Node BCrypt hasher used for the admin password. |
 | `docker/tables_xxl_job.sql`, `docker/ecshopx.sql` | Init SQL mounted into MySQL (see [Scheduled Jobs](../concepts/scheduling-xxljob.md) for the schema/seed contract; the dumps themselves are out of scope here). |
@@ -304,6 +367,7 @@ Both installers end `show_success_info` with `report_open_source_install_stat` f
 * **XXL token mismatch is silent-ish.** `xxl.job.accessToken` must be byte-identical between the admin's `PARAMS` and the executor's `APP_ARGS`; a mismatch rejects triggers (auto-registration still works, which can mislead).
 * **Hostnames must resolve.** Both installers print the `127.0.0.1 <admin> <h5> <pc>` hosts line; browsers hitting the published port by IP will land on nginx's default (first) vhost rather than the intended one.
 * **Lite re-deploys are cheap but not transactional.** `deploy.sh` re-copies `app.jar`, re-activates `dist`, and re-runs the password/menu updates against the existing volume; the jar is bind-mounted read-only, so the image itself never needs rebuilding on the customer host.
+* **The release pipeline is intentionally brittle about ordering and identity.** `bump-version.mjs` rejects non-increasing versions, `commit-and-tag.mjs` and `mirror-sync.mjs` refuse duplicate tags, `push-origin.mjs` refuses any branch but `master`, and `mirror-sync.mjs` aborts on a dirty mirror worktree. A failed origin push means no mirror sync; a failed mirror sync leaves the pushed origin tag in place (no rollback). The rsync reconcile pass is the safety net that makes the public tree correct even when the per-commit replay skipped or drifted.
 * **Contract smoke checks** documented in `docker-lite/README.md` for operators/CI: `docker compose -f docker-compose.dev.yml config`, `docker compose -f docker-lite/docker-compose.yml --env-file docker-lite/images.env.example config` (validates both stacks' interpolation), plus `bash tests/install/run.sh` — note that `tests/` is not present in this working tree, so only the two `compose config` checks are currently runnable from the repository as shipped.
 
 ## Related pages

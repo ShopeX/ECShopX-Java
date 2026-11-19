@@ -20,6 +20,8 @@ sources:
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/DigiOsNormalOrderDeliveryAdjustmentDispatchListenerRegistrationConfig.java
   - id: openwiki-source-893123407cdb2a42fed65796
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/DigiOsOperatorCreateDispatchListenerRegistrationConfig.java
+  - id: openwiki-source-2f5877465c358cc0186f88a0
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MemberTaskTradeRefundFinishDispatchListenerRegistrationConfig.java
   - id: openwiki-source-fd94d375300df90e9a5bdcb1
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/OrdersTradeFinishDispatchPublisherBeansConfig.java
   - id: openwiki-source-54c2942be6423a972467854a
@@ -30,6 +32,8 @@ sources:
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ShuyunOpenPlatformCreateMemberSuccessDispatchListenerRegistrationConfig.java
   - id: openwiki-source-4b4b98eac2f2e4cb60688735
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ShuyunOpenPlatformTradeRefundFinishDispatchListenerRegistrationConfig.java
+  - id: openwiki-source-a5dfc051a45297d50f63b5ac
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ShuyunOpenPlatformTradeRefundFinishTradeSyncDispatchListenerRegistrationConfig.java
   - id: openwiki-source-a253dadbd229b5be70efd916
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/SystemLinkJushuitanTradeFinishDispatchListenerRegistrationConfig.java
   - id: openwiki-source-155bd4d399cbb5112e0d1074
@@ -42,6 +46,8 @@ sources:
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/TradeFinishCustomDeclareOrderDispatchListenerRegistrationConfig.java
   - id: openwiki-source-7e9f65eace9710a4dfdfb46c
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/TradeFinishSendOmeDispatchListenerRegistrationConfig.java
+  - id: openwiki-source-15af71458a6c30a30482c1ee
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/TradeRefundFinishEventDispatchPublisherImpl.java
   - id: openwiki-source-89b43138f8e75edb4615495b
     resource: repo://ecshopx-bootstrap/src/main/resources/application.properties
   - id: openwiki-source-f16775752c04bd3a01b72956
@@ -128,6 +134,10 @@ sources:
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/offline/OfflinePaymentDoCheckService.java
   - id: openwiki-source-ff50bf9d82f8a9d1db0a8c21
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/payment/OrdersTradePaymentCallbackService.java
+  - id: openwiki-source-d5e922bfa1b97f1c6270d306
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/dispatch/MemberTaskTradeRefundFinishDispatchListener.java
+  - id: openwiki-source-c3474a1a316de685a0163938
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/membertask/MemberTaskRefundVoidService.java
   - id: openwiki-source-dab39b4fc46414902dfef75f
     resource: repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/api/admin/v1/ShuyunOpenPlatformConfigController.java
   - id: openwiki-source-87afda796a946a40671f5332
@@ -196,10 +206,10 @@ sources:
     resource: repo://ecshopx-youshu/src/main/java/cn/shopex/ecshopx/youshu/integration/YoushuOpenApiSignSupport.java
   - id: openwiki-source-9b2d13f1c467ba70b358feb5
     resource: repo://ecshopx-youshu/src/main/java/cn/shopex/ecshopx/youshu/package-info.java
-generated: { by: "openwiki/0.9.0", at: "2026-11-11T17:12:30.774Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-16T17:12:44.218Z" }
 verified:
   - by: openwiki/0.9.0
-    at: 2026-11-11T17:12:30.774Z
+    at: 2026-11-16T17:12:44.218Z
 ---
 
 # Third-Party Integrations (ERP, CRM, Analytics, Cross-border, DigiOS)
@@ -284,11 +294,13 @@ The full set of dispatch events each integration subscribes to. "sync" = `Listen
 | `event:systemlink:trade_aftersales` (ASYNC+REDIS) | OME + Marketing Center |
 | `event:systemlink:trade_aftersales_cancel` (ASYNC+REDIS) | OME + Marketing Center |
 | `event:systemlink:trade_aftersales_logi` (ASYNC+REDIS) | OME + SaasErp |
-| `event:thirdparty:trade_refund_finish` (**SYNC**) | Marketing Center, DmCrm (`trade_refund_finish_dm_crm`), Shuyun `shuyun.open_platform.refund_sync_on_trade_refund_finish`, Shuyun re-push `shuyun.open_platform.trade_sync_on_trade_refund_finish` — all sync |
+| `event:thirdparty:trade_refund_finish` (**SYNC**) | Marketing Center, DmCrm (`trade_refund_finish_dm_crm`), Shuyun `shuyun.open_platform.refund_sync_on_trade_refund_finish`, Shuyun re-push `shuyun.open_platform.trade_sync_on_trade_refund_finish` — all sync; plus the member-task reversal `listener:promotions.member_task.trade_refund_finish` registered **async** on the same plane (queued, `default` queue) |
 | `event:thirdparty:trade_update` (ASYNC+REDIS) | SaasErp `listener:thirdparty.listeners.TradeUpdateSendSaasErp` (@Order 82) |
 | `event:thirdparty:trade_aftersales_saas_erp` / `_cancel_saas_erp` / `event:thirdparty:trade_refund_cancel_saas_erp` (ASYNC+REDIS) | one SaasErp logging-adapter listener each |
 
 The refund/aftersales "fan-out" publishers in bootstrap (`TradeRefundAsyncFanOutDispatchPublisher`, `TradeAftersalesAsyncFanOutDispatchPublisher`, `TradeAftersalesCancelAsyncFanOutDispatchPublisher`, `TradeAftersalesLogiAsyncDispatchPublisher`) are ASYNC+REDIS wrappers over the shared `event:systemlink:*` names, so one aftersales state change becomes one queued message per downstream (OME, Marketing Center, SaasErp) rather than one serially-blocking call chain.
+
+The `event:thirdparty:trade_refund_finish` plane is the one SYNC exception (published by `TradeRefundFinishEventDispatchPublisherImpl` in bootstrap, triggered from the refund-finish path including `RefundErrorLogsService.resubmitRefund` → `doRefund`). It carries **four sync listeners** — Marketing Center and DmCrm (registered together in `ThirdPartyTradeRefundFinishDispatchListenerRegistrationConfig`, in that order, mirroring the PHP listener order pinned by `TradeRefundFinishThirdPartySyncBusDispatchFlowTest`), then the two Shuyun open-platform listeners — plus one deliberately **async** fifth: `listener:promotions.member_task.trade_refund_finish` (`MemberTaskTradeRefundFinishDispatchListener` in `ecshopx-promotions`, registered by `MemberTaskTradeRefundFinishDispatchListenerRegistrationConfig` with `ListenerDispatchOptions.async("default", null)`). The async listener hands the payload to `MemberTaskRefundVoidService.apply`, which requires `company_id`/`order_id`/`refund_success_time` and otherwise no-ops, then reverses member-task rewards for the refunded order: `total_spend` tasks delegate to `MemberTaskTotalSpendService.onRefund`; other tasks void the `member_task_completion` row (`voided=1`, `void_reason=refund`) and cancel the still-`pending` reward grant when the remaining amount (`total_fee − refunded_fee`) no longer meets the task's purchase rule. Queuing it keeps the member-task reversal — a local DB concern with no remote call — off the synchronous refund path alongside the remote pushes.
 
 ### Normal-order lifecycle events (`ecshopx-orders` names, published ASYNC+REDIS except cancel)
 
@@ -656,7 +668,7 @@ Per-tenant state (Redis, `companysRedisTemplate` unless noted): `JushuitanSettin
 * `JushuitanTradeFinishEventDispatchFlowTest`, `JushuitanTradeCancelEventDispatchFlowTest`, `JushuitanTradeAftersalesEventDispatchFlowTest`, `WdtErpTradeFinishEventDispatchFlowTest`, `WdtErpTradeCancelEventDispatchFlowTest`, `WdtErpTradeAfterSaleEventDispatchFlowTest` (bootstrap) — the per-ERP planes: event names, listener names, queued execution.
 * `TradeFinishSendOmeEventSyncDispatchFlowTest`, `OmeTradeUpdateEventDispatchFlowTest`, `TradeRefundSendOmeEventDispatchFlowTest`, `TradeAftersalesSendOmeEventDispatchFlowTest`, `TradeAftersalesCancelSendOmeEventDispatchFlowTest`, `TradeAfterLogiSendOmeEventDispatchFlowTest`, `TradeAfterLogiSendSaasErpEventDispatchFlowTest` (bootstrap) — OME/SaasErp multi-listener planes.
 * `ThirdPartyDmCrmTradeFinishEventSyncDispatchFlowTest`, `ThirdPartyMarketingCenterTradeFinishEventSyncDispatchFlowTest`, `TradeFinishCustomDeclareOrderEventSyncDispatchFlowTest` (bootstrap) — the @Order 82/83/95 in-process trade-finish listeners.
-* `TradeRefundFinishThirdPartySyncBusDispatchFlowTest` (bootstrap) — the SYNC `event:thirdparty:trade_refund_finish` plane with its four sync listeners.
+* `TradeRefundFinishThirdPartySyncBusDispatchFlowTest` (bootstrap) — the SYNC `event:thirdparty:trade_refund_finish` plane with its four sync listeners; the async fifth listener on the same plane (member-task reward reversal) is covered by `MemberTaskRefundVoidServiceTest` (promotions) — the void/cancel matrix of `MemberTaskRefundVoidService`.
 * `UploadItemsToJushuitanJobDispatchFlowTest`, `InventoryQueryFromJushuitanJobDispatchFlowTest`, `UploadItemsToWdtErpJobDispatchFlowTest`, `GetItemsFromOmeJobDispatchFlowTest` (+Category/Spec/Brand variants) (bootstrap) — the batch item jobs `job:75–84`.
 * `ScheduleSyncInventoryHandlerTest`, `ScheduleSyncLogisticsHandlerTest`, `WdtErpSyncServiceTest`, `WdtErpSyncServiceScheduleSyncInventoryTest` (systemlink) — the `WdtErpSetting:*` iteration and `sync-wdt-*` handlers.
 * `DmCrmTradeFinishOrchestratorServiceTest`, `TradeRefundFinishDmCrmProcessorTest`, `OrderDeliveryDmCrmOnNormalOrderDeliveryProcessorTest` (third-party) — point + sync orchestration and its swallow-everything semantics.

@@ -23,6 +23,7 @@ import cn.shopex.ecshopx.espier.service.upload.EspierUploadFileHandlerRegistry;
 import cn.shopex.ecshopx.espier.service.upload.EspierUploadFileQueuedPayload;
 import cn.shopex.ecshopx.espier.service.upload.EspierUploadHeaderHandle;
 import cn.shopex.ecshopx.espier.service.upload.EspierUploadTableHandler;
+import cn.shopex.ecshopx.espier.service.upload.UploadHeaderTitle;
 import cn.shopex.ecshopx.espier.service.upload.ImportDataJobDispatchPort;
 import cn.shopex.ecshopx.espier.storage.FileStorageService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -149,8 +150,8 @@ public class EspierUploadFileAsyncRunner {
 		long relationId = toLong(data.get("relation_id"));
 		Map<Integer, String> column;
 		try {
-			column = EspierUploadHeaderHandle.buildColumnMap(
-					headerCells, table.getHeaderTitle(companyId, relationId));
+			UploadHeaderTitle headerTitle = table.getHeaderTitle(companyId, relationId);
+			column = EspierUploadHeaderHandle.buildColumnMap(headerCells, headerTitle);
 		} catch (BadRequestException e) {
 			headerFail(id, storagePath, table, data, e.getMessage());
 			return;
@@ -186,7 +187,8 @@ public class EspierUploadFileAsyncRunner {
 		uploadFileInfo.putAll(data);
 		uploadFileInfo.put("storage_path", storagePath);
 
-		int numChunks = (rowPayloads.size() + 499) / 500;
+		int chunkSize = "normal_orders".equals(requestFileType) ? Math.max(rowPayloads.size(), 1) : 500;
+		int numChunks = rowPayloads.isEmpty() ? 0 : (rowPayloads.size() + chunkSize - 1) / chunkSize;
 		uploadeFileRepository.updateOneBy(Map.of("id", id), Map.of("left_job_num", numChunks));
 
 		if (numChunks == 0) {
@@ -195,8 +197,8 @@ public class EspierUploadFileAsyncRunner {
 		}
 
 		for (int k = 0; k < numChunks; k++) {
-			int from = k * 500;
-			int to = Math.min(from + 500, rowPayloads.size());
+			int from = k * chunkSize;
+			int to = Math.min(from + chunkSize, rowPayloads.size());
 			List<Map<String, Object>> chunk = new ArrayList<>(rowPayloads.subList(from, to));
 			int sort = numChunks - k;
 			importDataJobDispatchPort.dispatchImportDataChunk(

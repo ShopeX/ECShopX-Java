@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:5c35c0ff535e1898b5fa526c659884ddd9021d89ed946ee05d02f07703722fb9",
+  "pageVersion": "sha256:161fe9e59bb65ef14c512a5b9d0246a8990a14c19babba850ced9aa726fc2f88",
   "claims": [
     {
       "id": "claim_8ebde6be55a342c6aad350bc80c8c0f5",
@@ -164,7 +164,7 @@
     },
     {
       "id": "claim_357fd5e92ba8459180731a4fdaf819ee",
-      "statement": "The order-88 brokerage listener `TradeFinishCountBrokerageDispatchListener` pre-filters the payload (a blank/non-positive order_id or pay_type=point short-circuit before any order load) and delegates to `TradeFinishCountBrokerageBusService.handleTradeFinishRow`; the bus service repeats the point skip against its own parse, rejects a non-positive or unparseable company_id/order_id, loads the NormalOrders row and skips on order-not-found or a company mismatch between payload and order row, and invokes `NormalOrderBrokerageOnFinishService.orderFinishBrokerage` inside a `catch (Throwable)` that only logs at warn — a brokerage failure never propagates back into the trade-finish fan-out.",
+      "statement": "The order-88 brokerage listener `TradeFinishCountBrokerageDispatchListener` pre-filters the payload (a blank/non-positive order_id or pay_type=point short-circuit before any order load) and delegates to `TradeFinishCountBrokerageBusService.handleTradeFinishRow`; the bus service repeats the point skip against its own parse, rejects a non-positive or unparseable company_id/order_id (`listener_skip invalid_ids`), loads the NormalOrders row and skips on order-not-found or a company mismatch between payload and order row, and invokes `NormalOrderBrokerageOnFinishService.orderFinishBrokerageOnTradePaySuccess` inside a `catch (Throwable)` that only logs at warn — a brokerage failure never propagates back into the trade-finish fan-out.",
       "evidence": [
         {
           "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/dispatch/TradeFinishCountBrokerageDispatchListener.java",
@@ -172,7 +172,7 @@
         },
         {
           "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/brokerage/TradeFinishCountBrokerageBusService.java",
-          "version": "repo-file-v1:sha256:c44517c3e8755339b0ccf9d0243bea21d6d1823ef75cf768a1d0e5e1e62935ba"
+          "version": "repo-file-v1:sha256:3199c53f0e763c188b592bb1c298a2ba82ffd56afd0f579b7320bf0cd1a75dbb"
         }
       ]
     },
@@ -265,8 +265,8 @@
           "version": "repo-lines-v1:sha256:0bf69cb70d437b15d1d08cbf0167a5c7942eb1efb99215cac87dfb9eb7658055:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA4ZDkwNzk2YTFmYjNiYTIzOGEzNzY5ODI0N2E0NDllYjJjOWE4ZGVlMTAxMTY3OGE5YTk1NTMxMzk0OGZhZDAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNkNzdjYjA1MTdmYWI0ODllNWVhOTkwM2I4M2FiOTYwNGZlMWRiYTJhNjZmOWYyNjBlN2NjMWRkYjY3Y2ViNTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAyYjEzYzkzMDFhMTg5MzVlZWJiZGNmMWExNjViMjI5MTNlOTI2ODFjOGU0ZWE5NWRmZjE5ZDQ3ZjI5MzYyMzAifQ"
         },
         {
-          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/shopadmin/ShopadminNormalOrderCreateTransactionalRunner.java#L67-L80",
-          "version": "repo-lines-v1:sha256:20f6a70bc8ab8b33615a5cf91e30338b2f836a1e4cd249bb25e14be6dec4b4d4:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQxNmU2NTgxZGY1M2NjNmI0YzY2OGVlYTgxMDY1ZjE2YmZhMGZkMTZlZjg1ZDNlYTg4N2UwYjExMmYzNzMxZGEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU4ZmI3MWEyZjM2NDIyZDZhMTgwMDgzNTAyMjVhNWQ2NzNiMTU0MDY3MzAyNmRiNjYxYjE3ZTIxMGZkYTI2MjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFiZThmODUyNjUyMjk4ZGIwZjkyNDhjOTE1MWM5MmRkZDc4ZWRhMTc3ZDE1ZWM2MWRjNzU2Y2Y0Mzg2NWJiMDUifQ"
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/shopadmin/ShopadminNormalOrderCreateTransactionalRunner.java#L71-L85",
+          "version": "repo-lines-v1:sha256:a789f32266aa5a9cb930fa2e51a85fcb7ff4197cc3b6a5c9c3731304a33f18a6:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQxNmU2NTgxZGY1M2NjNmI0YzY2OGVlYTgxMDY1ZjE2YmZhMGZkMTZlZjg1ZDNlYTg4N2UwYjExMmYzNzMxZGEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU4ZmI3MWEyZjM2NDIyZDZhMTgwMDgzNTAyMjVhNWQ2NzNiMTU0MDY3MzAyNmRiNjYxYjE3ZTIxMGZkYTI2MjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFiZThmODUyNjUyMjk4ZGIwZjkyNDhjOTE1MWM5MmRkZDc4ZWRhMTc3ZDE1ZWM2MWRjNzU2Y2Y0Mzg2NWJiMDUifQ"
         }
       ]
     },
@@ -279,7 +279,7 @@
           "version": "repo-lines-v1:sha256:f7778a4d3ad65a9fad83407d69104c113509a13dde50f194b8883dc2669741f1:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjA4Y2MxNWQwNzU0YjZmMjFmNzFlMGIwM2I5ZGQ3ODZiYzk4ODAwM2IyYjU3NTY0YzYwNTBhODAyMjUxN2M1ZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZmY0NGUzNjBjMmIzOTA5MDU2MmQ2ZTQ4NmZkYzliYmVmNjJiYzg5MjYxOGRmODU3MGQ1ZTc3OThkMjgyNjcyMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSJ9"
         },
         {
-          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/create/OrderCreatePersistencePortImpl.java#L314-L314",
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/create/OrderCreatePersistencePortImpl.java#L316-L316",
           "version": "repo-lines-v1:sha256:ea47000ddd4deeb3a8234d0767a296f04c837be96b719a49b159b1d56c4f8ea4:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZWE0NzAwMGRkZDRkZWViM2E4MjM0ZDA3NjdhMjk2ZjA0YzgzN2JlOTZiNzE5YTQ5YjE1OWIxZDU2YzRmOGVhNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZWE0NzAwMGRkZDRkZWViM2E4MjM0ZDA3NjdhMjk2ZjA0YzgzN2JlOTZiNzE5YTQ5YjE1OWIxZDU2YzRmOGVhNCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiY2MyNjFiM2MyY2YxY2I2NjE0YTJkOGMyOTM5NzhiNjQwZDdjMTdhYWQ2MzFiMTM3NGFlODNjOTU0M2E3MzAzZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDZkZDAzZmU2ODk0MTMwOTkwYjRlNTY0ZWM3YTZlOWM2NDE3NTlkNDBmZWI5MDliMzdkMTlhMWE3ODhlYzg1MyJ9"
         },
         {
@@ -365,8 +365,8 @@
           "version": "repo-lines-v1:sha256:aa07749db41d893e748fd09b5ea55988a49b7f9ab1a18d043378c669a8fab4fc:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYzY2FmZTY0NTRhZDhhMDhjMGFmYmYwYWIxNDNhZWE2ZjU4ZmQwZTBkY2ZhMTIxM2Q5OGFmNzkxYTBmMjM0MTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU3MWVkNjY0MjUzNGUwN2VmNTVjNzIwNDFjYjI4YjExMTVlMTllYjJmZGFlYzYwZDA1ZjdkYjkyNDEyYWNmMDAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM0ZTgzYjRjMmQxOTFiMjliMjMzNmYwM2E5NTk1ZmUwODYzM2E4NDFmNTFlMDdiNTY4ODA5OGE0ZGZhODY0YzcifQ"
         },
         {
-          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/shopadmin/ShopadminNormalOrderCreateTransactionalRunner.java#L61-L79",
-          "version": "repo-lines-v1:sha256:fa890e83fb079d7ff35dc87d710ed9871d7117a2b6cc86169b443343aecd5237:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJkNzU0OGYwODFmM2Y0MjY0OTYxNzRiYjdmMTYwZjg3MDk0NDNjMWM1NmM2NmFmMzNmYjZmNmU4OTdjZjAzZjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA2MWU2YjljNjNmZWViNTRlODJlNmU5Y2VkNjEzMDZkZmNlNGE5M2M2MWQzNjI5MWE0NTBmNWY1NjhlNjk3MmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVmNDA3ZTMyZjY2MzQwMTliODIxOGJjOWIyZWViOGQ4Y2I5YmY4N2QzN2ZlNTVhNDgwYjU2ZjFkMDY1YzFiODQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNkNGQ4YjlkMDIxNzEwOGVjZDFiN2E4YTk1NTI1Y2NiYWNjZWFiZTM0NGExMzQ1MzU0ZTNkYmUzYTY1NDkyNzAifQ"
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/shopadmin/ShopadminNormalOrderCreateTransactionalRunner.java#L65-L84",
+          "version": "repo-lines-v1:sha256:fa60a59fd6393a4c42697ef06d3dba37d3cebd497400c2e5f463b7bad606a557:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJkNzU0OGYwODFmM2Y0MjY0OTYxNzRiYjdmMTYwZjg3MDk0NDNjMWM1NmM2NmFmMzNmYjZmNmU4OTdjZjAzZjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA2MWU2YjljNjNmZWViNTRlODJlNmU5Y2VkNjEzMDZkZmNlNGE5M2M2MWQzNjI5MWE0NTBmNWY1NjhlNjk3MmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVmNDA3ZTMyZjY2MzQwMTliODIxOGJjOWIyZWViOGQ4Y2I5YmY4N2QzN2ZlNTVhNDgwYjU2ZjFkMDY1YzFiODQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNkNGQ4YjlkMDIxNzEwOGVjZDFiN2E4YTk1NTI1Y2NiYWNjZWFiZTM0NGExMzQ1MzU0ZTNkYmUzYTY1NDkyNzAifQ"
         },
         {
           "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/payment/OrdersPaymentDoPaymentService.java#L378-L392",
@@ -678,15 +678,15 @@
     },
     {
       "id": "claim_1f75f7b9b529424ba97c57518cc90984",
-      "statement": "`NormalOrderBrokerageOnFinishService.orderFinishBrokerage` is the shared finish-flow brokerage entry (also used by confirm receipt, batch finish and ziti write-off): it publishes the ASYNC+REDIS `event:orders:normal_order_confirm_receipt` event, then calls the popularize bundle's `NormalOrderFinishBrokerageCoordinator` through the `ecshopx-common` interface (the port inversion keeps ecshopx-orders free of a popularize dependency), and back-fills plan_close_time on still-unsettled brokerage rows via `BrokeragePlanCloseTimeService.updatePlanCloseTime`.",
+      "statement": "`NormalOrderBrokerageOnFinishService` exposes two lifecycle-split entries into the same coordinator: the trade-pay-success entry `orderFinishBrokerageOnTradePaySuccess` (the one the trade-finish fan-out calls) only converts the order to a `NormalOrderBrokerageFinishInput` and calls the popularize bundle's `NormalOrderFinishBrokerageCoordinator` through the `ecshopx-common` interface (the port inversion keeps ecshopx-orders free of a popularize dependency), without publishing the confirm-receipt event or touching plan_close_time; the order-finish entry `orderFinishBrokerage` (used by confirm receipt, batch finish and ziti write-off) publishes the ASYNC+REDIS `event:orders:normal_order_confirm_receipt` event, runs the same coordinator call (which re-hits the idempotency guard and no-ops when the pay-success leg already wrote the row), and then back-fills plan_close_time on still-unsettled brokerage rows via `BrokeragePlanCloseTimeService.updatePlanCloseTime`.",
       "evidence": [
         {
           "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/NormalOrderBrokerageOnFinishService.java",
-          "version": "repo-file-v1:sha256:804d7c5ed502c04883b5923aa474751874375dff419425047bdc6cd89377ef09"
+          "version": "repo-file-v1:sha256:bd6c64606b2c3ebdf276f91a09ad33ca5d0cbfeb24dc7354470317f94d9e260f"
         },
         {
           "resource": "repo://ecshopx-popularize/src/main/java/cn/shopex/ecshopx/popularize/service/BrokeragePlanCloseTimeService.java",
-          "version": "repo-file-v1:sha256:88d671c5d311b4096298766025025520324914add1e1a22ef775dd267196af30"
+          "version": "repo-file-v1:sha256:3b0b20a1aac7693d4544b29be6f11117f7711cc08e448105eec654b9e2071b71"
         }
       ]
     },
@@ -696,21 +696,29 @@
       "evidence": [
         {
           "resource": "repo://ecshopx-popularize/src/main/java/cn/shopex/ecshopx/popularize/service/brokerage/NormalOrderFinishBrokerageCoordinator.java",
-          "version": "repo-file-v1:sha256:5525c82142eba5094d89707133f490cfdc0262f842d7cd78dc7a945246ab6962"
+          "version": "repo-file-v1:sha256:ec38411863437d988c0e968bc07240ea128e655e22420f631eeb063ee00a5346"
         }
       ]
     },
     {
       "id": "claim_ea7c1e02590b4aa589773e101081bae8",
-      "statement": "The coordinator resolves the parent promoter through the buyer promoter's `pid` (not the order's user_id) and inserts one `first_level` brokerage row keyed on the parent promoter's `user_id` — source=order, is_close=false, price = the order base (total_fee, or commission_fee when the config ratio type is profit), rebate = base × the merged `popularize_ratio.first_level.ratio`, and a non-null `plan_close_time` computed at insert by `BrokeragePlanCloseTimeService.computePlanCloseTimeEpochSec()` (now + 86400 × (`ecshopx.popularize.brokerage-plan-close.settle-days` + `aftersale-days`, both defaulting to 0 pending the merchant-side 分销确认天数/售后时效天数 settings).",
+      "statement": "The coordinator resolves the parent promoter through the buyer promoter's `pid` (not the order's user_id) and inserts one `first_level` brokerage row keyed on the parent promoter's `user_id` — source=order, is_close=false, price = the order base (total_fee, or commission_fee when the config ratio type is profit), rebate = base × the merged `popularize_ratio.<type>.first_level.ratio` (type = order_money by default or profit) — and stamps plan_close_time with the `PLAN_CLOSE_TIME_PENDING` sentinel (`Integer.MAX_VALUE`) returned by `BrokeragePlanCloseTimeService.pendingPlanCloseTimeForInsert()`, a placeholder so the settle-brokerage job never closes the row before the order completes; the real epoch value is only computed at order finish by `BrokeragePlanCloseTimeService.updatePlanCloseTime` as now + 86400 × (the promotion config `limit_time` + the platform order-validity `latest_aftersale_time` days, the latter read from orders through the `OrderValidityLatestAftersaleDaysReadPort` port inversion), pinned by `BrokeragePlanCloseTimeServiceTest`.",
       "evidence": [
         {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/integration/popularize/OrderValidityLatestAftersaleDaysReadPortImpl.java",
+          "version": "repo-file-v1:sha256:942847422a47df129d1d00f0aab067f91f7a0fd6ff0231f0f1b62551811db30e"
+        },
+        {
           "resource": "repo://ecshopx-popularize/src/main/java/cn/shopex/ecshopx/popularize/service/BrokeragePlanCloseTimeService.java",
-          "version": "repo-file-v1:sha256:88d671c5d311b4096298766025025520324914add1e1a22ef775dd267196af30"
+          "version": "repo-file-v1:sha256:3b0b20a1aac7693d4544b29be6f11117f7711cc08e448105eec654b9e2071b71"
         },
         {
           "resource": "repo://ecshopx-popularize/src/main/java/cn/shopex/ecshopx/popularize/service/brokerage/NormalOrderFinishBrokerageCoordinator.java",
-          "version": "repo-file-v1:sha256:5525c82142eba5094d89707133f490cfdc0262f842d7cd78dc7a945246ab6962"
+          "version": "repo-file-v1:sha256:ec38411863437d988c0e968bc07240ea128e655e22420f631eeb063ee00a5346"
+        },
+        {
+          "resource": "repo://ecshopx-popularize/src/test/java/cn/shopex/ecshopx/popularize/service/BrokeragePlanCloseTimeServiceTest.java",
+          "version": "repo-file-v1:sha256:8edcbe76da5790e56765d5191e1c8787d5ca5e076ca1078eedcb9b1707be1a08"
         }
       ]
     },
@@ -728,7 +736,7 @@
         },
         {
           "resource": "repo://ecshopx-popularize/src/main/java/cn/shopex/ecshopx/popularize/service/brokerage/NormalOrderFinishBrokerageCoordinator.java",
-          "version": "repo-file-v1:sha256:5525c82142eba5094d89707133f490cfdc0262f842d7cd78dc7a945246ab6962"
+          "version": "repo-file-v1:sha256:ec38411863437d988c0e968bc07240ea128e655e22420f631eeb063ee00a5346"
         },
         {
           "resource": "repo://ecshopx-popularize/src/test/java/cn/shopex/ecshopx/popularize/service/brokerage/NormalOrderFinishBrokerageCoordinatorPidResolutionTest.java",
@@ -739,10 +747,66 @@
           "version": "repo-file-v1:sha256:3bacbbc715fe6183710813ca3ba0e7dc5e004fd8f89ebdfe802da0162a7fe1a0"
         }
       ]
+    },
+    {
+      "id": "claim_87111d75f65a4cb1a09bd85a2d3b92f1",
+      "statement": "Both the wxapp and shopadmin create pipelines run `preparePricingSnapshot`, which invokes the `OrderCreateMemberTaskExtendPort` hook (`applyBeforePersist`); the promotions implementation `MemberTaskCheckoutService` validates the requested member task (it must exist for the company, be IN_PROGRESS, and — for once-frequency non-share tasks — not already completed by the buyer, otherwise checkout fails with 当前任务不可用于下单 / 您已完成该任务) and stamps `member_task_id` / `member_task_sharer_user_id` into the order data (the sharer id is zeroed when it equals the buyer), which `OrderCreatePersistencePortImpl.persistOrder` then persists onto the `NormalOrders` row.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/order/normal/OrderCreateMemberTaskExtendPort.java",
+          "version": "repo-file-v1:sha256:f59ca12f0c7d9b54f113563792db5b00bd259017b6edc670722bf5762bbfd079"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/create/OrderCreatePersistencePortImpl.java",
+          "version": "repo-file-v1:sha256:67d4eecb27fcc994b701511ada114a3be7cf812c945b9d2931d5299a215fa603"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/shopadmin/ShopadminNormalOrderCreateTransactionalRunner.java#L68-L76",
+          "version": "repo-lines-v1:sha256:69ba4e5b6b6641170fc03345b7166657bdcfb4f9372f598c3da7d92388b5667d:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjAxYzBhN2MzMjM3OGUyOGYyZmE3YzA0ZmIzM2MyZWI3ZDgxNWMzNTAyNjU1ODFkMGNhM2Q2MDAyMWQ2NjkyNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTA1MDFmY2I5MWY4ZDEzNmZkMjA2YWM5MWMzNWVlOTZlODIwNzg5ZTllZDQ1ZDRkM2Q4MGYyMWYyODY2NzhjOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjkwZDJhMzJhMmE1NTBmZTNkOWFhMGQwMzU2YTIzOTgyYWI3NmZmNDBkY2Q0YWZhNzk3Y2VkYmQ2YzVkODhlNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiM2NmYTZjZTE5NGRiZTRmZDk0ZGFjZjJiOGRiZTAwNDRjZDNmYWQ2NzhhZjc4NjgxNGJiYTZlZDkwNGVkZGExNyJ9"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/membertask/MemberTaskCheckoutService.java",
+          "version": "repo-file-v1:sha256:3bf7cfc1d83ae6fff1ec1a71a98fa2716041ec313fb7565fbb25275577f0eaaa"
+        }
+      ]
+    },
+    {
+      "id": "claim_584d85956a5340f0bd7a47d2d37e66ed",
+      "statement": "`MemberTaskNormalOrderPaySuccessDispatchListener` (`listener:promotions.member_task.normal_order_pay_success`, registered by `MemberTaskNormalOrderPaySuccessDispatchListenerRegistrationConfig` on the `event:288` NormalOrderPaySuccess plane, async `default`) is the promotions bundle's pay-success consumer: `MemberTaskPaySuccessService.apply` keys only on company_id/order_id, loads the order through `MemberTaskOrderReadPort` (a promotions-side read of orders_normal_orders), skips unless the row carries a positive member_task_id and the task is still IN_PROGRESS, then branches on type_detail — total_spend accumulates the member's spend progress in `MemberTaskTotalSpendService` and completes only when the cumulative progress reaches the rule amount; share_order attributes the completion (with invitee_user_id = the buyer) and the reward grant to the order's member_task_sharer_user_id rather than the buyer; other purchase tasks insert a `once` MemberTaskCompletion plus a pending MemberTaskRewardGrant in one @Transactional with DuplicateKeyException treated as idempotent re-delivery. Grants with needReceipt stay pending until the order reaches DONE with an end_time (`grantPendingIfOrderDone`), otherwise `grantPendingImmediate` fires at once; refunds unwind the same state through the twin `MemberTaskTradeRefundFinishDispatchListener` → `MemberTaskRefundVoidService` (voiding the non-voided completion and cancelling a still-pending grant when the remaining paid amount no longer meets the rule, and deducting refunded amounts from total_spend progress).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MemberTaskNormalOrderPaySuccessDispatchListenerRegistrationConfig.java",
+          "version": "repo-file-v1:sha256:9ddee04935431b52ecf0bbb275328801f34d14ce0f808a71c091be415426f154"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/dispatch/MemberTaskNormalOrderPaySuccessDispatchListener.java",
+          "version": "repo-file-v1:sha256:1e64607b053a95bb5e82ea76209baeb6a1086064fdc2c05e010509362468b237"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/membertask/MemberTaskOrderReadPortImpl.java",
+          "version": "repo-file-v1:sha256:5103bf7fbb2efb123a9c401213e0b3b7c0aaf94a233bb97d3bcfc5b4ff8cfaf3"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/membertask/MemberTaskPaySuccessService.java",
+          "version": "repo-file-v1:sha256:032aaa3384caf8ed6278de2b3393a4523f2dbc00726834b24dceda0fd0284754"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/membertask/MemberTaskRefundVoidService.java",
+          "version": "repo-file-v1:sha256:67e32d1a76e861fb78263e7388e07d5dfbaac4c6f7f708dc69475eea20145549"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/membertask/MemberTaskShareOrderService.java",
+          "version": "repo-file-v1:sha256:716222181decf008b0bb6f5f655052f4942f1e1da6823aa1f1caf0316cd0ea50"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/membertask/MemberTaskTotalSpendService.java",
+          "version": "repo-file-v1:sha256:7d3564f313c04fb789d601699c58f442f344907f6a82c8494b2939a7eecf6692"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.9.0",
-    "at": "2026-11-11T17:12:30.774Z"
+    "at": "2026-11-16T17:12:44.218Z"
   }
 }

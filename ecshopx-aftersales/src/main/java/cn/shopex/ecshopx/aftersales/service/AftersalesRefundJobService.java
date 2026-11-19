@@ -46,11 +46,16 @@ public class AftersalesRefundJobService {
 		}
 		String payType = r.getPayType() == null ? "" : r.getPayType();
 		if ("offline_pay".equalsIgnoreCase(payType)) {
-			log.info(
-					"schedule_refund::refundJob: offline_pay skip online refund company_id={} order_id={} refund_bn={}",
-					r.getCompanyId(),
-					r.getOrderId(),
-					r.getRefundBn());
+			if (r.getAftersalesBn() == null || r.getAftersalesBn() == 0L) {
+				log.info(
+						"schedule_refund::refundJob: offline_pay skip online refund company_id={} order_id={} refund_bn={}",
+						r.getCompanyId(),
+						r.getOrderId(),
+						r.getRefundBn());
+				return true;
+			}
+			sideEffects.updateRefundToSuccess(r);
+			sideEffects.updateAftersaleFinished(r);
 			return true;
 		}
 		if (r.getAftersalesBn() == null || r.getAftersalesBn() == 0L) {

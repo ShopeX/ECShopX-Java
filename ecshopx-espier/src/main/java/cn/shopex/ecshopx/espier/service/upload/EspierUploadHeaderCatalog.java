@@ -453,6 +453,9 @@ public final class EspierUploadHeaderCatalog {
 		HDR_NORMAL_ORDERS.put("订单号", "order_id");
 		HDR_NORMAL_ORDERS.put("快递单号", "delivery_code");
 		HDR_NORMAL_ORDERS.put("快递公司", "delivery_corp_name");
+		HDR_NORMAL_ORDERS.put("子订单号", "order_item_id");
+		HDR_NORMAL_ORDERS.put("商品编码", "item_bn");
+		HDR_NORMAL_ORDERS.put("发货数量", "delivery_num");
 	}
 
 	private static final Map<String, String> NEED_NORMAL_ORDERS;

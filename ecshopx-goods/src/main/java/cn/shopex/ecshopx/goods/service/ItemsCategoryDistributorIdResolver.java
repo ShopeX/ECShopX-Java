@@ -68,6 +68,12 @@ public class ItemsCategoryDistributorIdResolver {
 		return privateResolveProductModel(companyId);
 	}
 
+	/** BBC：{@code companys.menu_type=3}（platform）；店务 onsale 列表不暴露云仓，与 B2C/standard（4）等区分。 */
+	public boolean isBbcPlatformMenuType(long companyId) {
+		Companys c = companysMapper.selectById(companyId);
+		return c != null && Integer.valueOf(3).equals(c.getMenuType());
+	}
+
 	/**
 	 * 平面创建分类时解析写库 {@code distributor_id}，与同模块树形保存中 {@link #resolveForCategoryNode} 在无合并键时的规则一致。
 	 */

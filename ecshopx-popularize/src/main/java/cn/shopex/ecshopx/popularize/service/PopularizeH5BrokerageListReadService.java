@@ -56,8 +56,6 @@ public class PopularizeH5BrokerageListReadService {
 
 	private final BrokerageMapper brokerageMapper;
 
-	private final SalesmanBrokerageLogsQueryService salesmanBrokerageLogsQueryService;
-
 	private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
 	private final WechatUsersMapper wechatUsersMapper;
@@ -70,14 +68,12 @@ public class PopularizeH5BrokerageListReadService {
 
 	public PopularizeH5BrokerageListReadService(
 			BrokerageMapper brokerageMapper,
-			SalesmanBrokerageLogsQueryService salesmanBrokerageLogsQueryService,
 			NamedParameterJdbcTemplate namedParameterJdbcTemplate,
 			WechatUsersMapper wechatUsersMapper,
 			MembersAssociationsMapper membersAssociationsMapper,
 			MembersContactByUserIdsLookupService membersContactByUserIdsLookupService,
 			ObjectMapper objectMapper) {
 		this.brokerageMapper = brokerageMapper;
-		this.salesmanBrokerageLogsQueryService = salesmanBrokerageLogsQueryService;
 		this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
 		this.wechatUsersMapper = wechatUsersMapper;
 		this.membersAssociationsMapper = membersAssociationsMapper;
@@ -112,7 +108,6 @@ public class PopularizeH5BrokerageListReadService {
 			String brokerageSource,
 			String pageRaw,
 			String pageSizeRaw,
-			String isSalesmanPageRaw,
 			String shopNameRaw,
 			String mobileRaw,
 			String orderIdRaw,
@@ -199,132 +194,6 @@ public class PopularizeH5BrokerageListReadService {
 		return out;
 	}
 
-	private Object fetchSalesmanSegment(
-			long companyId, long userId, LinkedHashMap<String, Object> filter, int page, int pageSize) {
-		List<Long> dIds = loadSalespersonShopIdsLimit500(companyId, userId);
-		if (dIds.isEmpty()) {
-			return Collections.emptyList();
-		}
-		if (filter.containsKey("shopName")) {
-			String shopName = String.valueOf(filter.get("shopName")).trim();
-			List<Long> narrowed = queryDistributorIdsByShopNameLike(companyId, shopName, dIds);
-			if (narrowed.isEmpty()) {
-				return Collections.emptyList();
-			}
-			dIds = narrowed;
-		}
-		LinkedHashMap<String, Object> sqlFilter = new LinkedHashMap<>();
-		sqlFilter.put("company_id", Long.valueOf(companyId));
-		sqlFilter.put("user_id", Long.valueOf(userId));
-		sqlFilter.put("dIds", dIds);
-		sqlFilter.put("is_close", filter.get("is_close"));
-		if (filter.containsKey("mobile")) {
-			sqlFilter.put("mobile", filter.get("mobile"));
-		}
-		if (filter.containsKey("order_id")) {
-			sqlFilter.put("order_id", filter.get("order_id"));
-		}
-
-		long total = salesmanBrokerageLogsQueryService.countH5PromoterSalesmanBrokerageLogs(sqlFilter);
-		List<Map<String, Object>> list =
-				salesmanBrokerageLogsQueryService.selectPageH5PromoterSalesmanBrokerageLogs(sqlFilter, pageSize, page);
-
-		for (Map<String, Object> row : list) {
-			Object v = row.get("detail");
-			if (v instanceof String s) {
-				row.put("detail", parseDetailJson(this.objectMapper, s));
-			} else if (v == null) {
-				row.put("detail", parseDetailJson(this.objectMapper, null));
-			} else {
-				row.put("detail", v);
-			}
-		}
-
-		if (total > 0L && !list.isEmpty()) {
-			applyBuyerContactsMaskingAndCreatedDate(companyId, pageSize, list);
-		}
-
-		List<Map<String, Object>> spRows = salesmanBrokerageLogsQueryService.enrichListWithSalesperson(companyId, list);
-
-		LinkedHashMap<String, Object> out = new LinkedHashMap<>();
-		out.put("total_count", Long.valueOf(total));
-		out.put("list", list);
-		out.put("isSalesmanPage", Integer.valueOf(1));
-		if (spRows == null || spRows.isEmpty()) {
-			out.put("data_alesperson", null);
-		} else {
-			LinkedHashMap<String, Object> da = new LinkedHashMap<>();
-			da.put("list", spRows);
-			da.put("total_count", Long.valueOf(spRows.size()));
-			out.put("data_alesperson", da);
-		}
-		return out;
-	}
-
-	private List<Long> loadSalespersonShopIdsLimit500(long companyId, long userId) {
-		String sql =
-				"SELECT shop_id FROM shop_salesperson WHERE company_id = :companyId AND user_id = :userId LIMIT 500";
-		MapSqlParameterSource p =
-				new MapSqlParameterSource()
-						.addValue("companyId", companyId)
-						.addValue("userId", (int) userId);
-		List<Map<String, Object>> rows = namedParameterJdbcTemplate.queryForList(sql, p);
-		List<Long> out = new ArrayList<>();
-		for (Map<String, Object> row : rows) {
-			Object sid = row.get("shop_id");
-			if (sid == null) {
-				continue;
-			}
-			long v;
-			if (sid instanceof Number n) {
-				v = n.longValue();
-			} else {
-				try {
-					v = Long.parseLong(String.valueOf(sid).trim());
-				} catch (NumberFormatException e) {
-					continue;
-				}
-			}
-			if (v > 0L) {
-				out.add(v);
-			}
-		}
-		return out;
-	}
-
-	private List<Long> queryDistributorIdsByShopNameLike(long companyId, String shopName, List<Long> dIds) {
-		String pat = "%" + escapeSqlLike(shopName) + "%";
-		String sql =
-				"SELECT distributor_id FROM distribution_distributor WHERE company_id = :companyId "
-						+ "AND name LIKE :pat ESCAPE '\\\\' AND distributor_id IN (:dIds)";
-		MapSqlParameterSource p =
-				new MapSqlParameterSource()
-						.addValue("companyId", companyId)
-						.addValue("pat", pat)
-						.addValue("dIds", dIds);
-		List<Map<String, Object>> rows = namedParameterJdbcTemplate.queryForList(sql, p);
-		List<Long> out = new ArrayList<>();
-		for (Map<String, Object> row : rows) {
-			Object did = row.get("distributor_id");
-			if (did instanceof Number n) {
-				out.add(n.longValue());
-			} else if (did != null) {
-				try {
-					out.add(Long.parseLong(String.valueOf(did).trim()));
-				} catch (NumberFormatException ignored) {
-					// skip
-				}
-			}
-		}
-		return out;
-	}
-
-	private static String escapeSqlLike(String raw) {
-		if (raw == null) {
-			return "";
-		}
-		return raw.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_");
-	}
 
 	private static Object parseDetailJson(ObjectMapper objectMapper, String raw) {
 		if (raw == null || raw.trim().isEmpty()) {

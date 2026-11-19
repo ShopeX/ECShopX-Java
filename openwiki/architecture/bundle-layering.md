@@ -1,11 +1,11 @@
 ---
 type: architecture-convention
 title: Bundle Anatomy and Layering Conventions
-description: The internal package structure of one business Bundle (api/service/domain/mapper/integration/client/auth/gateway/dispatch/cron/port/config/repository) and the dependency-boundary rules that decide where new code goes — one domain per Maven module, Ports through ecshopx-common, assembly only in ecshopx-bootstrap — using ecshopx-orders as the worked example and cross-checked against goods, members, kaquan, digios, shuyun, and companys.
-tags: [architecture, bundle, layering, controllers, services, mappers, ports, dispatch, cron, maven, dependency-boundaries]
+description: The internal package structure of one business Bundle (api/service/domain/mapper/integration/client/auth/gateway/dispatch/cron/port/config/repository/search) and the dependency-boundary rules that decide where new code goes — one domain per Maven module, Ports through ecshopx-common, assembly only in ecshopx-bootstrap — using ecshopx-orders as the worked example and cross-checked against goods (including its ES search subsystem), members, kaquan, digios, shuyun, and companys.
+tags: [architecture, bundle, layering, controllers, services, mappers, ports, dispatch, cron, maven, dependency-boundaries, search]
 verified:
   - by: openwiki/0.9.0
-    at: 2026-11-08T17:14:16.576Z
+    at: 2026-11-16T17:12:44.218Z
 sources:
   - id: openwiki-source-84aeb105875424c9aac7edf8
     resource: repo://ecshopx-bootstrap/pom.xml
@@ -21,8 +21,14 @@ sources:
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/FinishOrderJobDispatchPublisherImpl.java
   - id: openwiki-source-6154c1d27f3b807ac0dd5b04
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/FinishOrderJobRegistrationConfig.java
+  - id: openwiki-source-5e3b86358992335ee5e99451
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ItemStoreUpdatedSearchIndexDispatchListenerRegistrationConfig.java
   - id: openwiki-source-fd94d375300df90e9a5bdcb1
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/OrdersTradeFinishDispatchPublisherBeansConfig.java
+  - id: openwiki-source-0efb63292c0898d92c370a01
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/SearchRebuildJobDispatchPublisherImpl.java
+  - id: openwiki-source-1f09d004ecebb282a2758fcf
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/SearchRebuildJobRegistrationConfig.java
   - id: openwiki-source-cfc65eac39ada1a8a2af76ba
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/UpdateItemSalesDispatchListenerRegistrationConfig.java
   - id: openwiki-source-c108088c8dc8a99034aeaa25
@@ -33,6 +39,8 @@ sources:
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/auth/PosJwtIssuerPort.java
   - id: openwiki-source-809e54f4e38e5137797c41dd
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/FinishOrderJobDispatchPublisher.java
+  - id: openwiki-source-39e681b7e63485fa9b3b7a54
+    resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/GoodsSearchDispatchJobNames.java
   - id: openwiki-source-2c4a54ebc839a0b89bdbcdf0
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/mybatis/FqcnMapperBeanNameGenerator.java
   - id: openwiki-source-6b0e6cf65040aaf8048f1d89
@@ -41,6 +49,10 @@ sources:
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/port/digios/PosStoreAccountDigiOsCreatePort.java
   - id: openwiki-source-9bceb1316bcda54f295cedd8
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/port/digios/PosStoreAccountDigiOsCreatePortNoOp.java
+  - id: openwiki-source-ce799b3330bdde98fe36774b
+    resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/port/goods/GoodsSearchIndexDirtyByItemIdsPort.java
+  - id: openwiki-source-0278c4cfc9e8e2156275a01f
+    resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/port/goods/GoodsSearchIndexDirtyByItemIdsPortNoOp.java
   - id: openwiki-source-1e55df8a8ff6fe394fcbba4b
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/port/order/JushuitanSettingReadPort.java
   - id: openwiki-source-e8ae20ad9a0b9aab932192bb
@@ -81,8 +93,46 @@ sources:
     resource: repo://ecshopx-goods/pom.xml
   - id: openwiki-source-d9ade624e0049278a0727013
     resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/api/admin/v1/ItemsController.java
+  - id: openwiki-source-4e6988cb06b02cce0aa1ed3a
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/integration/GoodsSearchIndexDirtyByItemIdsPortImpl.java
+  - id: openwiki-source-f869b1971f5f9d4b86d57e1c
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/search/GoodsSearchFacade.java
+  - id: openwiki-source-d06abc53183de96931fcb0be
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/search/rebuild/SearchRebuildJobHandler.java
+  - id: openwiki-source-5104912c2e0dd2286860ad8b
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/search/rebuild/SearchRebuildService.java
+  - id: openwiki-source-554819b0ae924b822bd10c56
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/search/SearchEsClientConfig.java
+  - id: openwiki-source-81cee125171492ab5fdeb912
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/search/SearchEsProperties.java
+  - id: openwiki-source-5c8392644c10d3730f3e231c
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/search/sync/GoodsSearchIndexDirtyFanout.java
+  - id: openwiki-source-180ad5fe96bda3a39aaa25d5
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/search/sync/GoodsSearchIndexPromotionSyncListener.java
+  - id: openwiki-source-e574685cf9ffc7b239038722
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/search/sync/ItemStoreUpdatedSearchIndexDispatchListener.java
+  - id: openwiki-source-e18412041f7508495d35a065
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/search/sync/SearchIndexSyncListeners.java
+  - id: openwiki-source-cf7076b808179a7f10172d21
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/search/sync/SearchIndexSyncScheduler.java
+  - id: openwiki-source-b7ec4571fbe5a976a79fa0c5
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/search/sync/SearchIndexUpdater.java
+  - id: openwiki-source-bd3665777605d5af32590a39
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/search/synonym/SearchSynonymImportFinishPortImpl.java
   - id: openwiki-source-cccea56ead2aaf5463693ac8
     resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/cart/wxapp/WxappCartAddPortImpl.java
+  - id: openwiki-source-638a47423376dbfac322e5d8
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/ItemsCreateOrchestrator.java
+  - id: openwiki-source-b8851fd7367f8b95aab5f74c
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/ItemsUpdateOrchestrator.java
+  - id: openwiki-source-b8bfd2250069805b8af88bc1
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/wxapp/WxappGoodsItemsListServiceImpl.java
+  - id: openwiki-source-1275b6d3b383cca8569c175f
+    resource: repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/search/sync/GoodsSearchIndexDirtyFanoutTest.java
+  - id: openwiki-source-2ca083787e4bd53b99aa569d
+    resource: repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/search/sync/GoodsSearchIndexPromotionSyncListenerTest.java
+  - id: openwiki-source-fe18540f43367dc1689771db
+    resource: repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/service/wxapp/WxappGoodsItemsListServiceImplEsSwitchTest.java
   - id: openwiki-source-760029181938f629ebc82c65
     resource: repo://ecshopx-kaquan/src/main/java/cn/shopex/ecshopx/kaquan/api/admin/v1/DiscountCardControllerExceptionAdvice.java
   - id: openwiki-source-0bab7146cc783a51fff474d2
@@ -151,14 +201,14 @@ sources:
     resource: repo://ecshopx-shuyun/src/test/java/cn/shopex/ecshopx/shuyun/auth/InboundSignedCallbackPreparerAuthTest.java
   - id: openwiki-source-f1b1aacc63642e5304668821
     resource: repo://readme.md
-generated: { by: "openwiki/0.9.0", at: "2026-11-08T17:14:16.576Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-16T17:12:44.218Z" }
 ---
 
 # Bundle Anatomy and Layering Conventions
 
 ECShopX-Java is a multi-module Maven build in which **one business domain = one Bundle = one Maven module**. The root `pom.xml` lists every Bundle as a `<module>`, and each Bundle's POM declares its own peer dependencies. This page documents what a single Bundle looks like on the inside — which packages exist, what each one owns, and the dependency-boundary rules a change must follow so that new code lands in the right place.
 
-The worked example throughout is **`ecshopx-orders`** (the largest Bundle: orders, cart, logistics, and settlement — see its `package-info.java`, "订单、购物车、物流与结算域"), with every convention cross-checked against **`ecshopx-goods`** (商品域), **`ecshopx-members`** (会员与账户域), and **`ecshopx-kaquan`** (卡券域). Three newer Bundles extend the skeleton and are covered in their own sections: **`ecshopx-digios`** (DigiOS POS direct integration — outbound gateway client, inbound stock push, store/account/adjustment sync), **`ecshopx-shuyun`** (数云对接域： legacy UAPI plus the open-platform open-api — see its `package-info.java`), and the **POS auth** layering inside **`ecshopx-companys`**.
+The worked example throughout is **`ecshopx-orders`** (the largest Bundle: orders, cart, logistics, and settlement — see its `package-info.java`, "订单、购物车、物流与结算域"), with every convention cross-checked against **`ecshopx-goods`** (商品域 — including the Elasticsearch-backed storefront search subsystem that lives in its own `search/` top-level package, covered below), **`ecshopx-members`** (会员与账户域), and **`ecshopx-kaquan`** (卡券域). Three newer Bundles extend the skeleton and are covered in their own sections: **`ecshopx-digios`** (DigiOS POS direct integration — outbound gateway client, inbound stock push, store/account/adjustment sync), **`ecshopx-shuyun`** (数云对接域： legacy UAPI plus the open-platform open-api — see its `package-info.java`), and the **POS auth** layering inside **`ecshopx-companys`**.
 
 For the *cross-Bundle* half of the story (who implements whose Ports, and how the dispatch bus moves messages between Bundles), see [Cross-Bundle Communication](cross-bundle-communication.md). For the system-level module map, see [Architecture Overview](overview.md); for the bus itself see [Dispatch Bus](../concepts/dispatch-bus.md), and for the external systems these Bundles talk to see [Third-Party Integrations](../integrations/third-party.md). For the HTTP request path that reaches these controllers, see [Request Lifecycle](request-lifecycle.md). For MyBatis specifics, see [Persistence — MyBatis](../concepts/persistence-mybatis.md).
 
@@ -186,9 +236,10 @@ Every business Bundle roots its code at `cn.shopex.ecshopx.<domain>` and mirrors
 | `repository` | Optional query/write helpers layered on top of mappers | `orders/repository/CategoryTaxRateRepository.java` |
 | `openapi` | Implementations of `Openapi*Port` interfaces consumed by the ecshopx-openapi gateway | `orders/openapi/OpenapiOrderListPortImpl.java` |
 | `event` / `listener` | Spring application events and `@TransactionalEventListener` beans | `orders/event/PaySuccessSpringEvent.java`, `orders/listener/` |
+| `search` | Elasticsearch-backed storefront search: ES client config, query building, index sync/rebuild, synonyms | `goods/search/GoodsSearchFacade.java`, `goods/search/sync/` |
 | `support`, `dto`, `util`, `web` | Pure helpers shared inside the Bundle | `kaquan/util/`, `goods/web/DatapassBlockResolver.java`, `digios/support/DigiOsMessageId.java` |
 
-Not every Bundle carries every package — `kaquan` has no `repository/`, `members` has no `cron/`, and only third-party-facing Bundles grow `client/`, `gateway/`, or `auth/` — but when a package exists it always means the same thing. **When you add code, the package choice is decided by the role the code plays, not by convenience.**
+Not every Bundle carries every package — `kaquan` has no `repository/`, `members` has no `cron/`, only third-party-facing Bundles grow `client/`, `gateway/`, or `auth/`, and only `goods` currently grows `search/` — but when a package exists it always means the same thing. **When you add code, the package choice is decided by the role the code plays, not by convenience.**
 
 ## Controllers: `api/admin/v1`, `api/front/v1`, `api/pos/v1`, `api/callback/v1`, `api/open`
 
@@ -287,6 +338,10 @@ Credential-checking flows also live under `service/`, grouped in an `*auth` subp
 
 **Where new service code goes:** under `service/`, in a channel subpackage when the behaviour is channel-specific (`service/admin`, `service/front/wxapp`, `service/normal`, `service/posauth`, …), as a `RequestGate` for pre-auth/permission gating, as a static `ParamValidator` for pure field validation, and as an `Orchestrator` when the flow spans several services and must own the transaction.
 
+### Orchestrators as feature-integration seams: the goods search-index hook
+
+The goods write path shows how an orchestrator absorbs a new cross-cutting feature without touching the low-level write services. `goods/service/items/ItemsCreateOrchestrator.createItemsReturningItemId(...)` branches on `supplier_id`: a supplier create delegates entirely to `SupplierItemsAddService.addItemsTransactional(params)` and returns `0`; a platform create runs `PlatformItemsAddService.addItemsTransactional(params)`, then — in order — `DistributorGoodsSyncService.syncGoods(companyId, defaultItemId)` (fan the new SKU out to distributor shops) and `GoodsSearchIndexDirtyFanout.scheduleUpsertForDefaultItem(companyId, defaultItemId)` (mark the ES index dirty, see the `search/` section below). `ItemsUpdateOrchestrator` repeats the identical three-step tail for the platform-update branch and additionally routes supplier-audit states (`submitting` / `approved`) through `SupplierItemsReviewGoodsService`. The important invariant: **the orchestrator owns the cross-cutting sequencing, so the supplier and platform write services below it stay unaware of both the distributor sync and the search index** — a new post-write concern hooks in here, not in the transactional service.
+
 ## `domain`, `mapper`, and `repository`
 
 * **`domain`** holds one MyBatis-Plus entity per table, annotated with the extended metadata annotations from `common/mybatis/metadata` (`@MpTable`, `@MpId`, `@MpField`, `@MpIndex`). These are meta-annotated with the stock MyBatis-Plus `@TableName`/`@TableId`/`@TableField` and additionally carry column type, length, nullability, comments, and indexes migrated from the legacy Doctrine ORM (see the Javadoc: "Extended MyBatis-Plus table annotation with database metadata migrated from ecshopx-api Doctrine ORM"). The `bin/make-migration` helper diffs the live MySQL schema against these domains to generate Flyway SQL under `ecshopx-bootstrap/src/main/resources/db/migration`, so **adding a column means annotating the entity and generating a migration, not hand-writing SQL in the Bundle** — though the readme warns the generated SQL must still be manually reviewed for types, defaults, NULL allowance, comments, and indexes.
@@ -318,6 +373,40 @@ Bundles that own a vendor integration add up to three extra packages:
 
 **Where new integration code goes:** outbound call machinery in `client/` (or `gateway/`), inbound signature/tenant gating in `auth/`, vendor settings in `config/` as `@ConfigurationProperties`, per-company DB overrides as a `domain` entity + admin controller, and every sync reaction to other Bundles' events as a `dispatch/` listener (next section). Wire-level payload shape translation belongs in `service/` helpers (`DigiOsAccountMapper`, `DigiOsStoreProfileMapper`, …), not in the client.
 
+## `search` — a domain-owned search subsystem (goods worked example)
+
+A Bundle that owns a full-text search engine keeps the whole subsystem in one top-level `search/` package, subdivided by responsibility rather than scattered through `service/`. `goods/search/` is currently the only instance and the reference layout:
+
+* **Connection and feature flag at the package root.** `SearchEsProperties` (`@ConfigurationProperties`, prefix `ecshopx.search.es`) carries `enabled` (default `false`), `likeFallback`, `hosts` (default `http://127.0.0.1:9200`), `alias`, timeouts, and a legacy rank-weight block whose Javadoc states the weights no longer participate in scoring; `SearchEsClientConfig` (`@EnableConfigurationProperties`) builds the dedicated `ElasticsearchClient` (`elasticsearch-java` 8.15.5, declared only in the goods POM) over a `RestClient` with the configured connect/socket timeouts.
+* **`search/query/`** — request-side: `GoodsSearchQuery.fromWxappParams(...)` normalizes storefront parameters (member tier resolved via `search/price/SearchMemberTierResolver`), `GoodsSearchEsQueryBuilder` builds the ES request, `GoodsSearchQueryService` executes it against the alias, and `GoodsSearchEsException` marks ES failures.
+* **`search/index/`** — the write-side document pipeline: `MybatisSearchIndexSourceLoader` hydrates `SearchIndexSource` rows from MySQL, `SearchIndexMapper` maps them to `GoodsSearchDocument`s keyed by `(company_id, distributor_id, default_item_id)` (`GoodsSearchDocumentId`), `GoodsSearchMappingService` owns index creation/mappings, and `GoodsSearchIndexRepository` performs bulk index, delete, and alias switching through the alias in `GoodsSearchIndexNames`.
+* **`search/sync/`** — incremental freshness, in three cooperating pieces: `GoodsSearchIndexDirtyFanout` turns one logical change into one dirty mark **per distributor** (headquarters `distributor_id=0` plus every distinct distributor carrying the default item, read from `DistributorItemsRepository`), swallowing per-distributor scheduling failures with a WARN; `SearchIndexSyncScheduler` converts each mark into a `GoodsSearchDirtyEvent` published *after commit* (registered as a `TransactionSynchronization` when a transaction is active, published immediately otherwise, publish failures also only WARNed); and `SearchIndexSyncListeners` (`@TransactionalEventListener(phase = AFTER_COMMIT, fallbackExecution = true)`) hands the event to `SearchIndexUpdater`, which no-ops when ES is disabled and otherwise upserts or deletes the single document with up to `MAX_ATTEMPTS = 3` retries, logging rather than throwing on exhaustion.
+* **`search/rebuild/`** — full reindex as a dispatch-bus job: `SearchRebuildJobHandler implements DispatchHandler` under the common job name `GoodsSearchDispatchJobNames.SEARCH_REBUILD_JOB` (`job:198:GoodsBundle\Jobs\SearchRebuildJob`), with payloads for all-active-companies rebuild, per-company upsert into the current alias, or single-company blue-green (new physical index → bulk in batches of 500 → alias switch, flagged as dangerous in multi-tenant use). The producer side follows the standard pattern: the `SearchRebuildJobDispatchPublisher` interface lives in `ecshopx-common`, and the bootstrap `SearchRebuildJobDispatchPublisherImpl` dispatches it ASYNC/REDIS on the `slow` queue with platform-default retry, while `SearchRebuildJobRegistrationConfig` binds the handler in the registry.
+* **`search/synonym/`** — synonym-set management with hot reload into ES; its cross-Bundle edge is `SearchSynonymImportFinishPortImpl`, which implements `common/espier/upload/SearchSynonymImportFinishPort` so the espier upload/import machinery can trigger an ES synonym reload after a synonym import without depending on goods (a reload failure returns a user-visible warning hint instead of throwing).
+* **`search/price/`** — member-tier resolution (`SearchMemberTierResolver`) and the effective-price calculator used for ES sort/filter.
+
+```mermaid
+flowchart TD
+    WR["items write paths and promotion events"] --> FAN["GoodsSearchIndexDirtyFanout"]
+    PORT["common GoodsSearchIndexDirtyByItemIdsPort impl"] --> FAN
+    BUS["EVENT_ITEM_STORE_UPDATE dispatch listener"] --> SCHED
+    FAN -->|"per distributor 0 plus shops"| SCHED["SearchIndexSyncScheduler"]
+    SCHED -->|"afterCommit publish"| EVT["GoodsSearchDirtyEvent"]
+    EVT --> LIS["SearchIndexSyncListeners"]
+    LIS --> UPD["SearchIndexUpdater upsert or delete with retry"]
+    UPD --> ES[("ES alias")]
+    JOB["SearchRebuildJobHandler dispatch job 198"] --> RB["SearchRebuildService"]
+    RB -->|"bulk 500 then alias switch"| ES
+```
+
+Incremental and full refresh paths of the goods ES search index, showing how dirty marks from write paths, Port calls, and the dispatch bus converge on the alias.
+
+The **read** side is switched per request, not per deployment. In `goods/service/wxapp/WxappGoodsItemsListServiceImpl.execute(...)`, the default-item list path consults `searchEsProperties.isEnabled()`: when off (or when the salesman gate short-circuits to empty) it stays on the pure DB path via `WxappGoodsItemsListQueryOrchestrator.queryItemListData(...)`; when on, it delegates to `GoodsSearchFacade.queryListWithHydration(...)`, which searches ES for ordered `default_item_id`s, then **hydrates those ids through the very same DB orchestrator** with an internal single-page override (`KEY_INTERNAL_LIST_PAGE=1`, page size capped at 50, accept-language passthrough), re-orders rows back into ES order, writes the ES sale price into the row's `price` (fen) while keeping `effectivePriceFen` strictly for sort/filter, and corrects `total_count` by the number of documents the DB hydration dropped (e.g. `goods_can_sale` filtering). If ES throws, `ecshopx.search.es.like-fallback` decides the failure mode: fall back to the DB path (keeping the keyword LIKE pre-resolve the param builder otherwise skips) or log and return an empty list. The ES path and the DB path therefore share exactly one list-query implementation — the orchestrator — and the facade is the only class that knows both worlds.
+
+**Why the dirty-by-item-ids Port is in `common` even though goods always provides it:** promotion write paths (seckill/group-buy) need to dirty the search index after commit, but the promotions Bundles must not depend on goods. The contract is `common/port/goods/GoodsSearchIndexDirtyByItemIdsPort` (SKU-level `scheduleUpsertForItemIds(companyId, itemIds)`) with a `@ConditionalOnMissingBean` NoOp in `common`; the sole implementation is `goods/integration/GoodsSearchIndexDirtyByItemIdsPortImpl`, which resolves each SKU `item_id` to its `default_item_id` via `ItemsRepository` + `DefaultItemIdResolver` (passing unresolved ids through unchanged) and delegates to the fanout. The observed consumer is goods' own `search/sync/GoodsSearchIndexPromotionSyncListener`, which listens for `SeckillActivityCommittedEvent`, `SeckillActivityEndCommittedEvent`, and `PromotionGroupActivityCommittedEvent` (resolving rel-goods rows through the *promotions* mappers, which goods may use because `ecshopx-goods` depends on `ecshopx-promotions` — never the reverse) and calls the Port rather than the fanout directly, keeping the wiring identical for any out-of-Bundle caller. A second inbound edge, `ItemStoreUpdatedSearchIndexDispatchListener` (`DispatchListener` on `GoodsDispatchEventNames.EVENT_ITEM_STORE_UPDATE`, registered sync by the bootstrap `ItemStoreUpdatedSearchIndexDispatchListenerRegistrationConfig` at `@Order(76)`), schedules an upsert for the affected `(distributor_id, default_item_id)` whenever stock changes.
+
+**Where new search code goes:** inside the owning Bundle's `search/` package — connection/feature flag and client config at the root, query building in `query/`, document mapping/index operations in `index/`, incremental freshness in `sync/`, full reindex as a `DispatchHandler` in `rebuild/`, and read paths behind a per-request `enabled` switch that always keeps the pre-existing DB path intact as the fallback. Dirty marks are per-distributor and strictly after-commit; ES failures degrade (WARN + empty/fallback), never break the write or read path.
+
 ## `dispatch` and `cron`: the two async entry points
 
 Business Bundles expose two kinds of background work, and they are **not interchangeable**:
@@ -327,7 +416,7 @@ Business Bundles expose two kinds of background work, and they are **not interch
   * `*DispatchListener implements DispatchListener` — an event listener. `orders/dispatch/UpdateItemSalesDispatchListener` implements `onEvent(payload)` and is registered against specific event names such as `OrdersDispatchEventNames.EVENT_TRADE_FINISH`.
   * Publisher-side interfaces live in `ecshopx-common` (`common/dispatch/FinishOrderJobDispatchPublisher`, `OrdersTradeFinishDispatchPublisher`, `DistributionAddEventDispatchPublisher`, `DigiOsAftersalesReturnAdjustmentDispatchPublisher`, `PosStoreAccountCreateEventDispatchPublisher`, …) so a Bundle can *publish* without depending on the bus implementation or on the consumer. **The producer side never registers handlers with the registry directly.**
   * Registration is **not** done with annotations. The bootstrap module contains explicit `*RegistrationConfig` `@Configuration` classes (e.g. `bootstrap/.../config/RefundByOrderUpdateOrderStatusJobRegistrationConfig.java` calls `dispatchRegistry.registerJob(...)` in `@PostConstruct`, and `UpdateItemSalesDispatchListenerRegistrationConfig` calls `registerEventListener(...)` with a `@Order` value that controls bean-initialization order). A Bundle that owns a new job handler must therefore add a matching registration config in `ecshopx-bootstrap`.
-  * **Listeners may live in a different Bundle than the event's owner.** All five `digios/dispatch/*DispatchListener` classes react to events owned by `distribution`, `orders`/`aftersales`, and `companys` (distributor create/update, order-delivery store adjustment, aftersales return adjustment, operator create), and `shuyun/dispatch/` carries twelve more of the same shape (member register, shop sync, product sync, trade/refund sync, offline-benefit consume). Each has its own bootstrap registration config (`DigiOsDistributorCreateDispatchListenerRegistrationConfig` binds `DistributionDispatchEventNames.EVENT_DISTRIBUTOR_CREATE` with `ListenerDispatchOptions.async("default", null)` at `@Order(79)`, and so on). This is how an integration Bundle bolts onto existing domains without those domains knowing it exists.
+  * **Listeners may live in a different Bundle than the event's owner, and outside the `dispatch/` package.** All five `digios/dispatch/*DispatchListener` classes react to events owned by `distribution`, `orders`/`aftersales`, and `companys` (distributor create/update, order-delivery store adjustment, aftersales return adjustment, operator create), `shuyun/dispatch/` carries twelve more of the same shape (member register, shop sync, product sync, trade/refund sync, offline-benefit consume), and goods' `search/sync/ItemStoreUpdatedSearchIndexDispatchListener` shows a listener living inside a feature package when it belongs to that feature. Each has its own bootstrap registration config (`DigiOsDistributorCreateDispatchListenerRegistrationConfig` binds `DistributionDispatchEventNames.EVENT_DISTRIBUTOR_CREATE` with `ListenerDispatchOptions.async("default", null)` at `@Order(79)`, and so on). This is how an integration Bundle bolts onto existing domains without those domains knowing it exists.
   * Publisher *implementations* for events a Bundle doesn't consume itself also live in the bootstrap: `DigiOsAftersalesReturnAdjustmentDispatchPublisherImpl` (in `ecshopx-bootstrap`, implementing the `common` interface) publishes `DigiOsDispatchEventNames.EVENT_AFTERSALES_RETURN_ADJUSTMENT` via `DispatchFacade` with `DispatchMode.ASYNC` + `DispatchDriverType.REDIS` + `RetryPolicy.platformDefault()`.
   * Payload conventions: `payload == null` is normalized to `Map.of()` by the handler itself (`FinishOrderJobHandler`), and after-commit publication is done either via `TransactionSynchronizationManager` inside the orchestrator (as `DistributorCreateOrchestrator` and `companys`' `PosStoreAccountWriteService.scheduleCreateDispatch` do) or via a dedicated `*AfterCommitDispatchPublisher` wrapper (as `orders/dispatch/OrdersTradeFinishAfterCommitDispatchPublisher` does for `OrdersTradeFinishDispatchPublisher`).
 * **`cron/`** contains XXL-JOB handlers named `Schedule*Handler`. Every handler is a `@Component` with a `@XxlJob("<short-name>")` method, a short-name constant (`HANDLER_SHORT` in orders, `HANDLER_SHORT_NAME` in kaquan), timing/log lines in the `[cron][<name>] done/failed, cost=...ms` shape, and — critically — a **failure path that publishes a `CronAlertEvent` and rethrows**, so that XXL-JOB marks the run as failed. `orders/cron/ScheduleFinishOrdersHandler` is the canonical example; `kaquan/cron/ScheduleCancelExpiredCardHandler` and the whole `orders/cron/Schedule*Handler` family (18 handlers) follow it exactly. Cron handlers delegate to a service (`NormalOrderCronService.scheduleFinishOrders()`, `UserDiscountService.scheduleCancelExCard()`); they contain no business logic of their own. Simple periodic refresh that needs no ops console, alerting, or manual trigger may instead be a plain `@Scheduled` bean in `config/` (e.g. `shuyun/config/TokenRefreshScheduler`).
@@ -347,9 +436,9 @@ Module-local YAML lives at `src/main/resources/application-<module>.yml` (e.g. `
 
 The dependency rules are:
 
-* **Every business Bundle depends on `ecshopx-common`.** Most also depend on **`ecshopx-dispatch`** (orders, members, aftersales, payment, reservation, companys, third-party, wsugc, chinaums-pay, popularize all declare it; goods, kaquan, digios, and shuyun currently do not — digios consumes bus events purely through the `DispatchListener` interface from `common/dispatch` plus bootstrap registration configs).
+* **Every business Bundle depends on `ecshopx-common`.** Most also depend on **`ecshopx-dispatch`** (orders, members, aftersales, payment, reservation, companys, third-party, wsugc, chinaums-pay, popularize all declare it; goods, kaquan, digios, and shuyun currently do not — digios consumes bus events purely through the `DispatchListener` interface from `common/dispatch` plus bootstrap registration configs, and goods does the same for its search listeners plus the search-rebuild `DispatchHandler`).
 * **A Bundle declares only the curated set of peer Bundles it actually needs.** `ecshopx-orders/pom.xml` is the reference: beyond `ecshopx-common` and `ecshopx-dispatch` it lists `ecshopx-work-wechat`, `ecshopx-third-party`, `ecshopx-supplier`, `ecshopx-reservation`, `ecshopx-espier`, `ecshopx-members`, `ecshopx-companys`, `ecshopx-point`, `ecshopx-aftersales`, `ecshopx-payment`, `ecshopx-chinaums-pay`, `ecshopx-deposit`, `ecshopx-hfpay`, `ecshopx-popularize`, and `ecshopx-super-admin`, plus the technical dependencies it needs directly (`mybatis-plus-spring-boot3-starter`, `xxl-job-core` 2.5.0, `weixin-java-pay`, `spring-boot-starter-data-redis`, `spring-boot-starter-mail`).
-* **Peer selection is deliberately asymmetric.** `ecshopx-goods` depends on `ecshopx-orders` (so goods can implement the cart Ports that orders owns), while `ecshopx-orders` does **not** depend on `ecshopx-goods` — the cart flow is inverted through `orders/port/WxappCartAddPort`. Similarly `ecshopx-kaquan` depends on `ecshopx-orders`, and `ecshopx-openapi` depends only on `ecshopx-common`, reaching Bundles through their `openapi/` Port adapters. Before adding a new peer dependency, check whether a Port inversion would keep the graph acyclic.
+* **Peer selection is deliberately asymmetric.** `ecshopx-goods` depends on `ecshopx-orders` (so goods can implement the cart Ports that orders owns) **and** on `ecshopx-promotions` (so its `search/sync` promotion listener can read the seckill/group-buy rel-goods tables), while neither `ecshopx-orders` nor `ecshopx-promotions` depends on `ecshopx-goods` — the cart flow is inverted through `orders/port/WxappCartAddPort`, and the promotion→search edge is inverted through `common/port/goods/GoodsSearchIndexDirtyByItemIdsPort`. Similarly `ecshopx-kaquan` depends on `ecshopx-orders`, and `ecshopx-openapi` depends only on `ecshopx-common`, reaching Bundles through their `openapi/` Port adapters. Before adding a new peer dependency, check whether a Port inversion would keep the graph acyclic.
 * **How a new Bundle wires in — the `ecshopx-digios` recipe.** `ecshopx-digios/pom.xml` declares only `ecshopx-common` plus the two peers whose read models it genuinely extends (`ecshopx-goods`, `ecshopx-distribution`) and the technical starters; it declares **no** dependency on `companys`, `orders`, `aftersales`, or `espier`, yet it reacts to all of them:
   1. *Inbound sync triggers* arrive as dispatch events: the listeners live in `digios/dispatch/`, and the `DigiOs*RegistrationConfig` classes in `ecshopx-bootstrap` bind them to event names owned by other Bundles.
   2. *Synchronous hooks into another Bundle's write path* go through a `common` Port with a NoOp default: `PosStoreAccountWriteService` (companys) calls `PosStoreAccountDigiOsCreatePort.ensureSyncedOnCreate(...)` before inserting, and digios' `@Primary` impl throws `BadRequestException` on DigiOS failure so the local create is blocked — with `PosStoreAccountDigiOsCreatePortNoOp` standing in when digios is absent.
@@ -366,9 +455,10 @@ The dependency rules are:
 | `api/callback/v1` signed callbacks | no | no | no | no | no | yes |
 | Named `@RestController("<prefix>...V1...")` | yes | yes | yes | yes | yes | yes |
 | `domain` + `mapper` (+ XML in `resources/mapper`) | yes | yes | yes | yes | yes | yes |
-| `integration` implementing foreign Ports | yes | yes | yes | yes | no (uses `port/` + `openapi/`) | no |
-| `dispatch` handlers/listeners | yes | yes | yes | yes | yes (listeners only) | yes |
+| `integration` implementing foreign Ports | yes | yes (incl. the search-dirty Port) | yes | yes | no (uses `port/` + `openapi/`) | no |
+| `dispatch` handlers/listeners | yes | yes (incl. search rebuild + stock-sync listener under `search/`) | yes | yes | yes (listeners only) | yes |
 | `client`/`gateway` + `auth` third-party layers | no | no | no | no | yes (`client/`) | yes (`gateway/` + `auth/`) |
+| `search/` ES subsystem | no | yes | no | no | no | no |
 | `cron` `Schedule*Handler` | yes | only testcfg mock | no | yes | no | no (`@Scheduled` in `config/`) |
 | `port` owned interfaces / `@Primary` impls | yes | no | no (only a `service/export/port` subpackage) | no | yes (`@Primary` impl of a `common` Port) | no |
 | `repository` layer | yes | yes | no | no | no | no |
@@ -382,6 +472,7 @@ Tests live in each Bundle's `src/test/java` and mirror the main package structur
 * Dispatch-handler tests (`orders/dispatch/FinishOrderJobHandlerTest.java`) pin the null-payload-to-empty-map normalization and the delegation to the service; consumer-runtime tests (`...DispatchConsumerRuntimeTest`) exercise the ack/retry/fail-recording path.
 * The shuyun inbound-verification contract is pinned by `shuyun/auth/InboundSignedCallbackPreparerAuthTest`, `...TokenModeTest`, `CallbackSignatureVerifierTest`, and `InboundSignedCallbackReplayGuardTest` — e.g. `prepare_whenSignatureInvalid_doesNotTouchReplayGuard` proves verification order (signature first, replay guard only after a valid signature) and the token-mode tests pin the PHP-compatible `{code,msg,data}` error dialect.
 * `companys/service/posauth/PosAuthServiceTest` pins the POS login rejection matrix (bad credentials, disabled/resigned account, closed/deleted shop) and the claim-map shape, mocking the `PosJwtIssuerPort` boundary; `digios/port/PosStoreAccountDigiOsCreatePortImplTest` pins the no-op-when-disabled and throw-`BadRequestException`-on-failure contract of the `@Primary` Port override.
+* The goods search subsystem pins its own contract: `goods/search/sync/GoodsSearchIndexDirtyFanoutTest` asserts the dirty fan-out always includes headquarters `distributor_id=0` plus every shop returned by `DistributorItemsRepository` and skips invalid ids; `GoodsSearchIndexPromotionSyncListenerTest` verifies a committed seckill translates into `GoodsSearchIndexDirtyByItemIdsPort.scheduleUpsertForItemIds(companyId, itemIds)`; and `goods/service/wxapp/WxappGoodsItemsListServiceImplEsSwitchTest` pins the read-side switch — ES disabled ⇒ pure DB path, ES enabled ⇒ facade with the keyword LIKE pre-resolve skipped, `likeFallback` on ⇒ the pre-resolve is kept, salesman-gate-empty ⇒ ES is never touched.
 * WebMvc slice tests in other Bundles (e.g. `reservation/.../ReservationAdminV1ReservationControllerCreateFinishPublishWebMvcTest`) verify that a controller in `api/admin/v1` produces the annotated `@Activated`/dispatch behaviour.
 * The naming conventions are enforced less by tests than by compilation and startup: a missing `@RestController` bean name collides only at runtime, and a mapper outside `**.mapper` simply is not scanned — both failures appear as Spring context startup errors, which is why the readme instructs contributors to "follow the repository's existing package structure and layering conventions (`controller` / `service` / `mapper` / `integration` / `port`)".
 
@@ -410,4 +501,5 @@ Tests live in each Bundle's `src/test/java` and mirror the main package structur
 | Dispatch event listener | `<bundle>/dispatch/<X>DispatchListener` + registration config | `implements DispatchListener`; register per event name; listener may live in a different Bundle than the event owner |
 | Scheduled task | `<bundle>/cron/Schedule<Thing>Handler` | `@XxlJob`, `CronAlertEvent` + rethrow on failure; plain `@Scheduled` in `config/` for trivial refresh loops |
 | Intra-Bundle after-commit hook | `<bundle>/event/` + `<bundle>/listener/` | `@TransactionalEventListener(AFTER_COMMIT)` |
+| Search-engine integration owned by this domain | `<bundle>/search/` (`query/`, `index/`, `sync/`, `rebuild/`, `synonym/`) | Feature-flag it (`enabled` properties switch), keep the DB path as fallback, dirty marks per distributor and strictly after-commit, ES failures degrade instead of throwing |
 | Bundle-scoped exception mapping | `<bundle>/config/` as `@RestControllerAdvice(basePackages=...)`, or beside the controllers scoped by `assignableTypes` | Scope it to your API package |

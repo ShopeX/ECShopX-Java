@@ -7,7 +7,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.argThat;
 
+import cn.shopex.ecshopx.common.dispatch.ThirdPartyTradeUpdateDispatchPublisher;
 import cn.shopex.ecshopx.orders.domain.NormalOrders;
 import cn.shopex.ecshopx.orders.domain.NormalOrdersItems;
 import cn.shopex.ecshopx.orders.domain.OrderAssociations;
@@ -65,13 +67,18 @@ class OrdersTradeFinishNormalOrderPaySuccessApplyServiceTest {
 		SupplierOrderMapper supplierOrderMapper = mock(SupplierOrderMapper.class);
 		when(supplierOrderMapper.update(any(), any())).thenReturn(1);
 
+		ThirdPartyTradeUpdateDispatchPublisher tradeUpdatePublisher =
+				mock(ThirdPartyTradeUpdateDispatchPublisher.class);
+		existing.setOrderClass("employee_purchase");
+		existing.setUserId(42L);
 		OrdersTradeFinishNormalOrderPaySuccessApplyService service =
 				new OrdersTradeFinishNormalOrderPaySuccessApplyService(
 						normalOrdersMapper,
 						normalOrdersItemsMapper,
 						orderAssociationsMapper,
 						supplierOrderMapper,
-						orderValiditySettingRedisReadService);
+						orderValiditySettingRedisReadService,
+						tradeUpdatePublisher);
 
 		Map<String, Object> payload = new LinkedHashMap<>();
 		payload.put("trade_state", "SUCCESS");
@@ -88,18 +95,30 @@ class OrdersTradeFinishNormalOrderPaySuccessApplyServiceTest {
 		verify(normalOrdersMapper).update(any(), any());
 		verify(orderAssociationsMapper).update(any(), any());
 		verify(supplierOrderMapper).update(any(), any());
+		verify(tradeUpdatePublisher)
+				.publish(
+						argThat(
+								m ->
+										m != null
+												&& Long.valueOf(1L).equals(m.get("company_id"))
+												&& Long.valueOf(5331426000090002L).equals(m.get("order_id"))
+												&& Long.valueOf(42L).equals(m.get("user_id"))
+												&& "employee_purchase".equals(m.get("order_class"))));
 	}
 
 	@Test
 	void markPayedIfNeeded_unknownTradeSource_skipsUpdate() {
 		SupplierOrderMapper supplierOrderMapper = mock(SupplierOrderMapper.class);
+		ThirdPartyTradeUpdateDispatchPublisher tradeUpdatePublisher =
+				mock(ThirdPartyTradeUpdateDispatchPublisher.class);
 		OrdersTradeFinishNormalOrderPaySuccessApplyService service =
 				new OrdersTradeFinishNormalOrderPaySuccessApplyService(
 						normalOrdersMapper,
 						normalOrdersItemsMapper,
 						orderAssociationsMapper,
 						supplierOrderMapper,
-						orderValiditySettingRedisReadService);
+						orderValiditySettingRedisReadService,
+						tradeUpdatePublisher);
 
 		Map<String, Object> payload = new LinkedHashMap<>();
 		payload.put("trade_state", "SUCCESS");
@@ -109,5 +128,6 @@ class OrdersTradeFinishNormalOrderPaySuccessApplyServiceTest {
 
 		assertTrue(service.markPayedIfNeeded(payload).isEmpty());
 		verify(normalOrdersMapper, never()).update(any(), any());
+		verify(tradeUpdatePublisher, never()).publish(any());
 	}
 }

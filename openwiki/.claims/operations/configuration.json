@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:aee27a8ed002729029a2950cb6379c9a3716da06a441786955dbcf2f861b5a1f",
+  "pageVersion": "sha256:2de2c3d47c4513ee2a1c2688fc337edc375486b0559f7b4e12d6cd2fd2295e2b",
   "claims": [
     {
       "id": "claim_9752d7d3781543a9b36be65942a23176",
@@ -616,7 +616,7 @@
       "evidence": [
         {
           "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties",
-          "version": "repo-file-v1:sha256:eb1782a8d4a3c9f883c0fe6b4242d22ae063301e668ee15a0546d8191e8f57c2"
+          "version": "repo-file-v1:sha256:4645c64c41b062e1a933583d0c92b5eeec2e165dd5d960bbd27d90cfacc280d8"
         },
         {
           "resource": "repo://ecshopx-digios/src/main/java/cn/shopex/ecshopx/digios/config/DigiOsProperties.java#L24-L75",
@@ -772,29 +772,53 @@
     },
     {
       "id": "claim_250d9d78970547328c5059f3fdd84f30",
-      "statement": "BrokeragePlanCloseTimeService computes the distribution commission settlement timestamp as plan_close_time = now (epoch seconds) + 86400 * (settleDays + aftersaleDays), where settleDays and aftersaleDays come from @Value(\"${ecshopx.popularize.brokerage-plan-close.settle-days:0}\") and @Value(\"${ecshopx.popularize.brokerage-plan-close.aftersale-days:0}\"); the code carries an explicit TODO that these placeholders should be replaced by the merchant-side 分销确认天数/售后时效天数 settings, so today they are flat platform-wide day offsets not wired to any merchant setting.",
+      "statement": "BrokeragePlanCloseTimeService no longer reads the former ecshopx.popularize.brokerage-plan-close.{settle-days,aftersale-days} @Value placeholders (the TODO to wire merchant settings is resolved): computePlanCloseTimeEpochSec(companyId) now derives plan_close_time = now (epoch seconds) + 86400 * (limit_time + latest_aftersale_time), where limit_time (分销确认天数) comes from the per-company merged popularize config (Redis string popularizeConfig:{companyId} via PopularizeSettingSaveService.getMergedPopularizeConfig, default 0) and latest_aftersale_time (售后时效天数) comes from the orders bundle's order-validity settings via the cross-bundle OrderValidityLatestAftersaleDaysReadPort, implemented by OrderValiditySettingRedisReadService.readPlatformSetting (Redis hash order_validity_setting field {companyId} on the companys template, default 0).",
       "evidence": [
         {
-          "resource": "repo://ecshopx-popularize/src/main/java/cn/shopex/ecshopx/popularize/service/BrokeragePlanCloseTimeService.java#L36-L51",
-          "version": "repo-lines-v1:sha256:72557438286b958e770b2530ef679737cfc81347b1928794c418c20e79452605:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVmYTMxMTBlNGJiZDliOWNhZjZkMWRlZmMzMGZhOWRmNDM4YjJiNThhMTNhYjAxOWM2ZWQ5ODNmYmQzMzIyYTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY4ODAzOGIzZDc4NTFmN2IxZmM1NzM1YzI4MmE0YTY2YWVhYmNiYjRlNzBmODRmMDY1MzkwZTI5MWE0YmQxMmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRjODE2ODJkOWU2NjBhMzY3ZjNhZTFmOGY0OTJjYjI5NTU3NjhhMjgzY2VjYmIzYTU0Yzk5MTJiYzQwNTM5MDcifQ"
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/integration/popularize/OrderValidityLatestAftersaleDaysReadPortImpl.java#L26-L39",
+          "version": "repo-lines-v1:sha256:add8b50f515bae46512be3f7a3c07b1832a253b49160a50937fbb1ae847874aa:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVkYjY5YjNhNjcwOGZmYmNiYTk1OGQyMTMyNTk5NDJiMmJlYjhhODAwYTM4ZjFmMmIxNTNhMjg3MDAzNDEzYTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg5ZGE4MDI1YjQwZmNjYTU3MmFhMTE0NTBlZWQ0Mjk4YzBjNGQ2NmM0OGFhMTVmYmMwODQyNGUyNTRhZjg3ZDkifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/setting/OrderValiditySettingDefaults.java#L25-L40",
+          "version": "repo-lines-v1:sha256:0e494ee04ae9d932d56b85c973148e17bbbf89cd687accd231450973c85d27cc:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc5NWY1YjFiNGIzZTNhMzNjNTU3MjgzNGU3NWIyODhhMWYxYTQ1OGVlZjFkYTY5YjhlNDU2ZDYyM2YzM2QzMmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ1Y2ZkNDFiZTE5ODAyZDVhN2Y1YTY2Y2VmODY2OTEwM2NmNWE1MThiYzU5OTQ3OThlMTFmYzlmMTE4MDM4YjUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZlNTk4MDNkOTQ3MjE2Yjk1ZDk3MjVkYmExNjI4ZmYxNTllOTk4MzBkYTg1OTMwY2QzMGI3ZmRmZDNiM2UxMDciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU5ZjgwYTJlMDA5ZjU2YzBhM2M3NmNiNjA5ZTRhZjE2NWE0ZDg4YjIxZTM5ZjNhNzAwNTJkNWExNmRlOGZhNzUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/setting/OrderValiditySettingRedisReadService.java#L41-L64",
+          "version": "repo-lines-v1:sha256:ce90516a76e9f45243b5364fc660e3139bfb09a04e1104d03fcb236ad4c97afd:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjljOGFlNGE2MmYwNjEyZTMwY2IxMzI1NzdiYWZhMDJkNDgxMTU0MjA2MmJiYzRjNzU4OTM4MzAyN2IxZDYyNWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ2YjgyZWY0ZDY5ZWYzN2ZhMDFmNzVmOGNlZjY2MWI0MjliNGFiMzJmMTU1MDA4YzUyMjg5OTU1NDY4YTM4NWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM1ZDcxNjc2OWQ4Y2FmMWVjN2E0NmU3NDVhYTM5Njc3YTA1NTJjNzFkNzJmNjc1ZjUwNDhjNzEyNGEzNjk5MDIifQ"
+        },
+        {
+          "resource": "repo://ecshopx-popularize/src/main/java/cn/shopex/ecshopx/popularize/service/BrokeragePlanCloseTimeService.java#L36-L76",
+          "version": "repo-lines-v1:sha256:f43b850fb67661c1c449eec7b2d8add2e0fb4d61ec60236503c889d693fa3890:eyJzZWxlY3RlZExpbmVDb3VudCI6NDEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE5YzkxMWM5NDdiY2ZmMTYyMGY2MDUxN2VmMjQ2YTk2YzY1M2ZlMmFmM2ExMDVjM2Q1MWVkNTYyNGQwMDBkZWMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE1ZjBkYzA2NDJiODJjNzNhZjNjZGM1NTRiZmEyMDAyMGQ3ZDlmNTBkNDE1OTllNWQ5OThjNjEzY2Y3MmQzY2YiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMyZjY3MmIxMDNmZDlhZmQ0MjgzN2FjZTFiOTFmZjVhNmQyNDNiYWM4YWViNzdhZGY3NjNjMzY3YjIyYzM2YjUifQ"
+        },
+        {
+          "resource": "repo://ecshopx-popularize/src/main/java/cn/shopex/ecshopx/popularize/service/PopularizeSettingSaveService.java#L57-L59",
+          "version": "repo-lines-v1:sha256:fd17375b758b9bf17e272cb56dedd68acef22d747dff098e6f04ac23575575dc:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzVjZGFmOWE0NjUyOTIwODYyMjI5OGU2OGZjNWRhODk2NDdhYmU5MjlmZWM0M2ExMmFjOThjNDM2YjVjYmY2YyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMmQzN2UxM2RjNTk2ODMxYWVmNGQ4YzMxZDEzODNjMTRkOWRjYTIzZjAzYWE2ZjM4OWU1ZWUyNDY4ZDk0OGU3ZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDk0YTEwOGY0ZmRhMjJiOGUzZDIzMDBmYzZiMTA3MDA4Y2NmOGVlMTMzZjE4ZGUwMjdmY2I4ZDQwZjRmZjM3NSJ9"
         }
       ]
     },
     {
       "id": "claim_7f31b70537c948668df2502ed6856106",
-      "statement": "The plan_close_time value produced by BrokeragePlanCloseTimeService is written onto unsettled brokerage rows in two places: on order confirm-receipt finish, NormalOrderBrokerageOnFinishService calls updatePlanCloseTime which UPDATEs brokerage rows matching companyId/orderId with is_close=false; and at commission-row insert, NormalOrderFinishBrokerageCoordinator stamps each new row's plan_close_time via computePlanCloseTimeEpochSec().",
+      "statement": "plan_close_time reaches unsettled brokerage rows through two paths with different semantics: on order confirm-receipt finish, NormalOrderBrokerageOnFinishService.orderFinishBrokerage calls BrokeragePlanCloseTimeService.updatePlanCloseTime, which UPDATEs brokerage rows matching companyId/orderId with is_close=false to the computed now + 86400*(limit_time+latest_aftersale_time) value; but at commission-row insert, NormalOrderFinishBrokerageCoordinator no longer stamps the computed time — it sets each new row's plan_close_time to the pending sentinel BrokeragePlanCloseTimeService.PLAN_CLOSE_TIME_PENDING (Integer.MAX_VALUE, via pendingPlanCloseTimeForInsert(), also returned for non-positive companyId), so the settle-brokerage job, which selects rows with plan_close_time <= now and is_close=false, cannot close a row before confirm-receipt refreshes it.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/NormalOrderBrokerageOnFinishService.java#L60-L69",
-          "version": "repo-lines-v1:sha256:a4d5d56fdeb2bf801fa400b74571ad7a9efa56bc301fca9600fecf29cfc92df4:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkwYzZhYWFhZWJhMTQ3NjMzNTRlNmVlNjFmZGEwMWI4NmY2MjQwYjMyMWVmNzc2N2M2MThiOGY4NTMyMDk4OTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk5NmU2MjNhYTE1ZjNkOTliYTUyMjkyMWYxZmZhNzU1NDA2OWY0NWI1Nzg2YWQ5ZGRiMDBhOTlkNjhmNjgzMGIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE0ZGJiNjE0NzA1MDU0NGY0NDhmYjk2ZmIxZmNkMmYyODE3MjQxY2ZkZGYxNTVjM2M4MzRjZTA3YjM4YTljMTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZkM2FmZDI0NDdiMDM3Y2JiMjM5N2YzYTk1MzYxODliMTgyMjExMDZhNDBiNmRlYzA3MzcyYzg0NGYxMjczNzAifQ"
+          "resource": "repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/NormalOrderBrokerageOnFinishService.java#L71-L82",
+          "version": "repo-lines-v1:sha256:15e3518ab67135c59ad5eef4041194c63c1a3a8d341e635464ec2c5f5f9222b4:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhlMjVmOThhNjBmMDBhMjY1MzVjMmUzOTI0YmY5MDA3YzU0MmJkNWUxOTZkZmRhMzEyMGI5Nzc0NjI3ZDhkMWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjljZTc2OTIzNDcwMzg4ZjVjOTI4MDI0ZGE0MGRjYzRhYzMyMTNmZDMwODQ3MzQ0NjQxMTQzYzkxZTY4MDM5MzUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZlOWM0MDU2ODZjYTRmM2I2OWQ1MDdjNzQzNDBjYzllZDQ3YzAzMjBlMDllZjFjYzdiYmQwYTE2ZTY0ZWI3MjYifQ"
         },
         {
-          "resource": "repo://ecshopx-popularize/src/main/java/cn/shopex/ecshopx/popularize/service/BrokeragePlanCloseTimeService.java#L53-L67",
-          "version": "repo-lines-v1:sha256:64c0d47eab94665d1c6423eb53c2ca6763a82b88c2e85c9d2524f29d9e0ff46f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYzZjljNjQyYzExZjQyNDcwM2VjMWU1ODNiMmE3ZmM1YThlZmYwNmZiYTVlNjBkMmRmOTA4NTA1MjNmNTcyZWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRjNjk1YjMzNDRiNjNhZDk5NzY5NmM2MTc2MDY5YWQ2MTUyZDQ2OWNhZTZhMjE5NzYyZTlkOWYyZDE1NGUwNmEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg5YWUzNGYwNTAxMzg2ODkzZmI5N2FjYzk4NjA3MzcxYjZmODkyNTM1OTlmNmY2OGZkYmU3YmM4ZjdlNjg0MTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI0Y2MxYjE5MTk4NzgzYWRkMGJhMDhiMGQ4NDg5MDJhYzdjOTc5NzVmZGM0YmQ1MjJmNDBiZDVhNmY1ZDQxOWEifQ"
+          "resource": "repo://ecshopx-popularize/src/main/java/cn/shopex/ecshopx/popularize/service/BrokeragePlanCloseTimeService.java#L39-L56",
+          "version": "repo-lines-v1:sha256:cafe5cc82d4f8b4070b5266f671942a426bfc9822693387abfab1b8078520612:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNiMDIzMjYxODJjMzJmNDM3NmQ5M2VhZTViZDEyZjYzYjZiZTRhOWExMWJhNTJjYzY4NTdjYWYzYTBmMWQ3MzMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZhYWVmMDBmZTA3ZGIxZTRmMzVlMDI5YjJkNmY5NDY3MDE1MDZhM2QyNmNhYmQxMWY3NGU0NzAyNTRlMzEwNDMifQ"
+        },
+        {
+          "resource": "repo://ecshopx-popularize/src/main/java/cn/shopex/ecshopx/popularize/service/BrokeragePlanCloseTimeService.java#L74-L97",
+          "version": "repo-lines-v1:sha256:bd8fc5d47d544995f8cc78fea5c790fd950e2db1d30b0dc568b53aeaadee2f40:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYzZjljNjQyYzExZjQyNDcwM2VjMWU1ODNiMmE3ZmM1YThlZmYwNmZiYTVlNjBkMmRmOTA4NTA1MjNmNTcyZWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjEwNzE0YmFlZDFiYWQ3YjQ0ZTNlMjFhYTU2MDU1YmNiODVhMTYwNDc1MTVjZjJkZGNlY2ZhN2QyNDg0YzIwZGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImEwNjlhOTdmOTkxNWQ4N2Y1NmEzMTUwYzdkZWE3MjZlYWQyZGNiNzVmMTY0MWExZTQ2NDI3NTkyNDgyZDA2NDYifQ"
+        },
+        {
+          "resource": "repo://ecshopx-popularize/src/main/java/cn/shopex/ecshopx/popularize/service/BrokerageService.java#L55-L73",
+          "version": "repo-lines-v1:sha256:f3df0dff3d7ecab4f81eb636d1c22cb03de6a2086976a2f379aa5ab5963c86f2:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3NzdjZTI3YWFhOWJjZDY3YTU3YTk0NDRjNjIxYmYxYWYwZDg1MGY2ZjUzZWNhNTkyYzNlMDg4ODlmZTNiZmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQxMDIyYjg1ODY3NzNlMjllNDIwNjZjMzczYTc0NmUyYmRjYTU0NTdiMWZmOTU0OTZiOTE3ZWRlYTQ2ODA3ZWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU5Mzk4OGNkYTEzZTJlZTA5NGM4ZTRhYzBmYjU4ODY1YTcyNDQ2MDQ5NjQ5YWUzY2MzZWQ4N2NjMjQwZGNmYmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ2MWJkZDNiMDU5M2NmNjY3ZjBlZDNkNzdmZDdmYWQ0ZmRiODU0NGRjNmYyYjJmZWYwMDBhYTc3YzZiMDAxNjQifQ"
         },
         {
           "resource": "repo://ecshopx-popularize/src/main/java/cn/shopex/ecshopx/popularize/service/brokerage/NormalOrderFinishBrokerageCoordinator.java#L176-L186",
-          "version": "repo-lines-v1:sha256:a0b78a617ce62c287b0af67471314f54775776c2c3a006c7448d9551e4e3c8f5:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjllZGI2ZWVhMzUwOTFlY2U3YjMxMGViYzg5NmI3NGFjZWM1MTMyMzNjYmY3MzY3OTAyYjg4MDk4M2ZmOGNlNjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRhYWE4OGIzZTEyODQxZGZiMzg1MzA1ODc4YjViN2I0OTEzMTdiY2RkNTA3NzFjNDRiNWRlZjgxYTZlMDM4ZjYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU2ZTI5NWViNDQ3NTkzODc5M2QxNTk0YWZhNDM4MTlkMmU2MDg5ZWM0NDM5NTllOTdkODJkZmE3ZmE1NjgyZGYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ5MWVjMWU1OGQ2OGVmNTI1NGE2N2M2YTAxOGVhMzVkMjk5ZjIyYmQ3OTg4ZDQ2OWExZjhiMjJkZDY4ZjljZmUifQ"
+          "version": "repo-lines-v1:sha256:15b6b7d90ab431032df78ac607ff35dd196297fe22709363369bb2530c64d9fe:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjllZGI2ZWVhMzUwOTFlY2U3YjMxMGViYzg5NmI3NGFjZWM1MTMyMzNjYmY3MzY3OTAyYjg4MDk4M2ZmOGNlNjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRhYWE4OGIzZTEyODQxZGZiMzg1MzA1ODc4YjViN2I0OTEzMTdiY2RkNTA3NzFjNDRiNWRlZjgxYTZlMDM4ZjYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU2ZTI5NWViNDQ3NTkzODc5M2QxNTk0YWZhNDM4MTlkMmU2MDg5ZWM0NDM5NTllOTdkODJkZmE3ZmE1NjgyZGYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ5MWVjMWU1OGQ2OGVmNTI1NGE2N2M2YTAxOGVhMzVkMjk5ZjIyYmQ3OTg4ZDQ2OWExZjhiMjJkZDY4ZjljZmUifQ"
         }
       ]
     },
@@ -837,6 +861,6 @@
   ],
   "verification": {
     "by": "openwiki/0.9.0",
-    "at": "2026-11-11T17:12:30.774Z"
+    "at": "2026-11-16T17:12:44.218Z"
   }
 }

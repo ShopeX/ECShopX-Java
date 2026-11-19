@@ -39,12 +39,6 @@ public final class WxappCartParamMergeSupport {
 		p.put("company_id", companyId);
 		p.put("user_id", sessionUserId);
 
-		long promoterUserId = longVal(p.get("promoter_user_id"));
-		p.put("promoter_user_id", promoterUserId);
-		if (promoterUserId != 0L && promoterUserId == sessionUserId) {
-			p.put("user_id", p.get("buy_user_id"));
-		}
-
 		String wxa = stringVal(sessionAuth.get("wxapp_appid"));
 		p.put("wxa_appid", wxa);
 		p.put("wxapp_appid", wxa);

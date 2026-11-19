@@ -57,20 +57,6 @@ public class WxappOrderFreightFeeService {
 			Map<String, Object> h5AuthClaims) {
 		Map<String, Object> params = WxappOrderParamMergeSupport.applyDefaultsAndAuthForFreightFee(mergedParams, h5AuthClaims);
 
-		if (mergedParams.containsKey("promoter_user_id")) {
-			long promoter = longVal(mergedParams.get("promoter_user_id"));
-			if (promoter != 0L) {
-				long authUid = longVal(h5AuthClaims != null ? h5AuthClaims.get("user_id") : null);
-				if (authUid == promoter) {
-					params.put("user_id", longVal(params.get("buy_user_id")));
-					params.put("order_source", "salesperson");
-					Object rm = params.get("receiver_mobile");
-					params.put("mobile", rm == null ? 0L : longVal(rm));
-					params.put("salesman_id", longVal(params.get("promoter_user_id")));
-				}
-			}
-		}
-
 		Object distributorIdRaw = mergedParams.get("distributor_id");
 		if (distributorIdRaw != null) {
 			String s = distributorIdRaw.toString().trim();

@@ -25,4 +25,9 @@ public interface DistributorDefaultAftersalesAddressReadPort {
 	 * 按 company_id + distributor_id + 默认标记（对齐 is_default=1）查询默认售后地址；无匹配行则 empty。
 	 */
 	Optional<Map<String, Object>> findDefaultAddress(long companyId, long distributorId);
+
+	/**
+	 * 默认寄回地址：company_id + distributor_id + return_type=logistics + is_default=1。无匹配行则 empty。
+	 */
+	Optional<Long> findDefaultLogisticsReturnAddressId(long companyId, long distributorId);
 }

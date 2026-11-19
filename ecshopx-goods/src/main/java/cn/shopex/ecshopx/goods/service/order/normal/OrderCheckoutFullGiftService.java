@@ -17,6 +17,7 @@
 package cn.shopex.ecshopx.goods.service.order.normal;
 
 import cn.shopex.ecshopx.common.order.normal.NormalOrderCreateParams;
+import cn.shopex.ecshopx.goods.service.cart.wxapp.CheckoutCartDistributorStoreOverlayService;
 import cn.shopex.ecshopx.goods.service.items.ItemAvailableStoreResolver;
 import cn.shopex.ecshopx.goods.service.items.ItemsCategoryPathByItemService;
 import java.math.BigDecimal;
@@ -36,16 +37,19 @@ public class OrderCheckoutFullGiftService {
 	private final GiftActivityStoreAdjustService giftActivityStoreAdjustService;
 	private final ItemAvailableStoreResolver itemAvailableStoreResolver;
 	private final ItemsCategoryPathByItemService itemsCategoryPathByItemService;
+	private final CheckoutCartDistributorStoreOverlayService checkoutCartDistributorStoreOverlayService;
 	private final StringRedisTemplate companysRedisTemplate;
 
 	public OrderCheckoutFullGiftService(
 			GiftActivityStoreAdjustService giftActivityStoreAdjustService,
 			ItemAvailableStoreResolver itemAvailableStoreResolver,
 			ItemsCategoryPathByItemService itemsCategoryPathByItemService,
+			CheckoutCartDistributorStoreOverlayService checkoutCartDistributorStoreOverlayService,
 			@Qualifier("companysRedisTemplate") StringRedisTemplate companysRedisTemplate) {
 		this.giftActivityStoreAdjustService = giftActivityStoreAdjustService;
 		this.itemAvailableStoreResolver = itemAvailableStoreResolver;
 		this.itemsCategoryPathByItemService = itemsCategoryPathByItemService;
+		this.checkoutCartDistributorStoreOverlayService = checkoutCartDistributorStoreOverlayService;
 		this.companysRedisTemplate = companysRedisTemplate;
 	}
 
@@ -292,12 +296,21 @@ public class OrderCheckoutFullGiftService {
 			List<Map<String, Object>> giftStoreAdjustments) {
 		List<Map<String, Object>> giftLines = new ArrayList<>();
 		long totalDiscountFee = 0L;
+		long distributorId = resolveOrderDistributorId(od);
+		List<Map<String, Object>> preparedGifts = new ArrayList<>();
 		for (Object giftObj : giftList) {
 			if (!(giftObj instanceof Map<?, ?> giftRaw)) {
 				continue;
 			}
 			Map<String, Object> itemInfo = new LinkedHashMap<>((Map<String, Object>) giftRaw);
 			itemInfo.put("company_id", companyId);
+			preparedGifts.add(itemInfo);
+		}
+		if (distributorId > 0L && !preparedGifts.isEmpty()) {
+			checkoutCartDistributorStoreOverlayService.applyForSkuMaps(
+					companyId, distributorId, preparedGifts);
+		}
+		for (Map<String, Object> itemInfo : preparedGifts) {
 			int originalGiftNum =
 					intVal(
 							itemInfo.get("original_gift_num"),
@@ -431,6 +444,15 @@ public class OrderCheckoutFullGiftService {
 		return fromParams == null ? "" : fromParams.trim();
 	}
 
+	/** 订单店：优先 distributor_id，其次 shop_id（与结算主品店上下文一致）。 */
+	private static long resolveOrderDistributorId(Map<String, Object> od) {
+		long distributorId = longVal(od != null ? od.get("distributor_id") : null, 0L);
+		if (distributorId > 0L) {
+			return distributorId;
+		}
+		return longVal(od != null ? od.get("shop_id") : null, 0L);
+	}
+
 	private Map<String, Object> buildGiftOrderLine(
 			Map<String, Object> activityData,
 			Map<String, Object> itemInfo,
@@ -462,8 +484,9 @@ public class OrderCheckoutFullGiftService {
 		line.put("total_fee", 0);
 		line.put("rebate", 0);
 		line.put("total_rebate", 0);
-		line.put("distributor_id", longVal(od.get("distributor_id"), 0L));
+		line.put("distributor_id", resolveOrderDistributorId(od));
 		line.put("mobile", stringVal(od.get("mobile")));
+		// 叠层后显式 false=店仓；未叠层/总部共用保持 true（与普通商品扣减语义一致）
 		line.put("is_total_store", !Boolean.FALSE.equals(itemInfo.get("is_total_store")));
 		line.put("shop_id", longVal(od.get("shop_id"), 0L));
 		line.put("fee_rate", od.get("fee_rate"));

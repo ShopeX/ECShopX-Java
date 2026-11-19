@@ -1,8 +1,8 @@
 ---
 type: domain-reference
 title: Goods Domain (ecshopx-goods)
-description: The product Bundle — item/SKU/category/tag/barcode management, platform-vs-supplier goods flows, three-pool inventory orchestration (ItemInventoryOrchestratorService, InventoryDeductTargetResolver, Redis item_store keys), checkout-time goods services for order create, the operator-cart facade family including the shopadmin fast-buy cloud bucket and platform-store resolution (OnsalePlatformStoreSupport), the wxapp list orchestrator, and the OME / Jushuitan / WdtErp item and inventory sync surfaces.
-tags: [goods, items, sku, inventory, categories, barcodes, dispatch-bus, ome, jushuitan, wdterp, checkout, orders, multi-language, recommendations, operator-cart, fast-buy, wxapp-list]
+description: The product Bundle — item/SKU/category/tag/barcode management, platform-vs-supplier goods flows, three-pool inventory orchestration (ItemInventoryOrchestratorService, InventoryDeductTargetResolver, Redis item_store keys), checkout-time goods services for order create, the operator-cart facade family including the shopadmin fast-buy cloud bucket and platform-store resolution (OnsalePlatformStoreSupport), the wxapp list orchestrator, the Elasticsearch goods-search subsystem (goods_store_item index, blue-green rebuild, dirty-event incremental sync, synonyms, query facade), and the OME / Jushuitan / WdtErp item and inventory sync surfaces.
+tags: [goods, items, sku, inventory, categories, barcodes, dispatch-bus, ome, jushuitan, wdterp, checkout, orders, multi-language, recommendations, operator-cart, fast-buy, wxapp-list, elasticsearch, goods-search, synonyms, search-rebuild]
 sources:
   - id: openwiki-source-91823d7dc6daf2fa438acd3f
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ItemAddEventDispatchPublisherImpl.java
@@ -18,6 +18,8 @@ sources:
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ItemStoreUpdatedEventDispatchListenerRegistrationConfig.java
   - id: openwiki-source-86880bd9da1913b90b40eef3
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ItemTagEditEventDispatchListenerRegistrationConfig.java
+  - id: openwiki-source-0efb63292c0898d92c370a01
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/SearchRebuildJobDispatchPublisherImpl.java
   - id: openwiki-source-ae5ddc2afd4f9ce163c8bc34
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ShuyunOpenPlatformItemStoreProductSyncDispatchListenerRegistrationConfig.java
   - id: openwiki-source-c245b30d4b56e7f701f3d388
@@ -52,12 +54,16 @@ sources:
     resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/api/admin/v1/ItemsTagsController.java
   - id: openwiki-source-243422ced17769fe49ddc64b
     resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/api/front/v1/ItemsController.java
+  - id: openwiki-source-0bb845d502f3fb8cbdc5c113
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/cron/ScheduleGoodsSearchRebuildHandler.java
   - id: openwiki-source-ad916be12b605c2e4737848c
     resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/cron/testcfg/CronTestMockConfig.java
   - id: openwiki-source-349f8e5d173616a903dd1042
     resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/dispatch/ItemsApproveStatusSyncDispatchListener.java
   - id: openwiki-source-4e7beef49f70c145391abf3b
     resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/dispatch/MedicineItemsSubmitAuditJobHandler.java
+  - id: openwiki-source-b746a088d04a04fa4cb3acb7
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/domain/GoodsSearchSynonym.java
   - id: openwiki-source-53076ea432a0f248e7894603
     resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/domain/Items.java
   - id: openwiki-source-8d11fe28b36d2eaf4389512a
@@ -74,12 +80,58 @@ sources:
     resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/package-info.java
   - id: openwiki-source-999488e07803c8696764656d
     resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/repository/ItemsBarcodeRepository.java
+  - id: openwiki-source-f869b1971f5f9d4b86d57e1c
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/search/GoodsSearchFacade.java
+  - id: openwiki-source-2163fb1f195904f48f634ded
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/search/index/GoodsSearchDocument.java
+  - id: openwiki-source-bae927064575e192939caf08
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/search/index/GoodsSearchIndexNames.java
+  - id: openwiki-source-83649260ef3eb1bd1346ab45
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/search/index/GoodsSearchMappingService.java
+  - id: openwiki-source-26e9034c84f38e52b64bc159
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/search/index/MybatisSearchIndexSourceLoader.java
+  - id: openwiki-source-410557eb602b78f9e9af98d1
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/search/price/SearchEffectivePriceCalculator.java
+  - id: openwiki-source-b80c81bfc2aa0622fe22f9c3
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/search/query/GoodsSearchEsQueryBuilder.java
+  - id: openwiki-source-53fd56bb55ad53eac1c5c098
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/search/query/GoodsSearchQueryService.java
+  - id: openwiki-source-d06abc53183de96931fcb0be
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/search/rebuild/SearchRebuildJobHandler.java
+  - id: openwiki-source-5104912c2e0dd2286860ad8b
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/search/rebuild/SearchRebuildService.java
+  - id: openwiki-source-554819b0ae924b822bd10c56
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/search/SearchEsClientConfig.java
+  - id: openwiki-source-81cee125171492ab5fdeb912
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/search/SearchEsProperties.java
+  - id: openwiki-source-5c8392644c10d3730f3e231c
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/search/sync/GoodsSearchIndexDirtyFanout.java
+  - id: openwiki-source-180ad5fe96bda3a39aaa25d5
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/search/sync/GoodsSearchIndexPromotionSyncListener.java
+  - id: openwiki-source-e574685cf9ffc7b239038722
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/search/sync/ItemStoreUpdatedSearchIndexDispatchListener.java
+  - id: openwiki-source-e18412041f7508495d35a065
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/search/sync/SearchIndexSyncListeners.java
+  - id: openwiki-source-cf7076b808179a7f10172d21
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/search/sync/SearchIndexSyncScheduler.java
+  - id: openwiki-source-b7ec4571fbe5a976a79fa0c5
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/search/sync/SearchIndexUpdater.java
+  - id: openwiki-source-b60c8f430b7650770647d36e
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/search/synonym/SearchSynonymEsReloader.java
+  - id: openwiki-source-bd3665777605d5af32590a39
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/search/synonym/SearchSynonymImportFinishPortImpl.java
+  - id: openwiki-source-284ed48be91d61fac09ff44b
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/search/synonym/SearchSynonymKeywordExpander.java
+  - id: openwiki-source-368e6fd13e6164ccdf948b1c
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/search/synonym/SearchSynonymService.java
   - id: openwiki-source-44d1fb47aa15c7379fef56f1
     resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/cart/wxapp/CheckoutCartLogisticsSupplierStoreClampService.java
   - id: openwiki-source-964c7fc37a2b8c220b7cf92a
     resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/distributor/DistributorItemsPagedAddRunner.java
   - id: openwiki-source-719565090cf1a121f8d59ecf
     resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/distributor/DistributorItemsRelListCoreService.java
+  - id: openwiki-source-b82b5293cc853319938ea8e0
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/GoodsSearchRebuildCronService.java
   - id: openwiki-source-c47b0102b62dec8fc0d98f93
     resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/DistributorGoodsSyncService.java
   - id: openwiki-source-7f5c18a9cc00d9897d2ffa5f
@@ -94,12 +146,16 @@ sources:
     resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/ItemAvailableStoreResolver.java
   - id: openwiki-source-5b98c98dc9a93c24f781fe31
     resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/ItemInventoryOrchestratorService.java
+  - id: openwiki-source-6ed56c6f6706b798432313cd
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/ItemsAuditUpdateService.java
   - id: openwiki-source-0fb528aa924a7af9fa4d40b5
     resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/ItemsBatchUpdateStoreOrchestrator.java
   - id: openwiki-source-638a47423376dbfac322e5d8
     resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/ItemsCreateOrchestrator.java
   - id: openwiki-source-57dfabd6152641e6b71cab02
     resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/ItemsMultiLangWriteService.java
+  - id: openwiki-source-313e4ed6edab304d73bedf10
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/ItemsPriceStoreStatusWriteService.java
   - id: openwiki-source-559a49241f70e701d3c70642
     resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/items/ItemStoreService.java
   - id: openwiki-source-b8851fd7367f8b95aab5f74c
@@ -140,6 +196,8 @@ sources:
     resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/keywords/GoodsKeywordsQueryService.java
   - id: openwiki-source-cd9cb6b079ca1b66f254e1eb
     resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/keywords/GoodsKeywordsWriteService.java
+  - id: openwiki-source-f0296d5d66100085b2e7dcf4
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/memberprice/MemberPriceSaveService.java
   - id: openwiki-source-78f76a52c291312bf7fb5c68
     resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/ome/OmeItemsFromOmePagedSyncRunner.java
   - id: openwiki-source-08ff5f6cd6e732ced25d5918
@@ -168,10 +226,14 @@ sources:
     resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/wdterp/WdtErpUploadItemsOrchestratorService.java
   - id: openwiki-source-f676f676ccc235acd7c4b14a
     resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/wxapp/WxappGoodsItemsListQueryOrchestrator.java
+  - id: openwiki-source-b8bfd2250069805b8af88bc1
+    resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/wxapp/WxappGoodsItemsListServiceImpl.java
   - id: openwiki-source-1d581316f942699f1aafc301
     resource: repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/support/ItemLangShardJdbc.java
   - id: openwiki-source-d5db0205a21e6b21df413b16
     resource: repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/repository/ItemsBarcodeRepositoryShopScopedTest.java
+  - id: openwiki-source-4d672d78212fce96c487df2a
+    resource: repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/search/rebuild/SearchRebuildServiceTest.java
   - id: openwiki-source-014d47f4cf11f2ca9adf5c7a
     resource: repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/service/items/InventoryDeductTargetResolverTest.java
   - id: openwiki-source-2bf1ba61082f6ce058dff2b1
@@ -220,15 +282,15 @@ sources:
     resource: repo://ecshopx-supplier/src/main/java/cn/shopex/ecshopx/supplier/service/SupplierItemBatchSyncToPoolService.java
   - id: openwiki-source-04b4e069925a03b744d9bb2f
     resource: repo://ecshopx-theme/src/main/java/cn/shopex/ecshopx/theme/service/PagesTemplateWidgetItemsService.java
-generated: { by: "openwiki/0.9.0", at: "2026-11-09T17:09:44.795Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-16T17:12:44.218Z" }
 verified:
   - by: openwiki/0.9.0
-    at: 2026-11-09T17:09:44.795Z
+    at: 2026-11-16T17:12:44.218Z
 ---
 
 # Goods Domain (ecshopx-goods)
 
-`ecshopx-goods` is the product Bundle (`商品域模块`, see `package-info.java`): everything that turns a merchant's catalog into sellable SKUs and everything order creation needs from that catalog. It owns the `items` table (SKU grain) plus its satellites — `items_category`, `items_rel_cats`, `item_rel_attributes`, `items_barcode`, `items_medicine`, multi-language shard tables — and the shop-scoped `distributor_items` copies maintained together with the distribution bundle. On top of the data it provides: admin/front item CRUD, platform-vs-supplier goods flows, batch status/store edits, barcodes, keywords, tags, recommendations, the inventory pools, the goods-side half of order create (`OrderCreateFormatDataPortImpl`, `OrderCreateInventoryPortImpl`, checkout cart ports, full-gift), the wxapp item-list orchestration chain (`WxappGoodsItemsListQueryOrchestrator`), and the operator-cart facade family the **companys** bundle drives over HTTP (`OperatorCartFastBuyFacade`, `OperatorCartSkuLoadFacade`, `OperatorCartDataListFacade`, `OperatorCartScanBarcodeFacade` — all implemented here in `service/operatorcart/`).
+`ecshopx-goods` is the product Bundle (`商品域模块`, see `package-info.java`): everything that turns a merchant's catalog into sellable SKUs and everything order creation needs from that catalog. It owns the `items` table (SKU grain) plus its satellites — `items_category`, `items_rel_cats`, `item_rel_attributes`, `items_barcode`, `items_medicine`, multi-language shard tables — and the shop-scoped `distributor_items` copies maintained together with the distribution bundle. On top of the data it provides: admin/front item CRUD, platform-vs-supplier goods flows, batch status/store edits, barcodes, keywords, tags, recommendations, the inventory pools, the goods-side half of order create (`OrderCreateFormatDataPortImpl`, `OrderCreateInventoryPortImpl`, checkout cart ports, full-gift), the wxapp item-list orchestration chain (`WxappGoodsItemsListQueryOrchestrator`), the Elasticsearch goods-search subsystem under `search/` (the `goods_store_item` index, blue-green rebuild, dirty-event incremental sync, synonyms, and the `GoodsSearchFacade` query path the front list uses when `ecshopx.search.es.enabled`), and the operator-cart facade family the **companys** bundle drives over HTTP (`OperatorCartFastBuyFacade`, `OperatorCartSkuLoadFacade`, `OperatorCartDataListFacade`, `OperatorCartScanBarcodeFacade` — all implemented here in `service/operatorcart/`).
 
 The Bundle follows the standard layering ([Bundle Layering](../architecture/bundle-layering.md)): controllers in `api/admin/v1` and `api/front/v1`, orchestration in `service/`, dispatch job handlers in `dispatch/`, openapi port impls in `openapi/`, order/promotion-facing ports in `integration/`, and entities in `domain/`. Its POM depends on 20 other bundles — notably `ecshopx-orders` (cart tables), `ecshopx-promotions`, `ecshopx-distribution`, `ecshopx-supplier`, `ecshopx-deposit`, `ecshopx-pointsmall` — which is why order-create logic can live here while staying decoupled through common ports ([Cross-Bundle Communication](../architecture/cross-bundle-communication.md)).
 
@@ -270,6 +332,7 @@ A unique index enforces `(company_id, distributor_id, item_bn)`; a composite ind
 | `POST /setItemsCategory` | `ItemsRelCatsWriteService` | replace item↔category rows |
 | `POST /setItemsTemplate`, `POST /setItemsSort`, `POST /rebateconf`, `POST /warning_store`, `POST /set_commission_ratio`, `PUT /itemsisgiftupdate`, `POST /items/params` | per-field write services | freight template, sort, rebate config, warning store, commission, gift flag, params |
 | `POST/GET/DELETE /keywords…` | `GoodsKeywords*Service` | shop hot keywords |
+| `GET/PUT /search/synonyms`, `DELETE /search/synonyms/{id}` | `SearchSynonymController` → `SearchSynonymService` | goods-search synonym groups (see [Goods search](#goods-search-elasticsearch)) |
 | `POST /medicineItems/sync` | `ItemsMedicineService` | medicine data sync |
 | `GET /goodsbycoupon/{coupon_id}` | `GoodsItemsByCouponService` | items usable by a coupon |
 
@@ -296,9 +359,10 @@ All job handlers live in `dispatch/`; registration happens in bootstrap configs 
 | `job:79:…UploadItemsToWdtErpJob` | `UploadItemsToWdtErpJobHandler` | WDT ERP item upload pages |
 | `job:82:…UploadItemsToJushuitanJob` | `UploadItemsToJushuitanJobHandler` | Jushuitan item upload pages |
 | `job:84:…InventoryQueryFromJushuitanJob` | `InventoryQueryFromJushuitanJobHandler` | Jushuitan inventory query batches |
+| `job:198:GoodsBundle\Jobs\SearchRebuildJob` | `SearchRebuildJobHandler` | goods search index full rebuild / per-company upsert (see [Goods search](#goods-search-elasticsearch)) |
 | export file jobs | `*ExportFileJobTypeHandler` | async CSV/XLSX exports (items, codes, tags, distributor items, epidemic registers, point-mall items) |
 
-There is no `cron/` production code in this bundle (only `cron/testcfg/CronTestMockConfig` for the `test-cron` profile) — scheduling is owned by system-link/bootstrap.
+The bundle's only production cron code is the goods-search rebuild handler (below); everything else under `cron/` is `cron/testcfg/CronTestMockConfig` for the `test-cron` profile — scheduling is otherwise owned by system-link/bootstrap.
 
 ## The create pipeline
 
@@ -334,17 +398,17 @@ sequenceDiagram
 Caption: the item create flow — permission gating, supplier-vs-platform routing, per-SKU persistence with side effects, and the two item lifecycle events.
 
 1. **Gate.** `POST /api/v1/goods/items` merges query/form/JSON params, copies `operator_type` from the operator JWT, forces `supplier_id=0` — unless the operator is a supplier, in which case `supplier_id=operator_id` and `audit_status` defaults to `submitting` (other operators get `approved`). `GoodsItemsCreateRequestGate.validateBeforeCreate` then enforces: logged-in operator with non-empty `operator_type`; super-admin route permission per route alias (skipped for `salesperson_workwechat` source); company activation (`ForbiddenException 未激活` when missing/zero, skipped for salesperson source); and distributor operators must carry distributor bindings and may only manage a distributor they own (else `您没有权限管理此店铺`), with their selected `distributor_id` injected into the merged params.
-2. **Routing.** `ItemsCreateOrchestrator.createItems` sends `supplier_id>0` to `SupplierItemsAddService` and everything else to `PlatformItemsAddService`, then (platform path only) calls `DistributorGoodsSyncService.syncGoods`.
+2. **Routing.** `ItemsCreateOrchestrator.createItems` sends `supplier_id>0` to `SupplierItemsAddService` and everything else to `PlatformItemsAddService`, then (platform path only) calls `DistributorGoodsSyncService.syncGoods` and marks the goods search-index dirty via `GoodsSearchIndexDirtyFanout.scheduleUpsertForDefaultItem` (see [Goods search](#goods-search-elasticsearch)).
 3. **Platform persistence.** `PlatformItemsAddService.addItemsTransactional` (`@Transactional`) picks an `ItemTypeHandler` (`normal` vs default `services`), enriches medicine params, and — for multi-spec (`nospec=false`) — loops `spec_items` persisting one SKU per row through `persistOneSku`; single-spec persists one. `default_item_id` falls out as the lowest-price SKU (first on-sale SKU, else the first), and `goods_id` defaults to `default_item_id`. After the loop: gift items run `ItemCreatePromotionGuardService.checkNotFinishedActivityValid`, prices run `checkItemPrice`, then `updateByItemIds` + `clearDefaultFlagExcept` + `setDefaultItem` stamp the whole sibling group, and `applyRelData` writes category rows (`ItemsRelCatsWriteService`), brand and params on the default SKU.
 4. **Per-SKU side effects.** `persistOneSku` inserts/updates the `items` row, writes multi-language rows, saves the shop-scoped barcode, seeds the Redis store (`itemStoreService.saveItemStore(itemId, store, 0)`), writes `item_spec` attribute rows with spec images, and honors `point_access=items` point-mall upserts. `NormalItemTypeHandler.preRelItemParams` validates store (`0-999999999`), converts `cost_price`/`rebate` money to fen, and generates `item_bn` when missing.
-5. **Events.** `ItemCreateEvent` is published **inside the transaction in SYNC mode** (the promotions listener runs inline before commit); `ItemAddEvent` is scheduled `afterCommit` per SKU (or immediately when no transaction synchronization is active) and published ASYNC on the Redis bus.
+5. **Events.** `ItemCreateEvent` is published **inside the transaction in SYNC mode** (the promotions listener runs inline before commit); `ItemAddEvent` is scheduled `afterCommit` per SKU (or immediately when no transaction synchronization is active) and published ASYNC on the Redis bus. The transaction also schedules a search-index upsert for the resolved default SKU (`GoodsSearchIndexDirtyFanout`, fired after commit), and `ItemsCreateOrchestrator` schedules a second upsert after `syncGoods` returns — both converge on the same upsert.
 6. **Distributor fan-out.** `syncGoods` selects distributors with `auto_sync_goods=true` (excluding `is_valid=delete`) and either runs all pages synchronously (≤3 distributors) or enqueues `job:62 AddDistributorItems` — `DistributorItemsPagedAddRunner.consumeOneQueuedPage` inserts/updates `distributor_items` rows per 100-SKU page and re-enqueues the next page until done, also firing Shuyun product sync per touched goods.
 
 ## Update, audit, delete, batch status
 
-* **Update** — `PUT /items/{item_id}` reuses the gate (`validateBeforeUpdate`) and `GoodsItemsCreateParamValidator.validateForUpdate` (name/pics/sort required; `normal` items require freight template + brand; supplier goods require `audit_status`), then `ItemsUpdateOrchestrator.updateItems` branches: supplier operator → `SupplierItemsAddService` with audit reset to `submitting` (unless already `processing`); platform operator editing a supplier good (`supplier_id>0` in body) → supplier add when `audit_status=approved`, then `SupplierItemsReviewGoodsService.reviewGoods`; plain platform good → platform add + `syncGoods`. The branch exclusivity is pinned by `ItemsUpdateOrchestratorDistributorSyncTest` (supplier paths never call `syncGoods`).
+* **Update** — `PUT /items/{item_id}` reuses the gate (`validateBeforeUpdate`) and `GoodsItemsCreateParamValidator.validateForUpdate` (name/pics/sort required; `normal` items require freight template + brand; supplier goods require `audit_status`), then `ItemsUpdateOrchestrator.updateItems` branches: supplier operator → `SupplierItemsAddService` with audit reset to `submitting` (unless already `processing`); platform operator editing a supplier good (`supplier_id>0` in body) → supplier add when `audit_status=approved`, then `SupplierItemsReviewGoodsService.reviewGoods`; plain platform good → platform add + `syncGoods` + search-index dirty upsert. The branch exclusivity is pinned by `ItemsUpdateOrchestratorDistributorSyncTest` (supplier paths never call `syncGoods`).
 * **Audit** — `PUT /audit/items` → `ItemsAuditUpdateService.auditItems` writes `audit_status`/`audit_reason` by a `goods_id` clause that accepts null/single/list semantics.
-* **Delete** — `ItemsDeleteOrchestrator.delete` routes by `operator_type`. `PlatformItemsDeleteService.deleteCore` loads the row company-scoped (`删除商品信息有误` when missing) and refuses a mismatched `distributor_id` query (`店铺商品信息有误，不可删除`), expands multi-spec to all sibling SKUs (by `default_item_id`, falling back to the row itself when the sibling query comes back empty), and assembles the `ItemDeleteEvent` payload (`item_id`, `company_id`, `del_ids`, full `item_info` snapshot) **before any delete runs**. The deletes then execute in a fixed order inside the one transaction: first `OperatorCartCleanupService.deleteByCompanyIdAndItemIds` purges the affected `operator_cart` rows (the companys bundle's shopadmin cart table) so a deleted SKU can never linger in an operator cart; then per SKU the `items` row + Redis `item_store` key + attribute rows; then rel-cats (default SKU), services rel-type, `distributor_items`, member prices and barcodes; and only at the end does `itemDeleteEventDispatchPublisher.publishAfterCommit` schedule the event **after commit**.
+* **Delete** — `ItemsDeleteOrchestrator.delete` routes by `operator_type`. `PlatformItemsDeleteService.deleteCore` loads the row company-scoped (`删除商品信息有误` when missing) and refuses a mismatched `distributor_id` query (`店铺商品信息有误，不可删除`), expands multi-spec to all sibling SKUs (by `default_item_id`, falling back to the row itself when the sibling query comes back empty), and assembles the `ItemDeleteEvent` payload (`item_id`, `company_id`, `del_ids`, full `item_info` snapshot) **before any delete runs**. The deletes then execute in a fixed order inside the one transaction: first `OperatorCartCleanupService.deleteByCompanyIdAndItemIds` purges the affected `operator_cart` rows (the companys bundle's shopadmin cart table) so a deleted SKU can never linger in an operator cart; then per SKU the `items` row + Redis `item_store` key + attribute rows; then rel-cats (default SKU), services rel-type, the search-index delete fan-out (`GoodsSearchIndexDirtyFanout.scheduleDeleteForDefaultItem`, scheduled before the `distributor_items` rows disappear so the shop list is still resolvable), `distributor_items`, member prices and barcodes; and only at the end does `itemDeleteEventDispatchPublisher.publishAfterCommit` schedule the event **after commit**.
 * **Supplier-linked sync.** When a supplier edits its master data, `SupplierItemsAddService.syncPlatformIfNeeded` propagates a PHP-whitelist field patch — `store`, `pics`, `other_product_materials`, `approve_status`, `item_name`, optional `cost_price` (yuan→fen, non-negative only)/`start_num`, and an audit reset (`audit_reason=""`, `audit_date=NULL`) when the edit carries `submiting`/`submitting`/`processing` — to every `items` row linked by `supplier_item_id` and refreshes each linked Redis store. It is skipped unless the goods' `supplier_items.is_sync_platform` flag is on (`isSyncPlatformEnabledForGoods`), and the surrounding `addItemsTransactional` resets that flag to `0` afterwards, so the platform pool owns the rows until the next explicit `syncToPool`. Pinned by `SupplierItemsAddServiceSyncPlatformIfNeededTest`.
 * **Supplier review and sync are split.** `SupplierItemsReviewGoodsService` implements three common interfaces the **supplier bundle** drives: `SupplierItemsReviewGoodsExecutor.reviewGoods` (called from `SupplierItemBatchReviewService`, and by `ItemsUpdateOrchestrator` when a platform operator audits a supplier good) now only writes `audit_status`/`audit_reason`/`audit_date` across the supplier `goods_id` — even an `approved` verdict no longer syncs rows into the platform pool. All three entrypoints first verify the supplier row belongs to the caller's company and reject foreign rows with `商品不存在或无权`. Pool copies happen exclusively through the explicit `SupplierItemsSyncToPoolExecutor.syncToPool` (driven by the supplier bundle's `SupplierItemBatchSyncToPoolService`), which requires the row to already be `approved` (`仅审核通过的商品可同步到商品池`), inserts/updates one pool `items` row per supplier SKU (with item-store seeding and pool-scope barcodes), deletes vanished SKUs, stamps `is_sync_platform=1`, and — under the `platform` product model — re-syncs every shop that previously copied the goods. `SupplierItemsSyncToShopExecutor.syncToShop` is likewise restricted to `platform` product-model companies, requires `approved`, and writes shop-scoped `items` rows plus dual-written shop barcode rows (`SupplierItemsReviewGoodsServiceAuditSyncSplitTest`, `SupplierItemsReviewGoodsServiceShopBarcodeDualWriteTest`).
 * **Batch status** — `PUT /itemstatusupdate` expands a truthy `query` filter into distinct `goods_id`s, then `GoodsItemsBatchApproveStatusService.updateItemsStatus`: `onsale` rejects supplier-controlled goods (`供应商商品不可售`) and prescription drugs unless the pharma-industry setting is on and their audit is not pending (`instock` skips those checks — deliberate); each goods gets `updateApproveStatusByCompanyAndGoodsId` plus an enqueue of the batch-status event through `job:74` (slow queue). The `job:74` handler republishes `EVENT_ITEM_BATCH_EDIT_STATUS`, whose listeners are the third-party marketing-center push **and** the goods-bundle's own `ItemsApproveStatusSyncDispatchListener`, which cascades the status to `distributor_items`.
@@ -484,6 +548,83 @@ The bucket itself is `OperatorShopFastBuyRedisService` (companys bundle): key `s
 <!-- openwiki: broken internal link [../workflows/operator-fast-buy-flow.md] file "../workflows/operator-fast-buy-flow.md" does not exist. Fix the href or restore the target, then delete this comment. -->
 The end-to-end shopadmin fast-buy flow (add → checkout → order create → bucket clear, including where each gate fires) is traced in [Operator Fast-Buy Flow](../workflows/operator-fast-buy-flow.md); this page owns the goods-side pieces above plus the `uses_platform_item_stock` flag that carries the platform-bucket deduction decision through `OrderCreateFormatDataPortImpl` into `OrderCreateInventoryPortImpl`.
 
+## Goods search (Elasticsearch)
+
+The `search/` package is the optional ES-backed recall path for the front goods list plus the index-maintenance machinery behind it. Everything is gated on `ecshopx.search.es.*` (`SearchEsProperties`): `enabled` (default `false`) turns the subsystem on, `likeFallback` decides whether an ES failure falls back to the DB list or returns an empty body, `hosts`/`alias` (default alias `goods_store_item`)/timeouts configure the `ElasticsearchClient` built in `SearchEsClientConfig`. The legacy `rank.*` weights are retained only for config compatibility — ranking is the hierarchical sort below.
+
+### Index shape and document materialization
+
+One document per **store-item** — the `(company_id, distributor_id, default_item_id)` triple (`GoodsSearchDocumentId`), so a goods exists once for the mall (`distributor_id=0`) and once per shop that sells it. `GoodsSearchMappingService` creates physical indices named `goods_store_item_yyyyMMddHHmmss` with: IK text (`ik_max_word` / `ik_smart`) on `item_name`/`brief`/`tags` plus a 1–2-gram CJK `.ngram` subfield, pinyin keyword+ngram (2–20) fields for full-pinyin and first-letter infix matching, keyword `item_bn`/`barcode`, long price/sort/sales/listed_at, `flattened` `member_prices.grade`/`vipGrade` maps, and **nested** `skus` (`sku_id`, `store`, `approve_status`) and `activities` (`type`, `activity_id`, `activity_price`, `start_at`, `end_at`, `priority` — only seckill / limited-time-sale / groups price-changing activities). `GoodsSearchDocument.hasStock()` is true when any SKU has `store > 0` and a sellable status.
+
+`MybatisSearchIndexSourceLoader` materializes one source per store-item key (paged by `(default_item_id, distributor_id)`): the default SKU anchors name/brief/prices, the sibling SKU rows become the nested SKU list (shop rows take their store/price from `distributor_items`), shop documents are materialized only when the goods is on that shop's shelf (`goods_can_sale`) or shop-owned — mirroring the DB list scope — and `SearchIndexMemberPriceMaterializer` / `SearchIndexMemberActivityRepository` add the member-price buckets and live activity rows. An empty materialization page does not end the scan (orphan keys are skipped), so rebuilds cannot stall on a deleted `items` row.
+
+### Query path: ES recall + DB hydrate
+
+```mermaid
+sequenceDiagram
+    participant SVC as WxappGoodsItemsListServiceImpl
+    participant GATE as Orchestrator salesman gate
+    participant FAC as GoodsSearchFacade
+    participant QRY as GoodsSearchQueryService
+    participant ES as Elasticsearch (goods_store_item alias)
+    participant ORCH as WxappGoodsItemsListQueryOrchestrator
+
+    SVC->>GATE: resolveSalesmanGateForWxappItemList (short-circuit nosalestore)
+    SVC->>FAC: queryListWithHydration(effective params, GoodsSearchQuery)
+    FAC->>QRY: search(query)
+    QRY->>QRY: expand keywords via SearchSynonymKeywordExpander
+    QRY->>ES: bool query (hard filters + keyword shoulds), hierarchical sort
+    ES-->>QRY: hits (x5 over-fetch when price filter/sort)
+    QRY->>QRY: SearchEffectivePriceCalculator per hit, Java price filter/sort, page slice
+    QRY-->>FAC: GoodsSearchPageResult (total, hits, approxTotal)
+    FAC->>ORCH: queryItemListData(item_id = ES-ordered ids, page 1, size min(50, hits))
+    ORCH-->>FAC: hydrated DB rows
+    FAC->>FAC: reorder to ES order, write sale_price into price + __list_sale_price
+    FAC-->>SVC: total_count (adjusted for dropped hits) + list
+```
+
+Caption: the ES recall path — synonym-expanded keyword search, Java-side effective-price post-processing, then DB hydration in ES order.
+
+* **Entry.** `WxappGoodsItemsListServiceImpl.execute` uses ES only for the default-goods list (`is_default != false`) when `searchEsProperties.isEnabled()`. With ES on, the param builder is told to skip the DB keyword LIKE (`skipKeywordDbLike`); the salesman gate is pre-resolved so a gated request short-circuits before touching ES; the tag intersection is applied in Java (`applyTagItemIdConstraint`); and `GoodsSearchQuery.fromWxappParams` maps the orchestration params (company, primary `distributor_id`, keywords, the `item_id ⊕ category_resolved_item_ids` allow list, category keys, approve/audit status, fen price bounds, `goodsSort`, page/pageSize, member tier). A `GoodsSearchEsException` falls back to the DB orchestrator when `likeFallback` is on, otherwise the response is an empty list body.
+* **Recall.** `GoodsSearchQueryService` short-circuits the `[-1]` no-match allow list, expands keywords through the synonym groups, then builds the ES bool query (`GoodsSearchEsQueryBuilder`): hard filters on company/distributor/approve/audit/allow-list/category, and — when keywords exist — a should-set of IK `multi_match` (`item_name^3`, `brief^2`, `tags^1`), a single-codepoint-token `.ngram` `multi_match`, `item_bn`/`barcode` prefixes, and pinyin `multi_match`; without keywords it is a constant-score match-all. Sorting is hierarchical: `has_stock` desc → `_score` → back-office `sort` desc → `sales` desc → `listed_at` desc; `goodsSort` sales/new map to a single-field ES sort.
+* **Effective price in Java.** Each hit's effective price is computed by `SearchEffectivePriceCalculator` with the exclusive-branch precedence **activity price > custom member price > tier-discount price > sale price**. Price filters and price sorts are therefore applied in Java: the service over-fetches `page * pageSize * 5` (capped at `MAX_WINDOW` 5000), filters/sorts, slices the requested page, and marks the total approximate; non-price queries paginate natively in ES (window beyond 5000 → `GoodsSearchEsException`).
+* **Hydration.** `GoodsSearchFacade` re-queries the DB through `WxappGoodsItemsListQueryOrchestrator.queryItemListData` with `item_id` set to the ES-ordered ids (page 1, size `min(50, max(ids,1))`), reorders rows back into ES order, writes the ES document's `sale_price` into the row's `price` (plus the internal `__list_sale_price` marker; enrichment may still add `activity_price`, and `restoreSalePriceWhenNoActivityPriceTag` cleans up rows with no price-changing activity), and adjusts `total_count` down by the number of hits that failed hydration (e.g. a shop's `goods_can_sale` flipped between index and query). Member-price display fields (`member_price`/`vip_price`) are applied later by `WxappGoodsItemsListMemberPriceApplyService` and never overwrite `price`.
+
+### Incremental sync: dirty events after commit
+
+```mermaid
+flowchart LR
+    subgraph sources["Dirty sources"]
+        A1["create / update / audit / price-store-status<br/>member price save<br/>(GoodsSearchIndexDirtyFanout.scheduleUpsert)"]
+        A2["delete<br/>(scheduleDelete, before distributor_items purge)"]
+        A3["EVENT_ITEM_STORE_UPDATE<br/>(ItemStoreUpdatedSearchIndexDispatchListener)"]
+        A4["seckill / groups commit + seckill end<br/>(GoodsSearchIndexPromotionSyncListener<br/>→ GoodsSearchIndexDirtyByItemIdsPort)"]
+    end
+    A1 & A2 & A3 & A4 --> SCH["SearchIndexSyncScheduler<br/>(GoodsSearchDirtyEvent afterCommit,<br/>immediate without tx)"]
+    SCH --> LIS["SearchIndexSyncListeners<br/>@TransactionalEventListener AFTER_COMMIT"]
+    LIS --> UPD["SearchIndexUpdater<br/>upsert = fetchOne → map → bulkIndex<br/>(missing source → delete); delete; 3 retries, warn-only"]
+    UPD --> ES[("goods_store_item alias")]
+```
+
+Caption: incremental search-index sync — every goods-mutating path fans out a dirty event per `(company, distributor, default_item_id)`; writes happen only after the DB transaction commits.
+
+`GoodsSearchIndexDirtyFanout` expands a `default_item_id` to the mall (`distributor_id=0`) plus every shop holding the goods in `distributor_items`, so one goods edit dirties one document per selling store. The write paths that call it: platform create/update (`PlatformItemsAddService` in-transaction, plus `ItemsCreateOrchestrator`/`ItemsUpdateOrchestrator` after `syncGoods` on the platform path only), `ItemsAuditUpdateService`, `ItemsPriceStoreStatusWriteService`, `MemberPriceSaveService`, and delete (`scheduleDeleteForDefaultItem`, deliberately scheduled **before** the `distributor_items` rows are purged so the fan-out can still resolve the shop list). `ItemStoreUpdatedSearchIndexDispatchListener` additionally listens to `event:258 ItemStoreUpdateEvent` so every stock change refreshes `has_stock`/`skus.store`, and `GoodsSearchIndexPromotionSyncListener` listens to seckill commit (`@EventListener`), seckill end and groups commit (`@TransactionalEventListener AFTER_COMMIT`, item ids re-read from the rel tables) and fans out through the common `GoodsSearchIndexDirtyByItemIdsPort` (goods' impl maps sku ids → default ids).
+
+`SearchIndexSyncScheduler` defers each dirty event to `afterCommit` (publishing immediately when no transaction synchronization is active, e.g. tests), and `SearchIndexSyncListeners` consumes the Spring event after commit and calls `SearchIndexUpdater`: an upsert re-materializes the source and bulk-indexes it — a source that no longer materializes (deleted goods, goods dropped from the shelf) becomes a document **delete** — and every op retries 3 times and only logs on final failure, so a search-index outage never breaks the goods write path. All of it is a no-op while `ecshopx.search.es.enabled=false`.
+
+### Full rebuild and scheduled calibration
+
+`job:198 GoodsBundle\Jobs\SearchRebuildJob` (`SearchRebuildJobHandler`, registered in bootstrap's `SearchRebuildJobRegistrationConfig`, enqueued ASYNC on the Redis slow queue) supports three payload shapes: `all_companies=true` → `rebuildCompanies` (blue-green rebuild of every active, unexpired company into one new physical index, then alias switch); `company_id` + optional `distributor_id` → `reindexCompanyIntoAlias` (upsert the company's pages into the current alias **without** switching); and `company_id` + `blue_green=true` → single-company blue-green (`rebuild`) — which replaces the site-wide alias and is explicitly marked dangerous for multi-tenant use. `SearchRebuildService` pages the source loader in batches of 500 keyed by `(default_item_id, distributor_id)`; a bulk failure aborts before the alias switch, so a failed rebuild never swaps in a partial index (`SearchRebuildServiceTest`).
+
+The XXL-Job handler `goods-search-rebuild` (`ScheduleGoodsSearchRebuildHandler`) periodically runs `GoodsSearchRebuildCronService.enqueueRebuildForActiveCompanies`, enqueuing one per-company upsert job per active company — the recurring drift-calibration loop that heals missed incremental events (and returns 0 without enqueuing when ES is disabled).
+
+### Synonyms
+
+Synonyms are per-company groups stored in `goods_search_synonyms` (unique `(company_id, group_key)`; `SearchSynonymService`, with an in-memory per-company list cache) and administered from `SearchSynonymController` (`GET/PUT /api/v1/goods/search/synonyms`, `DELETE /search/synonyms/{id}`). They take effect in **two** places:
+
+1. **Query-time expansion (the live path).** `GoodsSearchQueryService.withSynonymExpandedKeywords` asks `SearchSynonymKeywordExpander` to grow the keyword string: when the trimmed query equals or token-matches any word of a group, all other words of that group are appended (space-joined) before the `multi_match` runs — no index-side synonym filter needed (`SearchSynonymKeywordExpanderTest`).
+2. **ES 8 synonyms set (hot reload).** `SearchSynonymEsReloader` pushes the company's groups as a synonyms set (`goods_synonyms_{companyId}` via `SearchSynonymSetNames`) through the ES Synonyms API and calls `reloadSearchAnalyzers` on every physical index bound to the alias; `GoodsSearchMappingService.buildUpdatableSynonymFilter` declares the matching `updateable` synonym filter (per-company analyzer selection on the shared index is not yet wired into the query path). `replaceGroup`/`deleteGroup` invalidate the cache and reload ES; a reload `IOException` surfaces as `SearchSynonymEsReloadException` (同义词 ES 热更新失败). Bulk imports write groups without ES reload (`upsertGroupWithoutEsReload` via `SearchSynonymImportRowService`), and the espier import-finish port (`SearchSynonymImportFinishPortImpl`) triggers one reload at the end, degrading to a warning hint (数据已保存，搜索同义词热更新失败…) instead of failing the import.
+
 ## Categories
 
 `ItemsCategorySaveService.saveItemsCategory` is the tree persistence entry (`package-info.java` points here): it validates the tree (name required, ≤ 50 UTF-8 bytes), applies `customize_page_id` defaults, saves levels 1–3 recursively with comma-joined `path`, and resolves each node's `distributor_id` via `ItemsCategoryDistributorIdResolver` — main categories always `0`; under the `platform` product model the JWT distributor id wins; the product model comes from `companys.menu_type` (1..5 → `all`/`b2c`/`platform`/`standard`/`in_purchase`) with `${common.product-model:platform}` as default. An `afterCommit` synchronization publishes `EVENT_ITEM_CATEGORY_ADD` and dispatches Shuyun open-platform category sync for level-2/3 categories (`ItemsCategorySaveServiceApiConvergenceDispatchTest`).
@@ -511,7 +652,7 @@ Three small catalog surfaces were hardened to never leak or hand over another te
 3. **Repo param assembly** (`buildRepositoryParams`) — `audit_status` defaults `approved`, `approve_status` passes through, price bounds convert yuan→cents, and the item-id family composes `item_id` ⊕ `category_resolved_item_ids` ⊕ `__keyword_default_item_ids` ⊕ `tag_id` into one `KEY_ITEM_ID_OR_DEFAULT_IDS` set, intersecting when several are present and collapsing to `[-1]` whenever an intersection empties (a category or keyword with no hits must yield an empty list, not the whole catalog — pinned by `WxappGoodsItemsListQueryOrchestratorCategoryTest` and `…KeywordTest`).
 4. **Distributor scoping** — `standard` model with `is_can_sale` and a single shop joins through the store shelf (`dist_rel_virt_` virtual join on `distributor_items`/`goods_can_sale`, regardless of whether the SKU itself has independent stock); any other combination falls back to a direct `items.distributor_id` filter.
 
-`effectiveBusinessParamsForWxappItemList` replays steps 2 (minus the paging internals) so the response's `newFilter` echo reflects exactly the conditions the query used. After the orchestrator returns, the service layer applies member prices, promotion enrichment, promoter pricing, distributor sku-replace (`SalespersonCartDistributorSkuReplaceService`, same field rules as the rel-list core) and the wxapp display-store composition.
+`effectiveBusinessParamsForWxappItemList` replays steps 2 (minus the paging internals) so the response's `newFilter` echo reflects exactly the conditions the query used. When `ecshopx.search.es.enabled` is on and the request is the default-goods list (`is_default != false`), `WxappGoodsItemsListServiceImpl` routes the recall through Elasticsearch instead — `GoodsSearchQuery.fromWxappParams` maps the same effective params into an ES query and `GoodsSearchFacade` hydrates the DB rows in ES order (full flow in [Goods search](#goods-search-elasticsearch)); the orchestrator's `[-1]` no-match convention is honored on the ES side too. After the orchestrator/facade returns, the service layer applies member prices, promotion enrichment, promoter pricing, distributor sku-replace (`SalespersonCartDistributorSkuReplaceService`, same field rules as the rel-list core) and the wxapp display-store composition.
 
 `OrderCreateFormatDataPortImpl` reuses `querySkuItemsList` (with just `item_id` ids) to merge live SKU data onto wxapp-online order lines at checkout — the same enrichment a buyer saw in the cart.
 
@@ -534,7 +675,7 @@ Publisher interfaces live in `ecshopx-goods/dispatch` (some in `ecshopx-common`)
 | `ItemCreateEvent` | `event:257:GoodsBundle\Events\ItemCreateEvent` | `PlatformItemsAddService` **in-tx, SYNC** | `promotions.CreateItemSuccessPromotions` (sync, inline) |
 | `ItemAddEvent` | `event:271:…\ItemAddEvent` | per-SKU `afterCommit`, ASYNC Redis | third-party marketing-center push, youshu item add |
 | `ItemDeleteEvent` | `event:247:…\ItemDeleteEvent` | delete `afterCommit`, ASYNC Redis | marketing-center push (sync listener), youshu `items_item_delete` (async) |
-| `ItemStoreUpdateEvent` | `event:258:…\ItemStoreUpdateEvent` | `ItemStoreService.saveItemStore` / `saveItemStoreForWdtErp` (SYNC) | ali template message (`goods.listeners.SendTemplateMsgListener`), members goods-arrival notices, Shuyun open-platform product sync |
+| `ItemStoreUpdateEvent` | `event:258:…\ItemStoreUpdateEvent` | `ItemStoreService.saveItemStore` / `saveItemStoreForWdtErp` (SYNC) | ali template message (`goods.listeners.SendTemplateMsgListener`), members goods-arrival notices, Shuyun open-platform product sync, `ItemStoreUpdatedSearchIndexDispatchListener` (search-index upsert) |
 | item category add | `event:goods:item_category_add` | category save `afterCommit`, ASYNC Redis | youshu `item_category` |
 | `ItemTagEditEvent` | `event:259:…\ItemTagEditEvent` | `ItemsTagsRelService` (SYNC) | `promotions.ItemTagEditSuccessPromotions` |
 | `ItemBatchEditStatusEvent` | `event:248:…\ItemBatchEditStatusEvent` | `job:74` handler republish (ASYNC Redis) | marketing-center push, goods `items_approve_status_sync` → `distributor_items` |
@@ -608,6 +749,7 @@ Barcodes deserve their own note: `ItemsBarcodeRepository.saveBarcode` deletes th
 * **Barcode uniqueness is per shop**, enforced by application-level check (delete-then-insert), pinned by `ItemsBarcodeRepositoryShopScopedTest`.
 * **Pharma gating.** Prescription drugs cannot go on sale without the pharma-industry setting and a passed medicine audit; medicine submits go through `job:72` to kuaizhen580 with audit results written back to `items_medicine`.
 * **ERP failures never break the write path** — JST/WDT/OME jobs are async bus messages; the JST inventory persist is idempotent per item (store recompute from a full snapshot).
+* **Search-index failures never break the write path** — every incremental dirty event is deferred to `afterCommit`, retried 3 times and only logged on final failure; the front list degrades to the DB path (`likeFallback=true`) or an empty body. An upsert whose source no longer materializes becomes a document delete, and the per-company cron rebuild converges any residue a listener missed.
 
 ## Extension points
 
@@ -617,6 +759,7 @@ Barcodes deserve their own note: `ItemsBarcodeRepository.saveBarcode` deletes th
 * **New order-create concern on the goods side** — the common ports (`OrderCreateFormatDataPort`, `OrderCreateInventoryPort`, `OrderCreateItemCheckPort`, `OrderCheckoutCartPort`, `OrderCreateNeedParamsPort`) are single-implementation interfaces; compose inside the existing impls.
 * **New operator-cart concern** — the `ecshopx-common` operatorcart facades (`OperatorCartSkuLoadFacade`, `OperatorCartDataListFacade`, `OperatorCartFastBuyFacade`, `OperatorCartScanBarcodeFacade`) are goods-implemented single-implementation interfaces that companys/kaquan depend on; adding item-facing behavior to the shopadmin cart goes into these impls (or a new common facade), never into companys.
 * **New OpenAPI item surface** — add a port impl in `openapi/` and expose it from `ecshopx-openapi`; mappers are reused.
+* **New search-index freshness source** — any write path that changes list-visible goods data calls `GoodsSearchIndexDirtyFanout.scheduleUpsertForDefaultItem` (or listens to a promotion/stock event and goes through `GoodsSearchIndexDirtyByItemIdsPort`); the scheduler/updater chain needs no change.
 
 ## Focused tests
 
@@ -643,6 +786,11 @@ Barcodes deserve their own note: `ItemsBarcodeRepository.saveBarcode` deletes th
 * `ItemsCategorySaveServiceApiConvergenceDispatchTest`, `ItemsCategoryFrontDisplayResolverTest` — category save dispatch + front display rules.
 * `ItemsMultiLangWriteServiceTest`, `ItemsApproveStatusSyncServiceTest`, `ItemsMedicineServiceUpdateItemMedicineDataDispatchTest` — multi-lang, status cascade, medicine dispatch.
 * `JushuitanInventoryPersistItemStoreDispatchPublishProbeTest`, `Ome*InitialDispatchTest` — ERP sync wiring.
+* `WxappGoodsItemsListServiceImplEsSwitchTest`, `WxappGoodsItemsListRestoreSalePriceTest` — the ES/DB list switch and the sale-price restore rule.
+* `GoodsSearchQueryServiceTest` / `…RankingTest` — wxapp-param mapping, synonym-expanded keywords feeding the query builder, hard-filter composition, effective-price filter consistency and the hierarchical default sort.
+* `SearchRebuildServiceTest`, `GoodsSearchIndexRepositoryTest`, `GoodsSearchMappingServiceTest`, `GoodsSearchDocumentMaterializationTest`, `SearchIndexMapperTest`, `SearchIndexStoreItemKeyOrderTest`, `MybatisSearchIndexSourceLoaderFetchPageTest` / `…StoreOwnedTest` — blue-green create/bulk/switch ordering, no-switch-on-bulk-failure, mapping payload, document materialization and the store-visibility rules of the source loader.
+* `SearchIndexUpdaterTest` / `…MemberActivityTest`, `GoodsSearchIndexDirtyFanoutTest`, `GoodsSearchIndexPromotionSyncListenerTest` — incremental upsert/delete (retry, upsert-becomes-delete), the distributor `0` + shop fan-out set, and the seckill/groups committed-event triggers.
+* `SearchSynonymServiceTest`, `SearchSynonymKeywordExpanderTest`, `SearchSynonymEsReloaderTest`, `SearchSynonymImportRowServiceTest`, `SearchSynonymImportFinishPortImplTest` — synonym group CRUD/cache invalidation, query-time expansion, ES synonyms-set reload and import-row persistence.
 * `GoodsRecommend*Test` (match, scene, salability, checkout merge) and `OrderCheckoutCartPortImplTest` — recommendation and checkout-merge behavior.
 
 ## Related pages
@@ -652,6 +800,7 @@ Barcodes deserve their own note: `ItemsBarcodeRepository.saveBarcode` deletes th
 * [Redis Databases](../concepts/redis-databases.md) — the `companysRedisTemplate` vs `sharedStringRedisTemplate` split used by `item_store` keys and cart.
 * [Orders Domain](orders.md) — the other half of order create: the port callers, order status, cancel/restore flows.
 * [Stores and Merchants](stores-and-merchants.md) — distributors, product models and the `distributor_items` contract.
+* [Marketing and Loyalty Domains](marketing.md) — the seckill/groups/full-gift activities materialized into the search index and applied at checkout.
 <!-- openwiki: broken internal link [../workflows/operator-fast-buy-flow.md] file "../workflows/operator-fast-buy-flow.md" does not exist. Fix the href or restore the target, then delete this comment. -->
 * [Operator Fast-Buy Flow](../workflows/operator-fast-buy-flow.md) — the end-to-end shopadmin fast-buy trace across the facades documented here.
 * [Third-Party Integrations](../integrations/third-party.md) — OME, Jushuitan, WdtErp, youshu, marketing-center and Shuyun consumer surfaces.

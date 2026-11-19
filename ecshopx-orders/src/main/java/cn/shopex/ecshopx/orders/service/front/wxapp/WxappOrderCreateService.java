@@ -255,20 +255,6 @@ public class WxappOrderCreateService {
 			params.putIfAbsent("salesman_id", 0L);
 		}
 
-		if (mergedParams.containsKey("promoter_user_id")) {
-			long promoter = longVal(mergedParams.get("promoter_user_id"));
-			if (promoter != 0L) {
-				long authUid = longVal(h5AuthClaims != null ? h5AuthClaims.get("user_id") : null);
-				if (authUid == promoter) {
-					params.put("user_id", longVal(params.get("buy_user_id")));
-					params.put("order_source", "salesperson");
-					Object rm = params.get("receiver_mobile");
-					params.put("mobile", rm == null ? 0L : longVal(rm));
-					params.put("salesman_id", longVal(params.get("promoter_user_id")));
-				}
-			}
-		}
-
 		long orderUserId = longVal(params.get("user_id"));
 		WxappOrderCreateContext ctx = new WxappOrderCreateContext();
 		ctx.setRequest(request);
@@ -345,13 +331,6 @@ public class WxappOrderCreateService {
 			if ("paypal".equals(stringVal(data.get("pay_type")).toLowerCase(Locale.ROOT))) {
 				return payReturn;
 			}
-		}
-
-		if (intInput(params.get("isSalesmanPage"), 0) == 1
-				&& longVal(params.get("promoter_user_id")) > 0L
-				&& "offline_pay".equals(stringVal(params.get("pay_type")).toLowerCase(Locale.ROOT))) {
-			Map<String, Object> offlinePayData = buildSalesmanOfflinePayData(params, result, companyId);
-			ordersPaymentDoPaymentService.doPayment(authInfo, offlinePayData, false);
 		}
 
 		LinkedHashMap<String, Object> out = new LinkedHashMap<>();

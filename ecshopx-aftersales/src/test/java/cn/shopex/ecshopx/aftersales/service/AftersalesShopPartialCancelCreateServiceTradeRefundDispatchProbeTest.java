@@ -24,6 +24,7 @@ import cn.shopex.ecshopx.aftersales.wdterp.WdtErpTradeAfterSaleBusPayloadBuilder
 import cn.shopex.ecshopx.common.dispatch.JushuitanTradeAftersalesDispatchPublisher;
 import cn.shopex.ecshopx.common.dispatch.TradeRefundDispatchPublisher;
 import cn.shopex.ecshopx.common.dispatch.WdtErpTradeAfterSaleDispatchPublisher;
+import cn.shopex.ecshopx.common.port.aftersales.AftersalesAgreedCouponRestorePort;
 import cn.shopex.ecshopx.common.port.order.OrderNormalOrderHeaderReadPort;
 import cn.shopex.ecshopx.common.port.order.OrderNormalOrderItemsReadPort;
 import cn.shopex.ecshopx.common.port.order.OrderProcessLogPublishPort;
@@ -214,7 +215,8 @@ class AftersalesShopPartialCancelCreateServiceTradeRefundDispatchProbeTest {
 						wdtErpTradeAfterSaleDispatchPublisher,
 						wdtErpTradeAfterSaleBusPayloadBuilder,
 						tradeRefundDispatchPublisher,
-						tradeRefundPayloadMapper);
+						tradeRefundPayloadMapper,
+						mock(AftersalesAgreedCouponRestorePort.class));
 
 		TransactionTemplate requiresNew = new TransactionTemplate(txMgr);
 		requiresNew.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
@@ -376,7 +378,8 @@ class AftersalesShopPartialCancelCreateServiceTradeRefundDispatchProbeTest {
 						wdtErpTradeAfterSaleDispatchPublisher,
 						new WdtErpTradeAfterSaleBusPayloadBuilder(),
 						tradeRefundDispatchPublisher,
-						tradeRefundPayloadMapper);
+						tradeRefundPayloadMapper,
+						mock(AftersalesAgreedCouponRestorePort.class));
 
 		TransactionTemplate requiresNew = new TransactionTemplate(txMgr);
 		requiresNew.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);

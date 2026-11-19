@@ -4,7 +4,7 @@ title: "Members Domain (ecshopx-members)"
 openwiki_generated: true
 verified:
   - by: openwiki/0.9.0
-    at: 2026-11-11T17:12:30.774Z
+    at: 2026-11-16T17:12:44.218Z
 sources:
   - id: openwiki-source-aefde5c5815dc42e82aa67f0
     resource: repo://ecshopx-ali/src/main/java/cn/shopex/ecshopx/ali/service/alitemplate/ItemStoreGoodsArrivalAliTemplateOrchestrator.java
@@ -24,6 +24,10 @@ sources:
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MembersNormalOrderCancelNewCustomerDispatchListenerRegistrationConfig.java
   - id: openwiki-source-0315455e54e2688cacf7a480
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MembersNormalOrderPaySuccessNewCustomerDispatchListenerRegistrationConfig.java
+  - id: openwiki-source-8a2357faf9bbab59f216656d
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MemberTaskCreateMemberSuccessDispatchListenerRegistrationConfig.java
+  - id: openwiki-source-82e669c06760295ebd25c836
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MemberTaskUpdateMemberSuccessDispatchListenerRegistrationConfig.java
   - id: openwiki-source-1934321a6d758092fa3b0e5a
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/PromotionsCreateMemberSuccessDispatchListenerRegistrationConfig.java
   - id: openwiki-source-1a74edff54f16eb2ef107c71
@@ -32,6 +36,8 @@ sources:
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/RegisterPointCreateMemberSuccessDispatchListenerRegistrationConfig.java
   - id: openwiki-source-0987b0da75587e95d8e17649
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ShopexCrmCreateMemberSuccessDispatchListenerRegistrationConfig.java
+  - id: openwiki-source-bf511d9401677c29248d2745
+    resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ShopexCrmUpdateMemberSuccessDispatchListenerRegistrationConfig.java
   - id: openwiki-source-ebbcd0aeec7940f4f0465f31
     resource: repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/ShuyunOpenPlatformCreateMemberSuccessDispatchListenerRegistrationConfig.java
   - id: openwiki-source-ae5ddc2afd4f9ce163c8bc34
@@ -52,6 +58,8 @@ sources:
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/MembersBundleDispatchJobNames.java
   - id: openwiki-source-03eb47a2257dd8b22aaaa750
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/MembersCreateMemberSuccessDispatchPublisher.java
+  - id: openwiki-source-6b2ede0314feff760dc5d597
+    resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/MembersDispatchEventNames.java
   - id: openwiki-source-e88aaedda534a005ae27fbdf
     resource: repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/MembersUpdateMemberSuccessDispatchPublisher.java
   - id: openwiki-source-a3330859dff3ac5b6939c02d
@@ -130,6 +138,8 @@ sources:
     resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/h5/prelogin/H5WxappLoginRegisterFacade.java
   - id: openwiki-source-66d49b363643c4169f112cb5
     resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/h5/prelogin/H5WxappPreLoginService.java
+  - id: openwiki-source-0568f553205f480ec985554a
+    resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/h5/WxappMemberDeleteMemberService.java
   - id: openwiki-source-e2488bae085338c037053721
     resource: repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/h5/WxappMemberMobileChangeService.java
   - id: openwiki-source-5d5765d32775f5ad02f58757
@@ -194,25 +204,37 @@ sources:
     resource: repo://ecshopx-members/src/test/java/cn/shopex/ecshopx/members/service/systemtag/SleepingUserTagReconcileServiceTest.java
   - id: openwiki-source-8978c6a395936578f3e3b971
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/finish/FinishOrderJobService.java
+  - id: openwiki-source-63313299061636a903369d99
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/dispatch/CreateMemberSuccessMemberTaskInviteRegisterDispatchListener.java
+  - id: openwiki-source-1a734fddac4148abf66bddd5
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/dispatch/MemberTaskUpdateMemberSuccessDispatchListener.java
   - id: openwiki-source-043e01b99cf95e87d89828b8
     resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/integration/members/GoodsArrivalWxaSubscribeSendAdapter.java
   - id: openwiki-source-df26736cc03664d777529023
     resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/MarketingActivityCreatePersistenceService.java
+  - id: openwiki-source-8771b0ceda5ae69161db69f8
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/membertask/MemberTaskInviteRegisterCompletionService.java
+  - id: openwiki-source-fd54f2cd701df149b0b2f954
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/membertask/MemberTaskProfileCompleteness.java
+  - id: openwiki-source-e7f4c0c2681f379ffc42f86c
+    resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/membertask/MemberTaskProfileCompletionService.java
   - id: openwiki-source-9c61992f85949d88e97006d2
     resource: repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/wxatemplate/WxaTemplateSceneDefinitions.java
+  - id: openwiki-source-085b9529d9421c5b3fef58a9
+    resource: repo://ecshopx-promotions/src/test/java/cn/shopex/ecshopx/promotions/service/membertask/MemberTaskInviteRegisterCompletionServiceTest.java
   - id: openwiki-source-20d1f28c4e16414522b84f67
     resource: repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/dispatch/CreateMemberSuccessShuyunMemberRegisterDispatchListener.java
   - id: openwiki-source-77b9be238a039ce267c0c43e
     resource: repo://ecshopx-shuyun/src/main/java/cn/shopex/ecshopx/shuyun/service/openplatform/MemberRegisterDispatchService.java
   - id: openwiki-source-eab9c10485100198740b4183
     resource: repo://ecshopx-wechat/src/main/java/cn/shopex/ecshopx/wechat/repository/WeappAuthorizerAppidRepository.java
-generated: { by: "openwiki/0.9.0", at: "2026-11-11T17:12:30.774Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-16T17:12:44.218Z" }
 ---
 
 
 # Members Domain (ecshopx-members)
 
-**`ecshopx-members`** (会员与账户域, see `ecshopx-members/src/main/java/cn/shopex/ecshopx/members/package-info.java`) is the member/account Bundle: member records and their wechat/alipay/social associations, the H5 (wxapp/H5/PC) login orchestration that mints member JWTs, the JWT verification that every member-facing endpoint relies on, the member-create / member-update fan-out that drives CRM sync, register promotions, register points, datacube counters and membercard gifts, and the goods-arrival subscription surface (缺货订阅) whose wechat notices fire from the goods bundle's item-store event.
+**`ecshopx-members`** (会员与账户域, see `ecshopx-members/src/main/java/cn/shopex/ecshopx/members/package-info.java`) is the member/account Bundle: member records and their wechat/alipay/social associations, the H5 (wxapp/H5/PC) login orchestration that mints member JWTs, the JWT verification that every member-facing endpoint relies on, the member-create / member-update fan-out that drives CRM sync, register promotions, register points, datacube counters, membercard gifts and member-task completions, and the goods-arrival subscription surface (缺货订阅) whose wechat notices fire from the goods bundle's item-store event.
 
 Module layout follows the standard split ([Bundle Layering](../architecture/bundle-layering.md)): `api/front/v1` + `api/admin/v1` controllers, `service/{account,h5,front,admin,reg,sms,trustlogin,wxapp,...}` orchestration, `dispatch/` job publishers/handlers/listeners, `listener/` cross-bundle event listeners, `integration/` port impls for other bundles, `domain/` + `mapper/` persistence. `ecshopx-members` declares `ecshopx-common`, `ecshopx-dispatch`, `ecshopx-third-party`, `ecshopx-companys`, `ecshopx-work-wechat` and `ecshopx-wechat` (`ecshopx-members/pom.xml`) plus `nimbus-jose-jwt` for JWT.
 
@@ -344,7 +366,7 @@ All H5 member tokens are **HS256 (Nimbus) JWTs**, configured by `ecshopx.h5.jwt.
 | `creatMemberForH5Post` (front registration, social OAuth) via `registerAfterCommitH5CreateMemberSideEffects` | optional daily active set (skipped for re-activated upload members); `work_userid` + `channel=1` bind-salesperson |
 | `AdminMemberCreateMemberService.createMember` / `createMemberWithEmail` (admin console) | nothing (the port-driven side effects run in-transaction instead) |
 
-The payload keys are stable across all paths — `company_id`, `user_id`, `mobile`, `openid`, `wxa_appid`, `inviter_id`, `distributor_id`, `source_id`, `monitor_id`, `salesperson_id`, `if_register_promotion` — because downstream listeners read exactly these. `if_register_promotion` is false when the tenant's `member_logout_config.new_rights` is off *and* a `members_delete_record` row exists for that mobile (i.e. the member had deregistered, so they do not get new-member rights again).
+The payload keys are stable across all paths — `company_id`, `user_id`, `mobile`, `openid`, `wxa_appid`, `inviter_id`, `distributor_id`, `source_id`, `monitor_id`, `salesperson_id`, `if_register_promotion`, `member_task_id` — because downstream listeners read exactly these. `if_register_promotion` is false when the tenant's `member_logout_config.new_rights` is off *and* a `members_delete_record` row exists for that mobile (i.e. the member had deregistered, so they do not get new-member rights again). `member_task_id` is the member-task attribution id copied from the registration extras by `putMemberTaskIdOnRegisterEvent` (`0` when absent); the promotions `invite_register` task listener consumes it to credit the inviter (see the listener table below).
 
 ### In-transaction side effects of `createMemberLocalAutoRegister`
 
@@ -354,7 +376,7 @@ The wxapp pre-login auto-register path (`createMemberLocalAutoRegister`, called 
 
 The after-commit synchronization runs three steps in order, and `MemberAccountServiceCreateMemberLocalAutoRegisterDispatchTest` pins every gate (it drives the service through a real `DataSourceTransactionManager` over H2 with mocked mappers and mocked publishers, so the transaction boundary is real):
 
-1. **Publish** `event:members:create_member_success` via `MembersCreateMemberSuccessDispatchPublisher.publish(eventData)` with the eleven-key payload above (the test asserts the extras-provided `openid`, `wxa_appid`, `source_id`, `monitor_id`, `inviter_id` survive verbatim, and that `members_info.other_params` is `"[]"` on insert).
+1. **Publish** `event:members:create_member_success` via `MembersCreateMemberSuccessDispatchPublisher.publish(eventData)` with the twelve-key payload above (the test asserts the extras-provided `openid`, `wxa_appid`, `source_id`, `monitor_id`, `inviter_id` survive verbatim, and that `members_info.other_params` is `"[]"` on insert).
 2. **Daily active set** — `sharedStringRedisTemplate.opsForSet().add("Member:<companyId>:<yyyyMMdd>", userId)`.
 3. **Bind-salesperson enqueue, only when `work_userid` is non-blank *and* `channel == 1`** (parsed leniently from either a `Number` or a `String`, trimmed). Two bus names collapse onto the same handler ([MembersBundleDispatchJobNames](../concepts/dispatch-bus.md) constants in `ecshopx-common`):
    * `DmCrmSettingReadPort.isPointIntegrationOpen(companyId)` **false** → `enqueueBindSalseperson` → `job:185:MembersBundle\Jobs\BindSalseperson`, payload `{company_id, unionid, work_userid, customer_type:1, mobile, user_id}` with the real new `user_id`;
@@ -395,7 +417,7 @@ sequenceDiagram
 
 Caption: the post-commit contract of `createMemberLocalAutoRegister` — the in-transaction side-effect ports run before the synchronization is registered, then the after-commit hook publishes CreateMemberSuccess, updates the daily active set, and enqueues the BindSalseperson job only under the `work_userid` + `channel=1` gate with the DM-open switch between `job:185` and `job:186`; a rollback suppresses both.
 
-Bootstrap registers **nine listeners** on the event (each in its own `*DispatchListenerRegistrationConfig`, wired in `@PostConstruct` with `DispatchRegistry.registerEventListener`):
+Bootstrap registers **ten listeners** on the event (each in its own `*DispatchListenerRegistrationConfig`, wired in `@PostConstruct` with `DispatchRegistry.registerEventListener`):
 
 | Listener name | Bundle / listener | Queue | Gate |
 |---|---|---|---|
@@ -408,8 +430,16 @@ Bootstrap registers **nine listeners** on the event (each in its own `*DispatchL
 | `listener:members.create_member_success_notice` | members' own `CreateMemberSuccessNoticeDispatchListener` → `CreateMemberSuccessNoticeExecutionService` (wxapp template message "welcome / 邀请人 …") | slow | requires `openid` and `wxa_appid` |
 | `listener:promotions.create_member_success_send_membercard` | promotions `CreateMemberSuccessSendMembercardDispatchListener` → `RegisterPromotionsMembercardPromotionService` (membercard register promotion, coupons via kaquan's `VipGradeOrderReceiveMembercardPromotionService`) | default | `if_register_promotion` must be `true` |
 | `listener:members.create_member_success_new_customer` | members' own `CreateMemberSuccessNewCustomerDispatchListener` → `NewCustomerTagReconcileService.reconcile(companyId, userId, register)` | default | needs positive `company_id` + `user_id`; see the [member system-tag subsystem](#member-system-tags-tag_kindtag_code--three-reconcile-loops) |
+| `listener:promotions.member_task.invite_register` | promotions `CreateMemberSuccessMemberTaskInviteRegisterDispatchListener` → `MemberTaskInviteRegisterCompletionService.apply` — credits the **inviter's** `invite_register` member task when the registration carried a positive `member_task_id` attribution | default (`asyncDefaults()`, `@Order(22)` in `MemberTaskCreateMemberSuccessDispatchListenerRegistrationConfig`) | needs positive `company_id`, `user_id` and `member_task_id`, plus an `inviter_id` different from the invitee |
 
 The marketing-side view of the same fan-out is in [Marketing Domain](marketing.md).
+
+### Member tasks: the two dispatch entry points
+
+The member-task engine (会员任务) itself lives in **promotions** (`ecshopx-promotions/.../service/membertask/` — tasks, completions, reward grants); members' contribution is the two dispatch bridges declared in `MembersDispatchEventNames` (`LISTENER_MEMBER_TASK_INVITE_REGISTER`, `LISTENER_MEMBER_TASK_UPDATE_MEMBER_SUCCESS`):
+
+* **`invite_register` (H2)** — on `event:members:create_member_success`, `MemberTaskInviteRegisterCompletionService.apply` (transactional) returns early unless `company_id`, `user_id` (the invitee) and `member_task_id` are all positive and `inviter_id` is positive and different from the invitee; it then loads the task via `MemberTaskInProgressTasks.loadInProgressTask(companyId, taskId, "invite_register", now)` (so the task must be published, not off-shelf, and inside its begin/end window), skips a `frequency_type=once` task the inviter already completed and any task with an existing non-voided completion for this invitee, and otherwise runs `MemberTaskImmediateCompletionService.tryComplete(task, inviterUserId, 0, inviteeUserId, now)` — the completion belongs to the inviter, attributed to the invitee. `MemberTaskInviteRegisterCompletionServiceTest` pins the happy path (completion for inviter `55` with invitee `7` on task `10`) and the no-inviter skip.
+* **`profile`** — on `event:members:update_member_success` (registered by `MemberTaskUpdateMemberSuccessDispatchListenerRegistrationConfig`, default queue), `MemberTaskUpdateMemberSuccessDispatchListener` → `MemberTaskProfileCompletionService.apply` (transactional): after the positive `company_id`/`user_id` gate it requires the member's profile to satisfy `MemberTaskProfileCompleteness.isComplete` — every *enabled and required* field from `MemberTaskProfileReadPort.loadOpenMemberInfoFields(companyId)` must have a value (default fields from the member row, custom fields from `members_info.other_params.custom_data`); it then loops every published, on-shelf, in-progress `type_detail=profile` task of the tenant and, when no non-voided completion exists, inserts the `MemberTaskCompletion` (`cycle_key=once`, `DuplicateKeyException` = idempotent return) plus a `pending` `MemberTaskRewardGrant` snapshotting `task.reward_config`, and immediately grants via `MemberTaskRewardGrantService.grantPendingImmediateForCompletion`.
 
 ### In-transaction side effects of the H5 post path
 
@@ -417,7 +447,7 @@ The marketing-side view of the same fan-out is in [Marketing Domain](marketing.m
 
 ## Member update, mobile change, and the update event
 
-`PUT /api/v1/h5app/wxapp/member` → `WxappMemberUpdateMemberService.updateMember` (`@FrontAuth`): strips masked placeholder fields (`****-**-*` birthdays, `******` addresses), validates custom fields through `FrontMemberInfoUpdateValidationPort`, optionally calls the Shuyun open platform `member.modify` **before** the local write (A-MOD-01), then `MemberAccountService.memberInfoUpdate`, then registers an after-commit `MembersUpdateMemberSuccessDispatchPublisher.publish` with a fresh `members_info` snapshot. `event:members:update_member_success` currently has one listener in bootstrap (`listener:thirdparty.shopex_crm.sync_update_member`, also gated on `crm.crm-sync`). After the local write it patches the wechat profile (`nickname`/`headimgurl`) when the claims carry `unionid` + `open_id`, runs the OEM-Shuyun profile modify when the open platform is *not* enabled, and calls DM CRM `updateMemberInfoByMobile` when DM point integration is open.
+`PUT /api/v1/h5app/wxapp/member` → `WxappMemberUpdateMemberService.updateMember` (`@FrontAuth`): strips masked placeholder fields (`****-**-*` birthdays, `******` addresses), validates custom fields through `FrontMemberInfoUpdateValidationPort`, optionally calls the Shuyun open platform `member.modify` **before** the local write (A-MOD-01), then `MemberAccountService.memberInfoUpdate`, then registers an after-commit `MembersUpdateMemberSuccessDispatchPublisher.publish` with a fresh `members_info` snapshot. `event:members:update_member_success` currently has two listeners in bootstrap (`listener:thirdparty.shopex_crm.sync_update_member`, gated on `crm.crm-sync`, and `listener:promotions.member_task.update_member_success`, the member-task `profile` completion described above). After the local write it patches the wechat profile (`nickname`/`headimgurl`) when the claims carry `unionid` + `open_id`, runs the OEM-Shuyun profile modify when the open platform is *not* enabled, and calls DM CRM `updateMemberInfoByMobile` when DM point integration is open.
 
 `PUT /api/v1/h5app/wxapp/member/mobile` → `WxappMemberMobileChangeService.updateMemberMobile`: enforces a **30-day cooldown per member** via the Redis key `updateMemberMobileCD:<userId>:<sha1(companyId)>` (`members.update-mobile.ttl-seconds`, default 2592000) on the members Redis template, validates the CN mobile pattern, verifies the SMS code against `member-update:company<companyId>:<newMobile>`, refuses a duplicate mobile within the tenant, updates `members.mobile` (fixed-encrypted), `region_mobile` and `mobile_country_code`, writes a `member_operate_log` row (`operate_type=mobile`, operater `用户在云店自行修改`) with the old/new JSON, then sets the cooldown key.
 
@@ -589,7 +619,7 @@ The front `MembersController` hardened the address surface against cross-member 
 * `service/account/`, `service/admin/`, `service/export/`, `service/importrow/` — admin console member CRUD, batch operations, export jobs (`AdminMemberExportFileJob*`), import.
 * Tag services (`MemberTags*`, `TagsCategory*`, `MemberTagLibrary*`, `segment/`) — member tags/groups/segments, including `MemberRelTagsBatchCreateService` used by the datacube source-tag listener; the rule-driven system tags (`tag_kind=system`) on top of them are documented in [Member system tags](#member-system-tags-tag_kindtag_code--three-reconcile-loops) above.
 * `MedicationPersonnel*` services + controller — pharmacy-industry medication personnel records.
-* `WxappMemberDeleteMemberService` (`DELETE /wxapp/member`, 会员注销) — writes `members_delete_record`, which is what makes the *next* registration of that mobile lose `if_register_promotion`.
+* `WxappMemberDeleteMemberService` (`DELETE /wxapp/member`, 会员注销) — a two-step flow: `checkDeleteMembers` refuses deletion while `H5WxappMemberDeleteIncompleteOrdersPort.hasIncompleteNormalOrders` is true (the blocked message comes from the tenant's `member_logout_config` protocol title, falling back to `订单完成之前，无法注销会员`), and an unconfirmed call returns the masked mobile for confirmation; the confirmed call runs `deleteMembersInTx` (`@Transactional`), which unbinds the member from the Shuyun open platform (or the OEM-Shuyun `ShuyunMemberUnbindPort` fallback), deletes the member's `wechat_users` rows for every association unionid, then deletes the `members_associations`, `members_address`, `members_info` and `members` rows, reconciles the member's system tags with `SOURCE_DISABLE` (detaching them), disables the promoter via `H5WxappMemberDeleteDisablePromoterPort` and removes the vip-grade rel via `H5WxappMemberDeleteVipGradeRelPort`, and finally inserts the `members_delete_record` row (fixed-encrypted mobile) — which is what makes the *next* registration of that mobile lose `if_register_promotion`. Any non-`ResourceException` failure is logged and rethrown as `ResourceException("注销失败")`.
 * `CompanyActivatedStaffTagListener` — a Spring `@TransactionalEventListener(AFTER_COMMIT, fallbackExecution = true)` on `CompanyActivatedEvent` that seeds the default `员工` staff tag per tenant; one of the few members listeners that is a Spring event rather than a dispatch listener.
 * `ItemStoreUpdatedGoodsArrivalDispatchListener` — the other entry in `listener/` besides the staff-tag listener: a dispatch listener (registered in bootstrap on `event:258`) rather than a Spring event listener; see the [Goods-arrival subscription](#goods-arrival-subscription-缺货订阅-subscribe-notices) section above for the full flow.
 * OpenAPI member creation runs as a dispatch job: `OpenapiCreateMemberJobHandler` → `OpenapiThirdApiV2MemberCreateService`, `MemberRegisterJobHandler` (OEM-Shuyun silent registration), `BatchActionMembersJobHandler`, `PushMemberTagRelationJobHandler`, `UpdateAddressLatAndLngJobHandler`, `SendMemberEmailActivationJobHandler`.
@@ -615,6 +645,7 @@ The front `MembersController` hardened the address surface against cross-member 
 
 * **`MemberAccountService*DispatchTest` family** (`ecshopx-members/src/test/.../service/account/`) pins exactly which listeners fire per registration path, using `MemberAccountServiceDispatchIntegrationTestConfiguration` (mocked mappers + mocked publishers + a real `DataSourceTransactionManager` over H2, so the commit/rollback boundary is genuine): `MemberAccountServiceCreateMemberForWxappBindNoBindSalespersonDispatchTest` (no `BindSalseperson` without salesperson identifiers; payload keys/values of the wxapp-bind path), `MemberAccountServiceCreateMemberLocalAutoRegisterDispatchTest` (promoter/distributor side-effect ports invoked in-transaction with the resolved `inviter_id`/`distributor_id`/`salesperson_id` and `ShopRelMember` inserted when `distributor_id>0`; the published payload carries the extras' `openid`/`wxa_appid`/`source_id`/`monitor_id`/`inviter_id`; `work_userid`+`channel=1` → `enqueueBindSalseperson` with `channel 1`, DM-open → `enqueueBindSalsepersonAfterDmMemberCreate`, other channels/blank work_userid → neither; `status.setRollbackOnly()` → **neither** the publish nor either enqueue fires — see the [post-commit dispatch contract](#post-commit-dispatch-contract-of-creatememberlocalautoregister) section), `MemberAccountServiceRegisterShuyunMemberDispatchTest`, `MemberAccountServiceCreatMemberForH5PostDispatchTest`, and the `*ShopexCrmDispatchFlowTest` siblings that run the real bootstrap publisher impl against a captured dispatch driver.
 * `AdminMemberCreateMemberServiceCreateMemberDispatchTest` / `AdminMemberCreateMemberShopexCrmDispatchFlowTest` — the admin path's after-commit publication.
+* **Member-task bridge family** (promotions, `service/membertask/`) — `MemberTaskInviteRegisterCompletionServiceTest` pins the invite_register bridge (happy path completes the inviter with the invitee attribution; missing inviter skips), and `MemberTaskProfileCompletionServiceTest` pins the profile bridge (incomplete profile skips, in-progress task completes once with a pending reward grant).
 * `H5NewLoginPathsCreateMemberSuccessDispatchProbeTest` (in `service/h5/prelogin`) — end-to-end from the three real login entries (`H5WxappLoginRegisterFacade.registerMemberForWxapp`, `registerMemberForAliapp`, `LocalH5AuthStrategy.resolve` with `auto_register`) to the published payload, plus the rollback case (`status.setRollbackOnly()` → **no** publish), which is the invariant the `afterCommit` registration enforces.
 * `CreateMemberSuccessEventDispatchFlowTest` / `CreateMemberSuccessShopexCrmSyncDispatchFlowTest` / `SyncWechatFansEventDispatchFlowTest` (bootstrap) — the registry/fan-out/consume side: N registered listeners ⇒ N enqueued `DispatchMessage`s in registration order, each consumed by `DispatchConsumerRuntime`.
 * `LoginControllerWxappNewLoginWebTest` (espier) — the controller slice: merged params are handed to `FrontWxappNewLoginService` unchanged.
@@ -626,7 +657,7 @@ The front `MembersController` hardened the address surface against cross-member 
 
 * **New login channel:** add an `H5AuthType` constant + an `H5AuthStrategy` `@Component`; register it in the `FrontWxappNewLoginService` switch only if it needs a pre-login step. Do not touch `H5LoginOrchestrator` or the JWT layer.
 * **New claim:** put it in the strategy's `H5GenericUser` attributes (anything but the reserved JWT names), and expect it to be *overwritten* on subsequent requests by `H5JwtUserLoginInfoEnrichService` — that service, not the token, is the source of truth for member state. If a claim must survive refresh, it already does (refresh copies non-registered claims).
-* **New post-registration side effect:** add a bootstrap `@Configuration` that registers a `DispatchListener` on `EVENT_CREATE_MEMBER_SUCCESS`; never publish inside the controller. Keep the payload contract (`company_id`, `user_id`, `mobile`, `openid`, `wxa_appid`, `inviter_id`, `distributor_id`, `source_id`, `monitor_id`, `salesperson_id`, `if_register_promotion`) additive. If the side effect must run *inside* the registration transaction (like the promoter/distributor ports), follow the `createMemberLocalAutoRegister` pattern: run it before registering the after-commit synchronization, and keep the `isSynchronizationActive()` guard so a non-transactional caller fails fast instead of silently dropping the publish.
+* **New post-registration side effect:** add a bootstrap `@Configuration` that registers a `DispatchListener` on `EVENT_CREATE_MEMBER_SUCCESS`; never publish inside the controller. Keep the payload contract (`company_id`, `user_id`, `mobile`, `openid`, `wxa_appid`, `inviter_id`, `distributor_id`, `source_id`, `monitor_id`, `salesperson_id`, `if_register_promotion`, `member_task_id`) additive. If the side effect must run *inside* the registration transaction (like the promoter/distributor ports), follow the `createMemberLocalAutoRegister` pattern: run it before registering the after-commit synchronization, and keep the `isSynchronizationActive()` guard so a non-transactional caller fails fast instead of silently dropping the publish.
 * **New member-facing endpoint:** annotate `@FrontAuth` (claims injected via `H5_AUTH_CLAIMS` / `H5_COMPANY_ID`) or `@FrontNoAuth` (anonymous claims with `user_id=0`). For a `@FrontNoAuth` handler that must work without any resolvable company, follow the explicit `getNoAuthDecryptPhoneNumber` carve-out in `FrontNoAuthInterceptor` rather than loosening the interceptor.
 * **Mobile columns:** always write through `LegacyFixedMobileEncrypt.fixedEncryptMobile` and read through `findMemberByCompanyAndMobile`/`resolvePlainMobileForMember`; a raw `members.mobile` equality query breaks the moment `common.encrypt-sensitive-data` is switched on.
 * **Goods-arrival notify changes:** keep `listPending` and `markSuccess` in sync — they must apply the same shop/headquarters matching, or rows get marked without a send. A new `sub_type` (a new kind of subscribe notice) needs a new matching predicate *and* a new orchestrator/scene; the current code only ever queries `sub_type='goods'`. Do not move the send out of the `try/catch` in `ItemStoreGoodsArrivalWxaTemplateOrchestrator.dispatchIfApplicable` — a notify failure must not roll back the caller's stock write, because the publisher is a SYNC dispatch event running inside the goods transaction.

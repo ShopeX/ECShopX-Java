@@ -110,8 +110,6 @@ public class WxappOrderDetailService {
 			String orderIdRaw,
 			String invoiceListRaw,
 			String from,
-			String promoterUserId,
-			String isSalesmanPage,
 			List<String> selfDeliveryOperatorIdParam,
 			String prescriptionOrderRandom) {
 		final String invoiceListT = invoiceListRaw == null ? "" : invoiceListRaw.trim();
@@ -184,10 +182,6 @@ public class WxappOrderDetailService {
 				(currentUserId > 0L && currentUserId == longVal(orderInfo.get("user_id"))) || selfDeliveryMatch;
 		if (allowed) {
 			applyPickupcodeStatus(companyId, orderInfo);
-		} else if (queryTruthy(promoterUserId)
-				&& queryTruthy(isSalesmanPage)
-				&& branchBSalesMatch(assocToRow(assoc), promoterUserId)) {
-			orderInfo.put("order_source", "salesperson");
 		} else if (currentUserId != longVal(orderInfo.get("user_id")) && queryTruthy(prescriptionOrderRandom)) {
 			wxappOrderDetailPrescriptionRandomGuard.logIfMiss(orderId, prescriptionOrderRandom);
 		} else {
@@ -337,13 +331,6 @@ public class WxappOrderDetailService {
 			}
 		}
 		return intVal(item.get("price"));
-	}
-
-	private static boolean branchBSalesMatch(Map<String, Object> orderAssoc, String promoterUserId) {
-		String q = promoterUserId == null ? "" : promoterUserId.trim();
-		String p = normalizeId(orderAssoc.get("promoter_user_id"));
-		String s = normalizeId(orderAssoc.get("salesman_id"));
-		return p.equals(q) || s.equals(q);
 	}
 
 	private static Map<String, Object> assocToRow(OrderAssociations a) {

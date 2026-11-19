@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:b2b7918664e42b8fa2a97f8e2f0fe2b132bea7e3fe5d7d13bfcf6005db5ff678",
+  "pageVersion": "sha256:36bf08a6e50a8c2dd55d9fd9dfa3a8aa34b73c3a9b6da720bd61b9a8aee200a6",
   "claims": [
     {
       "id": "claim_3d9864ae8e5d4123b40f3da9acfcc8e6",
@@ -263,7 +263,7 @@
           "version": "repo-lines-v1:sha256:a14347163c8d603148eb63e98355dc90716434a463e3877cb803097e8843da4e:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTBmMzM4YzQwYTUzYzRmYTFlMWYyNzcwMzE0ZTg4ZjIyNTVlN2RlN2RlYWNkYWEzZmFmODAzN2M3NjU0MTQxZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMTJmMmVlNWZhMGI2YTc2YmQ2NzA4YWYyOWEyN2Q2YzFiNTRjZjM3YmQwZTkyMzllYjVhZDU4YTYwOTQyOTdjMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzI2ZDdjYmE2YzFiMjA2OWRkNGIzNjgzY2ZlODA1NmQzZWZhMzkyMTNlZDZjNjg5MjViOTk5NTgyYjNjNzA3NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTBkMTY3OGRhZmUzNGU2M2Q3ZWRmODdhZTg5MWUwMGUxMjJiNjAxYmYzN2UyZDkyOWJjZTViNjc5NjIwZjkyZCJ9"
         },
         {
-          "resource": "repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/orders/service/normal/create/OrderCreatePersistencePortImplShopIdAlignPhpTest.java#L124-L174",
+          "resource": "repo://ecshopx-orders/src/test/java/cn/shopex/ecshopx/orders/service/normal/create/OrderCreatePersistencePortImplShopIdAlignPhpTest.java#L169-L219",
           "version": "repo-lines-v1:sha256:579dbf7851e1ee4e45b91cbdea55a0be3fb879dc46e5350d5398bdbe36ab09da:eyJzZWxlY3RlZExpbmVDb3VudCI6NTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiYTFiMWYwZDkzOTU3NDJlMjE2ZjcxYzllOTBjOGZiOWFhNmI0Mjk2YWFhNGNlN2NjMDVjOTZlYTViODdiYWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZmMGYzNGY0ZmEwNTZhZDUwZTlmZDFiNmRkZjZmYzI3MTE2MTYzNTU3NzA4MDUwNjc3ZjI1NTZkNWZlOWVkYTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ3NWZjYjkwOTQ1MDQ4ZTk0OTJjZDgzYzM3ODRhMzk2MzI1M2U3NTIzYWY4YjYwMGIyZmZkMDhkOTg3OGYxYWQifQ"
         },
         {
@@ -552,7 +552,7 @@
       "evidence": [
         {
           "resource": "repo://ecshopx-espier/src/main/java/cn/shopex/ecshopx/espier/service/ExportCsvFileService.java",
-          "version": "repo-file-v1:sha256:e57bdd4adbac29daa858d82aa88bee60e4b5fd358944b99025cf6feca7d2a998"
+          "version": "repo-file-v1:sha256:03d551302f28fa14449ac6acb060e0b7f83488c612b92feeb6248095cc0782f3"
         },
         {
           "resource": "repo://ecshopx-espier/src/test/java/cn/shopex/ecshopx/espier/service/ExportCsvFileServiceTest.java",
@@ -611,7 +611,7 @@
           "version": "repo-lines-v1:sha256:0c68ca278015a7028989bd3a54293ab82764e8215be88f9d3587d9278167a87d:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU2ODA2ZjE1NWM1YWMxYWUyNzIyY2EwNmYyYWM5Y2FkY2I4ODFiOTEyM2NiNjI0YTNjMTA0NzViNDQ0OWRjMmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwN2JiNzNhMWU0NWNhNTVjNTAxZGQ0MDNkOWY1ODMyOGVkMzQyODc2YjNlODUwOTEwZTQ0YWI1MjM0MzljZmUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAwYjBmNTViZTNmNDAwMWFhMDg1NWIzYTIzNTJiNjY5MDY0MTVjMzQzZmQzOGQxOWJlNTczOTg2YTY2MjU4YWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJiYjkzZDlkOTRlNzI0N2ZiMjI2YWQ3NWY3Nzc3MTVkNGZlOWExMzYzNTUzZjEwOGY4NzRlMGJkYmRkODUwYWEifQ"
         },
         {
-          "resource": "repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/service/items/PlatformItemsDeleteServiceItemDeleteEventPublishProbeTest.java#L120-L146",
+          "resource": "repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/service/items/PlatformItemsDeleteServiceItemDeleteEventPublishProbeTest.java#L124-L150",
           "version": "repo-lines-v1:sha256:8e49fcfb99b95f67e56e75c477d8a720feda226a398f552a9f69955553476d13:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNlNWQxNDkwYjM0NmQ3Yzk2OWRlYTljYTNjN2MwYWJhODRkMzdmYmViYTE2YThmMzMzYjE0NjBmOTZkMDdlOWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjViYjEzN2RjMWNkNzEwZWIxOGFmNDBhZDU0ZDU4MzRmMTQwYmQ0YzNiMGJmMmVjZDFkMTUxMzdkYzcwYjc3MzMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZhNmI5YmU5OGY1OGQyZjZmN2Q4OGE3OTcwMTJkMzc3MTU2ZTJlZTVkNDRiZmM1OGE3MGU1NzUwNmRlNWNkMDgifQ"
         }
       ]
@@ -740,7 +740,7 @@
       "evidence": [
         {
           "resource": "repo://ecshopx-popularize/src/main/java/cn/shopex/ecshopx/popularize/service/brokerage/NormalOrderFinishBrokerageCoordinator.java#L82-L208",
-          "version": "repo-lines-v1:sha256:33b3e40070538bcc06425d42d45b93e740a7787fc578593d15cbd5a393cd81e4:eyJzZWxlY3RlZExpbmVDb3VudCI6MTI3LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI2ZGFjMTgwOGRjZjczMDU2MmQwMjliMDgzOWQzZDZhY2UyMDI3YmFkNjBiYTczYTY3ZTFjMTNiMmIyMWE0YTRiIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIxMzZmOTkxZDZiOWE1OTg2MTBiZTQ5NDZkNTM5MmM5YjQ2ZjMxYTlmNzMxNmE5MGExZDE5MmNiYzQ5MTU4MjUwIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJlNjg3Mzg2OGRhNWNhZWQyMWM5ZmRmNjk4NjJiMGRhNTQwNjllY2RmMTg4MmMyMTY1MzU2Yzc0ZjVhN2QxZDAzIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJhYzk4MTdiZDNjODY4ODVjMWE0YzFhYTdhOGU2ZWRiYzZiODBmODdhNjE3Mjg4MGRiNDlhNzBhY2EyZDAxOTcyIn0"
+          "version": "repo-lines-v1:sha256:aff8d00c5918e27f1b452d310d18adfede00299fc61cb71fa8f58e5fc41723bb:eyJzZWxlY3RlZExpbmVDb3VudCI6MTI3LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI2ZGFjMTgwOGRjZjczMDU2MmQwMjliMDgzOWQzZDZhY2UyMDI3YmFkNjBiYTczYTY3ZTFjMTNiMmIyMWE0YTRiIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIxMzZmOTkxZDZiOWE1OTg2MTBiZTQ5NDZkNTM5MmM5YjQ2ZjMxYTlmNzMxNmE5MGExZDE5MmNiYzQ5MTU4MjUwIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJlNjg3Mzg2OGRhNWNhZWQyMWM5ZmRmNjk4NjJiMGRhNTQwNjllY2RmMTg4MmMyMTY1MzU2Yzc0ZjVhN2QxZDAzIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJhYzk4MTdiZDNjODY4ODVjMWE0YzFhYTdhOGU2ZWRiYzZiODBmODdhNjE3Mjg4MGRiNDlhNzBhY2EyZDAxOTcyIn0"
         },
         {
           "resource": "repo://ecshopx-popularize/src/test/java/cn/shopex/ecshopx/popularize/service/brokerage/NormalOrderFinishBrokerageCoordinatorPidResolutionTest.java",
@@ -819,10 +819,104 @@
           "version": "repo-lines-v1:sha256:18753e42a6ff1c598643fef2d6e98a0c1df0d5afe725a6aac6fdbf08f6d77d87:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ3NTViNTk1YWY1N2ZjZDE5YTE0ODkwMmJiM2I5YzdkZWFkZDljZDdmMzEzZDVlMWQ0NzM4M2M4MGJkYmEwYTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImMyMjNmOTIyYzQ5ODJmMmU3MGI2ZDdlN2JmYmFkNWQxNDkyZGQ3NDMzM2ExZDk2Y2NiMzgyZTFhODI0MWFlZjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjllNjBiZTJjZmQwMjhiMjU4ZDBlYmVlM2Q3MDNiOWFhNGM5NDgxZTAyYTE3NzE0YjA1ZjQ4ODM4ODJmYWI3ZDAifQ"
         }
       ]
+    },
+    {
+      "id": "claim_f43c2af4b2d244f4832005cc15c4e9ae",
+      "statement": "SearchRebuildServiceTest pins the goods-search blue/green rebuild ordering with a fixed injected clock (() -> FIXED_EPOCH_MS via the package-private test-only constructor): Mockito InOrder asserts createIndex(expectedIndex) -> bulkIndex(expectedIndex, ...) -> switchAlias(expectedIndex) with never() on putAlias; reindexCompanyIntoAlias bulks into ensureWritableAlias() with never() on createIndex/switchAlias; and a bulkIndex IOException aborts the rebuild before any alias switch (never() on switchAlias and putAlias), with keyset paging over fetchPage(companyId, distributorId, afterDefaultItemId, afterDistributorId, BULK_BATCH_SIZE).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/search/rebuild/SearchRebuildService.java",
+          "version": "repo-file-v1:sha256:a783fc708e6e5735169a5a78dfdb18228670a48fe206cb94a5142f7ac464e812"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/search/rebuild/SearchRebuildServiceTest.java",
+          "version": "repo-file-v1:sha256:929cc9f23c00a2301e710d246c93f235d3aebab274e5c9d43c726502954507ab"
+        }
+      ]
+    },
+    {
+      "id": "claim_5fad71fa2e5344148ca26f1d60e0b4a6",
+      "statement": "SearchIndexUpdaterTest pins the goods-search incremental sync contract over a mocked ElasticsearchClient-backed repository: ecshopx.search.es disabled makes upsert a no-op; an upsert loads the SearchIndexSource via fetchOne and bulks onto the alias with the composite document id GoodsSearchDocumentId.of(companyId, distributorId, defaultItemId); a missing source (Optional.empty) deletes the document instead of indexing and never bulks; and ES failures are retried MAX_ATTEMPTS (3) times then swallowed (doesNotThrowAnyException with times(3) on bulkIndex), so search staleness never fails the calling business path.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/search/sync/SearchIndexUpdater.java",
+          "version": "repo-file-v1:sha256:eacfbc14575be8a7ca42ce364629876fe1dab3589bb02f2218f4116ebe74a7b2"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/search/sync/SearchIndexUpdaterTest.java",
+          "version": "repo-file-v1:sha256:34dba391820e4d176e1dd894a440f39956bb158451a1ee619f1401f409769b34"
+        }
+      ]
+    },
+    {
+      "id": "claim_d9c2c2cd4bce4a69a72c01718f03853a",
+      "statement": "SearchSynonymServiceTest pins the goods-search synonym admin flow over a mocked repository and reloader: list is isolated per company; replaceGroup persists then reloads all of the company's groups into ES; deleteGroup deletes then reloads (InOrder); a per-company in-memory cache serves repeat list calls with one listByCompanyId until a mutation invalidates it; upsertGroupWithoutEsReload persists without reloading; and a reload failure after a successful DB write propagates as SearchSynonymEsReloadException without rolling back the DB write.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/search/synonym/SearchSynonymServiceTest.java",
+          "version": "repo-file-v1:sha256:7627d6952bf45a3960ae903e321c87e6105fea8d018fcfdacd365b61ab777762"
+        }
+      ]
+    },
+    {
+      "id": "claim_08a5d9b3f83344bebe8f35cb3cdeec1c",
+      "statement": "GoodsSearchQueryServiceRankingTest pins the goods-search query/sort DSL by serializing the built Elasticsearch request to JSON and asserting on the text: the default no-keyword query uses constant_score without function_score; multi-character keyword mode uses multi_match over item_name and excludes the ngram subfields (so a multi-char keyword cannot be ngram-recalled); a single-CJK-character keyword includes item_name.ngram/brief.ngram/tags.ngram; synonym-expanded queries ngram only the single-code-point tokens; ASCII keywords hit the pinyin fields; sales/new sorts map to sales/listed_at desc field sorts; and the default composite sort orders has_stock -> _score -> sort -> sales -> listed_at by position in the serialized request.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/search/query/GoodsSearchQueryServiceRankingTest.java",
+          "version": "repo-file-v1:sha256:9baa8562c41a5fecdbc3610a6d705db7c69b7401e598694dd79c6dcb86d818d6"
+        }
+      ]
+    },
+    {
+      "id": "claim_bd63e0ef5c06442b9ea8b8e19307163d",
+      "statement": "GoodsSearchMappingServiceTest pins the goods-search index mapping payload as a pure function with no Elasticsearch client: the built mappings declare nested skus and activities, ik_max_word/ik_smart analyzers on item_name, and the pinyin (goods_pinyin_index/goods_pinyin_search) and CJK-ngram (goods_cjk_ngram) analyzers in the analysis block.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/search/index/GoodsSearchMappingServiceTest.java",
+          "version": "repo-file-v1:sha256:bfe4be7bfe79ef1b0af93e1bc45e8b7717fe774512a1d0dbfe4dac156ac51f38"
+        }
+      ]
+    },
+    {
+      "id": "claim_65a34de5372e438ab92008fe52bb8584",
+      "statement": "SearchRebuildJobRegistrationConfigTest wires the goods-search rebuild job at bootstrap with a plain Mockito registration test: registerSearchRebuildJob() must call dispatchRegistry.registerJob(GoodsSearchDispatchJobNames.SEARCH_REBUILD_JOB, searchRebuildJobHandler), pinning the PHP-parity job name job:198:GoodsBundle\\Jobs\\SearchRebuildJob to its handler.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/SearchRebuildJobRegistrationConfig.java",
+          "version": "repo-file-v1:sha256:2c16d7c6f190dca16b07b884fea7944ef07ce8e0a8987273e67106e1486e0c07"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/config/SearchRebuildJobRegistrationConfigTest.java",
+          "version": "repo-file-v1:sha256:cf65e809d19029936c05f7b2e076843df65de9f4e0bdb82c81af8922eb61ba80"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/GoodsSearchDispatchJobNames.java",
+          "version": "repo-file-v1:sha256:8f5db995630465e6d8385ca7872f6d77310c8289870964eec2e1c86aa8892670"
+        }
+      ]
+    },
+    {
+      "id": "claim_bf82bffdd71a475cb219534218f22cff",
+      "statement": "The goods-search test slice runs with no Elasticsearch node: ElasticsearchClient/GoodsSearchIndexRepository/GoodsSearchMappingService/SearchIndexSourceLoader are Mockito mocks (or bypassed entirely to assert serialized DSL/mappings), so analyzer behavior, real bulk-index rejection, alias atomicity, and query recall/ranking against a live index are assumed, not exercised; ecshopx.search.es.enabled=false in application.properties keeps ES off by default.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/application.properties",
+          "version": "repo-file-v1:sha256:4645c64c41b062e1a933583d0c92b5eeec2e165dd5d960bbd27d90cfacc280d8"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/search/rebuild/SearchRebuildServiceTest.java",
+          "version": "repo-file-v1:sha256:929cc9f23c00a2301e710d246c93f235d3aebab274e5c9d43c726502954507ab"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/test/java/cn/shopex/ecshopx/goods/search/sync/SearchIndexUpdaterTest.java",
+          "version": "repo-file-v1:sha256:34dba391820e4d176e1dd894a440f39956bb158451a1ee619f1401f409769b34"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.9.0",
-    "at": "2026-11-11T17:12:30.774Z"
+    "at": "2026-11-16T17:12:44.218Z"
   }
 }

@@ -58,6 +58,22 @@ public class DistributorDefaultAftersalesAddressReadPortImpl implements Distribu
 		return Optional.of(nested);
 	}
 
+	@Override
+	public Optional<Long> findDefaultLogisticsReturnAddressId(long companyId, long distributorId) {
+		DistributorAftersalesAddress row =
+				distributorAftersalesAddressMapper.selectOne(
+						new LambdaQueryWrapper<DistributorAftersalesAddress>()
+								.eq(DistributorAftersalesAddress::getCompanyId, companyId)
+								.eq(DistributorAftersalesAddress::getDistributorId, distributorId)
+								.eq(DistributorAftersalesAddress::getReturnType, "logistics")
+								.eq(DistributorAftersalesAddress::getIsDefault, 1)
+								.last("LIMIT 1"));
+		if (row == null || row.getAddressId() == null) {
+			return Optional.empty();
+		}
+		return Optional.of(row.getAddressId());
+	}
+
 	private static String str(Object o) {
 		return o == null ? "" : String.valueOf(o).trim();
 	}

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:9a783c75e45e274cbf8210af2e4fce82ce821a76500433bb425cadad6573bcec",
+  "pageVersion": "sha256:eea0f60d4225da0543a8275d84e765c341f2e9d300a7247d6adff5e627958c04",
   "claims": [
     {
       "id": "claim_76729765035c42478dea741f33d9430e",
@@ -11,8 +11,8 @@
           "version": "repo-lines-v1:sha256:4705d5242949afa17c19f3c4f72eb46f7ffd37137530728e4615740be87cdedf:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1OWZiMWU2YTJkZmIyMGExNzQzMDFhNWY2YWI1YzQyNjdkOTc1MzgzNDkxYTZiMThiMmU2MTNmNTRlYzRmYmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFkMjNhZTdkN2UxMTJkODMyM2QyODUxYjQyNGQ1NDE2MjM2M2I4ZGUxYmVmOWUzMWRkZmU2NTZiNWRmMmU4MDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
         },
         {
-          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/OrdersDispatchEventNames.java#L19-L74",
-          "version": "repo-lines-v1:sha256:685a68f647a6cf2e7d343e715cfcc1d160223bb6880243eba33715db006d4ce8:eyJzZWxlY3RlZExpbmVDb3VudCI6NTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYyZjM4NTIxYjgzMTQ1NTdjYzI0NDg5ZGY1OGU4NDQ0YjYyZjRjNmU5MjIwNGM2ZjFkOGI4YjUzNmQ1MGIyODQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQyNjk5MTNmZWRhZjNhZDY1ODRkYTQwZTQ1ZTdjZDcyMTMwMmU5MGVmYzJiNTM3ZDcyZTE1Mzk3ZjFlOGJkOTkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFkMjNhZTdkN2UxMTJkODMyM2QyODUxYjQyNGQ1NDE2MjM2M2I4ZGUxYmVmOWUzMWRkZmU2NTZiNWRmMmU4MDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjUwZjE2NzM5MWE2YjQzZjQ0MjIwYzMxNzM2OGYxYzhhYjQ0MjVjYjhkMjkyM2Q3MzVlY2YwY2VlOGY1YmE1NTMifQ"
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/OrdersDispatchEventNames.java#L19-L80",
+          "version": "repo-lines-v1:sha256:d6381564d3e62dafdc7d9bcccf848892464ce2b02f83490cf3d45b0cb299741e:eyJzZWxlY3RlZExpbmVDb3VudCI6NjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYyZjM4NTIxYjgzMTQ1NTdjYzI0NDg5ZGY1OGU4NDQ0YjYyZjRjNmU5MjIwNGM2ZjFkOGI4YjUzNmQ1MGIyODQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQyNjk5MTNmZWRhZjNhZDY1ODRkYTQwZTQ1ZTdjZDcyMTMwMmU5MGVmYzJiNTM3ZDcyZTE1Mzk3ZjFlOGJkOTkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFkMjNhZTdkN2UxMTJkODMyM2QyODUxYjQyNGQ1NDE2MjM2M2I4ZGUxYmVmOWUzMWRkZmU2NTZiNWRmMmU4MDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjUwZjE2NzM5MWE2YjQzZjQ0MjIwYzMxNzM2OGYxYzhhYjQ0MjVjYjhkMjkyM2Q3MzVlY2YwY2VlOGY1YmE1NTMifQ"
         },
         {
           "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/OrdersDispatchJobNames.java#L19-L56",
@@ -121,7 +121,7 @@
           "version": "repo-lines-v1:sha256:13c88eff7d8123275deb36c23c54d6b63287b0a845946bf613e0bc169de5a5c8:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFlZDk0ZjEwNmJlNmNlOWFhNzQ1ODI3ZGI5ZmEyYjY4NmMyNGJjOWQ4MjE4M2Y0MjFlZDEzZTdjMWUzMDRmOWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU2ODczODY4ZGE1Y2FlZDIxYzlmZGY2OTg2MmIwZGE1NDA2OWVjZGYxODgyYzIxNjUzNTZjNzRmNWE3ZDFkMDMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMxYzZhNDE2MDc2MTM2MDZjNWM0MmYxNTdhYTM4MzI5NDQyMzlkY2Q4YzEyNDM0NDkxNDA0OWJkZDFjZDg4MTAifQ"
         },
         {
-          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/account/MemberAccountService.java#L394-L404",
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/account/MemberAccountService.java#L397-L407",
           "version": "repo-lines-v1:sha256:7624c7f74579b5a2d75eb43ab8691f4b9c0874eaf2dac4d19de703659bcef08b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg1ZDM3YWMxNzI4MmRkMTgwMWE0YWIxNzFlMGU4NTg0YjRjNjEzNDEzZTRkNmUyOWUyOWI0MzNiYzM1NGY5OTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZhMmEzYjc2ZTEyY2UxNTM3OWQwNWYyODY5ZGM0ODMyZGU3NTg5MDUzYjQ5YmZmMjM3ZTQyNWM3MjM3ODAxNTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk3Mjc3MzZiNjY5MmY0NGY4YzEyOGM5ODkzZjUwNDdkYjI0MzY0NjU4ZGVjMjkzNDZlY2VmYmI0MzY1N2ExZWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU3NjVmOGQwYjkxMDEzMDVjMTdjMGQ2NjJiOTg5N2ZjZWE1Njc4MzAyOTFjMGY2MDdkOGNmNmIzNmIzMGNlMzUifQ"
         },
         {
@@ -393,7 +393,7 @@
       "statement": "The Java-first dotted listener names in OrdersDispatchEventNames follow the grammar <consumer-bundle>[.<sub-domain>].<action>_on_<event-snake>; recent additions include the shuyun open-platform trade.sync and offline-benefit listeners (listener:shuyun.open_platform.*) and the digios store-adjustment listener (listener:digios.store_adjustment_on_normal_order_delivery), alongside the legacy PHP-FQN form (listener:WsugcBundle\\Listeners\\Order, listener:HfPayBundle\\Listeners\\HfpayTradeRecordListener@paySuccess) and thirdparty marketing-center listeners.",
       "evidence": [
         {
-          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/OrdersDispatchEventNames.java#L100-L122",
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/OrdersDispatchEventNames.java#L106-L128",
           "version": "repo-lines-v1:sha256:6a7c7dc4755edf6c79f384d448eea8c1acf01c169c88b7022c19abb401d366ac:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE5NzVmZmRhODZiYzZiZDJkNGRmNjU5YzFjZmFlYWRjYzc4ZmU3YTljYTNlNzU3MTllOTUzOTU5ZTMzMWYxN2EiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIyODIzMzNmZjMyNzc4MzcwMGQ2MThmMTIyMzZkMWUwMDEyMTdiZmViNDU0YWJjZmZhZDVlMDRhYWVkMmJkMTkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA4MWZlMTQzNjA4MTVmNzgyMTUwNDU0NzZjMGQ1OWU0MTRhYTc1NzgwYWRmZTBjNzI4M2FjYjRjNDgxNjM3ZTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjYwZTg2ZWYyMTBkYWYyODExMDYxNjZiMzIzMzQzY2U3Yzg0N2FmNTJlZDg2NWQ1MWUxNWYxYjg3ZjQ0NTYzODIifQ"
         }
       ]
@@ -463,8 +463,8 @@
           "version": "repo-lines-v1:sha256:6d030cc741bb9bb31754b20cdda8af65d1203fb43944b436bf9713ed8c93aa81:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE4ZDcxMjQyMmYyNTMzMjdjNGRkNzUxYzc4OTk2MzhmYzQ5NGMzMGI0Zjk2ZGFjNjMwN2M2ZDg4NzE3MDIxNTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAyNGE3ZjE5NTc0OGE3MWYxMGQ5YjM0YjI4ODY0OTIxMzcxZTNkM2NjYWM0MDQ1ZDcyYTlkMmZkZmU4OGFhNWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
         },
         {
-          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/MembersDispatchEventNames.java#L21-L34",
-          "version": "repo-lines-v1:sha256:14cbeed417c15dff20d5ac75d747a8aa310fd5d7ffb43d7c33d5b07553ea639f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4ODlhYmUxZmQ0NjgxMTk0Y2Q4ZmEzNmY5MmRlODJjNzc0MjMzZDIxNjg2ZjU0NTRhZmIwMTM5NzQxYTlhNGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFhMTg5NjE5MGIwMjVmZDhkMTUwZjg0MjExOTlmYjA0NDk2ZDhmMzkwMmQwNjNkY2Y3NjVlYzA0YzRlYjQ2MTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY2MzMzZTliY2JjNmEyOTdjZjhiNDQ3YmFhYzNiOGVjYTk5Y2RlMzRmMWY4MWRkNDJhZmEyZTgzYjhiZDVlYmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjYzMGQ2NDBlNDAyMjJlMTZhMGFiODFmZDExMTA3OTQ2MjRmMDFhZDRiMjFmMDM2MzIzYzBiMmU0YWY4MWE5MzAifQ"
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/MembersDispatchEventNames.java#L21-L42",
+          "version": "repo-lines-v1:sha256:ec1831ecf1bbd69875a219683b85cb04141622ffb99f4545da664263f77ec7eb:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4ODlhYmUxZmQ0NjgxMTk0Y2Q4ZmEzNmY5MmRlODJjNzc0MjMzZDIxNjg2ZjU0NTRhZmIwMTM5NzQxYTlhNGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFhMTg5NjE5MGIwMjVmZDhkMTUwZjg0MjExOTlmYjA0NDk2ZDhmMzkwMmQwNjNkY2Y3NjVlYzA0YzRlYjQ2MTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY2MzMzZTliY2JjNmEyOTdjZjhiNDQ3YmFhYzNiOGVjYTk5Y2RlMzRmMWY4MWRkNDJhZmEyZTgzYjhiZDVlYmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjYzMGQ2NDBlNDAyMjJlMTZhMGFiODFmZDExMTA3OTQ2MjRmMDFhZDRiMjFmMDM2MzIzYzBiMmU0YWY4MWE5MzAifQ"
         }
       ]
     },
@@ -517,14 +517,126 @@
           "version": "repo-lines-v1:sha256:a4ad176a5cd4c28dd79ddd66ff576e15aab0f00e0addd9e094387e20d1f25b54:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVkNzNhYTc4ZDZkMDc5Njc2ZTliMDM0NjM3NmE0ZmNhOWMyMjkwZDhhY2E3MzY3NzEwYTE5ZDlhODk3ZGE1ODciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA0ZGJiZDc3MzEwZDFmZGUxYzBkOWJiMGEwOTMxNTI3YTg4MzU2YzIzMGFlNmVhZDRmMTdmMmNlYTY0ZTg3ZTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
         },
         {
-          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/OrdersDispatchEventNames.java#L106-L108",
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/OrdersDispatchEventNames.java#L112-L114",
           "version": "repo-lines-v1:sha256:c62b70ee6f7339a75e7c25e5f38d474f1dc34a5c21d8eabc86ab610a7dcf8051:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTg4MzEzNzdmY2Y0ZTFlYjAxZDIyMDNjODIzYmY1ODE0OWFhNGY5OTM0NWNhNmM5M2ZiZDc2MjI1OTgyYTk0YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOWExYjJlYmYzOTM5MTdiNGM1YTMyNWE5ZTIxYjY1ZGFhM2I0ZDVmZTYyYmZkNzBkMmM1NmYwMDY4YzY3N2M1ZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDAwZjU3YjIzYzJkMmZjMDEzNjEzMDZiMzViYjNhM2M5NTU3ODczYzRmY2U1MDFlYTNkOWFkY2E2ZDAzOGUxMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMTFmNmExMTM4NDVmZTY2NDVkODdlNmJiZGJmNmJkMzE1NTkwNjY5YWFhNzc4NjNiNjYzMmM1MTI0NDQ0YTI3OSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_0234cd3471d24f55881b10d524bfcfcc",
+      "statement": "GoodsSearchDispatchJobNames.SEARCH_REBUILD_JOB = \"job:198:GoodsBundle\\\\Jobs\\\\SearchRebuildJob\" is the single source of truth for the goods search-index rebuild job, shared by bootstrap's SearchRebuildJobDispatchPublisherImpl (publisher) and SearchRebuildJobRegistrationConfig (consumer registration); the name keeps the legacy PHP CSV id 198 for migration parity.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/SearchRebuildJobDispatchPublisherImpl.java#L56-L67",
+          "version": "repo-lines-v1:sha256:0e0ee1faf3763e7846cc0ede9c4994fc4b3befc093b7170c82e2f2488f3b4cf7:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc0NWMzYjVmOTgxNTQ3MmYwZWVhMzhkNWVjYjc2MmM5YjAyYWY1MjRmYWU2YTk2ZGMyMmVlZmFmNDY3ZDQ3NTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhlNjM3OGFjMjQwZjcxNDUyMjkxNmY3ZGQ1MmY4YWFkYWE0ZDM3MGQ1NmQyOGU5ZTU5MmVhZDk5NDAzNjU2NWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQwMzk5NDVmNzEzY2VjY2MyYTJiZTk4MWFiNWM1ZWVhMzdmOTVmOTc2OWU1NzVjZDhlZDlhOWZjYmFmZGYwNmEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/SearchRebuildJobRegistrationConfig.java#L37-L40",
+          "version": "repo-lines-v1:sha256:bd8063e2862bcb7581c450d1d95b7aaca1a076acbdb8ef4661d7e927623775df:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDRjYzNmMmMwYmE5MjM2YjY4ZDc5Zjc1ZWUyZmQ0YmM4NjliZWQ5MjhlOWYzOWZhY2M1NTFlOWU4YTQ4NGM1ZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjZGE4MmRhNjA2MjM4ZTA1ZTYyMzk5NTY5YzVlZTAzOTkzNDE5NjQ4YWU1ZDQzYTJiZjhjZDYzNDdmODI2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzQwY2YzZWNhZDRjMmQwYzMyZjAzNmIwYTllOWI2ZjBmNGQ0OGM3YmMzNGQ2N2M0N2Q2YmY1NzBlMjg3NTAwOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSJ9"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/GoodsSearchDispatchJobNames.java#L19-L26",
+          "version": "repo-lines-v1:sha256:a754189f06ed1a8469e2c3d6bb287dcfe2efea07e80cba450db6ccf0d1728e61:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTJkZTY5YjQxZDBlZDkzNWY5ZGQ0NDMwNWY3ZjFhNWE3NDg5NDhjN2ZlNmZkZWUwMzJmZThjNzYyYjgyZGJjZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMWQyM2FlN2Q3ZTExMmQ4MzIzZDI4NTFiNDI0ZDU0MTYyMzYzYjhkZTFiZWY5ZTMxZGRmZTY1NmI1ZGYyZTgwNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_81a33826e95a42ebbd62595fe4ee44e0",
+      "statement": "SearchRebuildJobDispatchPublisherImpl is a typed, cron-fed job publisher (@Component @Profile(\"!test-cron\")) implementing common's SearchRebuildJobDispatchPublisher: enqueueAllCompanies() emits payload all_companies=true, enqueueCompany(long) rejects non-positive ids with IllegalArgumentException and emits company_id, and both dispatch SEARCH_REBUILD_JOB with DispatchOptions ASYNC/REDIS/queue \"slow\"/no delay/platformDefault retry.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/SearchRebuildJobDispatchPublisherImpl.java#L33-L68",
+          "version": "repo-lines-v1:sha256:9d1527c547bea5d81e141da62f6fb76105eda709a956bbe560a1aade60413bd2:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg2M2FmNzQ3MGE2N2MwZGQ1ZWI1ZThkODRhZjBiYjVmM2ZjYjM2ZjIyYTRjYzY4MjE2NzU1ODRhYjQ4N2MyMGEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg4MjkwNWEwNzljMjA2NmQ5NWNhZGU2NzdmMDJhYTQ0MWRjNjFiZjAxYjY1YzJjNTM4ZTA3MjQ4MGFjOWQ2ZGYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/SearchRebuildJobDispatchPublisher.java#L20-L27",
+          "version": "repo-lines-v1:sha256:ffca36bf10dbc8a8063e4a8d23bf3a9c3bcfba99dd4ee9c87e6ec08f970844c2:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNzYwNjk0Yjk0MThkOTVkOTM2MmJhZDE0YmM2YmZmMjdlNGQ4ZTM3NGQyNzNlZjI0MzgyYjdiMjQ3Zjc1MmZlNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTI2NDdjYTQ3NWFjNzFlYTExY2M5ZWE1Nzk0ZjBiOWE4M2FhNjMxMjA2M2VlZjZlZDgyODkyNjVhN2Q3MWY5NiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_1fee7f7c4bdc4d1a96564ba23b48ea3c",
+      "statement": "SearchRebuildJobHandler (ecshopx-goods/goods/search/rebuild, beside SearchRebuildService rather than in a dispatch/ package) parses a multi-shape payload: all_companies truthy (Boolean/Number/String forms) re-lists all non-disabled, non-expired companies from the companys table and blue-green rebuilds them; a bare company_id upserts into the current ES alias via SearchRebuildService.reindexCompanyIntoAlias with optional distributor_id; blue_green=true runs a full single-company rebuild that swaps the site-wide alias. Missing/invalid company_id throws IllegalArgumentException and IOException is wrapped in UncheckedIOException so a failed rebuild marks the bus job failed.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/search/rebuild/SearchRebuildJobHandler.java#L34-L74",
+          "version": "repo-lines-v1:sha256:085541e11b973ca92f83c1f12d3154cba91f57ca2da978864d730f1c44b7e6c3:eyJzZWxlY3RlZExpbmVDb3VudCI6NDEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYyM2NiNGMxM2Q2Nzc1OWQ1NGY3NjcxZDQ0MDM0OTcyZDA5MDNhMzlkMDhhZmFlNzNiYjk4MWViOWFiMGRjZjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk1YzllYTIyNDUzM2NjMTEyNmVkNzcxYjU3YmJmYjdhY2QzMWFkMGQ1OTJlODRlMjBmNDQzNjI0MGYwNzI5MTIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjllZjQwYzEzMGMyNGI2MjhlM2NkNDljYTFkZmJiZWZiYzY0NWVmOWM1MDYwYTUxYWZkMmQ3OGYwZGY5OTg0YjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjYyYzAwMWE2YWU4MDY0N2JlY2I1NDE4NWVlYzMyM2UzZTJhZTU5YmRiYjYwZWViYjMyYjc1MTE0NGU0ZDBjMTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/search/rebuild/SearchRebuildJobHandler.java#L76-L134",
+          "version": "repo-lines-v1:sha256:e2aa3435f5acbc8f061a01494f1bece1a247d78fab0ee9d66da7d6c2c3dbbf26:eyJzZWxlY3RlZExpbmVDb3VudCI6NTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZhYjk3Y2E2NWU0YzAyOWI5ZThlNDQ5NTFkMzlhNDljZDg5YWQ2NzgxMmIyN2QwMDMzZjM2OWFjOGYyNDlhNTkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE2NmM2ZGI1NDJlMzcwMDU2MjNjYzdlZGMxZTZkNDhmMzdkMmE4MWQ2ZWMwOTc4Y2FhMDc3ODViMTY3NDljOGYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_61d3debaf6be4be6804384003c8f5043",
+      "statement": "The goods-search-rebuild XXL-JOB handler is the only queue-feeder cron that publishes several dispatch jobs per tick: ScheduleGoodsSearchRebuildHandler delegates to GoodsSearchRebuildCronService.enqueueRebuildForActiveCompanies(), which returns 0 and publishes nothing when ecshopx.search.es.enabled=false, otherwise enqueues one SEARCH_REBUILD_JOB per non-disabled, non-expired company and logs enqueuedCompanies=; the seeded xxl_job_info row 70 schedules it nightly at 0 0 1 * * ? *.",
+      "evidence": [
+        {
+          "resource": "repo://docker/tables_xxl_job.sql#L213-L213",
+          "version": "repo-lines-v1:sha256:db16eaa01ab1d18a24b4e678f9c461b654505347e3def97890f855f2d7bdd00e:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZGIxNmVhYTAxYWIxZDE4YTI0YjRlNjc4ZjljNDYxYjY1NDUwNTM0N2UzZGVmOTc4OTBmODU1ZjJkN2JkZDAwZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZGIxNmVhYTAxYWIxZDE4YTI0YjRlNjc4ZjljNDYxYjY1NDUwNTM0N2UzZGVmOTc4OTBmODU1ZjJkN2JkZDAwZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjY5MTc0ZjBiNDMyNGY3YWY3OTM2ZjQyZDM2YTdlMzhjZDgxMzU1MDI0YTc1N2ViNWU4NmY0MmQyZjg1ZTllZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTM0ZGYwMzUyNTk4YmNjNWQzYjlkYWQxYzMyZTNiNzM5MjliZGM0OTM4ZTVhN2VmMzU0YWI0OWQ3NTQzZGMyNCJ9"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/cron/ScheduleGoodsSearchRebuildHandler.java#L29-L56",
+          "version": "repo-lines-v1:sha256:1fc33e6fae31249dace521b5bb66ba97b701f80ac8806008c81f6d507a4c48e9:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE5MThkMDg5NjNmYTc0NWNkOTMxMzU3YTQ1NmIxYjA1YWE4YzhmYTY4MTE2ZWUyYTBiMjBkNTdhMDBjOTQ1MjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImYwNzEzODA0MTM3MTUwNzYyNTliYjZiYWFhODhiNjFjZWEzOTYyYzQ5NzYwMzMwYWVjNTFmMWNjOTQzZTA0MWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/service/GoodsSearchRebuildCronService.java#L46-L80",
+          "version": "repo-lines-v1:sha256:c6ca604abb785503d3ed8c4d79d97cbe80957d404ef13c97b26bef812d67e1ef:eyJzZWxlY3RlZExpbmVDb3VudCI6MzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjczNTFmOTA3MGUyNmJkMTJjNmZkZTAzNDZhMjVmYTI4MzBkY2NiNzBjYjhkNmFkMWIwZWZhNzM3MjQ5NDFlZGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQwOTc0ZWE5NGIzYjE5ZjJiYzJjOGM5OTJkNWY5NzE1YzJkNzViMmFlZGRjZjgyYmY4NWRjMzk4N2FmNGQ4YmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_0c3280ea212947b7bcf4ffc3df2fdf80",
+      "statement": "Under the test-cron profile, ecshopx-goods' cron/testcfg/CronTestMockConfig (in src/main) installs a @Bean @Primary NoopSearchRebuildJobDispatchPublisher that only logs and counts calls, replacing the @Profile(\"!test-cron\")-guarded real impl so diff-harness cron runs do not enqueue real rebuild jobs.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/cron/mock/NoopSearchRebuildJobDispatchPublisher.java#L20-L40",
+          "version": "repo-lines-v1:sha256:b9bfee6722fe3359363b18909037e9c69f74af29547fd1765fd38ebbbbdac1b3:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE3MzhmM2QwNjlhY2MyMDVhMDIzMzczNmQ3ODlhMDFiMzJkZTU5MDE0NmMwNjhlNmMzMTRjMDY3Yjg5YzcyZWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNiYzhhZWQ0OGJiZWE2MzFjMzRjYmI3NzQwZjIwMmRjY2U3YTdkYjgyYmMyMDRiMjI1YzM4ODgyZDQxY2UzMzUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/cron/testcfg/CronTestMockConfig.java#L29-L65",
+          "version": "repo-lines-v1:sha256:ca96b3a3c870491168558721cbf17454d9ae26bee5452244ec3459823e369eaf:eyJzZWxlY3RlZExpbmVDb3VudCI6MzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM2MmU4ZjFjNWU4NzRkYTUxNTNkZTg2MTQwNzIyN2I1MmFjMjAzYTk4ODQzNmY0MjU3ZmNiZDdlY2IxODMwNjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFhODNlMWU1N2JhMGIzMTY1NDZmOTU1YTE1NWQxNjQ1ZjNjN2YzOGI1MjZlNjlmYzBmODY5MTFlMzBhNTgzYmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImYzYWZhODE4NGVlZWUxOTA0ZmMwYmU2MGJiNTI4NGU0YjM2MjU2OWZlNWViZTFmOTZkYmEwMjA0ZTI3YTBiOTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA0MWY4MGRkNjBiYjhjZTRiYzdlZWI4NjQ3OTY0YTVmMTFjZTliNmFlYzYzNDM2ZmEwOGNlNTAwNDA2YTQxN2QifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_ed9ccc2bd65342f58eea7add22aed273",
+      "statement": "EspierExportFileJobRegistrationConfig is the extreme many-names-one-handler registration: its @PostConstruct registers the same EspierExportFileJobDispatchHandler against twenty-one distinct EspierDispatchJobNames export constants (job:10/14/81/85/86/87/91/190/212/213/214/94/95/110/130/132/133/159/200/165/166, all EspierBundle\\\\Jobs\\\\ExportFileJob) plus OrderListExportFileJobDispatchHandler against EXPORT_FILE_JOB_ORDER_LIST (job:131).",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/EspierExportFileJobRegistrationConfig.java#L40-L85",
+          "version": "repo-lines-v1:sha256:ce9be0afeb5f3ef9a839666de8ae5a4f3873da3408abd1d73042f40e2eee6f2f:eyJzZWxlY3RlZExpbmVDb3VudCI6NDYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ0Y2MzZjJjMGJhOTIzNmI2OGQ3OWY3NWVlMmZkNGJjODY5YmVkOTI4ZTlmMzlmYWNjNTUxZTllOGE0ODRjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZmOGExNzJkOTcxYzRmY2FiYTc3ZmEwMjU2YzAzZDM2ZGJlMjBjNDE0NWIwYTIzN2ZjNjgxOGM4ZjA3ZjRlMzQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/EspierDispatchJobNames.java#L19-L70",
+          "version": "repo-lines-v1:sha256:b21ff36764c6c580114a05cac94611dd6df6ec97ae3ef5ebca4d564dd19c8b0e:eyJzZWxlY3RlZExpbmVDb3VudCI6NTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjExMmVlNjQ5NmNlYjYyOWZlOGY2ZjJlZDJmZDhkM2IwMmYyNTU1NDViZjgwNTc5YzcwY2JjMTcyOTZjOGVhOWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkwYjVkYmU3MDllNzAxMTFmYzM4MjVlNzNkMTZlZDhlOWVhYjQ0OTk4MjJiZGZlYWJhNDU3ODg4YTkxNmY2ODMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFkMjNhZTdkN2UxMTJkODMyM2QyODUxYjQyNGQ1NDE2MjM2M2I4ZGUxYmVmOWUzMWRkZmU2NTZiNWRmMmU4MDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI4YzcyMzZmNjE2NDhlMzYzNjUyNzI2N2E3Y2VmMGJkM2U2NGY0OTBmYWY5YWVmMmIwOTc3OWMxYzY0ZmQzZGYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_549e1f42feac4c5da874315c383f2d7a",
+      "statement": "SearchRebuildJobRegistrationConfigTest demonstrates the lighter-weight registration-pinning test shape: it constructs SearchRebuildJobRegistrationConfig with a mocked DispatchRegistry and SearchRebuildJobHandler, invokes the @PostConstruct method directly, and verifies registerJob was called with exactly GoodsSearchDispatchJobNames.SEARCH_REBUILD_JOB.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/test/java/cn/shopex/ecshopx/config/SearchRebuildJobRegistrationConfigTest.java#L24-L39",
+          "version": "repo-lines-v1:sha256:c07ecc75bb8f3449909c8caaece31a6e080366c5ad41a27b58de525348863870:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRiOTU1Y2NkNjAxY2U2MWYzMTkzZGI0NmVlN2QxMDM3MTgwNTUxMWIxMzZmYzBmOTNlMmI5N2IwMjI4Y2E0NTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJmN2M3NTVmNDIzMTBlMmE4YWFhYWNmYzkyOWQyMWQwN2I5ZTE0OTU1NGM5ZDFjY2Q4ZjIyYTVlNzAwYWQzOTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_a5631e7d983b4e229d018eedee008e6e",
+      "statement": "docker/tables_xxl_job.sql now seeds 70 xxl_job_info BEAN-mode job definitions; the newest row (id 70) is goods-search-rebuild at 0 0 1 * * ? *, and the seed SQL runs only on first database initialisation so jobs added later are created through the admin console.",
+      "evidence": [
+        {
+          "resource": "repo://docker/tables_xxl_job.sql#L143-L213",
+          "version": "repo-lines-v1:sha256:fe5cc5a2ba42756db0419507bf3e2d3456aa6d8cf5b1ed5baa5fa0b59fab55c0:eyJzZWxlY3RlZExpbmVDb3VudCI6NzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ0YmY4MGJiNTA4YTA5NmM3MTExNDllNmQyOTJjMWJmZjI3YzRjY2Q2NTMxZmQ0Y2IyNGYwZmE1ZmNhOGYyZDEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRiMTZlYWEwMWFiMWQxOGEyNGI0ZTY3OGY5YzQ2MWI2NTQ1MDUzNDdlM2RlZjk3ODkwZjg1NWYyZDdiZGQwMGUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU0YTAxZjFhMTA4YTNhYmQyZGMwZDA0NWU1NDM0MzRkN2Q3ZmJlMzY5YjBiY2Y0OTNlYjNlMjQ4ZTdiOWU3MDIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjUzNGRmMDM1MjU5OGJjYzVkM2I5ZGFkMWMzMmUzYjczOTI5YmRjNDkzOGU1YTdlZjM1NGFiNDlkNzU0M2RjMjQifQ"
         }
       ]
     }
   ],
   "verification": {
     "by": "openwiki/0.9.0",
-    "at": "2026-11-08T17:14:16.576Z"
+    "at": "2026-11-16T17:12:44.218Z"
   }
 }

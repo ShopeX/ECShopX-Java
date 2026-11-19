@@ -165,9 +165,13 @@ public class GoodsItemsListPromotionEnrichmentService {
 						continue;
 					}
 				}
-				if (applyCrowd && "limited_time_sale".equals(tagType)) {
+				if ("limited_time_sale".equals(tagType)) {
 					SeckillActivity seckill = seckillById.get(promotionId);
-					if (seckill != null
+					// PHP ItemsService::getPromotions — 平台/店铺限时特惠互斥，与详情 source_id 校验一致
+					if (!passesLimitedTimeSaleShopScope(seckill, itemDistributorId)) {
+						continue;
+					}
+					if (applyCrowd
 							&& !memberCrowdMatcher.matchesLimitedTimeSale(
 									companyId,
 									userId,
@@ -181,11 +185,52 @@ public class GoodsItemsListPromotionEnrichmentService {
 				if (ACTIVITY_PRICE_TAG_TYPES.contains(tagType)) {
 					Object ap = data.get("activity_price");
 					if (ap instanceof Number an) {
+						// PHP ItemsService：只写 activity_price，保留原售价 price 供划线/列表展示
 						items.put("activity_price", an.longValue());
 					}
 				}
 			}
 		}
+	}
+
+	/**
+	 * Align PHP list tag filter for {@code limited_time_sale}: {@code source_id} must equal the
+	 * (standard-replaced) item distributor context; optional distributor_id CSV must contain it.
+	 */
+	static boolean passesLimitedTimeSaleShopScope(SeckillActivity seckill, long itemDistributorId) {
+		if (seckill == null) {
+			return false;
+		}
+		long activitySourceId = seckill.getSourceId() != null ? seckill.getSourceId() : 0L;
+		if (activitySourceId != itemDistributorId) {
+			return false;
+		}
+		List<Long> activityDistributorIds = parseDistributorIdCsv(seckill.getDistributorId());
+		if (!activityDistributorIds.isEmpty() && !activityDistributorIds.contains(itemDistributorId)) {
+			return false;
+		}
+		return true;
+	}
+
+	private static List<Long> parseDistributorIdCsv(String raw) {
+		if (!StringUtils.hasText(raw)) {
+			return List.of();
+		}
+		List<Long> out = new ArrayList<>();
+		for (String p : raw.split(",")) {
+			if (!StringUtils.hasText(p)) {
+				continue;
+			}
+			try {
+				long id = Long.parseLong(p.trim());
+				if (id >= 0L) {
+					out.add(id);
+				}
+			} catch (NumberFormatException ignored) {
+				// skip
+			}
+		}
+		return out;
 	}
 
 	private Map<Long, MarketingActivity> loadActivities(Set<Long> ids) {

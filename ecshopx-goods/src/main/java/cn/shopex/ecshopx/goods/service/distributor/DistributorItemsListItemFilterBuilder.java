@@ -75,14 +75,14 @@ public class DistributorItemsListItemFilterBuilder {
 			if (tagItemIds.isEmpty()) {
 				return Optional.empty();
 			}
-			Object itemIdParam = merged.get("item_id");
-			if (itemIdParam != null && StringUtils.hasText(itemIdParam.toString())) {
-				List<Long> req = parseIdList(str(itemIdParam));
-				tagItemIds = tagItemIds.stream().filter(req::contains).collect(Collectors.toList());
-				if (tagItemIds.isEmpty()) {
-					return Optional.empty();
+				Object itemIdParam = merged.get("item_id");
+				if (itemIdParam != null && StringUtils.hasText(itemIdParam.toString())) {
+					List<Long> req = parseIdList(itemIdParam);
+					tagItemIds = tagItemIds.stream().filter(req::contains).collect(Collectors.toList());
+					if (tagItemIds.isEmpty()) {
+						return Optional.empty();
+					}
 				}
-			}
 			filter.put(ItemsListQueryRepository.KEY_ITEM_ID_OR_DEFAULT_IDS, tagItemIds);
 		}
 
@@ -135,13 +135,13 @@ public class DistributorItemsListItemFilterBuilder {
 			filter.put(ItemsListQueryRepository.KEY_STORE_LTE_WARNING, warningStore);
 		}
 
-		Object itemIdQ = merged.get("item_id");
-		if (itemIdQ != null && StringUtils.hasText(itemIdQ.toString())) {
-			List<Long> ids = parseIdList(str(itemIdQ));
-			if (!ids.isEmpty()) {
-				filter.put(ItemsListQueryRepository.KEY_ITEM_ID_OR_DEFAULT_IDS, new ArrayList<>(ids));
+			Object itemIdQ = merged.get("item_id");
+			if (itemIdQ != null && StringUtils.hasText(itemIdQ.toString())) {
+				List<Long> ids = parseIdList(itemIdQ);
+				if (!ids.isEmpty()) {
+					filter.put(ItemsListQueryRepository.KEY_ITEM_ID_OR_DEFAULT_IDS, new ArrayList<>(ids));
+				}
 			}
-		}
 
 		String isCanSale = str(merged.get("is_can_sale"));
 		if ("false".equalsIgnoreCase(isCanSale)) {
@@ -356,19 +356,48 @@ public class DistributorItemsListItemFilterBuilder {
 		return out;
 	}
 
-	private static List<Long> parseIdList(String s) {
-		List<Long> out = new ArrayList<>();
-		if (!StringUtils.hasText(s)) {
+		/**
+		 * Parses {@code item_id} from query/body: scalar, CSV string, or list from {@code item_id[]=…}
+		 * (via {@code FlexibleHttpServletParameterMap}). Must not call {@code List#toString()} then
+		 * split — that yields {@code "[8242"} and throws {@link NumberFormatException}.
+		 */
+		private static List<Long> parseIdList(Object raw) {
+			List<Long> out = new ArrayList<>();
+			if (raw == null) {
+				return out;
+			}
+			if (raw instanceof List<?> list) {
+				for (Object o : list) {
+					if (o == null) {
+						continue;
+					}
+					if (o instanceof Number n) {
+						out.add(n.longValue());
+						continue;
+					}
+					String t = o.toString().trim();
+					if (StringUtils.hasText(t)) {
+						out.add(Long.parseLong(t));
+					}
+				}
+				return out;
+			}
+			if (raw instanceof Number n) {
+				out.add(n.longValue());
+				return out;
+			}
+			String s = str(raw).trim();
+			if (!StringUtils.hasText(s)) {
+				return out;
+			}
+			for (String part : s.split(",")) {
+				String t = part.trim();
+				if (StringUtils.hasText(t)) {
+					out.add(Long.parseLong(t));
+				}
+			}
 			return out;
 		}
-		for (String part : s.split(",")) {
-			String t = part.trim();
-			if (StringUtils.hasText(t)) {
-				out.add(Long.parseLong(t));
-			}
-		}
-		return out;
-	}
 
 	private static String str(Object o) {
 		return o == null ? "" : o.toString();

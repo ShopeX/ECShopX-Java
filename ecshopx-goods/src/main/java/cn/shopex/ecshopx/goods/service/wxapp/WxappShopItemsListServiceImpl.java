@@ -147,23 +147,6 @@ public class WxappShopItemsListServiceImpl implements WxappShopItemsListService 
 			orchestrationParams.put("distributor_id", distRaw.trim());
 		}
 
-		boolean salesmanPage = isSalesmanPageQuery(request.getParameter("isSalesmanPage"));
-		long shopUserIdForSales = 0L;
-		if (su != null && !su.isBlank()) {
-			try {
-				shopUserIdForSales = Long.parseLong(su.trim());
-			} catch (NumberFormatException ignored) {
-				shopUserIdForSales = 0L;
-			}
-		}
-		if (salesmanPage) {
-			orchestrationParams.put("isSalesmanPage", "1");
-			orchestrationParams.put("user_id", shopUserIdForSales);
-			if (log.isDebugEnabled()) {
-				log.debug("wxapp shop items list salesman branch companyId={} shopUserIdForSales={}", companyId, shopUserIdForSales);
-			}
-		}
-
 		long categoryId = 0L;
 		String catRaw = request.getParameter("category_id");
 		if (StringUtils.hasText(catRaw)) {
@@ -207,6 +190,7 @@ public class WxappShopItemsListServiceImpl implements WxappShopItemsListService 
 
 		wxappGoodsItemsListMemberPriceApplyService.applyForRows(companyId, authUserId, list, acceptLang);
 		goodsItemsListPromotionEnrichmentService.enrich(list, authUserId);
+		WxappGoodsItemsListServiceImpl.restoreSalePriceWhenNoActivityPriceTag(list);
 		result.put("goods_total", result.get("total_count"));
 		applyShopItemsListStoreBackfill(companyId, list);
 
@@ -248,21 +232,6 @@ public class WxappShopItemsListServiceImpl implements WxappShopItemsListService 
 			return parsed > 0 ? parsed : 20;
 		} catch (NumberFormatException e) {
 			return 20;
-		}
-	}
-
-	private static boolean isSalesmanPageQuery(String raw) {
-		if (!StringUtils.hasText(raw)) {
-			return false;
-		}
-		String t = raw.trim();
-		if ("1".equals(t)) {
-			return true;
-		}
-		try {
-			return Integer.parseInt(t) == 1;
-		} catch (NumberFormatException e) {
-			return false;
 		}
 	}
 

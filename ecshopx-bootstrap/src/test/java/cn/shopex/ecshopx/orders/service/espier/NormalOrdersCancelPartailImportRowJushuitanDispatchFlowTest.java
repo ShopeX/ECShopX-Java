@@ -29,6 +29,7 @@ import cn.shopex.ecshopx.common.dispatch.TradeRefundDispatchPublisher;
 import cn.shopex.ecshopx.common.dispatch.WdtErpTradeAfterSaleDispatchPublisher;
 import cn.shopex.ecshopx.common.dispatch.SendAfterSaleWaitDealNoticeJobDispatchPublisher;
 import cn.shopex.ecshopx.common.dispatch.SystemLinkDispatchEventNames;
+import cn.shopex.ecshopx.common.port.aftersales.AftersalesAgreedCouponRestorePort;
 import cn.shopex.ecshopx.common.port.order.OrderNormalOrderHeaderReadPort;
 import cn.shopex.ecshopx.common.port.order.OrderNormalOrderItemsReadPort;
 import cn.shopex.ecshopx.common.port.order.OrderProcessLogPublishPort;
@@ -59,6 +60,8 @@ import cn.shopex.ecshopx.orders.mapper.NormalOrdersItemsMapper;
 import cn.shopex.ecshopx.orders.mapper.NormalOrdersMapper;
 import cn.shopex.ecshopx.orders.mapper.OrderAssociationsMapper;
 import cn.shopex.ecshopx.orders.service.admin.AdminNormalOrderPartialCancelService;
+import cn.shopex.ecshopx.orders.service.admin.PartialDeliveryFulfillmentReconcileService;
+import cn.shopex.ecshopx.orders.service.admin.PlatformSelfSubCancelSupport;
 import cn.shopex.ecshopx.orders.service.setting.OrderValiditySettingRedisReadService;
 import cn.shopex.ecshopx.supplier.mapper.SupplierOrderMapper;
 import java.util.ArrayList;
@@ -218,7 +221,8 @@ class NormalOrdersCancelPartailImportRowJushuitanDispatchFlowTest {
 						wdtErpTradeAfterSaleDispatchPublisher,
 						new WdtErpTradeAfterSaleBusPayloadBuilder(),
 						tradeRefundDispatchPublisher,
-						tradeRefundPayloadMapper);
+						tradeRefundPayloadMapper,
+						mock(AftersalesAgreedCouponRestorePort.class));
 
 		OrderValiditySettingRedisReadService validity = mock(OrderValiditySettingRedisReadService.class);
 		when(validity.readPlatformSetting(anyLong()))
@@ -250,7 +254,9 @@ class NormalOrdersCancelPartailImportRowJushuitanDispatchFlowTest {
 						mock(SupplierOrderMapper.class),
 						aftersalesCreate,
 						validity,
-						mock(SendAfterSaleWaitDealNoticeJobDispatchPublisher.class));
+						mock(SendAfterSaleWaitDealNoticeJobDispatchPublisher.class),
+						mock(PlatformSelfSubCancelSupport.class),
+						mock(PartialDeliveryFulfillmentReconcileService.class));
 
 		NormalOrdersCancelUploadImportRowService importRowService =
 				new NormalOrdersCancelUploadImportRowService(
@@ -386,7 +392,8 @@ class NormalOrdersCancelPartailImportRowJushuitanDispatchFlowTest {
 						wdtErpTradeAfterSaleDispatchPublisher,
 						new WdtErpTradeAfterSaleBusPayloadBuilder(),
 						tradeRefundDispatchPublisher,
-						tradeRefundPayloadMapper);
+						tradeRefundPayloadMapper,
+						mock(AftersalesAgreedCouponRestorePort.class));
 
 		OrderValiditySettingRedisReadService validity = mock(OrderValiditySettingRedisReadService.class);
 		when(validity.readPlatformSetting(anyLong()))
@@ -416,7 +423,9 @@ class NormalOrdersCancelPartailImportRowJushuitanDispatchFlowTest {
 						mock(SupplierOrderMapper.class),
 						aftersalesCreate,
 						validity,
-						mock(SendAfterSaleWaitDealNoticeJobDispatchPublisher.class));
+						mock(SendAfterSaleWaitDealNoticeJobDispatchPublisher.class),
+						mock(PlatformSelfSubCancelSupport.class),
+						mock(PartialDeliveryFulfillmentReconcileService.class));
 
 		NormalOrdersCancelUploadImportRowService importRowService =
 				new NormalOrdersCancelUploadImportRowService(
@@ -532,7 +541,8 @@ class NormalOrdersCancelPartailImportRowJushuitanDispatchFlowTest {
 						wdtErpTradeAfterSaleDispatchPublisher,
 						new WdtErpTradeAfterSaleBusPayloadBuilder(),
 						tradeRefundDispatchPublisher,
-						tradeRefundPayloadMapper);
+						tradeRefundPayloadMapper,
+						mock(AftersalesAgreedCouponRestorePort.class));
 
 		OrderValiditySettingRedisReadService validity = mock(OrderValiditySettingRedisReadService.class);
 		when(validity.readPlatformSetting(anyLong()))
@@ -562,7 +572,9 @@ class NormalOrdersCancelPartailImportRowJushuitanDispatchFlowTest {
 						mock(SupplierOrderMapper.class),
 						aftersalesCreate,
 						validity,
-						mock(SendAfterSaleWaitDealNoticeJobDispatchPublisher.class));
+						mock(SendAfterSaleWaitDealNoticeJobDispatchPublisher.class),
+						mock(PlatformSelfSubCancelSupport.class),
+						mock(PartialDeliveryFulfillmentReconcileService.class));
 
 		NormalOrdersCancelUploadImportRowService importRowService =
 				new NormalOrdersCancelUploadImportRowService(

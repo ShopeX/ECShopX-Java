@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:6f839105bc4f60858848b05a06e8c4e0db4b1c18dd7b78925a287c1b72e593cc",
+  "pageVersion": "sha256:85715bdee2fc437b7969ca375d1ba8da9a1a497492b8a8acc89fc0366e646d45",
   "claims": [
     {
       "id": "claim_09e7ff1c6b064857b6a05d2f3f39120d",
@@ -85,7 +85,7 @@
           "version": "repo-lines-v1:sha256:98b5bc9e5925be9838bc70fd49f1b5b5455f5a122fa180abcf6edf3db3995644:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ0Y2MzZjJjMGJhOTIzNmI2OGQ3OWY3NWVlMmZkNGJjODY5YmVkOTI4ZTlmMzlmYWNjNTUxZTllOGE0ODRjNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNhZmUxMDQzMTczNjI2ZDkyMWIwYjdjYjk5MTBlNWRmMTljYzk5NTE4ZTgzZGZlNzk2ZDUwYWM0NjgwMDEwMzYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
         },
         {
-          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/OrdersDispatchEventNames.java#L67-L74",
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/OrdersDispatchEventNames.java#L73-L80",
           "version": "repo-lines-v1:sha256:6dbd0f086636e803532b98cc321cf0b37230ecac6d06bd1619113fc9a9cef3e8:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYmE3Y2Y3MDE1MzA1NWFiZjE5ODJiZDFkZjVlMGE2ZjE2Y2ViMzA0MzlhYmI1ZGRjMGNkNTI4MWI0MWI3MjFkNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZDI2OTkxM2ZlZGFmM2FkNjU4NGRhNDBlNDVlN2NkNzIxMzAyZTkwZWZjMmI1MzdkNzJlMTUzOTdmMWU4YmQ5OSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjI4NDg3NTVhNGYwZjVjM2YzNTQwOGNlOTljNDIwNWMyNmMzOGEzNTQ1MDQxYmQxYjMwZDk2Zjc0N2QzZTA2ZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTBmMTY3MzkxYTZiNDNmNDQyMjBjMzE3MzY4ZjFjOGFiNDQyNWNiOGQyOTIzZDczNWVjZjBjZWU4ZjViYTU1MyJ9"
         },
         {
@@ -181,8 +181,8 @@
       "statement": "The promotions cron handlers follow the alert-and-rethrow template (log cost, publish CronAlertEvent on failure, rethrow): trigger-promotion-activity, invalid-promotion-activity, done-group, done-nostore-group, fail-group, expire-specific-crowd-discount, expire-crowd-month, clear-turntable-times-over and recover-turntable-processing; recover-turntable-processing (60s-stuck turntable draw recovery) has no seeded xxl_job_info row in docker/tables_xxl_job.sql, so it never fires until the job is created in the XXL-JOB console.",
       "evidence": [
         {
-          "resource": "repo://docker/tables_xxl_job.sql#L144-L212",
-          "version": "repo-lines-v1:sha256:f035a66644e5a35e93e54d956e41511ee3eb020f62c9f9bddd4cc063031f4cdd:eyJzZWxlY3RlZExpbmVDb3VudCI6NjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdkMDViYTNiOTdmNmU5ZTRkODM5YjI1NzQ4MDgxOTZkYWMzMzZiMWUxOGExNDY5YzE1ZTM4ZDgwYzE5OGI5MDciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBlMzljZjVhMDFjMWRmMzkwNzI3YmM5NjNkZTg3OWRiNTc2ZjdiYTMwMTdiYzY3NDUxNTMyMGZjZTljMDFkMWMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYxMGQ5MDY5NmMyNjRjMDhiMzcxZjc5MzU1ZTg3NTUwYmNhNTNhN2VmNjA4MTk4ZDhmZWI5N2UxYmEzM2ZlYzQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjUzNGRmMDM1MjU5OGJjYzVkM2I5ZGFkMWMzMmUzYjczOTI5YmRjNDkzOGU1YTdlZjM1NGFiNDlkNzU0M2RjMjQifQ"
+          "resource": "repo://docker/tables_xxl_job.sql#L144-L213",
+          "version": "repo-lines-v1:sha256:08bfebd7717bf28f3ce69f1a51d57ca10c2b8bb4e8f82ed6325b046ea88c7a74:eyJzZWxlY3RlZExpbmVDb3VudCI6NzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdkMDViYTNiOTdmNmU5ZTRkODM5YjI1NzQ4MDgxOTZkYWMzMzZiMWUxOGExNDY5YzE1ZTM4ZDgwYzE5OGI5MDciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRiMTZlYWEwMWFiMWQxOGEyNGI0ZTY3OGY5YzQ2MWI2NTQ1MDUzNDdlM2RlZjk3ODkwZjg1NWYyZDdiZGQwMGUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYxMGQ5MDY5NmMyNjRjMDhiMzcxZjc5MzU1ZTg3NTUwYmNhNTNhN2VmNjA4MTk4ZDhmZWI5N2UxYmEzM2ZlYzQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjUzNGRmMDM1MjU5OGJjYzVkM2I5ZGFkMWMzMmUzYjczOTI5YmRjNDkzOGU1YTdlZjM1NGFiNDlkNzU0M2RjMjQifQ"
         },
         {
           "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/cron/ScheduleRecoverTurntableProcessingHandler.java#L32-L57",
@@ -1083,10 +1083,198 @@
           "version": "repo-file-v1:sha256:d7dfa80d330cfd4bea101792e49bf3e5600a6f8f9035211f2fc658d846c23fcd"
         }
       ]
+    },
+    {
+      "id": "claim_e079e3761bd7455cb54fe877f5e67f19",
+      "statement": "The member-task subsystem (ECX-10420/10422/10431/10433/10434/10467) owns four tables seeded by Flyway V00000000000008 — member_task (definition), member_task_completion (one row per task/cycle, cycle_key), member_task_reward_grant (one row per completion, unique key uk_mtrg_completion on completion_id), and member_task_user_progress (amount_fen accumulator) — plus two order attribution columns orders_normal_orders.member_task_id / member_task_sharer_user_id; MemberTaskTypeCatalog pins nine known category/detail pairs across newcomer/purchase/share/behavior, and MemberTaskSaveService rejects any pair not in the catalog.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/resources/db/migration/V00000000000008.sql",
+          "version": "repo-file-v1:sha256:be2b0de1e5a189fbce10abd28cb85a1b1f47d3089d0d2d58362fecea27bdb5fd"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/domain/membertask/MemberTaskTypeCatalog.java",
+          "version": "repo-file-v1:sha256:39de1d449b0ebb28e68518c4b430ee5923cf30d03241551f71a8997a277a1eb5"
+        }
+      ]
+    },
+    {
+      "id": "claim_72e12cd1f8724a00822b53583087a6cd",
+      "statement": "MemberTaskSaveService.update only edits rows whose derived display status is draft (仅待发布状态可编辑), forces type_category/type_detail immutable, and applies an optimistic config_version lock — the client must send the current version, a mismatch or a zero-row conditional update raises 任务配置已被他人修改，请刷新后重试; MemberTaskLifecycleService.publish only publishes a draft whose end_time is still future, and offShelf only from pending_start/in_progress, with MemberTaskDisplayStatus.resolve deriving draft/pending_start/in_progress/expired where off_shelf=1 always yields expired.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/domain/membertask/MemberTaskDisplayStatus.java",
+          "version": "repo-file-v1:sha256:abe77220a4c556a63a5b67eb0b3759e97bd5bcbb82da101d8df250af18fc69c9"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/membertask/MemberTaskLifecycleService.java",
+          "version": "repo-file-v1:sha256:03f2ec6870ff1c6663e932dd6537939763b8d9563c832d457b3a6272d36b9ceb"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/membertask/MemberTaskSaveService.java#L108-L145",
+          "version": "repo-lines-v1:sha256:b043e38dbdbb1a2afcfc726a27e9ce8abdb0447da8dac28c27942d8173c3eb3d:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdhYWUyNjQ0MjVmYzBhN2QwYTYxODM3ZmM5NjlhNTA4ZjRkMjFjOTI2YjMzNmI3MGRiZGE4MWU5NzQ5ZWVhMDEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImEyYzdjZTk4MzI1ZmNiYzlmYzYyNTYyOTQ3YjAxOGEwNjM1ZDBkMzkxOTU5OTAxNTMxOTRkZjhhMjNjOWYzNjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFlZjg0YjAzNzk2ODM3NzA0MjE1ZDhmOGEwZWIzODMxMmVlMWE1ZGUwNjZiNjNiNDYxZTNkMGUyZTU0NTFlZmIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_f74c1795a6884d3a9226fc155c3bdee4",
+      "statement": "MemberTaskRewardGrantService.executeGrant is the idempotent payout core: it claims the grant with a conditional UPDATE member_task_reward_grant SET status='granted' WHERE grant_id=? AND status='pending' — a zero-row claim returns ALREADY_GRANTED, so concurrent triggers pay exactly once; on success it applies the reward snapshot (points → PointMemberAddPointService.addPointForNormalOrderBonus with 会员任务奖励, coupon_id → UserDiscountReceiveCardService.receiveCard with the member mobile, blank mobile = 会员手机号为空，无法发券), and on exception flips the grant to failed with error_message so MemberTaskGrantRetryService can re-drive the same row after a failed→pending reset with retry_count+1.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/membertask/MemberTaskCouponGrantPortImpl.java",
+          "version": "repo-file-v1:sha256:3f89c6998fc99419eb59495afd9fa8f06bcd2e95ee1ab5a0d825e04885604461"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/membertask/MemberTaskGrantRetryService.java",
+          "version": "repo-file-v1:sha256:05cfa1d48b1c693fb3f0803b0b38555eddcbb052daa011c0ea3f07c7ede0de5e"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/membertask/MemberTaskPointGrantPortImpl.java",
+          "version": "repo-file-v1:sha256:53ccb1a71fc07393bbac7782789df89c16e6f2936713a8e9ced9638f875ce326"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/membertask/MemberTaskRewardGrantService.java#L180-L235",
+          "version": "repo-lines-v1:sha256:bb37358d9c80ea9672035555630f4da7cadc6e0d892ba8a2e313a4eae0851196:eyJzZWxlY3RlZExpbmVDb3VudCI6NTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA5NGQxNTk3MmQyMzdkMmY4N2ZmYTg2OTZhODFjNTkyMGQ4M2IxOGRkMDJhYmU2NTg0OTM0ZjFiZjAwYmRmMTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkwMWIxOWVhZDA5YjEzM2QzMWNiZDVkYjJhNGVmYTQxMjRlMzhkMDgyZTQyNGY2YzRhZWM0ZTlhYzUyMjVlMTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjczZjAyNGZlZGM2YjQ1YTlhYWUxYzA3Mzc4Nzc4YmEzNmJhMzI1Yjk5M2E5ZDEwYjIzY2M0YzQzNjM1ZWUzNTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNiMTU3YTBhYTc0Nzg3N2Q5Y2NhYmZhYzc1ODlmYWM1NGRiMjFkYWE2YmFmZWVmNGQzY2E3ODQ5NzllZDEwM2EifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d28fb8a39dfc458d8ee1fe13b077a3f5",
+      "statement": "Three bootstrap-registered listeners feed the purchase/share member-task leg: MemberTaskNormalOrderPaySuccessDispatchListener on event:288 (pay success) → MemberTaskPaySuccessService.apply, MemberTaskNormalOrderConfirmReceiptDispatchListener on event:orders:normal_order_confirm_receipt → grantPendingIfOrderDone(CONFIRM_RECEIPT), and MemberTaskTradeRefundFinishDispatchListener on event:thirdparty:trade_refund_finish → MemberTaskRefundVoidService.apply; when rule_config.need_receipt is false the pay-success leg grants immediately (PAY_SUCCESS_IMMEDIATE), and when true the grant stays pending until the order is DONE with end_time>0 (PAY_SUCCESS_AFTER_DONE or CONFIRM_RECEIPT), with grantPendingIfOrderDone skipping SKIPPED_GATE otherwise.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MemberTaskNormalOrderConfirmReceiptDispatchListenerRegistrationConfig.java",
+          "version": "repo-file-v1:sha256:1469398f3ada696fd1b991e243e26917c2fa69194753e587dd1a59cedc3f145d"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MemberTaskNormalOrderPaySuccessDispatchListenerRegistrationConfig.java",
+          "version": "repo-file-v1:sha256:9ddee04935431b52ecf0bbb275328801f34d14ce0f808a71c091be415426f154"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MemberTaskTradeRefundFinishDispatchListenerRegistrationConfig.java",
+          "version": "repo-file-v1:sha256:0f3bb8fae454b8397b318ce18659c67df65bf1443ab5ff9628e0534a5cb70702"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/membertask/MemberTaskPaySuccessService.java",
+          "version": "repo-file-v1:sha256:032aaa3384caf8ed6278de2b3393a4523f2dbc00726834b24dceda0fd0284754"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/membertask/MemberTaskRewardGrantService.java#L63-L78",
+          "version": "repo-lines-v1:sha256:d751083efe3bcbc1bc10ccfe88825dce6b9dbf165c09d5173cbd6501462a54fe:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE0MWYxZTBlOGMxNmYzMWZlMGI4N2U0NzNhM2JkMWZjMjFkMmZkZTMzMGI1N2QxMGY1NjUxMTdhOGQzZDRmMTkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3Y2RhODJkYTYwNjIzOGUwNWU2MjM5OTU2OWM1ZWUwMzk5MzQxOTY0OGFlNWQ0M2EyYmY4Y2Q2MzQ3ZjgyNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjliMzFkOWE2ZDNkOWYzZDUyYzY1N2JiMzZlMDY3OTFjNDlhNDk3OTA1MDQzNWQ3ZjZjZWEyZWNiOWY1YzI4ZjQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMxMTY3ZjczZWE1YjA0NDBhNjRmYTE3NjYzN2E0NDI4NGZjODRhZDJmMWJlZmQyMGViZTgxYjkwMDg2MmJmMTYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_59abdfebb5264a768bd3905d08bb1e67",
+      "statement": "MemberTaskCheckoutService (promotions' OrderCreateMemberTaskExtendPort impl, called from the wxapp and shopadmin order-create runners) stamps member_task_id / member_task_sharer_user_id onto the order after validating the task is in-progress and — for once-frequency non-share types — that the member has no active completion (您已完成该首单任务 / 您已完成该任务); MemberTaskShareOrderService credits only the sharer (member_task_sharer_user_id), never the buyer, and skips self-shares.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/membertask/MemberTaskCheckoutService.java",
+          "version": "repo-file-v1:sha256:3bf7cfc1d83ae6fff1ec1a71a98fa2716041ec313fb7565fbb25275577f0eaaa"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/membertask/MemberTaskShareOrderService.java",
+          "version": "repo-file-v1:sha256:716222181decf008b0bb6f5f655052f4942f1e1da6823aa1f1caf0316cd0ea50"
+        }
+      ]
+    },
+    {
+      "id": "claim_11f33389a3f640a7a877c379d505b67f",
+      "statement": "MemberTaskTotalSpendService accumulates total_spend progress in member_task_user_progress.amount_fen under a FOR UPDATE row lock with insert-on-duplicate reselect, writing a completion once the running total reaches amount_fen; MemberTaskRefundVoidService reverses it — total_spend refunds deduct the accumulator and void the pending completion when the total drops below threshold, while single-shot types re-check matchesRemainingAfterRefund(total_fee, refunded_fee) and void only when the remainder breaks the rule, via a conditional voided=0→1 update plus a pending→cancelled grant flip that never touches a grant already granted or failed.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/membertask/MemberTaskRefundVoidService.java",
+          "version": "repo-file-v1:sha256:67e32d1a76e861fb78263e7388e07d5dfbaac4c6f7f708dc69475eea20145549"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/membertask/MemberTaskTotalSpendService.java",
+          "version": "repo-file-v1:sha256:7d3564f313c04fb789d601699c58f442f344907f6a82c8494b2939a7eecf6692"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/membertask/MemberTaskUserProgressService.java",
+          "version": "repo-file-v1:sha256:73d20018389f5ba2ddd3ea3a8912838f2e68e70957360ba64aa170c2a3ae1534"
+        }
+      ]
+    },
+    {
+      "id": "claim_176c92fea6104d2284f0e69eae8b0ce8",
+      "statement": "The behavior/profile/invite member-task types complete through non-order legs: sign-in calls MemberTaskSignInCompletionService.onSignInSuccess synchronously from UserSignFrontSignInService, browse rides the C-side POST /api/v1/h5app/wxapp/promotion/member-tasks/browse-report into MemberTaskBrowseCompletionService, favorite enters via MemberTaskOnItemFavoritePortImpl from MemberItemsFavAddService, profile rides event:members:update_member_success into MemberTaskProfileCompletionService, and invite-register rides event:members:create_member_success via CreateMemberSuccessMemberTaskInviteRegisterDispatchListener — all non-order types write completion+grant through MemberTaskImmediateCompletionService.tryComplete, which swallows DuplicateKeyException on either insert so a replayed trigger is a silent no-op.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MemberTaskCreateMemberSuccessDispatchListenerRegistrationConfig.java",
+          "version": "repo-file-v1:sha256:258a5f675b6ea7cffee4f50c10d152642ee09cf406f984ed1e4edaa4ed780e07"
+        },
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MemberTaskUpdateMemberSuccessDispatchListenerRegistrationConfig.java",
+          "version": "repo-file-v1:sha256:8a7253e5a68d7e86845ef84443dc60c075999c1b128ca0ef8ec85c63eeb3e38e"
+        },
+        {
+          "resource": "repo://ecshopx-members/src/main/java/cn/shopex/ecshopx/members/service/itemsfav/MemberItemsFavAddService.java",
+          "version": "repo-file-v1:sha256:e807d32aa5967f317add5540eb5a76bdfaf2b7644039b4dcbd47be701e371750"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/membertask/MemberTaskImmediateCompletionService.java",
+          "version": "repo-file-v1:sha256:1a07902f9af240eaed2369abae4772f91b4c27399514ecf30dbdd37fbb573b04"
+        }
+      ]
+    },
+    {
+      "id": "claim_a79557d370b748368695f7fafafbaad6",
+      "statement": "MemberTaskFrontListService.list applies MemberTaskAudiencePolicy.visibleToUser — unlimited (or blank) shows everyone, visible requires the member's member_rel_tags to match the configured audience_tag_ids (union = any hit, intersection = all hits), hidden inverts — and derives each row's user_task_status from the completion+grant pair via MemberTaskUserTaskStatusResolver (pending→PENDING_REWARD, granted→REWARDED, failed→REWARD_FAILED, cancelled→TODO), dropping non-in_progress tasks whose status is TODO from the front list entirely.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/domain/membertask/MemberTaskUserTaskStatusResolver.java",
+          "version": "repo-file-v1:sha256:1b979dae958b25d354dbd0c8161cf94f65c94f79bc762acb1a01e8acf7b59040"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/membertask/MemberTaskAudiencePolicy.java",
+          "version": "repo-file-v1:sha256:9dbdc973721201a6536e2d7fbd7dde04e34a7c2f7c82ba7b71d790f2dc2c40d9"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/membertask/MemberTaskFrontListService.java",
+          "version": "repo-file-v1:sha256:8355f7ab9e41f9c868d3d9d11248ff46edd18e0bea0838ffe4ae5e047bd645d1"
+        }
+      ]
+    },
+    {
+      "id": "claim_3abde8625d944088a098777b6d64f835",
+      "statement": "Member-task CSV exports ride the shared export-file bus as job:200:EspierBundle\\Jobs\\ExportFileJob (distinct from the turntable job:159): the completion export enqueues type=export_member_task_completion with filter {task_id, datapass_block, grant_status} and the overview export type=export_member_task_overview with the admin list filters, both ASYNC/REDIS on the slow queue (SYNC under local); MemberTaskCompletionExportAsyncService pages rows 100 at a time, batch-resolves member nicknames via MemberAccountService.listMemberSummariesByUserIds, and an empty result or failed upload is a silent no-op.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-bootstrap/src/main/java/cn/shopex/ecshopx/config/MemberTaskExportFileJobDispatchPublisherImpl.java",
+          "version": "repo-file-v1:sha256:bcc952e1bade70ef43f1d0e609a4b7281d9a3ff7c51b70e8c1a9f6f7ebcc0edd"
+        },
+        {
+          "resource": "repo://ecshopx-common/src/main/java/cn/shopex/ecshopx/common/dispatch/EspierDispatchJobNames.java#L62-L62",
+          "version": "repo-lines-v1:sha256:362a5b552333a071a6ad59c445a7b2e4f49917412afa76e1b8ba5d9bea9a1451:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzYyYTViNTUyMzMzYTA3MWE2YWQ1OWM0NDVhN2IyZTRmNDk5MTc0MTJhZmE3NmUxYjhiYTVkOWJlYTlhMTQ1MSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzYyYTViNTUyMzMzYTA3MWE2YWQ1OWM0NDVhN2IyZTRmNDk5MTc0MTJhZmE3NmUxYjhiYTVkOWJlYTlhMTQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjUwNWIxYTU3YTFhYTM5OWE2NGQ5ZWU1NjJlOTU1YWFjNDBhZWQ3MTk2MWI5YTU1NWNmYmFhMzczZDkyZWUxMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiY2Q3Njg3NWM2ZWU4ZTE0NDExNWNjMGJiMzZjM2VlNmJhZjA1YTI4M2U5OThkOGFkZDYzMjU4NjBiODM3ZGY1MCJ9"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/dispatch/MemberTaskExportFileJobTypes.java",
+          "version": "repo-file-v1:sha256:f859cac3a0313d0f4ba8bec0a1f7c7fb28d847eb1fcf981b560992428d1b2d77"
+        },
+        {
+          "resource": "repo://ecshopx-promotions/src/main/java/cn/shopex/ecshopx/promotions/service/export/MemberTaskCompletionExportAsyncService.java",
+          "version": "repo-file-v1:sha256:63278fbfa74f6db724a288f4671310fba69f7c24b966f5c0e1996c0ffebff669"
+        }
+      ]
+    },
+    {
+      "id": "claim_ca4b7f4a8b4a4897bef97595cdd859ab",
+      "statement": "GoodsSearchIndexPromotionSyncListener (goods bundle) closes the promotion→search-index loop: on SeckillActivityCommittedEvent it reindexes the seckill's item ids, on SeckillActivityEndCommittedEvent and PromotionGroupActivityCommittedEvent (both AFTER_COMMIT) it re-resolves item ids from seckill_rel_goods / promotion_groups_rel_goods and reindexes, each time calling GoodsSearchIndexDirtyByItemIdsPort.scheduleUpsertForItemIds — whose impl resolves each SKU to its default_item_id via DefaultItemIdResolver and fans out through GoodsSearchIndexDirtyFanout — with every call wrapped in a warn-and-swallow try/catch so a search-index failure never rolls back a promotion write.",
+      "evidence": [
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/integration/GoodsSearchIndexDirtyByItemIdsPortImpl.java",
+          "version": "repo-file-v1:sha256:085d90617ef862409184f685d0b5d0a180a06717564acab4e42a17a3bc853e05"
+        },
+        {
+          "resource": "repo://ecshopx-goods/src/main/java/cn/shopex/ecshopx/goods/search/sync/GoodsSearchIndexPromotionSyncListener.java",
+          "version": "repo-file-v1:sha256:5dfd12496bb66cce8566527df434c7bd3c4aed5869805d2842b2a8616999613d"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.9.0",
-    "at": "2026-11-09T03:34:48.355Z"
+    "at": "2026-11-16T17:12:44.218Z"
   }
 }

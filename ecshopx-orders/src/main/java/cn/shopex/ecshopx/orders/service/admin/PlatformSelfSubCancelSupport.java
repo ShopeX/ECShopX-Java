@@ -31,16 +31,13 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 /**
- * 多供应商订单中平台自营明细（{@code normal_orders_items.supplier_id=0}）的未发货子单取消，
- * 语义对齐供应商子单取消，但退款单仍使用 {@code supplier_id=0}，需与整单取消按金额区分。
+ * 多供应商订单取消辅助：供应商子单 {@code cancel_item_num} 补齐、剩余取消后子单收口，
+ * 以及主单 {@code cancel_status} 回退时对 {@code supplier_id=0} 售前退款的区分判定。
+ * <p>平台/店铺 PARTAIL 剩余取消已改走 {@link AdminNormalOrderPartialCancelService}（仅退款售后），
+ * 不再通过本类参数强制进整单取消。
  */
 @Service
 public class PlatformSelfSubCancelSupport {
-
-	public static final String PLATFORM_SELF_SUB_CANCEL_PARAM = "platform_self_sub_cancel";
-
-	/** 店铺/平台在部分发货订单上取消剩余未发商品，走整单取消建单与状态流转。 */
-	public static final String SHOP_REMAINING_FULL_CANCEL_PARAM = "shop_remaining_full_cancel";
 
 	private final SupplierOrderMapper supplierOrderMapper;
 	private final NormalOrdersItemsMapper normalOrdersItemsMapper;

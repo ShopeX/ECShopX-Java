@@ -120,6 +120,11 @@ public class MybatisSearchIndexSourceLoader implements SearchIndexSourceLoader {
 			return Optional.empty();
 		}
 		Map<Long, DistributorItems> distByItemId = loadDistributorRows(companyId, distributorId, skuRows);
+		boolean storeOwned = isStoreOwnedAnchor(distributorId, anchor);
+		if (distributorId > 0 && !hasGoodsCanSale(distByItemId) && !storeOwned) {
+			// 与列表 DB 门店范围对齐：上架表可售或店铺自有；其它不可售店品不入索引
+			return Optional.empty();
+		}
 		long hqPriceFen = priceFen(anchor.getPrice());
 		long marketPriceFen = anchor.getMarketPrice() != null ? anchor.getMarketPrice().longValue() : 0L;
 		Long distributorPriceFen = resolveDistributorPriceFen(distributorId, defaultItemId, anchor, distByItemId);
@@ -134,7 +139,7 @@ public class MybatisSearchIndexSourceLoader implements SearchIndexSourceLoader {
 		SearchIndexMemberPriceMaterializer.Buckets memberPrices =
 				memberActivityRepository.loadMemberPrices(companyId, defaultItemId, skuItemIds);
 		List<SearchIndexSource.Activity> activities =
-				memberActivityRepository.loadActivities(companyId, skuItemIds);
+				memberActivityRepository.loadActivities(companyId, distributorId, skuItemIds);
 		List<String> tagNames = resolveTagNames(companyId, defaultItemId);
 		return Optional.of(
 				SearchIndexSource.builder()
@@ -197,6 +202,21 @@ public class MybatisSearchIndexSourceLoader implements SearchIndexSourceLoader {
 		return map;
 	}
 
+	private static boolean hasGoodsCanSale(Map<Long, DistributorItems> distByItemId) {
+		for (DistributorItems d : distByItemId.values()) {
+			if (d != null && Boolean.TRUE.equals(d.getGoodsCanSale())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static boolean isStoreOwnedAnchor(long distributorId, Items anchor) {
+		return distributorId > 0
+				&& anchor.getDistributorId() != null
+				&& anchor.getDistributorId().longValue() == distributorId;
+	}
+
 	private static List<SearchIndexSource.Sku> buildSkus(
 			List<Items> skuRows, Map<Long, DistributorItems> distByItemId, long distributorId) {
 		List<SearchIndexSource.Sku> skus = new ArrayList<>(skuRows.size());
@@ -208,10 +228,14 @@ public class MybatisSearchIndexSourceLoader implements SearchIndexSourceLoader {
 			String approveStatus = item.getApproveStatus() != null ? item.getApproveStatus() : "instock";
 			if (distributorId > 0) {
 				DistributorItems dist = distByItemId.get(item.getItemId());
-				if (dist == null) {
+				if (dist != null) {
+					store = dist.getStore() != null ? dist.getStore() : 0L;
+				} else if (item.getDistributorId() != null
+						&& item.getDistributorId().longValue() == distributorId) {
+					store = item.getStore() != null ? item.getStore().longValue() : 0L;
+				} else {
 					continue;
 				}
-				store = dist.getStore() != null ? dist.getStore() : 0L;
 			} else {
 				store = item.getStore() != null ? item.getStore().longValue() : 0L;
 			}
@@ -255,7 +279,7 @@ public class MybatisSearchIndexSourceLoader implements SearchIndexSourceLoader {
 	 */
 	private static long resolveSales(
 			long distributorId, long defaultItemId, Items anchor, Map<Long, DistributorItems> distByItemId) {
-		if (distributorId > 0) {
+		if (distributorId > 0 && !distByItemId.isEmpty()) {
 			DistributorItems spuDist = distByItemId.get(defaultItemId);
 			if (spuDist != null && spuDist.getSales() != null && spuDist.getSales() > 0) {
 				return spuDist.getSales();

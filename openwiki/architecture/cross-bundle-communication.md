@@ -5,7 +5,7 @@ description: The five mechanisms Bundles use to talk to each other without circu
 tags: [architecture, ports, dispatch, wiring, bootstrap, dependency-inversion, events, objectprovider]
 verified:
   - by: openwiki/0.9.0
-    at: 2026-11-09T17:09:44.795Z
+    at: 2026-11-16T17:12:44.218Z
 sources:
   - id: openwiki-source-c468812f5ebcfefdc20facd4
     resource: repo://ecshopx-aftersales/src/main/java/cn/shopex/ecshopx/aftersales/integration/AftersalesRefundAsyncPortImpl.java

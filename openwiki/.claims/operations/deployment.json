@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:c69a8241d27de5d4306abdefbc8032c7823c854e7f6815756c00c95b1133cd33",
+  "pageVersion": "sha256:0ca4ea1051115dfb7c4c25cf0c2996f1730d1c6be9d112cb5219b9acc4cb1d25",
   "claims": [
     {
       "id": "claim_6a17d8777ae74ac19c9786dddedd59bd",
@@ -26,7 +26,7 @@
       "evidence": [
         {
           "resource": "repo://docker/Dockerfile.runtime#L40-L41",
-          "version": "repo-lines-v1:sha256:30c99f6586f231e76326561ea87fbf1c2da62dbafa7e281be919b56dd04de21b:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOTFjMzMwODdhNDc2MDg3MjIxZWI3N2NmNjY0YWU2MzYwZmZmMWRjMGVhMGE0MGMyZWU4YTA5YTJmNzUyMmJiOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTVmODExNTNkZDg2ZDE0YzQ3ODFhOTI3OTRiNGE5MmE3MjkwNWI4YWNkMWUzYmVmMWMyZGFiNzQ5NzM3Mjk2ZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiN2ZlODI5NTk2NGFlZjIwZjU0MWQxZThhNWZlYzllMGY0ZDViOWVjNzg3MjkzZDAwYmQ4NDQ4Yzg2MDNmODRkZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTMwMDRmY2E1YzVhMTkzNmE4NGZiOTVkZTcyNzliMTMwNTFkMzVhYTY5YzU0ZjgxNTlhYTg2N2YyZjlhNWI5NCJ9"
+          "version": "repo-lines-v1:sha256:b83e9f0d5b0eac5ba1a06d49b23d20fd83e44625f8ddb034aa8a18f7d9bc0e30:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOTFjMzMwODdhNDc2MDg3MjIxZWI3N2NmNjY0YWU2MzYwZmZmMWRjMGVhMGE0MGMyZWU4YTA5YTJmNzUyMmJiOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzRjNTlkNzkzMDgwMWUwYzYyNWNiNWRmNjhkMjBiZjUzMTY4NmE2N2ZkNDhjYmE2ODU2NTZmNzZlMWYzZTRiMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiN2ZlODI5NTk2NGFlZjIwZjU0MWQxZThhNWZlYzllMGY0ZDViOWVjNzg3MjkzZDAwYmQ4NDQ4Yzg2MDNmODRkZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTMwMDRmY2E1YzVhMTkzNmE4NGZiOTVkZTcyNzliMTMwNTFkMzVhYTY5YzU0ZjgxNTlhYTg2N2YyZjlhNWI5NCJ9"
         },
         {
           "resource": "repo://docker/app-entrypoint.sh#L10-L13",
@@ -408,7 +408,7 @@
         },
         {
           "resource": "repo://docker/Dockerfile.runtime#L1-L54",
-          "version": "repo-lines-v1:sha256:95100f4008fb5099db296e6d30e3530515013624b6a32ddb5036a182a1c05303:eyJzZWxlY3RlZExpbmVDb3VudCI6NTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdlYjQ4YmQ3NThhMDRiMjU4MGM2MDIxYTg2ZGZiY2UyMTFmMDE1YTFkZDVjYzRmMzljMTNiNmVjZmUxNTcyOTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUxNDU4MTEwMWY3MDhkODNlYzA1MTQ1NTdiZDc3NjQ1NmVhNmY1Mzc0ZGEwNDk1MzhmYjQ3MjE0OGI0Nzc2YzEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+          "version": "repo-lines-v1:sha256:68af19c41a36162b2e576214cdb456fe04a0adec07a9442bb5da77bd2419423d:eyJzZWxlY3RlZExpbmVDb3VudCI6NTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdlYjQ4YmQ3NThhMDRiMjU4MGM2MDIxYTg2ZGZiY2UyMTFmMDE1YTFkZDVjYzRmMzljMTNiNmVjZmUxNTcyOTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUxNDU4MTEwMWY3MDhkODNlYzA1MTQ1NTdiZDc3NjQ1NmVhNmY1Mzc0ZGEwNDk1MzhmYjQ3MjE0OGI0Nzc2YzEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
         },
         {
           "resource": "repo://docker/build-runtime-base.sh#L1-L13",
@@ -444,7 +444,7 @@
     },
     {
       "id": "claim_5c47386e2ae44537abac3f318e581ad4",
-      "statement": "The project version is 5.5.3, declared as ${revision} in the root pom.xml properties (parent spring-boot 3.5.12) and used as the Maven project version; the lite tarball is named ecshopx-java-<version>.tar.gz with that version resolved by sed-only parsing of pom.xml (CI-friendly ${revision} placeholders resolved), and the same sed-only version read feeds the open-source install-stat reporter so customer machines never need mvn/java.",
+      "statement": "The project version is 5.6.3, declared as ${revision} in the root pom.xml properties (parent spring-boot 3.5.12) and used as the Maven project version; the lite tarball is named ecshopx-java-<version>.tar.gz with that version resolved by sed-only parsing of pom.xml (CI-friendly ${revision} placeholders resolved), and the same sed-only version read feeds the open-source install-stat reporter so customer machines never need mvn/java.",
       "evidence": [
         {
           "resource": "repo://docker-lite/lib/common.sh#L26-L56",
@@ -464,13 +464,151 @@
         },
         {
           "resource": "repo://pom.xml#L6-L23",
-          "version": "repo-lines-v1:sha256:79cc45ae7b162c67934ac9da79b52b1017c2404dfd1a3368b0c09482d498a0f8:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYyZDg2OTJjNDcwNGI5Y2Q5ZmMwN2Y5ODNhMDFjYWNlOTI2MjYzZjJjZjJkOGM0M2QzZGQ0NDc3ODQ0NmU4OWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxYjg1MzA5OGRmNWRmM2MzNzA0MWVmZjljZjgzODhhYmQ5ZWNhZDM4MmU0YmE2ZTg3OTUzYjRkMTkyN2JhNjgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM5OGMzN2Q5M2QwNWZkYWY1MjYxYjkwNzg3YWU2MzFjODhkMzIyMmQwZGE1YWRkZGU2NWJiMDU4ZjVlMzZhMWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUxYTBiMmFjNTJkN2ZlYmJmNjU0ZGIyNmMxZDMzNzkxODE0ZTgyNWRiOTk1NjA2NGE5MmVhZjEyYzkxMmU3ZWEifQ"
+          "version": "repo-lines-v1:sha256:505a16de1779495716622fa0007fc475282a967d091d1c51f88cd2e56e13b655:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYyZDg2OTJjNDcwNGI5Y2Q5ZmMwN2Y5ODNhMDFjYWNlOTI2MjYzZjJjZjJkOGM0M2QzZGQ0NDc3ODQ0NmU4OWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxYjg1MzA5OGRmNWRmM2MzNzA0MWVmZjljZjgzODhhYmQ5ZWNhZDM4MmU0YmE2ZTg3OTUzYjRkMTkyN2JhNjgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM5OGMzN2Q5M2QwNWZkYWY1MjYxYjkwNzg3YWU2MzFjODhkMzIyMmQwZGE1YWRkZGU2NWJiMDU4ZjVlMzZhMWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUxYTBiMmFjNTJkN2ZlYmJmNjU0ZGIyNmMxZDMzNzkxODE0ZTgyNWRiOTk1NjA2NGE5MmVhZjEyYzkxMmU3ZWEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_0130d58ba5ec4fb0b8867a36af19a59c",
+      "statement": "The .shopex/release/ pipeline is the maintainer-side source-release sequence prepare-master → sync-demo-menus → generate-release-migration → bump-version → commit-and-tag → push-origin → mirror-sync: bump-version.mjs rewrites the root pom.xml <revision> and refuses non-increasing plain x.y.z versions, commit-and-tag.mjs stages pom.xml + the menu seed dir (+ optional migration) with message \"[TBID:<tbid>] release: bump version to <version>\" and creates the annotated tag named exactly <version>, and push-origin.mjs pushes master plus the tag to origin, refusing any branch but master.",
+      "evidence": [
+        {
+          "resource": "repo://.shopex/release/bump-version.mjs#L27-L53",
+          "version": "repo-lines-v1:sha256:65d69eda7498fa1a82811270bb8f00396b09ba769e65bb3da1d5dc0e58f6486d:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNjMTg0MjliNmU4YjhlN2I4Y2ZiOGNlZDc0N2IwOTAzNjViZjFlY2Y5NjIxNjkxZmU2ZWU2Yjk5MzYzYTc5OWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEyN2VlYTcyMmIxMTQ5MjM0MDg1MGM5M2VhZmVlMzQ5ZDc3N2MxYTE0MGU3N2FiZmFhOTQzMDU1MzE3ZDg0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU2ODhiYmFlZTdjM2ZjNWJkMTEwNDMyNDU0MzFhMDYwN2EyY2EwNWVkYzRkYTg3ZjZlMDhjOWNhZmNkMmEwZTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://.shopex/release/commit-and-tag.mjs#L26-L81",
+          "version": "repo-lines-v1:sha256:9dac7757c4a49974222d62e01db10fac5bc0992b7158af33f7ff80f018e797f7:eyJzZWxlY3RlZExpbmVDb3VudCI6NTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEyN2VlYTcyMmIxMTQ5MjM0MDg1MGM5M2VhZmVlMzQ5ZDc3N2MxYTE0MGU3N2FiZmFhOTQzMDU1MzE3ZDg0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRhNmNhMzIzMDNlZTU1NDc0YjBiODBkMzZiNjdhMmZjNjAwMTUyNTVjYjFkNWQ3ZTU2NjQ5MTRjNjU4YTE0ZGIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://.shopex/release/push-origin.mjs#L25-L44",
+          "version": "repo-lines-v1:sha256:2f1a86f7f5942943e6e81ec9727947763ec10be28042c62d151ae126185cdf5b:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjljZmYwOGFkNWRjMjEwZTYxNmE5NDA2YWVmYmE1M2QxYzVhNzJkMTMyMzc3NDFiYzI1MTI2NWVkMjE5ZWE5NDciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY1NDQ0M2U0NWNkYjExOGIyMWZmMzVjYWVjYTMxODBmZjMyMWFjZjM1ZGVjMDYxM2E3MTBiYzVlMDg5MGI1ZDAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjEyN2VlYTcyMmIxMTQ5MjM0MDg1MGM5M2VhZmVlMzQ5ZDc3N2MxYTE0MGU3N2FiZmFhOTQzMDU1MzE3ZDg0MTMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_ba9045db675a40cea8820bedcada9090",
+      "statement": "generate-release-migration.mjs produces each release's Flyway migration by creating a scratch MySQL database (ecshopx_release_<version>), importing the baseline docker/ecshopx.sql, running bin/make-migration migrate then release to diff the schema, deduping the generated statements against all existing V*.sql files in db/migration, renaming the result to the next sequential V<N>.sql, and dropping the scratch database (including on failure via an exit hook); it reports {\"migration\": path|null} and null means no schema changes.",
+      "evidence": [
+        {
+          "resource": "repo://.shopex/release/generate-release-migration.mjs#L1-L58",
+          "version": "repo-lines-v1:sha256:aa719c2eb27c9e06245226e05811716a2e354d033aa49a698f1a3ec1d664f9db:eyJzZWxlY3RlZExpbmVDb3VudCI6NTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE1OWM0Nzg3MmI3MWYxMjU4OTk0Mjg5MjQ2NGU3NjRjMGRiMzUwYzIwYjcyMjI4NjQ1NjE1Y2MzNmUwYTA3MjUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFiMWI2ZTRjMzcwNWJjYTRhYjMzODFiYWJiNTExMDJiMWE1NjM5OTc3NjQ3NWY2ZjlhM2ZjM2VhOTRmOGM1NzkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJlMTE5YjQyYjE0MGJmM2FkOWE2YTQwOWQzZDQzMzUwOGUxZDU2ZWI3Zjc5NjA4MGM3YWM1ZTE1M2VjNjQ0YzQifQ"
+        },
+        {
+          "resource": "repo://.shopex/release/generate-release-migration.mjs#L100-L180",
+          "version": "repo-lines-v1:sha256:5dba10212d12e5c4783982552466352c81529724fedee5cd2f88f76abb9de455:eyJzZWxlY3RlZExpbmVDb3VudCI6ODEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc0NTNkZDc4MTkxNDVmMjA4ZTkzMDI1ZmRlNTQzZmNiMzA2NzM4Mjg3YjY3NmVmYjEzMzAwZGMzZTg5ZTM1NjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEyN2VlYTcyMmIxMTQ5MjM0MDg1MGM5M2VhZmVlMzQ5ZDc3N2MxYTE0MGU3N2FiZmFhOTQzMDU1MzE3ZDg0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVhYzA2N2U4MzU3ZDM1NzVlOTY3NGYyYjYxZTBlMTdlNTE5NTRkZjE3Mjk1YTNmZTlhZGIwODEyNTQ3Yzc2ZTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://.shopex/release/lib/mysql-admin.mjs#L33-L59",
+          "version": "repo-lines-v1:sha256:8cb149c30986de4d31f427c1cedffee90b7b036c6b4d0001bbb0b2ae4a61fe0c:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjViNDY1YmI1MmE0OWUwOTA1YWFhMjkzZmQzNDYxYjljZjdkOTVjNTJkMTYyZDJmNDEyMmRlZmYxY2IxNzJlZjUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY5YWRkNTkwZWQzNzkzNGI1NTY3ODMzOGM0NTRkYjhhNzhhYzBjNjY2ZjNiNTUyZGRkZTM0ZGQ5NzJjZmE2MjAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY1MDdkODExOWRlOWUyMTlkNjFjZWI1MTI0YTE1Y2M2YzQ2ZGRmNTMwZmZiMGExZDk2MDQwMzQwYTg4NGEzMjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY3ZTQ3YTlmZGY1MTM1OTFmNWRmM2JhMzcyZmE5OWIyYjk2YTk4MDJkMmEwY2IwZmE2N2E3NDQyYmExNTk0ZjcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_fd3d0c0091ce4760ba70c5af9fbc04fe",
+      "statement": "sync-demo-menus.mjs logs into the demo deployment at {demoBaseUrl}/api/v1/operator/login (logintype localadmin) and downloads six versioned shop menus via /api/v1/shopmenu/down?version=N (base64-decoded JSON), rewriting the seed files ecshopx-bootstrap/src/main/resources/seed/menu/{platform,it,shop,dealer,merchant,supplier}_menu.json so every release ships menu seeds matching the live demo.",
+      "evidence": [
+        {
+          "resource": "repo://.shopex/release/sync-demo-menus.mjs#L10-L100",
+          "version": "repo-lines-v1:sha256:f4674dc4a5fefd79df4076af320708ff6db1bf5e2344caa92b42ba93c71b0b14:eyJzZWxlY3RlZExpbmVDb3VudCI6OTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2ZjViNDBiMTU4NDU3ZDE3ODY0ZjIxNzkwNzg2ZGQ1YTJlY2RiNjRiNjZhNjUxZjc4OGQ0ZTI1Y2QzMzAzZDIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg0ZTQ0YzM2MzMyODVkMTY1MWNlYWZiZDcwZTgyYTA0MDVjN2FkY2Q1MDkzNjkwNjUyM2I1YmEyMjg0OGMwZTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_0b3d75146ff348e593c0afa8e6f59871",
+      "statement": "mirror-sync.mjs publishes a release to the public GitHub/Gitee mirror checkouts in two passes: first it replays every commit from the previous version tag (auto-detected or --from) up to the release tag one commit at a time, preserving author/committer identity and dates, stripping [TBID:…] from messages and skipping commits whose entire diff is inside excludePaths; then it reconciles by exporting the release tag tree via git archive and rsync -a --delete over the mirror (respecting excludePaths), committing any residual diff as \"chore: reconcile public tree for <version>\", so the public tree always ends file-identical to the tag minus excludePaths even when replay drifted, before tagging <version> and pushing branch + tag.",
+      "evidence": [
+        {
+          "resource": "repo://.shopex/release/mirror-sync.mjs#L1-L44",
+          "version": "repo-lines-v1:sha256:5ba781c01c7c69489b90e177187133541710b80fb6b939468aa5a9e187c6f998:eyJzZWxlY3RlZExpbmVDb3VudCI6NDQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE1OWM0Nzg3MmI3MWYxMjU4OTk0Mjg5MjQ2NGU3NjRjMGRiMzUwYzIwYjcyMjI4NjQ1NjE1Y2MzNmUwYTA3MjUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI4ODUwMmI5NjVmNmFjMmQ2YTAyMGNlODJkMGExOTI4Yjk1MWRjYzU5YzlkNzg1ODBjMjc0Nzk3Y2ZkZjgwZTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY2YTJjNTc4ZTgyNzU4MzA3YTM0MGE1YjUzYzA4YzEwNGU3NjRlNDk5Y2UwOGFhZTdkMWQ1ZDAyOGIyYWVlMmYifQ"
+        },
+        {
+          "resource": "repo://.shopex/release/mirror-sync.mjs#L185-L260",
+          "version": "repo-lines-v1:sha256:cbdc3f9dabec98d5a704bb855165cd29061d3d178a69eda9fb1625260a5bcee4:eyJzZWxlY3RlZExpbmVDb3VudCI6NzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk1ZWYwMWJjMDhkYmMzYjYzZTRlNzVlYTNkMjZhNWI5NDE4OTE4NzdlMjdhZDg5MTMyOWM4NDExZDdkOGRjNGQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRlZDNkMGUwMDljM2I0ZmIwYzdiN2IyZDQ3YTY2MTEzNGRhYTdkM2FjNjcwMDk0MTJmN2IxNzhlMTI0ZjRkNjEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg5OWRhMjM2ZjRjYWFhZTRmZTA5MmY3N2UyNjcyMjdlM2JhNDRhNDM2OGJlYTBlODJmNDQyZGUxYTQxZmViZWMifQ"
+        },
+        {
+          "resource": "repo://.shopex/release/mirror-sync.mjs#L262-L391",
+          "version": "repo-lines-v1:sha256:8ebddd242d181d8125d97b68aa0e3ab304e8fecdd8bc44b9bf445886b22a8a2e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMwLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI0MTJjYTM0NWNjZjc1YmY5YzA4MDZiY2U2OTViZThkZTgwOGI3OTk4NDI1MWE3YTU0ZDIwMmNmNjEwMWRkNDUxIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIxMjdlZWE3MjJiMTE0OTIzNDA4NTBjOTNlYWZlZTM0OWQ3NzdjMWExNDBlNzdhYmZhYTk0MzA1NTMxN2Q4NDEzIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJhNTk5MTQ4MTg3MWU1MzllYmM3MDY1NGJjNjBiNTkwYTJkOTkwMDJiNmM3NGEwZjA0MzA4OTE0YmNkZjE5OTZjIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MCwiZm9sbG93aW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1In0"
+        }
+      ]
+    },
+    {
+      "id": "claim_76d933fd32a84e81a04ca3c8f0b2ca80",
+      "statement": "mirror-sync.mjs has hard preconditions and failure boundaries: the mirror working tree must be clean, the release tag must already exist in the private repo and must not yet exist in the mirror, --reconcile-only redoes only the archive/rsync pass and force-updates an existing tag; per the release skill's recorded boundary, a failed origin push means no mirror work and a failed mirror leaves the pushed origin commit/tag un-rolled-back.",
+      "evidence": [
+        {
+          "resource": "repo://.agents/skills/shopex-ecx-release/SKILL.md#L45-L50",
+          "version": "repo-lines-v1:sha256:0f32983771b6364496ad085fd663d53dba9066fa93fbdf065e1cf2d124d1fa9a:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTY0NjA4YTQxZTMyOGI0OGU1ODdhYmVkOWIwZGFlMjJkMjFmYzRjM2JjY2IxMWI5ZjA4MjIzNjNmYTU0MDUzZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMjExYzgyZmM3NzI4OTJjZmM0MzgyM2U3ZGY5Y2JjZDE3NjVjMjY1NzJkOWJhYmI0YmVhZmYxYWFhNWE1ZDUxNSJ9"
+        },
+        {
+          "resource": "repo://.shopex/release/mirror-sync.mjs#L285-L330",
+          "version": "repo-lines-v1:sha256:b63f056b87cc52be30eccd22aa6bd8ab97b097e111e0170f18c6cf37eff315f0:eyJzZWxlY3RlZExpbmVDb3VudCI6NDYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk1ZTYyNmI1MDU2ZDgzYWRlMWY4MGYwYTUxMjlkODgxZTc4NTdlZTVkZjZlMmNkN2Q4NGJiZDBiODYzM2M1N2YiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNmZjQ0NTczZTY3NzYxODcyNWZhMzZkOTFmN2FjNjE5MzA4OTNmMjVjMzk3MDgwMDYwMTMwYjA5ZDMwYmE1ZDMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc0YTc4MTliN2NhYzQ3N2ZhYzc0NjQ3MmIxODFkNjZlODM2YzE3YTk0ZWZjNDY5YTYxZDYxNDFjMzhhZDgwZmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImExNWU0NjFlOGUwYzVhMDYzNmRiM2NlMmFjMjNjZWQ2MTIzNmNkZjE3NzAxMDkzZDE4NDY1YWEzOWUzNTQ0NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_3fdc61be97e24914ad236be7d8dbf1f2",
+      "statement": "Release configuration is committed .shopex/release.json deep-merged with git-ignored .shopex/release.local.json (secrets win): release.json carries demoBaseUrl, the githubPath/giteePath local mirror checkouts, the excludePaths filter and non-secret mysql coordinates, while release.local.json (from release.local.json.example) carries demoUsername/demoPassword and mysql.password; loadReleaseConfig refuses to run without the secrets file or required fields, and validate-config.mjs checks config and mirror paths up front.",
+      "evidence": [
+        {
+          "resource": "repo://.shopex/release.json#L1-L29",
+          "version": "repo-lines-v1:sha256:3e14ae350c6a8c6b1a560e14ff17dc5b110eb368ca38acdd1e610d77a7d423af:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE2ZmIwOGZkYTFhY2I5NTdiNjExNmJkMzc4MTFhMWZlNDFhMDE2MTFjMDYzMWVkYmY3ODZkNjg4OWEyN2E1NWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://.shopex/release/lib/config.mjs#L46-L120",
+          "version": "repo-lines-v1:sha256:7b5eca6a84a832f0b3632ac2472698529b3cf1dda717eb57f6447d919ff3b100:eyJzZWxlY3RlZExpbmVDb3VudCI6NzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAwMzE5NThhMTAyN2Y4YjY2N2NiN2JkYzlhYjQ3MzEyZDQ2YzgyNDQ2ZDI1ZmQ3NDk1MWU0MmU2NGEwYzcxZjAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA3MTZlMTU4OWU1MGJkOGExYzI4YTk4YmY0MWFhNzI3OWM0MWE3NTU3YWIxM2MzNzljMGIxOTRkOGViNmU3ZGQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdlNzQ0M2NkMGUxY2M0NjE3MGEyZTBhZmY3ODk4ZTgyNDdhZWJmNzU3YjgyZDliNzVhYTBkZjMyNzk1NTAzMTAifQ"
+        },
+        {
+          "resource": "repo://.shopex/release/validate-config.mjs#L12-L27",
+          "version": "repo-lines-v1:sha256:8304bbfb419d77a057e0c122a30285bfacaff4041d932c1d3cdeed6e143ed605:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEyN2VlYTcyMmIxMTQ5MjM0MDg1MGM5M2VhZmVlMzQ5ZDc3N2MxYTE0MGU3N2FiZmFhOTQzMDU1MzE3ZDg0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU2MzkwMjNhNzg0OTM0YmFlZGRmY2UzMTE0MjY0N2I5YzY2ZjVlNzU4NzZlYWI5N2FmYWUyOTUwNDBjOWM2MTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_f6587c7ee9894ae18cdc9095dca25635",
+      "statement": "docker/Dockerfile.demo is a Java-only variant of the app image: a Maven builder stage (private-registry maven:3.9-eclipse-temurin-17) onto an Alpine Temurin 17 JRE plus OpenResty, with no Node, Nuxt or frontend assets; java-entrypoint.sh starts Java on container SERVER_PORT=8080 (overriding the Undertow 18080 default) and gates OpenResty on a 127.0.0.1:8080 readiness poll, java-nginx.conf reverse-proxies listener 18080 to that Java, and the image pins LANG/LC_ALL=C.UTF-8 (Alpine lacks locale data, otherwise JDK 17 derives ASCII and Chinese data corrupts) plus fontconfig/ttf-dejavu for headless AWT captcha/QR/barcode rendering; no compose file references it.",
+      "evidence": [
+        {
+          "resource": "repo://docker/Dockerfile.demo#L1-L63",
+          "version": "repo-lines-v1:sha256:b548f02b7f6c7f3779d289ef6d27c55388f34223f4d6a2fb37bd673c08f5ab2e:eyJzZWxlY3RlZExpbmVDb3VudCI6NjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk0ODBjZTViYmFkYTRjMWQzMTdhMTJkYTY2NjczZjk3NjU2MWY0Yjk4YzIyNGQ2MzJiNzQ2MzAyYWFhNmM1ODkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI4MWNkNzU5MGEzNWQ3ZGMxYjk3MGNhZmMzY2Y3YmQ3YTZkYTA0ZTg5ZDI1YzlkZjUxZjc3MzI4NDVkOTMyMmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://docker/java-entrypoint.sh#L1-L41",
+          "version": "repo-lines-v1:sha256:db36df5e7d9278d34898d4bf4476eeadc95235b6e30b094207b71a08f585c01a:eyJzZWxlY3RlZExpbmVDb3VudCI6NDEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE4MDc2ZDNkMjhkMjFlMDIwMTJiMjBlYWY3ZGJmNzU0MDlhNjI3NzEzNDQzOTAyNWYyODJlMzY4ZTMzMDVhYmYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBjNjg2OGMyYzQ0ZjA1MzYxOWNlZjFjYzM4M2UxZDUzMDc0M2I1NzRjYTE5MmFjZTkxNjhhOWNjZjQ2YTg2ZTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://docker/java-nginx.conf#L37-L65",
+          "version": "repo-lines-v1:sha256:ac5aea4151c90d5acb50161b6d3c2f9599b0ef01d5c943fe16d9cef1624af444:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNlZTU0MjVkYTQyYTc5ZGZkM2M2YTFlN2JjNjcxMTI3MDQwMWY2YTMxNzMxMzhiN2M3ZTY1ZmJiN2MwYTg1ODQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_80ecbaf38b7446a18747ee54a6919852",
+      "statement": "docker/elasticsearch/ is a dev-only goods-search Elasticsearch: the Dockerfile extends docker.elastic.co/elasticsearch/elasticsearch:8.15.5 with the analysis-ik 8.15.5 Chinese-analyzer plugin installed from a URL at build time, and the compose file runs it as ecshopx/elasticsearch-ik:8.15.5 single-node with all X-Pack security disabled, published on ${ES_HOST_PORT:-9200} with an es-data volume; its own header warns security off — do not expose publicly, and nothing in the main stacks depends on it.",
+      "evidence": [
+        {
+          "resource": "repo://docker/elasticsearch/Dockerfile#L1-L3",
+          "version": "repo-lines-v1:sha256:ed431ed2ebc2af99e38be7cae14e7f898e975cca6934867094b7e90950037f6c:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjAxYTM0OWJlYmYwNmI5OTJlNzE0NDQxOThmZTc5YjQ2ZmQzNTY2OTUwZTk5NmQwYTI4NzNiODQyNTVjNjZmMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYzRlOTc4NDZmMDMxZDIxYjk0NTg1NTQxYjcxY2I0NWNkYTgzOTRlNTU3NjQ4MWI4MmI4OGJiYjdjZjExZjBkOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        },
+        {
+          "resource": "repo://docker/elasticsearch/docker-compose.yml#L1-L28",
+          "version": "repo-lines-v1:sha256:99ed634b322c902e28f032fa110a659e5c7fdaa745f6178b987be0b9b30ca8c5:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjllZWM4MWNlN2YzOGEwZmUxMDY2YzJkYjk0ODc5M2JmY2Q1MTAyYzMxOWI3Nzc1NzMwNTJmOTAzY2YyNWUyNDUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFkM2YwODZlMDI1YmIxZmQ4ZTc5N2NiYmE1NTQyMzQ0YWMwODAxOWViMzFmYzU0Mzg1OTY4NTQ2NWQ5OTZhZmQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_0f7a80f7f751419797cefd5e52a34f44",
+      "statement": "docker/pack-docker-images-bundle.sh is the release-side counterpart of install-docker-images.sh: it docker-save|gzips exactly the five image tags from docker-lite/images.env (runtime base, maven builder, mysql:8.0, redis:7-alpine, xxl-job-admin:2.5.0) into docker/images/ecx-java-docker-images.zip — the .zip extension is historical, the payload is gzip'd docker-save in OCI or legacy layout, both loadable via the same gunzip|docker load pipeline — and verifies the archive's index.json/repositories after writing; this bundle is what is uploaded to the CDN behind DOCKER_IMAGES_BUNDLE_URL.",
+      "evidence": [
+        {
+          "resource": "repo://docker/pack-docker-images-bundle.sh#L1-L73",
+          "version": "repo-lines-v1:sha256:993271a515d9169ad7a8e30347e3921dca99aa09dbc5e04e6554afc47dc822a5:eyJzZWxlY3RlZExpbmVDb3VudCI6NzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFkOTVmYzA0YTgwYzk1MmY0OWNlNDE4ODYyN2M1M2IwZmJlOGM0NDA0MWI5NTJkNTkyYWNkMWRlOTk4NjE0NjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVhNDg2ZTNmNDZkZDU5NTBiMTFjZDJlNzFiN2YzNzQ0NjhiY2JmZGM5MThhMThiYmI2NmU5YWVhYTM3NjYxYmMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
         }
       ]
     }
   ],
   "verification": {
     "by": "openwiki/0.9.0",
-    "at": "2026-11-11T17:12:30.774Z"
+    "at": "2026-11-16T17:12:44.218Z"
   }
 }

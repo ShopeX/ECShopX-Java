@@ -58,9 +58,6 @@ public class ShopProtocolSetService {
 	private static final String TYPE_MEMBER_LOGOUT = "member_logout";
 	private static final String TYPE_MEMBER_LOGOUT_CONFIG = "member_logout_config";
 
-	private static final List<String> SALESMAN_PROTOCOL_TYPES =
-			List.of("salesman_service", "salesman_privacy");
-
 	private final StringRedisTemplate companysRedisTemplate;
 	private final ObjectMapper redisJsonMapper;
 	private final ProtocolUpdateLogMapper protocolUpdateLogMapper;
@@ -161,30 +158,6 @@ public class ShopProtocolSetService {
 		protocolRow.put("take_effect_date", takeEffect);
 		LinkedHashMap<String, Object> paramsForRedis = buildUpdateData(protocolRow, "member_register");
 		persistHashField(companyId, hashKey, "member_register", paramsForRedis);
-	}
-
-	public LinkedHashMap<String, LinkedHashMap<String, String>> protocolsaleman(
-			long companyId, String countryCode) {
-		LinkedHashMap<String, LinkedHashMap<String, String>> outer = new LinkedHashMap<>();
-		for (String type : SALESMAN_PROTOCOL_TYPES) {
-			Map<String, Object> data = this.get(companyId, type, countryCode);
-			LinkedHashMap<String, String> row = new LinkedHashMap<>(5);
-			row.put("type", "");
-			row.put("title", "");
-			row.put("content", "");
-			row.put("update_date", "");
-			row.put("take_effect_date", "");
-			Object rawRow = data.get(type);
-			if (rawRow instanceof Map<?, ?> src) {
-				row.put("type", toResponseString(src.get("type")));
-				row.put("title", toResponseString(src.get("title")));
-				row.put("content", toResponseString(src.get("content")));
-				row.put("update_date", toResponseString(src.get("update_date")));
-				row.put("take_effect_date", toResponseString(src.get("take_effect_date")));
-			}
-			outer.put(type, row);
-		}
-		return outer;
 	}
 
 	private static String toResponseString(Object v) {

@@ -1,7 +1,7 @@
 ---
 type: domain-reference
 title: Stores, Distributors, Merchants, and Salespersons
-description: The store-side and B2B2C Bundles — companies/shops/operators, the POS store-account subsystem plus its POS terminal JWT auth plane (login, session invalidation, three-role permission matrix), the store-cashier operator surface (pre-checkout Shuyun member readiness at POST /api/v1/operator/member/ready and the companys-owned operator_cart cleanup, ECX-10747), shop protocols cached in Redis with a protocol_update_log DB fallback (ECX-11114), non-default-language data-role creates with empty-string role_name placeholders (ECX-11083), distributors as physical stores with create/update after-commit fan-out and DigiOS sync listeners, promoter QR codes and pid-based first-level brokerage with plan_close_time backfill (ECX-11089) plus the distributor_id=0 default brokerage-list branch (ECX-11088), merchant onboarding now on the mall-member @FrontAuth plane (ECX-10617), WeCom salesperson tasks and commissions, plus selfservice, reservation, community group-buy chief write-off, and the supplier_order split out of normal orders.
+description: The store-side and B2B2C Bundles — companies/shops/operators, the POS store-account subsystem plus its POS terminal JWT auth plane (login, session invalidation, three-role permission matrix), the store-cashier operator surface (pre-checkout Shuyun member readiness at POST /api/v1/operator/member/ready and the companys-owned operator_cart cleanup, ECX-10747), shop protocols cached in Redis with a protocol_update_log DB fallback (ECX-11114), non-default-language data-role creates with empty-string role_name placeholders (ECX-11083), distributors as physical stores with create/update after-commit fan-out and DigiOS sync listeners, promoter QR codes and pid-based first-level brokerage with the pending plan_close_time placeholder refreshed on order completion (ECX-11089) plus the distributor_id=0 default brokerage-list branch (ECX-11088), storefront template pool resolution (platform pool vs per-shop distributor_index templates), merchant onboarding now on the mall-member @FrontAuth plane (ECX-10617), WeCom salesperson tasks and commissions, plus selfservice, reservation, community group-buy chief write-off, and the supplier_order split out of normal orders.
 tags: [distributors, stores, companies, merchants, salesperson, popularize, community, supplier, dispatch-bus, payment-subject, payment-subject-resolution, distributor-items, onboarding, settlement, pos-store-account, pos-auth, digios, operator-cart, shuyun, member-readiness]
 sources:
   - id: openwiki-source-4460b2ae6ffdfa7f6511ddc1
@@ -200,16 +200,26 @@ sources:
     resource: repo://ecshopx-merchant/src/main/java/cn/shopex/ecshopx/merchant/service/wxapp/MerchantWxappSettlementApplySaveParamValidator.java
   - id: openwiki-source-6ffb4137d9207197034001d7
     resource: repo://ecshopx-merchant/src/main/java/cn/shopex/ecshopx/merchant/service/wxapp/MerchantWxappSettlementApplySaveService.java
+  - id: openwiki-source-520855d1b9493ddf72c77d4f
+    resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/integration/popularize/OrderValidityLatestAftersaleDaysReadPortImpl.java
   - id: openwiki-source-f451eeaaacd8448e25e3c13a
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/brokerage/TradeFinishCountBrokerageBusService.java
+  - id: openwiki-source-b30ccaf3a71ef98378fd3e75
+    resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/finish/FinishOrderBatchService.java
   - id: openwiki-source-11c92ab35f4ce1f9788dbd95
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/front/wxapp/WxappNormalOrderCreateOrchestrator.java
   - id: openwiki-source-c2e0d21be538ee1e2cb4e432
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/NormalOrderBrokerageOnFinishService.java
+  - id: openwiki-source-79a00ef161c191fbd1570101
+    resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/NormalOrderConfirmReceiptAfterCommitService.java
+  - id: openwiki-source-cf53a9f50fac653d8c2134e3
+    resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/normal/NormalOrderZitiWriteoffService.java
   - id: openwiki-source-7832b5e57d5d960a02d053c2
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/payment/OrdersPaymentChannelQueryService.java
   - id: openwiki-source-11504f9b8ac58d0bd088b826
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/payment/OrdersPaymentDoPaymentService.java
+  - id: openwiki-source-b249ab02c2d3bc38e3b687ee
+    resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/orders/service/serviceorder/ServiceOrderZitiWriteoffService.java
   - id: openwiki-source-ab420cef928add1ab3268149
     resource: repo://ecshopx-orders/src/main/java/cn/shopex/ecshopx/supplier/service/SupplierOrderSplitOnNormalOrderAddService.java
   - id: openwiki-source-1dadfec169f4df087b2904a0
@@ -232,6 +242,8 @@ sources:
     resource: repo://ecshopx-popularize/src/main/java/cn/shopex/ecshopx/popularize/service/SalesmanBrokerageLogsQueryService.java
   - id: openwiki-source-64db68f43408803a5d0963c0
     resource: repo://ecshopx-popularize/src/test/java/cn/shopex/ecshopx/popularize/service/brokerage/NormalOrderFinishBrokerageCoordinatorPidResolutionTest.java
+  - id: openwiki-source-919cf58b30566a4b65b65cf6
+    resource: repo://ecshopx-popularize/src/test/java/cn/shopex/ecshopx/popularize/service/BrokeragePlanCloseTimeServiceTest.java
   - id: openwiki-source-f31cc454394a8b4c10d49a3a
     resource: repo://ecshopx-reservation/src/main/java/cn/shopex/ecshopx/reservation/package-info.java
   - id: openwiki-source-7544a54376d5013f054faa68
@@ -260,10 +272,16 @@ sources:
     resource: repo://ecshopx-supplier/src/main/java/cn/shopex/ecshopx/supplier/package-info.java
   - id: openwiki-source-3619796531667b6781e35a09
     resource: repo://ecshopx-theme/src/main/java/cn/shopex/ecshopx/theme/dispatch/CreateDistributorJobHandler.java
-generated: { by: "openwiki/0.9.0", at: "2026-11-11T17:12:30.774Z" }
+  - id: openwiki-source-b1f06e49cafa17e4042438e1
+    resource: repo://ecshopx-theme/src/main/java/cn/shopex/ecshopx/theme/service/PagesTemplateFrontDetailService.java
+  - id: openwiki-source-410e4a934c445b04f99444b6
+    resource: repo://ecshopx-theme/src/main/java/cn/shopex/ecshopx/theme/support/PagesTemplateFrontDetailResolveSupport.java
+  - id: openwiki-source-57ba08390afce48e8084838d
+    resource: repo://ecshopx-theme/src/test/java/cn/shopex/ecshopx/theme/support/PagesTemplateFrontDetailResolveSupportTest.java
+generated: { by: "openwiki/0.9.0", at: "2026-11-16T17:12:44.218Z" }
 verified:
   - by: openwiki/0.9.0
-    at: 2026-11-11T17:12:30.774Z
+    at: 2026-11-16T17:12:44.218Z
 ---
 
 # Stores, Distributors, Merchants, and Salespersons
@@ -429,6 +447,16 @@ The service behind it, `DistributorPaymentSubjectService.setPaymentSubject`, ref
 
 Every consumer therefore sees either the platform bucket (`0`) or the one self-settling store id — the resolved id selects which payment-setting bucket, config validation, and gateway credentials a trade settles through, and the orders/payment bundles depend only on the common port, never on the distribution bundle. This page owns the data-model and write-guard perspective; the consumption flow (do-payment, channel query, refunds, front channel list) belongs to [Order Payment Flow](../workflows/order-payment-flow.md) and [Payments Domain](payments.md), and the orders-side contract is pinned by `OrdersPaymentDoPaymentServicePaymentSubjectTest`.
 
+## Storefront templates: platform pool vs per-shop (store-vs-platform resolution)
+
+The member-facing storefront template detail (`GET /api/v1/h5app/wxapp/pagestemplate/detail`, `PagesTemplateController.detail` → `PagesTemplateFrontDetailService`) must decide **which template pool** a request reads: the shared platform pool (`distributor_id=0` rows) or a single shop's own template rows. That decision lives in `PagesTemplateFrontDetailResolveSupport` (theme bundle) and is the store-side counterpart to template ownership:
+
+* **Pool selection** — `usePlatformTemplatePool(indexType, virtualDistributor)` returns the platform pool when `index_type == 1` (headquarters index mode), or when `index_type == 2` (shop index mode) **and** the requested store is a *virtual* store. Otherwise the shop's own pool (`distributor_id = <requested>`) is used.
+* **Virtual store test** — `isVirtualDistributorRow` treats a store as virtual when its `distributor_self` flag is truthy (`1`, `"1"`, `true`, case-insensitive) — i.e. the HQ self-pickup store has no independent storefront and falls back to the platform pool. The service resolves this by re-reading the distributor row through the `DistributorGetInfoSimpleByDistributorIdPort` (a distribution-bundle read) only when `distributor_id > 0`.
+* **`weapp_pages` mapping** — the *same* requested page maps to different stored `weapp_pages` values per pool: the shop pool stores the homepage as `distributor_index` (`weappPagesForShopTemplateDb` maps blank/`index` → `distributor_index`), while the platform pool keeps `index` (`weappPagesForPlatformPoolDb`). A missing `pages_template_id` with no matching row returns an empty list; an explicit bogus `pages_template_id` throws `模版ID错误`.
+
+So a shop request for the homepage only hits `distributor_index` rows when the store is a real (non-virtual) shop in shop-index mode; headquarters mode and the HQ self-pickup store always read the shared platform `index` pool. Pinned by `PagesTemplateFrontDetailResolveSupportTest` and `PagesTemplateFrontDetailServiceVirtualPoolTest`.
+
 ## POS store accounts (ecshopx-companys)
 
 `pos_store_account` rows are the per-store **POS terminal accounts** — the login identities of the physical shop's staff (店长 store_manager / 主管 supervisor / 店员 clerk), distinct from both the back-office `operators` and the WeCom `shop_salesperson`. The table carries a **globally unique** `employee_no` (`uk_employee_no`, case-insensitive under `utf8mb4_unicode_ci`), a reversible `password_cipher`, and `status` in `enabled` / `disabled` / `resigned`. Indexes are `(company_id, distributor_id, status)` and `(company_id, role)`.
@@ -562,7 +590,14 @@ Admin `/api/v1/salesperson/task` CRUD defines tasks of types 1–4 scoped to all
 
 ### First-level brokerage on trade finish (ECX-11089)
 
-The write path is: orders bundle trade-finish listeners (`NormalOrderConfirmReceiptAfterCommitService`, `FinishOrderBatchService`, `NormalOrderZitiWriteoffService`, `ServiceOrderZitiWriteoffService`) and the `TradeFinishCountBrokerage` bus listener (`TradeFinishCountBrokerageBusService`, which skips `pay_type=point` trades) → `NormalOrderBrokerageOnFinishService.orderFinishBrokerage` (ecshopx-orders) → the common-port `NormalOrderFinishBrokerageCoordinator` implemented in this bundle. The on-finish service also back-fills `plan_close_time` on the un-closed brokerage rows via `BrokeragePlanCloseTimeService.updatePlanCloseTime` after the coordinator returns.
+The write path is: orders bundle trade-finish listeners (`NormalOrderConfirmReceiptAfterCommitService`, `FinishOrderBatchService`, `NormalOrderZitiWriteoffService`, `ServiceOrderZitiWriteoffService`) and the `TradeFinishCountBrokerage` bus listener (`TradeFinishCountBrokerageDispatchListener` → `TradeFinishCountBrokerageBusService`) → the two entry methods on `NormalOrderBrokerageOnFinishService` (ecshopx-orders) → the common-port `NormalOrderFinishBrokerageCoordinator` implemented in this bundle.
+
+The two entry methods split *when* brokerage is written versus *when* its settlement clock starts:
+
+* **`orderFinishBrokerage`** (order completion — confirm receipt, batch finish, ziti write-offs) publishes the normal-order confirm-receipt event (`EVENT_NORMAL_ORDER_CONFIRM_RECEIPT`, ASYNC REDIS with the platform-default retry), runs the coordinator, then back-fills `plan_close_time` on the order's un-closed brokerage rows via `BrokeragePlanCloseTimeService.updatePlanCloseTime`.
+* **`orderFinishBrokerageOnTradePaySuccess`** (trade pay-success — this is what the `TradeFinishCountBrokerage` bus listener calls) runs *only* the coordinator: no confirm-receipt event, no `updatePlanCloseTime`, so the inserted row keeps the pending placeholder until a real completion path refreshes it.
+
+The bus listener itself is defensive: it skips empty payloads, unparseable/non-positive `company_id`/`order_id`, **`pay_type=point` trades** (case-insensitive), unknown orders, and company-mismatched rows — every skip under the same `[popularize-trade-finish]` INFO tag — and any coordinator failure is caught and logged at WARN so the listener never throws back into the bus.
 
 `NormalOrderFinishBrokerageCoordinator.onNormalOrderFinishBrokerage` runs the whole computation in a programmatic `TransactionTemplate` (`PROPAGATION_REQUIRED` over `PlatformTransactionManager`) and, in order:
 
@@ -570,7 +605,7 @@ The write path is: orders bundle trade-finish listeners (`NormalOrderConfirmRece
 2. **Idempotency** — skips when any `popularize_brokerage` row already exists for `(company_id, order_id)`, so listener retries cannot double-count.
 3. **pid-based parent resolution** — the **buyer** must have a `popularize_promoter` row (scoped by company) with a positive `pid`; the parent row is loaded by that pid and must belong to the **same company**, have a positive `user_id`, and be `is_promoter=1` — anything else skips. The pid test in `NormalOrderFinishBrokerageCoordinatorPidResolutionTest` pins that the pid is the parent **promoter id** whose `user_id` (not the buyer's) receives the brokerage.
 4. **Rebate computation** — the merged config's `popularize_ratio.type` selects the base: `profit` uses the order's `commissionFee`, otherwise `order_money` uses `totalFee` parsed to minor units; the rebate is `base × first_level.ratio / 100`, rounded, capped at `Integer.MAX_VALUE` fen, and a rebate ≤ 0 skips.
-5. **Insert with a non-null `plan_close_time`** — the `first_level` row is written with `user_id = parent promoter user`, `buy_user_id = buyer`, `source=order`, `commissionType/rebatePoint="money"`, `isClose=false`, and `plan_close_time` from `BrokeragePlanCloseTimeService.computePlanCloseTimeEpochSec()` — `now + 86400 * (settleDays + aftersaleDays)`, both sourced from `ecshopx.popularize.brokerage-plan-close.{settle-days,aftersale-days}` and both **default 0** (the code carries a TODO to replace these placeholders with the merchant-side 分销确认天数/售后时效天数 settings).
+5. **Insert with the pending `plan_close_time` placeholder** — the `first_level` row is written with `user_id = parent promoter user`, `buy_user_id = buyer`, `source=order`, `commissionType/rebatePoint="money"`, `isClose=false`, and `plan_close_time = BrokeragePlanCloseTimeService.PLAN_CLOSE_TIME_PENDING` (`Integer.MAX_VALUE` seconds, via `pendingPlanCloseTimeForInsert()`) so the row cannot be swept by settle-brokerage closing before the order actually completes. The real timestamp lands only when a completion path (confirm receipt, batch finish, ziti write-off) calls `BrokeragePlanCloseTimeService.updatePlanCloseTime(companyId, orderId)`, which stamps every un-closed row for that order with `computePlanCloseTimeEpochSec(companyId)`: `now + 86400 * (limit_time + latest_aftersale_time)` days — `limit_time` from the merged popularize config (`getMergedPopularizeConfig`) and `latest_aftersale_time` from the platform order-validity settings via the orders-bundle `OrderValidityLatestAftersaleDaysReadPort` implementation (which reads the order-validity setting cache; unparseable values fall back to 0). A non-positive `company_id` makes `computePlanCloseTimeEpochSec` return the pending placeholder instead.
 6. **Statistics and downstream** — `PopularizeBrokerageStatisticsIncrementService.add` increments the parent promoter's `popularize_brokerage_statistics` (`item_total_price` += order base, `rebate_total` and `no_close_rebate` += rebate); the buyer promoter's `is_buy` flips to `1` (once); and `UpgradePromoterGradeJobDispatchPublisher.enqueueUpgradePromoterGrade(companyId, parentUserId)` enqueues the grade-upgrade job.
 
 Every skip and the successful `done` line are logged at INFO under the temporary `[popularize-trade-finish]` tag (also present in `TradeFinishCountBrokerageBusService`) — the coordinator's logger is annotated `测试环境排查 ECX-11089 用` (test-environment diagnostics for ECX-11089) and is meant to be demoted or removed once stable.
@@ -735,7 +770,7 @@ Caption: the store-side tables — the distributor as the join point between com
 * **Merchant settlement is member-scoped.** Since ECX-10617 the wxapp settlement surface resolves the apply by mall-member `user_id`, and an apply with `audit_status=2` (passed) is immutable; a refused (`3`) apply is re-opened only by a step-3 re-submit (`disabled=false`, `audit_status` back to `1`).
 * **Member readiness skips, never silently fails.** `POST /api/v1/operator/member/ready` returns `skipped` whenever the Shuyun config is disabled/ineligible or the member is already registered (`shuyun_open_online_wxapp_sync_at` or `offline_reg_distributor` positive); but once a sync is attempted, any failure — missing member, cross-company row, blank mobile, or a failed `member.register` — throws `ResourceException` and halts the cashier flow before cart pull.
 * **Deleted SKUs leave no cashier-facing trace (ECX-10747).** `OperatorCartCleanupService` physically removes purged `operator_cart` rows rather than reporting them as 失效 entries; `商品已失效` survives only on the submit path when no valid row remains.
-* **Idempotent brokerage and supplier split.** Both are guarded by existence checks on (company, order[, supplier]) so listener retries cannot double-count. The brokerage insert additionally carries a non-null `plan_close_time` (now + 86400 × (settle-days + aftersale-days), both defaulting to 0 until the merchant-settings TODO lands), so settlement scheduling never sees a null timestamp on new rows.
+* **Idempotent brokerage and supplier split.** Both are guarded by existence checks on (company, order[, supplier]) so listener retries cannot double-count. New brokerage rows are inserted with the `PLAN_CLOSE_TIME_PENDING` (`Integer.MAX_VALUE`) placeholder, so they are never null and never prematurely closed; the concrete timestamp (`now + 86400 × (limit_time + latest_aftersale_time)` days) is only stamped by `updatePlanCloseTime` on the order-completion paths — the pay-success listener path leaves the placeholder in place until then.
 * **First-level brokerage credits the pid parent, never the buyer.** The buyer's promoter row only locates the parent: `user_id` on the brokerage row, the statistics increment, and the grade-upgrade enqueue all use the parent promoter's `user_id`, and the parent must be a same-company `is_promoter=1` row — otherwise the trade silently earns nothing (only an INFO log under `[popularize-trade-finish]`).
 * **Shop-protocol Redis is a self-healing cache, not the source of truth.** A blank or evicted hash field is repopulated from `protocol_update_log` (latest non-draft row per type) and rewritten into the hash before answering; an empty DB result never fabricates cache entries. `*_draft` and `member_logout_config` fields never fall back to the DB.
 * **Non-default-language role creates keep the main row name-less (ECX-11083).** `companys_roles.role_name` is `NOT NULL`, so a non-default-language create writes `""` as a placeholder and stores the real name only in the `common_lang_mod` lang row — never treat an empty main-row `role_name` as a data error.
@@ -766,7 +801,8 @@ The dispatch-flow tests are the executable spec for the ordering claims above:
 * `MerchantAuditSuccessNoticeJobDispatchFlowTest`, `MerchantAuditFailNoticeJobDispatchFlowTest`, `MerchantEnterSuccessNoticeJobDispatchFlowTest`, `MerchantResetPasswordNoticeJobDispatchFlowTest` — the four merchant notice jobs (jobs 1–4) and their publishers.
 * `SalespersonTaskJobDispatchFlowTest`, `SalespersonRelationshipContinuityJobDispatchFlowTest`, `SalespersonItemsShelvesJobDispatchFlowTest` — jobs 45/46/138 wiring. (The `WxappSalespersonSessionAuthService` auth cross-check itself has no dedicated test; its contract is pinned by the interceptor's usage.)
 * `NormalOrderAddEventAsyncFanOutSupplierAndYoushuDispatchFlowTest`, `NormalOrderAddOrderAddPushMarketingCenterDispatchFlowTest`, `OrdersSupplierOrderSplitOnNormalOrderAddDispatchListenerDispatchConsumerRuntimeTest` — supplier split listener plane and fan-out order.
-* `TradeFinishCountBrokerage*DispatchFlowTests`, `TradeFinishCountBrokerageUpgradePromoterGradeEnqueueTest`, `NormalOrderFinishBrokerageCoordinatorPidResolutionTest` — idempotent first-level brokerage, the pid-parent resolution (brokerage row `user_id` = parent promoter user, `buy_user_id` = buyer), the statistics increment, and the grade-upgrade enqueue.
+* `TradeFinishCountBrokerage*DispatchFlowTests`, `TradeFinishCountBrokerageUpgradePromoterGradeEnqueueTest`, `NormalOrderFinishBrokerageCoordinatorPidResolutionTest`, `BrokeragePlanCloseTimeServiceTest` — idempotent first-level brokerage, the pid-parent resolution (brokerage row `user_id` = parent promoter user, `buy_user_id` = buyer), the statistics increment, the grade-upgrade enqueue, and the `plan_close_time` pending-placeholder / `limit_time + latest_aftersale_time` computation.
+* `PagesTemplateFrontDetailResolveSupportTest`, `PagesTemplateFrontDetailServiceVirtualPoolTest` — the storefront pool selection (headquarters vs virtual-store platform pool vs per-shop pool) and the `index` → `distributor_index` shop-pool mapping.
 * `ShopProtocolSetServiceGetFallbackTest` (ecshopx-companys) — the ECX-11114 Redis→DB fallback: DB repopulation + Redis rewrite on a cold hash, Redis-hit without DB access, DB-empty without rewrite, and the single-type fallback.
 * `DataRoleCreateServiceTest` (ecshopx-companys) — the ECX-11083 language split: default-lang create writes `role_name` to the main table; non-default-lang create inserts the empty-string placeholder and routes the name to `common_lang_mod` via `saveLang`.
 * `DistributorGoodsSyncServiceAddDistributorItemsDispatchTest`, `ItemsUpdateOrchestratorDistributorSyncTest` — the goods→store catalog contract (in [Goods Domain](goods.md)).
