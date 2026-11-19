@@ -156,9 +156,10 @@ public class PickupLocationController {
 		String operatorType = opType == null ? "" : String.valueOf(opType);
 
 		long pickupLocationId = parsePositivePickupLocationIdFromPath(id);
+		String effectiveDistributorId = resolveDistributorIdParam(request, distributorIdParam);
 		Object payload =
 				pickupLocationListService.getPickupLocationInfo(
-						companyId, operatorType, distributorIdParam, pickupLocationId);
+						companyId, operatorType, effectiveDistributorId, pickupLocationId);
 		return ResponseEntity.ok(ApiResult.ok(payload));
 	}
 
@@ -213,24 +214,9 @@ public class PickupLocationController {
 
 		long pickupLocationId = parsePositivePickupLocationIdFromPath(id);
 
-		long distributorScopeId = 0L;
-		if ("distributor".equals(operatorType)) {
-			Long distributorFromRequest = null;
-			if (StringUtils.hasText(distributorIdParam)) {
-				try {
-					distributorFromRequest = Long.parseLong(distributorIdParam.trim());
-				} catch (NumberFormatException ex) {
-					throw new BadRequestException(
-							messageSource.getMessage(
-									"distribution.pickupLocation.relDistributor.invalidDistributorId",
-									null,
-									LocaleContextHolder.getLocale()));
-				}
-			} else if (body.getDistributorId() != null) {
-				distributorFromRequest = body.getDistributorId();
-			}
-			distributorScopeId = distributorFromRequest != null ? distributorFromRequest : 0L;
-		}
+		long distributorScopeId =
+				resolveDistributorScopeIdForPickupLocationWrite(
+						request, operatorType, distributorIdParam, body.getDistributorId());
 
 		Map<String, Object> data =
 				pickupLocationCreateService.updatePickupLocation(
@@ -263,8 +249,9 @@ public class PickupLocationController {
 			data.put("status", Boolean.TRUE);
 			return ResponseEntity.ok(ApiResult.ok(data));
 		}
+		String effectiveDistributorId = resolveDistributorIdParam(request, distributorIdParam);
 		pickupLocationListService.delPickupLocation(
-				companyId, operatorType, distributorIdParam, pickupLocationId.getAsLong());
+				companyId, operatorType, effectiveDistributorId, pickupLocationId.getAsLong());
 
 		Map<String, Object> data = new LinkedHashMap<>();
 		data.put("status", Boolean.TRUE);
@@ -390,6 +377,32 @@ public class PickupLocationController {
 			return String.valueOf(attrId);
 		}
 		return null;
+	}
+
+	private long resolveDistributorScopeIdForPickupLocationWrite(
+			HttpServletRequest request,
+			String operatorType,
+			String distributorIdParam,
+			Long bodyDistributorId) {
+		if (!"distributor".equals(operatorType)) {
+			return 0L;
+		}
+		String effective = resolveDistributorIdParam(request, distributorIdParam);
+		if (StringUtils.hasText(effective)) {
+			try {
+				return Long.parseLong(effective.trim());
+			} catch (NumberFormatException ex) {
+				throw new BadRequestException(
+						messageSource.getMessage(
+								"distribution.pickupLocation.relDistributor.invalidDistributorId",
+								null,
+								LocaleContextHolder.getLocale()));
+			}
+		}
+		if (bodyDistributorId != null) {
+			return bodyDistributorId;
+		}
+		return 0L;
 	}
 
 	private static Map<String, Object> toStringKeyMap(Map<?, ?> m) {
