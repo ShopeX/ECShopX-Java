@@ -71,6 +71,18 @@ class PagesTemplateWidgetItemsServicePointsmallTest {
 	}
 
 	@Test
+	void missingDataType_returnsEmptyWidgetBodyForPhpParity() {
+		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/pagestemplate/widget/items");
+		request.setParameter("data_count", "4");
+		PagesTemplateWidgetItemsQuery q = PagesTemplateWidgetItemsQuery.fromHttpServletRequest(request);
+
+		Map<String, Object> result = service.getWidgetItems(38L, "zh-CN", q);
+
+		assertEquals(List.of(), result.get("data"));
+		assertEquals(List.of(), result.get("filter"));
+	}
+
+	@Test
 	void pointsmallItemsUsesDataValueArrayIds() {
 		PointsmallItems ent = new PointsmallItems();
 		ent.setItemId(403L);

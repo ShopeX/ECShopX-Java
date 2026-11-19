@@ -101,9 +101,11 @@ public final class PagesTemplateWidgetItemsQuery {
 
 	public static PagesTemplateWidgetItemsQuery fromHttpServletRequest(HttpServletRequest request) {
 		String dtRaw = request.getParameter("data_type");
-		String dataType = dtRaw == null ? "" : dtRaw.trim();
-		if (!StringUtils.hasText(dataType)) {
-			throw new BadRequestException("data_type 无效");
+		String dataType;
+		if (dtRaw == null || !StringUtils.hasText(dtRaw.trim())) {
+			dataType = "";
+		} else {
+			dataType = dtRaw.trim();
 		}
 		DataValueSnapshot dv = parseDataValue(request);
 		Integer distributorId = parseDistributorId(request);

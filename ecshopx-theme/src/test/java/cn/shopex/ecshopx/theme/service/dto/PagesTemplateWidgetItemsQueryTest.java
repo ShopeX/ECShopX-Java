@@ -38,6 +38,17 @@ class PagesTemplateWidgetItemsQueryTest {
 	}
 
 	@Test
+	void admin_missingDataType_allowsEmptyStringForPhpParity() {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		request.setParameter("data_count", "4");
+		request.setParameter("pages_template_id", "200");
+
+		PagesTemplateWidgetItemsQuery q = PagesTemplateWidgetItemsQuery.fromHttpServletRequest(request);
+
+		assertEquals("", q.getDataType());
+	}
+
+	@Test
 	void missingOrInvalidEActivityIdIsZero() {
 		MockHttpServletRequest missing = new MockHttpServletRequest();
 		missing.setParameter("data_type", "items");
