@@ -21,6 +21,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -35,9 +36,10 @@ import cn.shopex.ecshopx.common.auth.OperatorJwtRequestAttributes;
 import cn.shopex.ecshopx.common.auth.PosOrderDocAccessPort;
 import cn.shopex.ecshopx.common.dispatch.JushuitanTradeAftersalesDispatchPublisher;
 import cn.shopex.ecshopx.common.dispatch.ThirdPartyTradeAftersalesCancelSaasErpDispatchPublisher;
-import cn.shopex.ecshopx.common.dispatch.ThirdPartyTradeAftersalesSaasErpDispatchPublisher;
+import cn.shopex.ecshopx.common.dispatch.ThirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher;
 import cn.shopex.ecshopx.common.dispatch.WdtErpTradeAfterSaleDispatchPublisher;
 import cn.shopex.ecshopx.common.exception.ForbiddenException;
+import cn.shopex.ecshopx.common.port.aftersales.AftersalesAgreedCouponRestorePort;
 import cn.shopex.ecshopx.common.port.aftersales.AftersalesBrokeragePort;
 import cn.shopex.ecshopx.common.port.order.JushuitanSettingReadPort;
 import cn.shopex.ecshopx.common.port.order.NormalOrderLeftAftersalesWritePort;
@@ -109,7 +111,7 @@ class AftersalesRefundConfirmServiceScopeTest {
 			thirdPartyTradeAftersalesCancelSaasErpDispatchPublisher;
 
 	@Mock
-	private ThirdPartyTradeAftersalesSaasErpDispatchPublisher thirdPartyTradeAftersalesSaasErpDispatchPublisher;
+	private ThirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher thirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher;
 
 	@Mock
 	private PosOrderDocAccessPort posOrderDocAccessPort;
@@ -142,7 +144,8 @@ class AftersalesRefundConfirmServiceScopeTest {
 						wdtErpTradeAfterSaleDispatchPublisher,
 						wdtErpTradeAfterSaleBusPayloadBuilder,
 						thirdPartyTradeAftersalesCancelSaasErpDispatchPublisher,
-						thirdPartyTradeAftersalesSaasErpDispatchPublisher,
+						thirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher,
+						mock(AftersalesAgreedCouponRestorePort.class),
 						posOrderDocAccessPort,
 						aftersalesRefuseWxaNotifyService);
 	}

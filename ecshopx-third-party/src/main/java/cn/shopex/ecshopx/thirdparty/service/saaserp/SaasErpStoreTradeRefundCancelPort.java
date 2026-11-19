@@ -21,5 +21,6 @@ import java.util.Map;
 @FunctionalInterface
 public interface SaasErpStoreTradeRefundCancelPort {
 
-	void callStoreTradeRefundCancel(Map<String, Object> requestBody);
+	/** Outbound uses Matrix method {@code store.trade.refund.add} (PHP cancel path). */
+	void callStoreTradeRefundCancel(long companyId, Map<String, Object> requestBody);
 }

@@ -21,8 +21,9 @@ import cn.shopex.ecshopx.aftersales.port.AftersalesRefundAsyncPort;
 import cn.shopex.ecshopx.aftersales.wdterp.WdtErpTradeAfterSaleBusPayloadBuilder;
 import cn.shopex.ecshopx.common.dispatch.JushuitanTradeAftersalesDispatchPublisher;
 import cn.shopex.ecshopx.common.dispatch.ThirdPartyTradeAftersalesCancelSaasErpDispatchPublisher;
-import cn.shopex.ecshopx.common.dispatch.ThirdPartyTradeAftersalesSaasErpDispatchPublisher;
+import cn.shopex.ecshopx.common.dispatch.ThirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher;
 import cn.shopex.ecshopx.common.dispatch.WdtErpTradeAfterSaleDispatchPublisher;
+import cn.shopex.ecshopx.common.port.aftersales.AftersalesAgreedCouponRestorePort;
 import cn.shopex.ecshopx.common.port.aftersales.AftersalesBrokeragePort;
 import cn.shopex.ecshopx.common.auth.OperatorJwtRequestAttributes;
 import cn.shopex.ecshopx.common.port.order.JushuitanSettingReadPort;
@@ -98,8 +99,8 @@ class RefundCheckThirdPartyTradeAftersalesSaasErpBusPublishProbeTest {
 		WdtErpTradeAfterSaleBusPayloadBuilder wdtPayloadBuilder = new WdtErpTradeAfterSaleBusPayloadBuilder();
 		ThirdPartyTradeAftersalesCancelSaasErpDispatchPublisher thirdPartyTradeAftersalesCancelSaasErpPublisher =
 				mock(ThirdPartyTradeAftersalesCancelSaasErpDispatchPublisher.class);
-		ThirdPartyTradeAftersalesSaasErpDispatchPublisher thirdPartyTradeAftersalesSaasErpDispatchPublisher =
-				mock(ThirdPartyTradeAftersalesSaasErpDispatchPublisher.class);
+		ThirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher thirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher =
+				mock(ThirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher.class);
 		ObjectMapper objectMapper = new ObjectMapper();
 
 		Aftersales aftersales = new Aftersales();
@@ -165,7 +166,8 @@ class RefundCheckThirdPartyTradeAftersalesSaasErpBusPublishProbeTest {
 						wdtPublisher,
 						wdtPayloadBuilder,
 						thirdPartyTradeAftersalesCancelSaasErpPublisher,
-						thirdPartyTradeAftersalesSaasErpDispatchPublisher,
+						thirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher,
+						mock(AftersalesAgreedCouponRestorePort.class),
 						mock(cn.shopex.ecshopx.common.auth.PosOrderDocAccessPort.class),
 						mock(AftersalesRefuseWxaNotifyService.class));
 
@@ -179,12 +181,12 @@ class RefundCheckThirdPartyTradeAftersalesSaasErpBusPublishProbeTest {
 
 		service.confirmRefund(param);
 
-		InOrder ordering = inOrder(txMgr, orderProcessLogPublishPort, thirdPartyTradeAftersalesSaasErpDispatchPublisher);
+		InOrder ordering = inOrder(txMgr, orderProcessLogPublishPort, thirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher);
 		ordering.verify(txMgr).getTransaction(any());
 		ordering.verify(orderProcessLogPublishPort).publish(any());
 		@SuppressWarnings("unchecked")
 		ArgumentCaptor<Map<String, Object>> erpCaptor = ArgumentCaptor.forClass(Map.class);
-		ordering.verify(thirdPartyTradeAftersalesSaasErpDispatchPublisher).publish(erpCaptor.capture());
+		ordering.verify(thirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher).publish(erpCaptor.capture());
 		ordering.verify(txMgr).commit(any());
 
 		Map<String, Object> published = erpCaptor.getValue();
@@ -192,8 +194,8 @@ class RefundCheckThirdPartyTradeAftersalesSaasErpBusPublishProbeTest {
 		assertThat(published.get("aftersales_bn")).isEqualTo(AFTERSALES_BN);
 		assertThat(published.get("order_id")).isEqualTo(ORDER_ID);
 		assertThat(published.get("aftersales_type")).isEqualTo("ONLY_REFUND");
-		assertThat(published.get("aftersales_status")).isEqualTo(2);
-		assertThat(published.get("progress")).isEqualTo(4);
+		assertThat(published.get("aftersales_status")).isEqualTo(1);
+		assertThat(published.get("progress")).isEqualTo(9);
 		assertThat(published.get("aftersales_action")).isEqualTo("update");
 
 		verify(applicationEventPublisher, never()).publishEvent(any(SaasErpAftersalesSpringEvent.class));
@@ -220,8 +222,8 @@ class RefundCheckThirdPartyTradeAftersalesSaasErpBusPublishProbeTest {
 		WdtErpTradeAfterSaleBusPayloadBuilder wdtPayloadBuilder = new WdtErpTradeAfterSaleBusPayloadBuilder();
 		ThirdPartyTradeAftersalesCancelSaasErpDispatchPublisher thirdPartyTradeAftersalesCancelSaasErpPublisher =
 				mock(ThirdPartyTradeAftersalesCancelSaasErpDispatchPublisher.class);
-		ThirdPartyTradeAftersalesSaasErpDispatchPublisher thirdPartyTradeAftersalesSaasErpDispatchPublisher =
-				mock(ThirdPartyTradeAftersalesSaasErpDispatchPublisher.class);
+		ThirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher thirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher =
+				mock(ThirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher.class);
 		ObjectMapper objectMapper = new ObjectMapper();
 
 		HttpServletRequest request = mock(HttpServletRequest.class);
@@ -298,7 +300,8 @@ class RefundCheckThirdPartyTradeAftersalesSaasErpBusPublishProbeTest {
 						wdtPublisher,
 						wdtPayloadBuilder,
 						thirdPartyTradeAftersalesCancelSaasErpPublisher,
-						thirdPartyTradeAftersalesSaasErpDispatchPublisher,
+						thirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher,
+						mock(AftersalesAgreedCouponRestorePort.class),
 						mock(cn.shopex.ecshopx.common.auth.PosOrderDocAccessPort.class),
 						mock(AftersalesRefuseWxaNotifyService.class));
 
@@ -311,14 +314,14 @@ class RefundCheckThirdPartyTradeAftersalesSaasErpBusPublishProbeTest {
 
 		service.refundCheck(merged, request);
 
-		InOrder ordering = inOrder(txMgr, orderProcessLogPublishPort, thirdPartyTradeAftersalesSaasErpDispatchPublisher);
+		InOrder ordering = inOrder(txMgr, orderProcessLogPublishPort, thirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher);
 		ordering.verify(txMgr).getTransaction(any());
 		@SuppressWarnings("unchecked")
 		ArgumentCaptor<Map<String, Object>> logCaptor = ArgumentCaptor.forClass(Map.class);
 		ordering.verify(orderProcessLogPublishPort).publish(logCaptor.capture());
 		@SuppressWarnings("unchecked")
 		ArgumentCaptor<Map<String, Object>> erpCaptor = ArgumentCaptor.forClass(Map.class);
-		ordering.verify(thirdPartyTradeAftersalesSaasErpDispatchPublisher).publish(erpCaptor.capture());
+		ordering.verify(thirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher).publish(erpCaptor.capture());
 		ordering.verify(txMgr).commit(any());
 
 		Map<String, Object> logPublished = logCaptor.getValue();
@@ -333,8 +336,8 @@ class RefundCheckThirdPartyTradeAftersalesSaasErpBusPublishProbeTest {
 		assertThat(published.get("aftersales_bn")).isEqualTo(AFTERSALES_BN);
 		assertThat(published.get("order_id")).isEqualTo(ORDER_ID);
 		assertThat(published.get("aftersales_type")).isEqualTo("ONLY_REFUND");
-		assertThat(published.get("aftersales_status")).isEqualTo(2);
-		assertThat(published.get("progress")).isEqualTo(4);
+		assertThat(published.get("aftersales_status")).isEqualTo(1);
+		assertThat(published.get("progress")).isEqualTo(9);
 		assertThat(published.get("aftersales_action")).isEqualTo("update");
 
 		verify(applicationEventPublisher, never()).publishEvent(any(SaasErpAftersalesSpringEvent.class));
@@ -360,8 +363,8 @@ class RefundCheckThirdPartyTradeAftersalesSaasErpBusPublishProbeTest {
 		WdtErpTradeAfterSaleBusPayloadBuilder wdtPayloadBuilder = new WdtErpTradeAfterSaleBusPayloadBuilder();
 		ThirdPartyTradeAftersalesCancelSaasErpDispatchPublisher thirdPartyTradeAftersalesCancelSaasErpPublisher =
 				mock(ThirdPartyTradeAftersalesCancelSaasErpDispatchPublisher.class);
-		ThirdPartyTradeAftersalesSaasErpDispatchPublisher thirdPartyTradeAftersalesSaasErpDispatchPublisher =
-				mock(ThirdPartyTradeAftersalesSaasErpDispatchPublisher.class);
+		ThirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher thirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher =
+				mock(ThirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher.class);
 		ObjectMapper objectMapper = new ObjectMapper();
 
 		Aftersales aftersales = new Aftersales();
@@ -426,7 +429,8 @@ class RefundCheckThirdPartyTradeAftersalesSaasErpBusPublishProbeTest {
 						wdtPublisher,
 						wdtPayloadBuilder,
 						thirdPartyTradeAftersalesCancelSaasErpPublisher,
-						thirdPartyTradeAftersalesSaasErpDispatchPublisher,
+						thirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher,
+						mock(AftersalesAgreedCouponRestorePort.class),
 						mock(cn.shopex.ecshopx.common.auth.PosOrderDocAccessPort.class),
 						mock(AftersalesRefuseWxaNotifyService.class));
 
@@ -440,7 +444,7 @@ class RefundCheckThirdPartyTradeAftersalesSaasErpBusPublishProbeTest {
 
 		service.confirmRefund(param);
 
-		verify(thirdPartyTradeAftersalesSaasErpDispatchPublisher, never()).publish(any());
+		verify(thirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher, never()).publish(any());
 		verify(thirdPartyTradeAftersalesCancelSaasErpPublisher, times(1)).publish(any());
 	}
 }

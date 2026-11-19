@@ -16,16 +16,28 @@
 
 package cn.shopex.ecshopx.thirdparty.service.saaserp;
 
+import cn.shopex.ecshopx.thirdparty.service.saascert.SaasCertErpBindReadService;
 import java.util.Map;
 import org.springframework.stereotype.Component;
 
+/**
+ * ERP bind gate for SaasErp aftersale/refund outbound. Aftersale Matrix body assembly still falls
+ * back to event entities until a dedicated aftersales adapter lands.
+ */
 @Component
 public class DefaultSaasErpTradeAftersaleOutboundSupport
 		implements SaasErpCompanySaasBindingReadPort, SaasErpTradeAftersaleOrderStructPort {
 
+	private final SaasCertErpBindReadService saasCertErpBindReadService;
+
+	public DefaultSaasErpTradeAftersaleOutboundSupport(
+			SaasCertErpBindReadService saasCertErpBindReadService) {
+		this.saasCertErpBindReadService = saasCertErpBindReadService;
+	}
+
 	@Override
 	public boolean isSaasErpOutboundEnabled(long companyId) {
-		return true;
+		return companyId > 0L && saasCertErpBindReadService.isErpBound(companyId);
 	}
 
 	@Override

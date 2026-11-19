@@ -20,7 +20,7 @@ import java.util.Map;
 
 public interface SaasErpStoreTradeAftersaleAddPort {
 
-	void callStoreTradeAftersaleAdd(Map<String, Object> requestBody);
+	void callStoreTradeAftersaleAdd(long companyId, Map<String, Object> requestBody);
 
-	void callOmeAftersaleStatusUpdate(Map<String, Object> requestBody);
+	void callOmeAftersaleStatusUpdate(long companyId, Map<String, Object> requestBody);
 }

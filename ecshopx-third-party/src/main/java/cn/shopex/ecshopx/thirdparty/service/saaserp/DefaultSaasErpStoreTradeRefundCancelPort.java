@@ -21,20 +21,37 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+/**
+ * Refund-cancel outbound still calls Matrix {@code store.trade.refund.add}, matching PHP
+ * {@code TradeRefundCancelSendSaasErp}.
+ */
 @Component
 public class DefaultSaasErpStoreTradeRefundCancelPort implements SaasErpStoreTradeRefundCancelPort {
 
 	private static final Logger log = LoggerFactory.getLogger(DefaultSaasErpStoreTradeRefundCancelPort.class);
 
+	private static final String METHOD = "store.trade.refund.add";
+
+	private final SaasErpMatrixOutboundClient matrixOutboundClient;
+
+	public DefaultSaasErpStoreTradeRefundCancelPort(SaasErpMatrixOutboundClient matrixOutboundClient) {
+		this.matrixOutboundClient = matrixOutboundClient;
+	}
+
 	@Override
-	public void callStoreTradeRefundCancel(Map<String, Object> requestBody) {
-		if (requestBody == null || requestBody.isEmpty()) {
+	public void callStoreTradeRefundCancel(long companyId, Map<String, Object> requestBody) {
+		if (companyId <= 0 || requestBody == null || requestBody.isEmpty()) {
 			return;
 		}
 		try {
-			log.debug("store.trade.refund.cancel body={}", requestBody);
+			Map<String, Object> result = matrixOutboundClient.call(companyId, METHOD, requestBody);
+			log.debug(
+					"store.trade.refund.add (cancel) companyId={} resultKeys={}",
+					companyId,
+					result == null ? 0 : result.keySet());
 		} catch (RuntimeException e) {
-			log.debug("store.trade.refund.cancel logging failed: {}", e.getMessage());
+			log.debug(
+					"store.trade.refund.add (cancel) failed companyId={} msg={}", companyId, e.getMessage());
 		}
 	}
 }

@@ -2,11 +2,13 @@ package cn.shopex.ecshopx.thirdparty.dispatch;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import cn.shopex.ecshopx.common.dispatch.SystemLinkDispatchEventNames;
 import cn.shopex.ecshopx.dispatch.DispatchConsumerRuntime;
@@ -21,6 +23,7 @@ import cn.shopex.ecshopx.dispatch.InMemoryDispatchConsumerStateRecorder;
 import cn.shopex.ecshopx.dispatch.InMemoryDispatchRegistry;
 import cn.shopex.ecshopx.dispatch.ListenerDispatchOptions;
 import cn.shopex.ecshopx.dispatch.RetryPolicy;
+import cn.shopex.ecshopx.thirdparty.service.saaserp.SaasErpCompanySaasBindingReadPort;
 import cn.shopex.ecshopx.thirdparty.service.saaserp.SaasErpStoreTradeRefundAddPort;
 import cn.shopex.ecshopx.thirdparty.service.saaserp.TradeRefundSendSaasErpBusService;
 import java.time.Instant;
@@ -417,7 +420,8 @@ class TradeRefundSendSaasErpDispatchListenerDispatchConsumerRuntimeTest {
 	@Test
 	void consume_whenCompanyIdMissing_skipsRefundAddPort() {
 		SaasErpStoreTradeRefundAddPort port = mock(SaasErpStoreTradeRefundAddPort.class);
-		TradeRefundSendSaasErpBusService realBus = new TradeRefundSendSaasErpBusService(port);
+		SaasErpCompanySaasBindingReadPort binding = mock(SaasErpCompanySaasBindingReadPort.class);
+		TradeRefundSendSaasErpBusService realBus = new TradeRefundSendSaasErpBusService(port, binding);
 		TradeRefundSendSaasErpDispatchListener listener = new TradeRefundSendSaasErpDispatchListener(realBus);
 		InMemoryDispatchRegistry registry = new InMemoryDispatchRegistry();
 		registry.registerEventListener(
@@ -453,13 +457,14 @@ class TradeRefundSendSaasErpDispatchListenerDispatchConsumerRuntimeTest {
 
 		runtime.consume(msg, 1);
 
-		verify(port, never()).callStoreTradeRefundAdd(any());
+		verify(port, never()).callStoreTradeRefundAdd(anyLong(), any());
 	}
 
 	@Test
 	void consume_whenRefundBnMissing_skipsRefundAddPort() {
 		SaasErpStoreTradeRefundAddPort port = mock(SaasErpStoreTradeRefundAddPort.class);
-		TradeRefundSendSaasErpBusService realBus = new TradeRefundSendSaasErpBusService(port);
+		SaasErpCompanySaasBindingReadPort binding = mock(SaasErpCompanySaasBindingReadPort.class);
+		TradeRefundSendSaasErpBusService realBus = new TradeRefundSendSaasErpBusService(port, binding);
 		TradeRefundSendSaasErpDispatchListener listener = new TradeRefundSendSaasErpDispatchListener(realBus);
 		InMemoryDispatchRegistry registry = new InMemoryDispatchRegistry();
 		registry.registerEventListener(
@@ -495,13 +500,14 @@ class TradeRefundSendSaasErpDispatchListenerDispatchConsumerRuntimeTest {
 
 		runtime.consume(msg, 1);
 
-		verify(port, never()).callStoreTradeRefundAdd(any());
+		verify(port, never()).callStoreTradeRefundAdd(anyLong(), any());
 	}
 
 	@Test
 	void consume_whenOrderIdNonPositive_skipsRefundAddPort() {
 		SaasErpStoreTradeRefundAddPort port = mock(SaasErpStoreTradeRefundAddPort.class);
-		TradeRefundSendSaasErpBusService realBus = new TradeRefundSendSaasErpBusService(port);
+		SaasErpCompanySaasBindingReadPort binding = mock(SaasErpCompanySaasBindingReadPort.class);
+		TradeRefundSendSaasErpBusService realBus = new TradeRefundSendSaasErpBusService(port, binding);
 		TradeRefundSendSaasErpDispatchListener listener = new TradeRefundSendSaasErpDispatchListener(realBus);
 		InMemoryDispatchRegistry registry = new InMemoryDispatchRegistry();
 		registry.registerEventListener(
@@ -538,6 +544,6 @@ class TradeRefundSendSaasErpDispatchListenerDispatchConsumerRuntimeTest {
 
 		runtime.consume(msg, 1);
 
-		verify(port, never()).callStoreTradeRefundAdd(any());
+		verify(port, never()).callStoreTradeRefundAdd(anyLong(), any());
 	}
 }

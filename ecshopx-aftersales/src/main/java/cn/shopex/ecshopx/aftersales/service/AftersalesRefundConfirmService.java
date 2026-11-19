@@ -28,11 +28,12 @@ import cn.shopex.ecshopx.common.auth.DualJwtSupport;
 import cn.shopex.ecshopx.common.auth.PosOrderDocAccessPort;
 import cn.shopex.ecshopx.common.dispatch.JushuitanTradeAftersalesDispatchPublisher;
 import cn.shopex.ecshopx.common.dispatch.ThirdPartyTradeAftersalesCancelSaasErpDispatchPublisher;
-import cn.shopex.ecshopx.common.dispatch.ThirdPartyTradeAftersalesSaasErpDispatchPublisher;
+import cn.shopex.ecshopx.common.dispatch.ThirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher;
 import cn.shopex.ecshopx.common.dispatch.WdtErpTradeAfterSaleDispatchPublisher;
 import cn.shopex.ecshopx.common.exception.BadRequestException;
 import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.common.exception.UnauthorizedException;
+import cn.shopex.ecshopx.common.port.aftersales.AftersalesAgreedCouponRestorePort;
 import cn.shopex.ecshopx.common.port.aftersales.AftersalesBrokeragePort;
 import cn.shopex.ecshopx.common.port.order.JushuitanSettingReadPort;
 import cn.shopex.ecshopx.common.port.order.NormalOrderLeftAftersalesWritePort;
@@ -78,7 +79,8 @@ public class AftersalesRefundConfirmService {
 	private final WdtErpTradeAfterSaleDispatchPublisher wdtErpTradeAfterSaleDispatchPublisher;
 	private final WdtErpTradeAfterSaleBusPayloadBuilder wdtErpTradeAfterSaleBusPayloadBuilder;
 	private final ThirdPartyTradeAftersalesCancelSaasErpDispatchPublisher thirdPartyTradeAftersalesCancelSaasErpDispatchPublisher;
-	private final ThirdPartyTradeAftersalesSaasErpDispatchPublisher thirdPartyTradeAftersalesSaasErpDispatchPublisher;
+	private final ThirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher thirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher;
+	private final AftersalesAgreedCouponRestorePort aftersalesAgreedCouponRestorePort;
 	private final PosOrderDocAccessPort posOrderDocAccessPort;
 	private final AftersalesRefuseWxaNotifyService aftersalesRefuseWxaNotifyService;
 
@@ -99,7 +101,8 @@ public class AftersalesRefundConfirmService {
 			WdtErpTradeAfterSaleDispatchPublisher wdtErpTradeAfterSaleDispatchPublisher,
 			WdtErpTradeAfterSaleBusPayloadBuilder wdtErpTradeAfterSaleBusPayloadBuilder,
 			ThirdPartyTradeAftersalesCancelSaasErpDispatchPublisher thirdPartyTradeAftersalesCancelSaasErpDispatchPublisher,
-			ThirdPartyTradeAftersalesSaasErpDispatchPublisher thirdPartyTradeAftersalesSaasErpDispatchPublisher,
+			ThirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher thirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher,
+			AftersalesAgreedCouponRestorePort aftersalesAgreedCouponRestorePort,
 			PosOrderDocAccessPort posOrderDocAccessPort,
 			AftersalesRefuseWxaNotifyService aftersalesRefuseWxaNotifyService) {
 		this.aftersalesMapper = aftersalesMapper;
@@ -118,7 +121,8 @@ public class AftersalesRefundConfirmService {
 		this.wdtErpTradeAfterSaleDispatchPublisher = wdtErpTradeAfterSaleDispatchPublisher;
 		this.wdtErpTradeAfterSaleBusPayloadBuilder = wdtErpTradeAfterSaleBusPayloadBuilder;
 		this.thirdPartyTradeAftersalesCancelSaasErpDispatchPublisher = thirdPartyTradeAftersalesCancelSaasErpDispatchPublisher;
-		this.thirdPartyTradeAftersalesSaasErpDispatchPublisher = thirdPartyTradeAftersalesSaasErpDispatchPublisher;
+		this.thirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher = thirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher;
+		this.aftersalesAgreedCouponRestorePort = aftersalesAgreedCouponRestorePort;
 		this.posOrderDocAccessPort = posOrderDocAccessPort;
 		this.aftersalesRefuseWxaNotifyService = aftersalesRefuseWxaNotifyService;
 	}
@@ -273,6 +277,9 @@ public class AftersalesRefundConfirmService {
 		if (st == null || st != 1) {
 			throw new ResourceException("售后" + bnLabel + "不是审核中，无需审核");
 		}
+		if (aftersales.getProgress() != null && aftersales.getProgress() == 9) {
+			throw new ResourceException("售后单已同意退款");
+		}
 		if (param.containsKey("refund_fee") && !isLooseEmpty(param.get("refund_fee"))) {
 			int requested = intVal(param.get("refund_fee"));
 			int cap = aftersales.getRefundFee() == null ? 0 : aftersales.getRefundFee();
@@ -369,33 +376,28 @@ public class AftersalesRefundConfirmService {
 			aftersales.setProgress(3);
 			aftersales.setRefuseReason(refundRowMemo);
 		} else {
-			aftersales.setAftersalesStatus(2);
-			aftersales.setProgress(4);
+			aftersales.setAftersalesStatus(1);
+			aftersales.setProgress(9);
 		}
 		aftersales.setUpdateTime(now);
 		int mu = aftersalesMapper.updateById(aftersales);
 		if (mu == 0) {
 			throw new ResourceException("需要退款的售后单不存在");
 		}
-		LambdaUpdateWrapper<AftersalesDetail> duw =
-				new LambdaUpdateWrapper<AftersalesDetail>()
-						.eq(AftersalesDetail::getCompanyId, companyId)
-						.eq(AftersalesDetail::getAftersalesBn, aftersalesBn);
-		if (reject) {
-			duw.set(AftersalesDetail::getAftersalesStatus, 3).set(AftersalesDetail::getProgress, 3);
-		} else {
-			duw.set(AftersalesDetail::getAftersalesStatus, 2).set(AftersalesDetail::getProgress, 4);
-		}
-		duw.set(AftersalesDetail::getUpdateTime, now);
 		List<AftersalesDetail> detailRows =
 				aftersalesDetailMapper.selectList(
 						new LambdaQueryWrapper<AftersalesDetail>()
 								.eq(AftersalesDetail::getCompanyId, companyId)
 								.eq(AftersalesDetail::getAftersalesBn, aftersalesBn));
-		if (!detailRows.isEmpty()) {
-			int du = aftersalesDetailMapper.update(null, duw);
-			if (du == 0) {
-				throw new ResourceException("需要退款的售后单不存在");
+		if (!reject) {
+			try {
+				aftersalesAgreedCouponRestorePort.restoreOnRefundAgreed(companyId, orderId);
+			} catch (RuntimeException ex) {
+				log.debug(
+						"[confirmRefund] coupon restore failed companyId={} orderId={}",
+						companyId,
+						orderId,
+						ex);
 			}
 		}
 		if (reject) {
@@ -432,6 +434,7 @@ public class AftersalesRefundConfirmService {
 			logMap.put("detail", refundAgreeOrderProcessLogDetail(bnLabel));
 			logMap.put("params", new LinkedHashMap<>(param));
 			orderProcessLogPublishPort.publish(logMap);
+			// 先冲销再更新明细状态，避免 completedNum(status=2) 口径误计入本次
 			for (AftersalesDetail d : detailRows) {
 				Map<String, Object> bp = new LinkedHashMap<>();
 				bp.put("company_id", companyId);
@@ -441,12 +444,29 @@ public class AftersalesRefundConfirmService {
 				aftersalesBrokeragePort.brokerageByAftersales(bp);
 			}
 		}
+		// develop：同意退款明细保持处理中(1/9)，拒绝为(3/3)
+		LambdaUpdateWrapper<AftersalesDetail> duw =
+				new LambdaUpdateWrapper<AftersalesDetail>()
+						.eq(AftersalesDetail::getCompanyId, companyId)
+						.eq(AftersalesDetail::getAftersalesBn, aftersalesBn);
+		if (reject) {
+			duw.set(AftersalesDetail::getAftersalesStatus, 3).set(AftersalesDetail::getProgress, 3);
+		} else {
+			duw.set(AftersalesDetail::getAftersalesStatus, 1).set(AftersalesDetail::getProgress, 9);
+		}
+		duw.set(AftersalesDetail::getUpdateTime, now);
+		if (!detailRows.isEmpty()) {
+			int du = aftersalesDetailMapper.update(null, duw);
+			if (du == 0) {
+				throw new ResourceException("需要退款的售后单不存在");
+			}
+		}
 		Map<String, Object> erpPayload = new LinkedHashMap<>(aftersalesToSnakeMap(aftersales));
 		erpPayload.put("aftersales_action", reject ? "cancel" : "update");
 		if (reject) {
 			thirdPartyTradeAftersalesCancelSaasErpDispatchPublisher.publish(erpPayload);
 		} else {
-			thirdPartyTradeAftersalesSaasErpDispatchPublisher.publish(erpPayload);
+			thirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher.publish(erpPayload);
 		}
 		sendWxaTemplateMsg(
 				aftersales.getAftersalesStatus() == null ? 0 : aftersales.getAftersalesStatus(),

@@ -20,5 +20,5 @@ import java.util.Map;
 
 public interface SaasErpStoreTradeAddPort {
 
-	void callStoreTradeAdd(Map<String, Object> body);
+	void callStoreTradeAdd(long companyId, Map<String, Object> body);
 }

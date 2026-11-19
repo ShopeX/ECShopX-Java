@@ -69,10 +69,10 @@ public class TradeRefundCancelSendSaasErpBusService {
 		}
 		Map<String, Object> body = new LinkedHashMap<>(entities);
 		try {
-			saasErpStoreTradeRefundCancelPort.callStoreTradeRefundCancel(body);
+			saasErpStoreTradeRefundCancelPort.callStoreTradeRefundCancel(companyId, body);
 		} catch (RuntimeException e) {
 			log.debug(
-					"store.trade.refund.cancel failed companyId={} orderId={} msg={}",
+					"store.trade.refund.add (cancel) failed companyId={} orderId={} msg={}",
 					companyId,
 					orderId,
 					e.getMessage());

@@ -28,18 +28,29 @@ public class DefaultSaasErpStoreTradeAftersaleLogisticsUpdatePort
 	private static final Logger log =
 			LoggerFactory.getLogger(DefaultSaasErpStoreTradeAftersaleLogisticsUpdatePort.class);
 
+	private static final String METHOD = "store.trade.aftersale.logistics.update";
+
+	private final SaasErpMatrixOutboundClient matrixOutboundClient;
+
+	public DefaultSaasErpStoreTradeAftersaleLogisticsUpdatePort(
+			SaasErpMatrixOutboundClient matrixOutboundClient) {
+		this.matrixOutboundClient = matrixOutboundClient;
+	}
+
 	@Override
 	public void callStoreTradeAftersaleLogisticsUpdate(long companyId, Map<String, Object> afterLogistics) {
-		if (afterLogistics == null || afterLogistics.isEmpty()) {
+		if (companyId <= 0 || afterLogistics == null || afterLogistics.isEmpty()) {
 			return;
 		}
 		try {
+			Map<String, Object> result = matrixOutboundClient.call(companyId, METHOD, afterLogistics);
 			log.debug(
-					"store.trade.aftersale.logistics.update companyId={} body={}",
+					"{} companyId={} resultKeys={}",
+					METHOD,
 					companyId,
-					afterLogistics);
+					result == null ? 0 : result.keySet());
 		} catch (RuntimeException e) {
-			log.debug("store.trade.aftersale.logistics.update logging failed: {}", e.getMessage());
+			log.debug("{} failed companyId={} msg={}", METHOD, companyId, e.getMessage());
 		}
 	}
 }

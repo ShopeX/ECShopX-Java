@@ -96,10 +96,10 @@ public class TradeAftersaleCancelSendSaasErpBusService {
 				}
 			}
 			outboundBody.put("aftersales_action", "cancel");
-			saasErpStoreTradeAftersaleCancelPort.callStoreTradeAftersaleCancel(outboundBody);
+			saasErpStoreTradeAftersaleCancelPort.callStoreTradeAftersaleCancel(companyId, outboundBody);
 		} catch (RuntimeException e) {
 			log.debug(
-					"store.trade.aftersale.cancel failed companyId={} orderId={} msg={}",
+					"store.trade.aftersale cancel failed companyId={} orderId={} msg={}",
 					companyId,
 					orderId,
 					e.getMessage());

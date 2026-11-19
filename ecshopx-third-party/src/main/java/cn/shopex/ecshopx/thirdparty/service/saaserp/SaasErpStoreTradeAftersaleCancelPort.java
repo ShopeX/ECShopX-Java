@@ -18,7 +18,12 @@ package cn.shopex.ecshopx.thirdparty.service.saaserp;
 
 import java.util.Map;
 
+@FunctionalInterface
 public interface SaasErpStoreTradeAftersaleCancelPort {
 
-	void callStoreTradeAftersaleCancel(Map<String, Object> requestBody);
+	/**
+	 * ONLY_REFUND → {@code store.trade.refund.add}; otherwise {@code
+	 * store.trade.aftersale.status.update}.
+	 */
+	void callStoreTradeAftersaleCancel(long companyId, Map<String, Object> requestBody);
 }

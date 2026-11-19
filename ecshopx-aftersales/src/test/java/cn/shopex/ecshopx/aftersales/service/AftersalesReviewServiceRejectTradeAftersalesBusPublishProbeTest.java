@@ -21,9 +21,10 @@ import cn.shopex.ecshopx.common.auth.OperatorJwtRequestAttributes;
 import cn.shopex.ecshopx.common.config.LangueProperties;
 import cn.shopex.ecshopx.common.dispatch.JushuitanTradeAftersalesDispatchPublisher;
 import cn.shopex.ecshopx.common.dispatch.ThirdPartyTradeAftersalesCancelSaasErpDispatchPublisher;
-import cn.shopex.ecshopx.common.dispatch.ThirdPartyTradeAftersalesSaasErpDispatchPublisher;
+import cn.shopex.ecshopx.common.dispatch.ThirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher;
 import cn.shopex.ecshopx.common.dispatch.TradeAftersalesDispatchPublisher;
 import cn.shopex.ecshopx.common.dispatch.WdtErpTradeAfterSaleDispatchPublisher;
+import cn.shopex.ecshopx.common.port.aftersales.AftersalesAgreedCouponRestorePort;
 import cn.shopex.ecshopx.common.port.aftersales.AftersalesBrokeragePort;
 import cn.shopex.ecshopx.common.port.distribution.DistributorAftersalesAddressDetailReadPort;
 import cn.shopex.ecshopx.common.port.order.NormalOrderLeftAftersalesWritePort;
@@ -76,8 +77,8 @@ class AftersalesReviewServiceRejectTradeAftersalesBusPublishProbeTest {
 		long aftersalesBn = 202601011234570L;
 		long orderId = 100L;
 
-		ThirdPartyTradeAftersalesSaasErpDispatchPublisher thirdPartyTradeAftersalesSaasErpDispatchPublisher =
-				mock(ThirdPartyTradeAftersalesSaasErpDispatchPublisher.class);
+		ThirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher thirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher =
+				mock(ThirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher.class);
 
 		AftersalesMapper aftersalesMapper = mock(AftersalesMapper.class);
 		AtomicInteger selectPass = new AtomicInteger();
@@ -165,9 +166,10 @@ class AftersalesReviewServiceRejectTradeAftersalesBusPublishProbeTest {
 						wdtErpTradeAfterSaleDispatchPublisher,
 						new WdtErpTradeAfterSaleBusPayloadBuilder(),
 						thirdPartyTradeAftersalesCancelSaasErpDispatchPublisher,
-						thirdPartyTradeAftersalesSaasErpDispatchPublisher,
+						thirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher,
 						tradeAftersalesDispatchPublisher,
-				mock(AftersalesRefuseWxaNotifyService.class));
+						mock(AftersalesAgreedCouponRestorePort.class),
+						mock(AftersalesRefuseWxaNotifyService.class));
 
 		Map<String, Object> param = new LinkedHashMap<>();
 		param.put("company_id", companyId);
@@ -182,7 +184,9 @@ class AftersalesReviewServiceRejectTradeAftersalesBusPublishProbeTest {
 		jwt.put("company_id", companyId);
 		jwt.put("operator_type", "admin");
 		jwt.put("operator_id", 1L);
-		when(request.getAttribute(OperatorJwtRequestAttributes.OPERATOR_JWT_USER_DATA)).thenReturn(jwt);
+		org.mockito.Mockito.lenient()
+				.when(request.getAttribute(OperatorJwtRequestAttributes.OPERATOR_JWT_USER_DATA))
+				.thenReturn(jwt);
 
 		service.aftersalesReview(new LinkedHashMap<>(param), request);
 

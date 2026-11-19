@@ -17,24 +17,9 @@
 package cn.shopex.ecshopx.thirdparty.service.saaserp;
 
 import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
-@Component
-public class SaasErpStoreTradeAddLoggingAdapter implements SaasErpStoreTradeAddPort {
+@FunctionalInterface
+public interface SaasErpStoreTradeAftersaleStatusUpdatePort {
 
-	private static final Logger log = LoggerFactory.getLogger(SaasErpStoreTradeAddLoggingAdapter.class);
-
-	@Override
-	public void callStoreTradeAdd(Map<String, Object> body) {
-		if (body == null || body.isEmpty()) {
-			return;
-		}
-		try {
-			log.debug("store.trade.add body={}", body);
-		} catch (RuntimeException e) {
-			log.debug("store.trade.add logging failed: {}", e.getMessage());
-		}
-	}
+	void callStoreTradeAftersaleStatusUpdate(long companyId, Map<String, Object> requestBody);
 }

@@ -26,27 +26,34 @@ public class DefaultSaasErpStoreTradeAftersaleAddPort implements SaasErpStoreTra
 
 	private static final Logger log = LoggerFactory.getLogger(DefaultSaasErpStoreTradeAftersaleAddPort.class);
 
-	@Override
-	public void callStoreTradeAftersaleAdd(Map<String, Object> requestBody) {
-		if (requestBody == null || requestBody.isEmpty()) {
-			return;
-		}
-		try {
-			log.debug("store.trade.aftersale.add body={}", requestBody);
-		} catch (RuntimeException e) {
-			log.debug("store.trade.aftersale.add logging failed: {}", e.getMessage());
-		}
+	private static final String METHOD_ADD = "store.trade.aftersale.add";
+	private static final String METHOD_OME_STATUS = "ome.aftersale.status_update";
+
+	private final SaasErpMatrixOutboundClient matrixOutboundClient;
+
+	public DefaultSaasErpStoreTradeAftersaleAddPort(SaasErpMatrixOutboundClient matrixOutboundClient) {
+		this.matrixOutboundClient = matrixOutboundClient;
 	}
 
 	@Override
-	public void callOmeAftersaleStatusUpdate(Map<String, Object> requestBody) {
-		if (requestBody == null || requestBody.isEmpty()) {
+	public void callStoreTradeAftersaleAdd(long companyId, Map<String, Object> requestBody) {
+		call(companyId, METHOD_ADD, requestBody);
+	}
+
+	@Override
+	public void callOmeAftersaleStatusUpdate(long companyId, Map<String, Object> requestBody) {
+		call(companyId, METHOD_OME_STATUS, requestBody);
+	}
+
+	private void call(long companyId, String method, Map<String, Object> requestBody) {
+		if (companyId <= 0 || requestBody == null || requestBody.isEmpty()) {
 			return;
 		}
 		try {
-			log.debug("ome.aftersale.status_update body={}", requestBody);
+			Map<String, Object> result = matrixOutboundClient.call(companyId, method, requestBody);
+			log.debug("{} companyId={} resultKeys={}", method, companyId, result == null ? 0 : result.keySet());
 		} catch (RuntimeException e) {
-			log.debug("ome.aftersale.status_update logging failed: {}", e.getMessage());
+			log.debug("{} failed companyId={} msg={}", method, companyId, e.getMessage());
 		}
 	}
 }

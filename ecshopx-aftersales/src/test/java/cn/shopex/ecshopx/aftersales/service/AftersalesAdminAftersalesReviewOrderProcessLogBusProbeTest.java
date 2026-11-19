@@ -23,9 +23,10 @@ import cn.shopex.ecshopx.common.auth.OperatorJwtRequestAttributes;
 import cn.shopex.ecshopx.common.config.LangueProperties;
 import cn.shopex.ecshopx.common.dispatch.JushuitanTradeAftersalesDispatchPublisher;
 import cn.shopex.ecshopx.common.dispatch.ThirdPartyTradeAftersalesCancelSaasErpDispatchPublisher;
-import cn.shopex.ecshopx.common.dispatch.ThirdPartyTradeAftersalesSaasErpDispatchPublisher;
+import cn.shopex.ecshopx.common.dispatch.ThirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher;
 import cn.shopex.ecshopx.common.dispatch.TradeAftersalesDispatchPublisher;
 import cn.shopex.ecshopx.common.dispatch.WdtErpTradeAfterSaleDispatchPublisher;
+import cn.shopex.ecshopx.common.port.aftersales.AftersalesAgreedCouponRestorePort;
 import cn.shopex.ecshopx.common.port.aftersales.AftersalesBrokeragePort;
 import cn.shopex.ecshopx.common.port.distribution.DistributorAftersalesAddressDetailReadPort;
 import cn.shopex.ecshopx.common.port.order.NormalOrderLeftAftersalesWritePort;
@@ -77,7 +78,7 @@ class AftersalesAdminAftersalesReviewOrderProcessLogBusProbeTest {
 	private ThirdPartyTradeAftersalesCancelSaasErpDispatchPublisher thirdPartyTradeAftersalesCancelSaasErpDispatchPublisher;
 
 	@Mock
-	private ThirdPartyTradeAftersalesSaasErpDispatchPublisher thirdPartyTradeAftersalesSaasErpDispatchPublisher;
+	private ThirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher thirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher;
 
 	private static final long COMPANY_ID = 9001L;
 	private static final long ORDER_ID = 5001L;
@@ -189,9 +190,10 @@ class AftersalesAdminAftersalesReviewOrderProcessLogBusProbeTest {
 						wdtErpTradeAfterSaleDispatchPublisher,
 						new WdtErpTradeAfterSaleBusPayloadBuilder(),
 						thirdPartyTradeAftersalesCancelSaasErpDispatchPublisher,
-						thirdPartyTradeAftersalesSaasErpDispatchPublisher,
+						thirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher,
 						tradeAftersalesDispatchPublisher,
-				mock(AftersalesRefuseWxaNotifyService.class));
+						mock(AftersalesAgreedCouponRestorePort.class),
+						mock(AftersalesRefuseWxaNotifyService.class));
 
 		Map<String, Object> body = new LinkedHashMap<>();
 		body.put("aftersales_bn", AFTERSALES_BN);
@@ -208,7 +210,7 @@ class AftersalesAdminAftersalesReviewOrderProcessLogBusProbeTest {
 
 		service.aftersalesReview(new LinkedHashMap<>(body), request);
 
-		verify(thirdPartyTradeAftersalesSaasErpDispatchPublisher, never()).publish(any());
+		verify(thirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher, never()).publish(any());
 		verify(tradeAftersalesDispatchPublisher, times(1)).publish(any());
 	}
 
@@ -304,9 +306,10 @@ class AftersalesAdminAftersalesReviewOrderProcessLogBusProbeTest {
 						wdtErpTradeAfterSaleDispatchPublisher,
 						new WdtErpTradeAfterSaleBusPayloadBuilder(),
 						thirdPartyTradeAftersalesCancelSaasErpDispatchPublisher,
-						thirdPartyTradeAftersalesSaasErpDispatchPublisher,
+						thirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher,
 						tradeAftersalesDispatchPublisher,
-				mock(AftersalesRefuseWxaNotifyService.class));
+						mock(AftersalesAgreedCouponRestorePort.class),
+						mock(AftersalesRefuseWxaNotifyService.class));
 
 		Map<String, Object> body = new LinkedHashMap<>();
 		body.put("aftersales_bn", AFTERSALES_BN);
@@ -328,7 +331,7 @@ class AftersalesAdminAftersalesReviewOrderProcessLogBusProbeTest {
 		verify(applicationEventPublisher, never()).publishEvent(any(SaasErpAftersalesSpringEvent.class));
 		@SuppressWarnings("unchecked")
 		ArgumentCaptor<Map<String, Object>> saasCap = ArgumentCaptor.forClass(Map.class);
-		verify(thirdPartyTradeAftersalesSaasErpDispatchPublisher, times(1)).publish(saasCap.capture());
+		verify(thirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher, times(1)).publish(saasCap.capture());
 		assertThat(saasCap.getValue().get("aftersales_action")).isEqualTo("update");
 		assertThat(saasCap.getValue().get("company_id")).isEqualTo(COMPANY_ID);
 		assertThat(saasCap.getValue().get("order_id")).isEqualTo(ORDER_ID);
@@ -416,9 +419,10 @@ class AftersalesAdminAftersalesReviewOrderProcessLogBusProbeTest {
 						wdtErpTradeAfterSaleDispatchPublisher,
 						new WdtErpTradeAfterSaleBusPayloadBuilder(),
 						thirdPartyTradeAftersalesCancelSaasErpDispatchPublisher,
-						thirdPartyTradeAftersalesSaasErpDispatchPublisher,
+						thirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher,
 						tradeAftersalesDispatchPublisher,
-				mock(AftersalesRefuseWxaNotifyService.class));
+						mock(AftersalesAgreedCouponRestorePort.class),
+						mock(AftersalesRefuseWxaNotifyService.class));
 
 		Map<String, Object> body = new LinkedHashMap<>();
 		body.put("aftersales_bn", AFTERSALES_BN);
@@ -440,7 +444,7 @@ class AftersalesAdminAftersalesReviewOrderProcessLogBusProbeTest {
 		verify(applicationEventPublisher, never()).publishEvent(any(SaasErpAftersalesSpringEvent.class));
 		@SuppressWarnings("unchecked")
 		ArgumentCaptor<Map<String, Object>> saasCap = ArgumentCaptor.forClass(Map.class);
-		verify(thirdPartyTradeAftersalesSaasErpDispatchPublisher, times(1)).publish(saasCap.capture());
+		verify(thirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher, times(1)).publish(saasCap.capture());
 		assertThat(saasCap.getValue().get("aftersales_action")).isEqualTo("update");
 		assertThat(saasCap.getValue().get("company_id")).isEqualTo(COMPANY_ID);
 		assertThat(saasCap.getValue().get("aftersales_type")).isEqualTo("REFUND_GOODS");
@@ -486,7 +490,7 @@ class AftersalesAdminAftersalesReviewOrderProcessLogBusProbeTest {
 		assertThat(cancelCap.getValue().get("aftersales_bn")).isEqualTo(AFTERSALES_BN);
 		assertThat(cancelCap.getValue().get("aftersales_type")).isEqualTo("ONLY_REFUND");
 
-		verify(thirdPartyTradeAftersalesSaasErpDispatchPublisher, never()).publish(any());
+		verify(thirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher, never()).publish(any());
 	}
 
 	@Test
@@ -523,7 +527,7 @@ class AftersalesAdminAftersalesReviewOrderProcessLogBusProbeTest {
 		assertThat(paramsMap.get("freight")).isEqualTo(5);
 
 		verify(thirdPartyTradeAftersalesCancelSaasErpDispatchPublisher, never()).publish(any());
-		verify(thirdPartyTradeAftersalesSaasErpDispatchPublisher, times(1)).publish(any());
+		verify(thirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher, times(1)).publish(any());
 	}
 
 	@Test
@@ -561,7 +565,7 @@ class AftersalesAdminAftersalesReviewOrderProcessLogBusProbeTest {
 		verify(thirdPartyTradeAftersalesCancelSaasErpDispatchPublisher, never()).publish(any());
 		@SuppressWarnings("unchecked")
 		ArgumentCaptor<Map<String, Object>> saasAgain = ArgumentCaptor.forClass(Map.class);
-		verify(thirdPartyTradeAftersalesSaasErpDispatchPublisher, times(1)).publish(saasAgain.capture());
+		verify(thirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher, times(1)).publish(saasAgain.capture());
 		assertThat(saasAgain.getValue().get("aftersales_action")).isEqualTo("update");
 		assertThat(saasAgain.getValue().get("order_id")).isEqualTo(ORDER_ID);
 		assertThat(saasAgain.getValue().get("aftersales_bn")).isEqualTo(AFTERSALES_BN);

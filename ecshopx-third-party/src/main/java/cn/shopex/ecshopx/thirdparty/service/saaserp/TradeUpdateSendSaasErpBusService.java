@@ -17,9 +17,12 @@
 package cn.shopex.ecshopx.thirdparty.service.saaserp;
 
 import cn.shopex.ecshopx.common.saaserp.TradeUpdateGroupMemberOrdersPort;
+import cn.shopex.ecshopx.common.saaserp.inbound.SaasErpOrderStructPort;
+import cn.shopex.ecshopx.thirdparty.service.saascert.SaasCertErpBindReadService;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -32,12 +35,18 @@ public class TradeUpdateSendSaasErpBusService {
 
 	private final TradeUpdateGroupMemberOrdersPort tradeUpdateGroupMemberOrdersPort;
 	private final SaasErpStoreTradeAddPort saasErpStoreTradeAddPort;
+	private final SaasErpOrderStructPort saasErpOrderStructPort;
+	private final SaasCertErpBindReadService saasCertErpBindReadService;
 
 	public TradeUpdateSendSaasErpBusService(
 			TradeUpdateGroupMemberOrdersPort tradeUpdateGroupMemberOrdersPort,
-			SaasErpStoreTradeAddPort saasErpStoreTradeAddPort) {
+			SaasErpStoreTradeAddPort saasErpStoreTradeAddPort,
+			SaasErpOrderStructPort saasErpOrderStructPort,
+			SaasCertErpBindReadService saasCertErpBindReadService) {
 		this.tradeUpdateGroupMemberOrdersPort = tradeUpdateGroupMemberOrdersPort;
 		this.saasErpStoreTradeAddPort = saasErpStoreTradeAddPort;
+		this.saasErpOrderStructPort = saasErpOrderStructPort;
+		this.saasCertErpBindReadService = saasCertErpBindReadService;
 	}
 
 	public void handleTradeUpdateEntities(Map<String, Object> entities) {
@@ -53,18 +62,59 @@ public class TradeUpdateSendSaasErpBusService {
 		if (!StringUtils.hasText(orderIdStr)) {
 			return;
 		}
-		String sourceType = str(entities.get("order_class"));
+		if (!saasCertErpBindReadService.isErpBound(companyId)) {
+			log.debug(
+					"saaserp TradeUpdateSendSaasErp companyId:{},orderId:{},msg:未开启SaasErp",
+					companyId,
+					orderIdStr);
+			return;
+		}
+		String sourceType = toSaasErpSourceType(str(entities.get("order_class")));
 		switch (sourceType) {
-			case "normal_seckill", "normal_normal", "normal" -> handleSingleOrderBranch(entities);
-			case "normal_groups", "groups" -> handleGroupBranch(entities, companyId, orderIdStr);
+			case "normal_shopguide", "normal_shopadmin", "normal_seckill", "normal_normal", "normal" ->
+					pushOrderStruct(companyId, orderIdStr, sourceType);
+			case "normal_groups" -> handleGroupBranch(entities, companyId, orderIdStr);
 			default -> {
 				/* unhandled order_class */
 			}
 		}
 	}
 
-	private void handleSingleOrderBranch(Map<String, Object> entities) {
-		saasErpStoreTradeAddPort.callStoreTradeAdd(new LinkedHashMap<>(entities));
+	/**
+	 * PHP prefixes a non-{@code normal} {@code order_class} with {@code normal_}. Values that are already
+	 * {@code normal} or {@code normal_*} are kept so publishers that stored the prefixed slug still match.
+	 */
+	public static String toSaasErpSourceType(String orderClass) {
+		if (!StringUtils.hasText(orderClass)) {
+			return "";
+		}
+		String raw = orderClass.trim();
+		if ("normal".equals(raw) || raw.startsWith("normal_")) {
+			return raw;
+		}
+		return "normal_" + raw;
+	}
+
+	private void pushOrderStruct(long companyId, String orderId, String sourceType) {
+		Optional<Map<String, Object>> struct =
+				saasErpOrderStructPort.getOrderStruct(companyId, orderId, sourceType);
+		if (struct.isEmpty()) {
+			log.debug(
+					"store.trade.add skipped: empty order struct companyId={} orderId={} sourceType={}",
+					companyId,
+					orderId,
+					sourceType);
+			return;
+		}
+		try {
+			saasErpStoreTradeAddPort.callStoreTradeAdd(companyId, struct.get());
+		} catch (RuntimeException e) {
+			log.debug(
+					"store.trade.add failed companyId={} orderId={} msg={}",
+					companyId,
+					orderId,
+					e.getMessage());
+		}
 	}
 
 	private void handleGroupBranch(Map<String, Object> entities, long companyId, String orderIdStr) {
@@ -90,23 +140,8 @@ public class TradeUpdateSendSaasErpBusService {
 			if (!StringUtils.hasText(rowOrderId)) {
 				continue;
 			}
-			Map<String, Object> body = new LinkedHashMap<>();
-			body.put("company_id", rowCompany);
-			body.put("order_id", rowOrderId);
-			body.put("order_class", StringUtils.hasText(groupGoodsType) ? groupGoodsType : "normal_groups");
-			Object uid = row.get("m_member_id");
-			if (uid != null) {
-				body.put("user_id", uid);
-			}
-			try {
-				saasErpStoreTradeAddPort.callStoreTradeAdd(body);
-			} catch (RuntimeException e) {
-				log.debug(
-						"store.trade.add failed companyId={} orderId={} msg={}",
-						rowCompany,
-						rowOrderId,
-						e.getMessage());
-			}
+			String rowSource = StringUtils.hasText(groupGoodsType) ? groupGoodsType : "normal_groups";
+			pushOrderStruct(rowCompany, rowOrderId, rowSource);
 		}
 	}
 

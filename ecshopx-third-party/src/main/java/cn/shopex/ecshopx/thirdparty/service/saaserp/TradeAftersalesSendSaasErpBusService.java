@@ -93,14 +93,17 @@ public class TradeAftersalesSendSaasErpBusService {
 			}
 			int originalStatus = intFrom(outboundBody.get("status"));
 			outboundBody.put("status", 1);
-			saasErpStoreTradeAftersaleAddPort.callStoreTradeAftersaleAdd(outboundBody);
+			saasErpStoreTradeAftersaleAddPort.callStoreTradeAftersaleAdd(companyId, outboundBody);
 			if (originalStatus != 1) {
 				Map<String, Object> updatePayload =
 						saasErpTradeAftersaleOrderStructPort.buildAftersaleOmeStatusUpdatePayloadOrNull(
 								companyId, aftersalesBnRaw);
+				if (updatePayload == null || updatePayload.isEmpty()) {
+					updatePayload = fallbackOmeStatusUpdatePayload(orderId, aftersalesBnRaw, entities);
+				}
 				if (updatePayload != null && !updatePayload.isEmpty()) {
 					try {
-						saasErpStoreTradeAftersaleAddPort.callOmeAftersaleStatusUpdate(updatePayload);
+						saasErpStoreTradeAftersaleAddPort.callOmeAftersaleStatusUpdate(companyId, updatePayload);
 					} catch (RuntimeException e) {
 						log.debug(
 								"ome.aftersale.status_update failed companyId={} orderId={} msg={}",
@@ -177,5 +180,31 @@ public class TradeAftersalesSendSaasErpBusService {
 		} catch (NumberFormatException e) {
 			return 0;
 		}
+	}
+
+	/** Minimal ome.aftersale.status_update body aligned with PHP status mapping. */
+	private static Map<String, Object> fallbackOmeStatusUpdatePayload(
+			long orderId, Object aftersalesBnRaw, Map<String, Object> entities) {
+		Object statusRaw = entities.get("aftersales_status");
+		if (statusRaw == null) {
+			statusRaw = entities.get("status");
+		}
+		int localStatus = intFrom(statusRaw);
+		Integer omsStatus =
+				switch (localStatus) {
+					case 0 -> 1;
+					case 1 -> 3;
+					case 2 -> 4;
+					case 3, 4 -> 5;
+					default -> null;
+				};
+		if (omsStatus == null) {
+			return Map.of();
+		}
+		Map<String, Object> payload = new LinkedHashMap<>();
+		payload.put("status", omsStatus);
+		payload.put("tid", orderId);
+		payload.put("aftersale_id", aftersalesBnRaw);
+		return payload;
 	}
 }

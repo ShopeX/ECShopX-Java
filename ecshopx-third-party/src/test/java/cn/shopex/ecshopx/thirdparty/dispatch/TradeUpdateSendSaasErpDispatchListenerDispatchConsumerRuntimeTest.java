@@ -6,7 +6,9 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import cn.shopex.ecshopx.common.dispatch.ThirdPartyDispatchEventNames;
 import cn.shopex.ecshopx.dispatch.DispatchConsumerRuntime;
@@ -22,8 +24,10 @@ import cn.shopex.ecshopx.dispatch.InMemoryDispatchRegistry;
 import cn.shopex.ecshopx.dispatch.ListenerDispatchOptions;
 import cn.shopex.ecshopx.dispatch.RetryPolicy;
 import cn.shopex.ecshopx.common.saaserp.TradeUpdateGroupMemberOrdersPort;
+import cn.shopex.ecshopx.common.saaserp.inbound.SaasErpOrderStructPort;
 import cn.shopex.ecshopx.thirdparty.service.saaserp.SaasErpStoreTradeAddPort;
 import cn.shopex.ecshopx.thirdparty.service.saaserp.TradeUpdateSendSaasErpBusService;
+import cn.shopex.ecshopx.thirdparty.service.saascert.SaasCertErpBindReadService;
 import java.time.Instant;
 import java.util.LinkedHashMap;
 import org.junit.jupiter.api.BeforeEach;
@@ -187,7 +191,9 @@ class TradeUpdateSendSaasErpDispatchListenerDispatchConsumerRuntimeTest {
 	void consume_whenCompanyIdMissing_skipsBusService() {
 		SaasErpStoreTradeAddPort port = mock(SaasErpStoreTradeAddPort.class);
 		TradeUpdateGroupMemberOrdersPort groupPort = mock(TradeUpdateGroupMemberOrdersPort.class);
-		TradeUpdateSendSaasErpBusService realBus = new TradeUpdateSendSaasErpBusService(groupPort, port);
+		TradeUpdateSendSaasErpBusService realBus =
+				new TradeUpdateSendSaasErpBusService(
+						groupPort, port, mock(SaasErpOrderStructPort.class), mock(SaasCertErpBindReadService.class));
 		TradeUpdateSendSaasErpDispatchListener listener = new TradeUpdateSendSaasErpDispatchListener(realBus);
 		InMemoryDispatchRegistry registry = new InMemoryDispatchRegistry();
 		registry.registerEventListener(
@@ -223,7 +229,53 @@ class TradeUpdateSendSaasErpDispatchListenerDispatchConsumerRuntimeTest {
 
 		runtime.consume(msg, 1);
 
-		verify(port, never()).callStoreTradeAdd(any());
+		verify(port, never()).callStoreTradeAdd(anyLong(), any());
 		verify(groupPort, never()).listPaidTeamOrderRowsForLeader(anyLong(), anyString(), anyLong());
+	}
+
+	@Test
+	void shopadminAndGroupsOrderClassMatchPhpSourceType() {
+		assertEquals("normal_shopadmin", TradeUpdateSendSaasErpBusService.toSaasErpSourceType("shopadmin"));
+		assertEquals("normal_shopguide", TradeUpdateSendSaasErpBusService.toSaasErpSourceType("shopguide"));
+		assertEquals("normal_seckill", TradeUpdateSendSaasErpBusService.toSaasErpSourceType("seckill"));
+		assertEquals("normal_groups", TradeUpdateSendSaasErpBusService.toSaasErpSourceType("groups"));
+		assertEquals("normal", TradeUpdateSendSaasErpBusService.toSaasErpSourceType("normal"));
+		assertEquals("normal_groups", TradeUpdateSendSaasErpBusService.toSaasErpSourceType("normal_groups"));
+
+		SaasErpStoreTradeAddPort port = mock(SaasErpStoreTradeAddPort.class);
+		SaasErpOrderStructPort structPort = mock(SaasErpOrderStructPort.class);
+		SaasCertErpBindReadService bind = mock(SaasCertErpBindReadService.class);
+		when(bind.isErpBound(1L)).thenReturn(true);
+		LinkedHashMap<String, Object> struct = new LinkedHashMap<>();
+		struct.put("tid", "9");
+		struct.put("status", "TRADE_ACTIVE");
+		when(structPort.getOrderStruct(1L, "9", "normal_shopadmin")).thenReturn(java.util.Optional.of(struct));
+		TradeUpdateSendSaasErpBusService bus =
+				new TradeUpdateSendSaasErpBusService(
+						mock(TradeUpdateGroupMemberOrdersPort.class), port, structPort, bind);
+		LinkedHashMap<String, Object> payload = new LinkedHashMap<>();
+		payload.put("company_id", 1L);
+		payload.put("order_id", "9");
+		payload.put("order_class", "shopadmin");
+		bus.handleTradeUpdateEntities(payload);
+		verify(port, times(1)).callStoreTradeAdd(1L, struct);
+	}
+
+	@Test
+	void handleTradeUpdate_whenErpNotBound_skipsStoreTradeAdd() {
+		SaasErpStoreTradeAddPort port = mock(SaasErpStoreTradeAddPort.class);
+		SaasErpOrderStructPort structPort = mock(SaasErpOrderStructPort.class);
+		SaasCertErpBindReadService bind = mock(SaasCertErpBindReadService.class);
+		when(bind.isErpBound(1L)).thenReturn(false);
+		TradeUpdateSendSaasErpBusService bus =
+				new TradeUpdateSendSaasErpBusService(
+						mock(TradeUpdateGroupMemberOrdersPort.class), port, structPort, bind);
+		LinkedHashMap<String, Object> payload = new LinkedHashMap<>();
+		payload.put("company_id", 1L);
+		payload.put("order_id", "9");
+		payload.put("order_class", "normal");
+		bus.handleTradeUpdateEntities(payload);
+		verify(port, never()).callStoreTradeAdd(anyLong(), any());
+		verify(structPort, never()).getOrderStruct(anyLong(), anyString(), anyString());
 	}
 }

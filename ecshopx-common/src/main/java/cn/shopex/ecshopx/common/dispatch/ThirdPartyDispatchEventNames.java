@@ -25,6 +25,9 @@ public final class ThirdPartyDispatchEventNames {
 	public static final String EVENT_TRADE_AFTERSALES_CANCEL_SAAS_ERP =
 			"event:thirdparty:trade_aftersales_cancel_saas_erp";
 
+	public static final String EVENT_TRADE_AFTERSALES_UPDATE_SAAS_ERP =
+			"event:thirdparty:trade_aftersales_update_saas_erp";
+
 	public static final String EVENT_TRADE_REFUND_CANCEL_SAAS_ERP =
 			"event:thirdparty:trade_refund_cancel_saas_erp";
 

@@ -29,9 +29,13 @@ public class TradeRefundSendSaasErpBusService {
 	private static final Logger log = LoggerFactory.getLogger(TradeRefundSendSaasErpBusService.class);
 
 	private final SaasErpStoreTradeRefundAddPort saasErpStoreTradeRefundAddPort;
+	private final SaasErpCompanySaasBindingReadPort saasErpCompanySaasBindingReadPort;
 
-	public TradeRefundSendSaasErpBusService(SaasErpStoreTradeRefundAddPort saasErpStoreTradeRefundAddPort) {
+	public TradeRefundSendSaasErpBusService(
+			SaasErpStoreTradeRefundAddPort saasErpStoreTradeRefundAddPort,
+			SaasErpCompanySaasBindingReadPort saasErpCompanySaasBindingReadPort) {
 		this.saasErpStoreTradeRefundAddPort = saasErpStoreTradeRefundAddPort;
+		this.saasErpCompanySaasBindingReadPort = saasErpCompanySaasBindingReadPort;
 	}
 
 	public void handleTradeRefundEntities(Map<String, Object> entities) {
@@ -53,9 +57,16 @@ public class TradeRefundSendSaasErpBusService {
 			log.debug("TradeRefundSendSaasErp_skip reason=missing_refund_bn companyId={} orderId={}", companyId, orderId);
 			return;
 		}
+		if (!saasErpCompanySaasBindingReadPort.isSaasErpOutboundEnabled(companyId)) {
+			log.debug(
+					"TradeRefundSendSaasErp_skip reason=saas_erp_outbound_disabled companyId={} orderId={}",
+					companyId,
+					orderId);
+			return;
+		}
 		Map<String, Object> body = new LinkedHashMap<>(entities);
 		try {
-			saasErpStoreTradeRefundAddPort.callStoreTradeRefundAdd(body);
+			saasErpStoreTradeRefundAddPort.callStoreTradeRefundAdd(companyId, body);
 		} catch (RuntimeException e) {
 			log.debug(
 					"store.trade.refund.add failed companyId={} orderId={} msg={}",

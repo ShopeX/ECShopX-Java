@@ -21,5 +21,5 @@ import java.util.Map;
 @FunctionalInterface
 public interface SaasErpStoreTradeRefundAddPort {
 
-	void callStoreTradeRefundAdd(Map<String, Object> requestBody);
+	void callStoreTradeRefundAdd(long companyId, Map<String, Object> requestBody);
 }

@@ -26,15 +26,27 @@ public class DefaultSaasErpStoreTradeRefundAddPort implements SaasErpStoreTradeR
 
 	private static final Logger log = LoggerFactory.getLogger(DefaultSaasErpStoreTradeRefundAddPort.class);
 
+	private static final String METHOD = "store.trade.refund.add";
+
+	private final SaasErpMatrixOutboundClient matrixOutboundClient;
+
+	public DefaultSaasErpStoreTradeRefundAddPort(SaasErpMatrixOutboundClient matrixOutboundClient) {
+		this.matrixOutboundClient = matrixOutboundClient;
+	}
+
 	@Override
-	public void callStoreTradeRefundAdd(Map<String, Object> requestBody) {
-		if (requestBody == null || requestBody.isEmpty()) {
+	public void callStoreTradeRefundAdd(long companyId, Map<String, Object> requestBody) {
+		if (companyId <= 0 || requestBody == null || requestBody.isEmpty()) {
 			return;
 		}
 		try {
-			log.debug("store.trade.refund.add body={}", requestBody);
+			Map<String, Object> result = matrixOutboundClient.call(companyId, METHOD, requestBody);
+			log.debug(
+					"store.trade.refund.add companyId={} resultKeys={}",
+					companyId,
+					result == null ? 0 : result.keySet());
 		} catch (RuntimeException e) {
-			log.debug("store.trade.refund.add logging failed: {}", e.getMessage());
+			log.debug("store.trade.refund.add failed companyId={} msg={}", companyId, e.getMessage());
 		}
 	}
 }

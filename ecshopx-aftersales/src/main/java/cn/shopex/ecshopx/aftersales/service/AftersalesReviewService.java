@@ -26,7 +26,7 @@ import cn.shopex.ecshopx.aftersales.port.AftersalesRefundAsyncPort;
 import cn.shopex.ecshopx.aftersales.wdterp.WdtErpTradeAfterSaleBusPayloadBuilder;
 import cn.shopex.ecshopx.common.dispatch.JushuitanTradeAftersalesDispatchPublisher;
 import cn.shopex.ecshopx.common.dispatch.ThirdPartyTradeAftersalesCancelSaasErpDispatchPublisher;
-import cn.shopex.ecshopx.common.dispatch.ThirdPartyTradeAftersalesSaasErpDispatchPublisher;
+import cn.shopex.ecshopx.common.dispatch.ThirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher;
 import cn.shopex.ecshopx.common.dispatch.TradeAftersalesDispatchPublisher;
 import cn.shopex.ecshopx.common.dispatch.WdtErpTradeAfterSaleDispatchPublisher;
 import cn.shopex.ecshopx.common.auth.DualJwtSupport;
@@ -34,6 +34,7 @@ import cn.shopex.ecshopx.common.config.LangueProperties;
 import cn.shopex.ecshopx.common.exception.BadRequestException;
 import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.common.exception.UnauthorizedException;
+import cn.shopex.ecshopx.common.port.aftersales.AftersalesAgreedCouponRestorePort;
 import cn.shopex.ecshopx.common.port.aftersales.AftersalesBrokeragePort;
 import cn.shopex.ecshopx.common.port.distribution.DistributorAftersalesAddressDetailReadPort;
 import cn.shopex.ecshopx.common.port.order.NormalOrderLeftAftersalesWritePort;
@@ -93,9 +94,10 @@ public class AftersalesReviewService {
 	private final WdtErpTradeAfterSaleBusPayloadBuilder wdtErpTradeAfterSaleBusPayloadBuilder;
 	private final ThirdPartyTradeAftersalesCancelSaasErpDispatchPublisher
 			thirdPartyTradeAftersalesCancelSaasErpDispatchPublisher;
-	private final ThirdPartyTradeAftersalesSaasErpDispatchPublisher
-			thirdPartyTradeAftersalesSaasErpDispatchPublisher;
+	private final ThirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher
+			thirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher;
 	private final TradeAftersalesDispatchPublisher tradeAftersalesDispatchPublisher;
+	private final AftersalesAgreedCouponRestorePort aftersalesAgreedCouponRestorePort;
 	private final AftersalesRefuseWxaNotifyService aftersalesRefuseWxaNotifyService;
 
 	public AftersalesReviewService(
@@ -119,9 +121,10 @@ public class AftersalesReviewService {
 			WdtErpTradeAfterSaleBusPayloadBuilder wdtErpTradeAfterSaleBusPayloadBuilder,
 			ThirdPartyTradeAftersalesCancelSaasErpDispatchPublisher
 					thirdPartyTradeAftersalesCancelSaasErpDispatchPublisher,
-			ThirdPartyTradeAftersalesSaasErpDispatchPublisher
-					thirdPartyTradeAftersalesSaasErpDispatchPublisher,
+			ThirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher
+					thirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher,
 			TradeAftersalesDispatchPublisher tradeAftersalesDispatchPublisher,
+			AftersalesAgreedCouponRestorePort aftersalesAgreedCouponRestorePort,
 			AftersalesRefuseWxaNotifyService aftersalesRefuseWxaNotifyService) {
 		this.aftersalesMapper = aftersalesMapper;
 		this.aftersalesDetailMapper = aftersalesDetailMapper;
@@ -143,9 +146,10 @@ public class AftersalesReviewService {
 		this.wdtErpTradeAfterSaleBusPayloadBuilder = wdtErpTradeAfterSaleBusPayloadBuilder;
 		this.thirdPartyTradeAftersalesCancelSaasErpDispatchPublisher =
 				thirdPartyTradeAftersalesCancelSaasErpDispatchPublisher;
-		this.thirdPartyTradeAftersalesSaasErpDispatchPublisher =
-				thirdPartyTradeAftersalesSaasErpDispatchPublisher;
+		this.thirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher =
+				thirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher;
 		this.tradeAftersalesDispatchPublisher = tradeAftersalesDispatchPublisher;
+		this.aftersalesAgreedCouponRestorePort = aftersalesAgreedCouponRestorePort;
 		this.aftersalesRefuseWxaNotifyService = aftersalesRefuseWxaNotifyService;
 	}
 
@@ -334,6 +338,15 @@ public class AftersalesReviewService {
 			}
 			persistMainAndDetailsAndErp(companyId, aftersalesBn, a, approved, now, param, null);
 			registerOnlyRefundApprovePostCommit(companyId, orderId, aftersalesToSnakeMap(a));
+			try {
+				aftersalesAgreedCouponRestorePort.restoreOnRefundAgreed(companyId, orderId);
+			} catch (RuntimeException ex) {
+				log.debug(
+						"[aftersalesReview] coupon restore failed companyId={} orderId={}",
+						companyId,
+						orderId,
+						ex);
+			}
 			return;
 		}
 		a.setProgress(1);
@@ -426,7 +439,7 @@ public class AftersalesReviewService {
 		Map<String, Object> erpPayload = new LinkedHashMap<>(aftersalesToSnakeMap(a));
 		erpPayload.put("aftersales_action", approved ? "update" : "cancel");
 		if (approved) {
-			thirdPartyTradeAftersalesSaasErpDispatchPublisher.publish(erpPayload);
+			thirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher.publish(erpPayload);
 		} else {
 			thirdPartyTradeAftersalesCancelSaasErpDispatchPublisher.publish(erpPayload);
 		}

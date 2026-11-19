@@ -39,7 +39,7 @@ public class SaasCertErpBindReadService {
 		return StringUtils.hasText(nodeId);
 	}
 
-	static String erpBindRedisKey(long companyId) {
+	public static String erpBindRedisKey(long companyId) {
 		return "SaasErpBind:" + sha1Hex(String.valueOf(companyId));
 	}
 

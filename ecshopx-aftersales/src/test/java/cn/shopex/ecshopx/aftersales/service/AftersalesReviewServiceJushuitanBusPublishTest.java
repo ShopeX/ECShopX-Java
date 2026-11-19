@@ -23,9 +23,10 @@ import cn.shopex.ecshopx.common.auth.OperatorJwtRequestAttributes;
 import cn.shopex.ecshopx.common.config.LangueProperties;
 import cn.shopex.ecshopx.common.dispatch.JushuitanTradeAftersalesDispatchPublisher;
 import cn.shopex.ecshopx.common.dispatch.ThirdPartyTradeAftersalesCancelSaasErpDispatchPublisher;
-import cn.shopex.ecshopx.common.dispatch.ThirdPartyTradeAftersalesSaasErpDispatchPublisher;
+import cn.shopex.ecshopx.common.dispatch.ThirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher;
 import cn.shopex.ecshopx.common.dispatch.TradeAftersalesDispatchPublisher;
 import cn.shopex.ecshopx.common.dispatch.WdtErpTradeAfterSaleDispatchPublisher;
+import cn.shopex.ecshopx.common.port.aftersales.AftersalesAgreedCouponRestorePort;
 import cn.shopex.ecshopx.common.port.aftersales.AftersalesBrokeragePort;
 import cn.shopex.ecshopx.common.port.distribution.DistributorAftersalesAddressDetailReadPort;
 import cn.shopex.ecshopx.common.port.order.NormalOrderLeftAftersalesWritePort;
@@ -117,8 +118,8 @@ class AftersalesReviewServiceJushuitanBusPublishTest {
 		long aftersalesBn = 202601011234567L;
 		long orderId = 100L;
 
-		ThirdPartyTradeAftersalesSaasErpDispatchPublisher thirdPartyTradeAftersalesSaasErpDispatchPublisher =
-				mock(ThirdPartyTradeAftersalesSaasErpDispatchPublisher.class);
+		ThirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher thirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher =
+				mock(ThirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher.class);
 		TradeAftersalesDispatchPublisher tradeAftersalesDispatchPublisher =
 				mock(TradeAftersalesDispatchPublisher.class);
 
@@ -209,9 +210,10 @@ class AftersalesReviewServiceJushuitanBusPublishTest {
 						wdtErpTradeAfterSaleDispatchPublisher,
 						new WdtErpTradeAfterSaleBusPayloadBuilder(),
 						thirdPartyTradeAftersalesCancelSaasErpDispatchPublisher,
-						thirdPartyTradeAftersalesSaasErpDispatchPublisher,
+						thirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher,
 						tradeAftersalesDispatchPublisher,
-				mock(AftersalesRefuseWxaNotifyService.class));
+						mock(AftersalesAgreedCouponRestorePort.class),
+						mock(AftersalesRefuseWxaNotifyService.class));
 
 		Map<String, Object> param = new LinkedHashMap<>();
 		param.put("company_id", companyId);
@@ -268,7 +270,7 @@ class AftersalesReviewServiceJushuitanBusPublishTest {
 		verify(applicationEventPublisher, never()).publishEvent(any(SaasErpAftersalesSpringEvent.class));
 
 		ArgumentCaptor<Map<String, Object>> saasErpCap = ArgumentCaptor.forClass(Map.class);
-		verify(thirdPartyTradeAftersalesSaasErpDispatchPublisher, times(1)).publish(saasErpCap.capture());
+		verify(thirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher, times(1)).publish(saasErpCap.capture());
 		Map<String, Object> saasErpPayload = saasErpCap.getValue();
 		assertEquals("update", saasErpPayload.get("aftersales_action"));
 		assertEquals(companyId, ((Number) saasErpPayload.get("company_id")).longValue());
@@ -294,8 +296,8 @@ class AftersalesReviewServiceJushuitanBusPublishTest {
 		long aftersalesBn = 202601011234568L;
 		long orderId = 100L;
 
-		ThirdPartyTradeAftersalesSaasErpDispatchPublisher thirdPartyTradeAftersalesSaasErpDispatchPublisher =
-				mock(ThirdPartyTradeAftersalesSaasErpDispatchPublisher.class);
+		ThirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher thirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher =
+				mock(ThirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher.class);
 		TradeAftersalesDispatchPublisher tradeAftersalesDispatchPublisher =
 				mock(TradeAftersalesDispatchPublisher.class);
 
@@ -388,9 +390,10 @@ class AftersalesReviewServiceJushuitanBusPublishTest {
 						wdtErpTradeAfterSaleDispatchPublisher,
 						new WdtErpTradeAfterSaleBusPayloadBuilder(),
 						thirdPartyTradeAftersalesCancelSaasErpDispatchPublisher,
-						thirdPartyTradeAftersalesSaasErpDispatchPublisher,
+						thirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher,
 						tradeAftersalesDispatchPublisher,
-				mock(AftersalesRefuseWxaNotifyService.class));
+						mock(AftersalesAgreedCouponRestorePort.class),
+						mock(AftersalesRefuseWxaNotifyService.class));
 
 		Map<String, Object> param = new LinkedHashMap<>();
 		param.put("company_id", companyId);
@@ -435,7 +438,7 @@ class AftersalesReviewServiceJushuitanBusPublishTest {
 		verify(applicationEventPublisher, never()).publishEvent(any(SaasErpAftersalesSpringEvent.class));
 
 		ArgumentCaptor<Map<String, Object>> saasErpCap = ArgumentCaptor.forClass(Map.class);
-		verify(thirdPartyTradeAftersalesSaasErpDispatchPublisher, times(1)).publish(saasErpCap.capture());
+		verify(thirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher, times(1)).publish(saasErpCap.capture());
 		Map<String, Object> saasErpPayload = saasErpCap.getValue();
 		assertEquals("update", saasErpPayload.get("aftersales_action"));
 		assertEquals(companyId, ((Number) saasErpPayload.get("company_id")).longValue());
@@ -488,8 +491,8 @@ class AftersalesReviewServiceJushuitanBusPublishTest {
 		long aftersalesBn = 202601011234569L;
 		long orderId = 100L;
 
-		ThirdPartyTradeAftersalesSaasErpDispatchPublisher thirdPartyTradeAftersalesSaasErpDispatchPublisher =
-				mock(ThirdPartyTradeAftersalesSaasErpDispatchPublisher.class);
+		ThirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher thirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher =
+				mock(ThirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher.class);
 
 		AftersalesMapper aftersalesMapper = mock(AftersalesMapper.class);
 		AtomicInteger selectPass = new AtomicInteger();
@@ -579,9 +582,10 @@ class AftersalesReviewServiceJushuitanBusPublishTest {
 						wdtErpTradeAfterSaleDispatchPublisher,
 						wdtErpTradeAfterSaleBusPayloadBuilder,
 						thirdPartyTradeAftersalesCancelSaasErpDispatchPublisher,
-						thirdPartyTradeAftersalesSaasErpDispatchPublisher,
+						thirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher,
 						tradeAftersalesDispatchPublisher,
-				mock(AftersalesRefuseWxaNotifyService.class));
+						mock(AftersalesAgreedCouponRestorePort.class),
+						mock(AftersalesRefuseWxaNotifyService.class));
 
 		Map<String, Object> param = new LinkedHashMap<>();
 		param.put("company_id", companyId);
@@ -642,7 +646,7 @@ class AftersalesReviewServiceJushuitanBusPublishTest {
 		verify(applicationEventPublisher, never()).publishEvent(any(SaasErpAftersalesSpringEvent.class));
 		verify(aftersalesRefundAsyncPort, never()).scheduleOrderRefundComplete(anyLong(), anyLong());
 
-		verify(thirdPartyTradeAftersalesSaasErpDispatchPublisher, never()).publish(any());
+		verify(thirdPartyTradeAftersalesUpdateSaasErpDispatchPublisher, never()).publish(any());
 
 		ArgumentCaptor<Map<String, Object>> cancelCap = ArgumentCaptor.forClass(Map.class);
 		verify(thirdPartyTradeAftersalesCancelSaasErpDispatchPublisher, times(1)).publish(cancelCap.capture());

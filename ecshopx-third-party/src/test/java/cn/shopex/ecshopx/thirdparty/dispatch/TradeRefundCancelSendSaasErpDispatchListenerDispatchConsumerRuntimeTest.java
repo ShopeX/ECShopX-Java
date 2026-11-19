@@ -143,7 +143,7 @@ class TradeRefundCancelSendSaasErpDispatchListenerDispatchConsumerRuntimeTest {
 
 		runtime.consume(msg, 1);
 
-		verify(port, never()).callStoreTradeRefundCancel(any());
+		verify(port, never()).callStoreTradeRefundCancel(anyLong(), any());
 	}
 
 	@Test
@@ -187,7 +187,7 @@ class TradeRefundCancelSendSaasErpDispatchListenerDispatchConsumerRuntimeTest {
 
 		runtime.consume(msg, 1);
 
-		verify(port, never()).callStoreTradeRefundCancel(any());
+		verify(port, never()).callStoreTradeRefundCancel(anyLong(), any());
 		verify(binding, never()).isSaasErpOutboundEnabled(anyLong());
 	}
 }
