@@ -20,8 +20,11 @@ import cn.shopex.ecshopx.distribution.domain.Distributor;
 import cn.shopex.ecshopx.distribution.service.DistributorListQueryService;
 import cn.shopex.ecshopx.espier.service.ExportCsvFileService;
 import cn.shopex.ecshopx.espier.service.ExportLogCreateService;
+import cn.shopex.ecshopx.goods.domain.ItemsCategory;
+import cn.shopex.ecshopx.goods.repository.ItemsCategoryRepository;
 import cn.shopex.ecshopx.goods.service.distributor.dto.DistributorItemsExportContext;
 import cn.shopex.ecshopx.kaquan.domain.MemberCardGrade;
+import cn.shopex.ecshopx.supplier.repository.SupplierOperatorQueryRepository;
 import cn.shopex.ecshopx.kaquan.domain.VipGrade;
 import cn.shopex.ecshopx.kaquan.mapper.MemberCardGradeMapper;
 import cn.shopex.ecshopx.kaquan.mapper.VipGradeMapper;
@@ -37,9 +40,12 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -60,6 +66,8 @@ public class DistributorItemsCsvExportService {
 	private final MemberCardGradeMapper memberCardGradeMapper;
 	private final VipGradeMapper vipGradeMapper;
 	private final ObjectMapper objectMapper;
+	private final SupplierOperatorQueryRepository supplierOperatorQueryRepository;
+	private final ItemsCategoryRepository itemsCategoryRepository;
 
 	public DistributorItemsCsvExportService(
 			DistributorItemsRelListCoreService relListCore,
@@ -69,7 +77,9 @@ public class DistributorItemsCsvExportService {
 			DistributorListQueryService distributorListQueryService,
 			MemberCardGradeMapper memberCardGradeMapper,
 			VipGradeMapper vipGradeMapper,
-			ObjectMapper objectMapper) {
+			ObjectMapper objectMapper,
+			SupplierOperatorQueryRepository supplierOperatorQueryRepository,
+			ItemsCategoryRepository itemsCategoryRepository) {
 		this.relListCore = relListCore;
 		this.memberPriceExportQueryRepository = memberPriceExportQueryRepository;
 		this.exportCsvFileService = exportCsvFileService;
@@ -78,6 +88,8 @@ public class DistributorItemsCsvExportService {
 		this.memberCardGradeMapper = memberCardGradeMapper;
 		this.vipGradeMapper = vipGradeMapper;
 		this.objectMapper = objectMapper;
+		this.supplierOperatorQueryRepository = supplierOperatorQueryRepository;
+		this.itemsCategoryRepository = itemsCategoryRepository;
 	}
 
 	public void runExport(DistributorItemsExportContext ctx) {
@@ -104,6 +116,7 @@ public class DistributorItemsCsvExportService {
 				any = true;
 				List<Long> pageItemIds = list.stream().map(r -> longVal(r.get("item_id"))).filter(id -> id > 0).distinct()
 						.toList();
+				enrichSupplierAndCategoryFields(companyId, list);
 				Map<Long, String> mpriceJsonByItem = memberPriceExportQueryRepository.mapMpriceJsonByItemId(companyId,
 						pageItemIds);
 				for (Map<String, Object> row : list) {
@@ -188,7 +201,67 @@ public class DistributorItemsCsvExportService {
 				titles.put("vip_grade_price" + v.getVipGradeId(), nm);
 			}
 		}
+		titles.put("supplier_name", "所属供应商");
+		titles.put("item_main_category", "管理分类");
+		titles.put("item_category", "销售分类");
 		return titles;
+	}
+
+	/** 与店铺商品列表 {@link DistributorItemsListOrchestratorImpl} 的供应商/类目展示一致。 */
+	private void enrichSupplierAndCategoryFields(long companyId, List<Map<String, Object>> rows) {
+		if (rows == null || rows.isEmpty()) {
+			return;
+		}
+		Set<Long> supOpIds = new LinkedHashSet<>();
+		Set<Long> allCategoryIds = new LinkedHashSet<>();
+		for (Map<String, Object> r : rows) {
+			long sid = longVal(r.get("supplier_id"));
+			if (sid > 0) {
+				supOpIds.add(sid);
+			}
+			long mainCat = parseCatId(r.get("item_main_cat_id"));
+			if (mainCat > 0) {
+				allCategoryIds.add(mainCat);
+			}
+			@SuppressWarnings("unchecked")
+			List<Object> catObjs = (List<Object>) r.get("item_cat_id");
+			if (catObjs != null) {
+				for (Object c : catObjs) {
+					long cid = longVal(c);
+					if (cid > 0) {
+						allCategoryIds.add(cid);
+					}
+				}
+			}
+		}
+		Map<Long, String> supNames = supplierOperatorQueryRepository.mapSupplierNameByOperatorIds(companyId, supOpIds);
+		Map<Long, String> idToName = new HashMap<>();
+		if (!allCategoryIds.isEmpty()) {
+			for (ItemsCategory c : itemsCategoryRepository.listByCompanyAndCategoryIdIn(companyId, allCategoryIds)) {
+				if (c.getCategoryId() != null && StringUtils.hasText(c.getCategoryName())) {
+					idToName.put(c.getCategoryId(), c.getCategoryName());
+				}
+			}
+		}
+		for (Map<String, Object> r : rows) {
+			long sid = longVal(r.get("supplier_id"));
+			r.put("supplier_name", supNames.getOrDefault(sid, ""));
+			long mainCat = parseCatId(r.get("item_main_cat_id"));
+			r.put("itemMainCatName", mainCat > 0 ? idToName.getOrDefault(mainCat, "") : "");
+			@SuppressWarnings("unchecked")
+			List<Object> catObjs = (List<Object>) r.get("item_cat_id");
+			List<String> itemCatName = new ArrayList<>();
+			if (catObjs != null) {
+				for (Object c : catObjs) {
+					long cid = longVal(c);
+					String nm = idToName.get(cid);
+					if (nm != null) {
+						itemCatName.add("[" + nm + "]");
+					}
+				}
+			}
+			r.put("itemCatName", itemCatName);
+		}
 	}
 
 	private Map<String, String> buildCsvRow(Map<String, Object> r, LinkedHashMap<String, String> titles,
@@ -226,7 +299,41 @@ public class DistributorItemsCsvExportService {
 			String k = "vip_grade_price" + v.getVipGradeId();
 			row.put(k, tierPriceYuanFromJson(mpriceRoot, "vipGrade", v.getVipGradeId()));
 		}
+		row.put("supplier_name", str(r.get("supplier_name")));
+		row.put("item_main_category", str(r.get("itemMainCatName")));
+		row.put("item_category", formatSaleCategoryNames(r.get("itemCatName")));
 		return row;
+	}
+
+	private static String formatSaleCategoryNames(Object raw) {
+		if (!(raw instanceof List<?> list) || list.isEmpty()) {
+			return "";
+		}
+		StringBuilder sb = new StringBuilder();
+		for (Object o : list) {
+			if (o != null) {
+				sb.append(o);
+			}
+		}
+		return sb.toString();
+	}
+
+	private static long parseCatId(Object raw) {
+		if (raw == null) {
+			return 0L;
+		}
+		if (raw instanceof Number n) {
+			return n.longValue();
+		}
+		String s = raw.toString().trim();
+		if (s.isEmpty()) {
+			return 0L;
+		}
+		try {
+			return Long.parseLong(s);
+		} catch (NumberFormatException e) {
+			return 0L;
+		}
 	}
 
 	private JsonNode parseMpriceRoot(String raw) {
