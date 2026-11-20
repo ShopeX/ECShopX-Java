@@ -114,7 +114,21 @@ public class SaasCertBindShopNodeService {
 					.eq(ShopBind::getNodeType, nodeType)
 					.eq(ShopBind::getStatus, BIND)
 					.last("LIMIT 1");
-			if (shopBindMapper.selectOne(occupiedQ) != null) {
+			ShopBind occupied = shopBindMapper.selectOne(occupiedQ);
+			if (occupied != null) {
+				// PHP 同文案短路，但补写 Redis，避免「库有绑、Redis 丢」后永远无法出站
+				String existingNodeId =
+						StringUtils.hasText(occupied.getNodeId()) ? occupied.getNodeId().trim() : nodeId;
+				if (StringUtils.hasText(existingNodeId)) {
+					companysRedisTemplate
+							.opsForValue()
+							.set(SaasCertErpBindReadService.erpBindRedisKey(companyId), existingNodeId);
+					log.info(
+							"saascert bindShopNode backfill SaasErpBind on duplicate companyId={} nodeId={} nodeType={}",
+							companyId,
+							existingNodeId,
+							nodeType);
+				}
 				log.debug("saascert bindShopNode node_type {} is exists", nodeType);
 				return "node_type is exists";
 			}

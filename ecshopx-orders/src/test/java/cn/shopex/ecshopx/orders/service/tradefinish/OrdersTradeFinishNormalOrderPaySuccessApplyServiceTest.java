@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 @ExtendWith(MockitoExtension.class)
 class OrdersTradeFinishNormalOrderPaySuccessApplyServiceTest {
@@ -129,5 +130,55 @@ class OrdersTradeFinishNormalOrderPaySuccessApplyServiceTest {
 		assertTrue(service.markPayedIfNeeded(payload).isEmpty());
 		verify(normalOrdersMapper, never()).update(any(), any());
 		verify(tradeUpdatePublisher, never()).publish(any());
+	}
+
+	/**
+	 * Mimics TradeFinish SYNC running inside an outer payment TX {@code afterCommit}: synchronizations
+	 * are still active but no actual transaction remains. TradeUpdate must publish immediately.
+	 */
+	@Test
+	void markPayedIfNeeded_syncActiveWithoutActualTx_publishesTradeUpdateImmediately() {
+		NormalOrders existing = new NormalOrders();
+		existing.setOrderStatus("NOTPAY");
+		existing.setPayStatus("NOTPAY");
+		existing.setOrderClass("normal");
+		existing.setUserId(278L);
+		when(normalOrdersMapper.selectOne(any())).thenReturn(existing);
+		when(normalOrdersMapper.update(any(), any())).thenReturn(1);
+		when(orderAssociationsMapper.update(any(), any())).thenReturn(1);
+		SupplierOrderMapper supplierOrderMapper = mock(SupplierOrderMapper.class);
+		when(supplierOrderMapper.update(any(), any())).thenReturn(1);
+		ThirdPartyTradeUpdateDispatchPublisher tradeUpdatePublisher =
+				mock(ThirdPartyTradeUpdateDispatchPublisher.class);
+		OrdersTradeFinishNormalOrderPaySuccessApplyService service =
+				new OrdersTradeFinishNormalOrderPaySuccessApplyService(
+						normalOrdersMapper,
+						normalOrdersItemsMapper,
+						orderAssociationsMapper,
+						supplierOrderMapper,
+						orderValiditySettingRedisReadService,
+						tradeUpdatePublisher);
+
+		Map<String, Object> payload = new LinkedHashMap<>();
+		payload.put("trade_state", "SUCCESS");
+		payload.put("company_id", 38L);
+		payload.put("order_id", 5437476000090278L);
+		payload.put("trade_source_type", "normal_normal");
+
+		TransactionSynchronizationManager.initSynchronization();
+		try {
+			assertTrue(TransactionSynchronizationManager.isSynchronizationActive());
+			assertTrue(service.markPayedIfNeeded(payload).isPresent());
+			verify(tradeUpdatePublisher)
+					.publish(
+							argThat(
+									m ->
+											m != null
+													&& Long.valueOf(38L).equals(m.get("company_id"))
+													&& Long.valueOf(5437476000090278L).equals(m.get("order_id"))
+													&& "normal".equals(m.get("order_class"))));
+		} finally {
+			TransactionSynchronizationManager.clearSynchronization();
+		}
 	}
 }

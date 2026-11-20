@@ -158,6 +158,11 @@ public class OrdersTradeFinishNormalOrderPaySuccessApplyService {
 	/**
 	 * PHP {@code AbstractNormalOrder::orderStatusUpdate} fires {@code TradeUpdateEvent} whenever the new status is
 	 * not {@code PART_PAYMENT}. This path only leaves {@code NOTPAY}, so the SaasErp add is always scheduled.
+	 *
+	 * <p>Must use {@link TransactionSynchronizationManager#isActualTransactionActive()} (not merely
+	 * {@code isSynchronizationActive()}): TradeFinish is SYNC and often runs inside an outer payment TX's
+	 * {@code afterCommit}, where synchronizations are still "active" but the TX is already committed.
+	 * Registering another afterCommit there never fires — publish immediately in that case.
 	 */
 	private void scheduleSaasErpTradeUpdateAfterCommit(long companyId, long orderId, NormalOrders order) {
 		Map<String, Object> erp = new LinkedHashMap<>();
@@ -169,7 +174,8 @@ public class OrdersTradeFinishNormalOrderPaySuccessApplyService {
 		String orderClass = trim(order.getOrderClass());
 		erp.put("order_class", orderClass.isEmpty() ? "normal" : orderClass);
 		Runnable publish = () -> thirdPartyTradeUpdateDispatchPublisher.publish(erp);
-		if (TransactionSynchronizationManager.isSynchronizationActive()) {
+		// Only defer when a real TX is still open; afterCommit-phase sync-without-TX must publish now.
+		if (TransactionSynchronizationManager.isActualTransactionActive()) {
 			TransactionSynchronizationManager.registerSynchronization(
 					new TransactionSynchronization() {
 						@Override

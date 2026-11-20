@@ -92,6 +92,7 @@ class SaasCertBindShopNodeServiceTest {
 		when(prismOps.get(any())).thenReturn("{\"cert_id\":\"c1\",\"node_id\":\"n1\",\"token\":\"tok\"}");
 		ShopBind existing = new ShopBind();
 		existing.setId(9L);
+		existing.setNodeId("erp-node-existing");
 		when(shopBindMapper.selectOne(any())).thenReturn(existing);
 
 		Map<String, String> params = new LinkedHashMap<>();
@@ -103,6 +104,8 @@ class SaasCertBindShopNodeServiceTest {
 
 		assertEquals("node_type is exists", service.bindShopNode(1L, params));
 		verify(shopBindMapper, never()).insert(any(ShopBind.class));
+		verify(companysOps)
+				.set(SaasCertErpBindReadService.erpBindRedisKey(1L), "erp-node-existing");
 	}
 
 	private static String sign(Map<String, String> params, String token) {

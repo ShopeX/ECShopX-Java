@@ -36,31 +36,31 @@ import org.springframework.util.StringUtils;
 @Service
 public class SaasErpMatrixCertCredentialsReadService {
 
-	private final StringRedisTemplate companysRedisTemplate;
 	private final StringRedisTemplate prismRedisTemplate;
 	private final ObjectMapper objectMapper;
 	private final CompanyPassportUidByCompanyIdPort companyPassportUidByCompanyIdPort;
+	private final SaasCertErpBindReadService saasCertErpBindReadService;
 
 	public SaasErpMatrixCertCredentialsReadService(
-			@Qualifier("companysRedisTemplate") StringRedisTemplate companysRedisTemplate,
 			@Qualifier("prismRedisTemplate") StringRedisTemplate prismRedisTemplate,
 			ObjectMapper objectMapper,
-			CompanyPassportUidByCompanyIdPort companyPassportUidByCompanyIdPort) {
-		this.companysRedisTemplate = companysRedisTemplate;
+			CompanyPassportUidByCompanyIdPort companyPassportUidByCompanyIdPort,
+			SaasCertErpBindReadService saasCertErpBindReadService) {
 		this.prismRedisTemplate = prismRedisTemplate;
 		this.objectMapper = objectMapper;
 		this.companyPassportUidByCompanyIdPort = companyPassportUidByCompanyIdPort;
+		this.saasCertErpBindReadService = saasCertErpBindReadService;
 	}
 
 	public Optional<SaasErpMatrixCertCredentials> findCredentials(long companyId) {
 		if (companyId <= 0) {
 			return Optional.empty();
 		}
-		String erpBindNodeId =
-				companysRedisTemplate.opsForValue().get(SaasCertErpBindReadService.erpBindRedisKey(companyId));
-		if (!StringUtils.hasText(erpBindNodeId)) {
+		Optional<String> erpBind = saasCertErpBindReadService.resolveErpBindNodeId(companyId);
+		if (erpBind.isEmpty()) {
 			return Optional.empty();
 		}
+		String erpBindNodeId = erpBind.get();
 		String shopexUid =
 				companyPassportUidByCompanyIdPort.findPassportUid(companyId).orElse("").trim();
 		String raw = prismRedisTemplate.opsForValue().get(certRedisKey(shopexUid, companyId));
