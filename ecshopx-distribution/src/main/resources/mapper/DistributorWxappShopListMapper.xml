@@ -20,7 +20,26 @@
 		<if test="(f.isValidIn == null or f.isValidIn.size() == 0) and (f.isValid == null or f.isValid == '')">
 			AND d.is_valid = 'true'
 		</if>
-		<if test="f.openDivided != null">
+		<if test="f.openDividedPublicOrWhitelist">
+			AND (
+				d.open_divided = 0
+				OR (
+					d.open_divided = 1
+					AND (
+						<choose>
+							<when test="f.openDividedWhitelistDistributorIds != null and f.openDividedWhitelistDistributorIds.size() &gt; 0">
+								d.distributor_id IN
+								<foreach collection="f.openDividedWhitelistDistributorIds" item="wid" open="(" separator="," close=")">#{wid}</foreach>
+							</when>
+							<otherwise>
+								1 = 0
+							</otherwise>
+						</choose>
+					)
+				)
+			)
+		</if>
+		<if test="!f.openDividedPublicOrWhitelist and f.openDivided != null">
 			AND d.open_divided = #{f.openDivided}
 		</if>
 		<if test="f.provinceLikeEscaped != null and f.provinceLikeEscaped != ''">

@@ -17,7 +17,9 @@
 package cn.shopex.ecshopx.distribution.service.distributorvalid;
 
 import cn.shopex.ecshopx.distribution.mapper.DistributorMapper;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import org.springframework.stereotype.Service;
 
@@ -34,28 +36,26 @@ public class DistributorIsValidNearShopService {
 		this.distributorMapper = distributorMapper;
 	}
 
+	/**
+	 * Finds the nearest shop. When {@code whitelistDistributorIds} is non-null, applies public-or-whitelist
+	 * mix filtering; when null, keeps the caller's filter (e.g. show_type=self / nostores).
+	 */
 	public Map<String, Object> getNearShopData(
-			Map<String, Object> filter, double lat, double lng, int isShopDivided) {
+			Map<String, Object> filter, double lat, double lng, List<Long> whitelistDistributorIds) {
 		Map<String, Object> q = new LinkedHashMap<>(filter);
+		if (whitelistDistributorIds != null) {
+			q.remove("open_divided");
+			q.put("open_divided_public_or_whitelist", Boolean.TRUE);
+			q.put("open_divided_whitelist_ids", new ArrayList<>(whitelistDistributorIds));
+		}
 		Map<String, Object> nearRow = distributorMapper.selectNearestDistributorHaversineFirst(q, lat, lng);
 		if (nearRow != null && !nearRow.isEmpty()) {
 			DistributorIsValidRowKeyBridge.ensureSnakeCaseCoreKeys(nearRow);
 			distributorIsValidCoreQueryService.applyFormatStoreInfo(nearRow);
 			return nearRow;
 		}
-		if (isShopDivided != 0) {
-			Map<String, Object> q2 = new LinkedHashMap<>(filter);
-			q2.remove("open_divided");
-			Map<String, Object> second = distributorMapper.selectNearestDistributorHaversineFirst(q2, lat, lng);
-			if (second != null && !second.isEmpty()) {
-				DistributorIsValidRowKeyBridge.ensureSnakeCaseCoreKeys(second);
-				distributorIsValidCoreQueryService.applyFormatStoreInfo(second);
-				second.put("white_hidden", 1);
-				return second;
-			}
-		}
-		Map<String, Object> def = loadDefaultDistributorRowForNearFallback(
-				((Number) filter.get("company_id")).longValue());
+		Map<String, Object> def =
+				loadDefaultDistributorRowForNearFallback(((Number) filter.get("company_id")).longValue());
 		if (def == null) {
 			def = new LinkedHashMap<>();
 		}

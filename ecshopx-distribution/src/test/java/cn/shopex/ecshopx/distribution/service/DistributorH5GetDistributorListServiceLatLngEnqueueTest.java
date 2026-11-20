@@ -14,7 +14,6 @@ import cn.shopex.ecshopx.distribution.mapper.DistributorMapper;
 import cn.shopex.ecshopx.distribution.mapper.DistributorWhiteListMapper;
 import cn.shopex.ecshopx.distribution.repository.DistributorWxappShopListFilter;
 import cn.shopex.ecshopx.distribution.repository.DistributorWxappShopListRepository;
-import cn.shopex.ecshopx.distribution.service.distributorvalid.DistributorIsValidSettingService;
 import cn.shopex.ecshopx.distribution.service.wxappdistributorlist.DistributorWxappShopListAppendBlocksService;
 import cn.shopex.ecshopx.distribution.service.wxappdistributorlist.DistributorWxappShopListFilterBuildService;
 import cn.shopex.ecshopx.distribution.service.wxappdistributorlist.DistributorWxappShopListRowAssemblyService;
@@ -61,9 +60,6 @@ class DistributorH5GetDistributorListServiceLatLngEnqueueTest {
 	private MerchantDisabledDistributorIdsQueryService merchantDisabledDistributorIdsQueryService;
 
 	@Mock
-	private DistributorIsValidSettingService distributorIsValidSettingService;
-
-	@Mock
 	private DistributorWhiteListMapper distributorWhiteListMapper;
 
 	@Mock
@@ -94,6 +90,21 @@ class DistributorH5GetDistributorListServiceLatLngEnqueueTest {
 		lenient()
 				.when(distributorWxappShopListFilterBuildService.build(anyLong(), anyLong(), any(), any()))
 				.thenReturn(new DistributorWxappShopListFilterBuildResult(new DistributorWxappShopListFilter(), 0, true));
+		lenient().when(distributorWhiteListMapper.selectList(any())).thenReturn(List.of());
+		lenient()
+				.when(merchantDisabledDistributorIdsQueryService.listDistributorIdsLinkedToDisabledMerchants(anyLong()))
+				.thenReturn(List.of());
+		lenient().when(distributorMapper.selectList(any())).thenReturn(List.of());
+		lenient()
+				.when(distributorWxappShopListSalesNetRankingService.buildNetSalesMapForCompany(anyLong(), anyLong()))
+				.thenReturn(Map.of());
+		lenient().when(distributorWxappShopListRepository.countByFilter(any())).thenReturn(0L);
+		lenient().when(distributorWxappShopListRepository.selectPageByFilter(any())).thenReturn(List.of());
+		lenient()
+				.when(
+						distributorWxappShopListRowAssemblyService.toResponseRows(
+								anyLong(), org.mockito.ArgumentMatchers.anyBoolean(), any(), any(), any()))
+				.thenReturn(List.of());
 		service =
 				new DistributorH5GetDistributorListService(
 						distributorWxappShopListTagMetadataReadService,
@@ -102,7 +113,6 @@ class DistributorH5GetDistributorListServiceLatLngEnqueueTest {
 						distributorWxappShopListFilterBuildService,
 						distributorWxappShopListSalesNetRankingService,
 						merchantDisabledDistributorIdsQueryService,
-						distributorIsValidSettingService,
 						distributorWhiteListMapper,
 						memberAccountService,
 						distributorWxappShopListRepository,

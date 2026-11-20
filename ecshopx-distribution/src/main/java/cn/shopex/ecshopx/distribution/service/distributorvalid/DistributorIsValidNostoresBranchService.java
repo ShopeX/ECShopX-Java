@@ -77,7 +77,7 @@ public class DistributorIsValidNostoresBranchService {
 		}
 		filter.put("distributor_id", ids);
 		Map<String, Object> near =
-				distributorIsValidNearShopService.getNearShopData(filter, latNum, lngNum, 0);
+				distributorIsValidNearShopService.getNearShopData(filter, latNum, lngNum, null);
 		Object isDada = near.get("is_dada");
 		if (isDada != null && "1".equals(String.valueOf(isDada).trim())) {
 			near.put("is_dada", Boolean.TRUE);

@@ -12,7 +12,30 @@
 			</foreach>
 		</if>
 		<if test="q.is_valid != null">AND is_valid = #{q.is_valid}</if>
-		<if test="q.open_divided != null">AND open_divided = #{q.open_divided}</if>
+		<if test="q.open_divided_public_or_whitelist != null and q.open_divided_public_or_whitelist == true">
+			AND (
+				open_divided = 0
+				OR (
+					open_divided = 1
+					AND (
+						<choose>
+							<when test="q.open_divided_whitelist_ids != null and q.open_divided_whitelist_ids.size() &gt; 0">
+								distributor_id IN
+								<foreach collection="q.open_divided_whitelist_ids" item="wid" open="(" separator="," close=")">
+									#{wid}
+								</foreach>
+							</when>
+							<otherwise>
+								1 = 0
+							</otherwise>
+						</choose>
+					)
+				)
+			)
+		</if>
+		<if test="(q.open_divided_public_or_whitelist == null or q.open_divided_public_or_whitelist != true) and q.open_divided != null">
+			AND open_divided = #{q.open_divided}
+		</if>
 		<if test="q.distributor_self != null">AND distributor_self = #{q.distributor_self}</if>
 		<if test="q.is_default != null">AND is_default = #{q.is_default}</if>
 		<if test="q.is_ziti != null and q.is_ziti == true">

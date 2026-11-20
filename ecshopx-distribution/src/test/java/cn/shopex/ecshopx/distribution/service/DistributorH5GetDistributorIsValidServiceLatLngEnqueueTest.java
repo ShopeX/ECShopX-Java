@@ -17,7 +17,6 @@ import cn.shopex.ecshopx.distribution.service.distributorvalid.DistributorIsVali
 import cn.shopex.ecshopx.distribution.service.distributorvalid.DistributorIsValidCoreQueryService;
 import cn.shopex.ecshopx.distribution.service.distributorvalid.DistributorIsValidNearShopService;
 import cn.shopex.ecshopx.distribution.service.distributorvalid.DistributorIsValidNostoresBranchService;
-import cn.shopex.ecshopx.distribution.service.distributorvalid.DistributorIsValidSettingService;
 import cn.shopex.ecshopx.distribution.service.distributorvalid.DistributorIsValidWhiteListBranchService;
 import cn.shopex.ecshopx.distribution.service.distributorvalid.dto.DistributorIsValidQuery;
 import cn.shopex.ecshopx.members.service.address.MemberAddressDefaultReadService;
@@ -37,9 +36,6 @@ class DistributorH5GetDistributorIsValidServiceLatLngEnqueueTest {
 	private static final long USER_ID = 42L;
 	private static final long FILTER_COMPANY_ID = 10L;
 	private static final long AUTH_COMPANY_ID = 20L;
-
-	@Mock
-	private DistributorIsValidSettingService distributorIsValidSettingService;
 
 	@Mock
 	private DistributorIsValidWhiteListBranchService distributorIsValidWhiteListBranchService;
@@ -68,13 +64,13 @@ class DistributorH5GetDistributorIsValidServiceLatLngEnqueueTest {
 	@Mock
 	private DistributionStoreEntryRuleRedisService distributionStoreEntryRuleRedisService;
 
+	@Mock
+	private DistributorWhiteListCheckUserValidService distributorWhiteListCheckUserValidService;
+
 	private DistributorH5GetDistributorIsValidService service;
 
 	@BeforeEach
 	void setUp() {
-		lenient()
-				.when(distributorIsValidSettingService.getOpenDividedSetting(anyLong()))
-				.thenReturn(new LinkedHashMap<>());
 		Map<String, Object> selfRow = new LinkedHashMap<>();
 		selfRow.put("is_valid", "true");
 		selfRow.put("is_delivery", Boolean.TRUE);
@@ -90,9 +86,11 @@ class DistributorH5GetDistributorIsValidServiceLatLngEnqueueTest {
 		lenient()
 				.when(distributionStoreEntryRuleRedisService.getInRule(anyLong()))
 				.thenReturn(defaultInRule);
+		lenient()
+				.when(distributorWhiteListCheckUserValidService.listWhitelistedDistributorIds(anyLong(), anyLong()))
+				.thenReturn(java.util.List.of());
 		service =
 				new DistributorH5GetDistributorIsValidService(
-						distributorIsValidSettingService,
 						distributorIsValidWhiteListBranchService,
 						memberAddressDefaultReadService,
 						memberAddressLatLngNonNumericEnqueueService,
@@ -101,7 +99,8 @@ class DistributorH5GetDistributorIsValidServiceLatLngEnqueueTest {
 						distributorIsValidNostoresBranchService,
 						distributorIsValidNearShopService,
 						distributorIsValidAppendFieldsService,
-						distributionStoreEntryRuleRedisService);
+						distributionStoreEntryRuleRedisService,
+						distributorWhiteListCheckUserValidService);
 	}
 
 	private static DistributorIsValidQuery baselineQuery() {

@@ -20,11 +20,14 @@ import cn.shopex.ecshopx.distribution.domain.Distributor;
 import cn.shopex.ecshopx.distribution.domain.DistributorWhiteList;
 import cn.shopex.ecshopx.distribution.mapper.DistributorMapper;
 import cn.shopex.ecshopx.distribution.mapper.DistributorWhiteListMapper;
-import cn.shopex.ecshopx.distribution.service.distributorvalid.DistributorIsValidSettingService;
 import cn.shopex.ecshopx.members.service.account.MemberAccountService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 @Service
 public class DistributorWhiteListCheckUserValidService {
@@ -32,25 +35,18 @@ public class DistributorWhiteListCheckUserValidService {
 	private final DistributorMapper distributorMapper;
 	private final DistributorWhiteListMapper distributorWhiteListMapper;
 	private final MemberAccountService memberAccountService;
-	private final DistributorIsValidSettingService distributorIsValidSettingService;
 
 	public DistributorWhiteListCheckUserValidService(
 			DistributorMapper distributorMapper,
 			DistributorWhiteListMapper distributorWhiteListMapper,
-			MemberAccountService memberAccountService,
-			DistributorIsValidSettingService distributorIsValidSettingService) {
+			MemberAccountService memberAccountService) {
 		this.distributorMapper = distributorMapper;
 		this.distributorWhiteListMapper = distributorWhiteListMapper;
 		this.memberAccountService = memberAccountService;
-		this.distributorIsValidSettingService = distributorIsValidSettingService;
 	}
 
 	public boolean checkUserValidCommon(long distributorId, long userId, long companyId) {
-		Map<String, Object> set = distributorIsValidSettingService.getOpenDividedSetting(companyId);
-		if (Boolean.TRUE.equals(set.get("status"))) {
-			return checkUserValidInDistributor(distributorId, userId, companyId);
-		}
-		return true;
+		return checkUserValidInDistributor(distributorId, userId, companyId);
 	}
 
 	public boolean checkUserValidInDistributor(long distributorId, long userId, long companyId) {
@@ -74,5 +70,31 @@ public class DistributorWhiteListCheckUserValidService {
 								.eq(DistributorWhiteList::getMobile, mobile)
 								.last("LIMIT 1"));
 		return w != null;
+	}
+
+	/** Returns distinct distributor ids on the member mobile whitelist; empty when unsigned-in or no mobile. */
+	public List<Long> listWhitelistedDistributorIds(long companyId, long userId) {
+		if (userId <= 0L) {
+			return List.of();
+		}
+		String mobile = memberAccountService.findMobileStored(companyId, userId);
+		if (!StringUtils.hasText(mobile)) {
+			return List.of();
+		}
+		List<DistributorWhiteList> rows =
+				distributorWhiteListMapper.selectList(
+						new LambdaQueryWrapper<DistributorWhiteList>()
+								.eq(DistributorWhiteList::getCompanyId, companyId)
+								.eq(DistributorWhiteList::getMobile, mobile));
+		if (rows == null || rows.isEmpty()) {
+			return List.of();
+		}
+		Set<Long> ids = new LinkedHashSet<>();
+		for (DistributorWhiteList row : rows) {
+			if (row.getDistributorId() != null && row.getDistributorId() > 0L) {
+				ids.add(row.getDistributorId());
+			}
+		}
+		return new ArrayList<>(ids);
 	}
 }

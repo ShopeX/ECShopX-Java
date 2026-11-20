@@ -16,7 +16,6 @@ import cn.shopex.ecshopx.distribution.service.distributorvalid.DistributorIsVali
 import cn.shopex.ecshopx.distribution.service.distributorvalid.DistributorIsValidCoreQueryService;
 import cn.shopex.ecshopx.distribution.service.distributorvalid.DistributorIsValidNearShopService;
 import cn.shopex.ecshopx.distribution.service.distributorvalid.DistributorIsValidNostoresBranchService;
-import cn.shopex.ecshopx.distribution.service.distributorvalid.DistributorIsValidSettingService;
 import cn.shopex.ecshopx.distribution.service.distributorvalid.DistributorIsValidWhiteListBranchService;
 import cn.shopex.ecshopx.distribution.service.distributorvalid.dto.DistributorIsValidQuery;
 import cn.shopex.ecshopx.members.service.address.MemberAddressDefaultReadService;
@@ -34,9 +33,6 @@ class DistributorH5GetDistributorIsValidServicePreferVirtualStoreTest {
 
 	private static final long COMPANY_ID = 38L;
 	private static final long USER_ID = 100L;
-
-	@Mock
-	private DistributorIsValidSettingService distributorIsValidSettingService;
 
 	@Mock
 	private DistributorIsValidWhiteListBranchService distributorIsValidWhiteListBranchService;
@@ -65,16 +61,18 @@ class DistributorH5GetDistributorIsValidServicePreferVirtualStoreTest {
 	@Mock
 	private DistributionStoreEntryRuleRedisService distributionStoreEntryRuleRedisService;
 
+	@Mock
+	private DistributorWhiteListCheckUserValidService distributorWhiteListCheckUserValidService;
+
 	private DistributorH5GetDistributorIsValidService service;
 
 	@BeforeEach
 	void setUp() {
 		lenient()
-				.when(distributorIsValidSettingService.getOpenDividedSetting(anyLong()))
-				.thenReturn(new LinkedHashMap<>());
+				.when(distributorWhiteListCheckUserValidService.listWhitelistedDistributorIds(anyLong(), anyLong()))
+				.thenReturn(java.util.List.of());
 		service =
 				new DistributorH5GetDistributorIsValidService(
-						distributorIsValidSettingService,
 						distributorIsValidWhiteListBranchService,
 						memberAddressDefaultReadService,
 						memberAddressLatLngNonNumericEnqueueService,
@@ -83,7 +81,8 @@ class DistributorH5GetDistributorIsValidServicePreferVirtualStoreTest {
 						distributorIsValidNostoresBranchService,
 						distributorIsValidNearShopService,
 						distributorIsValidAppendFieldsService,
-						distributionStoreEntryRuleRedisService);
+						distributionStoreEntryRuleRedisService,
+						distributorWhiteListCheckUserValidService);
 	}
 
 	@Test

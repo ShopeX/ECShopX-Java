@@ -47,6 +47,14 @@ public class DistributorWxappShopListFilter {
 	private List<Long> distributorIdInList;
 	private List<Long> excludeDistributorIdList;
 	private Integer openDivided;
+	/**
+	 * When true, SQL uses public-or-whitelist mix:
+	 * {@code open_divided = 0 OR (open_divided = 1 AND distributor_id IN whitelistIds)}.
+	 * Takes precedence over {@link #openDivided}.
+	 */
+	private boolean openDividedPublicOrWhitelist;
+	/** Whitelist distributor ids used when {@link #openDividedPublicOrWhitelist} is true. */
+	private List<Long> openDividedWhitelistDistributorIds;
 	private Integer searchType;
 	private String nameLikeEscaped;
 	private List<Long> orDistributorIdsFromItems;
@@ -80,6 +88,11 @@ public class DistributorWxappShopListFilter {
 		n.excludeDistributorIdList =
 				this.excludeDistributorIdList == null ? null : new ArrayList<>(this.excludeDistributorIdList);
 		n.openDivided = this.openDivided;
+		n.openDividedPublicOrWhitelist = this.openDividedPublicOrWhitelist;
+		n.openDividedWhitelistDistributorIds =
+				this.openDividedWhitelistDistributorIds == null
+						? null
+						: new ArrayList<>(this.openDividedWhitelistDistributorIds);
 		n.searchType = this.searchType;
 		n.nameLikeEscaped = this.nameLikeEscaped;
 		n.orDistributorIdsFromItems =

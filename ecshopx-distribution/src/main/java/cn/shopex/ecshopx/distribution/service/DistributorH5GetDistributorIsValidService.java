@@ -22,7 +22,6 @@ import cn.shopex.ecshopx.distribution.service.distributorvalid.DistributorIsVali
 import cn.shopex.ecshopx.distribution.service.distributorvalid.DistributorIsValidCoreQueryService;
 import cn.shopex.ecshopx.distribution.service.distributorvalid.DistributorIsValidNearShopService;
 import cn.shopex.ecshopx.distribution.service.distributorvalid.DistributorIsValidNostoresBranchService;
-import cn.shopex.ecshopx.distribution.service.distributorvalid.DistributorIsValidSettingService;
 import cn.shopex.ecshopx.distribution.service.distributorvalid.DistributorIsValidWhiteListBranchService;
 import cn.shopex.ecshopx.distribution.service.distributorvalid.dto.DistributorIsValidQuery;
 import cn.shopex.ecshopx.members.service.address.MemberAddressDefaultReadService;
@@ -36,7 +35,6 @@ import org.springframework.util.StringUtils;
 @Service
 public class DistributorH5GetDistributorIsValidService {
 
-	private final DistributorIsValidSettingService distributorIsValidSettingService;
 	private final DistributorIsValidWhiteListBranchService distributorIsValidWhiteListBranchService;
 	private final MemberAddressDefaultReadService memberAddressDefaultReadService;
 	private final MemberAddressLatLngNonNumericEnqueueService memberAddressLatLngNonNumericEnqueueService;
@@ -46,9 +44,9 @@ public class DistributorH5GetDistributorIsValidService {
 	private final DistributorIsValidNearShopService distributorIsValidNearShopService;
 	private final DistributorIsValidAppendFieldsService distributorIsValidAppendFieldsService;
 	private final DistributionStoreEntryRuleRedisService distributionStoreEntryRuleRedisService;
+	private final DistributorWhiteListCheckUserValidService distributorWhiteListCheckUserValidService;
 
 	public DistributorH5GetDistributorIsValidService(
-			DistributorIsValidSettingService distributorIsValidSettingService,
 			DistributorIsValidWhiteListBranchService distributorIsValidWhiteListBranchService,
 			MemberAddressDefaultReadService memberAddressDefaultReadService,
 			MemberAddressLatLngNonNumericEnqueueService memberAddressLatLngNonNumericEnqueueService,
@@ -57,8 +55,8 @@ public class DistributorH5GetDistributorIsValidService {
 			DistributorIsValidNostoresBranchService distributorIsValidNostoresBranchService,
 			DistributorIsValidNearShopService distributorIsValidNearShopService,
 			DistributorIsValidAppendFieldsService distributorIsValidAppendFieldsService,
-			DistributionStoreEntryRuleRedisService distributionStoreEntryRuleRedisService) {
-		this.distributorIsValidSettingService = distributorIsValidSettingService;
+			DistributionStoreEntryRuleRedisService distributionStoreEntryRuleRedisService,
+			DistributorWhiteListCheckUserValidService distributorWhiteListCheckUserValidService) {
 		this.distributorIsValidWhiteListBranchService = distributorIsValidWhiteListBranchService;
 		this.memberAddressDefaultReadService = memberAddressDefaultReadService;
 		this.memberAddressLatLngNonNumericEnqueueService = memberAddressLatLngNonNumericEnqueueService;
@@ -68,6 +66,7 @@ public class DistributorH5GetDistributorIsValidService {
 		this.distributorIsValidNearShopService = distributorIsValidNearShopService;
 		this.distributorIsValidAppendFieldsService = distributorIsValidAppendFieldsService;
 		this.distributionStoreEntryRuleRedisService = distributionStoreEntryRuleRedisService;
+		this.distributorWhiteListCheckUserValidService = distributorWhiteListCheckUserValidService;
 	}
 
 	public Map<String, Object> getDistributorIsValid(
@@ -76,15 +75,9 @@ public class DistributorH5GetDistributorIsValidService {
 		Map<String, Object> filter = new LinkedHashMap<>();
 		filter.put("company_id", Long.valueOf(companyId));
 		filter.put("is_valid", "true");
-		Map<String, Object> setting = distributorIsValidSettingService.getOpenDividedSetting(companyId);
-		if (Boolean.TRUE.equals(setting.get("status"))
-				&& query.showType() != null
-				&& "self".equals(query.showType())) {
+		if (query.showType() != null && "self".equals(query.showType())) {
 			return distributorIsValidWhiteListBranchService.getWhiteListDistributor(
 					userId, companyId, query.distributorIdRaw(), query.lngRaw(), query.latRaw());
-		}
-		if (Boolean.TRUE.equals(setting.get("status"))) {
-			filter.put("open_divided", Integer.valueOf(0));
 		}
 		int radioType = resolveRadioType(companyId);
 		boolean preferVirtualStore = query.preferVirtualStoreByInRule(radioType);
@@ -102,11 +95,23 @@ public class DistributorH5GetDistributorIsValidService {
 		String latWork = work[1];
 		validateLngLatSometimes(lngWork, latWork);
 		if (distributorIdRawLooksSet(query.distributorIdRaw())) {
-			filter.put("distributor_id", resolveDistributorIdForFilter(query.distributorIdRaw()));
+			Long resolvedId = resolveDistributorIdForFilter(query.distributorIdRaw());
+			filter.put("distributor_id", resolvedId);
 			filter.remove("open_divided");
 			result = new LinkedHashMap<>(distributorIsValidCoreQueryService.getInfo(filter));
 			if (result.isEmpty()) {
 				throw new ResourceException("店铺查询错误.");
+			}
+			if (resolvedId != null
+					&& resolvedId.longValue() > 0L
+					&& !distributorWhiteListCheckUserValidService.checkUserValidInDistributor(
+							resolvedId.longValue(), userId, companyId)) {
+				result.clear();
+				result.put("distributor_id", Long.valueOf(0L));
+				result.put("is_delivery", Boolean.TRUE);
+				result.put("is_ziti", Boolean.FALSE);
+				result.put("is_valid", "false");
+				return result;
 			}
 			result.put("status", Boolean.TRUE);
 			if ("true".equals(String.valueOf(result.get("is_valid")))) {
@@ -120,42 +125,16 @@ public class DistributorH5GetDistributorIsValidService {
 							companyId, userId, filter, lngWork, latWork, query);
 		} else if (coordinatesLookPresent(lngWork, latWork)) {
 			filter.remove("distributor_id");
-			int isShopDivided = Boolean.TRUE.equals(setting.get("status")) ? 1 : 0;
-			if (isShopDivided == 1) {
-				filter.put("distributor_self", Integer.valueOf(0));
-			}
+			filter.put("distributor_self", Integer.valueOf(0));
 			double latNum = Double.parseDouble(latWork.trim());
 			double lngNum = Double.parseDouble(lngWork.trim());
-			result =
-					distributorIsValidNearShopService.getNearShopData(filter, latNum, lngNum, isShopDivided);
-			if (isShopDivided == 0 && distributorIdExplicitlyZero(query.distributorIdRaw())) {
-				Object ds = result.get("distributor_self");
-				if (numericOneTruthy(ds)) {
-					result.put("distributor_id", Long.valueOf(0L));
-				}
-			}
+			List<Long> whitelistIds =
+					distributorWhiteListCheckUserValidService.listWhitelistedDistributorIds(companyId, userId);
+			result = distributorIsValidNearShopService.getNearShopData(filter, latNum, lngNum, whitelistIds);
 		} else {
 			if (distributorIdExplicitlyZero(query.distributorIdRaw())) {
-				if (userId == 0L) {
-					if (Boolean.TRUE.equals(setting.get("status"))) {
-						Map<String, Object> f = new LinkedHashMap<>();
-						f.put("company_id", companyId);
-						f.put("distributor_id", Long.valueOf(0L));
-						result = distributorIsValidCoreQueryService.getInfo(f);
-					} else {
-						result = distributorIsValidCoreQueryService.getDistributorSelf(companyId, true, Map.of());
-						result.put("distributor_id", Long.valueOf(0L));
-					}
-				} else {
-					if (Boolean.TRUE.equals(setting.get("status"))) {
-						result =
-								distributorIsValidCoreQueryService.getDistributorSelf(
-										companyId, true, Map.of("open_divided", Integer.valueOf(0)));
-					} else {
-						result = distributorIsValidCoreQueryService.getDistributorSelf(companyId, true, Map.of());
-						result.put("distributor_id", Long.valueOf(0L));
-					}
-				}
+				result = distributorIsValidCoreQueryService.getDistributorSelf(companyId, true, Map.of());
+				result.put("distributor_id", Long.valueOf(0L));
 				result.put("is_delivery", result.getOrDefault("is_delivery", Boolean.TRUE));
 				result.put("is_ziti", result.getOrDefault("is_ziti", Boolean.FALSE));
 				result.put("is_valid", "true");
@@ -184,7 +163,6 @@ public class DistributorH5GetDistributorIsValidService {
 		}
 		if ("true".equals(String.valueOf(result.get("is_valid")))) {
 			distributorIsValidAppendFieldsService.applyTailFields(companyId, result, query);
-			overwriteDividedHeadStoreMinimalIfNeeded(setting, query.distributorIdRaw(), result);
 			return result;
 		}
 		Map<String, Object> fallback = distributorIsValidCoreQueryService.getInfoSimple(companyId, 1, "true");
@@ -414,53 +392,4 @@ public class DistributorH5GetDistributorIsValidService {
 		return true;
 	}
 
-	private boolean dividedHeadDefaultLooksTrue(Object v) {
-		if (v == null) {
-			return false;
-		}
-		if (v instanceof Boolean b) {
-			return b.booleanValue();
-		}
-		if (v instanceof Number n) {
-			return n.intValue() == 1;
-		}
-		if (v instanceof String s) {
-			String t = s.trim();
-			return "1".equals(t) || "true".equalsIgnoreCase(t);
-		}
-		return false;
-	}
-
-	private void overwriteDividedHeadStoreMinimalIfNeeded(
-			Map<String, Object> setting, String postdataDistributorIdRaw, Map<String, Object> mutableResult) {
-		if (!Boolean.TRUE.equals(setting.get("status"))) {
-			return;
-		}
-		if (postdataDistributorIdRaw == null) {
-			return;
-		}
-		if (parseQueryDistributorIdAsLong(postdataDistributorIdRaw) != 0L) {
-			return;
-		}
-		if (!dividedHeadDefaultLooksTrue(mutableResult.get("is_default"))) {
-			return;
-		}
-		mutableResult.clear();
-		mutableResult.put("distributor_id", Long.valueOf(0L));
-		mutableResult.put("is_delivery", Boolean.TRUE);
-		mutableResult.put("is_ziti", Boolean.FALSE);
-	}
-
-	private static boolean numericOneTruthy(Object v) {
-		if (v == null) {
-			return false;
-		}
-		if (v instanceof Boolean b) {
-			return b.booleanValue();
-		}
-		if (v instanceof Number n) {
-			return n.intValue() == 1;
-		}
-		return "1".equals(String.valueOf(v).trim());
-	}
 }

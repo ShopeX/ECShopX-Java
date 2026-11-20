@@ -101,7 +101,7 @@ public class DistributorIsValidWhiteListBranchService {
 			f.put("company_id", companyId);
 			f.put("distributor_id", new ArrayList<>(distributorIdList));
 			f.put("open_divided", Integer.valueOf(1));
-			Map<String, Object> tmp = distributorIsValidNearShopService.getNearShopData(f, lat, lng, 0);
+			Map<String, Object> tmp = distributorIsValidNearShopService.getNearShopData(f, lat, lng, null);
 			Object rd = tmp.get("real_default");
 			if (rd instanceof Number n && n.intValue() == 1) {
 				return new LinkedHashMap<>();

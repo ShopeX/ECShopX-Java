@@ -23,7 +23,6 @@ import cn.shopex.ecshopx.distribution.mapper.DistributorMapper;
 import cn.shopex.ecshopx.distribution.mapper.DistributorWhiteListMapper;
 import cn.shopex.ecshopx.distribution.repository.DistributorWxappShopListFilter;
 import cn.shopex.ecshopx.distribution.repository.DistributorWxappShopListRepository;
-import cn.shopex.ecshopx.distribution.service.distributorvalid.DistributorIsValidSettingService;
 import cn.shopex.ecshopx.distribution.service.wxappdistributorlist.DistributorWxappShopListAppendBlocksService;
 import cn.shopex.ecshopx.distribution.service.wxappdistributorlist.DistributorWxappShopListFilterBuildService;
 import cn.shopex.ecshopx.distribution.service.wxappdistributorlist.DistributorWxappShopListRowAssemblyService;
@@ -60,7 +59,6 @@ public class DistributorH5GetDistributorListService {
 	private final DistributorWxappShopListFilterBuildService distributorWxappShopListFilterBuildService;
 	private final DistributorWxappShopListSalesNetRankingService distributorWxappShopListSalesNetRankingService;
 	private final MerchantDisabledDistributorIdsQueryService merchantDisabledDistributorIdsQueryService;
-	private final DistributorIsValidSettingService distributorIsValidSettingService;
 	private final DistributorWhiteListMapper distributorWhiteListMapper;
 	private final MemberAccountService memberAccountService;
 	private final DistributorWxappShopListRepository distributorWxappShopListRepository;
@@ -76,7 +74,6 @@ public class DistributorH5GetDistributorListService {
 			DistributorWxappShopListFilterBuildService distributorWxappShopListFilterBuildService,
 			DistributorWxappShopListSalesNetRankingService distributorWxappShopListSalesNetRankingService,
 			MerchantDisabledDistributorIdsQueryService merchantDisabledDistributorIdsQueryService,
-			DistributorIsValidSettingService distributorIsValidSettingService,
 			DistributorWhiteListMapper distributorWhiteListMapper,
 			MemberAccountService memberAccountService,
 			DistributorWxappShopListRepository distributorWxappShopListRepository,
@@ -90,7 +87,6 @@ public class DistributorH5GetDistributorListService {
 		this.distributorWxappShopListFilterBuildService = distributorWxappShopListFilterBuildService;
 		this.distributorWxappShopListSalesNetRankingService = distributorWxappShopListSalesNetRankingService;
 		this.merchantDisabledDistributorIdsQueryService = merchantDisabledDistributorIdsQueryService;
-		this.distributorIsValidSettingService = distributorIsValidSettingService;
 		this.distributorWhiteListMapper = distributorWhiteListMapper;
 		this.memberAccountService = memberAccountService;
 		this.distributorWxappShopListRepository = distributorWxappShopListRepository;
@@ -132,29 +128,35 @@ public class DistributorH5GetDistributorListService {
 
 		boolean dividedSelfGeoBypass = false;
 		Map<Long, Long> outSortWhitelistRowIdByDistributorId = Map.of();
-		Map<String, Object> setting = distributorIsValidSettingService.getOpenDividedSetting(companyId);
-		if (Boolean.TRUE.equals(setting.get("status"))) {
-			filter.setOpenDivided(Integer.valueOf(0));
-			if (StringUtils.hasText(q.showType()) && "self".equals(q.showType())) {
-				List<DistributorWhiteList> wlRows = loadWhitelistRowsForUser(companyId, userId);
-				if (wlRows.isEmpty()) {
-					return finalizeResult(result, built.isRecommend());
-				}
-				List<Long> whiteIds =
-						wlRows.stream().map(DistributorWhiteList::getDistributorId).distinct().collect(Collectors.toList());
-				boolean rqGeo = StringUtils.hasText(q.lng()) && StringUtils.hasText(q.lat());
-				if (!rqGeo) {
-					outSortWhitelistRowIdByDistributorId = new LinkedHashMap<>();
-					for (DistributorWhiteList w : wlRows) {
-						if (w.getDistributorId() != null && w.getId() != null) {
-							outSortWhitelistRowIdByDistributorId.put(w.getDistributorId(), w.getId());
-						}
+		List<DistributorWhiteList> wlRows = loadWhitelistRowsForUser(companyId, userId);
+		List<Long> whiteIds =
+				wlRows.stream()
+						.map(DistributorWhiteList::getDistributorId)
+						.filter(id -> id != null && id > 0L)
+						.distinct()
+						.collect(Collectors.toList());
+		if (StringUtils.hasText(q.showType()) && "self".equals(q.showType())) {
+			if (whiteIds.isEmpty()) {
+				return finalizeResult(result, built.isRecommend());
+			}
+			boolean selfRqGeo = StringUtils.hasText(q.lng()) && StringUtils.hasText(q.lat());
+			if (!selfRqGeo) {
+				outSortWhitelistRowIdByDistributorId = new LinkedHashMap<>();
+				for (DistributorWhiteList w : wlRows) {
+					if (w.getDistributorId() != null && w.getId() != null) {
+						outSortWhitelistRowIdByDistributorId.put(w.getDistributorId(), w.getId());
 					}
 				}
-				filter.setOpenDivided(Integer.valueOf(1));
-				filter.setDistributorIdInList(new ArrayList<>(whiteIds));
-				dividedSelfGeoBypass = true;
 			}
+			filter.setOpenDividedPublicOrWhitelist(false);
+			filter.setOpenDividedWhitelistDistributorIds(null);
+			filter.setOpenDivided(Integer.valueOf(1));
+			filter.setDistributorIdInList(new ArrayList<>(whiteIds));
+			dividedSelfGeoBypass = true;
+		} else {
+			filter.setOpenDivided(null);
+			filter.setOpenDividedPublicOrWhitelist(true);
+			filter.setOpenDividedWhitelistDistributorIds(new ArrayList<>(whiteIds));
 		}
 
 		boolean isNs = StringUtils.hasText(q.isNostoresRaw()) && !"0".equals(q.isNostoresRaw().trim());
