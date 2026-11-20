@@ -20,6 +20,7 @@ import cn.shopex.ecshopx.companys.mapper.OperatorCartMapper;
 import cn.shopex.ecshopx.companys.service.operatorcart.OperatorCartCleanupService;
 import cn.shopex.ecshopx.companys.service.operatorcart.OperatorCartCompanyProductModelReader;
 import cn.shopex.ecshopx.goods.service.cart.salesperson.SalespersonDistributorCartFormatAndTotalService;
+import cn.shopex.ecshopx.goods.service.items.ItemSpecImageLookupService;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -50,6 +51,7 @@ class OperatorCartDataListFacadeImplPosPromotionTest {
 	@Mock private OperatorCartCompanyProductModelReader productModelReader;
 	@Mock private OperatorCartHandleValidCartService operatorCartHandleValidCartService;
 	@Mock private SalespersonDistributorCartFormatAndTotalService salespersonDistributorCartFormatAndTotalService;
+	@Mock private ItemSpecImageLookupService itemSpecImageLookupService;
 	@Mock private OperatorCartCleanupService operatorCartCleanupService;
 	@Mock private LangueProperties langueProperties;
 	@Mock private OperatorCartPosPromotionService operatorCartPosPromotionService;
@@ -65,6 +67,7 @@ class OperatorCartDataListFacadeImplPosPromotionTest {
 						productModelReader,
 						operatorCartHandleValidCartService,
 						salespersonDistributorCartFormatAndTotalService,
+						itemSpecImageLookupService,
 						operatorCartCleanupService,
 						langueProperties,
 						operatorCartPosPromotionService);

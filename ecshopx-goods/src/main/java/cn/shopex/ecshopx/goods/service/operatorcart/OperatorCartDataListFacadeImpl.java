@@ -27,6 +27,7 @@ import cn.shopex.ecshopx.companys.mapper.OperatorCartMapper;
 import cn.shopex.ecshopx.companys.service.operatorcart.OperatorCartCleanupService;
 import cn.shopex.ecshopx.companys.service.operatorcart.OperatorCartCompanyProductModelReader;
 import cn.shopex.ecshopx.goods.service.cart.salesperson.SalespersonDistributorCartFormatAndTotalService;
+import cn.shopex.ecshopx.goods.service.items.ItemSpecImageLookupService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -44,6 +45,7 @@ public class OperatorCartDataListFacadeImpl implements OperatorCartDataListFacad
 	private final OperatorCartCompanyProductModelReader productModelReader;
 	private final OperatorCartHandleValidCartService operatorCartHandleValidCartService;
 	private final SalespersonDistributorCartFormatAndTotalService salespersonDistributorCartFormatAndTotalService;
+	private final ItemSpecImageLookupService itemSpecImageLookupService;
 	private final OperatorCartCleanupService operatorCartCleanupService;
 	private final LangueProperties langueProperties;
 	private final OperatorCartPosPromotionService operatorCartPosPromotionService;
@@ -53,13 +55,16 @@ public class OperatorCartDataListFacadeImpl implements OperatorCartDataListFacad
 			OperatorCartCompanyProductModelReader productModelReader,
 			OperatorCartHandleValidCartService operatorCartHandleValidCartService,
 			SalespersonDistributorCartFormatAndTotalService salespersonDistributorCartFormatAndTotalService,
-			OperatorCartCleanupService operatorCartCleanupService, LangueProperties langueProperties,
+			ItemSpecImageLookupService itemSpecImageLookupService,
+			OperatorCartCleanupService operatorCartCleanupService,
+			LangueProperties langueProperties,
 			OperatorCartPosPromotionService operatorCartPosPromotionService) {
 		this.operatorCartMapper = operatorCartMapper;
 		this.operatorCartSkuLoadFacade = operatorCartSkuLoadFacade;
 		this.productModelReader = productModelReader;
 		this.operatorCartHandleValidCartService = operatorCartHandleValidCartService;
 		this.salespersonDistributorCartFormatAndTotalService = salespersonDistributorCartFormatAndTotalService;
+		this.itemSpecImageLookupService = itemSpecImageLookupService;
 		this.operatorCartCleanupService = operatorCartCleanupService;
 		this.langueProperties = langueProperties;
 		this.operatorCartPosPromotionService = operatorCartPosPromotionService;
@@ -122,6 +127,7 @@ public class OperatorCartDataListFacadeImpl implements OperatorCartDataListFacad
 			operatorCartCleanupService.deleteAllRows(cartRows);
 			return emptyBody();
 		}
+		itemSpecImageLookupService.applySpecImageUrl(companyId, new ArrayList<>(itemByItemId.values()));
 
 		List<Map<String, Object>> cartRowMaps = new ArrayList<>();
 		for (OperatorCart row : cartRows) {
