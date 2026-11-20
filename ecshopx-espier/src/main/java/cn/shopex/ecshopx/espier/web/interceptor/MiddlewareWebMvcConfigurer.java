@@ -81,8 +81,8 @@ public class MiddlewareWebMvcConfigurer implements WebMvcConfigurer {
 						"/api/v1/operator/sms/code",
 						"/api/v1/operator/basic",
 						"/api/v1/operator/credential",
-						"/api/v1/third/saascert/cert/validate",
-						"/api/v1/third/saascert/matrix/callback/**",
+						"/api/third/saascert/cert/validate",
+						"/api/third/saascert/matrix/callback/**",
 						"/api/mcp",
 						"/api/mcp/oauth/**")
 				.order(10);

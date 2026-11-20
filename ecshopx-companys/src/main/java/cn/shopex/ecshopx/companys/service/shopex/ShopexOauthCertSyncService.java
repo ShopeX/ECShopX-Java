@@ -70,7 +70,7 @@ public class ShopexOauthCertSyncService {
 			return;
 		}
 		String certiUrl = certiBaseUrl.replaceAll("/+$", "") + "/" + companyId + "/";
-		String validateUrl = certiBaseUrl.replaceAll("/+$", "") + "/api/v1/third/saascert/cert/validate";
+		String validateUrl = certiBaseUrl.replaceAll("/+$", "") + "/api/third/saascert/cert/validate";
 
 		LinkedHashMap<String, Object> form = new LinkedHashMap<>();
 		form.put("certi_url", certiUrl);

@@ -196,8 +196,8 @@ public class OperatorJwtAuthenticationFilter extends OncePerRequestFilter {
 		}
 		// 矩阵绑定回打 / 证书反查：矩阵侧匿名回调，与 PHP saascert 公开路由一致
 		if (path != null
-				&& (path.equals("/api/v1/third/saascert/cert/validate")
-						|| path.startsWith("/api/v1/third/saascert/matrix/callback/"))) {
+				&& (path.equals("/api/third/saascert/cert/validate")
+						|| path.startsWith("/api/third/saascert/matrix/callback/"))) {
 			return true;
 		}
 		// OpenAPI 第三方网关（公开 /api/openapi/** 与 internal forward）：走 sign 鉴权，不使用运营 JWT

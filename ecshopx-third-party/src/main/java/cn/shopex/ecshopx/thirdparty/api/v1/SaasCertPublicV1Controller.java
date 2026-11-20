@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
  * 矩阵 / 证书中心公开回调（对齐 PHP routes/thirdparty/saascert.php，无需 JWT）。
  */
 @RestController("thirdPartySaasCertPublicV1")
-@RequestMapping("/api/v1")
+@RequestMapping("/api")
 public class SaasCertPublicV1Controller {
 
 	private final SaasCertBindShopNodeService saasCertBindShopNodeService;
