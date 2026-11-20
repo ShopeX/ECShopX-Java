@@ -34,13 +34,19 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 @Service
 public class OrdersTradeFinishNormalOrderPaySuccessApplyService {
+
+	private static final Logger log =
+			LoggerFactory.getLogger(OrdersTradeFinishNormalOrderPaySuccessApplyService.class);
 
 	private static final Set<String> NORMAL_TRADE_SOURCE_TYPES = Set.of(
 			"normal",
@@ -78,8 +84,13 @@ public class OrdersTradeFinishNormalOrderPaySuccessApplyService {
 	/**
 	 * When trade finish indicates a successful mall normal-order payment, transitions {@code NOTPAY} rows to
 	 * the trade-success status and returns the async follow-up payload; otherwise empty.
+	 *
+	 * <p>{@link Propagation#REQUIRES_NEW} is required because TradeFinish often runs inside an outer payment
+	 * TX {@code afterCommit}: joining that already-committed TX and registering another {@code afterCommit}
+	 * never fires (Spring snapshots synchronizations before invoking them). A fresh TX commits PAYED, then
+	 * its own afterCommit publishes {@code TradeUpdate}.
 	 */
-	@Transactional(rollbackFor = Exception.class)
+	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
 	public Optional<Map<String, Object>> markPayedIfNeeded(Map<String, Object> tradeFinishPayload) {
 		if (tradeFinishPayload == null || tradeFinishPayload.isEmpty()) {
 			return Optional.empty();
@@ -159,10 +170,10 @@ public class OrdersTradeFinishNormalOrderPaySuccessApplyService {
 	 * PHP {@code AbstractNormalOrder::orderStatusUpdate} fires {@code TradeUpdateEvent} whenever the new status is
 	 * not {@code PART_PAYMENT}. This path only leaves {@code NOTPAY}, so the SaasErp add is always scheduled.
 	 *
-	 * <p>Must use {@link TransactionSynchronizationManager#isActualTransactionActive()} (not merely
-	 * {@code isSynchronizationActive()}): TradeFinish is SYNC and often runs inside an outer payment TX's
-	 * {@code afterCommit}, where synchronizations are still "active" but the TX is already committed.
-	 * Registering another afterCommit there never fires — publish immediately in that case.
+	 * <p>Defer only while a real TX is still open ({@link
+	 * TransactionSynchronizationManager#isActualTransactionActive()}). With {@code REQUIRES_NEW} on {@link
+	 * #markPayedIfNeeded}, that is this method's own TX — its afterCommit will fire. If somehow called with
+	 * synchronizations but no actual TX (zombie afterCommit without a new TX), publish immediately.
 	 */
 	private void scheduleSaasErpTradeUpdateAfterCommit(long companyId, long orderId, NormalOrders order) {
 		Map<String, Object> erp = new LinkedHashMap<>();
@@ -173,9 +184,22 @@ public class OrdersTradeFinishNormalOrderPaySuccessApplyService {
 		}
 		String orderClass = trim(order.getOrderClass());
 		erp.put("order_class", orderClass.isEmpty() ? "normal" : orderClass);
-		Runnable publish = () -> thirdPartyTradeUpdateDispatchPublisher.publish(erp);
-		// Only defer when a real TX is still open; afterCommit-phase sync-without-TX must publish now.
+		Runnable publish =
+				() -> {
+					log.info(
+							"SaasErp TradeUpdate publish companyId={} orderId={} orderClass={}",
+							companyId,
+							orderId,
+							erp.get("order_class"));
+					thirdPartyTradeUpdateDispatchPublisher.publish(erp);
+				};
+		// Only defer when a real TX is still open; sync-without-actual-TX must publish now.
 		if (TransactionSynchronizationManager.isActualTransactionActive()) {
+			log.info(
+					"SaasErp TradeUpdate schedule afterCommit companyId={} orderId={} orderClass={}",
+					companyId,
+					orderId,
+					erp.get("order_class"));
 			TransactionSynchronizationManager.registerSynchronization(
 					new TransactionSynchronization() {
 						@Override
@@ -185,6 +209,11 @@ public class OrdersTradeFinishNormalOrderPaySuccessApplyService {
 					});
 			return;
 		}
+		log.info(
+				"SaasErp TradeUpdate publish immediate companyId={} orderId={} orderClass={} (no active TX)",
+				companyId,
+				orderId,
+				erp.get("order_class"));
 		publish.run();
 	}
 
