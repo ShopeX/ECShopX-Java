@@ -1,10 +1,22 @@
 # ecshopx-goods — module-local config (optional profile: spring.config.import)
+# Search ES：Basic(username/password) 与 api-key 二选一；ssl.* 仅配 https hosts
 ecshopx:
   search:
     es:
       enabled: false
       like-fallback: false
       hosts: http://127.0.0.1:9200
+      # username:
+      # password:
+      # api-key:
+      # ssl:
+      #   truststore:
+      #   truststore-password:
+      #   truststore-type: PKCS12
+      #   keystore:
+      #   keystore-password:
+      #   keystore-type: PKCS12
+      #   key-password:
       alias: goods_store_item
       connect-timeout-ms: 1000
       socket-timeout-ms: 1500

@@ -39,6 +39,17 @@ public class SearchEsProperties {
 
 	private int socketTimeoutMs = 1500;
 
+	/** Basic Auth 用户名；空则未启用 Basic。 */
+	private String username;
+
+	/** Basic Auth 密码；username 非空时必填。 */
+	private String password;
+
+	/** API Key Auth：Base64(id:api_key) 整串；空白则未启用。 */
+	private String apiKey;
+
+	private Ssl ssl = new Ssl();
+
 	private Rank rank = new Rank();
 
 	public String getAliasName() {
@@ -63,5 +74,25 @@ public class SearchEsProperties {
 		private double salesWeight = 1.0;
 
 		private double listedAtWeight = 1.0;
+	}
+
+	/** Search ES TLS：可选 truststore / keystore（默认 PKCS12）。 */
+	@Data
+	public static class Ssl {
+
+		private String truststore;
+
+		private String truststorePassword;
+
+		private String truststoreType = "PKCS12";
+
+		private String keystore;
+
+		private String keystorePassword;
+
+		private String keystoreType = "PKCS12";
+
+		/** 私钥密码；未设时回退为 {@link #keystorePassword}。 */
+		private String keyPassword;
 	}
 }

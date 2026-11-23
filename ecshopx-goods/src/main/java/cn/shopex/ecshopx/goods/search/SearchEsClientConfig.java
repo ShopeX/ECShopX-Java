@@ -44,6 +44,7 @@ public class SearchEsClientConfig {
 		builder.setRequestConfigCallback(cb -> cb
 				.setConnectTimeout(properties.getConnectTimeoutMs())
 				.setSocketTimeout(properties.getSocketTimeoutMs()));
+		SearchEsClientSupport.configure(builder, properties);
 		return builder.build();
 	}
 
