@@ -5525,14 +5525,14 @@
     "sort": 1,
     "is_menu": true,
     "pid": 599,
-    "apis": "pctemplate.lists\npctemplate.edit\npctemplate.getHeaderOrFooter\npctemplate.getTemplateContent\npctemplate.saveTemplateContent\npctemplate.saveHeaderOrFooter\npagestemplate.detail",
+    "apis": "pctemplate.lists\npctemplate.edit\npctemplate.getHeaderOrFooter\npctemplate.getTemplateContent\npctemplate.saveTemplateContent\npctemplate.saveHeaderOrFooter\npagestemplate.detail\npctemplate.getHeaderOrFooter\npctemplate.getTemplateContent\npctemplate.saveTemplateContent\npctemplate.saveHeaderOrFooter\npagestemplate.detail\npctemplate.getDecorationContent",
     "icon": null,
     "is_show": true,
     "alias_name": "templatelist",
     "version": 1,
     "disabled": false,
     "created": 1792035297,
-    "updated": 1792035297,
+    "updated": 1795416865,
     "level": 3,
     "parent_name": "PC商城",
     "isChildrenMenu": false,
@@ -5577,37 +5577,6 @@
       "zh-TW": "導航菜單",
       "ja-JP": "ナビゲーションメニュー",
       "ru-RU": "Меню навигации"
-    }
-  },
-  {
-    "shopmenu_id": 602,
-    "company_id": 0,
-    "name": "模板编辑",
-    "url": "/wxapp/pcmall/design",
-    "sort": 2,
-    "is_menu": true,
-    "pid": 599,
-    "apis": "pctemplate.getHeaderOrFooter\npctemplate.getTemplateContent\npctemplate.saveTemplateContent\npctemplate.saveHeaderOrFooter\npagestemplate.detail\npctemplate.getDecorationContent",
-    "icon": null,
-    "is_show": true,
-    "alias_name": "design",
-    "version": 1,
-    "disabled": false,
-    "created": 1792035297,
-    "updated": 1792035297,
-    "level": 3,
-    "parent_name": "PC商城",
-    "isChildrenMenu": false,
-    "menu_type": [
-      "all"
-    ],
-    "name_lang": {
-      "zh-CN": "模板编辑",
-      "en-CN": "Template Editing",
-      "ar-SA": "تحرير القوالب",
-      "zh-TW": "模板編輯",
-      "ja-JP": "テンプレート編集",
-      "ru-RU": "Редактирование шаблона"
     }
   },
   {
@@ -5670,6 +5639,37 @@
       "zh-TW": "頁面SEO",
       "ja-JP": "ページSEO",
       "ru-RU": "SEO страниц"
+    }
+  },
+  {
+    "shopmenu_id": 788,
+    "company_id": 0,
+    "name": "模版编辑",
+    "url": "/wxapp/pcmall/design",
+    "sort": 5,
+    "is_menu": true,
+    "pid": 599,
+    "apis": null,
+    "icon": null,
+    "is_show": true,
+    "alias_name": "design",
+    "version": 1,
+    "disabled": false,
+    "created": 1795420304,
+    "updated": 1795420424,
+    "level": 3,
+    "parent_name": "PC商城",
+    "isChildrenMenu": false,
+    "menu_type": [
+      "all"
+    ],
+    "name_lang": {
+      "zh-CN": "模版编辑",
+      "en-CN": "",
+      "ar-SA": "",
+      "zh-TW": "",
+      "ja-JP": "",
+      "ru-RU": ""
     }
   },
   {
