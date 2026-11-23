@@ -21,6 +21,7 @@ import cn.shopex.ecshopx.common.goods.MarketingActivityCatalogAccess;
 import cn.shopex.ecshopx.companys.domain.CurrencyExchangeRate;
 import cn.shopex.ecshopx.companys.service.currency.CompanyDefaultCurrencyService;
 import cn.shopex.ecshopx.orders.service.excard.NormalOrderNumericIdService;
+import cn.shopex.ecshopx.orders.service.front.wxapp.MerchantSelfDeliveryTimeListService;
 import cn.shopex.ecshopx.orders.service.normal.create.NormalOrderCheckoutPointDeductService;
 import cn.shopex.ecshopx.orders.service.normal.create.NormalOrderCreateState;
 import cn.shopex.ecshopx.orders.service.setting.OrderValiditySettingRedisReadService;
@@ -51,6 +52,7 @@ public class ShopadminNormalOrderTempInfoEnrichmentService {
 	private final DistributorGetInfoSimpleByDistributorIdPort distributorGetInfoSimpleByDistributorIdPort;
 	private final NormalOrderCheckoutPointDeductService normalOrderCheckoutPointDeductService;
 	private final MarketingActivityCatalogAccess marketingActivityCatalogAccess;
+	private final MerchantSelfDeliveryTimeListService merchantSelfDeliveryTimeListService;
 
 	public ShopadminNormalOrderTempInfoEnrichmentService(
 			NormalOrderNumericIdService normalOrderNumericIdService,
@@ -60,7 +62,8 @@ public class ShopadminNormalOrderTempInfoEnrichmentService {
 			CompanyDefaultCurrencyService companyDefaultCurrencyService,
 			DistributorGetInfoSimpleByDistributorIdPort distributorGetInfoSimpleByDistributorIdPort,
 			NormalOrderCheckoutPointDeductService normalOrderCheckoutPointDeductService,
-			MarketingActivityCatalogAccess marketingActivityCatalogAccess) {
+			MarketingActivityCatalogAccess marketingActivityCatalogAccess,
+			MerchantSelfDeliveryTimeListService merchantSelfDeliveryTimeListService) {
 		this.normalOrderNumericIdService = normalOrderNumericIdService;
 		this.orderValiditySettingRedisReadService = orderValiditySettingRedisReadService;
 		this.pointMemberRuleReadService = pointMemberRuleReadService;
@@ -69,6 +72,7 @@ public class ShopadminNormalOrderTempInfoEnrichmentService {
 		this.distributorGetInfoSimpleByDistributorIdPort = distributorGetInfoSimpleByDistributorIdPort;
 		this.normalOrderCheckoutPointDeductService = normalOrderCheckoutPointDeductService;
 		this.marketingActivityCatalogAccess = marketingActivityCatalogAccess;
+		this.merchantSelfDeliveryTimeListService = merchantSelfDeliveryTimeListService;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -126,14 +130,22 @@ public class ShopadminNormalOrderTempInfoEnrichmentService {
 		od.put("app_pay_type", "07");
 
 		long merchantId = 0L;
+		Map<String, Object> distributorInfo = null;
 		if (distributorId > 0L) {
-			Map<String, Object> di =
+			distributorInfo =
 					distributorGetInfoSimpleByDistributorIdPort.getInfoSimpleByDistributorId(companyId, distributorId);
-			if (di != null && di.get("merchant_id") != null) {
-				merchantId = longVal(di.get("merchant_id"), 0L);
+			if (distributorInfo != null && distributorInfo.get("merchant_id") != null) {
+				merchantId = longVal(distributorInfo.get("merchant_id"), 0L);
 			}
 		}
 		od.put("merchant_id", String.valueOf(merchantId));
+		if (!StringUtils.hasText(stringVal(od.get("receipt_type")))) {
+			String receiptFromParams = stringVal(pr.get("receipt_type"));
+			if (StringUtils.hasText(receiptFromParams)) {
+				od.put("receipt_type", receiptFromParams);
+			}
+		}
+		merchantSelfDeliveryTimeListService.applyIfEligible(od, distributorInfo);
 
 		CurrencyExchangeRate cur = companyDefaultCurrencyService.getCur(companyId);
 		od.put("fee_type", cur.getCurrency() != null ? cur.getCurrency() : "CNY");

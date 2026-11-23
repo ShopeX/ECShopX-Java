@@ -68,6 +68,8 @@ public class WxappNormalOrderTempInfoEnrichmentService {
 
 	private final PointsmallFreightMoneyConvertPort pointsmallFreightMoneyConvertPort;
 
+	private final MerchantSelfDeliveryTimeListService merchantSelfDeliveryTimeListService;
+
 	public WxappNormalOrderTempInfoEnrichmentService(
 			NormalOrderNumericIdService normalOrderNumericIdService,
 			OrderValiditySettingRedisReadService orderValiditySettingRedisReadService,
@@ -78,7 +80,8 @@ public class WxappNormalOrderTempInfoEnrichmentService {
 			DistributorGetInfoSimpleByDistributorIdPort distributorGetInfoSimpleByDistributorIdPort,
 			NormalOrderCheckoutPointDeductService normalOrderCheckoutPointDeductService,
 			OrderCreateFormatDataPort orderCreateFormatDataPort,
-			PointsmallFreightMoneyConvertPort pointsmallFreightMoneyConvertPort) {
+			PointsmallFreightMoneyConvertPort pointsmallFreightMoneyConvertPort,
+			MerchantSelfDeliveryTimeListService merchantSelfDeliveryTimeListService) {
 		this.normalOrderNumericIdService = normalOrderNumericIdService;
 		this.orderValiditySettingRedisReadService = orderValiditySettingRedisReadService;
 		this.normalOrderShippingFreightCountService = normalOrderShippingFreightCountService;
@@ -89,6 +92,7 @@ public class WxappNormalOrderTempInfoEnrichmentService {
 		this.normalOrderCheckoutPointDeductService = normalOrderCheckoutPointDeductService;
 		this.orderCreateFormatDataPort = orderCreateFormatDataPort;
 		this.pointsmallFreightMoneyConvertPort = pointsmallFreightMoneyConvertPort;
+		this.merchantSelfDeliveryTimeListService = merchantSelfDeliveryTimeListService;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -175,11 +179,12 @@ public class WxappNormalOrderTempInfoEnrichmentService {
 		od.put("app_pay_type", "07");
 
 		long merchantId = 0L;
+		Map<String, Object> distributorInfo = null;
 		if (distributorId > 0L) {
-			Map<String, Object> di =
+			distributorInfo =
 					distributorGetInfoSimpleByDistributorIdPort.getInfoSimpleByDistributorId(companyId, distributorId);
-			if (di != null && di.get("merchant_id") != null) {
-				merchantId = longVal(di.get("merchant_id"), 0L);
+			if (distributorInfo != null && distributorInfo.get("merchant_id") != null) {
+				merchantId = longVal(distributorInfo.get("merchant_id"), 0L);
 			}
 		}
 		od.put("merchant_id", merchantId);
@@ -187,6 +192,7 @@ public class WxappNormalOrderTempInfoEnrichmentService {
 		applyDefaultCurrency(state);
 
 		applyLogisticsReceiverAndFreightFromParams(state, pointsmall, false);
+		merchantSelfDeliveryTimeListService.applyIfEligible(od, distributorInfo);
 		if (!pointsmall) {
 			orderCreateFormatDataPort.applyCheckoutCouponAfterFreight(state);
 
