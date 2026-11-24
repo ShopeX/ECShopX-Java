@@ -26,12 +26,14 @@ import cn.shopex.ecshopx.common.core.domain.ApiResult;
 import cn.shopex.ecshopx.common.crypto.SensitiveFieldEncryptor;
 import cn.shopex.ecshopx.common.exception.BadRequestException;
 import cn.shopex.ecshopx.common.port.MerchantPaymentTradeQueryPort;
+import cn.shopex.ecshopx.common.web.FlexibleBody;
 import cn.shopex.ecshopx.espier.security.OperatorJwtAuthenticationFilter;
 import cn.shopex.ecshopx.members.domain.Members;
 import cn.shopex.ecshopx.members.mapper.MembersMapper;
 import cn.shopex.ecshopx.popularize.service.PopularizeBrokerageCountReadService;
 import cn.shopex.ecshopx.popularize.service.PopularizeBrokerageListReadService;
 import cn.shopex.ecshopx.popularize.service.PopularizeCashWithdrawalListReadService;
+import cn.shopex.ecshopx.popularize.service.PopularizeCashWithdrawalProcessParamSupport;
 import cn.shopex.ecshopx.popularize.service.PopularizeCashWithdrawalProcessRequestGate;
 import cn.shopex.ecshopx.popularize.service.PopularizeCashWithdrawalProcessService;
 import cn.shopex.ecshopx.popularize.service.PopularizeTaskBrokerageCountExportService;
@@ -104,9 +106,13 @@ public class BrokerageController {
 	@PutMapping(value = "/popularize/cash_withdrawals/{cash_withdrawal_id}", name = "处理推广员佣金提现申请")
 	public ResponseEntity<?> processCashWithdrawal(
 			@PathVariable("cash_withdrawal_id") String cashWithdrawalId,
-			@RequestParam(value = "process_type", required = false) String processType,
-			@RequestParam(value = "remarks", required = false) String remarks,
+			@RequestParam(value = "process_type", required = false) String processTypeQuery,
+			@RequestParam(value = "remarks", required = false) String remarksQuery,
+			@FlexibleBody(required = false) Map<String, Object> body,
 			HttpServletRequest request) {
+		String processType =
+				PopularizeCashWithdrawalProcessParamSupport.resolveProcessType(processTypeQuery, body);
+		String remarks = PopularizeCashWithdrawalProcessParamSupport.resolveRemarks(remarksQuery, body);
 		popularizeCashWithdrawalProcessRequestGate.validateBeforeProcess(request);
 		@SuppressWarnings("unchecked")
 		Map<String, Object> jwt = (Map<String, Object>) request.getAttribute(OperatorJwtAuthenticationFilter.OPERATOR_JWT_USER_DATA);
