@@ -19,7 +19,6 @@ package cn.shopex.ecshopx.members.service.address;
 import cn.shopex.ecshopx.members.domain.MembersAddress;
 import cn.shopex.ecshopx.members.mapper.MembersAddressMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,12 +47,7 @@ public class MemberAddressDefaultReadService {
 		if (row == null) {
 			return null;
 		}
-		Map<String, Object> m = new LinkedHashMap<>();
-		m.put("lat", row.getLat());
-		m.put("lng", row.getLng());
-		m.put("city", row.getCity());
-		m.put("adrdetail", row.getAdrdetail());
-		m.put("address_id", row.getAddressId());
+		Map<String, Object> m = MemberAddressResponseMaps.toRow(row);
 		if (!isNumericCoordinate(row.getLat()) || !isNumericCoordinate(row.getLng())) {
 			log.warn(
 					"member_default_address_lat_lng_non_numeric companyId={} membersAddressUserIdColumnValue={} addressId={} lat={} lng={}",
