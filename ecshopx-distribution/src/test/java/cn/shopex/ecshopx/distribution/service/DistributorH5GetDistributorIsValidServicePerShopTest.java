@@ -157,14 +157,15 @@ class DistributorH5GetDistributorIsValidServicePerShopTest {
 	}
 
 	@Test
-	void specificDistributor_whenOpenDividedAndNotWhitelisted_returnsInvalidZeroShop() {
+	void specificDistributor_whenOpenDivided_returnsShopTruthWithoutWhitelistGate() {
 		Map<String, Object> info = new LinkedHashMap<>();
 		info.put("distributor_id", Long.valueOf(501L));
 		info.put("is_valid", "true");
 		info.put("open_divided", Long.valueOf(1L));
+		info.put("mobile", "13800000000");
+		info.put("address", "addr");
+		info.put("name", "shop-501");
 		when(distributorIsValidCoreQueryService.getInfo(any())).thenReturn(info);
-		when(distributorWhiteListCheckUserValidService.checkUserValidInDistributor(501L, USER_ID, COMPANY_ID))
-				.thenReturn(false);
 
 		DistributorIsValidQuery query =
 				DistributorIsValidQuery.of(
@@ -173,7 +174,10 @@ class DistributorH5GetDistributorIsValidServicePerShopTest {
 		Map<String, Object> result =
 				service.getDistributorIsValid(COMPANY_ID, USER_ID, COMPANY_ID, USER_ID, query);
 
-		assertThat(result.get("distributor_id")).isEqualTo(0L);
-		assertThat(String.valueOf(result.get("is_valid"))).isEqualTo("false");
+		assertThat(result.get("distributor_id")).isEqualTo(501L);
+		assertThat(String.valueOf(result.get("is_valid"))).isEqualTo("true");
+		assertThat(result.get("open_divided")).isEqualTo(1L);
+		verify(distributorWhiteListCheckUserValidService, never())
+				.checkUserValidInDistributor(anyLong(), anyLong(), anyLong());
 	}
 }

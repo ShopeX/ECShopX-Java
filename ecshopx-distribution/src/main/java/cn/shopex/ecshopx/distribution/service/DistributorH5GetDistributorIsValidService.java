@@ -102,17 +102,8 @@ public class DistributorH5GetDistributorIsValidService {
 			if (result.isEmpty()) {
 				throw new ResourceException("店铺查询错误.");
 			}
-			if (resolvedId != null
-					&& resolvedId.longValue() > 0L
-					&& !distributorWhiteListCheckUserValidService.checkUserValidInDistributor(
-							resolvedId.longValue(), userId, companyId)) {
-				result.clear();
-				result.put("distributor_id", Long.valueOf(0L));
-				result.put("is_delivery", Boolean.TRUE);
-				result.put("is_ziti", Boolean.FALSE);
-				result.put("is_valid", "false");
-				return result;
-			}
+			// Whitelist eligibility is checked by /wxapp/distributor/checkUserInWhite; do not
+			// collapse open_divided shops into distributor_id=0 / is_valid=false here.
 			result.put("status", Boolean.TRUE);
 			if ("true".equals(String.valueOf(result.get("is_valid")))) {
 				result.put("status", Boolean.FALSE);
