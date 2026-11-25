@@ -279,6 +279,37 @@
     }
   },
   {
+    "shopmenu_id": 790,
+    "company_id": 0,
+    "name": "运费模版",
+    "url": "/shopadmin/entity/shippingtemplates",
+    "sort": 8,
+    "is_menu": true,
+    "pid": 682,
+    "apis": null,
+    "icon": null,
+    "is_show": true,
+    "alias_name": "shippingtemplates",
+    "version": 3,
+    "disabled": false,
+    "created": 1795585459,
+    "updated": 1795585574,
+    "level": 2,
+    "parent_name": "商品",
+    "isChildrenMenu": false,
+    "menu_type": [
+      "all"
+    ],
+    "name_lang": {
+      "zh-CN": "运费模版",
+      "en-CN": "",
+      "ar-SA": "",
+      "zh-TW": "",
+      "ja-JP": "",
+      "ru-RU": ""
+    }
+  },
+  {
     "shopmenu_id": 691,
     "company_id": 0,
     "name": "交易",
@@ -437,7 +468,7 @@
   {
     "shopmenu_id": 696,
     "company_id": 0,
-    "name": "运费模板",
+    "name": "运费模板1",
     "url": "/shopadmin/order/shippingtemplates",
     "sort": 5,
     "is_menu": true,
@@ -445,11 +476,11 @@
     "apis": "shipping.templates.list\nshipping.templates.info\nshipping.templates.create\nshipping.templates.update\nshipping.templates.delete\nespier.address.info\ndelivery.process.list",
     "icon": null,
     "is_show": true,
-    "alias_name": "shippingtemplates",
+    "alias_name": "shippingtemplates1",
     "version": 3,
     "disabled": false,
     "created": 1792036073,
-    "updated": 1792036073,
+    "updated": 1795585565,
     "level": 2,
     "parent_name": "交易",
     "isChildrenMenu": false,
@@ -457,7 +488,7 @@
       "platform"
     ],
     "name_lang": {
-      "zh-CN": "运费模板",
+      "zh-CN": "运费模板1",
       "en-CN": "shippingtemplates",
       "ar-SA": "قوالب رسوم الشحن",
       "zh-TW": "運費模板",
