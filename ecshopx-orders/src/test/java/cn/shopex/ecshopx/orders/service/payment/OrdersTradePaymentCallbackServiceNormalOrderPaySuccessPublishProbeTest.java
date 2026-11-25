@@ -20,7 +20,9 @@ import cn.shopex.ecshopx.orders.domain.Trade;
 import cn.shopex.ecshopx.orders.mapper.NormalOrdersMapper;
 import cn.shopex.ecshopx.orders.mapper.OrderAssociationsMapper;
 import cn.shopex.ecshopx.orders.mapper.TradeMapper;
+import cn.shopex.ecshopx.aftersales.service.AftersalesRefundService;
 import cn.shopex.ecshopx.orders.service.tradefinish.OrdersTradeFinishNormalOrderPaySuccessApplyService;
+import cn.shopex.ecshopx.orders.service.tradefinish.OrdersTradeFinishReconcileService;
 import com.baomidou.mybatisplus.core.MybatisConfiguration;
 import com.baomidou.mybatisplus.core.metadata.TableInfoHelper;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -103,18 +105,6 @@ class OrdersTradePaymentCallbackServiceNormalOrderPaySuccessPublishProbeTest {
 		when(normalOrdersMapper.update(any(), any())).thenReturn(1);
 		when(orderAssociationsMapper.update(any(), any())).thenReturn(1);
 
-		NormalOrderPaySuccessDispatchPublisher paySuccessPublisher = mock(NormalOrderPaySuccessDispatchPublisher.class);
-		OrdersTradeFinishNormalOrderPaySuccessBridgeDispatchListener bridge =
-				new OrdersTradeFinishNormalOrderPaySuccessBridgeDispatchListener(applyService, paySuccessPublisher);
-
-		doAnswer(
-						inv -> {
-							bridge.onEvent(inv.getArgument(0));
-							return null;
-						})
-				.when(ordersTradeFinishPublisher)
-				.publish(any());
-
 		Trade notPay = new Trade();
 		notPay.setTradeId("T1");
 		notPay.setTradeState("NOTPAY");
@@ -145,8 +135,28 @@ class OrdersTradePaymentCallbackServiceNormalOrderPaySuccessPublishProbeTest {
 		AtomicInteger selects = new AtomicInteger();
 		when(tradeMapper.selectById(eq("T1")))
 				.thenAnswer(inv -> selects.incrementAndGet() <= 2 ? notPay : success);
+		when(tradeMapper.selectOne(any())).thenReturn(success);
 		when(tradeMapper.updateById(any(Trade.class))).thenReturn(1);
 		when(tradeMapper.update(any(), any())).thenReturn(1);
+
+		OrdersTradeFinishReconcileService reconcileService =
+				new OrdersTradeFinishReconcileService(
+						normalOrdersMapper,
+						tradeMapper,
+						applyService,
+						mock(AftersalesRefundService.class));
+		NormalOrderPaySuccessDispatchPublisher paySuccessPublisher = mock(NormalOrderPaySuccessDispatchPublisher.class);
+		OrdersTradeFinishNormalOrderPaySuccessBridgeDispatchListener bridge =
+				new OrdersTradeFinishNormalOrderPaySuccessBridgeDispatchListener(
+						reconcileService, paySuccessPublisher);
+
+		doAnswer(
+						inv -> {
+							bridge.onEvent(inv.getArgument(0));
+							return null;
+						})
+				.when(ordersTradeFinishPublisher)
+				.publish(any());
 
 		OrdersTradePaymentCallbackService svc =
 				new OrdersTradePaymentCallbackService(

@@ -26,7 +26,9 @@ import cn.shopex.ecshopx.orders.mapper.NormalOrdersMapper;
 import cn.shopex.ecshopx.orders.mapper.OfflinePaymentMapper;
 import cn.shopex.ecshopx.orders.mapper.OrderAssociationsMapper;
 import cn.shopex.ecshopx.orders.mapper.TradeMapper;
+import cn.shopex.ecshopx.aftersales.service.AftersalesRefundService;
 import cn.shopex.ecshopx.orders.service.tradefinish.OrdersTradeFinishNormalOrderPaySuccessApplyService;
+import cn.shopex.ecshopx.orders.service.tradefinish.OrdersTradeFinishReconcileService;
 import com.baomidou.mybatisplus.core.MybatisConfiguration;
 import com.baomidou.mybatisplus.core.metadata.TableInfoHelper;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -152,9 +154,15 @@ class OfflinePaymentDoCheckServiceNormalOrderPaySuccessPublishProbeTest {
 						mock(cn.shopex.ecshopx.supplier.mapper.SupplierOrderMapper.class),
 						mock(cn.shopex.ecshopx.orders.service.setting.OrderValiditySettingRedisReadService.class),
 						mock(cn.shopex.ecshopx.common.dispatch.ThirdPartyTradeUpdateDispatchPublisher.class));
+		OrdersTradeFinishReconcileService reconcileService =
+				new OrdersTradeFinishReconcileService(
+						normalOrdersMapper,
+						tradeMapper,
+						applyService,
+						mock(AftersalesRefundService.class));
 		OrdersTradeFinishNormalOrderPaySuccessBridgeDispatchListener bridge =
 				new OrdersTradeFinishNormalOrderPaySuccessBridgeDispatchListener(
-						applyService, normalOrderPaySuccessDispatchPublisher);
+						reconcileService, normalOrderPaySuccessDispatchPublisher);
 
 		lenient()
 				.doAnswer(

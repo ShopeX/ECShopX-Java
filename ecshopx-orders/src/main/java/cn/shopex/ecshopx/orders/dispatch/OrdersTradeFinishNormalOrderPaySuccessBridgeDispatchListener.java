@@ -18,27 +18,27 @@ package cn.shopex.ecshopx.orders.dispatch;
 
 import cn.shopex.ecshopx.common.dispatch.DispatchListener;
 import cn.shopex.ecshopx.common.dispatch.NormalOrderPaySuccessDispatchPublisher;
-import cn.shopex.ecshopx.orders.service.tradefinish.OrdersTradeFinishNormalOrderPaySuccessApplyService;
+import cn.shopex.ecshopx.orders.service.tradefinish.OrdersTradeFinishReconcileService;
 import java.util.Map;
 import org.springframework.stereotype.Component;
 
 @Component
 public class OrdersTradeFinishNormalOrderPaySuccessBridgeDispatchListener implements DispatchListener {
 
-	private final OrdersTradeFinishNormalOrderPaySuccessApplyService ordersTradeFinishNormalOrderPaySuccessApplyService;
+	private final OrdersTradeFinishReconcileService ordersTradeFinishReconcileService;
 	private final NormalOrderPaySuccessDispatchPublisher normalOrderPaySuccessDispatchPublisher;
 
 	public OrdersTradeFinishNormalOrderPaySuccessBridgeDispatchListener(
-			OrdersTradeFinishNormalOrderPaySuccessApplyService ordersTradeFinishNormalOrderPaySuccessApplyService,
+			OrdersTradeFinishReconcileService ordersTradeFinishReconcileService,
 			NormalOrderPaySuccessDispatchPublisher normalOrderPaySuccessDispatchPublisher) {
-		this.ordersTradeFinishNormalOrderPaySuccessApplyService = ordersTradeFinishNormalOrderPaySuccessApplyService;
+		this.ordersTradeFinishReconcileService = ordersTradeFinishReconcileService;
 		this.normalOrderPaySuccessDispatchPublisher = normalOrderPaySuccessDispatchPublisher;
 	}
 
 	@Override
 	public void onEvent(Map<String, Object> payload) {
-		ordersTradeFinishNormalOrderPaySuccessApplyService
-				.markPayedIfNeeded(payload)
+		ordersTradeFinishReconcileService
+				.reconcile(payload)
 				.ifPresent(normalOrderPaySuccessDispatchPublisher::publish);
 	}
 }
