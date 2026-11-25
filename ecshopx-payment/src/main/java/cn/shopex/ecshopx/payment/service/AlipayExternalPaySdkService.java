@@ -23,16 +23,18 @@ import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.domain.AlipayTradePayModel;
 import com.alipay.api.request.AlipayTradeAppPayRequest;
+import com.alipay.api.request.AlipayTradePagePayRequest;
 import com.alipay.api.request.AlipayTradePayRequest;
 import com.alipay.api.request.AlipayTradeWapPayRequest;
 import com.alipay.api.response.AlipayTradeAppPayResponse;
+import com.alipay.api.response.AlipayTradePagePayResponse;
 import com.alipay.api.response.AlipayTradePayResponse;
 import com.alipay.api.response.AlipayTradeWapPayResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 /**
- * Alipay OpenAPI calls used by orders-layer pay param building (app pay order string, barcode pay).
+ * Alipay OpenAPI calls used by orders-layer pay param building (PC page pay, WAP, app pay, barcode).
  */
 @Service
 public class AlipayExternalPaySdkService {
@@ -41,6 +43,38 @@ public class AlipayExternalPaySdkService {
 
 	public AlipayExternalPaySdkService(AlipayOpenapiClientFactory alipayOpenapiClientFactory) {
 		this.alipayOpenapiClientFactory = alipayOpenapiClientFactory;
+	}
+
+	/**
+	 * PC website pay ({@code alipay.trade.page.pay}), aligned with PHP {@code AlipayService::web()}.
+	 */
+	public String pagePayFormHtml(
+			long companyId,
+			long distributorIdForSetting,
+			String bizContentJson,
+			String returnUrl,
+			String notifyUrl) {
+		if (!StringUtils.hasText(bizContentJson)) {
+			throw new ResourceException("支付失败");
+		}
+		AlipayClient client = alipayOpenapiClientFactory.alipayClient(companyId, distributorIdForSetting);
+		AlipayTradePagePayRequest request = new AlipayTradePagePayRequest();
+		request.setBizContent(bizContentJson.trim());
+		if (StringUtils.hasText(returnUrl)) {
+			request.setReturnUrl(returnUrl.trim());
+		}
+		if (StringUtils.hasText(notifyUrl)) {
+			request.setNotifyUrl(notifyUrl.trim());
+		}
+		try {
+			AlipayTradePagePayResponse response = client.pageExecute(request);
+			if (response == null || !StringUtils.hasText(response.getBody())) {
+				throw new ResourceException("支付失败");
+			}
+			return normalizeWapPayFormHtml(response.getBody());
+		} catch (AlipayApiException e) {
+			throw new ResourceException("支付失败");
+		}
 	}
 
 	public String pageWapPayFormHtml(

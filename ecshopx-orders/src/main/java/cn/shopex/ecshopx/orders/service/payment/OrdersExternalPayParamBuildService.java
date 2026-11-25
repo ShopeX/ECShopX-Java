@@ -551,9 +551,9 @@ public class OrdersExternalPayParamBuildService {
 	}
 
 	/**
-	 * Alipay 拉起参数：通过 {@link AlipayExternalPaySdkService} 调用 OpenAPI {@code alipay.trade.app.pay}
-	 *（{@code sdkExecute}）。{@code alipaymini} 仍使用 {@code FACE_TO_FACE_PAYMENT} 与可选 {@code buyer_id}，与迁移前
-	 * {@code biz_content} 一致。
+	 * Alipay 拉起参数：{@code alipay} → PC {@code alipay.trade.page.pay}（返回 {@code payment}）；
+	 * {@code alipayh5} → WAP；其余默认 App {@code alipay.trade.app.pay}（{@code orderString}）。
+	 * {@code alipaymini} 使用 {@code FACE_TO_FACE_PAYMENT} 与可选 {@code buyer_id}。
 	 */
 	private Map<String, Object> alipayClientParams(
 			String payTypeLc,
@@ -576,37 +576,65 @@ public class OrdersExternalPayParamBuildService {
 		if (!StringUtils.hasText(subject)) {
 			subject = "订单支付";
 		}
-		if ("alipaypos".equals(payTypeLc)) {
-			return alipayTradePayBarCode(companyId, distributorIdForSetting, orderId, tradeId, totalYuan, subject, data);
-		}
-		if ("alipayh5".equals(payTypeLc)) {
-			Map<String, Object> h5Biz = new LinkedHashMap<>();
-			h5Biz.put("out_trade_no", tradeId);
-			h5Biz.put("total_amount", totalYuan);
-			h5Biz.put("subject", subject);
-			h5Biz.put("product_code", "QUICK_WAP_WAY");
-			String passbackQuery = "company_id=" + companyId + "&pay_type=alipayh5";
-			h5Biz.put(
-					"passback_params",
-					URLEncoder.encode(passbackQuery, StandardCharsets.UTF_8));
-			String h5BizJson;
-			try {
-				h5BizJson = objectMapper.writeValueAsString(h5Biz);
-			} catch (JsonProcessingException e) {
-				throw new ResourceException("支付失败");
+			if ("alipaypos".equals(payTypeLc)) {
+				return alipayTradePayBarCode(companyId, distributorIdForSetting, orderId, tradeId, totalYuan, subject, data);
 			}
-			String payment =
-					alipayExternalPaySdkService.pageWapPayFormHtml(
-							companyId,
-							distributorIdForSetting,
-							h5BizJson,
-							str(data.get("return_url")),
-							alipayNotifyUrl);
-			Map<String, Object> h5Out = new LinkedHashMap<>();
-			h5Out.put("payment", payment);
-			attachTradeInfo(h5Out, orderId, tradeId, str(data.get("trade_source_type")));
-			return h5Out;
-		}
+			if ("alipay".equals(payTypeLc)) {
+				Map<String, Object> pcBiz = new LinkedHashMap<>();
+				pcBiz.put("out_trade_no", tradeId);
+				pcBiz.put("total_amount", totalYuan);
+				pcBiz.put("subject", subject);
+				pcBiz.put("product_code", "FAST_INSTANT_TRADE_PAY");
+				String pcPassbackQuery = "company_id=" + companyId + "&pay_type=alipay";
+				pcBiz.put(
+						"passback_params",
+						URLEncoder.encode(pcPassbackQuery, StandardCharsets.UTF_8));
+				String pcBizJson;
+				try {
+					pcBizJson = objectMapper.writeValueAsString(pcBiz);
+				} catch (JsonProcessingException e) {
+					throw new ResourceException("支付失败");
+				}
+				String pcPayment =
+						alipayExternalPaySdkService.pagePayFormHtml(
+								companyId,
+								distributorIdForSetting,
+								pcBizJson,
+								str(data.get("return_url")),
+								alipayNotifyUrl);
+				Map<String, Object> pcOut = new LinkedHashMap<>();
+				pcOut.put("payment", pcPayment);
+				attachTradeInfo(pcOut, orderId, tradeId, str(data.get("trade_source_type")));
+				return pcOut;
+			}
+			if ("alipayh5".equals(payTypeLc)) {
+				Map<String, Object> h5Biz = new LinkedHashMap<>();
+				h5Biz.put("out_trade_no", tradeId);
+				h5Biz.put("total_amount", totalYuan);
+				h5Biz.put("subject", subject);
+				h5Biz.put("product_code", "QUICK_WAP_WAY");
+				String passbackQuery = "company_id=" + companyId + "&pay_type=alipayh5";
+				h5Biz.put(
+						"passback_params",
+						URLEncoder.encode(passbackQuery, StandardCharsets.UTF_8));
+				String h5BizJson;
+				try {
+					h5BizJson = objectMapper.writeValueAsString(h5Biz);
+				} catch (JsonProcessingException e) {
+					throw new ResourceException("支付失败");
+				}
+				String payment =
+						alipayExternalPaySdkService.pageWapPayFormHtml(
+								companyId,
+								distributorIdForSetting,
+								h5BizJson,
+								str(data.get("return_url")),
+								alipayNotifyUrl);
+				Map<String, Object> h5Out = new LinkedHashMap<>();
+				h5Out.put("payment", payment);
+				attachTradeInfo(h5Out, orderId, tradeId, str(data.get("trade_source_type")));
+				return h5Out;
+			}
 		Map<String, Object> biz = new LinkedHashMap<>();
 		biz.put("subject", subject);
 		biz.put("out_trade_no", tradeId);
