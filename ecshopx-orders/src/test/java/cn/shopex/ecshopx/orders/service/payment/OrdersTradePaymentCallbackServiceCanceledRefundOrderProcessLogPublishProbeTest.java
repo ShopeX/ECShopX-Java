@@ -1,6 +1,7 @@
 package cn.shopex.ecshopx.orders.service.payment;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
@@ -96,15 +97,10 @@ class OrdersTradePaymentCallbackServiceCanceledRefundOrderProcessLogPublishProbe
 	private AftersalesRefundService aftersalesRefundService;
 
 	@Test
-	void successStatus_applyTradePaymentNotify_whenCanceledNormalOrder_invokesRefundOrderProcessLogPublishOnce() {
+	void successStatus_applyTradePaymentNotify_whenCanceledNormalOrder_doesNotLegacyRefundOpl() {
 		OrderProcessLogPublishPort orderProcessLogPublishPort = mock(OrderProcessLogPublishPort.class);
 		OfflinePayTradeFinishCanceledNormalOrderRefundService refundService =
-				new OfflinePayTradeFinishCanceledNormalOrderRefundService(
-						normalOrdersMapper,
-						supplierOrderMapper,
-						orderSuccessTradeReadPort,
-						aftersalesRefundService,
-						orderProcessLogPublishPort);
+				new OfflinePayTradeFinishCanceledNormalOrderRefundService(normalOrdersMapper);
 		OrdersTradeFinishOfflinePayCanceledNormalOrderRefundDispatchListener tradeFinishListener =
 				new OrdersTradeFinishOfflinePayCanceledNormalOrderRefundDispatchListener(refundService);
 
@@ -141,19 +137,6 @@ class OrdersTradePaymentCallbackServiceCanceledRefundOrderProcessLogPublishProbe
 		canceled.setDistributorId(12L);
 		canceled.setPoint(0);
 		when(normalOrdersMapper.selectOne(any())).thenReturn(canceled);
-		when(supplierOrderMapper.selectList(any())).thenReturn(List.of());
-
-		Map<String, Object> tradeMap = new LinkedHashMap<>();
-		tradeMap.put("trade_id", "T1");
-		tradeMap.put("pay_type", "alipay");
-		tradeMap.put("fee_type", "CNY");
-		tradeMap.put("cur_fee_type", "CNY");
-		tradeMap.put("cur_fee_rate", 1.0);
-		tradeMap.put("cur_fee_symbol", "￥");
-		tradeMap.put("merchant_id", 88L);
-		when(orderSuccessTradeReadPort.primarySuccessTrade(9L, 501L)).thenReturn(Optional.of(tradeMap));
-
-		doNothing().when(aftersalesRefundService).createRefund(any());
 
 		Trade notPay = new Trade();
 		notPay.setTradeId("T1");
@@ -200,23 +183,9 @@ class OrdersTradePaymentCallbackServiceCanceledRefundOrderProcessLogPublishProbe
 
 		svc.applyTradePaymentNotify("T1", "SUCCESS", Map.of("pay_type", "alipay", "transaction_id", "tx-1"));
 
-		verify(orderProcessLogPublishPort, times(1))
-				.publish(
-						argThat(
-								m ->
-										m != null
-												&& Objects.equals(501L, toLong(m.get("order_id")))
-												&& Objects.equals(9L, toLong(m.get("company_id")))
-												&& Objects.equals("system", String.valueOf(m.get("operator_type")))
-												&& Objects.equals(0L, toLong(m.get("operator_id")))
-												&& Objects.equals("订单退款", m.get("remarks"))
-												&& Objects.equals("订单号：501，系统自动同意退款", m.get("detail"))
-												&& Boolean.FALSE.equals(m.get("is_show"))
-												&& m.get("params") instanceof Map<?, ?> params
-												&& params.size() == 3
-												&& Objects.equals(9L, toLong(params.get("company_id")))
-												&& Objects.equals(501L, toLong(params.get("order_id")))
-												&& Objects.equals(3L, toLong(params.get("user_id")))));
+		verify(orderProcessLogPublishPort, times(0)).publish(any());
+		verify(aftersalesRefundService, times(0)).createRefund(any());
+		verify(orderSuccessTradeReadPort, times(0)).primarySuccessTrade(anyLong(), anyLong());
 	}
 
 	private static long toLong(Object o) {

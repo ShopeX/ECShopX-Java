@@ -3,6 +3,7 @@ package cn.shopex.ecshopx.orders.service.offline;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
@@ -137,12 +138,7 @@ class OfflinePaymentDoCheckTradeFinishCanceledRefundOplPublishProbeTest {
 		transactionTemplate = new TransactionTemplate(syncFiringTxManager());
 
 		OfflinePayTradeFinishCanceledNormalOrderRefundService refundService =
-				new OfflinePayTradeFinishCanceledNormalOrderRefundService(
-						normalOrdersMapper,
-						supplierOrderMapper,
-						orderSuccessTradeReadPort,
-						aftersalesRefundService,
-						orderProcessLogPublishPort);
+				new OfflinePayTradeFinishCanceledNormalOrderRefundService(normalOrdersMapper);
 		OrdersTradeFinishDispatchPublisher inlineTradeFinish = refundService::executeIfApplicable;
 
 		lenient().when(companysRedisTemplate.opsForValue()).thenReturn(companysValueOps);
@@ -170,8 +166,8 @@ class OfflinePaymentDoCheckTradeFinishCanceledRefundOplPublishProbeTest {
 	}
 
 	@Test
-	@DisplayName("Approve path publishes refund order process log entities once")
-	void approve_whenCanceledNormalOrder_publishesRefundOplOnce() {
+	@DisplayName("Approve path does not legacy-refund canceled order (Spec §3.4 → reconcile)")
+	void approve_whenCanceledNormalOrder_doesNotLegacyRefundOrOpl() {
 		long paymentId = 20L;
 		long companyId = 88L;
 		long orderIdNum = 42L;
@@ -209,18 +205,6 @@ class OfflinePaymentDoCheckTradeFinishCanceledRefundOplPublishProbeTest {
 		canceled.setPoint(0);
 		when(normalOrdersMapper.selectOne(any())).thenReturn(canceled);
 
-		when(supplierOrderMapper.selectList(any())).thenReturn(List.of());
-
-		Map<String, Object> tradeMap = new LinkedHashMap<>();
-		tradeMap.put("trade_id", tradeId);
-		tradeMap.put("pay_type", "offline_pay");
-		tradeMap.put("fee_type", "CNY");
-		tradeMap.put("cur_fee_type", "CNY");
-		tradeMap.put("cur_fee_rate", 1.0);
-		tradeMap.put("cur_fee_symbol", "￥");
-		tradeMap.put("merchant_id", 0L);
-		when(orderSuccessTradeReadPort.primarySuccessTrade(companyId, orderIdNum)).thenReturn(Optional.of(tradeMap));
-
 		Trade notPay = new Trade();
 		notPay.setTradeId(tradeId);
 		notPay.setCompanyId(String.valueOf(companyId));
@@ -248,30 +232,13 @@ class OfflinePaymentDoCheckTradeFinishCanceledRefundOplPublishProbeTest {
 
 		service.doCheck(companyId, 1L, "admin", "op", body);
 
-		verify(dispatchFacade, times(3))
+		verify(dispatchFacade, times(2))
 				.publishEvent(
 						eq(OrdersDispatchEventNames.EVENT_ORDER_PROCESS_LOG),
-						payloadCaptor.capture(),
+						any(),
 						eq(DispatchOptions.oplQueuedAfterCommit()));
-
-		List<Map<String, Object>> payloads = payloadCaptor.getAllValues();
-		long refundCount =
-				payloads.stream().filter(p -> "订单退款".equals(String.valueOf(p.get("remarks")))).count();
-		assertEquals(1L, refundCount);
-		Map<String, Object> refundPayload =
-				payloads.stream().filter(p -> "订单退款".equals(String.valueOf(p.get("remarks")))).findFirst().orElseThrow();
-		assertEquals("订单号：" + orderIdNum + "，系统自动同意退款", refundPayload.get("detail"));
-		assertEquals("system", refundPayload.get("operator_type"));
-		assertEquals(0L, ((Number) refundPayload.get("operator_id")).longValue());
-		assertEquals(Boolean.FALSE, refundPayload.get("is_show"));
-		Object paramsObj = refundPayload.get("params");
-		assertTrue(paramsObj instanceof Map<?, ?>);
-		@SuppressWarnings("unchecked")
-		Map<String, Object> params = (Map<String, Object>) paramsObj;
-		assertEquals(orderIdNum, toLong(params.get("order_id")));
-		assertEquals(companyId, toLong(params.get("company_id")));
-		assertEquals(9001L, toLong(params.get("user_id")));
-		verify(aftersalesRefundService, times(1)).createRefund(any());
+		verify(aftersalesRefundService, times(0)).createRefund(any());
+		verify(orderSuccessTradeReadPort, times(0)).primarySuccessTrade(anyLong(), anyLong());
 	}
 
 	@Test
