@@ -19,6 +19,9 @@ package cn.shopex.ecshopx.aftersales.service;
 import cn.shopex.ecshopx.aftersales.domain.AftersalesRefund;
 import cn.shopex.ecshopx.aftersales.mapper.AftersalesRefundMapper;
 import cn.shopex.ecshopx.common.dispatch.AftersalesRefundJobDispatchPublisher;
+import cn.shopex.ecshopx.common.exception.ResourceException;
+import cn.shopex.ecshopx.common.port.aftersales.AftersalesRefundAbnormalChannelPort;
+import cn.shopex.ecshopx.common.port.order.OrderNormalOrderHeaderReadPort;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
@@ -36,6 +39,7 @@ import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -58,14 +62,23 @@ public class AftersalesRefundService {
 					"PROCESSING",
 					"SUCCESS");
 
+	private static final List<String> ABNORMAL_TRADE_REFUND_CAS_FROM =
+			List.of(REFUND_STATUS_PAY_AFTER_CANCEL, REFUND_STATUS_DUP_PAY);
+
 	private final AftersalesRefundMapper aftersalesRefundMapper;
 	private final AftersalesRefundJobDispatchPublisher aftersalesRefundJobDispatchPublisher;
+	private final AftersalesRefundAbnormalChannelPort aftersalesRefundAbnormalChannelPort;
+	private final ObjectProvider<OrderNormalOrderHeaderReadPort> orderNormalOrderHeaderReadPort;
 
 	public AftersalesRefundService(
 			AftersalesRefundMapper aftersalesRefundMapper,
-			AftersalesRefundJobDispatchPublisher aftersalesRefundJobDispatchPublisher) {
+			AftersalesRefundJobDispatchPublisher aftersalesRefundJobDispatchPublisher,
+			AftersalesRefundAbnormalChannelPort aftersalesRefundAbnormalChannelPort,
+			ObjectProvider<OrderNormalOrderHeaderReadPort> orderNormalOrderHeaderReadPort) {
 		this.aftersalesRefundMapper = aftersalesRefundMapper;
 		this.aftersalesRefundJobDispatchPublisher = aftersalesRefundJobDispatchPublisher;
+		this.aftersalesRefundAbnormalChannelPort = aftersalesRefundAbnormalChannelPort;
+		this.orderNormalOrderHeaderReadPort = orderNormalOrderHeaderReadPort;
 	}
 
 	/**
@@ -167,6 +180,149 @@ public class AftersalesRefundService {
 						.orderByDesc(AftersalesRefund::getCreateTime)
 						.last("LIMIT 1");
 		return aftersalesRefundMapper.selectOne(w);
+	}
+
+	/**
+	 * TradeFinish 异常退款实退（Spec §4.3）：CAS 待审异常态 → 渠道打款 → SUCCESS 或回原状态；无订单收尾。
+	 */
+	public AftersalesRefund refundAbnormalTrade(long companyId, long refundBn) {
+		AftersalesRefund refund = loadRefundByBn(companyId, refundBn);
+		if (refund == null) {
+			throw new ResourceException("退款单不存在");
+		}
+		String orderStatus = resolveOrderStatusForAbnormalLog(companyId, refund.getOrderId());
+		String refundStatus = str(refund.getRefundStatus());
+		if ("SUCCESS".equals(refundStatus)) {
+			logRefundAbnormal(
+					refund,
+					orderStatus,
+					refundStatus,
+					"already_success");
+			return refund;
+		}
+		if ("PROCESSING".equals(refundStatus)) {
+			throw new ResourceException("该退款单处理中");
+		}
+		if (!ABNORMAL_TRADE_REFUND_CAS_FROM.contains(refundStatus)) {
+			throw new ResourceException("退款单状态不支持异常实退");
+		}
+
+		String priorStatus = refundStatus;
+		int now = (int) (System.currentTimeMillis() / 1000L);
+		int claimed =
+				aftersalesRefundMapper.update(
+						null,
+						new LambdaUpdateWrapper<AftersalesRefund>()
+								.eq(AftersalesRefund::getCompanyId, companyId)
+								.eq(AftersalesRefund::getRefundBn, refundBn)
+								.eq(AftersalesRefund::getRefundStatus, priorStatus)
+								.set(AftersalesRefund::getRefundStatus, "PROCESSING")
+								.set(AftersalesRefund::getUpdateTime, now));
+		if (claimed <= 0) {
+			return refundAbnormalTradeCasMiss(companyId, refundBn, orderStatus);
+		}
+
+		Map<String, Object> payRes =
+				aftersalesRefundAbnormalChannelPort.dispatchAbnormalRefundChannel(companyId, refundBn);
+		String payStatus = String.valueOf(payRes.getOrDefault("status", ""));
+		int effectiveRefundFee = refund.getRefundFee() == null ? 0 : refund.getRefundFee();
+		int effectiveRefundPoint = refund.getRefundPoint() == null ? 0 : refund.getRefundPoint();
+
+		if ("SUCCESS".equals(payStatus) || "PROCESSING".equals(payStatus)) {
+			String refundId = payRes.get("refund_id") == null ? "" : String.valueOf(payRes.get("refund_id"));
+			aftersalesRefundMapper.update(
+					null,
+					new LambdaUpdateWrapper<AftersalesRefund>()
+							.eq(AftersalesRefund::getCompanyId, companyId)
+							.eq(AftersalesRefund::getRefundBn, refundBn)
+							.eq(AftersalesRefund::getRefundStatus, "PROCESSING")
+							.set(AftersalesRefund::getRefundId, refundId)
+							.set(AftersalesRefund::getRefundStatus, "SUCCESS")
+							.set(AftersalesRefund::getRefundedFee, effectiveRefundFee)
+							.set(AftersalesRefund::getRefundedPoint, effectiveRefundPoint)
+							.set(AftersalesRefund::getRefundSuccessTime, (long) now)
+							.set(AftersalesRefund::getUpdateTime, now));
+			AftersalesRefund fresh = loadRefundByBn(companyId, refundBn);
+			logRefundAbnormal(
+					fresh != null ? fresh : refund,
+					orderStatus,
+					"SUCCESS",
+					"channel_success");
+			return fresh != null ? fresh : refund;
+		}
+
+		aftersalesRefundMapper.update(
+				null,
+				new LambdaUpdateWrapper<AftersalesRefund>()
+						.eq(AftersalesRefund::getCompanyId, companyId)
+						.eq(AftersalesRefund::getRefundBn, refundBn)
+						.eq(AftersalesRefund::getRefundStatus, "PROCESSING")
+						.set(AftersalesRefund::getRefundStatus, priorStatus)
+						.set(AftersalesRefund::getUpdateTime, now));
+		AftersalesRefund restored = loadRefundByBn(companyId, refundBn);
+		logRefundAbnormal(
+				restored != null ? restored : refund,
+				orderStatus,
+				priorStatus,
+				"channel_fail");
+		Object err = payRes.get("error_desc");
+		if (err == null) {
+			err = payRes.get("error_msg");
+		}
+		String msg = err == null ? "退款失败" : String.valueOf(err);
+		throw new ResourceException(msg.isBlank() ? "退款失败" : msg);
+	}
+
+	private AftersalesRefund refundAbnormalTradeCasMiss(
+			long companyId, long refundBn, String orderStatus) {
+		AftersalesRefund again = loadRefundByBn(companyId, refundBn);
+		if (again == null) {
+			throw new ResourceException("退款单不存在");
+		}
+		String rs = str(again.getRefundStatus());
+		if ("SUCCESS".equals(rs)) {
+			logRefundAbnormal(again, orderStatus, rs, "already_success");
+			return again;
+		}
+		if ("PROCESSING".equals(rs)) {
+			throw new ResourceException("该退款单处理中");
+		}
+		throw new ResourceException("退款单状态已变化，请重试");
+	}
+
+	private AftersalesRefund loadRefundByBn(long companyId, long refundBn) {
+		return aftersalesRefundMapper.selectOne(
+				new LambdaQueryWrapper<AftersalesRefund>()
+						.eq(AftersalesRefund::getCompanyId, companyId)
+						.eq(AftersalesRefund::getRefundBn, refundBn)
+						.last("LIMIT 1"));
+	}
+
+	private String resolveOrderStatusForAbnormalLog(long companyId, Long orderId) {
+		if (orderId == null || orderId <= 0L) {
+			return "";
+		}
+		OrderNormalOrderHeaderReadPort port =
+				orderNormalOrderHeaderReadPort == null ? null : orderNormalOrderHeaderReadPort.getIfAvailable();
+		if (port == null) {
+			return "";
+		}
+		return port.getHeader(companyId, orderId)
+				.map(h -> str(h.get("order_status")))
+				.orElse("");
+	}
+
+	private void logRefundAbnormal(
+			AftersalesRefund refund, String orderStatus, String refundStatus, String result) {
+		log.info(
+				"refund_abnormal_refund order_id={} company_id={} trade_id={} order_status={} refund_status={} refund_bn={} result={}",
+				refund.getOrderId(),
+				refund.getCompanyId(),
+				refund.getTradeId(),
+				orderStatus,
+				refundStatus,
+				refund.getRefundBn(),
+				result);
 	}
 
 	/**

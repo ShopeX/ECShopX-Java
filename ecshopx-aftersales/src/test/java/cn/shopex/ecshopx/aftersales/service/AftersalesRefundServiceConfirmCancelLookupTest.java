@@ -7,6 +7,9 @@ import static org.mockito.Mockito.when;
 import cn.shopex.ecshopx.aftersales.domain.AftersalesRefund;
 import cn.shopex.ecshopx.aftersales.mapper.AftersalesRefundMapper;
 import cn.shopex.ecshopx.common.dispatch.AftersalesRefundJobDispatchPublisher;
+import cn.shopex.ecshopx.common.port.aftersales.AftersalesRefundAbnormalChannelPort;
+import cn.shopex.ecshopx.common.port.order.OrderNormalOrderHeaderReadPort;
+import org.springframework.beans.factory.ObjectProvider;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -24,11 +27,22 @@ class AftersalesRefundServiceConfirmCancelLookupTest {
 	@Mock
 	private AftersalesRefundJobDispatchPublisher aftersalesRefundJobDispatchPublisher;
 
+	@Mock
+	private AftersalesRefundAbnormalChannelPort aftersalesRefundAbnormalChannelPort;
+
+	@Mock
+	private ObjectProvider<OrderNormalOrderHeaderReadPort> orderNormalOrderHeaderReadPort;
+
 	private AftersalesRefundService service;
 
 	@BeforeEach
 	void init() {
-		service = new AftersalesRefundService(aftersalesRefundMapper, aftersalesRefundJobDispatchPublisher);
+		service =
+				new AftersalesRefundService(
+						aftersalesRefundMapper,
+						aftersalesRefundJobDispatchPublisher,
+						aftersalesRefundAbnormalChannelPort,
+						orderNormalOrderHeaderReadPort);
 	}
 
 	@Test

@@ -18,6 +18,9 @@ import ch.qos.logback.core.read.ListAppender;
 import cn.shopex.ecshopx.aftersales.domain.AftersalesRefund;
 import cn.shopex.ecshopx.aftersales.mapper.AftersalesRefundMapper;
 import cn.shopex.ecshopx.common.dispatch.AftersalesRefundJobDispatchPublisher;
+import cn.shopex.ecshopx.common.port.aftersales.AftersalesRefundAbnormalChannelPort;
+import cn.shopex.ecshopx.common.port.order.OrderNormalOrderHeaderReadPort;
+import org.springframework.beans.factory.ObjectProvider;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
@@ -39,13 +42,24 @@ class AftersalesRefundServiceScheduleRefundTest {
 	@Mock
 	private AftersalesRefundJobDispatchPublisher aftersalesRefundJobDispatchPublisher;
 
+	@Mock
+	private AftersalesRefundAbnormalChannelPort aftersalesRefundAbnormalChannelPort;
+
+	@Mock
+	private ObjectProvider<OrderNormalOrderHeaderReadPort> orderNormalOrderHeaderReadPort;
+
 	private AftersalesRefundService service;
 	private ListAppender<ILoggingEvent> listAppender;
 	private Logger serviceLogger;
 
 	@BeforeEach
 	void init() {
-		service = new AftersalesRefundService(aftersalesRefundMapper, aftersalesRefundJobDispatchPublisher);
+		service =
+				new AftersalesRefundService(
+						aftersalesRefundMapper,
+						aftersalesRefundJobDispatchPublisher,
+						aftersalesRefundAbnormalChannelPort,
+						orderNormalOrderHeaderReadPort);
 		listAppender = new ListAppender<>();
 		listAppender.start();
 		listAppender.list.clear();
