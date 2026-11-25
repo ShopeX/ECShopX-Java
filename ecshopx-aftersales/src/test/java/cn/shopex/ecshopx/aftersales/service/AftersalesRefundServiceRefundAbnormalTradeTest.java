@@ -109,6 +109,25 @@ class AftersalesRefundServiceRefundAbnormalTradeTest {
 	}
 
 	@Test
+	@DisplayName("§4.3 渠道抛错：CAS 后恢复原异常状态")
+	void refundAbnormalTrade_channelThrows_restoresPriorStatus() {
+		AftersalesRefund pending =
+				abnormalPending(AftersalesRefundService.REFUND_STATUS_PAY_AFTER_CANCEL);
+		AftersalesRefund restored =
+				abnormalPending(AftersalesRefundService.REFUND_STATUS_PAY_AFTER_CANCEL);
+		when(aftersalesRefundMapper.selectOne(any())).thenReturn(pending, restored);
+		when(aftersalesRefundMapper.update(any(), any())).thenReturn(1);
+		when(aftersalesRefundAbnormalChannelPort.dispatchAbnormalRefundChannel(COMPANY_ID, REFUND_BN))
+				.thenThrow(new ResourceException("支付单不存在或非成功态"));
+
+		assertThatThrownBy(() -> service.refundAbnormalTrade(COMPANY_ID, REFUND_BN))
+				.isInstanceOf(ResourceException.class)
+				.hasMessageContaining("支付单不存在");
+
+		verify(aftersalesRefundMapper, times(2)).update(any(), any());
+	}
+
+	@Test
 	@DisplayName("§4.3 SUCCESS 幂等：不调渠道")
 	void refundAbnormalTrade_alreadySuccess_idempotent() {
 		AftersalesRefund done = successRefund(abnormalPending(AftersalesRefundService.REFUND_STATUS_PAY_AFTER_CANCEL));

@@ -222,8 +222,21 @@ public class AftersalesRefundService {
 			return refundAbnormalTradeCasMiss(companyId, refundBn, orderStatus);
 		}
 
-		Map<String, Object> payRes =
-				aftersalesRefundAbnormalChannelPort.dispatchAbnormalRefundChannel(companyId, refundBn);
+		Map<String, Object> payRes;
+		try {
+			payRes =
+					aftersalesRefundAbnormalChannelPort.dispatchAbnormalRefundChannel(
+							companyId, refundBn);
+		} catch (RuntimeException ex) {
+			restoreAbnormalRefundPriorStatus(companyId, refundBn, priorStatus, now);
+			AftersalesRefund restored = loadRefundByBn(companyId, refundBn);
+			logRefundAbnormal(
+					restored != null ? restored : refund,
+					orderStatus,
+					priorStatus,
+					"channel_throw");
+			throw ex;
+		}
 		String payStatus = String.valueOf(payRes.getOrDefault("status", ""));
 		int effectiveRefundFee = refund.getRefundFee() == null ? 0 : refund.getRefundFee();
 		int effectiveRefundPoint = refund.getRefundPoint() == null ? 0 : refund.getRefundPoint();
@@ -251,14 +264,7 @@ public class AftersalesRefundService {
 			return fresh != null ? fresh : refund;
 		}
 
-		aftersalesRefundMapper.update(
-				null,
-				new LambdaUpdateWrapper<AftersalesRefund>()
-						.eq(AftersalesRefund::getCompanyId, companyId)
-						.eq(AftersalesRefund::getRefundBn, refundBn)
-						.eq(AftersalesRefund::getRefundStatus, "PROCESSING")
-						.set(AftersalesRefund::getRefundStatus, priorStatus)
-						.set(AftersalesRefund::getUpdateTime, now));
+		restoreAbnormalRefundPriorStatus(companyId, refundBn, priorStatus, now);
 		AftersalesRefund restored = loadRefundByBn(companyId, refundBn);
 		logRefundAbnormal(
 				restored != null ? restored : refund,
@@ -271,6 +277,18 @@ public class AftersalesRefundService {
 		}
 		String msg = err == null ? "退款失败" : String.valueOf(err);
 		throw new ResourceException(msg.isBlank() ? "退款失败" : msg);
+	}
+
+	private void restoreAbnormalRefundPriorStatus(
+			long companyId, long refundBn, String priorStatus, int now) {
+		aftersalesRefundMapper.update(
+				null,
+				new LambdaUpdateWrapper<AftersalesRefund>()
+						.eq(AftersalesRefund::getCompanyId, companyId)
+						.eq(AftersalesRefund::getRefundBn, refundBn)
+						.eq(AftersalesRefund::getRefundStatus, "PROCESSING")
+						.set(AftersalesRefund::getRefundStatus, priorStatus)
+						.set(AftersalesRefund::getUpdateTime, now));
 	}
 
 	private AftersalesRefund refundAbnormalTradeCasMiss(
