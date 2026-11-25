@@ -45,6 +45,19 @@ public class AftersalesRefundService {
 	/** Lower bound for order creation time (Unix epoch seconds); scheduled refunds only include orders created at or after this instant. */
 	public static final int SCHEDULE_REFUND_MIN_CREATE_TIME_EPOCH_SEC = 1607616000;
 
+	/** TradeFinish 逾期支付待人工审批退款（Spec §2.1） */
+	public static final String REFUND_STATUS_PAY_AFTER_CANCEL = "PAY_AFTER_CANCEL";
+
+	/** TradeFinish 重复支付待人工审批退款（Spec §2.1） */
+	public static final String REFUND_STATUS_DUP_PAY = "DUP_PAY";
+
+	private static final List<String> ABNORMAL_TRADE_REFUND_IDEMPOTENT_STATUSES =
+			List.of(
+					REFUND_STATUS_PAY_AFTER_CANCEL,
+					REFUND_STATUS_DUP_PAY,
+					"PROCESSING",
+					"SUCCESS");
+
 	private final AftersalesRefundMapper aftersalesRefundMapper;
 	private final AftersalesRefundJobDispatchPublisher aftersalesRefundJobDispatchPublisher;
 
@@ -59,6 +72,107 @@ public class AftersalesRefundService {
 	 * 售前取消等场景直接创建退款申请单（对位仓储 create + 字段组装）。
 	 * 写库后回写 {@code params}：{@code refund_bn}（{@link Long}）、若存在则 {@code refund_id}。
 	 */
+	/**
+	 * TradeFinish 异常退款建单工厂：绑定本笔 {@code trade_id}，状态为 {@link #REFUND_STATUS_PAY_AFTER_CANCEL} 或
+	 * {@link #REFUND_STATUS_DUP_PAY}。同 {@code company_id + trade_id} 在待审/处理中/已成功时幂等返回已有单。
+	 */
+	public AftersalesRefund createAbnormalTradeRefund(
+			Map<String, Object> order, Map<String, Object> tradeRow, String refundStatus) {
+		if (order == null || tradeRow == null) {
+			throw new IllegalArgumentException("order and tradeRow required");
+		}
+		String status = str(refundStatus);
+		if (!REFUND_STATUS_PAY_AFTER_CANCEL.equals(status) && !REFUND_STATUS_DUP_PAY.equals(status)) {
+			throw new IllegalArgumentException("abnormal refund_status must be PAY_AFTER_CANCEL or DUP_PAY");
+		}
+		long companyId = longVal(order.get("company_id"));
+		String tradeId = str(tradeRow.get("trade_id"));
+		if (companyId <= 0L || tradeId.isEmpty()) {
+			throw new IllegalArgumentException("company_id and trade_id required");
+		}
+		AftersalesRefund existing = findAbnormalTradeRefundIdempotent(companyId, tradeId);
+		if (existing != null) {
+			return existing;
+		}
+
+		String tradePayType = str(tradeRow.get("pay_type"));
+		int payFee = intVal(tradeRow.get("pay_fee"));
+		int refundFee = "point".equalsIgnoreCase(tradePayType) ? 0 : payFee;
+		int refundPoint = "point".equalsIgnoreCase(tradePayType) ? payFee : 0;
+		String refundChannel =
+				"offline_pay".equalsIgnoreCase(tradePayType) ? "offline" : "original";
+
+		long userId = longVal(order.get("user_id"));
+		long orderId = longVal(order.get("order_id"));
+		long shopId = longVal(order.get("shop_id"));
+		long distributorId = longVal(order.get("distributor_id"));
+		long merchantId = longVal(tradeRow.get("merchant_id"));
+		String freightType = str(order.get("freight_type"));
+		if (freightType.isEmpty()) {
+			freightType = "cash";
+		}
+		String curFeeType = str(tradeRow.get("cur_fee_type"));
+		if (curFeeType.isEmpty()) {
+			curFeeType = "CNY";
+		}
+		BigDecimal curFeeRateBd = toBigDecimal(tradeRow.get("cur_fee_rate"));
+		String curFeeSymbol = str(tradeRow.get("cur_fee_symbol"));
+		if (curFeeSymbol.isEmpty()) {
+			curFeeSymbol = "￥";
+		}
+		String curPayFee =
+				"point".equalsIgnoreCase(tradePayType)
+						? String.valueOf(refundPoint)
+						: BigDecimal.valueOf(refundFee)
+								.multiply(curFeeRateBd)
+								.setScale(0, RoundingMode.HALF_UP)
+								.toPlainString();
+
+		int now = (int) (System.currentTimeMillis() / 1000L);
+		AftersalesRefund row = new AftersalesRefund();
+		row.setRefundBn(genRefundBnLong());
+		row.setOrderId(orderId);
+		row.setTradeId(tradeId);
+		row.setCompanyId(companyId);
+		row.setSupplierId(0L);
+		row.setUserId(userId);
+		row.setShopId(shopId);
+		row.setDistributorId(distributorId);
+		row.setRefundType("1");
+		row.setRefundChannel(refundChannel);
+		row.setRefundStatus(status);
+		row.setRefundFee(refundFee);
+		row.setRefundPoint(refundPoint);
+		row.setReturnFreight(0);
+		row.setFreight(0);
+		row.setFreightType(freightType);
+		row.setPayType(tradePayType);
+		row.setCurrency("point".equalsIgnoreCase(tradePayType) ? "" : str(tradeRow.get("fee_type")));
+		row.setCurFeeType(
+				"point".equalsIgnoreCase(tradePayType) ? "" : curFeeType);
+		row.setCurFeeRate(curFeeRateBd.setScale(4, RoundingMode.HALF_UP).doubleValue());
+		row.setCurFeeSymbol(
+				"point".equalsIgnoreCase(tradePayType) ? "" : curFeeSymbol);
+		row.setCurPayFee(curPayFee);
+		row.setReturnPoint(0);
+		row.setMerchantId(merchantId);
+		row.setCreateTime(now);
+		row.setUpdateTime(now);
+		aftersalesRefundMapper.insert(row);
+		return row;
+	}
+
+	AftersalesRefund findAbnormalTradeRefundIdempotent(long companyId, String tradeId) {
+		LambdaQueryWrapper<AftersalesRefund> w =
+				new LambdaQueryWrapper<AftersalesRefund>()
+						.eq(AftersalesRefund::getCompanyId, companyId)
+						.eq(AftersalesRefund::getTradeId, tradeId)
+						.in(AftersalesRefund::getRefundStatus, ABNORMAL_TRADE_REFUND_IDEMPOTENT_STATUSES)
+						.orderByDesc(AftersalesRefund::getCreateTime)
+						.last("LIMIT 1");
+		return aftersalesRefundMapper.selectOne(w);
+	}
+
 	public void createRefund(Map<String, Object> params) {
 		if (params == null) {
 			return;

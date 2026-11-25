@@ -79,7 +79,7 @@ public class AftersalesRefund {
     private String refundChannel;
 
     /**
-     * 退款状态，列默认 READY。READY 未审核；AUDIT_SUCCESS 审核成功待退款；SUCCESS 退款成功；REFUSE 退款驳回；CANCEL 撤销退款；REFUNDCLOSE 退款关闭；PROCESSING 退款处理中或已发起退款等待到账；CHANGE 退款异常
+     * 退款状态，列默认 READY。READY 未审核；AUDIT_SUCCESS 审核成功待退款；SUCCESS 退款成功；REFUSE 退款驳回；CANCEL 撤销退款；REFUNDCLOSE 退款关闭；PROCESSING 退款处理中或已发起退款等待到账；CHANGE 退款异常；PAY_AFTER_CANCEL 逾期支付待人工审批退款；DUP_PAY 重复支付待人工审批退款
      */
     @MpField(value = "refund_status", columnType = "string", comment = "退款状态", defaultValue = "READY")
     private String refundStatus = "READY";
