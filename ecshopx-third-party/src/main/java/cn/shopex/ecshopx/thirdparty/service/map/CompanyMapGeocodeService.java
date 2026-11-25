@@ -387,6 +387,10 @@ public class CompanyMapGeocodeService implements CompanyMapGeocodePort {
 	private String tencentGeocoderV1HttpBody(MapConfig cfg, String combinedAddress, String regionOptional) {
 		String cleaned = cleanAddressForTencent(combinedAddress);
 		if (!StringUtils.hasText(cleaned)) {
+			log.warn(
+					"tencent forward geocode skip empty address companyId={} rawAddress={}",
+					cfg.getCompanyId(),
+					combinedAddress);
 			return null;
 		}
 		String appKey = cfg.getAppKey() == null ? "" : cfg.getAppKey();
@@ -404,7 +408,29 @@ public class CompanyMapGeocodeService implements CompanyMapGeocodePort {
 			ub.queryParam(e.getKey(), e.getValue());
 		}
 		String url = ub.encode(StandardCharsets.UTF_8).build().toUriString();
-		return restClient.get().uri(url).retrieve().body(String.class);
+		// request: log query params (no app_secret); response body for diagnose
+		log.info(
+				"tencent forward geocode request companyId={} address={} region={} key={} sig={}",
+				cfg.getCompanyId(),
+				cleaned,
+				regionOptional,
+				appKey,
+				sig);
+		String body;
+		try {
+			body = restClient.get().uri(url).retrieve().body(String.class);
+		} catch (Exception e) {
+			log.warn(
+					"tencent forward geocode http failed companyId={} reason={}",
+					cfg.getCompanyId(),
+					e.getMessage());
+			throw e;
+		}
+		log.info(
+				"tencent forward geocode response companyId={} body={}",
+				cfg.getCompanyId(),
+				body);
+		return body;
 	}
 
 	private Object forwardTencentPositionRaw(MapConfig cfg, String address) {
