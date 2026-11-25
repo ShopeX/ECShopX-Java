@@ -69,10 +69,6 @@ public class AftersalesRefundService {
 	}
 
 	/**
-	 * 售前取消等场景直接创建退款申请单（对位仓储 create + 字段组装）。
-	 * 写库后回写 {@code params}：{@code refund_bn}（{@link Long}）、若存在则 {@code refund_id}。
-	 */
-	/**
 	 * TradeFinish 异常退款建单工厂：绑定本笔 {@code trade_id}，状态为 {@link #REFUND_STATUS_PAY_AFTER_CANCEL} 或
 	 * {@link #REFUND_STATUS_DUP_PAY}。同 {@code company_id + trade_id} 在待审/处理中/已成功时幂等返回已有单。
 	 */
@@ -173,6 +169,10 @@ public class AftersalesRefundService {
 		return aftersalesRefundMapper.selectOne(w);
 	}
 
+	/**
+	 * 售前取消等场景直接创建退款申请单（对位仓储 create + 字段组装）。
+	 * 写库后回写 {@code params}：{@code refund_bn}（{@link Long}）、若存在则 {@code refund_id}。
+	 */
 	public void createRefund(Map<String, Object> params) {
 		if (params == null) {
 			return;

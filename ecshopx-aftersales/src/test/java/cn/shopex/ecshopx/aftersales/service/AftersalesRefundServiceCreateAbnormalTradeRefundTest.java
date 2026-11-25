@@ -106,6 +106,27 @@ class AftersalesRefundServiceCreateAbnormalTradeRefundTest {
 	}
 
 	@Test
+	@DisplayName("幂等：已 PROCESSING 返回既有单且不 insert")
+	void createAbnormalTradeRefund_whenProcessingExists_returnsExistingWithoutInsert() {
+		AftersalesRefund existing = new AftersalesRefund();
+		existing.setRefundBn(2_0260115777L);
+		existing.setCompanyId(1L);
+		existing.setTradeId("T-PROCESSING");
+		existing.setRefundStatus("PROCESSING");
+		when(aftersalesRefundMapper.selectOne(any())).thenReturn(existing);
+
+		AftersalesRefund result =
+				service.createAbnormalTradeRefund(
+						baseOrder(),
+						baseTradeRow("T-PROCESSING", "wxpay", 200),
+						AftersalesRefundService.REFUND_STATUS_PAY_AFTER_CANCEL);
+
+		assertThat(result).isSameAs(existing);
+		assertThat(result.getRefundStatus()).isEqualTo("PROCESSING");
+		verify(aftersalesRefundMapper, never()).insert(any(AftersalesRefund.class));
+	}
+
+	@Test
 	@DisplayName("幂等：已 SUCCESS 返回既有单且不 insert")
 	void createAbnormalTradeRefund_whenSuccessExists_returnsExisting() {
 		AftersalesRefund existing = new AftersalesRefund();
@@ -131,6 +152,11 @@ class AftersalesRefundServiceCreateAbnormalTradeRefundTest {
 						() ->
 								service.createAbnormalTradeRefund(
 										baseOrder(), baseTradeRow("T-X", "wxpay", 1), "READY"))
+				.isInstanceOf(IllegalArgumentException.class);
+		assertThatThrownBy(
+						() ->
+								service.createAbnormalTradeRefund(
+										baseOrder(), baseTradeRow("T-Y", "wxpay", 1), "AUDIT_SUCCESS"))
 				.isInstanceOf(IllegalArgumentException.class);
 		verify(aftersalesRefundMapper, never()).insert(any(AftersalesRefund.class));
 	}
