@@ -114,6 +114,67 @@ class OrdersTradeFinishNormalOrderPaySuccessApplyServiceTest {
 	}
 
 	@Test
+	void markPayedIfNeeded_partPaymentOrderStatus_advancesToPayed() {
+		NormalOrders existing = new NormalOrders();
+		existing.setOrderStatus("PART_PAYMENT");
+		existing.setPayStatus("NOTPAY");
+		existing.setOrderClass("normal");
+		existing.setUserId(9L);
+		when(normalOrdersMapper.selectOne(any())).thenReturn(existing);
+		when(normalOrdersMapper.update(any(), any())).thenReturn(1);
+		when(orderAssociationsMapper.update(any(), any())).thenReturn(1);
+		SupplierOrderMapper supplierOrderMapper = mock(SupplierOrderMapper.class);
+		when(supplierOrderMapper.update(any(), any())).thenReturn(1);
+		ThirdPartyTradeUpdateDispatchPublisher tradeUpdatePublisher =
+				mock(ThirdPartyTradeUpdateDispatchPublisher.class);
+		OrdersTradeFinishNormalOrderPaySuccessApplyService service =
+				new OrdersTradeFinishNormalOrderPaySuccessApplyService(
+						normalOrdersMapper,
+						normalOrdersItemsMapper,
+						orderAssociationsMapper,
+						supplierOrderMapper,
+						orderValiditySettingRedisReadService,
+						tradeUpdatePublisher);
+
+		Map<String, Object> payload = successPayload(1L, 600L, "normal_normal");
+
+		Optional<Map<String, Object>> out = service.markPayedIfNeeded(payload);
+
+		assertTrue(out.isPresent());
+		assertEquals(1L, out.get().get("company_id"));
+		assertEquals(600L, out.get().get("order_id"));
+		verify(normalOrdersMapper).update(any(), any());
+		verify(orderAssociationsMapper).update(any(), any());
+		verify(supplierOrderMapper).update(any(), any());
+	}
+
+	@Test
+	void markPayedIfNeeded_alreadyPayedOrderStatus_returnsEmpty() {
+		NormalOrders existing = new NormalOrders();
+		existing.setOrderStatus("PAYED");
+		existing.setPayStatus("PAYED");
+		when(normalOrdersMapper.selectOne(any())).thenReturn(existing);
+		when(normalOrdersMapper.update(any(), any())).thenReturn(0);
+		SupplierOrderMapper supplierOrderMapper = mock(SupplierOrderMapper.class);
+		ThirdPartyTradeUpdateDispatchPublisher tradeUpdatePublisher =
+				mock(ThirdPartyTradeUpdateDispatchPublisher.class);
+		OrdersTradeFinishNormalOrderPaySuccessApplyService service =
+				new OrdersTradeFinishNormalOrderPaySuccessApplyService(
+						normalOrdersMapper,
+						normalOrdersItemsMapper,
+						orderAssociationsMapper,
+						supplierOrderMapper,
+						orderValiditySettingRedisReadService,
+						tradeUpdatePublisher);
+
+		assertTrue(service.markPayedIfNeeded(successPayload(1L, 700L, "normal_normal")).isEmpty());
+		verify(normalOrdersMapper).update(any(), any());
+		verify(orderAssociationsMapper, never()).update(any(), any());
+		verify(supplierOrderMapper, never()).update(any(), any());
+		verify(tradeUpdatePublisher, never()).publish(any());
+	}
+
+	@Test
 	void markPayedIfNeeded_unknownTradeSource_skipsUpdate() {
 		SupplierOrderMapper supplierOrderMapper = mock(SupplierOrderMapper.class);
 		ThirdPartyTradeUpdateDispatchPublisher tradeUpdatePublisher =

@@ -82,8 +82,9 @@ public class OrdersTradeFinishNormalOrderPaySuccessApplyService {
 	}
 
 	/**
-	 * When trade finish indicates a successful mall normal-order payment, transitions {@code NOTPAY} rows to
-	 * the trade-success status and returns the async follow-up payload; otherwise empty.
+	 * When trade finish indicates a successful mall normal-order payment, transitions {@code NOTPAY} or
+	 * {@code PART_PAYMENT} rows to the trade-success status and returns the async follow-up payload; otherwise
+	 * empty.
 	 *
 	 * <p>{@link Propagation#REQUIRES_NEW} is required because TradeFinish often runs inside an outer payment
 	 * TX {@code afterCommit}: joining that already-committed TX and registering another {@code afterCommit}
@@ -132,7 +133,7 @@ public class OrdersTradeFinishNormalOrderPaySuccessApplyService {
 						new LambdaUpdateWrapper<NormalOrders>()
 								.eq(NormalOrders::getCompanyId, companyId)
 								.eq(NormalOrders::getOrderId, orderId)
-								.eq(NormalOrders::getOrderStatus, "NOTPAY")
+								.in(NormalOrders::getOrderStatus, "NOTPAY", "PART_PAYMENT")
 								.set(NormalOrders::getOrderStatus, targetOrderStatus)
 								.set(NormalOrders::getPayStatus, "PAYED"));
 		if (updatedNormal <= 0) {
@@ -144,7 +145,7 @@ public class OrdersTradeFinishNormalOrderPaySuccessApplyService {
 				new LambdaUpdateWrapper<OrderAssociations>()
 						.eq(OrderAssociations::getCompanyId, companyId)
 						.eq(OrderAssociations::getOrderId, orderId)
-						.eq(OrderAssociations::getOrderStatus, "NOTPAY")
+						.in(OrderAssociations::getOrderStatus, "NOTPAY", "PART_PAYMENT")
 						.set(OrderAssociations::getOrderStatus, targetOrderStatus));
 
 		if ("PAYED".equals(targetOrderStatus) || "DONE".equals(targetOrderStatus)) {
@@ -168,7 +169,8 @@ public class OrdersTradeFinishNormalOrderPaySuccessApplyService {
 
 	/**
 	 * PHP {@code AbstractNormalOrder::orderStatusUpdate} fires {@code TradeUpdateEvent} whenever the new status is
-	 * not {@code PART_PAYMENT}. This path only leaves {@code NOTPAY}, so the SaasErp add is always scheduled.
+	 * not {@code PART_PAYMENT}. This path only leaves {@code NOTPAY} or {@code PART_PAYMENT}, so the SaasErp add
+	 * is always scheduled.
 	 *
 	 * <p>Defer only while a real TX is still open ({@link
 	 * TransactionSynchronizationManager#isActualTransactionActive()}). With {@code REQUIRES_NEW} on {@link
