@@ -249,6 +249,42 @@ class CreateDeliverySaasErpActTest {
 		assertEquals("A", sepInfo.get(0).get("item_bn"));
 		assertEquals("LN1", sepInfo.get(0).get("delivery_code"));
 		assertEquals("SF", sepInfo.get(0).get("delivery_corp"));
+		Object deliveryNum = sepInfo.get(0).get("delivery_num");
+		assertTrue(deliveryNum instanceof Number, "delivery_num should be numeric");
+		assertEquals(1, ((Number) deliveryNum).intValue());
+		assertEquals("1", String.valueOf(deliveryNum).trim());
+	}
+
+	@Test
+	void stringNumberFromErpYieldsWholeIntDeliveryNum() throws Exception {
+		Map<String, Object> pending = itemRow("KC26011700000010", "PENDING", 0, 1);
+		pending.put("id", 6271L);
+		when(deliveryOrderPort.load(COMPANY_ID, "5441653000350261"))
+				.thenReturn(Optional.of(orderWithItems(List.of(pending))));
+		when(sepDeliveryPort.deliver(any())).thenReturn(Boolean.TRUE);
+
+		Map<String, String> params = new LinkedHashMap<>();
+		params.put("order_id", "5441653000350261");
+		params.put("logi_no", "SF123456789");
+		params.put("logi_code", "SF");
+		params.put(
+				"struct",
+				"[{\"item_id\":\"\",\"item_type\":\"\",\"product_bn\":\"KC26011700000010\","
+						+ "\"product_name\":\"jacket\",\"number\":\"1\"}]");
+		params.put("delivery_type", "delivery");
+
+		SaasErpInboundResult result = handler.handle(params, COMPANY_ID);
+
+		assertEquals("true", result.status());
+		ArgumentCaptor<Map<String, Object>> captor = ArgumentCaptor.forClass(Map.class);
+		verify(sepDeliveryPort).deliver(captor.capture());
+		ObjectMapper mapper = new ObjectMapper();
+		@SuppressWarnings("unchecked")
+		List<Map<String, Object>> sepInfo =
+				mapper.readValue((String) captor.getValue().get("sepInfo"), List.class);
+		Object deliveryNum = sepInfo.get(0).get("delivery_num");
+		assertEquals("1", String.valueOf(deliveryNum).trim());
+		assertTrue(String.valueOf(deliveryNum).trim().matches("^[1-9][0-9]*$"));
 	}
 
 	private static Map<String, String> deliveryParams(String orderId) {

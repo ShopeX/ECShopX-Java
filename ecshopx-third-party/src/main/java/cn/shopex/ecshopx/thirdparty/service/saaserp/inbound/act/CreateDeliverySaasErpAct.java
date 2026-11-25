@@ -170,8 +170,11 @@ public class CreateDeliverySaasErpAct implements SaasErpActHandler {
 				}
 				deliveryNum.put(itemBn, requested - shipNum);
 				deliveryItemNum += shipNum;
-				line.put("delivery_item_num", deliveryItemNum);
-				line.put("delivery_num", shipNum);
+				// Match PHP: delivery_num must stringify as a whole positive int
+				// ("1", not "1.0") for OrderDeliveryService's /^[1-9][0-9]*$/ check.
+				int shipNumInt = (int) Math.round(shipNum);
+				line.put("delivery_item_num", (int) Math.round(deliveryItemNum));
+				line.put("delivery_num", shipNumInt);
 			}
 
 			if (deliveryItemNum >= num) {
