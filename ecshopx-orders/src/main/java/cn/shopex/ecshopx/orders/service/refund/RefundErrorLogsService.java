@@ -16,6 +16,9 @@
 
 package cn.shopex.ecshopx.orders.service.refund;
 
+import cn.shopex.ecshopx.aftersales.domain.AftersalesRefund;
+import cn.shopex.ecshopx.aftersales.mapper.AftersalesRefundMapper;
+import cn.shopex.ecshopx.aftersales.service.AftersalesRefundService;
 import cn.shopex.ecshopx.common.exception.BadRequestException;
 import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.espier.api.admin.v1.EspierAdminJwtControllerSupport;
@@ -37,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -46,14 +50,25 @@ public class RefundErrorLogsService {
 	private final RefundErrorLogsMapper refundErrorLogsMapper;
 	private final AftersalesRefundDoRefundService aftersalesRefundDoRefundService;
 	private final ObjectMapper objectMapper;
+	private final AftersalesRefundMapper aftersalesRefundMapper;
 
 	public RefundErrorLogsService(
 			RefundErrorLogsMapper refundErrorLogsMapper,
 			AftersalesRefundDoRefundService aftersalesRefundDoRefundService,
 			ObjectMapper objectMapper) {
+		this(refundErrorLogsMapper, aftersalesRefundDoRefundService, objectMapper, null);
+	}
+
+	@Autowired
+	public RefundErrorLogsService(
+			RefundErrorLogsMapper refundErrorLogsMapper,
+			AftersalesRefundDoRefundService aftersalesRefundDoRefundService,
+			ObjectMapper objectMapper,
+			AftersalesRefundMapper aftersalesRefundMapper) {
 		this.refundErrorLogsMapper = refundErrorLogsMapper;
 		this.aftersalesRefundDoRefundService = aftersalesRefundDoRefundService;
 		this.objectMapper = objectMapper;
+		this.aftersalesRefundMapper = aftersalesRefundMapper;
 	}
 
 	public Map<String, Object> getList(Map<String, Object> jwtMap, HttpServletRequest request) {
@@ -210,6 +225,21 @@ public class RefundErrorLogsService {
 		long companyId = toPositiveLong(cyObj);
 		if (refundBn <= 0L || companyId <= 0L) {
 			throw new BadRequestException("参数错误");
+		}
+
+		if (aftersalesRefundMapper != null) {
+			AftersalesRefund refundRow =
+					aftersalesRefundMapper.selectOne(
+							new LambdaQueryWrapper<AftersalesRefund>()
+									.eq(AftersalesRefund::getCompanyId, companyId)
+									.eq(AftersalesRefund::getRefundBn, refundBn)
+									.last("LIMIT 1"));
+			if (refundRow == null) {
+				throw new ResourceException("退款单不存在");
+			}
+			if (AftersalesRefundService.isTradeFinishAbnormalRefund(refundRow)) {
+				throw new ResourceException("支付完结异常退款单不支持错误日志重提，请在退款单列表操作");
+			}
 		}
 
 		aftersalesRefundDoRefundService.doRefund(companyId, refundBn, true);

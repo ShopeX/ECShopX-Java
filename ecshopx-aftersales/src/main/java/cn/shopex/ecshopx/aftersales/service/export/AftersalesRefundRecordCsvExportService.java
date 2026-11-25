@@ -17,6 +17,7 @@
 package cn.shopex.ecshopx.aftersales.service.export;
 
 import cn.shopex.ecshopx.aftersales.domain.AftersalesRefund;
+import cn.shopex.ecshopx.aftersales.service.AftersalesRefundService;
 import cn.shopex.ecshopx.aftersales.mapper.AftersalesMapper;
 import cn.shopex.ecshopx.aftersales.mapper.AftersalesRefundMapper;
 import cn.shopex.ecshopx.aftersales.service.AftersalesRefundListService;
@@ -286,16 +287,8 @@ public class AftersalesRefundRecordCsvExportService {
 		if (!StringUtils.hasText(s)) {
 			return "--";
 		}
-		return switch (s) {
-			case "AUDIT_SUCCESS" -> "审核成功待退款";
-			case "SUCCESS" -> "退款成功";
-			case "REFUSE" -> "退款驳回";
-			case "CANCEL" -> "撤销退款";
-			case "REFUNDCLOSE" -> "退款关闭";
-			case "PROCESSING" -> "已发起退款等待到账";
-			case "CHANGE" -> "退款异常";
-			default -> "--";
-		};
+		String label = AftersalesRefundService.refundStatusLabel(s);
+		return label.equals(s) ? "--" : label;
 	}
 
 	private static String refundFreightFeeYuan(Map<String, Object> raw) {

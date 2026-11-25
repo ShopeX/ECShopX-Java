@@ -65,6 +65,45 @@ public class AftersalesRefundService {
 	private static final List<String> ABNORMAL_TRADE_REFUND_CAS_FROM =
 			List.of(REFUND_STATUS_PAY_AFTER_CANCEL, REFUND_STATUS_DUP_PAY);
 
+	/** 支付完结异常退款单（售前路径与错误日志重提均需隔离，对齐 PHP {@code isTradeFinishAbnormalRefund}）。 */
+	public static boolean isTradeFinishAbnormalRefund(AftersalesRefund refund) {
+		if (refund == null) {
+			return false;
+		}
+		String status = str(refund.getRefundStatus());
+		if (ABNORMAL_TRADE_REFUND_CAS_FROM.contains(status)) {
+			return true;
+		}
+		int returnFreight = refund.getReturnFreight() == null ? 0 : refund.getReturnFreight();
+		if ("PROCESSING".equals(status)
+				&& "1".equals(str(refund.getRefundType()))
+				&& returnFreight == 0
+				&& refund.getAftersalesBn() == null) {
+			return true;
+		}
+		return false;
+	}
+
+	/** 管理端退款状态展示文案（列表/导出与 PHP {@code refundStatusLabel} 对齐）。 */
+	public static String refundStatusLabel(String status) {
+		if (status == null || status.isBlank()) {
+			return status;
+		}
+		return switch (status) {
+			case "READY" -> "待审核";
+			case "AUDIT_SUCCESS" -> "审核成功待退款";
+			case "SUCCESS" -> "退款成功";
+			case "REFUSE" -> "退款驳回";
+			case "CANCEL" -> "撤销退款";
+			case "REFUNDCLOSE" -> "退款关闭";
+			case "PROCESSING" -> "已发起退款等待到账";
+			case "CHANGE" -> "退款异常";
+			case REFUND_STATUS_PAY_AFTER_CANCEL -> "逾期支付待退款";
+			case REFUND_STATUS_DUP_PAY -> "重复支付待退款";
+			default -> status;
+		};
+	}
+
 	private final AftersalesRefundMapper aftersalesRefundMapper;
 	private final AftersalesRefundJobDispatchPublisher aftersalesRefundJobDispatchPublisher;
 	private final AftersalesRefundAbnormalChannelPort aftersalesRefundAbnormalChannelPort;

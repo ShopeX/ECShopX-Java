@@ -18,8 +18,10 @@ package cn.shopex.ecshopx.aftersales.api.admin.v1;
 
 import cn.shopex.ecshopx.aftersales.dto.RefundAdminListQuery;
 import cn.shopex.ecshopx.aftersales.dto.RefundLogExportQuery;
+import cn.shopex.ecshopx.aftersales.domain.AftersalesRefund;
 import cn.shopex.ecshopx.aftersales.service.AftersalesOfflineRefundSaveService;
 import cn.shopex.ecshopx.aftersales.service.AftersalesRefundListService;
+import cn.shopex.ecshopx.aftersales.service.AftersalesRefundService;
 import cn.shopex.ecshopx.aftersales.service.AftersalesRefundLogExportService;
 import cn.shopex.ecshopx.aftersales.service.AftersalesRefundOfflineBankService;
 import cn.shopex.ecshopx.common.core.domain.ApiResult;
@@ -29,6 +31,7 @@ import cn.shopex.ecshopx.common.annotation.DingoResponse;
 import cn.shopex.ecshopx.common.annotation.ShopLog;
 import cn.shopex.ecshopx.common.auth.OperatorJwtRequestAttributes;
 import cn.shopex.ecshopx.common.exception.BadRequestException;
+import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.common.exception.UnauthorizedException;
 import cn.shopex.ecshopx.common.web.FlexibleBody;
 import cn.shopex.ecshopx.common.web.FlexibleHttpServletParameterMap;
@@ -61,16 +64,19 @@ public class RefundController {
 	private final AftersalesRefundListService aftersalesRefundListService;
 	private final AftersalesRefundLogExportService aftersalesRefundLogExportService;
 	private final AftersalesRefundOfflineBankService aftersalesRefundOfflineBankService;
+	private final AftersalesRefundService aftersalesRefundService;
 
 	public RefundController(
 			AftersalesOfflineRefundSaveService aftersalesOfflineRefundSaveService,
 			AftersalesRefundListService aftersalesRefundListService,
 			AftersalesRefundLogExportService aftersalesRefundLogExportService,
-			AftersalesRefundOfflineBankService aftersalesRefundOfflineBankService) {
+			AftersalesRefundOfflineBankService aftersalesRefundOfflineBankService,
+			AftersalesRefundService aftersalesRefundService) {
 		this.aftersalesOfflineRefundSaveService = aftersalesOfflineRefundSaveService;
 		this.aftersalesRefundListService = aftersalesRefundListService;
 		this.aftersalesRefundLogExportService = aftersalesRefundLogExportService;
 		this.aftersalesRefundOfflineBankService = aftersalesRefundOfflineBankService;
+		this.aftersalesRefundService = aftersalesRefundService;
 	}
 
 	@Activated(routeAlias = "refund.list")
@@ -151,6 +157,43 @@ public class RefundController {
 			@RequestParam(value = "order_id", required = false) String orderIdRaw,
 			HttpServletRequest request) {
 		return ApiResult.ok(aftersalesRefundOfflineBankService.getOfflineBank(orderIdRaw, request));
+	}
+
+	@Activated(routeAlias = "refund.abnormal")
+	@PostMapping(
+			value = "/refund/{refund_bn}/abnormal-refund",
+			name = "支付完结异常退款",
+			produces = MediaType.APPLICATION_JSON_VALUE)
+	public ApiResult<AftersalesRefund> abnormalRefund(
+			@PathVariable("refund_bn") String refundBnRaw, HttpServletRequest request) {
+		if (refundBnRaw == null || refundBnRaw.isBlank()) {
+			throw new ResourceException("退款单号不能为空");
+		}
+		String trimmed = refundBnRaw.trim();
+		long refundBn;
+		try {
+			refundBn = Long.parseLong(trimmed);
+		} catch (NumberFormatException e) {
+			throw new BadRequestException("退款单号无效");
+		}
+		if (refundBn <= 0L) {
+			throw new BadRequestException("退款单号无效");
+		}
+
+		Object attr = request.getAttribute(OperatorJwtRequestAttributes.OPERATOR_JWT_USER_DATA);
+		if (!(attr instanceof Map<?, ?> jwt)) {
+			throw new UnauthorizedException("未登录");
+		}
+		Object companyIdObj = jwt.get("company_id");
+		if (companyIdObj == null) {
+			throw new BadRequestException("企业id必填");
+		}
+		long companyId = longVal(companyIdObj);
+		if (companyId <= 0L) {
+			throw new BadRequestException("企业id必填");
+		}
+
+		return ApiResult.ok(aftersalesRefundService.refundAbnormalTrade(companyId, refundBn));
 	}
 
 	@Activated(routeAlias = "refund.offline")
