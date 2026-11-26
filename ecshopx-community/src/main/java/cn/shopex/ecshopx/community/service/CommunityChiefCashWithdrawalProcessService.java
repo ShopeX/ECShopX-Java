@@ -68,10 +68,11 @@ public class CommunityChiefCashWithdrawalProcessService {
 		LambdaUpdateWrapper<CommunityChiefCashWithdrawal> toProcess = new LambdaUpdateWrapper<>();
 		toProcess.eq(CommunityChiefCashWithdrawal::getCompanyId, companyId)
 				.eq(CommunityChiefCashWithdrawal::getId, cashWithdrawalId)
-				.set(CommunityChiefCashWithdrawal::getStatus, "process");
+				.eq(CommunityChiefCashWithdrawal::getStatus, "apply")
+				.setSql("status = {0}", "process");
 		int toProcessRows = communityChiefCashWithdrawalMapper.update(null, toProcess);
 		if (toProcessRows == 0) {
-			throw new ResourceException("未查询到更新数据");
+			throw new ResourceException("当前佣金提现正在处理或已完成");
 		}
 
 		String payTypeRaw = info.getPayType();
@@ -108,10 +109,11 @@ public class CommunityChiefCashWithdrawalProcessService {
 					LambdaUpdateWrapper<CommunityChiefCashWithdrawal> uw = new LambdaUpdateWrapper<>();
 					uw.eq(CommunityChiefCashWithdrawal::getCompanyId, companyId)
 							.eq(CommunityChiefCashWithdrawal::getId, cashWithdrawalId)
-							.set(CommunityChiefCashWithdrawal::getStatus, "success");
+							.eq(CommunityChiefCashWithdrawal::getStatus, "process")
+							.setSql("status = {0}", "success");
 					int n = communityChiefCashWithdrawalMapper.update(null, uw);
 					if (n == 0) {
-						throw new ResourceException("未查询到更新数据");
+						throw new ResourceException("当前佣金提现正在处理或已完成");
 					}
 				});
 			} catch (ResourceException e) {
@@ -122,24 +124,17 @@ public class CommunityChiefCashWithdrawalProcessService {
 			return;
 		}
 		if ("PROCESS".equals(st)) {
-			LambdaUpdateWrapper<CommunityChiefCashWithdrawal> uw = new LambdaUpdateWrapper<>();
-			uw.eq(CommunityChiefCashWithdrawal::getCompanyId, companyId)
-					.eq(CommunityChiefCashWithdrawal::getId, cashWithdrawalId)
-					.set(CommunityChiefCashWithdrawal::getStatus, "process");
-			int n = communityChiefCashWithdrawalMapper.update(null, uw);
-			if (n == 0) {
-				throw new ResourceException("未查询到更新数据");
-			}
 			return;
 		}
 
 		LambdaUpdateWrapper<CommunityChiefCashWithdrawal> revert = new LambdaUpdateWrapper<>();
 		revert.eq(CommunityChiefCashWithdrawal::getCompanyId, companyId)
 				.eq(CommunityChiefCashWithdrawal::getId, cashWithdrawalId)
-				.set(CommunityChiefCashWithdrawal::getStatus, "apply");
+				.eq(CommunityChiefCashWithdrawal::getStatus, "process")
+				.setSql("status = {0}", "apply");
 		int rev = communityChiefCashWithdrawalMapper.update(null, revert);
 		if (rev == 0) {
-			throw new ResourceException("未查询到更新数据");
+			throw new ResourceException("当前佣金提现正在处理或已完成");
 		}
 		String msg = errorDesc(data != null ? data.get("error_desc") : null);
 		if (!StringUtils.hasText(msg)) {
@@ -159,10 +154,11 @@ public class CommunityChiefCashWithdrawalProcessService {
 				}
 				LambdaUpdateWrapper<CommunityChiefCashWithdrawal> uw = new LambdaUpdateWrapper<>();
 				uw.eq(CommunityChiefCashWithdrawal::getCompanyId, companyId)
-						.eq(CommunityChiefCashWithdrawal::getId, cashWithdrawalId);
+						.eq(CommunityChiefCashWithdrawal::getId, cashWithdrawalId)
+						.eq(CommunityChiefCashWithdrawal::getStatus, "apply");
 				int n = communityChiefCashWithdrawalMapper.update(patch, uw);
 				if (n == 0) {
-					throw new ResourceException("未查询到更新数据");
+					throw new ResourceException("当前佣金提现正在处理或已完成");
 				}
 			});
 		} catch (ResourceException e) {

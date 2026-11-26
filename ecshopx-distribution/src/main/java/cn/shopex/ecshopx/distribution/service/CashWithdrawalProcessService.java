@@ -79,8 +79,14 @@ public class CashWithdrawalProcessService {
 		CashWithdrawal info = requireApplyWithdrawal(companyId, cashWithdrawalId);
 
 		LambdaUpdateWrapper<CashWithdrawal> toProcess = new LambdaUpdateWrapper<>();
-		toProcess.eq(CashWithdrawal::getCompanyId, companyId).eq(CashWithdrawal::getId, cashWithdrawalId).set(CashWithdrawal::getStatus, "process");
-		cashWithdrawalMapper.update(null, toProcess);
+		toProcess.eq(CashWithdrawal::getCompanyId, companyId)
+				.eq(CashWithdrawal::getId, cashWithdrawalId)
+				.eq(CashWithdrawal::getStatus, "apply")
+				.setSql("status = {0}", "process");
+		int claimed = cashWithdrawalMapper.update(null, toProcess);
+		if (claimed == 0) {
+			throw new ResourceException("当前佣金提现正在处理或已完成");
+		}
 
 		Map<String, Object> paymentData = new LinkedHashMap<>();
 		paymentData.put("rel_scene_id", String.valueOf(cashWithdrawalId));
@@ -105,26 +111,32 @@ public class CashWithdrawalProcessService {
 							LambdaUpdateWrapper<CashWithdrawal> uw = new LambdaUpdateWrapper<>();
 							uw.eq(CashWithdrawal::getCompanyId, companyId)
 									.eq(CashWithdrawal::getId, cashWithdrawalId)
-									.set(CashWithdrawal::getStatus, "success");
-							cashWithdrawalMapper.update(null, uw);
+									.eq(CashWithdrawal::getStatus, "process")
+									.setSql("status = {0}", "success");
+							int n = cashWithdrawalMapper.update(null, uw);
+							if (n == 0) {
+								throw new ResourceException("当前佣金提现正在处理或已完成");
+							}
 							int money = info.getMoney() != null ? info.getMoney() : 0;
 							distributeCountWriteService.agreeCashWithdrawal(
 									companyId, info.getDistributorId(), money);
 						});
+			} catch (ResourceException e) {
+				throw e;
 			} catch (RuntimeException e) {
 				throw new ResourceException("付款成功，服务器异常，请通过异常处理重试");
 			}
 			return;
 		}
 		if ("PROCESS".equals(st)) {
-			LambdaUpdateWrapper<CashWithdrawal> uw = new LambdaUpdateWrapper<>();
-			uw.eq(CashWithdrawal::getCompanyId, companyId).eq(CashWithdrawal::getId, cashWithdrawalId).set(CashWithdrawal::getStatus, "process");
-			cashWithdrawalMapper.update(null, uw);
 			return;
 		}
 
 		LambdaUpdateWrapper<CashWithdrawal> revert = new LambdaUpdateWrapper<>();
-		revert.eq(CashWithdrawal::getCompanyId, companyId).eq(CashWithdrawal::getId, cashWithdrawalId).set(CashWithdrawal::getStatus, "apply");
+		revert.eq(CashWithdrawal::getCompanyId, companyId)
+				.eq(CashWithdrawal::getId, cashWithdrawalId)
+				.eq(CashWithdrawal::getStatus, "process")
+				.setSql("status = {0}", "apply");
 		cashWithdrawalMapper.update(null, revert);
 
 		String msg = errorDesc(data != null ? data.get("error_desc") : null);
@@ -146,8 +158,13 @@ public class CashWithdrawalProcessService {
 					patch.setRemarks(remarks.trim());
 				}
 				LambdaUpdateWrapper<CashWithdrawal> uw = new LambdaUpdateWrapper<>();
-				uw.eq(CashWithdrawal::getCompanyId, companyId).eq(CashWithdrawal::getId, cashWithdrawalId);
-				cashWithdrawalMapper.update(patch, uw);
+				uw.eq(CashWithdrawal::getCompanyId, companyId)
+						.eq(CashWithdrawal::getId, cashWithdrawalId)
+						.eq(CashWithdrawal::getStatus, "apply");
+				int n = cashWithdrawalMapper.update(patch, uw);
+				if (n == 0) {
+					throw new ResourceException("当前佣金提现正在处理或已完成");
+				}
 
 				int money = info.getMoney() != null ? info.getMoney() : 0;
 				distributeCountWriteService.rejectCashWithdrawal(companyId, info.getDistributorId(), money);
@@ -170,8 +187,13 @@ public class CashWithdrawalProcessService {
 					patch.setRemarks(remarks.trim());
 				}
 				LambdaUpdateWrapper<CashWithdrawal> uw = new LambdaUpdateWrapper<>();
-				uw.eq(CashWithdrawal::getCompanyId, companyId).eq(CashWithdrawal::getId, cashWithdrawalId);
-				cashWithdrawalMapper.update(patch, uw);
+				uw.eq(CashWithdrawal::getCompanyId, companyId)
+						.eq(CashWithdrawal::getId, cashWithdrawalId)
+						.eq(CashWithdrawal::getStatus, "apply");
+				int n = cashWithdrawalMapper.update(patch, uw);
+				if (n == 0) {
+					throw new ResourceException("当前佣金提现正在处理或已完成");
+				}
 
 				int money = info.getMoney() != null ? info.getMoney() : 0;
 				distributeCountWriteService.rejectCashWithdrawal(companyId, info.getDistributorId(), money);
