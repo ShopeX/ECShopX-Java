@@ -62,6 +62,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberQuerySuccessEnvelopeDo
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberTagRelationPushBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberTagRelationPushSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberTagLibrarySuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberTagLibraryPushBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberTagLibraryPushSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -740,10 +742,86 @@ public class MemberController extends OpenapiBaseController {
 		return new OpenapiEnvelope("success", "E0000", "操作成功", data);
 	}
 
+	@Operation(
+			summary = "开放接口推送标签库",
+			description =
+					"企微标签库全量同步：按签名鉴权租户 company_id 逐组 upsert（事务内）。"
+							+ " 组按 wechat_group_id 命中更新否则新建（group_name PHP-empty 计 fail_count 跳过）；"
+							+ " 标签按 wechat_tag_id 命中更新否则新建（tag_name PHP-empty 跳过），"
+							+ " 缺省 tag_color=#3e7bff、source=wechat；组内清理未包含的旧关系。"
+							+ " 推送后删除本次未包含的企微来源组/标签（wechat_group_id/wechat_tag_id 非空且不在推送集），"
+							+ " 连带删除组关系与会员打标关系（deleted_groups/deleted_tags）。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}"
+							+ "（method=ecx.member.tagLibrary.push, version=1.0）签名校验后转发；"
+							+ " 直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " tag_library 仅 body 通道，须非空对象数组（否则 E1001 data=[]）；系统异常 E9999 data=[]。"
+							+ " 副作用：写库 upsert members_tags/members_tag_group 及关系表，删除多余企微组/标签"
+							+ "（含 members_rel_tags）；无异步/第三方调用。",
+			operationId = "ecx.member.tagLibrary.push")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态。"
+								+ " 成功：status=success, code=E0000, message=操作成功，data 为 8 键统计"
+								+ "（success/fail/created/updated/deleted 组与标签，组级失败计入 fail_count）；"
+								+ " 入参非法：status=fail, code=E1001 标签库数据不能为空，data=[]；"
+								+ " 系统异常：status=fail, code=E9999 标签库推送失败：{异常信息}，data=[]；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。"
+								+ " 见 EcxMemberTagLibraryPushFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxMemberTagLibraryPushSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "推送成功",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"操作成功\","
+															+ "\"data\":{\"success_count\":1,\"fail_count\":0,"
+															+ "\"created_groups\":1,\"updated_groups\":0,"
+															+ "\"created_tags\":1,\"updated_tags\":0,"
+															+ "\"deleted_groups\":0,\"deleted_tags\":0}}"),
+									@ExampleObject(
+											name = "fail-empty-library",
+											summary = "tag_library 缺失/空/非对象数组（data 为空数组）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E1001\","
+															+ "\"message\":\"标签库数据不能为空\",\"data\":[]}"),
+									@ExampleObject(
+											name = "fail-system",
+											summary = "系统异常（E9999，data 为空数组）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E9999\","
+															+ "\"message\":\"标签库推送失败：数据库连接失败\",\"data\":[]}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@PostMapping(value = "/ecx.member.tagLibrary.push", name = "开放接口推送标签库")
 	public OpenapiEnvelope tagLibraryPush(
-			HttpServletRequest request,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@RequestBody(
+							description =
+									"JSON body；tag_library 数组仅经 body 提供，须非空且元素为对象。"
+											+ " 组/标签字段与缺省值见 schema",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxMemberTagLibraryPushBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		Object tagLibraryRaw = body != null ? body.get("tag_library") : null;
 		if (OpenapiTagLibraryPushParams.isInvalidTagLibrary(tagLibraryRaw)) {
