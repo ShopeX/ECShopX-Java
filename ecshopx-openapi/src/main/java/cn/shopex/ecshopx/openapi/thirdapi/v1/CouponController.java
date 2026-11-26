@@ -29,6 +29,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxCouponCreateBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxCouponCreateSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxCouponListBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxCouponListSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxCouponUpdateBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxCouponUpdateSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -204,15 +206,100 @@ public class CouponController extends OpenapiBaseController {
 		return new OpenapiEnvelope("success", "E0000", "发放成功", data);
 	}
 
+	@Operation(
+			summary = "开放接口优惠券有效期更新",
+			description =
+					"按签名鉴权得到的租户 company_id，用券模板（template+rule）与券编码 code 定位已发放优惠券"
+							+ "（user_discount），更新其 begin_date/end_date（事务内执行）。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.coupon.update, version=1.0）"
+							+ " 签名校验后转发到本 internal 路径；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 全部参数双通道：body 含同名键时以 body 为准（null/空白视为未提供且不回退 query），"
+							+ " body 无该键时读 query。start_time/end_time 必填非空白，但非整数不报错、按 0 写入"
+							+ "（parseIntFlexible）；本接口不校验时间是否已过期。"
+							+ " 副作用：写库更新 user_discount 的 begin_date/end_date；无异步/第三方调用。",
+			operationId = "ecx.coupon.update")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态。"
+								+ " 成功：status=success, code=E0000, message=修改成功，data 仅含 status=true；"
+								+ " 业务失败：status=fail, code=E0001（缺参/该优惠券已失效/修改失败，请检查优惠券是否存在），data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxCouponUpdateFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxCouponUpdateSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "更新成功",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"修改成功\","
+															+ "\"data\":{\"status\":true}}"),
+									@ExampleObject(
+											name = "fail-user-card-not-found",
+											summary = "业务失败（已发放券不存在）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E0001\","
+															+ "\"message\":\"修改失败，请检查优惠券是否存在\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-card-invalid",
+											summary = "业务失败（券模板不存在）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E0001\",\"message\":\"该优惠券已失效\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@PostMapping(value = "/ecx.coupon.update", name = "开放接口优惠券有效期更新")
 	public OpenapiEnvelope updateUserCard(
-			HttpServletRequest request,
-			@RequestParam(name = "template", required = false) String templateParam,
-			@RequestParam(name = "rule", required = false) String ruleParam,
-			@RequestParam(name = "code", required = false) String codeParam,
-			@RequestParam(name = "start_time", required = false) String startTimeParam,
-			@RequestParam(name = "end_time", required = false) String endTimeParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "优惠券模板ID（第三方编码，对应 discount_cards.card_code）；必填（body 同名键优先）",
+							required = true)
+					@RequestParam(name = "template", required = false)
+					String templateParam,
+			@Parameter(description = "优惠券规则ID（第三方编码，对应 discount_cards.card_rule_code）；可选，缺省按空串匹配")
+					@RequestParam(name = "rule", required = false)
+					String ruleParam,
+			@Parameter(
+							description = "已发放优惠券编码（user_discount.code，配合券模板定位记录）；必填（body 同名键优先）",
+							required = true,
+							example = "CODE-1")
+					@RequestParam(name = "code", required = false)
+					String codeParam,
+			@Parameter(
+							description =
+									"新的生效时间，Unix 秒级时间戳；必填非空白；非整数不报错、按 0 写入（body 同名键优先）",
+							required = true,
+							example = "1764115200")
+					@RequestParam(name = "start_time", required = false)
+					String startTimeParam,
+			@Parameter(
+							description =
+									"新的失效时间，Unix 秒级时间戳；必填非空白；非整数不报错、按 0 写入；不校验是否已过期（body 同名键优先）",
+							required = true,
+							example = "1766707200")
+					@RequestParam(name = "end_time", required = false)
+					String endTimeParam,
+			@RequestBody(
+							description =
+									"可选 JSON body；字段与 query 同名双通道，body 含键时优先"
+											+ "（null/空白视为未提供且不回退 query）",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema = @Schema(implementation = EcxCouponUpdateBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		String template =
 				OpenapiRequestParams.mergeRequiredString(templateParam, body, "template", "优惠券模板ID必填");
