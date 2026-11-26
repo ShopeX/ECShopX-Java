@@ -324,14 +324,18 @@
 			resultType="cn.shopex.ecshopx.aftersales.domain.dto.DeliveryStaffAftersalesAggregateRow">
 		SELECT
 			aftersales.self_delivery_operator_id AS selfDeliveryOperatorId,
-			COUNT(aftersales.order_id) AS aftersalesCount,
+			COUNT(DISTINCT aftersales.aftersales_bn) AS aftersalesCount,
 			SUM(aftersales.refund_fee) AS refundFeeCount
 		FROM aftersales
-		LEFT JOIN aftersales_refund ON aftersales.aftersales_bn = aftersales_refund.aftersales_bn
+		INNER JOIN (
+			SELECT aftersales_bn
+			FROM aftersales_refund
+			WHERE refund_success_time &gt;= #{startEpoch}
+				AND refund_success_time &lt;= #{endEpoch}
+			GROUP BY aftersales_bn
+		) refund_hit ON aftersales.aftersales_bn = refund_hit.aftersales_bn
 		WHERE aftersales.aftersales_status = 2
 			AND aftersales.company_id = #{companyId}
-			AND aftersales_refund.refund_success_time &gt;= #{startEpoch}
-			AND aftersales_refund.refund_success_time &lt;= #{endEpoch}
 		<if test="operatorIds != null and !operatorIds.isEmpty()">
 			AND aftersales.self_delivery_operator_id IN
 			<foreach collection="operatorIds" item="oid" open="(" separator="," close=")">
