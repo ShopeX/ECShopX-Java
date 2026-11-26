@@ -163,6 +163,7 @@ public class WxappOrderDetailNewService {
 		if (orderInfo == null) {
 			throw new BadRequestException("无此订单");
 		}
+		WxappOrderDetailMarkdownFilterSupport.stripMarkDown(orderInfo);
 		if (tradeInfo != null && !tradeInfo.isEmpty()) {
 			tradeInfo =
 					OrderTradeInfoPhpParityMaps.tradeSnakeToPhpCamel(

@@ -166,6 +166,7 @@ public class WxappOrderDetailService {
 		if (orderInfo == null || orderInfo.isEmpty()) {
 			return Collections.emptyList();
 		}
+		WxappOrderDetailMarkdownFilterSupport.stripMarkDown(orderInfo);
 
 		wxappOrderDetailDeliveryInfoService.appendDeliveryInfo(companyId, orderIdNum, result);
 
