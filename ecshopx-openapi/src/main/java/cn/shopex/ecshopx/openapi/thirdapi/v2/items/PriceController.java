@@ -23,6 +23,8 @@ import cn.shopex.ecshopx.common.web.FlexibleBody;
 import cn.shopex.ecshopx.openapi.thirdapi.OpenapiBaseController;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemPriceGetBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemPriceGetSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemPriceSyncBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemPriceSyncSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -140,10 +142,84 @@ public class PriceController extends OpenapiBaseController {
 		return itemPriceGetPort.getPriceDetail(companyId, merged);
 	}
 
+	@Operation(
+			summary = "同步商品价格",
+			description =
+					"按签名鉴权租户 company_id 同步商品价格（5 键白名单，body 含键优先否则 query）："
+							+ " item_code 必填非空白（E5001「商品货号参数错误」）；三价键存在时须数值且 ×100 截断后 >0 分"
+							+ "（否则 E5001 对应文案）；distributor_code 键存在须标量（E5001「店铺ID参数错误」）。"
+							+ " 总部分支（platform 或未传 distributor_code）：按 item_bn 定位（查无 E5101「商品找不到」），"
+							+ " 三价至少一个（否则 E5001「应至少指定一个要更新的价格」），部分更新 items 三价。"
+							+ " standard 店铺分支：仅 price 生效（缺失/非法直接成功无操作）；店铺查无 E5401；"
+							+ " 店铺行（或 SPU 行）is_total_store=true 报 E5410「商品总部发货无法更新库存和价格」；"
+							+ " 拼团价守卫 E0000+fail；已有店铺行仅覆盖 price，无则新建（store 取总部、is_can_sale=false）。"
+							+ " 其他异常 E5000（空则「未知错误」）。成功恒 data=null，Advice 包装 message 固定「成功」。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.item.price.sync, version=2.0）"
+							+ " 签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 副作用：总部分支 UPDATE items 三价；店铺分支 @Transactional UPDATE/INSERT"
+							+ " distribution_distributor_items.price；无异步、无第三方调用。",
+			operationId = "ecx.item.price.sync.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功, data 恒 null；"
+								+ " 业务失败：status=fail, code=E5001 六文案 / E5101 商品找不到 / E5401 店铺找不到 /"
+								+ " E5410 商品总部发货无法更新库存和价格 / E0000（PHP 旧契约）拼团守卫 / E5000 未知错误，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxItemPriceSyncFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxItemPriceSyncSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "同步成功（无返回体）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-no-price",
+											summary = "总部分支未指定任何价格",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5001\","
+															+ "\"message\":\"应至少指定一个要更新的价格\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-total-store",
+											summary = "店铺行总部发货禁改价",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5410\","
+															+ "\"message\":\"商品总部发货无法更新库存和价格\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-price-invalid",
+											summary = "price 非数值/≤0 分",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5001\",\"message\":\"销售价参数错误\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@PutMapping("/ecx.item.price.sync")
 	public Void sync(
-			HttpServletRequest request,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@RequestBody(
+							description = "可选 JSON body；5 键白名单与 query 同名双通道（body 含键优先）；双分支语义见 schema",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxItemPriceSyncBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		Map<String, Object> merged = OpenapiThirdApiV2ItemPriceSyncParams.buildMergedParams(request, body);
 		itemPriceSyncPort.syncPrice(companyId, merged);
