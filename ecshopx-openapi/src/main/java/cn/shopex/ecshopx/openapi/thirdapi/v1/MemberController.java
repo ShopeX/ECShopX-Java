@@ -57,6 +57,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberNotifyBecomeFriendBody
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberNotifyBecomeFriendSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberOrderListBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberOrderListSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberQueryBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberQuerySuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -209,12 +211,88 @@ public class MemberController extends OpenapiBaseController {
 		return new OpenapiEnvelope("success", "E0000", "操作成功", data);
 	}
 
+	@Operation(
+			summary = "开放接口查询会员信息",
+			description =
+					"按签名鉴权租户 company_id 查询会员身份（4 键：is_member/mobile/unionid/uid）。"
+							+ " mobile PHP-truthy 优先按手机号（解密返回，unionid 查无关联时为布尔 false）；"
+							+ " 否则按 unionid（wechat 关联，手机号取 region_mobile 优先否则解密 mobile）。"
+							+ " 二选一必填（PHP-empty 视为未提供）；查无会员返回成功信封 is_member=N、"
+							+ " mobile/unionid/uid 均为空串（PHP 旧契约，非失败）。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.member.query, version=1.0）"
+							+ " 签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 参数双通道（body 含键优先）；body unionid 须为字符串。只读，无写库/异步/第三方副作用。",
+			operationId = "ecx.member.query")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态。"
+								+ " 成功：status=success, code=E0000, message=操作成功，data 见 EcxMemberQueryDataDoc"
+								+ "（查无会员 is_member=N，三键空串）；"
+								+ " 校验失败：status=fail, code=E0001（请填写unionid/请填写正确的手机号/"
+								+ "unionid或者手机号必填），data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxMemberQueryFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxMemberQuerySuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success-member",
+											summary = "是会员",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"操作成功\","
+															+ "\"data\":{\"is_member\":\"Y\",\"mobile\":\"13800000000\","
+															+ "\"unionid\":\"union-test\",\"uid\":5}}"),
+									@ExampleObject(
+											name = "success-not-member",
+											summary = "非会员（成功信封，三键空串）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"操作成功\","
+															+ "\"data\":{\"is_member\":\"N\",\"mobile\":\"\",\"unionid\":\"\",\"uid\":\"\"}}"),
+									@ExampleObject(
+											name = "success-no-unionid",
+											summary = "mobile 分支查无 unionid（unionid 为布尔 false）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"操作成功\","
+															+ "\"data\":{\"is_member\":\"Y\",\"mobile\":\"13800000000\","
+															+ "\"unionid\":false,\"uid\":5}}"),
+									@ExampleObject(
+											name = "fail-missing-identifier",
+											summary = "两个定位参数均未提供",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E0001\","
+															+ "\"message\":\"unionid或者手机号必填\",\"data\":null}")
+								}))
+	})
 	@PostMapping(value = "/ecx.member.query", name = "开放接口查询会员信息")
 	public OpenapiEnvelope memberInfo(
-			HttpServletRequest request,
-			@RequestParam(name = "mobile", required = false) String mobileParam,
-			@RequestParam(name = "unionid", required = false) String unionidParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "手机号；提供时须匹配 ^1[3-9]\\d{9}$；与 unionid 二选一，PHP-truthy 优先（body 同名键优先）",
+							example = "13800000000")
+					@RequestParam(name = "mobile", required = false)
+					String mobileParam,
+			@Parameter(
+							description = "微信 unionid（wechat 关联）；body 中须为字符串；查无返回 is_member=N（body 同名键优先）",
+							example = "union-test")
+					@RequestParam(name = "unionid", required = false)
+					String unionidParam,
+			@RequestBody(
+							description =
+									"可选 JSON body；字段与 query 同名双通道，body 含键时优先；unionid 须为字符串类型",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(implementation = EcxMemberQueryBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		boolean mobilePresent = OpenapiMemberQueryParams.isParamPresent(mobileParam, body, "mobile");
 		boolean unionidPresent = OpenapiMemberQueryParams.isParamPresent(unionidParam, body, "unionid");
