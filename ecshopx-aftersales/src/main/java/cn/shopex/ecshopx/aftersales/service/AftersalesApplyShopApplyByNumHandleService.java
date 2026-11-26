@@ -531,13 +531,7 @@ public class AftersalesApplyShopApplyByNumHandleService {
 		main.setUpdateTime(tsMain);
 		aftersalesMapper.insert(main);
 
-		int leftAftersalesNum = intVal(orderInfo.get("left_aftersales_num"));
-		int nextLeftAftersalesNum = Math.max(0, leftAftersalesNum - applyNum);
-		jdbcTemplate.update(
-				"UPDATE orders_normal_orders SET left_aftersales_num = ? WHERE company_id = ? AND order_id = ?",
-				nextLeftAftersalesNum,
-				companyId,
-				orderId);
+		NormalOrderLeftAftersalesNumDeduct.deductOrThrow(jdbcTemplate, companyId, orderId, applyNum);
 
 		String tradePayType = str(trade.get("pay_type"));
 		String refundChannel = "offline_pay".equalsIgnoreCase(tradePayType) ? "offline" : "original";

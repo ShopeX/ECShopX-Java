@@ -165,7 +165,7 @@ class AftersalesAdminApplyOrderProcessLogDispatchPublishProbeTest {
 		OrderItemsProfitWritePort profitWrite = mock(OrderItemsProfitWritePort.class);
 		AftersalesBrokeragePort brokeragePort = mock(AftersalesBrokeragePort.class);
 		JdbcTemplate jdbcTemplate = mock(JdbcTemplate.class);
-		when(jdbcTemplate.update(anyString(), any(), eq(COMPANY_ID), eq(ORDER_ID)))
+		when(jdbcTemplate.update(anyString(), any(), eq(COMPANY_ID), eq(ORDER_ID), any()))
 				.thenReturn(1);
 
 		ApplicationEventPublisher eventPublisher = mock(ApplicationEventPublisher.class);

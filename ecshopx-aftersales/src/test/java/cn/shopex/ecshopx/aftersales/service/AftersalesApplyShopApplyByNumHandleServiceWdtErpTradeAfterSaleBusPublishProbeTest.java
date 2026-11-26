@@ -124,6 +124,7 @@ class AftersalesApplyShopApplyByNumHandleServiceWdtErpTradeAfterSaleBusPublishPr
 				.thenReturn(0);
 		when(aftersalesApplyDetailQueryService.listReturnPointRows(anyLong(), anyLong(), anyLong()))
 				.thenReturn(List.of());
+		when(jdbcTemplate.update(anyString(), any(), any(), any(), any())).thenReturn(1);
 		doAnswer(
 						inv -> {
 							@SuppressWarnings("unchecked")

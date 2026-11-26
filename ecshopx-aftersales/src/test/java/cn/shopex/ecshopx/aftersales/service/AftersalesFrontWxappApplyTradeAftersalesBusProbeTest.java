@@ -145,6 +145,7 @@ class AftersalesFrontWxappApplyTradeAftersalesBusProbeTest {
 		when(aftersalesApplyDetailQueryService.listReturnPointRows(anyLong(), anyLong(), anyLong()))
 				.thenReturn(List.of());
 		when(aftersalesDetailMapper.insert(any(AftersalesDetail.class))).thenReturn(1);
+		when(jdbcTemplate.update(anyString(), any(), any(), any(), any())).thenReturn(1);
 		doAnswer(
 						inv -> {
 							@SuppressWarnings("unchecked")
