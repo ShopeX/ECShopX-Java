@@ -108,7 +108,8 @@ public class OrdersTradePaymentCallbackService {
 
 		LambdaUpdateWrapper<Trade> uw = new LambdaUpdateWrapper<>();
 		uw.eq(Trade::getTradeId, outTradeNo)
-				.set(Trade::getTradeState, status)
+				.eq(Trade::getTradeState, "NOTPAY")
+				.setSql("trade_state = {0}", status)
 				.set(Trade::getPayType, payType)
 				.set(Trade::getPayChannel, payChannel)
 				.set(Trade::getBankType, bankType)
@@ -125,7 +126,8 @@ public class OrdersTradePaymentCallbackService {
 		}
 		int updated = tradeMapper.update(null, uw);
 		if (updated <= 0) {
-			throw new ResourceException("交易单状态更新失败");
+			// Concurrent or duplicate notify already claimed NOTPAY → SUCCESS.
+			return;
 		}
 		if ("SUCCESS".equals(status)) {
 			publishSystemLinkTradeFinishAfterSuccess(outTradeNo);
