@@ -34,6 +34,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTagAddBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTagAddSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTagDeleteBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTagDeleteSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTagUpdateBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTagUpdateSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -202,16 +204,128 @@ public class MemberTagController extends OpenapiBaseController {
 				companyId, tagNameRaw, categoryIdRaw, descriptionRaw, tagColorRaw, fontColorRaw);
 	}
 
+	@Operation(
+			summary = "开放接口修改会员标签",
+			description =
+					"按签名鉴权租户 company_id 修改会员标签（6 键双通道，body 含键优先）："
+							+ " tag_id/tag_name/tag_color/font_color 必填非空白"
+							+ "（E5001「标签ID必填」/「标签名称必填」/「标签颜色必填」/「标签字体颜色必填」）；"
+							+ " tag_id trim+parseLong（非整数/查无/回读为空 E5561「该标签不存在」）；"
+							+ " 系统标签禁改（E0001「系统标签不可编辑」）；同名排除自身冲突 E5562「该标签名已存在」。"
+							+ " **description 恒写：键缺席也清空为 null**（originalString 不 trim + 存在性判定，"
+							+ " 非保留原值语义）；category_id 键存在且 PHP truthy（非空非\"0\"）才更新"
+							+ "（PHP intval 前导数字截断，如 \"12abc\"→12），否则保留原分类。"
+							+ " 颜色 trim 原样落库（无默认色，区别于新增）。"
+							+ " **成功信封为 Handler 显式构造：message 固定「操作成功」**（非 Advice 默认「成功」）；"
+							+ " data 为更新后回读 8 键行（同新增格式）。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.member.tag.update,"
+							+ " version=2.0）签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 副作用：@Transactional UPDATE members_tags（tag_name/description/tag_color/"
+							+ " font_color/updated + 条件 category_id）+ zh-CN 分表 upsert；无异步、无第三方调用。",
+			operationId = "ecx.member.tag.update.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Handler 显式信封）。"
+								+ " 成功：status=success, code=E0000, **message=操作成功**，data 为更新后 8 键行；"
+								+ " 业务失败：status=fail, code=E5001 各必填 / E5561 该标签不存在 /"
+								+ " E5562 该标签名已存在 / E0001 系统标签不可编辑，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxMemberTagUpdateFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxMemberTagUpdateSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "修改成功（message 为「操作成功」；时间为格式演示值）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"操作成功\","
+															+ "\"data\":{\"tag_id\":1,\"tag_name\":\"聚合测试类目\","
+															+ "\"category_id\":0,\"description\":null,"
+															+ "\"tag_color\":\"rgba(255, 25, 57, 1)\","
+															+ "\"font_color\":\"rgba(255, 255, 255, 1)\","
+															+ "\"created\":\"2026-01-01 00:00:00\","
+															+ "\"updated\":\"2026-01-01 00:00:00\"}}"),
+									@ExampleObject(
+											name = "fail-not-found",
+											summary = "标签查无/ID 非整数",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5561\","
+															+ "\"message\":\"该标签不存在\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-tag-exist",
+											summary = "同名标签冲突（排除自身）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5562\","
+															+ "\"message\":\"该标签名已存在\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-system-tag",
+											summary = "系统标签禁改",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E0001\","
+															+ "\"message\":\"系统标签不可编辑\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@PostMapping(value = "/ecx.member.tag.update", name = "开放接口修改会员标签")
 	public OpenapiEnvelope updateTag(
-			HttpServletRequest request,
-			@RequestParam(name = "tag_id", required = false) String tagIdParam,
-			@RequestParam(name = "tag_name", required = false) String tagNameParam,
-			@RequestParam(name = "description", required = false) String descriptionParam,
-			@RequestParam(name = "tag_color", required = false) String tagColorParam,
-			@RequestParam(name = "font_color", required = false) String fontColorParam,
-			@RequestParam(name = "category_id", required = false) String categoryIdParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "标签 ID；必填（E5001）；非整数/查无 E5561；系统标签 E0001",
+							required = true,
+							example = "1")
+					@RequestParam(name = "tag_id", required = false)
+					String tagIdParam,
+			@Parameter(
+							description = "标签名；必填（E5001「标签名称必填」）；同名冲突 E5562",
+							required = true,
+							example = "聚合测试类目")
+					@RequestParam(name = "tag_name", required = false)
+					String tagNameParam,
+			@Parameter(
+							description = "标签描述；恒写——键缺席也清空为 null（非保留原值）")
+					@RequestParam(name = "description", required = false)
+					String descriptionParam,
+			@Parameter(
+							description = "标签背景色；必填（E5001「标签颜色必填」）；无默认色",
+							required = true,
+							example = "rgba(255, 25, 57, 1)")
+					@RequestParam(name = "tag_color", required = false)
+					String tagColorParam,
+			@Parameter(
+							description = "标签字体色；必填（E5001「标签字体颜色必填」）",
+							required = true,
+							example = "rgba(255, 255, 255, 1)")
+					@RequestParam(name = "font_color", required = false)
+					String fontColorParam,
+			@Parameter(
+							description = "标签分类 ID；键存在且非空非\"0\"才更新（PHP intval 前导数字）；否则保留原分类",
+							example = "1")
+					@RequestParam(name = "category_id", required = false)
+					String categoryIdParam,
+			@RequestBody(
+							description =
+									"可选 JSON body；6 键与 query 同名双通道（body 含键优先）；"
+											+ "description 恒写清空语义与 category_id 条件更新见 schema",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxMemberTagUpdateBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		String tagIdRaw = OpenapiRequestParams.mergeString(tagIdParam, body, "tag_id");
 		String tagNameRaw = OpenapiRequestParams.mergeString(tagNameParam, body, "tag_name");
