@@ -33,6 +33,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxImageSaveBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxImageSaveSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxImageUploadLocalFormDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxImageUploadLocalSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxImageUploadTokenBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxImageUploadTokenSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -376,13 +378,93 @@ public class ImageController extends OpenapiBaseController {
 		return new OpenapiEnvelope("success", "E0000", "ok", data);
 	}
 
+	@Operation(
+			summary = "开放接口获取云存储上传Token",
+			description =
+					"按签名鉴权租户 company_id 生成文件直传凭证：data={driver, token}，token 键集随部署存储驱动"
+							+ "（local：domain+key；oss：accessid/host/policy/signature/expire/callback-var/dir；"
+							+ " aws：domain+key+预签名 url；qiniu：host/token/domain/region/key；cosv5：domain+key+预签名 url）。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.image.upload_token, version=1.0）"
+							+ " 签名校验后转发到本 internal 路径；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 全部参数双通道（body 含键优先，mergeString trim 语义）。filetype 必填：image/videos/file；"
+							+ " filename 缺省用 32 位 UUID；group 缺省空串。"
+							+ " 只读（生成凭证不上传文件；oss/cosv5 凭证 1 小时有效）；无写库/异步副作用。",
+			operationId = "ecx.image.upload_token")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态。"
+								+ " 成功：status=success, code=E0000, message=ok，data 见 EcxImageUploadTokenDataDoc"
+								+ "（token 字段为各驱动并集，实际按 driver 出现子集）；"
+								+ " 业务失败：status=fail, code=E0001（不支持的文件存储类型{t}/{fileType}配置文件错误），data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxImageUploadTokenFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxImageUploadTokenSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success-local",
+											summary = "local 驱动凭证",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"ok\","
+															+ "\"data\":{\"driver\":\"local\",\"token\":{"
+															+ "\"domain\":\"https://example.test/\","
+															+ "\"key\":\"test-project/image/1/2025/01/01/item/abc123test.png\"}}}"),
+									@ExampleObject(
+											name = "success-oss",
+											summary = "oss 驱动凭证（Post Policy 直传）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"ok\","
+															+ "\"data\":{\"driver\":\"oss\",\"token\":{"
+															+ "\"accessid\":\"LTAI-example\",\"host\":\"https://bucket.oss.example.com\","
+															+ "\"policy\":\"eyJleHBpcmF0aW9uIjoi...\",\"signature\":\"sig-example\","
+															+ "\"expire\":1764118800,\"callback-var\":[],"
+															+ "\"dir\":\"test-project/image/1/2025/01/01/item/abc123test.png\"}}}"),
+									@ExampleObject(
+											name = "fail-bad-filetype",
+											summary = "filetype 非法",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E0001\","
+															+ "\"message\":\"不支持的文件存储类型audio\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@PostMapping(value = "/ecx.image.upload_token", name = "开放接口获取云存储上传Token")
 	public OpenapiEnvelope getUploadToken(
-			HttpServletRequest request,
-			@RequestParam(name = "filetype", required = false) String filetypeParam,
-			@RequestParam(name = "group", required = false) String groupParam,
-			@RequestParam(name = "filename", required = false) String filenameParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "文件类型；必填：image/videos/file；其他值报错（body 同名键优先）",
+							required = true,
+							schema = @Schema(allowableValues = {"image", "videos", "file"}),
+							example = "image")
+					@RequestParam(name = "filetype", required = false)
+					String filetypeParam,
+			@Parameter(description = "存储分组（对象键可选路径段）；可选，缺省空串（body 同名键优先）", example = "item")
+					@RequestParam(name = "group", required = false)
+					String groupParam,
+			@Parameter(description = "文件名（参与对象键拼接；缺省用 32 位 UUID）；可选（body 同名键优先）", example = "test.png")
+					@RequestParam(name = "filename", required = false)
+					String filenameParam,
+			@RequestBody(
+							description =
+									"可选 JSON body；字段与 query 同名双通道，body 含键时优先"
+											+ "（null/空白视为未提供且不回退 query）",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema = @Schema(implementation = EcxImageUploadTokenBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		String fileType = OpenapiRequestParams.mergeString(filetypeParam, body, "filetype");
 		String group = OpenapiRequestParams.mergeString(groupParam, body, "group");
