@@ -21,6 +21,15 @@ import cn.shopex.ecshopx.common.openapi.OpenapiMemberCardV2DetailPort;
 import cn.shopex.ecshopx.common.openapi.OpenapiMemberCardV2UpdatePort;
 import cn.shopex.ecshopx.common.web.FlexibleBody;
 import cn.shopex.ecshopx.openapi.thirdapi.OpenapiBaseController;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberCardDetailSuccessEnvelopeDoc;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Map;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,6 +39,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /** OpenAPI v2 handler scaffold — methods added during migration. */
+@Tag(name = "开放接口-会员卡设置V2")
 @OpenapiResponse
 @RestController("openapiV2MemberCard")
 @RequestMapping("/api/openapi/internal/v2")
@@ -45,8 +55,62 @@ public class MemberCardController extends OpenapiBaseController {
 		this.memberCardV2UpdatePort = memberCardV2UpdatePort;
 	}
 
+	@Operation(
+			summary = "开放接口查询会员卡基础设置",
+			description =
+					"按签名鉴权租户 company_id 查询会员卡基础设置（membercard 表主键查询），无业务入参。"
+							+ " data 7 固定键：brand_name/logo_url/title/color/background_pic_url（null 转空串）"
+							+ " + created/updated（yyyy-MM-dd HH:mm:ss 系统时区格式化，非数值/缺失为空串）；"
+							+ " company_id/code_type 不透出。"
+							+ " 无设置行时不报错，7 键全部为空串（仍 success）。Advice 包装 message 固定「成功」。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.member_card.detail,"
+							+ " version=2.0）签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 只读，无写库/异步/第三方副作用。",
+			operationId = "ecx.member_card.detail.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功，data 见 EcxMemberCardDetailDataDoc"
+								+ "（无设置行为全空串，仍 success）；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxMemberCardDetailFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxMemberCardDetailSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "查询成功（URL/时间为格式演示值）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"brand_name\":\"FixtureBrand\","
+															+ "\"logo_url\":\"https://example.test/key.jpg\",\"title\":\"Gold\","
+															+ "\"color\":\"Color010\","
+															+ "\"background_pic_url\":\"https://example.test/key.jpg\","
+															+ "\"created\":\"2026-01-01 00:00:00\","
+															+ "\"updated\":\"2026-01-01 00:00:00\"}}"),
+									@ExampleObject(
+											name = "success-unset",
+											summary = "租户未设置会员卡（7 键全空串，仍 success）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"brand_name\":\"\",\"logo_url\":\"\",\"title\":\"\","
+															+ "\"color\":\"\",\"background_pic_url\":\"\","
+															+ "\"created\":\"\",\"updated\":\"\"}}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@GetMapping(value = "/ecx.member_card.detail", name = "开放接口查询会员卡基础设置")
-	public Map<String, Object> detail(HttpServletRequest request) {
+	public Map<String, Object> detail(@Parameter(hidden = true) HttpServletRequest request) {
 		long companyId = requireCompanyId(request);
 		return memberCardV2DetailPort.getMemberCardDetail(companyId);
 	}
