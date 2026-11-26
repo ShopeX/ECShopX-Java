@@ -24,6 +24,8 @@ import cn.shopex.ecshopx.common.web.FlexibleBody;
 import cn.shopex.ecshopx.openapi.thirdapi.OpenapiBaseController;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemStoreGetBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemStoreGetSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemStoreSyncBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemStoreSyncSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -60,10 +62,84 @@ public class StoreController extends OpenapiBaseController {
 		this.itemStoreGetPort = itemStoreGetPort;
 	}
 
+	@Operation(
+			summary = "同步商品库存",
+			description =
+					"按签名鉴权租户 company_id 同步商品库存（3 键白名单，body 含键优先否则 query）："
+							+ " item_code 必填非空白（E5001「商品货号参数错误」）；store 必填非负整数"
+							+ "（字符串 ^[0-9]+$ 且 ≤Integer.MAX，否则 E5001「同步库存数参数错误」）；"
+							+ " distributor_code 键存在须标量（E5001「店铺ID参数错误」）。"
+							+ " 总部分支（platform 或未传 distributor_code）：按 item_bn 定位（查无 E5101），"
+							+ " 与现值相同跳过写库；否则更新 items.store + 守卫写 Redis 库存（不抬高现值）+ 库存变更事件。"
+							+ " standard 店铺分支：店铺查无 E5401；店铺行/SPU 行 is_total_store=true 报 E5410；"
+							+ " 已有店铺行覆盖 store，无则新建（price 取总部、is_can_sale=false）；均守卫写店铺维度 Redis 库存。"
+							+ " 其他异常 E5000（空则「未知错误」）。成功恒 data=null，Advice 包装 message 固定「成功」。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.item.store.sync, version=2.0）"
+							+ " 签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 副作用：UPDATE items.store 或 @Transactional UPDATE/INSERT"
+							+ " distribution_distributor_items.store + Redis item_store 守卫写 + 库存变更事件；无第三方调用。",
+			operationId = "ecx.item.store.sync.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功, data 恒 null（含与现值相同跳过场景）；"
+								+ " 业务失败：status=fail, code=E5001 商品货号·同步库存数·店铺ID参数错误 / E5101 商品找不到 /"
+								+ " E5401 店铺找不到 / E5410 商品总部发货无法更新库存和价格 / E5000 未知错误，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxItemStoreSyncFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxItemStoreSyncSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "同步成功（无返回体）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-store-invalid",
+											summary = "store 缺失/负数/非整数",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5001\","
+															+ "\"message\":\"同步库存数参数错误\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-total-store",
+											summary = "店铺行总部发货禁改库存",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5410\","
+															+ "\"message\":\"商品总部发货无法更新库存和价格\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-goods-not-found",
+											summary = "item_code 查无",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5101\",\"message\":\"商品找不到\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@PutMapping("/ecx.item.store.sync")
 	public Void sync(
-			HttpServletRequest request,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@RequestBody(
+							description = "可选 JSON body；3 键白名单与 query 同名双通道（body 含键优先）；双分支语义见 schema",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxItemStoreSyncBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		Map<String, Object> merged = OpenapiThirdApiV2ItemStoreSyncParams.buildMergedParams(request, body);
 		itemStoreSyncPort.syncStore(companyId, merged);
