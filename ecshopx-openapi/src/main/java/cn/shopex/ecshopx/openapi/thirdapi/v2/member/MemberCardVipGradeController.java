@@ -27,6 +27,8 @@ import cn.shopex.ecshopx.common.web.FlexibleBody;
 import cn.shopex.ecshopx.openapi.thirdapi.OpenapiBaseController;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.OpenapiRequestParams;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.OpenapiThirdApiV2ShippingTemplatesListParams;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxVipGradeCreateBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxVipGradeCreateSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxVipGradeOrderListBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxVipGradeOrderListSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
@@ -92,20 +94,149 @@ public class MemberCardVipGradeController extends OpenapiBaseController {
 				companyId, pageSpec.page(), pageSpec.pageSize(), vipGradeIdRaw);
 	}
 
+	@Operation(
+			summary = "开放接口创建付费会员卡等级",
+			description =
+					"按签名鉴权租户 company_id 创建付费会员卡等级（10 键双通道，body 含键优先、值 null 视为未传）："
+							+ " grade_name 必填非空（原样不 trim，E5001「未填写付费等级名称」）；"
+							+ " discount 必填（E5001「未填写会员折扣」），须 1≤值≤10（否则 E5001「请求参数错误」），"
+							+ " 原样存 privileges.discount_desc、另存 discount=100-(int)(值*10)；"
+							+ " monthly_fee/quarter_fee/year_fee 至少一项非 null（全缺 E5001「购买金额必填一项」），"
+							+ " 键存在须非空且数值 ≥0（否则 E5001「请求参数错误」），原样字符串存 price_list"
+							+ "（monthly=30 天/quarter=90 天/year=365 天，未传档 price=null）；"
+							+ " guide_title/description/is_default/is_disabled/external_id 走 mergeString trim。"
+							+ " is_default/is_disabled 弱布尔：null/空串/\"0\"/\"false\"→false，其余 true。"
+							+ " lv_type 自动分配：租户无等级→vip；已有 vip→svip；同类型已存在 E5542"
+							+ "「该类型下会员付费等级已存在」；vip+svip 均存在 E5540「最多只能创建2个会员付费等级」。"
+							+ " 注意：external_id 被接收但忽略（恒写空串）；background_pic_url 恒空串。"
+							+ " 序列化异常 E0001「付费等级数据序列化失败」。"
+							+ " 成功 data 15 键行（vip_grade_id/type/grade_name/三档 fee 回显原样字符串或 null/"
+							+ " discount/guide_title/description/background_pic_url/is_default(0|1)/is_disabled(0|1)/"
+							+ " external_id/created/updated）。Advice 包装 message 固定「成功」。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}"
+							+ "（method=ecx.member_card_vip_grade.create, version=2.0）签名校验后转发；"
+							+ " 直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 副作用：INSERT kaquan_vip_grade 单行（无显式事务、无多语言分表写）；无异步、无第三方调用。",
+			operationId = "ecx.member_card_vip_grade.create.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功，data 见 EcxVipGradeCreateDataDoc；"
+								+ " 业务失败：status=fail, code=E5001 未填写付费等级名称·未填写会员折扣·购买金额必填一项·请求参数错误 /"
+								+ " E5542 该类型下会员付费等级已存在 / E5540 最多只能创建2个会员付费等级 /"
+								+ " E0001 付费等级数据序列化失败，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxVipGradeCreateFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxVipGradeCreateSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "创建成功（首个等级 type=vip；仅传月卡 0 元；时间为格式演示值）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"vip_grade_id\":2,\"type\":\"vip\",\"grade_name\":\"Gold\","
+															+ "\"monthly_fee\":\"0\",\"quarter_fee\":null,\"year_fee\":null,"
+															+ "\"discount\":\"10\",\"guide_title\":\"\",\"description\":\"\","
+															+ "\"background_pic_url\":\"\",\"is_default\":0,\"is_disabled\":0,"
+															+ "\"external_id\":\"\",\"created\":\"2026-01-01 00:00:00\","
+															+ "\"updated\":\"2026-01-01 00:00:00\"}}"),
+									@ExampleObject(
+											name = "fail-missing-fee",
+											summary = "三档金额全缺",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5001\","
+															+ "\"message\":\"购买金额必填一项\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-type-exist",
+											summary = "待分配类型已有等级",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5542\","
+															+ "\"message\":\"该类型下会员付费等级已存在\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-upper-limit",
+											summary = "vip 与 svip 均已存在",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5540\","
+															+ "\"message\":\"最多只能创建2个会员付费等级\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@PostMapping(value = "/ecx.member_card_vip_grade.create", name = "开放接口创建付费会员卡等级")
 	public Map<String, Object> create(
-			HttpServletRequest request,
-			@RequestParam(name = "grade_name", required = false) String gradeNameParam,
-			@RequestParam(name = "monthly_fee", required = false) String monthlyFeeParam,
-			@RequestParam(name = "quarter_fee", required = false) String quarterFeeParam,
-			@RequestParam(name = "year_fee", required = false) String yearFeeParam,
-			@RequestParam(name = "discount", required = false) String discountParam,
-			@RequestParam(name = "guide_title", required = false) String guideTitleParam,
-			@RequestParam(name = "description", required = false) String descriptionParam,
-			@RequestParam(name = "is_default", required = false) String isDefaultParam,
-			@RequestParam(name = "is_disabled", required = false) String isDisabledParam,
-			@RequestParam(name = "external_id", required = false) String externalIdParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "付费等级名称；必填非空（不 trim），否则 E5001「未填写付费等级名称」",
+							required = true,
+							example = "Gold")
+					@RequestParam(name = "grade_name", required = false)
+					String gradeNameParam,
+			@Parameter(
+							description = "月卡金额（元）；三档至少一项；键存在须非空且 ≥0（否则 E5001）；原样字符串落库",
+							example = "0")
+					@RequestParam(name = "monthly_fee", required = false)
+					String monthlyFeeParam,
+			@Parameter(
+							description = "季卡金额（元，90 天档）；校验同 monthly_fee",
+							example = "0")
+					@RequestParam(name = "quarter_fee", required = false)
+					String quarterFeeParam,
+			@Parameter(
+							description = "年卡金额（元，365 天档）；校验同 monthly_fee",
+							example = "0")
+					@RequestParam(name = "year_fee", required = false)
+					String yearFeeParam,
+			@Parameter(
+							description = "会员折扣（折）；必填，1≤值≤10（可小数）；10=无折扣；越界/非数字 E5001「请求参数错误」",
+							required = true,
+							example = "10")
+					@RequestParam(name = "discount", required = false)
+					String discountParam,
+			@Parameter(description = "导购标题；可选，trim；null/空串落库 null")
+					@RequestParam(name = "guide_title", required = false)
+					String guideTitleParam,
+			@Parameter(description = "等级描述；可选，trim；null/空串落库 null")
+					@RequestParam(name = "description", required = false)
+					String descriptionParam,
+			@Parameter(
+							description = "是否默认等级；弱布尔：空/\"0\"/\"false\"→false，其余 true；默认 false",
+							example = "0")
+					@RequestParam(name = "is_default", required = false)
+					String isDefaultParam,
+			@Parameter(
+							description = "是否停用；弱布尔语义同 is_default；默认 false",
+							example = "0")
+					@RequestParam(name = "is_disabled", required = false)
+					String isDisabledParam,
+			@Parameter(
+							description = "遗留参数：被接收但忽略（服务恒写 external_id 空串）",
+							deprecated = true)
+					@RequestParam(name = "external_id", required = false)
+					String externalIdParam,
+			@RequestBody(
+							description =
+									"可选 JSON body；10 键与 query 同名双通道（body 含键优先，值 null 视为未传）；"
+											+ "前五键不 trim、后五键 trim；语义见 schema",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxVipGradeCreateBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		return memberCardVipGradeCreatePort.create(
 				companyId,
