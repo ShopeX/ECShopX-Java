@@ -17,6 +17,7 @@
 package cn.shopex.ecshopx.members.service.segment;
 
 import cn.shopex.ecshopx.common.exception.ResourceException;
+import cn.shopex.ecshopx.members.service.admin.MemberTagSegmentRuleOrderItemParamsSupport;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -372,12 +373,9 @@ public class MemberSegmentRuleMatchedUsersQueryService {
 
 	private List<Long> queryOrderItem(
 			JsonNode params, long startTime, long endTime, long companyId, long distributorId) {
-		if (params == null || !params.isArray() || params.isEmpty()) {
+		List<Long> itemIds = MemberTagSegmentRuleOrderItemParamsSupport.extractItemIds(params);
+		if (itemIds.isEmpty()) {
 			return Collections.emptyList();
-		}
-		List<Long> itemIds = new ArrayList<>();
-		for (JsonNode n : params) {
-			itemIds.add(n.asLong(0L));
 		}
 		StringBuilder sql = new StringBuilder(
 				"""

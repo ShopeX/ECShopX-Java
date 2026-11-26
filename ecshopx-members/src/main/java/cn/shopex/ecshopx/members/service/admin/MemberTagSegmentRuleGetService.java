@@ -17,6 +17,7 @@
 package cn.shopex.ecshopx.members.service.admin;
 
 import cn.shopex.ecshopx.common.exception.ResourceException;
+import cn.shopex.ecshopx.common.members.port.MemberBrowseHistoryItemLookupPort;
 import cn.shopex.ecshopx.members.domain.MemberSegmentRule;
 import cn.shopex.ecshopx.members.domain.MemberTags;
 import cn.shopex.ecshopx.members.mapper.MemberSegmentRuleMapper;
@@ -38,14 +39,17 @@ public class MemberTagSegmentRuleGetService {
 
 	private final MemberSegmentRuleMapper memberSegmentRuleMapper;
 	private final MemberTagsMapper memberTagsMapper;
+	private final MemberBrowseHistoryItemLookupPort memberBrowseHistoryItemLookupPort;
 	private final ObjectMapper objectMapper;
 
 	public MemberTagSegmentRuleGetService(
 			MemberSegmentRuleMapper memberSegmentRuleMapper,
 			MemberTagsMapper memberTagsMapper,
+			MemberBrowseHistoryItemLookupPort memberBrowseHistoryItemLookupPort,
 			ObjectMapper objectMapper) {
 		this.memberSegmentRuleMapper = memberSegmentRuleMapper;
 		this.memberTagsMapper = memberTagsMapper;
+		this.memberBrowseHistoryItemLookupPort = memberBrowseHistoryItemLookupPort;
 		this.objectMapper = objectMapper;
 	}
 
@@ -94,6 +98,7 @@ public class MemberTagSegmentRuleGetService {
 		}
 
 		Object condition = parseCondition(rule.getRuleConfig());
+		enrichOrderItemParams(companyId, condition);
 
 		LinkedHashMap<String, Object> body = new LinkedHashMap<>();
 		body.put("rule_id", rule.getRuleId());
@@ -142,6 +147,29 @@ public class MemberTagSegmentRuleGetService {
 		} catch (JsonProcessingException e) {
 			return new LinkedHashMap<>();
 		}
+	}
+
+	private void enrichOrderItemParams(long companyId, Object condition) {
+		List<Long> itemIds = MemberTagSegmentRuleOrderItemParamsSupport.collectItemIds(condition);
+		if (itemIds.isEmpty()) {
+			return;
+		}
+		Map<Long, Map<String, Object>> rows =
+				memberBrowseHistoryItemLookupPort.listItemRowsForBrowseHistory(itemIds, companyId, "zh-CN");
+		Map<Long, MemberTagSegmentRuleOrderItemParamsSupport.ItemView> byId = new LinkedHashMap<>();
+		for (Long itemId : itemIds) {
+			Map<String, Object> row = rows.get(itemId);
+			if (row == null) {
+				continue;
+			}
+			Object name = row.get("item_name");
+			Object pics = row.get("pics");
+			byId.put(
+					itemId,
+					new MemberTagSegmentRuleOrderItemParamsSupport.ItemView(
+							name == null ? "" : String.valueOf(name), pics == null ? List.of() : pics));
+		}
+		MemberTagSegmentRuleOrderItemParamsSupport.enrichConditionInPlace(condition, byId);
 	}
 
 	private static long parseDistributorIdQueryLong(String distributorIdQueryParamRaw) {
