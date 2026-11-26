@@ -24,6 +24,8 @@ import cn.shopex.ecshopx.common.web.FlexibleBody;
 import cn.shopex.ecshopx.openapi.thirdapi.OpenapiBaseController;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.OpenapiMemberQueryParams;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.OpenapiRequestParams;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberPointDetailBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberPointDetailSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberPointLogListBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberPointLogListSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
@@ -203,11 +205,87 @@ public class MemberPointController extends OpenapiBaseController {
 				pageSpec.pageSize());
 	}
 
+	@Operation(
+			summary = "开放接口查询会员可用积分",
+			description =
+					"按签名鉴权租户 company_id 以手机号查询会员可用积分："
+							+ " mobile 必填（originalString 双通道，body 含键优先、值 null 视为未传；服务内 trim 后须"
+							+ " ^1[3456789][0-9]{9}$；缺失/空白 E5001「手机号必填」，格式错 E5001「手机号填写错误」）。"
+							+ " 会员按固定加密 mobile 等值定位（LIMIT 1）；**查无会员不报错**——"
+							+ " point_member 按 (company_id, user_id) LIMIT 1 读 point，"
+							+ " 会员查无/无积分账户/point null 均返回 point=0（仍 success）。"
+							+ " data 单键 {point: 整型}。Advice 包装 message 固定「成功」。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.member_point.detail,"
+							+ " version=2.0）签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 只读，无写库/异步/第三方副作用。",
+			operationId = "ecx.member_point.detail.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功，data={point}（查无会员为 0，仍 success）；"
+								+ " 业务失败：status=fail, code=E5001 手机号必填·手机号填写错误，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxMemberPointDetailFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxMemberPointDetailSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "查询成功",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"point\":10}}"),
+									@ExampleObject(
+											name = "success-no-member",
+											summary = "会员查无/无积分账户（point=0，仍 success）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"point\":0}}"),
+									@ExampleObject(
+											name = "fail-mobile-missing",
+											summary = "mobile 缺失/空白",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5001\",\"message\":\"手机号必填\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-mobile-format",
+											summary = "mobile 格式错误",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5001\","
+															+ "\"message\":\"手机号填写错误\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@GetMapping(value = "/ecx.member_point.detail", name = "开放接口查询会员可用积分")
 	public Map<String, Object> detail(
-			HttpServletRequest request,
-			@RequestParam(name = "mobile", required = false) String mobileParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "会员手机号（明文）；必填，trim 后须 ^1[3456789][0-9]{9}$；查无会员不报错（point=0）",
+							required = true,
+							example = "13800138000")
+					@RequestParam(name = "mobile", required = false)
+					String mobileParam,
+			@RequestBody(
+							description = "可选 JSON body；mobile 与 query 同名双通道（body 含键优先，值 null 视为未传）",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxMemberPointDetailBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		String mobileRaw = OpenapiRequestParams.originalString(mobileParam, body, "mobile");
 		return memberPointV2DetailPort.getMemberPointDetail(companyId, mobileRaw);
