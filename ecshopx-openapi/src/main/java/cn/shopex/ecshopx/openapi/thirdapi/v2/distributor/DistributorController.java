@@ -27,12 +27,15 @@ import cn.shopex.ecshopx.common.openapi.OpenapiErrorCode;
 import cn.shopex.ecshopx.common.web.FlexibleBody;
 import cn.shopex.ecshopx.openapi.thirdapi.OpenapiBaseController;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.OpenapiRequestParams;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.distributor.doc.EcxDistributorCreateBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.distributor.doc.EcxDistributorCreateSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.distributor.doc.EcxDistributorListBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.distributor.doc.EcxDistributorListSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.OpenapiThirdApiV2ShippingTemplatesListParams;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -158,21 +161,146 @@ public class DistributorController extends OpenapiBaseController {
 				OpenapiRequestParams.originalString(distributorIdParam, body, "distributor_id"));
 	}
 
+	@Operation(
+			summary = "开放接口创建店铺",
+			description =
+					"按签名鉴权租户 company_id 创建店铺（distribution_distributor）："
+							+ " shop_code（^[A-Za-z0-9-]+$）、distributor_name、contact_username、"
+							+ " contact_mobile（^1[3456789]\\d{9}$）必填，缺失/非法 E5001 对应文案；"
+							+ " 五个 0/1 开关可选（is_delivery 缺省 1，其余缺省 0；空串/非 0/1 报 E5001）；hour/logo 可选无格式校验。"
+							+ " 租户内店铺号/名称/手机号（密文）重复分别 E5402。"
+							+ " is_dada=1 时校验同城配已开启（未开启 E5300）并远程建店，shop_code 被 originShopId 覆盖"
+							+ "（覆盖后重复再报 E5402；建店失败 E0001）。"
+							+ " 新建恒禁用态（is_valid=false → status=2）、source_from=3，省市区/地址/坐标/regions 为空，"
+							+ " contact/mobile 加密存储。成功 data 为新建店铺 23 键行（同列表行结构），Advice 包装 message 固定「成功」。"
+							+ " 参数双通道：多数 originalString（body 含键取原始值），hour/logo mergeString。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.distributor.create, version=2.0）"
+							+ " 签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 副作用：事务内 INSERT distribution_distributor + 默认语言分表写；afterCommit 发布"
+							+ " 创建店铺慢队列任务 + distribution.add / distributor.create 事件；is_dada=1 时第三方同城配建店 HTTP。",
+			operationId = "ecx.distributor.create.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功，data 见 EcxDistributorListItemDoc（23 键，新建恒 status=2）；"
+								+ " 业务失败：status=fail, code=E5001 参数错误 / E5402 店铺号·名称·手机号已存在 /"
+								+ " E5300 该商户未开启达达同城配 / E0001 同城配建店失败文案，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxDistributorCreateFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxDistributorCreateSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "创建成功（禁用态，地址字段为空）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"distributor_id\":1001,\"shop_code\":\"S001\",\"status\":2,"
+															+ "\"distributor_name\":\"新门店名\",\"contact_username\":\"王五\","
+															+ "\"contact_mobile\":\"13912345678\",\"province\":\"\",\"city\":\"\","
+															+ "\"area\":\"\",\"region_codes\":[],\"region_names\":[],\"address\":\"\","
+															+ "\"lng\":\"\",\"lat\":\"\",\"hour\":\"08:30 - 21:30\",\"logo\":\"/x/logo.jpg\","
+															+ "\"is_ziti\":0,\"is_delivery\":1,\"is_auto_sync_goods\":0,\"is_dada\":0,"
+															+ "\"is_default\":0,\"created\":\"2023-11-15 06:13:21\","
+															+ "\"updated\":\"2023-11-15 06:13:21\"}}"),
+									@ExampleObject(
+											name = "fail-shop-code-exists",
+											summary = "店铺号重复",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5402\",\"message\":\"店铺号已存在\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-mobile-format",
+											summary = "联系方式缺失/格式非法",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5001\",\"message\":\"联系方式参数错误\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-dada-not-open",
+											summary = "is_dada=1 但未开启同城配",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5300\","
+															+ "\"message\":\"该商户未开启达达同城配\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@PostMapping(value = "/ecx.distributor.create", name = "开放接口创建店铺")
 	public Map<String, Object> create(
-			HttpServletRequest request,
-			@RequestParam(name = "shop_code", required = false) String shopCodeParam,
-			@RequestParam(name = "distributor_name", required = false) String distributorNameParam,
-			@RequestParam(name = "contact_username", required = false) String contactUsernameParam,
-			@RequestParam(name = "contact_mobile", required = false) String contactMobileParam,
-			@RequestParam(name = "hour", required = false) String hourParam,
-			@RequestParam(name = "is_ziti", required = false) String isZitiParam,
-			@RequestParam(name = "is_delivery", required = false) String isDeliveryParam,
-			@RequestParam(name = "is_auto_sync_goods", required = false) String isAutoSyncGoodsParam,
-			@RequestParam(name = "is_dada", required = false) String isDadaParam,
-			@RequestParam(name = "is_default", required = false) String isDefaultParam,
-			@RequestParam(name = "logo", required = false) String logoParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "店铺号；必填，^[A-Za-z0-9-]+$；is_dada=1 时被 originShopId 覆盖（body 同名键优先）",
+							required = true,
+							example = "S001")
+					@RequestParam(name = "shop_code", required = false)
+					String shopCodeParam,
+			@Parameter(description = "店铺名称；必填非空，租户内不可重名（body 同名键优先）", required = true, example = "新门店名")
+					@RequestParam(name = "distributor_name", required = false)
+					String distributorNameParam,
+			@Parameter(description = "联系人姓名；必填非空（body 同名键优先）", required = true, example = "王五")
+					@RequestParam(name = "contact_username", required = false)
+					String contactUsernameParam,
+			@Parameter(
+							description = "联系人手机；必填 ^1[3456789]\\d{9}$，租户内不可重复（body 同名键优先）",
+							required = true,
+							example = "13912345678")
+					@RequestParam(name = "contact_mobile", required = false)
+					String contactMobileParam,
+			@Parameter(description = "营业时间描述；可选缺省空串（body 同名键优先，mergeString）", example = "08:30 - 21:30")
+					@RequestParam(name = "hour", required = false)
+					String hourParam,
+			@Parameter(
+							description = "是否支持自提；0/1，缺省 0（body 同名键优先）",
+							schema = @Schema(allowableValues = {"0", "1"}),
+							example = "0")
+					@RequestParam(name = "is_ziti", required = false)
+					String isZitiParam,
+			@Parameter(
+							description = "是否支持快递配送；0/1，缺省 1（body 同名键优先）",
+							schema = @Schema(allowableValues = {"0", "1"}),
+							example = "1")
+					@RequestParam(name = "is_delivery", required = false)
+					String isDeliveryParam,
+			@Parameter(
+							description = "是否自动同步总部商品；0/1，缺省 0（body 同名键优先）",
+							schema = @Schema(allowableValues = {"0", "1"}),
+							example = "0")
+					@RequestParam(name = "is_auto_sync_goods", required = false)
+					String isAutoSyncGoodsParam,
+			@Parameter(
+							description = "是否开启同城配；0/1，缺省 0；=1 须已开启达达/闪送并远程建店（body 同名键优先）",
+							schema = @Schema(allowableValues = {"0", "1"}),
+							example = "0")
+					@RequestParam(name = "is_dada", required = false)
+					String isDadaParam,
+			@Parameter(
+							description = "是否默认店铺；0/1，缺省 0（body 同名键优先）",
+							schema = @Schema(allowableValues = {"0", "1"}),
+							example = "0")
+					@RequestParam(name = "is_default", required = false)
+					String isDefaultParam,
+			@Parameter(description = "店铺 Logo URL；可选缺省空串（body 同名键优先，mergeString）", example = "/x/logo.jpg")
+					@RequestParam(name = "logo", required = false)
+					String logoParam,
+			@RequestBody(
+							description = "可选 JSON body；字段与 query 同名双通道；校验与默认值见 schema",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxDistributorCreateBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		return distributorCreatePort.create(
 				companyId,
