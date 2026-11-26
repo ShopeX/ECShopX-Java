@@ -32,6 +32,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v2.distributor.doc.EcxDistributorItemD
 import cn.shopex.ecshopx.openapi.thirdapi.v2.distributor.doc.EcxDistributorItemDownloadSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.distributor.doc.EcxDistributorItemListBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.distributor.doc.EcxDistributorItemListSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.distributor.doc.EcxDistributorItemUpdateBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.distributor.doc.EcxDistributorItemUpdateSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -211,16 +213,114 @@ public class DistributorItemController extends OpenapiBaseController {
 				OpenapiRequestParams.originalString(distributorIdParam, body, "distributor_id"));
 	}
 
+	@Operation(
+			summary = "开放接口更新店铺商品",
+			description =
+					"按签名鉴权租户 company_id 部分更新店铺商品（distribution_distributor_items）："
+							+ " shop_code/item_code 必填（mergeString），缺失依次 E5001「店铺号参数有误」「商品货号参数错误」；"
+							+ " is_can_sale/is_total_store 键存在时仅 0/1（否则 E5001 对应文案）；store/price 键存在但非数值静默忽略"
+							+ "（price 元 ×100 HALF_UP 转分）。无任何补丁字段直接成功（data=null）。"
+							+ " 店铺查无 E5401「店铺找不到」、商品查无 E5101「商品找不到」；"
+							+ " is_total_store 仅 SPU 级可改（SKU 行 E5410），改后同步整个 SPU 组；"
+							+ " 总部发货生效值=1 时提交 store/price 报 E5410「商品总部发货无法更新库存和价格」；"
+							+ " price 不得小于进行中拼团活动价（E0001 拼团守卫文案）。"
+							+ " 店铺商品行不存在则新建（is_can_sale 缺省 false、store/price 缺省总部值、goods_can_sale=true）；"
+							+ " is_can_sale 改后按 SPU 组合同步 goods_can_sale。成功恒 data=null、message=成功（Advice 包装）。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.distributor_item.update, version=2.0）"
+							+ " 签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 副作用：@Transactional 内 UPDATE/INSERT distribution_distributor_items（含 SPU 组同步）+"
+							+ " store 提交时覆盖 Redis item_store 并发布库存变更事件；无第三方调用。",
+			operationId = "ecx.distributor_item.update.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功, data 恒 null；"
+								+ " 业务失败：status=fail, code=E5001 参数错误 / E5401 店铺找不到 / E5101 商品找不到 /"
+								+ " E5410 是否总部发货, 当前只支持更新spu级商品·商品总部发货无法更新库存和价格 /"
+								+ " E0001 拼团名称【…】的活动价格大于商品价格，请检查后再提交！，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxDistributorItemUpdateFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxDistributorItemUpdateSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "更新成功（无返回体）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-total-store-limit",
+											summary = "总部发货下提交库存/价格",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5410\","
+															+ "\"message\":\"商品总部发货无法更新库存和价格\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-sku-total-store",
+											summary = "SKU 行改总部发货",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5410\","
+															+ "\"message\":\"是否总部发货, 当前只支持更新spu级商品\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-shop-not-found",
+											summary = "shop_code 查无店铺",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5401\",\"message\":\"店铺找不到\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@PatchMapping(value = "/ecx.distributor_item.update", name = "开放接口更新店铺商品")
 	public Map<String, Object> update(
-			HttpServletRequest request,
-			@RequestParam(name = "shop_code", required = false) String shopCodeParam,
-			@RequestParam(name = "item_code", required = false) String itemCodeParam,
-			@RequestParam(name = "is_can_sale", required = false) String isCanSaleParam,
-			@RequestParam(name = "is_total_store", required = false) String isTotalStoreParam,
-			@RequestParam(name = "store", required = false) String storeParam,
-			@RequestParam(name = "price", required = false) String priceParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(description = "店铺号；必填（body 同名键优先）", required = true, example = "S001")
+					@RequestParam(name = "shop_code", required = false)
+					String shopCodeParam,
+			@Parameter(description = "商品货号（item_bn）；必填（body 同名键优先）", required = true, example = "A1")
+					@RequestParam(name = "item_code", required = false)
+					String itemCodeParam,
+			@Parameter(
+							description = "是否上架；键存在时仅 0/1（body 同名键优先）",
+							schema = @Schema(allowableValues = {"0", "1"}),
+							example = "1")
+					@RequestParam(name = "is_can_sale", required = false)
+					String isCanSaleParam,
+			@Parameter(
+							description = "是否总部发货；键存在时仅 0/1；仅 SPU 级可改；=1 时禁改库存/价格（body 同名键优先）",
+							schema = @Schema(allowableValues = {"0", "1"}),
+							example = "0")
+					@RequestParam(name = "is_total_store", required = false)
+					String isTotalStoreParam,
+			@Parameter(
+							description = "店铺独立库存；数值字符串，非数值静默忽略；仅非总部发货可改（body 同名键优先）",
+							example = "10")
+					@RequestParam(name = "store", required = false)
+					String storeParam,
+			@Parameter(
+							description = "店铺独立价格（元，×100 转分）；非数值静默忽略；不得小于拼团活动价（body 同名键优先）",
+							example = "99.00")
+					@RequestParam(name = "price", required = false)
+					String priceParam,
+			@RequestBody(
+							description = "可选 JSON body；部分更新语义与键存在规则见 schema",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxDistributorItemUpdateBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 
 		OpenapiDistributorItemUpdateCommand command =
