@@ -106,7 +106,7 @@ public class BargainPromotionCreateService {
 		BigDecimal mktPriceYuan = new BigDecimal(String.valueOf(params.get("mkt_price")).trim());
 		int priceFen = priceYuan.movePointRight(2).setScale(0, RoundingMode.DOWN).intValueExact();
 		int mktPriceFen = mktPriceYuan.movePointRight(2).setScale(0, RoundingMode.DOWN).intValueExact();
-		int minPriceFen = 100;
+		int minPriceFen = parseMinPriceFen(params.get("min_price"), priceFen, mktPriceFen, locale);
 		int maxCutPrice = mktPriceFen - priceFen;
 		if (maxCutPrice < 100) {
 			throw new BadRequestException(
@@ -226,7 +226,7 @@ public class BargainPromotionCreateService {
 		BigDecimal mktPriceYuan = new BigDecimal(String.valueOf(params.get("mkt_price")).trim());
 		int priceFen = priceYuan.movePointRight(2).setScale(0, RoundingMode.DOWN).intValueExact();
 		int mktPriceFen = mktPriceYuan.movePointRight(2).setScale(0, RoundingMode.DOWN).intValueExact();
-		int minPriceFen = 100;
+		int minPriceFen = parseMinPriceFen(params.get("min_price"), priceFen, mktPriceFen, locale);
 		int maxCutPrice = mktPriceFen - priceFen;
 		if (maxCutPrice < 100) {
 			throw new BadRequestException(
@@ -591,6 +591,44 @@ public class BargainPromotionCreateService {
 		} catch (NumberFormatException | ArithmeticException e) {
 			throw new BadRequestException(messageSource.getMessage(messageKey, null, locale));
 		}
+	}
+
+	/**
+	 * ECX-11445: request {@code min_price} is yuan; persist fen. Must be &gt; 0, ≤ purchase price, &lt;
+	 * market price.
+	 */
+	private int parseMinPriceFen(Object raw, int priceFen, int mktPriceFen, Locale locale) {
+		if (raw == null || !StringUtils.hasText(String.valueOf(raw).trim())) {
+			throw new BadRequestException(
+					messageSource.getMessage("promotions.bargain.min_price_required_min_0", null, locale));
+		}
+		int minPriceFen;
+		try {
+			BigDecimal yuan = new BigDecimal(String.valueOf(raw).trim());
+			if (yuan.compareTo(BigDecimal.ZERO) <= 0) {
+				throw new BadRequestException(
+						messageSource.getMessage("promotions.bargain.min_price_required_min_0", null, locale));
+			}
+			minPriceFen = yuan.movePointRight(2).setScale(0, RoundingMode.DOWN).intValueExact();
+		} catch (NumberFormatException | ArithmeticException e) {
+			throw new BadRequestException(
+					messageSource.getMessage("promotions.bargain.min_price_required_min_0", null, locale));
+		}
+		if (minPriceFen <= 0) {
+			throw new BadRequestException(
+					messageSource.getMessage("promotions.bargain.min_price_required_min_0", null, locale));
+		}
+		if (minPriceFen > priceFen) {
+			throw new BadRequestException(
+					messageSource.getMessage(
+							"promotions.bargain.min_price_must_not_exceed_price", null, locale));
+		}
+		if (minPriceFen >= mktPriceFen) {
+			throw new BadRequestException(
+					messageSource.getMessage(
+							"promotions.bargain.min_price_must_less_than_mkt_price", null, locale));
+		}
+		return minPriceFen;
 	}
 
 	private void assertStrictPositiveIntParam(Object v, String messageKey, Locale locale) {
