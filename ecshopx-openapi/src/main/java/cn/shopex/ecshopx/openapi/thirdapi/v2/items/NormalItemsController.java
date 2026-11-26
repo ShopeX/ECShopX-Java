@@ -33,6 +33,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemEntityDeleteBodyDo
 import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemEntityDeleteSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemEntityGetBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemEntityGetSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemEntityStatusUpdateBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemEntityStatusUpdateSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -209,12 +211,99 @@ public class NormalItemsController extends OpenapiBaseController {
 		return normalItemsEntityDetailPort.getEntityDetail(companyId, itemBn);
 	}
 
+	@Operation(
+			summary = "批量更新商品上下架状态",
+			description =
+					"按签名鉴权租户 company_id 批量更新商品上下架：item_bn 为货号 JSON 数组字符串"
+							+ "（必填非空白否则 E5001「货号必填」；非数组 E5100「请填写正确的货号格式」；"
+							+ "超 1000 个 E5100「商品状态可更改的最大数量为1000」）；status 必填仅 onsale/instock"
+							+ "（否则 E5001「状态必填,且必须是 onsale 或 instock 」）。"
+							+ " 按默认 SKU 货号定位 goods_id（全部查无 E5101「商品找不到」），整组 SKU 更新 approve_status。"
+							+ " onsale 守卫（ResourceException 转 E0000+fail PHP 旧契约）：供应商商品不可售 /"
+							+ " 处方药商品需要开启医药行业配置才能上架 / 处方药商品【{商品名}】审核通过后才能上架。"
+							+ " 两参数 originalString 双通道（body 含键取原始值，解析时 trim）。"
+							+ " 成功 data={status:true}，Advice 包装 message 固定「成功」。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.item.entity.status.update, version=2.0）"
+							+ " 签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 副作用：逐 goods_id UPDATE items.approve_status（整组 SKU）+ 批量编辑状态事件任务入队；"
+							+ " 无第三方调用。",
+			operationId = "ecx.item.entity.status.update.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功, data={status:true}；"
+								+ " 业务失败：status=fail, code=E5001 货号必填·状态必填 / E5100 货号格式·超 1000 /"
+								+ " E5101 商品找不到 / E0000（PHP 旧契约）供应商商品不可售·处方药守卫文案，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxItemEntityStatusUpdateFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxItemEntityStatusUpdateSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "批量更新成功",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"status\":true}}"),
+									@ExampleObject(
+											name = "fail-status-invalid",
+											summary = "status 非 onsale/instock",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5001\","
+															+ "\"message\":\"状态必填,且必须是 onsale 或 instock \",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-bn-format",
+											summary = "item_bn 非 JSON 数组",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5100\","
+															+ "\"message\":\"请填写正确的货号格式\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-supplier-legacy-zero",
+											summary = "上架含不可售供应商商品（PHP 旧契约：fail 但 code=E0000）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E0000\","
+															+ "\"message\":\"供应商商品不可售\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@PostMapping("/ecx.item.entity.status.update")
 	public Map<String, Object> batchUpdateItemsStatus(
-			HttpServletRequest request,
-			@RequestParam(name = "item_bn", required = false) String itemBnParam,
-			@RequestParam(name = "status", required = false) String statusParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "货号 JSON 数组字符串；必填，≤1000 个（body 同名键优先，可直接传数组）",
+							required = true,
+							example = "[\"SKU200\",\"SKU201\"]")
+					@RequestParam(name = "item_bn", required = false)
+					String itemBnParam,
+			@Parameter(
+							description = "目标状态；仅 onsale/instock（body 同名键优先）",
+							required = true,
+							schema = @Schema(allowableValues = {"onsale", "instock"}),
+							example = "onsale")
+					@RequestParam(name = "status", required = false)
+					String statusParam,
+			@RequestBody(
+							description = "可选 JSON body；字段与 query 同名双通道（取原始值）；守卫语义见 schema",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxItemEntityStatusUpdateBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		String itemBnRaw = OpenapiRequestParams.originalString(itemBnParam, body, "item_bn");
 		String statusRaw = OpenapiRequestParams.originalString(statusParam, body, "status");
