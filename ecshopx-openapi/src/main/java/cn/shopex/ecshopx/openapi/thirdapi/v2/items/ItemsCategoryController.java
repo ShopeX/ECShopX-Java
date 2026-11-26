@@ -30,6 +30,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemCategoryAddSuccess
 import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemCategoryDeleteBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemCategoryDeleteSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemCategoryGetSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemMaincategoryDetailGetBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemMaincategoryDetailGetSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemCategoryUpdateBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemCategoryUpdateSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
@@ -149,11 +151,101 @@ public class ItemsCategoryController extends OpenapiBaseController {
 		return itemCategoryListPort.getItemMainCategoryList(companyId);
 	}
 
+	@Operation(
+			summary = "开放接口获取商品主类目详情",
+			description =
+					"按签名鉴权租户 company_id 查询三级主类目详情：category 为「一级->二级->三级」名称路径"
+							+ "（必填非空否则 E5001「主类目名称必填」；恰好 3 段否则 E5130「主类目名称格式错误」）。"
+							+ " 逐级按名称查（is_main_category=1、distributor_id=0），任一级查无报 E5131 对应文案；"
+							+ " 三级命中后复核失败/详情为空返回 data=[]（PHP 旧契约空数组，不报错）。"
+							+ " data 8 固定键（category_id/sort/category_level 字符串化、created/updated 格式化可 null）+"
+							+ " 条件键 goods_params（attribute_type=item_params）/goods_spec（其余类型，attribute_id 倒序），"
+							+ " 属性行 8 键 + attribute_values 嵌套（total_count 字符串 + list 7 键/值，sort 升序 LIMIT 100）。"
+							+ " DB 异常 E5000 透传。category originalString 双通道。Advice 包装 message 固定「成功」。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.item.maincategory.detail.get, version=2.0）"
+							+ " 签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 只读，无写库/异步/第三方副作用。",
+			operationId = "ecx.item.maincategory.detail.get.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功，data 见 EcxItemMaincategoryDetailGetDataDoc"
+								+ "（复核失败/详情为空时 data=[]）；"
+								+ " 业务失败：status=fail, code=E5001 主类目名称必填 / E5130 主类目名称格式错误 /"
+								+ " E5131 各级类目名称未查询到相关数据 / E5000 DB 异常，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxItemMaincategoryDetailGetFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxItemMaincategoryDetailGetSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "查询成功（含规格属性与值）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"category_id\":\"1\",\"category_name\":\"HP\",\"sort\":\"1\","
+															+ "\"category_level\":\"3\",\"path\":\"1\",\"image_url\":\"/fixtures/logo.png\","
+															+ "\"created\":\"2023-11-15 06:13:21\",\"updated\":\"2023-11-15 06:13:21\","
+															+ "\"goods_spec\":[{\"attribute_id\":\"1\",\"attribute_name\":\"尺码\","
+															+ "\"attribute_memo\":\"\",\"attribute_sort\":\"1\",\"is_show\":\"true\","
+															+ "\"is_image\":\"false\",\"created\":\"2023-11-15 06:13:21\","
+															+ "\"updated\":\"2023-11-15 06:13:21\","
+															+ "\"attribute_values\":{\"total_count\":\"1\",\"list\":["
+															+ "{\"attribute_value_id\":\"100\",\"attribute_id\":\"1\","
+															+ "\"attribute_value\":\"XXL\",\"sort\":\"0\",\"image_url\":null,"
+															+ "\"created\":\"2023-11-15 06:13:21\","
+															+ "\"updated\":\"2023-11-15 06:13:21\"}]}}]}}"),
+									@ExampleObject(
+											name = "success-empty",
+											summary = "复核失败/详情为空（PHP 旧契约空数组）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\",\"data\":[]}"),
+									@ExampleObject(
+											name = "fail-format",
+											summary = "路径段数≠3",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5130\","
+															+ "\"message\":\"主类目名称格式错误\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-level3-not-found",
+											summary = "三级名称查无",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5131\","
+															+ "\"message\":\"三级类目名称未查询到相关数据\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@GetMapping(value = "/ecx.item.maincategory.detail.get", name = "开放接口获取商品主类目详情")
 	public Object getItemMainCategoryDetail(
-			HttpServletRequest request,
-			@RequestParam(name = "category", required = false) String categoryParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "三级主类目名称路径（一级->二级->三级）；必填（body 同名键优先，原始值不 trim）",
+							required = true,
+							example = "HP->上衣->HP")
+					@RequestParam(name = "category", required = false)
+					String categoryParam,
+			@RequestBody(
+							description = "可选 JSON body；category 与 query 同名双通道（取原始值）",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxItemMaincategoryDetailGetBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		String categoryRaw = OpenapiRequestParams.originalString(categoryParam, body, "category");
 		return mainCategoryDetailPort.getItemMainCategoryDetail(companyId, categoryRaw);
