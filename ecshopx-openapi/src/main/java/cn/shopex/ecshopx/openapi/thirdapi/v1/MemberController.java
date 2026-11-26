@@ -47,6 +47,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberCardGradesBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberCardGradesSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberCreateBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberCreateSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberFrequentItemsBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberFrequentItemsSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -537,14 +539,102 @@ public class MemberController extends OpenapiBaseController {
 		return new OpenapiEnvelope("success", "E0000", "操作成功", data);
 	}
 
+	@Operation(
+			summary = "开放接口会员常购清单",
+			description =
+					"按签名鉴权租户 company_id 统计会员时间段内已支付订单的商品聚合（buy_num=订单行数 COUNT、"
+							+ " sales_num=SUM(num)），关联商品行（item_name 默认语言覆盖、price 分转元、pic 首图），"
+							+ " 按 item_id 倒序输出 list 与 count（返回条数）。"
+							+ " 定位优先级：mobile > external_member_id > unionid（均 PHP-truthy 判断），查无会员报「参数无效」。"
+							+ " timeRange 必填：0 近一年 / 1 近半年 / 2 近三个月；其他值返回 status=fail 且 code=E0000"
+							+ "「时间段值无效」（PHP 旧契约）。聚合结果 Redis 缓存 1 小时。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.member.frequentItems, version=1.0）"
+							+ " 签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 参数双通道（body 含键优先）；body unionid/timeRange 须为字符串。"
+							+ " 副作用：写 Redis 聚合缓存（1 小时 TTL）；无写库/异步/第三方调用。",
+			operationId = "ecx.member.frequentItems")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态。"
+								+ " 成功：status=success, code=E0000, message=操作成功，data 含 list（5 字段/条）与 count"
+								+ "（无购买记录时 count=0、list=[]）；"
+								+ " 校验失败：status=fail, code=E0001（请填写unionid/请填写正确的手机号/请填写时间段/"
+								+ "unionid或者手机号必填/参数无效），data=null；"
+								+ " 时间段值无效：status=fail 且 code=E0000，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxMemberFrequentItemsFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxMemberFrequentItemsSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "查询成功",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"操作成功\","
+															+ "\"data\":{\"list\":[{\"item_name\":\"示例商品\",\"price\":\"99.00\","
+															+ "\"buy_num\":3,\"pic\":\"https://example.test/key.jpg\","
+															+ "\"sales_num\":6}],\"count\":1}}"),
+									@ExampleObject(
+											name = "success-empty",
+											summary = "无购买记录",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"操作成功\","
+															+ "\"data\":{\"count\":0,\"list\":[]}}"),
+									@ExampleObject(
+											name = "fail-bad-time-range",
+											summary = "时间段值无效（PHP 旧契约：code=E0000 但 status=fail）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E0000\",\"message\":\"时间段值无效\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@PostMapping(value = "/ecx.member.frequentItems", name = "开放接口会员常购清单")
 	public OpenapiEnvelope frequentItems(
-			HttpServletRequest request,
-			@RequestParam(name = "mobile", required = false) String mobileParam,
-			@RequestParam(name = "unionid", required = false) String unionidParam,
-			@RequestParam(name = "external_member_id", required = false) String externalMemberIdParam,
-			@RequestParam(name = "timeRange", required = false) String timeRangeParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "手机号；提供时须匹配 ^1[3-9]\\d{9}$；定位最高优先（body 同名键优先）",
+							example = "13800000000")
+					@RequestParam(name = "mobile", required = false)
+					String mobileParam,
+			@Parameter(
+							description = "微信 unionid（wechat 关联）；body 中须为字符串；定位最低优先（body 同名键优先）",
+							example = "union-test")
+					@RequestParam(name = "unionid", required = false)
+					String unionidParam,
+			@Parameter(description = "会员 ID（user_id）；mobile 未提供时其次优先（body 同名键优先）", example = "5")
+					@RequestParam(name = "external_member_id", required = false)
+					String externalMemberIdParam,
+			@Parameter(
+							description = "统计时间段；必填：0 近一年 / 1 近半年 / 2 近三个月；其他值报时间段值无效（body 同名键优先）",
+							required = true,
+							schema = @Schema(allowableValues = {"0", "1", "2"}),
+							example = "2")
+					@RequestParam(name = "timeRange", required = false)
+					String timeRangeParam,
+			@RequestBody(
+							description =
+									"可选 JSON body；字段与 query 同名双通道，body 含键时优先；"
+											+ "unionid/timeRange 须为字符串类型",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxMemberFrequentItemsBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		boolean mobilePresent = OpenapiMemberQueryParams.isParamPresent(mobileParam, body, "mobile");
 		boolean unionidPresent = OpenapiMemberQueryParams.isParamPresent(unionidParam, body, "unionid");
