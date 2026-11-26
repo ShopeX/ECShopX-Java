@@ -35,6 +35,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemEntityGetBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemEntityGetSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemEntityStatusUpdateBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemEntityStatusUpdateSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemEntityUpdateBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemEntityUpdateSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -484,10 +486,85 @@ public class NormalItemsController extends OpenapiBaseController {
 		return entityAddPort.createItems(companyId, merged);
 	}
 
+	@Operation(
+			summary = "更新平台商品",
+			description =
+					"按签名鉴权租户 company_id 更新平台商品：入参为新增 24 键白名单 + old_item_bn 定位键"
+							+ "（body 含键优先，否则 query 同名键）。必填校验依次：old_item_bn「老的商品货号必填」→"
+							+ " item_main_cat_id/item_name/pics/templates_id/brand_id/item_category（同新增六文案，均 E5001）；"
+							+ " pics/item_category 须非空标量 JSON 数组（E5100 格式文案）。"
+							+ " old_item_bn 定位默认 SKU（查无 E5100「商品错误」兜底）；nospec 须与库中现值字符串完全一致"
+							+ "（不一致 E5100「多规格和单规格不能切换」）。定位后注入 item_id 走新增同链路 upsert"
+							+ "（字段全量覆盖，item_params JSON 字符串先解码、非法置 null）。"
+							+ " 固定 item_type/special_type=normal、item_source=openapi。价格拼团守卫等同新增（E5100 透传）。"
+							+ " 成功 data={status:true}，Advice 包装 message 固定「成功」。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.item.entity.update, version=2.0）"
+							+ " 签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 副作用：事务内 upsert items（单/多 SKU）+ 关联表 + 默认标记；afterCommit 商品事件 +"
+							+ " 店铺商品同步 + 搜索索引 upsert 调度；intro 内联图上传。",
+			operationId = "ecx.item.entity.update.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功, data={status:true}；"
+								+ " 业务失败：status=fail, code=E5001 七必填文案 / E5100 格式·多规格和单规格不能切换·"
+								+ "请填写正确的规格数据·商品错误·拼团价守卫及更新异常透传，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxItemEntityUpdateFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxItemEntityUpdateSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "更新成功",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"status\":true}}"),
+									@ExampleObject(
+											name = "fail-old-bn-required",
+											summary = "old_item_bn 缺失/空",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5001\","
+															+ "\"message\":\"老的商品货号必填\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-nospec-switch",
+											summary = "nospec 与库中现值不一致",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5100\","
+															+ "\"message\":\"多规格和单规格不能切换\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-not-found",
+											summary = "old_item_bn 查无默认 SKU（兜底文案）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5100\",\"message\":\"商品错误\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@PostMapping("/ecx.item.entity.update")
 	public Map<String, Object> updateItems(
-			HttpServletRequest request,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@RequestBody(
+							description = "可选 JSON body；25 键白名单（24 新增键 + old_item_bn）与 query 同名双通道；校验与 nospec 约束见 schema",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxItemEntityUpdateBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		Map<String, Object> merged =
 				OpenapiThirdApiV2NormalItemsEntityUpdateParams.buildMergedParams(request, body);
