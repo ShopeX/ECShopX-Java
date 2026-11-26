@@ -31,6 +31,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.OpenapiBaseController;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxJurisdictionGetuserBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxJurisdictionGetuserSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxJurisdictionRoleFailEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxJurisdictionSysuserBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxJurisdictionSysuserSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -194,18 +196,109 @@ public class JurisdictionController extends OpenapiBaseController {
 		return OpenapiEnvelope.fail("E0001", "操作失败", List.of());
 	}
 
+	@Operation(
+			summary = "开放接口系统账号同步",
+			description =
+					"按签名鉴权租户 company_id 同步系统账号（operators，事务内执行）："
+							+ " 先按 shopexid 定位 admin 账号并校验其 company_id 与鉴权租户一致（不一致→配置错误）；"
+							+ " 再按 mobile+operator_type 定位目标账号：存在且同租户则更新（username/password 非空白才覆盖），"
+							+ " 跨租户→帐号已存在；不存在则新建 —— operator_type=admin 走开通流程"
+							+ "（新建 admin 账号 + companys 公司 + demo license，事务提交后异步发布 company_create 事件），"
+							+ " 其他类型轻量新建（随机 BCrypt 密码，shop_ids/distributor_ids=[]）。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.jurisdiction.sysuser, version=1.0）"
+							+ " 签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 全部参数双通道（body 含键优先），无必填硬校验。"
+							+ " 失败两形态：E0001「操作失败」+ data={status:false,message:原因}；"
+							+ " 或 status=fail 且 code=E0000（账号已开通/未查询到更新数据等，PHP 旧契约）+ data=null。"
+							+ " 副作用：写库 operators（admin 开通另写 companys 与 demo license）；admin 开通有异步事件；无第三方调用。",
+			operationId = "ecx.jurisdiction.sysuser")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态。"
+								+ " 成功：status=success, code=E0000, message=操作成功，data={status:true,message:保存成功}；"
+								+ " 业务失败：status=fail, code=E0001, message=操作失败，data={status:false,message:配置错误/帐号已存在/保存失败}；"
+								+ " 旧契约失败：status=fail 且 code=E0000（账号已开通/未查询到更新数据），data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxJurisdictionSysuserFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxJurisdictionSysuserSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "同步成功",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"操作成功\","
+															+ "\"data\":{\"status\":true,\"message\":\"保存成功\"}}"),
+									@ExampleObject(
+											name = "fail-account-exists",
+											summary = "业务失败（跨租户账号已存在，data 为嵌套失败对象）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E0001\",\"message\":\"操作失败\","
+															+ "\"data\":{\"status\":false,\"message\":\"帐号已存在\"}}"),
+									@ExampleObject(
+											name = "fail-already-opened",
+											summary = "旧契约失败（admin 已开通：code=E0000 但 status=fail）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E0000\",\"message\":\"账号已开通\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@PostMapping("/ecx.jurisdiction.sysuser")
 	public OpenapiEnvelope sysuser(
-			HttpServletRequest request,
-			@RequestParam(name = "shopexid", required = false) String shopexIdParam,
-			@RequestParam(name = "mobile", required = false) String mobileParam,
-			@RequestParam(name = "operator_type", required = false) String operatorTypeParam,
-			@RequestParam(name = "login_name", required = false) String loginNameParam,
-			@RequestParam(name = "username", required = false) String usernameParam,
-			@RequestParam(name = "password", required = false) String passwordParam,
-			@RequestParam(name = "eid", required = false) String eidParam,
-			@RequestParam(name = "passport_uid", required = false) String passportUidParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "管理员手机号：定位 admin 账号并校验租户一致；不匹配→配置错误（body 同名键优先）",
+							example = "13800000000")
+					@RequestParam(name = "shopexid", required = false)
+					String shopexIdParam,
+			@Parameter(description = "目标账号手机号（定位/新建）（body 同名键优先）", example = "13900000000")
+					@RequestParam(name = "mobile", required = false)
+					String mobileParam,
+			@Parameter(
+							description = "目标账号类型：admin 走开通流程；其他值（如 staff）轻量新建/更新（body 同名键优先）",
+							example = "staff")
+					@RequestParam(name = "operator_type", required = false)
+					String operatorTypeParam,
+			@Parameter(description = "登录名（仅轻量新建落库）（body 同名键优先）")
+					@RequestParam(name = "login_name", required = false)
+					String loginNameParam,
+			@Parameter(description = "姓名（新建落库；更新时非空白才覆盖）（body 同名键优先）", example = "张三")
+					@RequestParam(name = "username", required = false)
+					String usernameParam,
+			@Parameter(
+							description = "密码：更新时非空白才覆盖（原样写入）；新建忽略入参、落库随机密码（body 同名键优先）")
+					@RequestParam(name = "password", required = false)
+					String passwordParam,
+			@Parameter(description = "企业 ID（admin 开通流程写入 operators 与 companys）（body 同名键优先）")
+					@RequestParam(name = "eid", required = false)
+					String eidParam,
+			@Parameter(description = "Passport UID（admin 开通流程写入）（body 同名键优先）")
+					@RequestParam(name = "passport_uid", required = false)
+					String passportUidParam,
+			@RequestBody(
+							description =
+									"可选 JSON body；字段与 query 同名双通道，body 含键时优先"
+											+ "（null/空白视为未提供且不回退 query）",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxJurisdictionSysuserBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		OpenapiJurisdictionSysuserInput input =
 				new OpenapiJurisdictionSysuserInput(
