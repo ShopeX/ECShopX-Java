@@ -35,6 +35,17 @@ import cn.shopex.ecshopx.common.openapi.OpenapiMemberOrderListPort;
 import cn.shopex.ecshopx.common.openapi.OpenapiMemberQueryPort;
 import cn.shopex.ecshopx.common.web.FlexibleBody;
 import cn.shopex.ecshopx.openapi.thirdapi.OpenapiBaseController;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberAssignToSalespersonBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberAssignToSalespersonSuccessEnvelopeDoc;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +55,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /** OpenAPI v1 handler scaffold — methods added during migration. */
+@Tag(name = "开放接口-会员V1")
 @OpenapiResponse
 @RestController("openapiV1Member")
 @RequestMapping("/api/openapi/internal/v1")
@@ -430,12 +442,92 @@ public class MemberController extends OpenapiBaseController {
 		return new OpenapiEnvelope("success", "E0000", "操作成功", data);
 	}
 
+	@Operation(
+			summary = "开放接口分配客户回调通知",
+			description =
+					"企微分配客户回调：按签名鉴权租户 company_id 与 unionid（members_associations，user_type=wechat）"
+							+ " 定位会员，将其归属导购更新为 employee_number（members.fp_salesperson，has_fp=true）。"
+							+ " 幂等：已分配相同导购且 has_fp=true 时不重复写库，直接返回成功。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}"
+							+ "（method=ecx.member.assignMemberToSalesperson, version=1.0）签名校验后转发；"
+							+ " 直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 参数双通道：body 含键取原始值（null 不回退 query），否则 query 原样。"
+							+ " 失败码为接口自定义语义：E4003 缺参、E4002 会员不存在、E5001 系统错误。"
+							+ " 副作用：写库更新 members 归属导购字段；无异步/第三方调用。",
+			operationId = "ecx.member.assignMemberToSalesperson")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态。"
+								+ " 成功：status=success, code=E0000, message=分配成功，data 回显 employee_number/unionid"
+								+ " 并附 assign_time；"
+								+ " 业务失败：status=fail（E4003 请填写导购员工编号/请填写会员unionid；E4002 会员不存在；"
+								+ "E5001 系统错误：{异常信息}），data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。"
+								+ " 见 EcxMemberAssignToSalespersonFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxMemberAssignToSalespersonSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "分配成功",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"分配成功\","
+															+ "\"data\":{\"employee_number\":\"E9\",\"unionid\":\"union-test\","
+															+ "\"assign_time\":\"2026-11-26 12:00:00\"}}"),
+									@ExampleObject(
+											name = "fail-member-not-found",
+											summary = "会员不存在（E4002，接口自定义语义）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4002\",\"message\":\"会员不存在\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-missing-employee",
+											summary = "缺导购员工编号（E4003）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4003\","
+															+ "\"message\":\"请填写导购员工编号\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@PostMapping(value = "/ecx.member.assignMemberToSalesperson", name = "开放接口分配客户回调通知")
 	public OpenapiEnvelope assignMemberToSalesperson(
-			HttpServletRequest request,
-			@RequestParam(name = "employee_number", required = false) String employeeNumberParam,
-			@RequestParam(name = "unionid", required = false) String unionidParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "导购员工编号（写入 members.fp_salesperson）；必填非空（body 同名键优先）",
+							required = true,
+							example = "E9")
+					@RequestParam(name = "employee_number", required = false)
+					String employeeNumberParam,
+			@Parameter(
+							description = "会员微信 unionid（租户内 wechat 关联定位）；必填非空（body 同名键优先）",
+							required = true,
+							example = "union-test")
+					@RequestParam(name = "unionid", required = false)
+					String unionidParam,
+			@RequestBody(
+							description =
+									"可选 JSON body；字段与 query 同名双通道，body 含键时取原始值"
+											+ "（null 视为未提供且不回退 query）",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxMemberAssignToSalespersonBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		String employeeNumber =
 				OpenapiRequestParams.originalString(employeeNumberParam, body, "employee_number");
