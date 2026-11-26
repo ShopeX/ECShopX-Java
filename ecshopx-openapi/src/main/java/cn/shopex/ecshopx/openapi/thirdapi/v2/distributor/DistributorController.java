@@ -35,6 +35,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v2.distributor.doc.EcxDistributorDownl
 import cn.shopex.ecshopx.openapi.thirdapi.v2.distributor.doc.EcxDistributorDownloadSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.distributor.doc.EcxDistributorListBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.distributor.doc.EcxDistributorListSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.distributor.doc.EcxDistributorUpdateBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.distributor.doc.EcxDistributorUpdateSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.OpenapiThirdApiV2ShippingTemplatesListParams;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -513,28 +515,168 @@ public class DistributorController extends OpenapiBaseController {
 		return distributorDetailPort.getDistributorDetail(companyId, shopCodeRaw);
 	}
 
+	@Operation(
+			summary = "开放接口更新店铺",
+			description =
+					"按签名鉴权租户 company_id 部分更新店铺（distribution_distributor）："
+							+ " shop_code 定位键兼可改字段（^[A-Za-z0-9-]+$，缺失/查无 E5401「店铺找不到」，格式非法 E5001）；"
+							+ " 其余 17 字段键存在语义（body 含键——含 null——或 query 提供即视为提交；键不存在不改动）。"
+							+ " 校验：contact_mobile 非空须 ^1[3456789]\\d{9}$；五个开关仅 0/1；status 仅 0/1/2"
+							+ "（0→delete/1→true/2→false）；lng/lat 非空须数值——非法均 E5001 对应文案。"
+							+ " 重复校验（排除自身）：shop_code/名称/手机号（密文）E5402。"
+							+ " 无任何有效补丁字段不写库直接返回当前行；有补丁则更新 + updated 刷新，"
+							+ " 更新命中 0 行 E5401。contact/mobile 加密存储，名称变更重算首字母。"
+							+ " 成功 data 为更新后 23 键店铺行（同列表/详情），Advice 包装 message 固定「成功」。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.distributor.update, version=2.0）"
+							+ " 签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 副作用：事务内 UPDATE distribution_distributor；afterCommit 发布 distribution.edit /"
+							+ " distributor.update 事件；更新不触发同城配远程建店、无第三方调用。",
+			operationId = "ecx.distributor.update.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功，data 见 EcxDistributorListItemDoc（23 键）；"
+								+ " 业务失败：status=fail, code=E5001 参数错误（店铺号/联系方式/五开关/店铺状态/经纬度）/"
+								+ " E5401 店铺找不到 / E5402 店铺号·名称·手机号已存在，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxDistributorUpdateFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxDistributorUpdateSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "更新成功（返回更新后店铺行）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"distributor_id\":1001,\"shop_code\":\"S001\",\"status\":1,"
+															+ "\"distributor_name\":\"新门店名\",\"contact_username\":\"王五\","
+															+ "\"contact_mobile\":\"13912345678\",\"province\":\"北京市\",\"city\":\"北京市\","
+															+ "\"area\":\"海淀区\",\"region_codes\":[],\"region_names\":[],"
+															+ "\"address\":\"中关村大街1号\",\"lng\":\"116.310003\",\"lat\":\"39.992806\","
+															+ "\"hour\":\"08:30 - 21:30\",\"logo\":\"/x/logo.jpg\","
+															+ "\"is_ziti\":1,\"is_delivery\":1,\"is_auto_sync_goods\":1,\"is_dada\":0,"
+															+ "\"is_default\":0,\"created\":\"2020-09-13 20:26:40\","
+															+ "\"updated\":\"2023-11-15 06:13:21\"}}"),
+									@ExampleObject(
+											name = "fail-name-exists",
+											summary = "店铺名称与其他店铺重复",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5402\",\"message\":\"店铺名称已存在\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-status",
+											summary = "status 非法（非 0/1/2）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5001\",\"message\":\"店铺状态参数错误\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-not-found",
+											summary = "shop_code 缺失/定位查无",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5401\",\"message\":\"店铺找不到\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@PatchMapping(value = "/ecx.distributor.update", name = "开放接口更新店铺")
 	public Map<String, Object> update(
-			HttpServletRequest request,
-			@RequestParam(name = "shop_code", required = false) String shopCodeParam,
-			@RequestParam(name = "distributor_name", required = false) String distributorNameParam,
-			@RequestParam(name = "contact_username", required = false) String contactUsernameParam,
-			@RequestParam(name = "contact_mobile", required = false) String contactMobileParam,
-			@RequestParam(name = "hour", required = false) String hourParam,
-			@RequestParam(name = "is_ziti", required = false) String isZitiParam,
-			@RequestParam(name = "is_delivery", required = false) String isDeliveryParam,
-			@RequestParam(name = "is_auto_sync_goods", required = false) String isAutoSyncGoodsParam,
-			@RequestParam(name = "is_dada", required = false) String isDadaParam,
-			@RequestParam(name = "is_default", required = false) String isDefaultParam,
-			@RequestParam(name = "logo", required = false) String logoParam,
-			@RequestParam(name = "status", required = false) String statusParam,
-			@RequestParam(name = "province", required = false) String provinceParam,
-			@RequestParam(name = "city", required = false) String cityParam,
-			@RequestParam(name = "area", required = false) String areaParam,
-			@RequestParam(name = "address", required = false) String addressParam,
-			@RequestParam(name = "lng", required = false) String lngParam,
-			@RequestParam(name = "lat", required = false) String latParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "店铺号（定位键兼可改字段）；必填 ^[A-Za-z0-9-]+$（body 同名键优先，原始值）",
+							required = true,
+							example = "S001")
+					@RequestParam(name = "shop_code", required = false)
+					String shopCodeParam,
+			@Parameter(description = "店铺名称；可选，不可与其他店铺重名（body 同名键优先）", example = "新门店名")
+					@RequestParam(name = "distributor_name", required = false)
+					String distributorNameParam,
+			@Parameter(description = "联系人姓名；可选（body 同名键优先）", example = "王五")
+					@RequestParam(name = "contact_username", required = false)
+					String contactUsernameParam,
+			@Parameter(
+							description = "联系人手机；可选，非空须 ^1[3456789]\\d{9}$，不可重复（body 同名键优先）",
+							example = "13912345678")
+					@RequestParam(name = "contact_mobile", required = false)
+					String contactMobileParam,
+			@Parameter(description = "营业时间描述；可选（body 同名键优先）", example = "08:30 - 21:30")
+					@RequestParam(name = "hour", required = false)
+					String hourParam,
+			@Parameter(
+							description = "是否支持自提；0/1（body 同名键优先）",
+							schema = @Schema(allowableValues = {"0", "1"}),
+							example = "1")
+					@RequestParam(name = "is_ziti", required = false)
+					String isZitiParam,
+			@Parameter(
+							description = "是否支持快递配送；0/1（body 同名键优先）",
+							schema = @Schema(allowableValues = {"0", "1"}),
+							example = "1")
+					@RequestParam(name = "is_delivery", required = false)
+					String isDeliveryParam,
+			@Parameter(
+							description = "是否自动同步总部商品；0/1（body 同名键优先）",
+							schema = @Schema(allowableValues = {"0", "1"}),
+							example = "1")
+					@RequestParam(name = "is_auto_sync_goods", required = false)
+					String isAutoSyncGoodsParam,
+			@Parameter(
+							description = "是否开启同城配；0/1；更新不触发远程建店（body 同名键优先）",
+							schema = @Schema(allowableValues = {"0", "1"}),
+							example = "0")
+					@RequestParam(name = "is_dada", required = false)
+					String isDadaParam,
+			@Parameter(
+							description = "是否默认店铺；0/1（body 同名键优先）",
+							schema = @Schema(allowableValues = {"0", "1"}),
+							example = "0")
+					@RequestParam(name = "is_default", required = false)
+					String isDefaultParam,
+			@Parameter(description = "店铺 Logo URL；可选（body 同名键优先）", example = "/x/logo.jpg")
+					@RequestParam(name = "logo", required = false)
+					String logoParam,
+			@Parameter(
+							description = "店铺状态；0 删除/1 启用/2 禁用（body 同名键优先）",
+							schema = @Schema(allowableValues = {"0", "1", "2"}),
+							example = "1")
+					@RequestParam(name = "status", required = false)
+					String statusParam,
+			@Parameter(description = "省；可选（body 同名键优先）", example = "北京市")
+					@RequestParam(name = "province", required = false)
+					String provinceParam,
+			@Parameter(description = "市；可选（body 同名键优先）", example = "北京市")
+					@RequestParam(name = "city", required = false)
+					String cityParam,
+			@Parameter(description = "区；可选（body 同名键优先）", example = "海淀区")
+					@RequestParam(name = "area", required = false)
+					String areaParam,
+			@Parameter(description = "详细地址；可选（body 同名键优先）", example = "中关村大街1号")
+					@RequestParam(name = "address", required = false)
+					String addressParam,
+			@Parameter(description = "经度；非空须数值（body 同名键优先）", example = "116.310003")
+					@RequestParam(name = "lng", required = false)
+					String lngParam,
+			@Parameter(description = "纬度；非空须数值（body 同名键优先）", example = "39.992806")
+					@RequestParam(name = "lat", required = false)
+					String latParam,
+			@RequestBody(
+							description = "可选 JSON body；部分更新键存在语义与校验见 schema",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxDistributorUpdateBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		return distributorUpdatePort.update(
 				companyId,
