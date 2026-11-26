@@ -43,6 +43,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberBrowserHistoryBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberBrowserHistoryListBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberBrowserHistoryListSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberBrowserHistorySuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberCardGradesBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberCardGradesSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -326,11 +328,82 @@ public class MemberController extends OpenapiBaseController {
 		return new OpenapiEnvelope("success", "E0000", "操作成功", data);
 	}
 
+	@Operation(
+			summary = "开放接口获取会员卡等级列表",
+			description =
+					"按签名鉴权租户 company_id 返回全部会员卡等级精简列表（data 为数组，每项仅"
+							+ " grade_id（字符串）与 grade_name），grade_name 按 country_code 语言分表覆盖。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.member.cardGrades, version=1.0）"
+							+ " 签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " country_code 双通道：body 含键时以 body 为准（null/空白不回退 query），否则读 query；"
+							+ " 均缺省 zh-CN。查询异常返回 E9999 且 data=[]。"
+							+ " 只读，无写库/异步/第三方副作用。",
+			operationId = "ecx.member.cardGrades")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态。"
+								+ " 成功：status=success, code=E0000, message=操作成功，data 为数组（每项 grade_id/grade_name，"
+								+ " 无等级时 []）；"
+								+ " 查询异常：status=fail, code=E9999, message=获取会员卡等级列表失败：{异常信息}, data=[]；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxMemberCardGradesFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxMemberCardGradesSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "查询成功",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"操作成功\","
+															+ "\"data\":[{\"grade_id\":\"1\",\"grade_name\":\"普通会员\"}]}"),
+									@ExampleObject(
+											name = "success-empty",
+											summary = "无等级配置",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"操作成功\",\"data\":[]}"),
+									@ExampleObject(
+											name = "fail-system-error",
+											summary = "查询异常（E9999，data 为空数组）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E9999\","
+															+ "\"message\":\"获取会员卡等级列表失败：数据库连接失败\",\"data\":[]}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@PostMapping(value = "/ecx.member.cardGrades", name = "开放接口获取会员卡等级列表")
 	public OpenapiEnvelope getMemberCardGrades(
-			HttpServletRequest request,
-			@RequestParam(name = "country_code", required = false) String countryCodeParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description =
+									"语言/国家码，默认 zh-CN；body 含 country_code 键时以 body 为准，"
+											+ " body 无该键时才使用本 query 参数",
+							example = "zh-CN")
+					@RequestParam(name = "country_code", required = false)
+					String countryCodeParam,
+			@RequestBody(
+							description =
+									"可选 JSON body；仅读取 country_code。含该键时优先于 query"
+											+ "（值为 null/空白视为未提供且不回退 query，最终默认 zh-CN）",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxMemberCardGradesBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		String lang = OpenapiPaginationParams.mergeCountryCode(countryCodeParam, body);
 		if (lang == null) {
