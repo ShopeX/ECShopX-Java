@@ -33,6 +33,8 @@ import cn.shopex.ecshopx.common.web.FlexibleBody;
 import cn.shopex.ecshopx.openapi.thirdapi.OpenapiBaseController;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberCardCodeGradeUpdateBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberCardCodeGradeUpdateSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberCardGradeRelListBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberCardGradeRelListSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -411,14 +413,121 @@ public class MemberController extends OpenapiBaseController {
 				companyId, pageSpec.page(), pageSpec.pageSize(), raw);
 	}
 
+	@Operation(
+			summary = "开放接口会员等级关联会员列表",
+			description =
+					"按签名鉴权租户 company_id 分页查询等级关联会员：4 键与 query 同名双通道"
+							+ "（body 含键优先、值 null 视为未传、不 trim）。"
+							+ " grade_id 与 vip_grade_id 恰一键存在（按键存在性判定，与值无关）："
+							+ " 都缺 E5001「会员等级ID参数错误」；同传 E5001「会员等级ID与付费会员等级ID不能同时存在」；"
+							+ " 值须严格整数 ^-?\\d+$（允许负数，空串/小数/非数字分别报 E5001"
+							+ "「会员等级ID参数错误」/「付费会员等级ID参数错误」）；两分支均不校验等级存在。"
+							+ " grade 分支：members.grade_id 等值 + DISTINCT，user_id 降序；"
+							+ " vip 分支：vip_grade_rel_user(company_id, vip_grade_id) 等值、不过滤 end_date"
+							+ "（过期关联仍计入），user_id 降序，total_count 为关联行数（非去重），list 可重复会员。"
+							+ " page 默认 1、page_size 默认 20（PHP 式解析），page_size 原始解析 ≥500 报"
+							+ " E5002「每页的大小最大为500！」，钳制后 page≥1、page_size∈[20,499]。"
+							+ " data 键序 total_count/list/is_last_page(0|1)/pager{page,page_size}；"
+							+ " 行仅 mobile/username 两键（密文解密明文，查无空串；user_id 不透出）。"
+							+ " Advice 包装 message 固定「成功」。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}"
+							+ "（method=ecx.member_card_grade_rel.list, version=2.0）签名校验后转发；"
+							+ " 直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " DB 等未处理异常无本服务兜底 → HTTP 500 ApiResult{code:500,msg:服务器内部错误}。"
+							+ " 只读，无写库/异步/第三方副作用。",
+			operationId = "ecx.member_card_grade_rel.list.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功，data 见 EcxMemberCardGradeRelListDataDoc；"
+								+ " 业务失败：status=fail, code=E5001 会员等级ID参数错误·两ID不能同时存在·付费会员等级ID参数错误 /"
+								+ " E5002 每页的大小最大为500！，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxMemberCardGradeRelListFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxMemberCardGradeRelListSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "grade_id 分支查询成功（示例值取自 members 测试夹具）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"total_count\":1,"
+															+ "\"list\":[{\"mobile\":\"13800138000\",\"username\":\"张三\"}],"
+															+ "\"is_last_page\":1,\"pager\":{\"page\":1,\"page_size\":20}}}"),
+									@ExampleObject(
+											name = "success-empty",
+											summary = "等级查无关联会员（list 空数组）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"total_count\":0,\"list\":[],\"is_last_page\":1,"
+															+ "\"pager\":{\"page\":1,\"page_size\":20}}}"),
+									@ExampleObject(
+											name = "fail-both-ids",
+											summary = "grade_id 与 vip_grade_id 同传",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5001\","
+															+ "\"message\":\"会员等级ID与付费会员等级ID不能同时存在\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-missing-id",
+											summary = "两 ID 键均缺席",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5001\","
+															+ "\"message\":\"会员等级ID参数错误\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-page-size",
+											summary = "page_size 原始解析值 ≥500",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5002\","
+															+ "\"message\":\"每页的大小最大为500！\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@GetMapping(value = "/ecx.member_card_grade_rel.list", name = "开放接口会员等级关联会员列表")
 	public Map<String, Object> listByGradeOrVipGrade(
-			HttpServletRequest request,
-			@RequestParam(name = "page", required = false) String pageParam,
-			@RequestParam(name = "page_size", required = false) String pageSizeParam,
-			@RequestParam(name = "grade_id", required = false) String gradeIdParam,
-			@RequestParam(name = "vip_grade_id", required = false) String vipGradeIdParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "页码，默认 1；PHP 式解析后 max(…,1)，负数/0/非法按 1",
+							example = "1")
+					@RequestParam(name = "page", required = false)
+					String pageParam,
+			@Parameter(
+							description = "每页数量，默认 20；原始解析值 ≥500 报 E5002「每页的大小最大为500！」；钳制后生效 [20,499]",
+							example = "20")
+					@RequestParam(name = "page_size", required = false)
+					String pageSizeParam,
+			@Parameter(
+							description = "普通会员等级 ID；与 vip_grade_id 互斥恰一（键存在性）；严格整数 ^-?\\d+$，否则 E5001；不校验等级存在",
+							example = "1")
+					@RequestParam(name = "grade_id", required = false)
+					String gradeIdParam,
+			@Parameter(
+							description = "付费会员等级 ID；与 grade_id 互斥恰一；严格整数，否则 E5001「付费会员等级ID参数错误」；不过滤过期关联",
+							example = "2")
+					@RequestParam(name = "vip_grade_id", required = false)
+					String vipGradeIdParam,
+			@RequestBody(
+							description = "可选 JSON body；4 键与 query 同名双通道（body 含键优先，值 null 视为未传）；互斥语义见 schema",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxMemberCardGradeRelListBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 
 		OpenapiThirdApiV2MemberListParams.PageSpec pageSpec =
