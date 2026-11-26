@@ -31,6 +31,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxSalespersonDestroyBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxSalespersonDestroySuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxSalespersonPushBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxSalespersonPushSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxSalespersonUpdateStoresBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxSalespersonUpdateStoresSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -405,12 +407,91 @@ public class ShopSalespersonController extends OpenapiBaseController {
 		return new OpenapiEnvelope("success", "E0000", "操作成功", List.of());
 	}
 
+	@Operation(
+			summary = "更新导购绑定店铺",
+			description =
+					"按签名鉴权租户 company_id 重绑导购的店铺关联：employee_number 单值精确匹配"
+							+ " shop_salesperson.work_userid（LIMIT 1，不限人员类型），查无报「导购员信息查询错误」。"
+							+ " store_bn 分支：数值等于 0（\"0\"/\"0.0\" 等）→ 清空该导购全部店铺关联并成功；"
+							+ " 缺失/空白或逗号分段后全空 → 按空编号查有效店铺（通常报「未查询到店铺信息」）；"
+							+ " 否则逗号分隔多编号（逐段 trim）按租户查有效店铺（is_valid=true，created 倒序），"
+							+ " 查无报「未查询到店铺信息」，命中则事务内先删该导购全部旧关联再逐一插入"
+							+ "（shop_rel_salesperson，store_type=distributor）。"
+							+ " 成功 data 恒为空数组 []、message=操作成功（重绑与清空相同）。"
+							+ " 两参数双通道（body 含键时以 body 为准，null/空白视为未提供且不回退 query；body 无键读 query 并 trim）。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.salesperson.updateStores, version=1.0）"
+							+ " 签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 副作用：DELETE/INSERT shop_rel_salesperson（重绑走 TransactionTemplate；0 清空分支单条 DELETE 无显式事务）；"
+							+ " 不写 shop_salesperson；无异步、无第三方调用。",
+			operationId = "ecx.salesperson.updateStores.v1")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态。"
+								+ " 成功：status=success, code=E0000, message=操作成功, data 恒为空数组 []（重绑与 store_bn=0 清空相同）；"
+								+ " 业务失败：status=fail, code=E0001（导购员信息查询错误/未查询到店铺信息），data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxSalespersonUpdateStoresFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxSalespersonUpdateStoresSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "重绑成功（store_bn=0 清空亦同形）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"操作成功\",\"data\":[]}"),
+									@ExampleObject(
+											name = "fail-salesperson-not-found",
+											summary = "work_userid 查无匹配",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E0001\",\"message\":\"导购员信息查询错误\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-store-not-found",
+											summary = "有效店铺查无（含 store_bn 缺失按空编号查询）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E0001\",\"message\":\"未查询到店铺信息\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@PostMapping(value = "/ecx.salesperson.updateStores", name = "更新导购绑定店铺")
 	public OpenapiEnvelope updateSalespersonStores(
-			HttpServletRequest request,
-			@RequestParam(name = "employee_number", required = false) String employeeNumberParam,
-			@RequestParam(name = "store_bn", required = false) String storeBnParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description =
+									"导购企微 userid（shop_salesperson.work_userid），单值精确匹配；"
+											+ "查无报「导购员信息查询错误」（缺失按 null 匹配）（body 同名键优先）",
+							required = true,
+							example = "work-u")
+					@RequestParam(name = "employee_number", required = false)
+					String employeeNumberParam,
+			@Parameter(
+							description =
+									"店铺编号，逗号分隔多个；\"0\"（数值零）清空全部绑定；缺失/空白按空编号查询通常报"
+											+ "「未查询到店铺信息」（body 同名键优先）",
+							example = "S01")
+					@RequestParam(name = "store_bn", required = false)
+					String storeBnParam,
+			@RequestBody(
+							description = "可选 JSON body；字段与 query 同名双通道，body 含键时优先；store_bn 分支语义见 schema",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxSalespersonUpdateStoresBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		String employeeNumber = OpenapiRequestParams.mergeString(employeeNumberParam, body, "employee_number");
 		String storeBn = OpenapiRequestParams.mergeString(storeBnParam, body, "store_bn");
