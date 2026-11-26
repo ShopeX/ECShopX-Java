@@ -39,6 +39,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberAssignToSalespersonBod
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberAssignToSalespersonSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberBasicInfoBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberBasicInfoSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberBrowserHistoryBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberBrowserHistorySuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -432,14 +434,101 @@ public class MemberController extends OpenapiBaseController {
 		return new OpenapiEnvelope("success", "E0000", "操作成功", data);
 	}
 
+	@Operation(
+			summary = "开放接口会员浏览足迹",
+			description =
+					"按签名鉴权租户 company_id 查询会员商品浏览足迹：按 updated 倒序取页后关联商品行"
+							+ "（item_name 默认语言分表覆盖，price 分转元两位小数，pic 取首图），"
+							+ " 输出 list（updated 倒序）与 count（本页条数，非总数）。"
+							+ " 定位：mobile PHP-truthy 优先按手机号，否则 unionid（wechat 关联）；二选一必填；"
+							+ " 查无会员报「参数无效」。"
+							+ " 分页：page PHP-falsy 时固定 page=1/page_size=10；page 有效且 page_size 键存在才按其分页，"
+							+ " page_size 非整数/≤0 返回全部足迹。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.member.browserHistory, version=1.0）"
+							+ " 签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 参数双通道（body 含键优先）；body unionid 须为字符串。"
+							+ " 只读，无写库/异步/第三方副作用。",
+			operationId = "ecx.member.browserHistory")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态。"
+								+ " 成功：status=success, code=E0000, message=操作成功，data 含 list（5 字段/条）与 count"
+								+ "（无足迹时 count=0、list=[]）；"
+								+ " 业务失败：status=fail, code=E0001（请填写unionid/请填写正确的手机号/"
+								+ "unionid或者手机号必填/参数无效），data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxMemberBrowserHistoryFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxMemberBrowserHistorySuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "查询成功",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"操作成功\","
+															+ "\"data\":{\"list\":[{\"item_id\":1001,\"item_name\":\"示例商品\","
+															+ "\"price\":\"99.00\",\"updated\":1764115200,"
+															+ "\"pic\":\"https://example.test/key.jpg\"}],\"count\":1}}"),
+									@ExampleObject(
+											name = "success-empty",
+											summary = "无足迹",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"操作成功\","
+															+ "\"data\":{\"count\":0,\"list\":[]}}"),
+									@ExampleObject(
+											name = "fail-member-not-found",
+											summary = "查无会员（参数无效）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E0001\",\"message\":\"参数无效\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@PostMapping(value = "/ecx.member.browserHistory", name = "开放接口会员浏览足迹")
 	public OpenapiEnvelope browseHistory(
-			HttpServletRequest request,
-			@RequestParam(name = "mobile", required = false) String mobileParam,
-			@RequestParam(name = "unionid", required = false) String unionidParam,
-			@RequestParam(name = "page", required = false) String pageParam,
-			@RequestParam(name = "page_size", required = false) String pageSizeParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "手机号；提供时须匹配 ^1[3-9]\\d{9}$；与 unionid 二选一（body 同名键优先）",
+							example = "13800000000")
+					@RequestParam(name = "mobile", required = false)
+					String mobileParam,
+			@Parameter(
+							description = "微信 unionid（wechat 关联）；body 中须为字符串；查无关联报参数无效（body 同名键优先）",
+							example = "union-test")
+					@RequestParam(name = "unionid", required = false)
+					String unionidParam,
+			@Parameter(
+							description = "页码，从 1 起；空/\"0\" 时整体回退 page=1/page_size=10（body 同名键优先）",
+							example = "1")
+					@RequestParam(name = "page", required = false)
+					String pageParam,
+			@Parameter(
+							description = "每页条数；仅 page 有效且本键存在时生效；非整数/≤0 返回全部（body 同名键优先）",
+							example = "10")
+					@RequestParam(name = "page_size", required = false)
+					String pageSizeParam,
+			@RequestBody(
+							description =
+									"可选 JSON body；字段与 query 同名双通道，body 含键时优先；unionid 须为字符串类型",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxMemberBrowserHistoryBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		boolean mobilePresent = OpenapiMemberQueryParams.isParamPresent(mobileParam, body, "mobile");
 		boolean unionidPresent = OpenapiMemberQueryParams.isParamPresent(unionidParam, body, "unionid");
