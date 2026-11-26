@@ -61,6 +61,7 @@ import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberQueryBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberQuerySuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberTagRelationPushBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberTagRelationPushSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberTagLibrarySuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -679,8 +680,61 @@ public class MemberController extends OpenapiBaseController {
 		return new OpenapiEnvelope("success", "E0000", "操作成功", data);
 	}
 
+	@Operation(
+			summary = "开放接口获取标签库",
+			description =
+					"按签名鉴权租户 company_id 返回本地会员标签库（data 为标签组数组，组内 taglist 11 键/标签）。"
+							+ " 仅返回本地标签组与标签（wechat_group_id/wechat_tag_id 为 null 或空的行，企微同步的排除）；"
+							+ " 未分组标签归入虚拟组 group_id=0「未分组」；self_tag_count 为实时联表 COUNT 有效会员数。"
+							+ " 无入参。鉴权面 openapi sign：公网经 /api/openapi/{method}"
+							+ "（method=ecx.member.tagLibrary, version=1.0）签名校验后转发；"
+							+ " 直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 只读，无写库/异步/第三方副作用；无业务校验失败分支。",
+			operationId = "ecx.member.tagLibrary")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态。"
+								+ " 成功：status=success, code=E0000, message=操作成功，data 为标签组数组"
+								+ "（组 6 键 + taglist 标签 11 键，见 EcxMemberTagLibraryGroupDoc；无数据时 []）；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxMemberTagLibraryFailEnvelopeDoc。"
+								+ " 本接口无业务校验失败分支。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxMemberTagLibrarySuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "查询成功（含虚拟未分组组）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"操作成功\","
+															+ "\"data\":[{\"group_id\":0,\"group_name\":\"未分组\","
+															+ "\"description\":\"未分配到任何标签组的标签\",\"created\":\"\","
+															+ "\"updated\":\"\",\"taglist\":[{\"tag_id\":20,\"tag_name\":\"t1\","
+															+ "\"description\":\"\",\"tag_color\":\"#ff1939\","
+															+ "\"font_color\":\"#ffffff\",\"tag_icon\":\"\","
+															+ "\"tag_status\":\"online\",\"source\":\"self\","
+															+ "\"self_tag_count\":3,\"created\":\"2026-11-26 12:00:00\","
+															+ "\"updated\":\"2026-11-26 12:00:00\"}]}]}"),
+									@ExampleObject(
+											name = "success-empty",
+											summary = "无本地标签",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"操作成功\",\"data\":[]}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@PostMapping(value = "/ecx.member.tagLibrary", name = "开放接口获取标签库")
-	public OpenapiEnvelope tagLibrary(HttpServletRequest request) {
+	public OpenapiEnvelope tagLibrary(@Parameter(hidden = true) HttpServletRequest request) {
 		long companyId = requireCompanyId(request);
 		List<Map<String, Object>> data = memberTagLibraryPort.tagLibrary(companyId);
 		return new OpenapiEnvelope("success", "E0000", "操作成功", data);
