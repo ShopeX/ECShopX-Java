@@ -40,6 +40,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberAssignToSalespersonSuc
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberBasicInfoBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberBasicInfoSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberBrowserHistoryBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberBrowserHistoryListBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberBrowserHistoryListSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberBrowserHistorySuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -554,15 +556,109 @@ public class MemberController extends OpenapiBaseController {
 		return new OpenapiEnvelope("success", "E0000", "操作成功", data);
 	}
 
+	@Operation(
+			summary = "开放接口会员浏览足迹列表",
+			description =
+					"按签名鉴权租户 company_id 分页查询会员浏览足迹原始记录：total_count 为总数，"
+							+ " list 每行含 history_id/company_id/user_id/item_id/created/updated/create_time"
+							+ " 与 itemData（商品 5 键子集：item_id/item_bn/item_name/pics/price，price 为分未转元；"
+							+ " 商品缺失时 itemData=[]），按 updated 倒序。"
+							+ " 定位优先级：external_member_id PHP-truthy 时直接作为 user_id（跳过其余校验与会员存在性检查）；"
+							+ " 否则 mobile（优先）/unionid 二选一，查无会员报「会员信息获取失败」。"
+							+ " 分页：page 缺省 1、page_size 缺省 10，非整数回退默认。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}"
+							+ "（method=ecx.member.browserHistoryList, version=1.0）签名校验后转发；"
+							+ " 直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 参数双通道（body 含键优先）；body unionid 须为字符串。"
+							+ " 只读，无写库/异步/第三方副作用。",
+			operationId = "ecx.member.browserHistoryList")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态。"
+								+ " 成功：status=success, code=E0000, message=操作成功，data 含 total_count 与 list"
+								+ "（行 8 键含 itemData 5 键子集）；"
+								+ " 业务失败：status=fail, code=E0001（请填写unionid/请填写正确的手机号/"
+								+ "unionid或者手机号必填/会员信息获取失败），data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。"
+								+ " 见 EcxMemberBrowserHistoryListFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxMemberBrowserHistoryListSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "查询成功",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"操作成功\","
+															+ "\"data\":{\"total_count\":1,\"list\":[{\"history_id\":9,"
+															+ "\"company_id\":100,\"user_id\":5,\"item_id\":1001,"
+															+ "\"created\":1764115200,\"updated\":1764115200,"
+															+ "\"create_time\":\"2026-11-26 12:00:00\","
+															+ "\"itemData\":{\"item_id\":1001,\"item_bn\":\"A1\","
+															+ "\"item_name\":\"示例商品\","
+															+ "\"pics\":[\"https://example.test/key.jpg\"],\"price\":9900}}]}}"),
+									@ExampleObject(
+											name = "success-empty",
+											summary = "无足迹",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"操作成功\","
+															+ "\"data\":{\"total_count\":0,\"list\":[]}}"),
+									@ExampleObject(
+											name = "fail-member-not-found",
+											summary = "查无会员",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E0001\","
+															+ "\"message\":\"会员信息获取失败\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@PostMapping(value = "/ecx.member.browserHistoryList", name = "开放接口会员浏览足迹列表")
 	public OpenapiEnvelope geMembertBrowseList(
-			HttpServletRequest request,
-			@RequestParam(name = "mobile", required = false) String mobileParam,
-			@RequestParam(name = "unionid", required = false) String unionidParam,
-			@RequestParam(name = "external_member_id", required = false) String externalMemberIdParam,
-			@RequestParam(name = "page", required = false) String pageParam,
-			@RequestParam(name = "page_size", required = false) String pageSizeParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "手机号；提供时须匹配 ^1[3-9]\\d{9}$；与 unionid 二选一（body 同名键优先）",
+							example = "13800000000")
+					@RequestParam(name = "mobile", required = false)
+					String mobileParam,
+			@Parameter(
+							description = "微信 unionid（wechat 关联）；body 中须为字符串（body 同名键优先）",
+							example = "union-test")
+					@RequestParam(name = "unionid", required = false)
+					String unionidParam,
+			@Parameter(
+							description = "会员 ID（user_id）；PHP-truthy 时最高优先，直接按其查询（跳过其余校验）（body 同名键优先）",
+							example = "5")
+					@RequestParam(name = "external_member_id", required = false)
+					String externalMemberIdParam,
+			@Parameter(description = "页码，从 1 起；非整数/缺省按 1（body 同名键优先）", example = "1")
+					@RequestParam(name = "page", required = false)
+					String pageParam,
+			@Parameter(description = "每页条数；非整数/缺省按 10（body 同名键优先）", example = "10")
+					@RequestParam(name = "page_size", required = false)
+					String pageSizeParam,
+			@RequestBody(
+							description =
+									"可选 JSON body；字段与 query 同名双通道，body 含键时优先；unionid 须为字符串类型",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxMemberBrowserHistoryListBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		boolean mobilePresent = OpenapiMemberQueryParams.isParamPresent(mobileParam, body, "mobile");
 		boolean unionidPresent = OpenapiMemberQueryParams.isParamPresent(unionidParam, body, "unionid");
