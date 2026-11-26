@@ -27,6 +27,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v1.OpenapiRequestParams;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.OpenapiThirdApiV2ShippingTemplatesListParams;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTagCategoryAddBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTagCategoryAddSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTagCategoryDeleteBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTagCategoryDeleteSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -192,11 +194,86 @@ public class MemberTagCategoryController extends OpenapiBaseController {
 				companyId, pageSpec.page(), pageSpec.pageSize(), categoryNameRaw);
 	}
 
+	@Operation(
+			summary = "开放接口删除会员标签分类",
+			description =
+					"按签名鉴权租户 company_id 删除会员标签分类：category_id 必填非空白"
+							+ "（mergeString 双通道 trim，body 含键优先、值 null 视为未传；缺失 E5001「分类ID必填」）。"
+							+ " trim 后须可 parseLong（非整数按查无处理），company_id+category_id 定位 tags_category"
+							+ "（LIMIT 1），非整数/查无/超 int 范围均 E5571「该标签分类不存在」。"
+							+ " **执行顺序为先 DELETE 分类行、再检查分类下标签**：members_tags.category_id 计数 >0 时抛"
+							+ " E0000+status=fail「删除失败,该分类下已有标签」（PHP 零码契约），"
+							+ " @Transactional 回滚使分类恢复——对外表现为删除被拒、分类保留。"
+							+ " 成功 data={status:true}（布尔）。Advice 包装 message 固定「成功」。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}"
+							+ "（method=ecx.member.tagcategory.delete, version=2.0）签名校验后转发；"
+							+ " 直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 副作用：@Transactional DELETE tags_category 单行（有标签时回滚）；"
+							+ " 不删除/迁移分类下标签；无异步、无第三方调用。",
+			operationId = "ecx.member.tagcategory.delete.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功, data={status:true}；"
+								+ " 业务失败：status=fail, code=E5001 分类ID必填 / E5571 该标签分类不存在 /"
+								+ " E0000（status=fail，PHP 零码契约）删除失败,该分类下已有标签，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxMemberTagCategoryDeleteFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxMemberTagCategoryDeleteSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "删除成功",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"status\":true}}"),
+									@ExampleObject(
+											name = "fail-not-found",
+											summary = "分类查无/ID 非整数",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5571\","
+															+ "\"message\":\"该标签分类不存在\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-has-tags-zero-code",
+											summary = "分类下已有标签（PHP 零码契约：code=E0000 但 status=fail；事务回滚）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E0000\","
+															+ "\"message\":\"删除失败,该分类下已有标签\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@DeleteMapping(value = "/ecx.member.tagcategory.delete", name = "开放接口删除会员标签分类")
 	public Map<String, Object> deleteTagCategory(
-			HttpServletRequest request,
-			@RequestParam(name = "category_id", required = false) String categoryIdParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "分类 ID；必填（E5001）；非整数/查无 E5571；分类下有标签 E0000+fail（回滚保留）",
+							required = true,
+							example = "1")
+					@RequestParam(name = "category_id", required = false)
+					String categoryIdParam,
+			@RequestBody(
+							description = "可选 JSON body；category_id 与 query 同名双通道（mergeString trim，body 含键优先）",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxMemberTagCategoryDeleteBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		String categoryIdRaw = OpenapiRequestParams.mergeString(categoryIdParam, body, "category_id");
 		return memberTagCategoryDeletePort.deleteTagCategory(companyId, categoryIdRaw);
