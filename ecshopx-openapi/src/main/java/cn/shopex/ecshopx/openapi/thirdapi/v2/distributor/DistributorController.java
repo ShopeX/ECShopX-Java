@@ -29,6 +29,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.OpenapiBaseController;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.OpenapiRequestParams;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.distributor.doc.EcxDistributorCreateBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.distributor.doc.EcxDistributorCreateSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.distributor.doc.EcxDistributorDetailBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.distributor.doc.EcxDistributorDetailSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.distributor.doc.EcxDistributorListBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.distributor.doc.EcxDistributorListSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.OpenapiThirdApiV2ShippingTemplatesListParams;
@@ -334,11 +336,88 @@ public class DistributorController extends OpenapiBaseController {
 				OpenapiRequestParams.mergeString(templateNameParam, body, "template_name"));
 	}
 
+	@Operation(
+			summary = "开放接口查询店铺详情",
+			description =
+					"按签名鉴权租户 company_id 查询单个店铺详情：shop_code 必填非空（originalString 双通道，"
+							+ " body 含键取原始值不 trim），缺失 E5001「店铺号必填」；租户内精确匹配 LIMIT 1"
+							+ "（不过滤删除态），查无 E5401「店铺找不到」。"
+							+ " data 为 23 键店铺行（与列表/创建同构）：distributor_id 整型、status（0 已删除/1 启用/2 禁用/-1 未知）、"
+							+ " contact_username/contact_mobile 解密明文、region_codes/region_names 字符串数组、"
+							+ " 五个 0/1 开关、created/updated yyyy-MM-dd HH:mm:ss；"
+							+ " name/logo/省市区/address 等按默认语言分表非空覆盖。Advice 包装 message 固定「成功」。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.distributor.detail, version=2.0）"
+							+ " 签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 只读，无写库/异步/第三方副作用。",
+			operationId = "ecx.distributor.detail.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功，data 见 EcxDistributorListItemDoc（23 键）；"
+								+ " 业务失败：status=fail, code=E5001 店铺号必填 / E5401 店铺找不到，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxDistributorDetailFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxDistributorDetailSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "查询成功（启用店铺）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"distributor_id\":1001,\"shop_code\":\"S001\",\"status\":1,"
+															+ "\"distributor_name\":\"新门店名\",\"contact_username\":\"王五\","
+															+ "\"contact_mobile\":\"13912345678\",\"province\":\"北京市\",\"city\":\"北京市\","
+															+ "\"area\":\"海淀区\",\"region_codes\":[],\"region_names\":[],"
+															+ "\"address\":\"中关村大街1号\",\"lng\":\"116.310003\",\"lat\":\"39.992806\","
+															+ "\"hour\":\"08:30 - 21:30\",\"logo\":\"/x/logo.jpg\","
+															+ "\"is_ziti\":1,\"is_delivery\":1,\"is_auto_sync_goods\":1,\"is_dada\":0,"
+															+ "\"is_default\":0,\"created\":\"2020-09-13 20:26:40\","
+															+ "\"updated\":\"2023-11-15 06:13:21\"}}"),
+									@ExampleObject(
+											name = "fail-missing-shop-code",
+											summary = "shop_code 缺失/空",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5001\",\"message\":\"店铺号必填\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-not-found",
+											summary = "shop_code 查无店铺",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5401\",\"message\":\"店铺找不到\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@GetMapping(value = "/ecx.distributor.detail", name = "开放接口查询店铺详情")
 	public Map<String, Object> detail(
-			HttpServletRequest request,
-			@RequestParam(name = "shop_code", required = false) String shopCodeParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "店铺号；必填非空，租户内精确匹配（body 同名键优先，原始值不 trim）",
+							required = true,
+							example = "S001")
+					@RequestParam(name = "shop_code", required = false)
+					String shopCodeParam,
+			@RequestBody(
+							description = "可选 JSON body；shop_code 与 query 同名双通道（取原始值）",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxDistributorDetailBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 
 		String shopCodeRaw = OpenapiRequestParams.originalString(shopCodeParam, body, "shop_code");
