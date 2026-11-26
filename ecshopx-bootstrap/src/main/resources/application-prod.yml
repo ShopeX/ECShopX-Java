@@ -1,0 +1,8 @@
+# 生产环境默认关闭在线 API 文档入口
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+knife4j:
+  enable: false

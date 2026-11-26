@@ -18,7 +18,7 @@
 	<description>Ecshopx Java</description>
 
 	<properties>
-		<revision>5.7.4</revision>
+		<revision>5.7.3</revision>
 		<java.version>17</java.version>
 		<mybatis-plus.version>3.5.16</mybatis-plus.version>
 		<lombok.version>1.18.36</lombok.version>
@@ -27,6 +27,7 @@
 		<wxjava.version>4.7.6-20250628.205748</wxjava.version>
 		<alipay-sdk.version>4.39.134.ALL</alipay-sdk.version>
 		<spring-ai.version>1.1.0</spring-ai.version>
+		<knife4j.version>4.5.0</knife4j.version>
 	</properties>
 
 	<dependencyManagement>
