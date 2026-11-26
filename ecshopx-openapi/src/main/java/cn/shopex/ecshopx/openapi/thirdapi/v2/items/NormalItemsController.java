@@ -31,6 +31,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemEntityAddBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemEntityAddSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemEntityDeleteBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemEntityDeleteSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemEntityGetBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemEntityGetSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -106,11 +108,102 @@ public class NormalItemsController extends OpenapiBaseController {
 				OpenapiRequestParams.originalString(isSelfParam, body, "is_self"));
 	}
 
+	@Operation(
+			summary = "查询平台商品详情",
+			description =
+					"按签名鉴权租户 company_id 查询平台商品 SPU 详情：item_bn 必填非空白（缺失 E5001「货号必填」），"
+							+ " trim 后取 is_default=true 默认 SKU（查无/详情为空 E5101「商品找不到」；构建异常 E5000 透传）。"
+							+ " data 23 固定键：goods_id/brand_id/templates_id/sort/price/store 等整型（金额分）、"
+							+ " nospec/is_gift/is_show_specimg 布尔、weight 十进制字符串、pics 数组、"
+							+ " item_main_cat_id 字符串（主类目路径查无为空串）、item_category 销售分类 ID 数组、"
+							+ " update_time 取库 updated Unix 秒；item_name/brief zh-CN 分表覆盖。"
+							+ " 多规格（nospec=false）追加 spec_items（11 键/SKU 含 item_spec 6 键）、"
+							+ " item_spec_desc（4 键含 spec_values 4 键）、spec_images（4 键），"
+							+ " 且 approve_status 为 SKU 聚合、store 为 SKU 合计。"
+							+ " item_bn originalString 双通道。Advice 包装 message 固定「成功」。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.item.entity.get, version=2.0）"
+							+ " 签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 只读，无写库/异步/第三方副作用。",
+			operationId = "ecx.item.entity.get.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功，data 见 EcxItemEntityGetDataDoc；"
+								+ " 业务失败：status=fail, code=E5001 货号必填 / E5101 商品找不到 / E5000 详情构建异常，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxItemEntityGetFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxItemEntityGetSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success-multi-spec",
+											summary = "多规格商品详情（SKU 聚合状态/库存）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"goods_id\":200,\"item_bn\":\"SKU200\","
+															+ "\"item_name\":\"Wire test goods\",\"brief\":\"\",\"item_unit\":\"\","
+															+ "\"sort\":1,\"brand_id\":3,\"templates_id\":1,\"is_gift\":false,"
+															+ "\"pics\":[\"https://example.test/key.jpg\"],\"nospec\":false,"
+															+ "\"is_show_specimg\":false,\"weight\":\"1\",\"volume\":0.0,"
+															+ "\"price\":10,\"market_price\":0,\"cost_price\":0,\"barcode\":\"B200\","
+															+ "\"approve_status\":\"onsale\",\"store\":20,\"item_main_cat_id\":\"77\","
+															+ "\"item_category\":[1],\"update_time\":1700000001,"
+															+ "\"spec_items\":[{\"item_bn\":\"SKU200\",\"is_default\":true,"
+															+ "\"approve_status\":\"onsale\",\"weight\":\"1\",\"volume\":0.0,"
+															+ "\"price\":10,\"market_price\":0,\"cost_price\":0,\"barcode\":\"B200\","
+															+ "\"item_spec\":[{\"spec_id\":1,\"spec_value_id\":1,\"spec_name\":\"500mg\","
+															+ "\"spec_custom_value_name\":null,\"spec_value_name\":\"红\","
+															+ "\"spec_image_url\":null}],\"store\":10}],"
+															+ "\"item_spec_desc\":[{\"spec_id\":1,\"spec_name\":\"500mg\","
+															+ "\"is_image\":\"false\",\"spec_values\":[{\"spec_value_id\":1,"
+															+ "\"spec_value_name\":\"红\",\"spec_custom_value_name\":null,"
+															+ "\"spec_image_url\":null}]}],"
+															+ "\"spec_images\":[{\"spec_value_id\":1,\"spec_custom_value_name\":null,"
+															+ "\"spec_value_name\":\"红\",\"spec_image_url\":\"https://example.test/key.jpg\"}]}}"),
+									@ExampleObject(
+											name = "fail-bn-required",
+											summary = "item_bn 缺失/空白",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5001\",\"message\":\"货号必填\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-not-found",
+											summary = "默认 SKU 查无",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5101\",\"message\":\"商品找不到\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@GetMapping("/ecx.item.entity.get")
 	public Map<String, Object> getItemSpuDetail(
-			HttpServletRequest request,
-			@RequestParam(name = "item_bn", required = false) String itemBnParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "商品货号（默认 SKU item_bn）；必填非空白（body 同名键优先，原始值不 trim）",
+							required = true,
+							example = "SKU200")
+					@RequestParam(name = "item_bn", required = false)
+					String itemBnParam,
+			@RequestBody(
+							description = "可选 JSON body；item_bn 与 query 同名双通道（取原始值）",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxItemEntityGetBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		String itemBn = OpenapiRequestParams.originalString(itemBnParam, body, "item_bn");
 		return normalItemsEntityDetailPort.getEntityDetail(companyId, itemBn);
