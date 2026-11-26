@@ -27,6 +27,8 @@ import cn.shopex.ecshopx.common.web.FlexibleBody;
 import cn.shopex.ecshopx.openapi.thirdapi.OpenapiBaseController;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxImageDelBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxImageDelSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxImageListBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxImageListSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -68,17 +70,97 @@ public class ImageController extends OpenapiBaseController {
 		this.imageDeletePort = imageDeletePort;
 	}
 
+	@Operation(
+			summary = "开放接口获取图片列表",
+			description =
+					"按签名鉴权得到的租户 company_id 查询图片素材列表（upload_images），created 倒序分页，"
+							+ " 每行 5 字段（image_id/image_name/image_type/image_url/create_time）。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.image.list, version=1.0）"
+							+ " 签名校验后转发到本 internal 路径；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 全部参数双通道（body 含键优先）；分页键为 pageSize（驼峰），非整数回退默认（page=1、pageSize=20），"
+							+ " pageSize=0 时 list 为空但 total_count 为真实总数。"
+							+ " 筛选：storage 空/\"0\" 按 image；disabled PHP-truthy 查已删除否则未删除；"
+							+ " image_name 模糊；image_cat_id 整数精确；distributor_id 缺省 0（平台）。"
+							+ " 只读，无写库/异步/第三方副作用；无业务校验失败分支。",
+			operationId = "ecx.image.list")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态。"
+								+ " 成功：status=success, code=E0000, message=ok，data 含 total_count 与 list，"
+								+ " 行字段见 EcxImageListItemDoc；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxImageListFailEnvelopeDoc。"
+								+ " 本接口无业务校验失败分支。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation = EcxImageListSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "查询成功",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"ok\","
+															+ "\"data\":{\"total_count\":1,\"list\":[{\"image_id\":99,"
+															+ "\"image_name\":\"示例图片\",\"image_type\":\"item\","
+															+ "\"image_url\":\"https://example.test/key.jpg\","
+															+ "\"create_time\":1764115200}]}}"),
+									@ExampleObject(
+											name = "success-empty",
+											summary = "查询成功（无匹配）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"ok\","
+															+ "\"data\":{\"total_count\":0,\"list\":[]}}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@PostMapping(value = "/ecx.image.list", name = "开放接口获取图片列表")
 	public OpenapiEnvelope getImageList(
-			HttpServletRequest request,
-			@RequestParam(name = "storage", required = false) String storageParam,
-			@RequestParam(name = "image_name", required = false) String imageNameParam,
-			@RequestParam(name = "disabled", required = false) String disabledParam,
-			@RequestParam(name = "image_cat_id", required = false) String imageCatIdParam,
-			@RequestParam(name = "distributor_id", required = false) String distributorIdParam,
-			@RequestParam(name = "page", required = false) String pageParam,
-			@RequestParam(name = "pageSize", required = false) String pageSizeParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "存储类型：image 图片；videos 视频；空/\"0\"/缺省按 image（body 同名键优先）",
+							example = "image")
+					@RequestParam(name = "storage", required = false)
+					String storageParam,
+			@Parameter(description = "图片名称，模糊匹配；空/\"0\" 不过滤（body 同名键优先）")
+					@RequestParam(name = "image_name", required = false)
+					String imageNameParam,
+			@Parameter(
+							description = "删除状态：PHP-truthy（非空且非 \"0\"）查已删除，否则查未删除（body 同名键优先）",
+							example = "0")
+					@RequestParam(name = "disabled", required = false)
+					String disabledParam,
+			@Parameter(description = "图片分类 ID 精确匹配；空/\"0\" 不过滤，非整数忽略（body 同名键优先）", example = "10")
+					@RequestParam(name = "image_cat_id", required = false)
+					String imageCatIdParam,
+			@Parameter(description = "店铺 ID 精确匹配；缺省/非整数按 0（平台图片）（body 同名键优先）", example = "0")
+					@RequestParam(name = "distributor_id", required = false)
+					String distributorIdParam,
+			@Parameter(description = "页码，从 1 起；非整数/缺省按 1（body 同名键优先）", example = "1")
+					@RequestParam(name = "page", required = false)
+					String pageParam,
+			@Parameter(
+							description = "每页条数；非整数/缺省按 20；0 返回空列表；键名为驼峰 pageSize（body 同名键优先）",
+							example = "20")
+					@RequestParam(name = "pageSize", required = false)
+					String pageSizeParam,
+			@RequestBody(
+							description =
+									"可选 JSON body；字段与 query 同名双通道，body 含键时优先；分页键为 pageSize（驼峰）",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema = @Schema(implementation = EcxImageListBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		OpenapiImageListParams.BuildResult params = OpenapiImageListParams.build(
 				storageParam,
