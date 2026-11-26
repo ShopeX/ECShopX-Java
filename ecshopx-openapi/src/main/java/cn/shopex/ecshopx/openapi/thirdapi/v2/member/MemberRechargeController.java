@@ -27,6 +27,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.OpenapiBaseController;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.OpenapiRequestParams;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberRechargeTradeListBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberRechargeTradeListSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxRechargeRuleAddBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxRechargeRuleAddSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -213,13 +215,107 @@ public class MemberRechargeController extends OpenapiBaseController {
 				dateEnd);
 	}
 
+	@Operation(
+			summary = "开放接口新增储值面额规则",
+			description =
+					"按签名鉴权租户 company_id 新增储值面额规则（3 键均必填，mergeString 双通道 trim，"
+							+ " body 含键优先、值 null 视为未传）："
+							+ " fixed_money 元（小数位 ≤2，换算分后 1≤分值≤10,000,000 即 0.01~100000 元，"
+							+ " 否则 E5580「请填写正确的充值金额」；缺失 E5001「需付金额必填」）；"
+							+ " rule_type 仅 money/point（否则 E5001「请填写正确的充值类型」）；"
+							+ " rule_data 非负整数字符串（小数点/科学计数拒绝，E5001「请填写正确的赠送金额」；"
+							+ " money 为赠送金额、point 为赠送积分，整数原样落库）。"
+							+ " 同租户面额（分）唯一：重复 E5580「当前面额数已存在，不能重复添加」；"
+							+ " 面额总数 ≥14 拒绝 E5580「最多添加14个面额」。"
+							+ " 成功 data 5 键：rechargerule_id/money（元 2 位小数）/rule_type/rule_data（整型）/"
+							+ " create_time 格式化时间。Advice 包装 message 固定「成功」。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.member.rechargerule.add,"
+							+ " version=2.0）签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 副作用：INSERT deposit_recharge_rule 单行（无显式事务）；无异步、无第三方调用。",
+			operationId = "ecx.member.rechargerule.add.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功，data 见 EcxRechargeRuleAddDataDoc；"
+								+ " 业务失败：status=fail, code=E5001 需付金额必填·请填写正确的充值类型·请填写正确的赠送金额 /"
+								+ " E5580 请填写正确的充值金额·当前面额数已存在不能重复添加·最多添加14个面额，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxRechargeRuleAddFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxRechargeRuleAddSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "新增成功（80 元面额；时间为格式演示值）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"rechargerule_id\":1,\"money\":\"80.00\","
+															+ "\"rule_type\":\"money\",\"rule_data\":0,"
+															+ "\"create_time\":\"2026-01-01 00:00:00\"}}"),
+									@ExampleObject(
+											name = "fail-duplicate",
+											summary = "同面额已存在",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5580\","
+															+ "\"message\":\"当前面额数已存在，不能重复添加\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-upper-limit",
+											summary = "面额数量达上限",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5580\","
+															+ "\"message\":\"最多添加14个面额\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-rule-type",
+											summary = "rule_type 缺失/非法",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5001\","
+															+ "\"message\":\"请填写正确的充值类型\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@PostMapping(value = "/ecx.member.rechargerule.add", name = "开放接口新增储值面额规则")
 	public Map<String, Object> createRechargeRule(
-			HttpServletRequest request,
-			@RequestParam(name = "fixed_money", required = false) String fixedMoneyParam,
-			@RequestParam(name = "rule_type", required = false) String ruleTypeParam,
-			@RequestParam(name = "rule_data", required = false) String ruleDataParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "需付金额（元）；必填，小数位 ≤2 且 0.01~100000；重复面额/超 14 个 E5580",
+							required = true,
+							example = "80")
+					@RequestParam(name = "fixed_money", required = false)
+					String fixedMoneyParam,
+			@Parameter(
+							description = "充值赠送类型；必填，仅 money/point（否则 E5001）",
+							required = true,
+							example = "money")
+					@RequestParam(name = "rule_type", required = false)
+					String ruleTypeParam,
+			@Parameter(
+							description = "赠送数值；必填非负整数字符串（小数/科学计数拒绝）；money 赠金额/point 赠积分",
+							required = true,
+							example = "0")
+					@RequestParam(name = "rule_data", required = false)
+					String ruleDataParam,
+			@RequestBody(
+							description = "可选 JSON body；3 键与 query 同名双通道（mergeString trim，body 含键优先）；语义见 schema",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxRechargeRuleAddBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		String fixedMoneyRaw = OpenapiRequestParams.mergeString(fixedMoneyParam, body, "fixed_money");
 		String ruleTypeRaw = OpenapiRequestParams.mergeString(ruleTypeParam, body, "rule_type");
