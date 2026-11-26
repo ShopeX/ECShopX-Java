@@ -27,6 +27,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.OpenapiBaseController;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.OpenapiRequestParams;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemCategoryAddBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemCategoryAddSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemCategoryDeleteBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemCategoryDeleteSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -219,11 +221,81 @@ public class ItemsCategoryController extends OpenapiBaseController {
 				companyId, categoryIdRaw, categoryNameRaw, sortRaw, imageUrlRaw);
 	}
 
+	@Operation(
+			summary = "开放接口删除商品分类",
+			description =
+					"按签名鉴权租户 company_id 删除商品分类（含子级/孙级级联）："
+							+ " category_id 必填非空（缺失 E5001「分类ID必填」）；trim 后非整数/空白视为无操作直接成功"
+							+ "（PHP 旧契约）。删除守卫：分类树（自身+子+孙）经 items_rel_cats 关联的商品存在报"
+							+ " E5123「分类下存在商品」；主类目引用（items.item_main_cat_id 含子孙）存在报"
+							+ " E5123「类目下存在商品」。通过后删关联行、自身分类、直接子级与孙级分类。"
+							+ " 查无该 ID 不报错（DELETE 0 行仍成功）；其他异常统一 E5123（如「删除失败」）。"
+							+ " 成功 data={status:true}，Advice 包装 message 固定「成功」。"
+							+ " category_id originalString 双通道（body 含键取原始值不 trim）。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.item.category.delete, version=2.0）"
+							+ " 签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 副作用：DELETE items_rel_cats 关联行 + items_category（自身/子/孙）；无异步、无第三方调用。",
+			operationId = "ecx.item.category.delete.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功, data={status:true}（含非整数无操作/查无场景）；"
+								+ " 业务失败：status=fail, code=E5001 分类ID必填 / E5123 分类下存在商品·类目下存在商品·删除失败，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxItemCategoryDeleteFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxItemCategoryDeleteSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "删除成功（非整数 ID 亦同形无操作成功）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"status\":true}}"),
+									@ExampleObject(
+											name = "fail-id-required",
+											summary = "category_id 缺失/空",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5001\",\"message\":\"分类ID必填\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-items-in-category",
+											summary = "分类树下有商品在用",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5123\",\"message\":\"分类下存在商品\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@DeleteMapping(value = "/ecx.item.category.delete", name = "开放接口删除商品分类")
 	public Map<String, Object> deleteItemCategory(
-			HttpServletRequest request,
-			@RequestParam(name = "category_id", required = false) String categoryIdParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "分类 ID；必填非空；非整数视为无操作成功；删除级联子/孙级（body 同名键优先）",
+							required = true,
+							example = "1")
+					@RequestParam(name = "category_id", required = false)
+					String categoryIdParam,
+			@RequestBody(
+							description = "可选 JSON body；category_id 与 query 同名双通道（取原始值）",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxItemCategoryDeleteBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		String categoryIdRaw = OpenapiRequestParams.originalString(categoryIdParam, body, "category_id");
 		return itemCategoryDeletePort.deleteItemCategory(companyId, categoryIdRaw);
