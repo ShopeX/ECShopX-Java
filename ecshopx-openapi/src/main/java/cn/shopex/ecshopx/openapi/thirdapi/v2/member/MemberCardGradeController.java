@@ -29,6 +29,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v1.OpenapiRequestParams;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.OpenapiThirdApiV2ShippingTemplatesListParams;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxCardGradeBatchSaveBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxCardGradeBatchSaveSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberCardGradeCreateBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberCardGradeCreateSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -105,15 +107,122 @@ public class MemberCardGradeController extends OpenapiBaseController {
 		return memberCardGradeDetailPort.getGradeDetailByMobile(companyId, mobileRaw);
 	}
 
+	@Operation(
+			summary = "开放接口创建会员卡等级",
+			description =
+					"按签名鉴权租户 company_id 创建会员卡等级（5 键双通道，body 含键优先、值 null 视为未传）："
+							+ " grade_name 必填非空（原样不 trim，E5001「未填写等级名称」）；"
+							+ " discount 必填（E5001「未填写会员折扣」），须可 parseDouble 且 1≤值≤10（否则 E5001「请求参数错误」），"
+							+ " 原样存 privileges.discount_desc、另存 privileges.discount=100-(int)(值*10)（小数截断）；"
+							+ " total_consumption 必填（E5001「未填写升级条件」），须可 parseDouble 且 ≥0"
+							+ "（否则 E5001「请求参数错误」），原样存 promotion_condition.total_consumption；"
+							+ " background_pic_url/external_id 可选（mergeString trim，null 按空串）。"
+							+ " 租户等级计数 ≥6 拒绝（E5530「最多只能创建5个会员等级」，实际含默认等级共 6 上限）。"
+							+ " 新建恒非默认（default_grade=false）。JSON 序列化异常 E0001「等级数据序列化失败」。"
+							+ " 成功 data 为新建等级 9 键行（grade_id/is_default(0)/grade_name/discount/total_consumption/"
+							+ " background_pic_url/external_id/created/updated 格式化时间，回显入参原样字符串）。"
+							+ " Advice 包装 message 固定「成功」。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.member_card_grade.create,"
+							+ " version=2.0）签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 副作用：事务内 INSERT membercard_grade + zh-CN 多语言分表 upsert"
+							+ "（grade_name/description/background_pic_url/grade_background）；无异步、无第三方调用。",
+			operationId = "ecx.member_card_grade.create.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功，data 见 EcxMemberCardGradeCreateDataDoc；"
+								+ " 业务失败：status=fail, code=E5001 未填写等级名称·未填写会员折扣·未填写升级条件·请求参数错误 /"
+								+ " E5530 最多只能创建5个会员等级 / E0001 等级数据序列化失败，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxMemberCardGradeCreateFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxMemberCardGradeCreateSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "创建成功（discount=10 无折扣；时间/URL 为格式演示值）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"grade_id\":1,\"is_default\":0,\"grade_name\":\"普通会员\","
+															+ "\"discount\":\"10\",\"total_consumption\":\"0\","
+															+ "\"background_pic_url\":\"https://example.test/key.jpg\","
+															+ "\"external_id\":\"1\",\"created\":\"2026-01-01 00:00:00\","
+															+ "\"updated\":\"2026-01-01 00:00:00\"}}"),
+									@ExampleObject(
+											name = "fail-missing-name",
+											summary = "grade_name 缺失/空串",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5001\","
+															+ "\"message\":\"未填写等级名称\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-discount-range",
+											summary = "discount 越界/非数字",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5001\",\"message\":\"请求参数错误\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-upper-limit",
+											summary = "租户等级数量达上限",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5530\","
+															+ "\"message\":\"最多只能创建5个会员等级\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@PostMapping(value = "/ecx.member_card_grade.create", name = "开放接口创建会员卡等级")
 	public Map<String, Object> create(
-			HttpServletRequest request,
-			@RequestParam(name = "grade_name", required = false) String gradeNameParam,
-			@RequestParam(name = "discount", required = false) String discountParam,
-			@RequestParam(name = "total_consumption", required = false) String totalConsumptionParam,
-			@RequestParam(name = "background_pic_url", required = false) String backgroundPicUrlParam,
-			@RequestParam(name = "external_id", required = false) String externalIdParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "等级名称；必填非空（不 trim），否则 E5001「未填写等级名称」",
+							required = true,
+							example = "普通会员")
+					@RequestParam(name = "grade_name", required = false)
+					String gradeNameParam,
+			@Parameter(
+							description = "会员折扣（折）；必填，1≤值≤10（可小数）；10=无折扣；越界/非数字 E5001「请求参数错误」",
+							required = true,
+							example = "10")
+					@RequestParam(name = "discount", required = false)
+					String discountParam,
+			@Parameter(
+							description = "升级条件（累计消费门槛）；必填，数值 ≥0；非法 E5001「请求参数错误」",
+							required = true,
+							example = "0")
+					@RequestParam(name = "total_consumption", required = false)
+					String totalConsumptionParam,
+			@Parameter(
+							description = "会员卡背景图 URL；可选，trim 后落库，null 按空串（示例为格式演示值）",
+							example = "https://example.test/key.jpg")
+					@RequestParam(name = "background_pic_url", required = false)
+					String backgroundPicUrlParam,
+			@Parameter(
+							description = "外部等级唯一标识；可选，trim 后落库，null 按空串，不校验唯一性",
+							example = "1")
+					@RequestParam(name = "external_id", required = false)
+					String externalIdParam,
+			@RequestBody(
+							description =
+									"可选 JSON body；5 键与 query 同名双通道（body 含键优先，值 null 视为未传）；"
+											+ "前三键不 trim、后两键 trim；语义见 schema",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxMemberCardGradeCreateBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		return memberCardGradeCreatePort.create(
 				companyId,
