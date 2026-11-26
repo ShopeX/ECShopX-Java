@@ -39,6 +39,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberGradeChangeBody
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberGradeChangeSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberCardGradeRelListBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberCardGradeRelListSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberCreateBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberCreateSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberInfoUpdateBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberInfoUpdateSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberMobileUpdateBodyDoc;
@@ -99,31 +101,201 @@ public class MemberController extends OpenapiBaseController {
 		this.memberV2UpdateGradePort = memberV2UpdateGradePort;
 	}
 
+	@Operation(
+			summary = "开放接口创建会员单个",
+			description =
+					"按签名鉴权租户 company_id 同步创建单个会员（21 键：20 键 mergeAll 双通道"
+							+ " body 含键取原值否则 query trim；habbit 仅 body）。"
+							+ " mobile 必填（格式错/占用统一 E5502「会员手机号已存在」PHP 文案）；"
+							+ " source_from 仅 default/openapi（缺省 openapi）；sex 仅 0；status 0|1（缺省 1）；"
+							+ " grade_id 非负整数（缺省取租户默认等级，>0 查无 E5531）；card_code 空白自动生成"
+							+ "（占用 E5522）；tag_names 逗号分隔且**标签须已存在**（查无 E5561，不自动建）；"
+							+ " tag_ids 被接收但忽略；inviter_mobile 查无 E5511；salesperson_mobile 导购查无 E5601、"
+							+ " 已绑定 E5612；birthday 实际仅 yyyy-MM-dd 可用（datetime 形态落库重解析失败）；"
+							+ " habbit/枚举/email 校验同批量创建元素。"
+							+ " 同步执行完整创建链（members 随机 10 位密码/固定加密手机号 + members_info +"
+							+ " 标签关联 + 导购绑定（work_wechat_rel）+ unionid 关联 + 新客标签对账），"
+							+ " 任一步失败整体回滚（E5000「系统错误」兜底）。"
+							+ " 成功 data 为新建会员 29 键行（大量固定初始值见 EcxMemberCreateDataDoc）。"
+							+ " Advice 包装 message 固定「成功」。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.member.create,"
+							+ " version=2.0，另有 routeAlias adapay.member.create）签名校验后转发；"
+							+ " 直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 副作用：@Transactional INSERT members/members_info/members_rel_tags（计数更新）/"
+							+ " work_wechat_rel（导购绑定）/members_associations + 新客系统标签对账 +"
+							+ " 空卡号 Redis zset 写 + 导购拉新完成/会员数增加端口调用；无异步。",
+			operationId = "ecx.member.create.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功，data 见 EcxMemberCreateDataDoc；"
+								+ " 业务失败：status=fail, code=E5001 各字段填写错误 / E5502 会员手机号已存在 /"
+								+ " E5511 推荐人找不到 / E5531 等级找不到 / E5522 卡号已存在 / E5561 标签不存在 /"
+								+ " E5601 导购找不到 / E5612 导购已绑定 / E5000 系统错误，data=null（整体回滚）；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxMemberCreateFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxMemberCreateSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "创建成功（29 键行；时间为格式演示值）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"user_id\":50,\"company_id\":1,\"grade_id\":1,"
+															+ "\"mobile\":\"13800138000\",\"region_mobile\":\"13800138000\","
+															+ "\"mobile_country_code\":\"86\",\"user_card_code\":\"card\","
+															+ "\"offline_card_code\":\"\",\"inviter_id\":0,"
+															+ "\"source_from\":\"openapi\",\"source_id\":0,\"monitor_id\":0,"
+															+ "\"latest_source_id\":0,\"latest_monitor_id\":0,"
+															+ "\"authorizer_appid\":\"\",\"use_point\":0,\"wxa_appid\":\"\","
+															+ "\"alipay_appid\":\"\",\"created\":1735689600,\"updated\":1735689600,"
+															+ "\"disabled\":0,\"remarks\":\"\",\"third_data\":null,"
+															+ "\"reg_distributor\":0,\"reg_salesperson\":null,"
+															+ "\"fp_salesperson\":null,\"has_fp\":0,\"is_become_friend\":0,"
+															+ "\"op_distributor\":0}}"),
+									@ExampleObject(
+											name = "fail-mobile-exist",
+											summary = "mobile 格式错或已占用（同文案）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5502\","
+															+ "\"message\":\"会员手机号已存在\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-tag-not-found",
+											summary = "tag_names 标签不存在（不自动建）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5561\","
+															+ "\"message\":\"标签名为:聚合测试类目, 标签不存在！\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-grade-not-found",
+											summary = "指定 grade_id 查无",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5531\","
+															+ "\"message\":\"会员等级找不到\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@Activated(routeAlias = "adapay.member.create")
 	@PostMapping(value = "/ecx.member.create", name = "开放接口创建会员单个")
 	public Map<String, Object> create(
-			HttpServletRequest request,
-			@RequestParam(name = "mobile", required = false) String mobileParam,
-			@RequestParam(name = "inviter_mobile", required = false) String inviterMobileParam,
-			@RequestParam(name = "salesperson_mobile", required = false) String salespersonMobileParam,
-			@RequestParam(name = "union_id", required = false) String unionIdParam,
-			@RequestParam(name = "status", required = false) String statusParam,
-			@RequestParam(name = "tag_names", required = false) String tagNamesParam,
-			@RequestParam(name = "tag_ids", required = false) String tagIdsParam,
-			@RequestParam(name = "card_code", required = false) String cardCodeParam,
-			@RequestParam(name = "grade_id", required = false) String gradeIdParam,
-			@RequestParam(name = "username", required = false) String usernameParam,
-			@RequestParam(name = "avatar", required = false) String avatarParam,
-			@RequestParam(name = "sex", required = false) String sexParam,
-			@RequestParam(name = "birthday", required = false) String birthdayParam,
-			@RequestParam(name = "edu_background", required = false) String eduBackgroundParam,
-			@RequestParam(name = "income", required = false) String incomeParam,
-			@RequestParam(name = "industry", required = false) String industryParam,
-			@RequestParam(name = "email", required = false) String emailParam,
-			@RequestParam(name = "address", required = false) String addressParam,
-			@RequestParam(name = "remarks", required = false) String remarksParam,
-			@RequestParam(name = "source_from", required = false) String sourceFromParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "会员手机号；必填；格式错/占用统一 E5502「会员手机号已存在」",
+							required = true,
+							example = "13800138000")
+					@RequestParam(name = "mobile", required = false)
+					String mobileParam,
+			@Parameter(
+							description = "推荐人手机号；非空须格式（E5001）；查无 E5511",
+							example = "13800000000")
+					@RequestParam(name = "inviter_mobile", required = false)
+					String inviterMobileParam,
+			@Parameter(
+							description = "绑定导购手机号；非空须格式（E5001）；查无 E5601；已绑定 E5612",
+							example = "13800000000")
+					@RequestParam(name = "salesperson_mobile", required = false)
+					String salespersonMobileParam,
+			@Parameter(description = "微信 unionid；须字符串（否则 E5001）")
+					@RequestParam(name = "union_id", required = false)
+					String unionIdParam,
+			@Parameter(
+							description = "会员状态 0 禁用/1 启用；缺省 1；其他值 E5001",
+							example = "1")
+					@RequestParam(name = "status", required = false)
+					String statusParam,
+			@Parameter(
+							description = "标签名逗号分隔；标签须已存在（查无 E5561，不自动建）",
+							example = "聚合测试类目")
+					@RequestParam(name = "tag_names", required = false)
+					String tagNamesParam,
+			@Parameter(
+							description = "遗留参数：被接收但忽略（标签仅按 tag_names 解析）",
+							deprecated = true)
+					@RequestParam(name = "tag_ids", required = false)
+					String tagIdsParam,
+			@Parameter(
+							description = "会员卡号；空白自动生成；占用 E5522",
+							example = "card")
+					@RequestParam(name = "card_code", required = false)
+					String cardCodeParam,
+			@Parameter(
+							description = "会员等级 ID（内部）；非负整数；缺省取默认等级；>0 查无 E5531",
+							example = "1")
+					@RequestParam(name = "grade_id", required = false)
+					String gradeIdParam,
+			@Parameter(description = "姓名/昵称（缺省空串）", example = "张三")
+					@RequestParam(name = "username", required = false)
+					String usernameParam,
+			@Parameter(
+							description = "头像 URL（缺省空串；示例为格式演示值）",
+							example = "https://example.test/key.jpg")
+					@RequestParam(name = "avatar", required = false)
+					String avatarParam,
+			@Parameter(
+							description = "性别；仅 0 可成功（非 0 E5001）；缺省 0",
+							example = "0")
+					@RequestParam(name = "sex", required = false)
+					String sexParam,
+			@Parameter(
+							description = "生日 yyyy-MM-dd（datetime 形态落库失败）；可缺省（格式演示值）",
+							example = "1990-01-01")
+					@RequestParam(name = "birthday", required = false)
+					String birthdayParam,
+			@Parameter(
+							description = "学历枚举 0-4；缺省 4；越界 E5001",
+							example = "4")
+					@RequestParam(name = "edu_background", required = false)
+					String eduBackgroundParam,
+			@Parameter(
+							description = "年收入枚举 0-4；缺省 4；越界 E5001",
+							example = "4")
+					@RequestParam(name = "income", required = false)
+					String incomeParam,
+			@Parameter(
+							description = "行业枚举 0-12；缺省 12；越界 E5001",
+							example = "12")
+					@RequestParam(name = "industry", required = false)
+					String industryParam,
+			@Parameter(
+							description = "邮箱；非空须格式（E5001；示例为格式演示值）",
+							example = "zhangsan@example.test")
+					@RequestParam(name = "email", required = false)
+					String emailParam,
+			@Parameter(description = "地址（缺省空串）")
+					@RequestParam(name = "address", required = false)
+					String addressParam,
+			@Parameter(description = "备注（缺省空串）")
+					@RequestParam(name = "remarks", required = false)
+					String remarksParam,
+			@Parameter(
+							description = "来源渠道；仅 default/openapi（缺省 openapi）；其他 E5001",
+							example = "openapi")
+					@RequestParam(name = "source_from", required = false)
+					String sourceFromParam,
+			@RequestBody(
+							description =
+									"可选 JSON body；20 键与 query 同名双通道（body 含键取原值）+ habbit 仅 body；"
+											+ "同步创建链与忽略键语义见 schema",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxMemberCreateBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		Map<String, Object> raw =
 				OpenapiMemberV2CreateHandlerParams.mergeAll(
