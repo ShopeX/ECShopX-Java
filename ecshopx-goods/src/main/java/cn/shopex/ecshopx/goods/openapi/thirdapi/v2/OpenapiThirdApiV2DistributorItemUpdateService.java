@@ -151,7 +151,7 @@ public class OpenapiThirdApiV2DistributorItemUpdateService {
 
 			if (command.store().isPresent()) {
 				int st = command.store().get().intValue();
-				itemStoreService.saveItemStore(itemId, st, distributorId);
+				itemStoreService.overwriteItemStore(itemId, st, distributorId);
 			}
 		} else {
 			DistributorItems created = new DistributorItems();
@@ -172,7 +172,7 @@ public class OpenapiThirdApiV2DistributorItemUpdateService {
 			distributorItemsRepository.insert(created);
 
 			if (patchStore != null) {
-				itemStoreService.saveItemStore(itemId, patchStore.intValue(), distributorId);
+				itemStoreService.overwriteItemStore(itemId, patchStore.intValue(), distributorId);
 			}
 		}
 

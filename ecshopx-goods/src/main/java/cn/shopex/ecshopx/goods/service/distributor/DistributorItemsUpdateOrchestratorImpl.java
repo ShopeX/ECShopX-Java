@@ -106,7 +106,7 @@ public class DistributorItemsUpdateOrchestratorImpl implements DistributorItemsU
 				long storeLong = patch.store().get();
 				int storeInt = storeLong > Integer.MAX_VALUE ? Integer.MAX_VALUE : storeLong < Integer.MIN_VALUE ? Integer.MIN_VALUE : (int) storeLong;
 				for (DistributorItems row : itemList) {
-					itemStoreService.saveItemStore(row.getItemId(), storeInt, row.getDistributorId());
+					itemStoreService.overwriteItemStore(row.getItemId(), storeInt, row.getDistributorId());
 				}
 			}
 		} catch (ResourceException | BadRequestException e) {

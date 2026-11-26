@@ -128,7 +128,7 @@ public class OpenapiThirdApiV2ItemStoreUpdateService {
 		}
 		Items updated = itemsRepository.findByItemBnAndCompany(itemBn, companyId);
 		int newStore = updated != null && updated.getStore() != null ? updated.getStore() : 0;
-		itemStoreService.saveItemStore(itemId, newStore, 0L);
+		itemStoreService.overwriteItemStore(itemId, newStore, 0L);
 	}
 
 	private static Integer parseNonNegativeIntStrict(Object raw) {

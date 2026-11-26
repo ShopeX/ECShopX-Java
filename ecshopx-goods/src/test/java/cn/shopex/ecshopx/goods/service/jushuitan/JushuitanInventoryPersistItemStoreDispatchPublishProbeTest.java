@@ -81,7 +81,7 @@ class JushuitanInventoryPersistItemStoreDispatchPublishProbeTest {
 
 		jushuitanInventoryPersistService.persistInventoriesFromJushuitan(COMPANY_ID, List.of(inv));
 
-		verify(itemStoreService).saveItemStore(ITEM_ID, expectedStore, 0L);
+		verify(itemStoreService).overwriteItemStore(ITEM_ID, expectedStore, 0L);
 	}
 
 	@Test

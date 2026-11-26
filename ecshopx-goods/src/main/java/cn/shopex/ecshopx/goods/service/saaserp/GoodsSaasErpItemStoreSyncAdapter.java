@@ -120,7 +120,7 @@ public class GoodsSaasErpItemStoreSyncAdapter implements SaasErpItemStoreSyncPor
 	}
 
 	private void syncPlatformStore(long companyId, long itemId, int store) {
-		itemStoreService.saveItemStore(itemId, store, 0L);
+		itemStoreService.overwriteItemStore(itemId, store, 0L);
 		LambdaUpdateWrapper<Items> update = new LambdaUpdateWrapper<>();
 		update.eq(Items::getItemId, itemId);
 		if (companyId > 0L) {
@@ -166,7 +166,7 @@ public class GoodsSaasErpItemStoreSyncAdapter implements SaasErpItemStoreSyncPor
 					itemId);
 			return;
 		}
-		itemStoreService.saveItemStore(itemId, store, distributorId);
+		itemStoreService.overwriteItemStore(itemId, store, distributorId);
 		LambdaUpdateWrapper<DistributorItems> update = new LambdaUpdateWrapper<>();
 		update.eq(DistributorItems::getDistributorId, distributorId).eq(DistributorItems::getItemId, itemId);
 		if (companyId > 0L) {

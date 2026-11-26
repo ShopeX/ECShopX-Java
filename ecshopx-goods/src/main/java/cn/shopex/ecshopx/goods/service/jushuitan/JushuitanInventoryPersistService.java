@@ -101,7 +101,7 @@ public class JushuitanInventoryPersistService {
 					.eq(Items::getCompanyId, companyId)
 					.eq(Items::getItemId, itemId)
 					.set(Items::getStore, storeInt));
-			itemStoreService.saveItemStore(itemId, storeInt, 0L);
+			itemStoreService.overwriteItemStore(itemId, storeInt, 0L);
 		}
 	}
 

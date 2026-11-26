@@ -64,14 +64,14 @@ public class ItemsBatchUpdateStoreOrchestrator {
 					itemsRepository.updateStoreByCompanyAndDefaultItemId(companyId, row.itemId(), row.store());
 					List<Items> siblings = itemsRepository.listByDefaultItemIdAndCompany(row.itemId(), companyId);
 					for (Items it : siblings) {
-						itemStoreService.saveItemStore(it.getItemId(), row.store(), 0L);
+						itemStoreService.overwriteItemStore(it.getItemId(), row.store(), 0L);
 					}
 				} else {
 					int updated =
 							itemsRepository.updateStoreByItemIds(
 									companyId, List.of(row.itemId()), row.store());
 					if (updated > 0) {
-						itemStoreService.saveItemStore(row.itemId(), row.store(), 0L);
+						itemStoreService.overwriteItemStore(row.itemId(), row.store(), 0L);
 					}
 				}
 			}

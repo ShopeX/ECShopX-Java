@@ -111,7 +111,7 @@ class GoodsSaasErpItemStoreSyncAdapterTest {
 
 		adapter.sync(companyId, List.of(Map.of("product_bn", "ACT-BN", "product_store", 3)));
 
-		verify(itemStoreService, never()).saveItemStore(any(Long.class), any(Integer.class), any(Long.class));
+		verify(itemStoreService, never()).overwriteItemStore(any(Long.class), any(Integer.class), any(Long.class));
 	}
 
 	@Test
@@ -130,7 +130,7 @@ class GoodsSaasErpItemStoreSyncAdapterTest {
 				companyId,
 				List.of(Map.of("product_bn", "SKU-A", "product_store", 5, "store_code", "SHOP-1")));
 
-		verify(itemStoreService).saveItemStore(itemId, 5, distributorId);
+		verify(itemStoreService).overwriteItemStore(itemId, 5, distributorId);
 	}
 
 	@Test
@@ -141,7 +141,7 @@ class GoodsSaasErpItemStoreSyncAdapterTest {
 
 		adapter.sync(companyId, List.of(Map.of("product_bn", "SKU-B", "product_store", 8)));
 
-		verify(itemStoreService).saveItemStore(itemId, 8, 0L);
+		verify(itemStoreService).overwriteItemStore(itemId, 8, 0L);
 	}
 
 	@Test
@@ -152,7 +152,7 @@ class GoodsSaasErpItemStoreSyncAdapterTest {
 		when(itemsMapper.update(any(), any())).thenReturn(1);
 		doThrow(new RuntimeException("redis down"))
 				.when(itemStoreService)
-				.saveItemStore(eq(200L), eq(2), eq(0L));
+				.overwriteItemStore(eq(200L), eq(2), eq(0L));
 
 		assertThatCode(() -> adapter.sync(
 						companyId,
@@ -161,7 +161,7 @@ class GoodsSaasErpItemStoreSyncAdapterTest {
 								Map.of("product_bn", "SKU-OK", "product_store", 9))))
 				.doesNotThrowAnyException();
 
-		verify(itemStoreService).saveItemStore(itemId, 9, 0L);
+		verify(itemStoreService).overwriteItemStore(itemId, 9, 0L);
 	}
 
 	private static Items item(String bn, long id) {

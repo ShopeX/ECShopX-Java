@@ -61,7 +61,7 @@ class ItemsBatchUpdateStoreOrchestratorScopeTest {
 
 		verify(itemsRepository).updateStoreByItemIds(eq(100L), eq(List.of(42L)), eq(9));
 		verify(itemsRepository, never()).updateSingleItemStoreIfExists(anyLong(), anyInt());
-		verify(itemStoreService, never()).saveItemStore(anyLong(), anyInt(), anyLong());
+		verify(itemStoreService, never()).overwriteItemStore(anyLong(), anyInt(), anyLong());
 	}
 
 	@Test
@@ -73,6 +73,6 @@ class ItemsBatchUpdateStoreOrchestratorScopeTest {
 
 		verify(itemsRepository).updateStoreByItemIds(eq(100L), eq(List.of(42L)), eq(9));
 		verify(itemsRepository, never()).updateSingleItemStoreIfExists(anyLong(), anyInt());
-		verify(itemStoreService).saveItemStore(eq(42L), eq(9), eq(0L));
+		verify(itemStoreService).overwriteItemStore(eq(42L), eq(9), eq(0L));
 	}
 }

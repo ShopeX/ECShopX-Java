@@ -118,7 +118,7 @@ public class OpenapiProductStockUpdatePortImpl implements OpenapiProductStockUpd
 		long itemId = item.getItemId();
 		int store = parseStockWeak(value.get("stock"));
 		try {
-			itemStoreService.saveItemStore(itemId, store, 0L);
+			itemStoreService.overwriteItemStore(itemId, store, 0L);
 			itemsRepository.updateSingleItemStoreIfExists(itemId, store);
 		} catch (Exception e) {
 			Map<String, Object> err = new LinkedHashMap<>();
