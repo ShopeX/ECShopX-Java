@@ -35,6 +35,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxVipGradeDetailBodyDoc
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxVipGradeDetailSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxVipGradeListBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxVipGradeListSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxVipGradeUpdateBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxVipGradeUpdateSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxVipGradeOrderListBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxVipGradeOrderListSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
@@ -350,21 +352,145 @@ public class MemberCardVipGradeController extends OpenapiBaseController {
 				OpenapiRequestParams.mergeString(externalIdParam, body, "external_id"));
 	}
 
+	@Operation(
+			summary = "开放接口更新付费会员卡等级",
+			description =
+					"按签名鉴权租户 company_id 局部更新付费会员卡等级（11 键双通道，body 含键优先）："
+							+ " vip_grade_id 必填非空（originalString；缺失 E5001「请求参数错误」），"
+							+ " trim+parseLong（整值 double 兜底，非法按 -1）定位，查无 E5541「会员付费等级找不到」。"
+							+ " 其余 10 键走 presentOptionalString 按键存在性 PATCH："
+							+ " grade_name/guide_title/description 键存在且非空才原样写入（空串跳过，无法清空）；"
+							+ " 三档 fee 键存在且非空须数值 ≥0（否则 E5001），空串跳过；生效时按档合并 price_list"
+							+ "（已有档改 price、无档新建 monthly=30/quarter=90/year=365 天档）；"
+							+ " is_default/is_disabled 键存在即弱布尔覆盖（空/\"0\"/\"false\"→false，其余 true）。"
+							+ " 遗留键：discount 被校验（非空须 1≤值≤10，否则 E5001）但不落库；"
+							+ " external_id 被接收但忽略——两者响应回显库内原值。"
+							+ " 无无操作分支：定位成功后恒 UPDATE（至少刷新 updated 时间戳）。"
+							+ " 序列化异常 E0001「付费等级数据序列化失败」。成功 data 为更新后 15 键行（同 create 格式）。"
+							+ " 注意：PATCH 键传 JSON null 走 Optional.of(null) 存在 NPE 风险 → HTTP 500 ApiResult（非信封）。"
+							+ " Advice 包装 message 固定「成功」。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}"
+							+ "（method=ecx.member_card_vip_grade.update, version=2.0）签名校验后转发；"
+							+ " 直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 副作用：UPDATE kaquan_vip_grade（present 列 + price_list 合并 + updated；"
+							+ " 无显式事务、无多语言分表写）；无异步、无第三方调用。",
+			operationId = "ecx.member_card_vip_grade.update.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功，data 为更新后 15 键行；"
+								+ " 业务失败：status=fail, code=E5001 请求参数错误 / E5541 会员付费等级找不到 /"
+								+ " E0001 付费等级数据序列化失败，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxVipGradeUpdateFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxVipGradeUpdateSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "更新成功（返回更新后行；时间为格式演示值）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"vip_grade_id\":2,\"type\":\"vip\",\"grade_name\":\"Gold\","
+															+ "\"monthly_fee\":\"0\",\"quarter_fee\":null,\"year_fee\":null,"
+															+ "\"discount\":\"10\",\"guide_title\":\"\",\"description\":\"\","
+															+ "\"background_pic_url\":\"\",\"is_default\":0,\"is_disabled\":0,"
+															+ "\"external_id\":\"\",\"created\":\"2026-01-01 00:00:00\","
+															+ "\"updated\":\"2026-01-01 00:00:00\"}}"),
+									@ExampleObject(
+											name = "fail-grade-not-found",
+											summary = "vip_grade_id 查无（含非法字符串按 -1 查询）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5541\","
+															+ "\"message\":\"会员付费等级找不到\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-param",
+											summary = "vip_grade_id 缺失或 fee/discount 非法",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5001\",\"message\":\"请求参数错误\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@PatchMapping(value = "/ecx.member_card_vip_grade.update", name = "开放接口更新付费会员卡等级")
 	public Map<String, Object> update(
-			HttpServletRequest request,
-			@RequestParam(name = "vip_grade_id", required = false) String vipGradeIdParam,
-			@RequestParam(name = "grade_name", required = false) String gradeNameParam,
-			@RequestParam(name = "monthly_fee", required = false) String monthlyFeeParam,
-			@RequestParam(name = "quarter_fee", required = false) String quarterFeeParam,
-			@RequestParam(name = "year_fee", required = false) String yearFeeParam,
-			@RequestParam(name = "discount", required = false) String discountParam,
-			@RequestParam(name = "guide_title", required = false) String guideTitleParam,
-			@RequestParam(name = "description", required = false) String descriptionParam,
-			@RequestParam(name = "is_default", required = false) String isDefaultParam,
-			@RequestParam(name = "is_disabled", required = false) String isDisabledParam,
-			@RequestParam(name = "external_id", required = false) String externalIdParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "付费等级 ID；必填非空（E5001）；trim+parseLong（整值 double 兜底，非法按 -1），查无 E5541",
+							required = true,
+							example = "2")
+					@RequestParam(name = "vip_grade_id", required = false)
+					String vipGradeIdParam,
+			@Parameter(
+							description = "新付费等级名称；键存在且非空才更新（空串跳过，无法清空）",
+							example = "Gold")
+					@RequestParam(name = "grade_name", required = false)
+					String gradeNameParam,
+			@Parameter(
+							description = "月卡金额（元）；键存在且非空须 ≥0（否则 E5001）；空串跳过；按档合并 price_list",
+							example = "0")
+					@RequestParam(name = "monthly_fee", required = false)
+					String monthlyFeeParam,
+			@Parameter(
+							description = "季卡金额（元，90 天档）；校验与合并语义同 monthly_fee",
+							example = "0")
+					@RequestParam(name = "quarter_fee", required = false)
+					String quarterFeeParam,
+			@Parameter(
+							description = "年卡金额（元，365 天档）；校验与合并语义同 monthly_fee",
+							example = "0")
+					@RequestParam(name = "year_fee", required = false)
+					String yearFeeParam,
+			@Parameter(
+							description = "遗留参数：被校验（非空须 1≤值≤10）但不落库，响应回显原值",
+							deprecated = true,
+							example = "10")
+					@RequestParam(name = "discount", required = false)
+					String discountParam,
+			@Parameter(description = "新导购标题；键存在且非空才更新（空串跳过，无法清空）")
+					@RequestParam(name = "guide_title", required = false)
+					String guideTitleParam,
+			@Parameter(description = "新等级描述；键存在且非空才更新（空串跳过，无法清空）")
+					@RequestParam(name = "description", required = false)
+					String descriptionParam,
+			@Parameter(
+							description = "是否默认等级；键存在即弱布尔覆盖（空/\"0\"/\"false\"→false，其余 true）",
+							example = "0")
+					@RequestParam(name = "is_default", required = false)
+					String isDefaultParam,
+			@Parameter(
+							description = "是否停用；键存在即弱布尔覆盖，语义同 is_default",
+							example = "0")
+					@RequestParam(name = "is_disabled", required = false)
+					String isDisabledParam,
+			@Parameter(
+							description = "遗留参数：被接收但忽略（服务不写 external_id，响应回显原值）",
+							deprecated = true)
+					@RequestParam(name = "external_id", required = false)
+					String externalIdParam,
+			@RequestBody(
+							description =
+									"可选 JSON body；11 键与 query 同名双通道（body 含键优先）；"
+											+ "10 个 PATCH 键按键存在性生效；null 值风险与空串语义见 schema",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxVipGradeUpdateBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		return memberCardVipGradeUpdatePort.update(
 				companyId,
