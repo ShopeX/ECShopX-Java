@@ -26,11 +26,14 @@ import cn.shopex.ecshopx.common.openapi.OpenapiWxappShopListPort;
 import cn.shopex.ecshopx.common.web.FlexibleBody;
 import cn.shopex.ecshopx.openapi.thirdapi.OpenapiBaseController;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxWeappIdGetSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxWxappQrcodeBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxWxappQrcodeFailEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -63,16 +66,115 @@ public class WxappController extends OpenapiBaseController {
 		this.weappIdPort = weappIdPort;
 	}
 
+	@Operation(
+			summary = "开放接口获取导购任务小程序码",
+			description =
+					"按签名鉴权租户 company_id 生成导购任务小程序码，成功直接返回 image/png 二进制（非信封）。"
+							+ " path_type 必填且限 index/goods_list/goods_detail/recommend_list/recommend_detail/share_land，"
+							+ " 映射对应小程序页面；scene 必填 JSON 对象字符串，goods_detail/recommend_detail 须含整数 id≥1；"
+							+ " 任何校验失败统一「参数错误」（E0001）。"
+							+ " 租户须已绑定 yykweishop 授权小程序（wechat_weapp），未绑定报「参数错误」但 code=E0000（PHP 旧契约 fail）。"
+							+ " scene 全量 JSON 写 Redis 分享参数（key=companyId_shareId，TTL 30 天），"
+							+ " 小程序码 scene 仅 [id=...&]share_id=...（share_id 服务端 PhpUniqid 生成）；"
+							+ " width 正整数生效，否则微信默认 430px；经微信 getwxacodeunlimit（env=release，auto_color）取码。"
+							+ " 三参数双通道（body 含键取原始值不 trim，否则用 query）。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.wxapp.qrcode, version=1.0）"
+							+ " 签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 副作用：写 Redis 分享参数 + 调用微信第三方接口；无写库、无异步。",
+			operationId = "ecx.wxapp.qrcode.v1")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description = "成功：HTTP 200，Content-Type=image/png，body 为小程序码 PNG 二进制（微信 getwxacodeunlimit 返回）。",
+				content =
+						@Content(
+								mediaType = "image/png",
+								schema = @Schema(type = "string", format = "binary"))),
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"失败：HTTP 200，Content-Type=application/json，OpenapiEnvelope 形态。"
+								+ " 参数校验失败：status=fail, code=E0001, message=参数错误, data=null；"
+								+ " 未绑定 yykweishop 小程序：status=fail, code=E0000（PHP 旧契约）, message=参数错误, data=null；"
+								+ " 微信生成失败：status=fail, code=E0001（41030 小程序页面尚未发布或未通过审核 /"
+								+ " 获取小程序码失败：响应为空 / 微信 errmsg 透传）, data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权, data=null。见 EcxWxappQrcodeFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxWxappQrcodeFailEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "fail-param",
+											summary = "path_type/scene/id 校验失败",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E0001\",\"message\":\"参数错误\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unbound-legacy-zero",
+											summary = "未绑定 yykweishop 小程序（PHP 旧契约：fail 但 code=E0000）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E0000\",\"message\":\"参数错误\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-page-unpublished",
+											summary = "微信 41030：页面未发布/未过审",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E0001\","
+															+ "\"message\":\"小程序页面尚未发布或未通过审核\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@PostMapping(
 			value = "/ecx.wxapp.qrcode",
 			name = "开放接口获取导购任务小程序码",
 			produces = MediaType.IMAGE_PNG_VALUE)
 	public ResponseEntity<byte[]> getWxCode(
-			HttpServletRequest request,
-			@RequestParam(name = "path_type", required = false) String pathTypeParam,
-			@RequestParam(name = "scene", required = false) String sceneParam,
-			@RequestParam(name = "width", required = false) String widthParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description =
+									"落地页类型；必填，限 index/goods_list/goods_detail/recommend_list/recommend_detail/share_land"
+											+ "（body 同名键优先，原始值不 trim）",
+							required = true,
+							schema =
+									@Schema(
+											allowableValues = {
+												"index", "goods_list", "goods_detail",
+												"recommend_list", "recommend_detail", "share_land"
+											}),
+							example = "goods_detail")
+					@RequestParam(name = "path_type", required = false)
+					String pathTypeParam,
+			@Parameter(
+							description =
+									"场景参数 JSON 对象字符串；必填；goods_detail/recommend_detail 须含整数 id≥1"
+											+ "（body 同名键优先，原始值不 trim）",
+							required = true,
+							example = "{\"id\":1001}")
+					@RequestParam(name = "scene", required = false)
+					String sceneParam,
+			@Parameter(
+							description = "小程序码宽度 px；正整数生效，否则默认 430（body 同名键优先，原始值不 trim）",
+							example = "430")
+					@RequestParam(name = "width", required = false)
+					String widthParam,
+			@RequestBody(
+							description = "可选 JSON body；字段与 query 同名双通道（取原始值不 trim）；校验规则见 schema",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxWxappQrcodeBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		OpenapiWxappQrcodeParams.ParseResult parsed =
 				OpenapiWxappQrcodeParams.parse(pathTypeParam, sceneParam, widthParam, body);
