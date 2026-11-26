@@ -49,6 +49,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberCreateBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberCreateSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberFrequentItemsBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberFrequentItemsSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberListBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberListSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -925,13 +927,102 @@ public class MemberController extends OpenapiBaseController {
 		return new OpenapiEnvelope("success", "E0000", "操作成功", data);
 	}
 
+	@Operation(
+			summary = "开放接口会员基础信息列表",
+			description =
+					"按签名鉴权租户 company_id 与 unionid（逗号分隔多个，wechat 关联）批量查询会员资料："
+							+ " data.count 为匹配总数，data.list 按 user_id 倒序固定取前 100 条（不随入参翻页），"
+							+ " 每行含资料 19 键 + total_amount（累计消费分）+ unionid + 条件性最近浏览 4 键"
+							+ "（browse_count/browse_time/browse_item_name/browse_item_id，仅有足迹时）。"
+							+ " page/page_size 仅作用于 unionid 关联分页：page PHP-falsy 固定 (1,10)；"
+							+ " page_size 非整数/≤0 关联不分页。"
+							+ " unionid 键必填（缺失 E0001「unionid必填」；值非字符串非数字 E0001「请填写unionid」）；"
+							+ " 值为空/无匹配返回成功信封且 data=[]。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.member.list, version=1.0）"
+							+ " 签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 参数双通道（body 含键优先）。只读，无写库/异步/第三方副作用。",
+			operationId = "ecx.member.list.v1")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态。"
+								+ " 成功：status=success, code=E0000, message=操作成功，data 含 count 与 list"
+								+ "（行字段见 EcxMemberListDataDoc；unionid 空/无匹配时 data=[]）；"
+								+ " 校验失败：status=fail, code=E0001（unionid必填/请填写unionid），data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxMemberListFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxMemberListSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "查询成功（字段节选，完整字段见 schema）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"操作成功\","
+															+ "\"data\":{\"count\":1,\"list\":[{\"user_id\":5,\"company_id\":100,"
+															+ "\"username\":\"u1\",\"name\":null,\"avatar\":null,\"sex\":0,"
+															+ "\"birthday\":\"2000-01-02\",\"address\":null,\"email\":null,"
+															+ "\"industry\":null,\"income\":null,\"edu_background\":null,"
+															+ "\"habbit\":[],\"created\":1764115200,\"updated\":1764115200,"
+															+ "\"have_consume\":false,\"other_params\":\"[]\","
+															+ "\"dm_member_id\":null,\"dm_card_no\":null,\"total_amount\":9900,"
+															+ "\"unionid\":\"union-test\",\"browse_count\":3,"
+															+ "\"browse_time\":\"2026-11-26 12:00:00\","
+															+ "\"browse_item_name\":\"示例商品\",\"browse_item_id\":1001}]}}"),
+									@ExampleObject(
+											name = "success-empty",
+											summary = "unionid 空或无匹配（data 为空数组）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"操作成功\",\"data\":[]}"),
+									@ExampleObject(
+											name = "fail-missing-unionid",
+											summary = "unionid 键缺失",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E0001\",\"message\":\"unionid必填\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@PostMapping(value = "/ecx.member.list", name = "开放接口会员基础信息列表")
 	public OpenapiEnvelope memberInfoList(
-			HttpServletRequest request,
-			@RequestParam(name = "unionid", required = false) String unionidParam,
-			@RequestParam(name = "page", required = false) String pageParam,
-			@RequestParam(name = "page_size", required = false) String pageSizeParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description =
+									"微信 unionid，逗号分隔多个；键必填（缺失报错）；值须为字符串或数字；空值返回 data=[]（body 同名键优先）",
+							required = true,
+							example = "union-test")
+					@RequestParam(name = "unionid", required = false)
+					String unionidParam,
+			@Parameter(
+							description = "页码（关联分页），从 1 起；空/\"0\" 时整体回退 page=1/page_size=10（body 同名键优先）",
+							example = "1")
+					@RequestParam(name = "page", required = false)
+					String pageParam,
+			@Parameter(
+							description = "每页条数（关联分页）；仅 page 有效且本键存在时生效；非整数/≤0 关联不分页（body 同名键优先）",
+							example = "10")
+					@RequestParam(name = "page_size", required = false)
+					String pageSizeParam,
+			@RequestBody(
+							description =
+									"可选 JSON body；字段与 query 同名双通道，body 含键时优先；"
+											+ "unionid 值须为字符串或数字类型",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(implementation = EcxMemberListBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		boolean unionidPresent = OpenapiMemberQueryParams.isParamPresent(unionidParam, body, "unionid");
 		String unionidRaw = OpenapiRequestParams.mergeString(unionidParam, body, "unionid");
