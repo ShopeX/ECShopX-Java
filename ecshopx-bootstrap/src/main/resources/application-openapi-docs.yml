@@ -1,12 +1,10 @@
-# OpenAPI / Knife4j 文档 UI（本地或联调启用）
-# 激活方式其一：spring.config.import 增加 optional:classpath:application-openapi-docs.yml（见 application-local.properties）
-# 激活方式其二：spring.profiles.active 包含 openapi-docs（若单独作为 profile 使用）
+# OpenAPI / springdoc Swagger UI（本地或联调启用）
+# 激活方式其一：spring.config.import 增加 optional:classpath:application-openapi-docs.yml
+# 激活方式其二：启动参数覆盖 springdoc.*.enabled=true
 springdoc:
   api-docs:
     enabled: true
   swagger-ui:
     enabled: true
-knife4j:
-  enable: true
-  setting:
-    language: zh_cn
+  # Boot 3.5 / Framework 6.2：避免扫 ControllerAdvice 时踩兼容问题
+  override-with-generic-response: false

@@ -27,7 +27,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Knife4j / springdoc 分组与鉴权面 SecurityScheme 基线配置。
+ * springdoc 分组与鉴权面 SecurityScheme 基线配置。
  */
 @Configuration
 public class OpenApiConfig {
