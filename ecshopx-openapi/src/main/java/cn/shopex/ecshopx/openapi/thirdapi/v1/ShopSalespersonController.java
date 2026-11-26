@@ -27,6 +27,8 @@ import cn.shopex.ecshopx.common.web.FlexibleBody;
 import cn.shopex.ecshopx.openapi.thirdapi.OpenapiBaseController;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxSalespersonBathStatusUpdateBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxSalespersonBathStatusUpdateSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxSalespersonDestroyBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxSalespersonDestroySuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -182,11 +184,77 @@ public class ShopSalespersonController extends OpenapiBaseController {
 		return new OpenapiEnvelope("success", "E0000", "操作成功", List.of());
 	}
 
+	@Operation(
+			summary = "删除导购",
+			description =
+					"按签名鉴权租户 company_id 删除单个导购：employee_number 单值精确匹配"
+							+ " shop_salesperson.work_userid（LIMIT 1 取第一条，不支持逗号批量），"
+							+ " 查无匹配报「导购员信息查询错误」（E0001）；缺失按 null 匹配，通常也查无。"
+							+ " 命中后按 salesperson_id + company_id 同事务删除 shop_salesperson 与"
+							+ " shop_rel_salesperson（店铺关联）两表记录。成功 data 恒为空数组 []、message=操作成功。"
+							+ " employee_number 双通道（body 含键时以 body 为准，null/空白视为未提供且不回退 query；"
+							+ " body 无键读 query 并 trim）。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.salesperson.destroy, version=1.0）"
+							+ " 签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 副作用：事务内 DELETE 两表（AdminSalespersonDeleteService，rollbackFor=Exception）；"
+							+ " 无异步、无第三方调用。",
+			operationId = "ecx.salesperson.destroy.v1")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态。"
+								+ " 成功：status=success, code=E0000, message=操作成功, data 恒为空数组 []；"
+								+ " 业务失败：status=fail, code=E0001 导购员信息查询错误，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxSalespersonDestroyFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxSalespersonDestroySuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "删除成功（data 恒为空数组）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"操作成功\",\"data\":[]}"),
+									@ExampleObject(
+											name = "fail-not-found",
+											summary = "work_userid 查无匹配",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E0001\",\"message\":\"导购员信息查询错误\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@PostMapping(value = "/ecx.salesperson.destroy", name = "删除导购")
 	public OpenapiEnvelope destroySalesperson(
-			HttpServletRequest request,
-			@RequestParam(name = "employee_number", required = false) String employeeNumberParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description =
+									"导购企微 userid（shop_salesperson.work_userid），单值精确匹配（不支持逗号批量）；"
+											+ "查无报「导购员信息查询错误」（缺失按 null 匹配）（body 同名键优先）",
+							required = true,
+							example = "work-u")
+					@RequestParam(name = "employee_number", required = false)
+					String employeeNumberParam,
+			@RequestBody(
+							description = "可选 JSON body；employee_number 与 query 同名双通道，body 含键时优先",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxSalespersonDestroyBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		String employeeNumber = OpenapiRequestParams.mergeString(employeeNumberParam, body, "employee_number");
 		destroyPort.destroySalesperson(companyId, employeeNumber);
