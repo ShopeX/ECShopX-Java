@@ -35,8 +35,15 @@ public class NormalOrderExportRefundLookupService {
 				SUM(COALESCE(A.refund_fee, 0)) AS refund_fee,
 				SUM(COALESCE(A.refund_point, 0)) AS refund_point
 			FROM aftersales_detail A
-			LEFT JOIN aftersales_refund C ON A.aftersales_bn = C.aftersales_bn
-				AND C.refund_status IN ('AUDIT_SUCCESS', 'SUCCESS')
+			LEFT JOIN (
+				SELECT aftersales_bn,
+					SUM(COALESCE(refunded_fee, 0)) AS refunded_fee,
+					SUM(COALESCE(refunded_point, 0)) AS refunded_point,
+					MAX(refund_success_time) AS refund_success_time
+				FROM aftersales_refund
+				WHERE refund_status IN ('AUDIT_SUCCESS', 'SUCCESS')
+				GROUP BY aftersales_bn
+			) C ON A.aftersales_bn = C.aftersales_bn
 			WHERE A.company_id = :companyId AND A.order_id IN (:orderIds)
 			GROUP BY A.order_id, A.item_id
 			""";
@@ -53,13 +60,18 @@ public class NormalOrderExportRefundLookupService {
 		this.jdbc = jdbc;
 	}
 
+	/** Package-visible for unit tests asserting JOIN shape. */
+	static String itemRefundSql() {
+		return SQL_ITEM_REFUND;
+	}
+
 	public Map<String, RefundInfo> loadItemRefunds(long companyId, List<Long> orderIds) {
 		if (orderIds == null || orderIds.isEmpty()) {
 			return Map.of();
 		}
 		MapSqlParameterSource p =
 				new MapSqlParameterSource("companyId", companyId).addValue("orderIds", orderIds);
-		List<Map<String, Object>> rows = jdbc.queryForList(SQL_ITEM_REFUND, p);
+		List<Map<String, Object>> rows = jdbc.queryForList(itemRefundSql(), p);
 		Map<String, RefundInfo> out = new HashMap<>();
 		for (Map<String, Object> row : rows) {
 			Long orderId = longObj(row.get("order_id"));
