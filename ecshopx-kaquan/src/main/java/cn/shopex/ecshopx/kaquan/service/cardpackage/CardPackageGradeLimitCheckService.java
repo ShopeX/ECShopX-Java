@@ -82,24 +82,27 @@ public class CardPackageGradeLimitCheckService {
 			String cardTitle = card.getTitle() != null ? card.getTitle() : "";
 			String reKey = packageTitle + "_" + cardId;
 
-			String gradeIds = card.getGradeIds();
-			if (!isCsvFieldEffectivelyEmpty(gradeIds)) {
-				String trimmed = trimCommaEdges(gradeIds);
-				String[] parts = trimmed.split(",", -1);
-				for (String value : parts) {
-					if (!"grade".equals(setType) || !valueEqualsCheckGradeId(value, checkGradeId)) {
-						checkResult.put(reKey, buildRow(packageTitle, cardTitle, checkGradeId, gradeName));
+			if ("grade".equals(setType)) {
+				String gradeIds = card.getGradeIds();
+				if (!isCsvFieldEffectivelyEmpty(gradeIds)) {
+					String trimmed = trimCommaEdges(gradeIds);
+					String[] parts = trimmed.split(",", -1);
+					for (String value : parts) {
+						if (!valueEqualsCheckGradeId(value, checkGradeId)) {
+							checkResult.put(reKey, buildRow(packageTitle, cardTitle, checkGradeId, gradeName));
+						}
 					}
 				}
 			}
-
-			String vipGradeIds = card.getVipGradeIds();
-			if (!isCsvFieldEffectivelyEmpty(vipGradeIds)) {
-				String trimmed = trimCommaEdges(vipGradeIds);
-				String[] parts = trimmed.split(",", -1);
-				for (String value : parts) {
-					if (!"vip_grade".equals(setType) || !valueEqualsCheckGradeId(value, checkGradeId)) {
-						checkResult.put(reKey, buildRow(packageTitle, cardTitle, checkGradeId, gradeName));
+			else if ("vip_grade".equals(setType)) {
+				String vipGradeIds = card.getVipGradeIds();
+				if (!isCsvFieldEffectivelyEmpty(vipGradeIds)) {
+					String trimmed = trimCommaEdges(vipGradeIds);
+					String[] parts = trimmed.split(",", -1);
+					for (String value : parts) {
+						if (!valueEqualsCheckGradeId(value, checkGradeId)) {
+							checkResult.put(reKey, buildRow(packageTitle, cardTitle, checkGradeId, gradeName));
+						}
 					}
 				}
 			}
