@@ -29,6 +29,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v1.OpenapiMemberQueryParams;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.OpenapiRequestParams;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemEntityAddBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemEntityAddSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemEntityDeleteBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemEntityDeleteSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -126,11 +128,89 @@ public class NormalItemsController extends OpenapiBaseController {
 		return entityStatusUpdatePort.batchUpdateItemsStatus(companyId, itemBnRaw, statusRaw);
 	}
 
+	@Operation(
+			summary = "删除平台商品",
+			description =
+					"按签名鉴权租户 company_id 删除平台商品：item_bn 必填非空白（缺失 E5001「商品货号必填」），"
+							+ " trim 后按租户查 is_default=true 默认 SKU（查无 E5103「商品删除错误」）。"
+							+ " 多规格商品按 default_item_id 删除整个 SPU 组全部 SKU；单规格删自身。"
+							+ " 固定按平台 distributor_id=0 删除（店铺商品不匹配报 E5103「店铺商品信息有误，不可删除」）。"
+							+ " 级联清理：购物车、items 行、Redis item_store、属性关联、销售分类关联、店铺商品关联、"
+							+ " 会员价、条码；搜索索引删除调度；afterCommit 商品删除事件。"
+							+ " 删除链路其他异常统一 E5103（message 透传，空则「商品删除错误」）。"
+							+ " 成功 data={status:true}，Advice 包装 message 固定「成功」。"
+							+ " item_bn originalString 双通道（body 含键取原始值不 trim）。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.item.entity.delete, version=2.0）"
+							+ " 签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 副作用：多表 DELETE + Redis 库存键删除 + 搜索索引删除调度 + 商品删除事件；无第三方调用。",
+			operationId = "ecx.item.entity.delete.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功, data={status:true}；"
+								+ " 业务失败：status=fail, code=E5001 商品货号必填 / E5103 商品删除错误·删除商品信息有误·"
+								+ "店铺商品信息有误，不可删除，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxItemEntityDeleteFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxItemEntityDeleteSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "删除成功（多规格删整组）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"status\":true}}"),
+									@ExampleObject(
+											name = "fail-bn-required",
+											summary = "item_bn 缺失/空白",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5001\",\"message\":\"商品货号必填\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-not-found",
+											summary = "默认 SKU 查无",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5103\",\"message\":\"商品删除错误\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-shop-mismatch",
+											summary = "非平台商品（distributor_id≠0）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5103\","
+															+ "\"message\":\"店铺商品信息有误，不可删除\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@DeleteMapping("/ecx.item.entity.delete")
 	public Map<String, Object> deleteItems(
-			HttpServletRequest request,
-			@RequestParam(name = "item_bn", required = false) String itemBnParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "商品货号（默认 SKU item_bn）；必填非空白；多规格删整组（body 同名键优先）",
+							required = true,
+							example = "SKU200")
+					@RequestParam(name = "item_bn", required = false)
+					String itemBnParam,
+			@RequestBody(
+							description = "可选 JSON body；item_bn 与 query 同名双通道（取原始值）",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxItemEntityDeleteBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		String itemBnRaw = OpenapiRequestParams.originalString(itemBnParam, body, "item_bn");
 		return entityDeletePort.deleteItems(companyId, itemBnRaw);
