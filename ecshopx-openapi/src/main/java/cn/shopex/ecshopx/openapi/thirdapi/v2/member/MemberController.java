@@ -35,6 +35,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberCardCodeGradeUp
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberCardCodeGradeUpdateSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberCardGradeRelListBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberCardGradeRelListSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberInfoUpdateBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberInfoUpdateSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -311,24 +313,172 @@ public class MemberController extends OpenapiBaseController {
 		return null;
 	}
 
+	@Operation(
+			summary = "开放接口修改会员信息",
+			description =
+					"按签名鉴权租户 company_id 以手机号定位会员并**全量覆盖**更新信息（15 键：14 键双通道"
+							+ " body 含键取原值否则 query mergeString trim；habbit 仅 body）。"
+							+ " mobile 必填（格式错统一 E5502「会员手机号已存在」——PHP 旧契约文案，实为格式校验；"
+							+ " 查无 E5501）；birthday **实际必填**（缺失/空串 E5001「生日格式填写错误」，"
+							+ " 仅 yyyy-MM-dd 可用，datetime 形态过输入校验但落库重解析失败）。"
+							+ " 全量覆盖：未传键回落默认值——inviter_id 清 0、status=1（会把禁用会员重新启用）、"
+							+ " sex=0、username/avatar/email/address 空串、habbit=[]、edu=4/income=4/industry=12，"
+							+ " 不保留原值。sex 仅 0 可成功（action 层仅许 0，非 0 报 E5001「性别填写错误」，"
+							+ " 服务层 0/1/2 枚举不可达）。user_id/remarks 被接收但忽略（remarks 仍做字符串类型校验）。"
+							+ " 推荐人非空非\"0\"查无 E5511；各字段键存在时校验（详见 body schema）。"
+							+ " 其他异常统一 E5000「系统错误」（事务回滚）。成功恒 data=null，Advice message 固定「成功」。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.member_info.update,"
+							+ " version=2.0）签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 副作用：@Transactional UPDATE members(inviter_id/disabled/updated) +"
+							+ " UPDATE members_info（username 加密/avatar/sex/email/address/edu/income/industry/habbit/"
+							+ " birthday+year/month/day/updated）+ 新客系统标签对账（禁用摘除/启用按有效已付单判定）"
+							+ " 变更差异写 member_operate_log（operater=外部开发者）；无第三方调用。",
+			operationId = "ecx.member_info.update.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功, data 恒 null；"
+								+ " 业务失败：status=fail, code=E5502 会员手机号已存在（格式校验）/ E5001 各字段填写错误 /"
+								+ " E5501 会员找不到 / E5511 会员的推荐人找不到 / E5000 系统错误，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxMemberInfoUpdateFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxMemberInfoUpdateSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "更新成功（无返回体）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-mobile-format",
+											summary = "mobile 缺失/格式错（PHP 旧契约文案「已存在」）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5502\","
+															+ "\"message\":\"会员手机号已存在\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-birthday-missing",
+											summary = "birthday 缺失/空串（实际必填）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5001\","
+															+ "\"message\":\"生日格式填写错误\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-sex-nonzero",
+											summary = "sex 传 1/2（action 层仅许 0）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5001\",\"message\":\"性别填写错误\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-inviter-not-found",
+											summary = "推荐人手机号查无会员",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5511\","
+															+ "\"message\":\"会员的推荐人找不到\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-member-not-found",
+											summary = "mobile 查无会员",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5501\",\"message\":\"会员找不到\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@PatchMapping(value = "/ecx.member_info.update", name = "开放接口修改会员信息")
 	public Void updateDetail(
-			HttpServletRequest request,
-			@RequestParam(name = "user_id", required = false) String userIdParam,
-			@RequestParam(name = "mobile", required = false) String mobileParam,
-			@RequestParam(name = "inviter_mobile", required = false) String inviterMobileParam,
-			@RequestParam(name = "status", required = false) String statusParam,
-			@RequestParam(name = "remarks", required = false) String remarksParam,
-			@RequestParam(name = "username", required = false) String usernameParam,
-			@RequestParam(name = "avatar", required = false) String avatarParam,
-			@RequestParam(name = "sex", required = false) String sexParam,
-			@RequestParam(name = "birthday", required = false) String birthdayParam,
-			@RequestParam(name = "edu_background", required = false) String eduBackgroundParam,
-			@RequestParam(name = "income", required = false) String incomeParam,
-			@RequestParam(name = "industry", required = false) String industryParam,
-			@RequestParam(name = "email", required = false) String emailParam,
-			@RequestParam(name = "address", required = false) String addressParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "遗留参数：被接收但服务不消费（定位仅按 mobile）",
+							deprecated = true)
+					@RequestParam(name = "user_id", required = false)
+					String userIdParam,
+			@Parameter(
+							description = "会员手机号（定位键）；必填，格式错统一 E5502「会员手机号已存在」；查无 E5501",
+							required = true,
+							example = "13800138000")
+					@RequestParam(name = "mobile", required = false)
+					String mobileParam,
+			@Parameter(
+							description = "推荐人手机号；非空须格式（E5001）；查无 E5511；未传/\"0\" 清空推荐人（全量覆盖）",
+							example = "13800138000")
+					@RequestParam(name = "inviter_mobile", required = false)
+					String inviterMobileParam,
+			@Parameter(
+							description = "会员状态 0 禁用/1 启用；未传默认 1（会重新启用已禁用会员）；其他值 E5001",
+							example = "1")
+					@RequestParam(name = "status", required = false)
+					String statusParam,
+			@Parameter(
+							description = "遗留参数：被接收并做字符串类型校验，但不落库",
+							deprecated = true)
+					@RequestParam(name = "remarks", required = false)
+					String remarksParam,
+			@Parameter(
+							description = "姓名/昵称；恒写（加密），未传写空串清空；非字符串 E5001",
+							example = "张三")
+					@RequestParam(name = "username", required = false)
+					String usernameParam,
+			@Parameter(
+							description = "头像 URL；恒写，未传写空串清空；非字符串 E5001（示例为格式演示值）",
+							example = "https://example.test/key.jpg")
+					@RequestParam(name = "avatar", required = false)
+					String avatarParam,
+			@Parameter(
+							description = "性别；仅 0 可成功（非 0 恒 E5001「性别填写错误」）；未传按 0",
+							example = "0")
+					@RequestParam(name = "sex", required = false)
+					String sexParam,
+			@Parameter(
+							description = "生日 yyyy-MM-dd；实际必填（缺失/空串 E5001「生日格式填写错误」；示例为格式演示值）",
+							required = true,
+							example = "1990-01-01")
+					@RequestParam(name = "birthday", required = false)
+					String birthdayParam,
+			@Parameter(
+							description = "学历枚举 0-4；未传默认 4（恒写覆盖）；越界 E5001",
+							example = "4")
+					@RequestParam(name = "edu_background", required = false)
+					String eduBackgroundParam,
+			@Parameter(
+							description = "年收入枚举 0-4；未传默认 4（恒写覆盖）；越界 E5001",
+							example = "4")
+					@RequestParam(name = "income", required = false)
+					String incomeParam,
+			@Parameter(
+							description = "行业枚举 0-12；未传默认 12（恒写覆盖）；越界 E5001",
+							example = "12")
+					@RequestParam(name = "industry", required = false)
+					String industryParam,
+			@Parameter(
+							description = "邮箱；非空须格式（E5001）；恒写，未传写空串清空（示例为格式演示值）",
+							example = "zhangsan@example.test")
+					@RequestParam(name = "email", required = false)
+					String emailParam,
+			@Parameter(
+							description = "地址；恒写，未传写空串清空；非字符串 E5001")
+					@RequestParam(name = "address", required = false)
+					String addressParam,
+			@RequestBody(
+							description =
+									"可选 JSON body；14 键与 query 同名双通道（body 含键取原值）+ habbit 仅 body；"
+											+ "全量覆盖语义与忽略键/校验缺口见 schema",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxMemberInfoUpdateBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		Map<String, Object> merged =
 				OpenapiMemberV2UpdateDetailHandlerParams.mergeAll(
