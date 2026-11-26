@@ -69,8 +69,9 @@ public class DiscountCardsAdminListFilterBuilder {
 
 		boolean storeSelf = "true".equals(DiscountCardParamNormalize.stringVal(merged.get("store_self")));
 		if (storeSelf) {
-			String pattern = "%" + "%,%" + "%";
-			w.apply("distributor_id LIKE {0}", pattern);
+			// ECX-11449: self-operated cards persist distributor_id as ",0," (create/update store_self).
+			// Do not use "%%,%%" — that matches nearly every multi-shop CSV.
+			w.like(DiscountCards::getDistributorId, ",0,");
 		} else {
 			Object distObj = merged.get("distributor_id");
 			if (distObj != null && StringUtils.hasText(String.valueOf(distObj).trim())) {
