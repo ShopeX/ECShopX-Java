@@ -159,7 +159,7 @@ public class UserBargainCreateBargainLogService {
 						.eq(UserBargains::getCompanyId, companyId)
 						.eq(UserBargains::getUserId, targetUserId)
 						.eq(UserBargains::getBargainId, bargainId)
-						.last("LIMIT 1");
+						.last("LIMIT 1 FOR UPDATE");
 		UserBargains userBargain = userBargainsMapper.selectOne(ubW);
 		if (userBargain == null) {
 			throw new ResourceException(
@@ -234,28 +234,27 @@ public class UserBargainCreateBargainLogService {
 		log.setUpdated(nowInt);
 		bargainLogMapper.insert(log);
 
-		userBargain = userBargainsMapper.selectOne(ubW);
-		if (userBargain == null) {
-			throw new ResourceException(
-					messageSource.getMessage("promotions.bargain.user_bargain_help_not_found", null, locale));
-		}
-
-		int totalCutdown = nz(userBargain.getCutdownAmount()) + cutdownNum;
-		userBargain.setCutdownAmount(totalCutdown);
+		// Locked row already holds pre-help cutdown; increment in SQL to avoid TOCTOU absolute overwrite.
+		int totalCutdown = cutdownSoFar + cutdownNum;
+		String cutpriceRangeJson;
 		try {
-			userBargain.setCutpriceRange(objectMapper.writeValueAsString(slots));
+			cutpriceRangeJson = objectMapper.writeValueAsString(slots);
 		} catch (JsonProcessingException e) {
 			throw new ResourceException(
 					messageSource.getMessage(
 							"promotions.bargain.bargain_activity_completed_cannot_help", null, locale));
 		}
+		// Avoid absolute cutdown_amount write from the entity; increment only via setSql.
+		userBargain.setCutdownAmount(null);
+		userBargain.setCutpriceRange(cutpriceRangeJson);
 		userBargain.setUpdated(nowInt);
 
 		LambdaUpdateWrapper<UserBargains> uw =
 				new LambdaUpdateWrapper<UserBargains>()
 						.eq(UserBargains::getCompanyId, companyId)
 						.eq(UserBargains::getUserId, targetUserId)
-						.eq(UserBargains::getBargainId, bargainId);
+						.eq(UserBargains::getBargainId, bargainId)
+						.setSql("cutdown_amount = IFNULL(cutdown_amount,0) + " + cutdownNum);
 		int rows;
 		try {
 			rows = userBargainsMapper.update(userBargain, uw);
