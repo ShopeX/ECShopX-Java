@@ -23,6 +23,8 @@ import cn.shopex.ecshopx.common.openapi.OpenapiDiscountCardV2UserDiscountListPor
 import cn.shopex.ecshopx.common.openapi.OpenapiEnvelope;
 import cn.shopex.ecshopx.common.web.FlexibleBody;
 import cn.shopex.ecshopx.openapi.thirdapi.OpenapiBaseController;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.kaquan.doc.EcxDiscountcardSendBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.kaquan.doc.EcxDiscountcardSendSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.kaquan.doc.EcxDiscountcardV2ListBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.kaquan.doc.EcxDiscountcardV2ListSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
@@ -156,14 +158,112 @@ public class DiscountCardController extends OpenapiBaseController {
 		return new OpenapiEnvelope("success", "E0000", "操作成功", data);
 	}
 
+	@Operation(
+			summary = "开放接口单张优惠券发放",
+			description =
+					"按签名鉴权租户 company_id 向指定会员发放一张优惠券："
+							+ " plat_account（user_id>0）、card_id（>0）、source_type（中文来源文案）必填非空白，"
+							+ " 缺失依次报「商派会员Id参数错误」「优惠券ID参数错误」「卡券来源参数错误」（均 E5001）；"
+							+ " activity_name 可选缺省空串。四参数 mergeString 双通道（body 含键优先，null/空白不回退 query）。"
+							+ " 校验链：会员按租户查手机号（查无 E5001）→券存在→未过期（end_date>0 且≤now 报已过期）→"
+							+ " 库存（quantity≤已发放报库存不足）→kq_status 须正常→「商城本地领取」校验等级/付费等级可领性→"
+							+ " 「商城本地领取」「大转盘中奖领取」应用每人限领 get_limit→券码查重。"
+							+ " 来源非达摩事件且租户开启达摩 CRM 且券 source_type=dmcrm 时同步向达摩发券取 dm_card_code。"
+							+ " 成功 data：code（12 位随机数字券码）、begin_date/end_date（Unix 秒）、status（新领取恒 unused）、"
+							+ " 条件键 dm_card_code（达摩返回非空才出现）；Advice 包装 message 固定「成功」。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.discountcard.send, version=2.0）"
+							+ " 签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 副作用：@Transactional 内 INSERT kaquan_user_discount + 导购任务领券完成记录 +"
+							+ " 微信小程序领券成功模板消息；条件性达摩 CRM 第三方发券调用。",
+			operationId = "ecx.discountcard.send.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功，data 见 EcxDiscountcardSendDataDoc；"
+								+ " 业务失败：status=fail, code=E5001（参数错误/会员ID错误，未查询到会员信息/领取的优惠券不存在/"
+								+ "领取优惠券失败，优惠券已过期/领取的优惠券失败，库存不足了/不可领取！卡券状态非正常/不可领取！/"
+								+ "您已经领过该券，请到个人中心中查看哦~/您已经领取该卡券/领取该卡券失败），data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxDiscountcardSendFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxDiscountcardSendSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "发放成功（无达摩同步；code 为 12 位数字格式演示）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"code\":\"000000000000\",\"begin_date\":0,\"end_date\":0,"
+															+ "\"status\":\"unused\"}}"),
+									@ExampleObject(
+											name = "fail-out-of-stock",
+											summary = "库存不足",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5001\","
+															+ "\"message\":\"领取的优惠券失败，库存不足了\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-member-not-found",
+											summary = "会员查无",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5001\","
+															+ "\"message\":\"会员ID错误，未查询到会员信息\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-get-limit",
+											summary = "每人限领已达上限",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5001\","
+															+ "\"message\":\"您已经领过该券，请到个人中心中查看哦~\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@PostMapping(value = "/ecx.discountcard.send", name = "开放接口单张优惠券发放")
 	public Map<String, Object> userGetCard(
-			HttpServletRequest request,
-			@RequestParam(name = "plat_account", required = false) String platAccountParam,
-			@RequestParam(name = "card_id", required = false) String cardIdParam,
-			@RequestParam(name = "source_type", required = false) String sourceTypeParam,
-			@RequestParam(name = "activity_name", required = false) String activityNameParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "商派会员 ID（user_id 整数 >0）；必填（body 同名键优先）",
+							required = true,
+							example = "5")
+					@RequestParam(name = "plat_account", required = false)
+					String platAccountParam,
+			@Parameter(
+							description = "优惠券模板 ID（整数 >0）；必填（body 同名键优先）",
+							required = true,
+							example = "3")
+					@RequestParam(name = "card_id", required = false)
+					String cardIdParam,
+			@Parameter(
+							description =
+									"卡券来源中文文案；必填；「商城本地领取」「大转盘中奖领取」应用限领，达摩事件跳过同步"
+											+ "（body 同名键优先）",
+							required = true,
+							example = "商城本地领取")
+					@RequestParam(name = "source_type", required = false)
+					String sourceTypeParam,
+			@Parameter(description = "活动名称；可选缺省空串（body 同名键优先）", example = "")
+					@RequestParam(name = "activity_name", required = false)
+					String activityNameParam,
+			@RequestBody(
+							description = "可选 JSON body；字段与 query 同名双通道，body 含键时优先；来源语义见 schema",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxDiscountcardSendBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		OpenapiThirdApiV2DiscountCardSendParams.SendParams params =
 				OpenapiThirdApiV2DiscountCardSendParams.validate(
