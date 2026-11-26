@@ -35,6 +35,18 @@ import cn.shopex.ecshopx.openapi.thirdapi.OpenapiBaseController;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.OpenapiMemberQueryParams;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.OpenapiOrderListParams;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.OpenapiRequestParams;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxLogisticsEnabledGetBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxLogisticsEnabledGetErrorBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxLogisticsEnabledGetSuccessEnvelopeDoc;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +56,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "开放接口-订单V2")
 @OpenapiResponse
 @RestController("openapiV2Order")
 @RequestMapping("/api/openapi/internal/v2")
@@ -208,12 +221,115 @@ public class OrderController extends OpenapiBaseController {
 		return shippingTemplatesListPort.list(companyId, pageSpec.page(), pageSpec.pageSize());
 	}
 
+	@Operation(
+			summary = "开放接口开启物流公司列表",
+			description =
+					"按签名鉴权租户 company_id 查询已开启物流公司列表：distributor_id/supplier_id 与 query"
+							+ " 同名双通道（body 含键优先），宽松整型解析：缺键/空白/null/非数字一律按 0，不报参数错误。"
+							+ " 已开启判定：company_rel_logistics 按 (company_id, distributor_id, supplier_id) 等值"
+							+ " 匹配（默认 0/0 总部维度），仅保留有开启记录的物流字典行（status=1 过滤）。"
+							+ " data 恒为数组，首项固定 {corp_code:OTHER, corp_name:其他}；后续项仅 2 键"
+							+ " corp_code/corp_name（字典 null 值转空串），按物流字典行序。"
+							+ " 无已开启公司时仅返回 OTHER 一项。Advice 包装 message 固定「成功」。"
+							+ " 错误面：直连 internal 无鉴权上下文 HTTP 200 E4004 未授权；"
+							+ " company_id 超 Integer.MAX → HTTP 400 ApiResult{code:400,msg:参数错误}（非信封，"
+							+ " GlobalExceptionHandler 兜底）；其他未处理异常（如 DB 故障）→ HTTP 500"
+							+ " ApiResult{code:500,msg:服务器内部错误}。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.logistics.enabled.get,"
+							+ " version=2.0）签名校验后转发。只读，无写库/异步/第三方副作用。",
+			operationId = "ecx.logistics.enabled.get.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功，data 为物流公司数组"
+								+ "（首项恒 OTHER/其他，行 2 键见 EcxLogisticsEnabledRowDoc）；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxLogisticsEnabledGetFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxLogisticsEnabledGetSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "已开启顺丰/圆通（示例值取自物流字典种子 kuaidi.json）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":[{\"corp_code\":\"OTHER\",\"corp_name\":\"其他\"},"
+															+ "{\"corp_code\":\"SF\",\"corp_name\":\"顺丰快递\"},"
+															+ "{\"corp_code\":\"YTO\",\"corp_name\":\"圆通速递\"}]}"),
+									@ExampleObject(
+											name = "success-only-other",
+											summary = "该维度无已开启公司（仅 OTHER 一项）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":[{\"corp_code\":\"OTHER\",\"corp_name\":\"其他\"}]}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								})),
+		@ApiResponse(
+				responseCode = "400",
+				description =
+						"HTTP 400，ApiResult 形态（非 OpenapiEnvelope）：company_id 超 Integer.MAX 触发"
+								+ " BadRequestException「参数错误」，由 GlobalExceptionHandler 兜底。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxLogisticsEnabledGetErrorBodyDoc.class),
+								examples =
+										@ExampleObject(
+												name = "bad-request",
+												value = "{\"code\":400,\"msg\":\"参数错误\"}"))),
+		@ApiResponse(
+				responseCode = "500",
+				description = "HTTP 500，ApiResult 形态（非 OpenapiEnvelope）：其他未处理异常（如 DB 故障）兜底。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxLogisticsEnabledGetErrorBodyDoc.class),
+								examples =
+										@ExampleObject(
+												name = "internal-error",
+												value = "{\"code\":500,\"msg\":\"服务器内部错误\"}")))
+	})
 	@GetMapping(value = "/ecx.logistics.enabled.get", name = "开放接口开启物流公司列表")
 	public List<Map<String, Object>> getEnabledLogisticsList(
-			HttpServletRequest request,
-			@RequestParam(name = "distributor_id", required = false) String distributorIdParam,
-			@RequestParam(name = "supplier_id", required = false) String supplierIdParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "店铺（分销商）ID；整数，默认 0（总部维度）；空白/null/非数字均按 0，不报错",
+							example = "0")
+					@RequestParam(name = "distributor_id", required = false)
+					String distributorIdParam,
+			@Parameter(
+							description = "供应商 ID；整数，默认 0；解析规则同 distributor_id",
+							example = "0")
+					@RequestParam(name = "supplier_id", required = false)
+					String supplierIdParam,
+			@RequestBody(
+							description = "可选 JSON body；2 键与 query 同名双通道（body 含键优先）；宽松解析语义见 schema",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxLogisticsEnabledGetBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		int distributorId = parseOptionalIntDefaultZero(distributorIdParam, body, "distributor_id");
 		int supplierId = parseOptionalIntDefaultZero(supplierIdParam, body, "supplier_id");
