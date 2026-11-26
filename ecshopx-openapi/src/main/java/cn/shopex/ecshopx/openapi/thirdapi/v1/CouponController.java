@@ -27,6 +27,8 @@ import cn.shopex.ecshopx.common.web.FlexibleBody;
 import cn.shopex.ecshopx.openapi.thirdapi.OpenapiBaseController;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxCouponCreateBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxCouponCreateSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxCouponListBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxCouponListSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -229,13 +231,92 @@ public class CouponController extends OpenapiBaseController {
 		return new OpenapiEnvelope("success", "E0000", "修改成功", data);
 	}
 
+	@Operation(
+			summary = "开放接口优惠券列表",
+			description =
+					"按签名鉴权得到的租户 company_id 查询优惠券模板列表（discount_cards），按 created 倒序。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.coupon.list, version=1.0）"
+							+ " 签名校验后转发到本 internal 路径；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 全部参数双通道：body 含同名键时以 body 为准（null/空白视为未提供且不回退 query），"
+							+ " body 无该键时读 query。distributor_id 非空且非 \"0\" 时按逗号分隔多店铺过滤"
+							+ "（含全部店铺的券）；page_no 与 page_size 键成对存在才分页，否则返回全部；"
+							+ " 分页参数非整数返回 status=fail 且 code=E0000（PHP 旧契约）。"
+							+ " 只读，无写库/异步/第三方副作用。",
+			operationId = "ecx.coupon.list")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态。"
+								+ " 成功：status=success, code=E0000, message=操作成功，data 仅含 list（无总数字段），"
+								+ " 每条 6 字段见 EcxCouponListItemDoc；"
+								+ " 分页参数非整数：status=fail 且 code=E0000（A non-numeric value encountered），data=null；"
+								+ " 查询异常：status=fail, code=E0001，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxCouponListFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxCouponListSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "查询成功",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"操作成功\","
+															+ "\"data\":{\"list\":[{\"card_id\":3,\"title\":\"满减券\","
+															+ "\"description\":\"\",\"discount\":0,\"distributor_id\":\",\","
+															+ "\"card_type\":\"cash\"}]}}"),
+									@ExampleObject(
+											name = "success-empty",
+											summary = "查询成功（无匹配券模板）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"操作成功\","
+															+ "\"data\":{\"list\":[]}}"),
+									@ExampleObject(
+											name = "fail-non-numeric-page",
+											summary = "分页参数非整数（PHP 旧契约：code=E0000 但 status=fail）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E0000\","
+															+ "\"message\":\"A non-numeric value encountered\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@PostMapping(value = "/ecx.coupon.list", name = "开放接口优惠券列表")
 	public OpenapiEnvelope getCouponList(
-			HttpServletRequest request,
-			@RequestParam(name = "distributor_id", required = false) String distributorIdParam,
-			@RequestParam(name = "page_no", required = false) String pageNoParam,
-			@RequestParam(name = "page_size", required = false) String pageSizeParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description =
+									"店铺 ID 筛选，支持逗号分隔多个；非空且非 \"0\" 时生效"
+											+ "（含全部店铺的券）；缺省不过滤（body 同名键优先）",
+							example = "5")
+					@RequestParam(name = "distributor_id", required = false)
+					String distributorIdParam,
+			@Parameter(
+							description = "页码，从 1 起；与 page_size 键成对存在才分页，否则返回全部；非整数报错（body 同名键优先）",
+							example = "1")
+					@RequestParam(name = "page_no", required = false)
+					String pageNoParam,
+			@Parameter(description = "每页条数；与 page_no 键成对存在才分页；非整数报错（body 同名键优先）", example = "20")
+					@RequestParam(name = "page_size", required = false)
+					String pageSizeParam,
+			@RequestBody(
+							description =
+									"可选 JSON body；字段与 query 同名双通道，body 含键时优先"
+											+ "（null/空白视为未提供且不回退 query）",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema = @Schema(implementation = EcxCouponListBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		String distributorId = OpenapiRequestParams.mergeString(distributorIdParam, body, "distributor_id");
 		boolean applyDistributorFilter = OpenapiCouponListParams.isPhpTruthyDistributorId(distributorId);
