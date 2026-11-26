@@ -30,6 +30,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemCategoryAddSuccess
 import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemCategoryDeleteBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemCategoryDeleteSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemCategoryGetSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemCategoryUpdateBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemCategoryUpdateSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -261,14 +263,100 @@ public class ItemsCategoryController extends OpenapiBaseController {
 				companyId, categoryNameRaw, sortRaw, imageUrlRaw, parentIdRaw);
 	}
 
+	@Operation(
+			summary = "开放接口更新商品分类",
+			description =
+					"按签名鉴权租户 company_id 更新商品分类（items_category）："
+							+ " category_id、category_name 必填非空（缺失依次 E5001「分类ID必填」「分类名称必填」）；"
+							+ " category_id trim 后非整数/租户内查无 E5120「更新的分类不存在」。"
+							+ " category_name 全量覆盖（trim 落库 + zh-CN 分表 upsert）；改名时同父级/同店铺范围重名"
+							+ "（排除自身）E5120「分类名称不能重复」（与原名相同跳过查重）。"
+							+ " sort 可选（非整数 E5120「排序必须大于等于0」）；image_url 可选键不存在不改动；"
+							+ " 服务端固定附带 customize_page_id=0 重置。四参数 originalString 双通道（body 含键取原始值）。"
+							+ " 更新后回读分类详情校验存在性，并触发开放平台类目同步 dispatch（授权允许时异步外发）。"
+							+ " 其他异常统一包装 E5120（message 透传）。成功 data={status:true}，Advice 包装 message 固定「成功」。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.item.category.update, version=2.0）"
+							+ " 签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 副作用：UPDATE items_category（部分字段）+ zh-CN 分表 upsert + 条件性开放平台类目同步事件。",
+			operationId = "ecx.item.category.update.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功, data={status:true}；"
+								+ " 业务失败：status=fail, code=E5001 分类ID必填·分类名称必填 /"
+								+ " E5120 更新的分类不存在·分类名称不能重复·排序必须大于等于0，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxItemCategoryUpdateFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxItemCategoryUpdateSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "更新成功",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"status\":true}}"),
+									@ExampleObject(
+											name = "fail-not-found",
+											summary = "category_id 非整数/查无",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5120\",\"message\":\"更新的分类不存在\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-name-duplicate",
+											summary = "改名后与同父级分类重名",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5120\",\"message\":\"分类名称不能重复\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-name-required",
+											summary = "category_name 缺失/空",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5001\",\"message\":\"分类名称必填\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@PostMapping(value = "/ecx.item.category.update", name = "开放接口更新商品分类")
 	public Map<String, Object> updateItemCategory(
-			HttpServletRequest request,
-			@RequestParam(name = "category_id", required = false) String categoryIdParam,
-			@RequestParam(name = "category_name", required = false) String categoryNameParam,
-			@RequestParam(name = "sort", required = false) String sortParam,
-			@RequestParam(name = "image_url", required = false) String imageUrlParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "分类 ID；必填非空（body 同名键优先，原始值不 trim）",
+							required = true,
+							example = "1")
+					@RequestParam(name = "category_id", required = false)
+					String categoryIdParam,
+			@Parameter(
+							description = "分类名称；必填非空，全量覆盖，改名不可与同父级重名（body 同名键优先）",
+							required = true,
+							example = "聚合测试类目")
+					@RequestParam(name = "category_name", required = false)
+					String categoryNameParam,
+			@Parameter(description = "排序值；可选，非整数报错（body 同名键优先）", example = "1")
+					@RequestParam(name = "sort", required = false)
+					String sortParam,
+			@Parameter(description = "分类图片 URL；可选，键不存在不改动（body 同名键优先）", example = "/fixtures/logo.png")
+					@RequestParam(name = "image_url", required = false)
+					String imageUrlParam,
+			@RequestBody(
+							description = "可选 JSON body；字段与 query 同名双通道（取原始值）；校验见 schema",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxItemCategoryUpdateBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		String categoryIdRaw = OpenapiRequestParams.originalString(categoryIdParam, body, "category_id");
 		String categoryNameRaw = OpenapiRequestParams.originalString(categoryNameParam, body, "category_name");
