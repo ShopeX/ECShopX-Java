@@ -194,29 +194,19 @@ public class AftersalesRefundDoRefundService {
 			publishAdapayRefundOrderProcessLog(companyId, refund, payRes);
 		}
 
-		if (!"point".equals(payType)
-				&& !"prepaid_point".equals(payType)
-				&& effectiveRefundPoint > 0
-				&& !resubmit) {
-			pointMemberAddPointService.addPointForAftersalesRefund(
-					refund.getUserId(),
-					companyId,
-					effectiveRefundPoint,
-					refund.getOrderId(),
-					refund.getRefundBn(),
-					refund.getAftersalesBn());
-		}
-
 		String payStatus = String.valueOf(payRes.getOrDefault("status", ""));
 		int now = (int) (System.currentTimeMillis() / 1000L);
 		LambdaUpdateWrapper<AftersalesRefund> u =
 				new LambdaUpdateWrapper<AftersalesRefund>()
 						.eq(AftersalesRefund::getCompanyId, companyId)
 						.eq(AftersalesRefund::getRefundBn, refundBn);
-		if ("SUCCESS".equals(payStatus) || "PROCESSING".equals(payStatus)) {
+		boolean claimSuccess =
+				"SUCCESS".equals(payStatus) || "PROCESSING".equals(payStatus);
+		if (claimSuccess) {
 			String refundId = payRes.get("refund_id") == null ? "" : String.valueOf(payRes.get("refund_id"));
-			u.set(AftersalesRefund::getRefundId, refundId)
-					.set(AftersalesRefund::getRefundStatus, "SUCCESS")
+			u.ne(AftersalesRefund::getRefundStatus, "SUCCESS")
+					.setSql("refund_status = {0}", "SUCCESS")
+					.set(AftersalesRefund::getRefundId, refundId)
 					.set(AftersalesRefund::getRefundedFee, effectiveRefundFee)
 					.set(AftersalesRefund::getRefundedPoint, effectiveRefundPoint)
 					.set(AftersalesRefund::getRefundSuccessTime, (long) now)
@@ -227,6 +217,20 @@ public class AftersalesRefundDoRefundService {
 		int updated = aftersalesRefundMapper.update(null, u);
 		if (updated <= 0) {
 			throw new ResourceException("退款单状态更新失败");
+		}
+
+		if (claimSuccess
+				&& !"point".equals(payType)
+				&& !"prepaid_point".equals(payType)
+				&& effectiveRefundPoint > 0
+				&& !resubmit) {
+			pointMemberAddPointService.addPointForAftersalesRefund(
+					refund.getUserId(),
+					companyId,
+					effectiveRefundPoint,
+					refund.getOrderId(),
+					refund.getRefundBn(),
+					refund.getAftersalesBn());
 		}
 
 		AftersalesRefund fresh =

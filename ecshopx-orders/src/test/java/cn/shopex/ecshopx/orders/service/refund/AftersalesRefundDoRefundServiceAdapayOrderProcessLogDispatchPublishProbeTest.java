@@ -120,6 +120,7 @@ class AftersalesRefundDoRefundServiceAdapayOrderProcessLogDispatchPublishProbeTe
 				.thenReturn(payRes);
 
 		when(aftersalesDetailMapper.selectList(any())).thenReturn(Collections.emptyList());
+		when(aftersalesRefundMapper.update(any(), any())).thenReturn(1);
 
 		AftersalesRefundDoRefundService service =
 				new AftersalesRefundDoRefundService(ordersRefundPaymentDispatchService,
@@ -221,6 +222,7 @@ class AftersalesRefundDoRefundServiceAdapayOrderProcessLogDispatchPublishProbeTe
 						eq(0),
 						eq(false)))
 				.thenReturn(payRes);
+		when(aftersalesRefundMapper.update(any(), any())).thenReturn(1);
 
 		AftersalesRefundDoRefundService service =
 				new AftersalesRefundDoRefundService(ordersRefundPaymentDispatchService,

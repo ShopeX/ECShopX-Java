@@ -141,10 +141,11 @@ public class AftersalesOfflineRefundSaveService {
 		} else {
 			LambdaUpdateWrapper<AftersalesRefund> uw = new LambdaUpdateWrapper<>();
 			uw.eq(AftersalesRefund::getRefundBn, refundBnLong)
-					.set(AftersalesRefund::getRefundStatus, "SUCCESS");
+					.ne(AftersalesRefund::getRefundStatus, "SUCCESS")
+					.setSql("refund_status = {0}", "SUCCESS");
 			int refundRows = aftersalesRefundMapper.update(null, uw);
 			if (refundRows != 1) {
-				throw new ResourceException("售后退款单不存在");
+				throw new ResourceException("退款单已处理或不存在");
 			}
 			publishTradeRefundStatistics(companyId, refundInfo);
 			restoreEmployeePurchasePrepaidIfNeeded(companyId, refundInfo);

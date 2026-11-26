@@ -113,6 +113,7 @@ class AftersalesRefundDoRefundServiceResubmitTradeStatisticsPublishTest {
 				.thenReturn(payRes);
 
 		when(normalOrdersItemsMapper.selectList(any())).thenReturn(Collections.emptyList());
+		when(aftersalesRefundMapper.update(any(), any())).thenReturn(1);
 
 		AftersalesRefundDoRefundService service =
 				new AftersalesRefundDoRefundService(ordersRefundPaymentDispatchService,
