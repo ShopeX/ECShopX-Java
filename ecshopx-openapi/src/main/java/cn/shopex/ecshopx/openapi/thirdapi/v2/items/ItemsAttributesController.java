@@ -30,6 +30,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemBrandDeleteBodyDoc
 import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemBrandDeleteSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemBrandGetBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemBrandGetSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemBrandUpdateBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemBrandUpdateSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -325,13 +327,96 @@ public class ItemsAttributesController extends OpenapiBaseController {
 		return itemBrandDeletePort.deleteItemBrand(companyId, brandIdRaw);
 	}
 
+	@Operation(
+			summary = "开放接口更新商品品牌",
+			description =
+					"按签名鉴权租户 company_id 更新商品品牌（items_attributes）："
+							+ " brand_id、brand_name 必填非空（缺失依次 E5001「品牌ID必填」「品牌名称必填」）；"
+							+ " brand_id trim 后非整数/租户内查无 E5110「更新的数据不存在」；"
+							+ " brand_name 全量覆盖（trim 后落库），与其他品牌重名（排除自身）E5110「品牌名称不能重复」；"
+							+ " image_url 可选，键不存在不改动。三参数 originalString 双通道（body 含键取原始值不 trim）。"
+							+ " brand 类型不处理属性值；zh-CN 多语言分表同步更新；updated 刷新。"
+							+ " updateAttr 其他异常统一包装 E5110（message 透传）。"
+							+ " 成功 data={status:true}，Advice 包装 message 固定「成功」。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.item.brand.update, version=2.0）"
+							+ " 签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 副作用：UPDATE items_attributes + zh-CN 分表写；无异步、无第三方调用。",
+			operationId = "ecx.item.brand.update.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功, data={status:true}；"
+								+ " 业务失败：status=fail, code=E5001 品牌ID必填·品牌名称必填 /"
+								+ " E5110 更新的数据不存在·品牌名称不能重复，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxItemBrandUpdateFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxItemBrandUpdateSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "更新成功",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"status\":true}}"),
+									@ExampleObject(
+											name = "fail-not-found",
+											summary = "brand_id 非整数/查无",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5110\",\"message\":\"更新的数据不存在\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-name-duplicate",
+											summary = "品牌名称与其他品牌重复",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5110\",\"message\":\"品牌名称不能重复\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-name-required",
+											summary = "brand_name 缺失/空",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5001\",\"message\":\"品牌名称必填\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@PostMapping(value = "/ecx.item.brand.update", name = "开放接口更新商品品牌")
 	public Map<String, Object> updateItemBrand(
-			HttpServletRequest request,
-			@RequestParam(name = "brand_id", required = false) String brandIdParam,
-			@RequestParam(name = "brand_name", required = false) String brandNameParam,
-			@RequestParam(name = "image_url", required = false) String imageUrlParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "品牌 ID（attribute_id）；必填非空（body 同名键优先，原始值不 trim）",
+							required = true,
+							example = "1")
+					@RequestParam(name = "brand_id", required = false)
+					String brandIdParam,
+			@Parameter(
+							description = "品牌名称；必填非空，全量覆盖，不可与其他品牌重名（body 同名键优先）",
+							required = true,
+							example = "FixtureBrand")
+					@RequestParam(name = "brand_name", required = false)
+					String brandNameParam,
+			@Parameter(description = "品牌 Logo URL；可选，键不存在不改动（body 同名键优先）", example = "/fixtures/logo.png")
+					@RequestParam(name = "image_url", required = false)
+					String imageUrlParam,
+			@RequestBody(
+							description = "可选 JSON body；字段与 query 同名双通道（取原始值）；校验见 schema",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxItemBrandUpdateBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		String brandIdRaw = OpenapiRequestParams.originalString(brandIdParam, body, "brand_id");
 		String brandNameRaw = OpenapiRequestParams.originalString(brandNameParam, body, "brand_name");
