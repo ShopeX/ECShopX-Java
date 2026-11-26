@@ -25,6 +25,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v1.OpenapiMemberQueryParams;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.OpenapiRequestParams;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberOrderListBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberOrderListSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberPointOrderListBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberPointOrderListSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -198,14 +200,109 @@ public class MemberOrderController extends OpenapiBaseController {
 				pageSpec.pageSize());
 	}
 
+	@Operation(
+			summary = "开放接口查询会员订单积分列表",
+			description =
+					"按签名鉴权租户 company_id 分页查询会员订单积分（normal_orders，order_id 降序）："
+							+ " 4 键双通道（body 含键优先、值 null 视为未传、不 trim；mobile/order_id 另按存在性判定）。"
+							+ " mobile 键存在且非空白时按固定加密等值定位会员——命中按 user_id 过滤，"
+							+ " **查无/空白按 user_id=0 过滤（通常空结果，不报错）**。"
+							+ " order_id 键存在且非 null 非空串时 trim+parseLong 等值过滤"
+							+ "（\"0\" 参与；非数字按 -1 恒空，不报错）。"
+							+ " **create_time 下界固定当年 1 月 1 日零点（无时间入参，不可放宽）**。"
+							+ " page 默认 1、page_size 默认 20（PHP 式解析），原始 page_size ≥500 报"
+							+ " E5002「每页的大小最大为500！」，钳制后 page≥1、page_size∈[20,499]。"
+							+ " data：total_count/is_last_page(0|1)/pager{page,page_size}/list；行 10 键："
+							+ " order_id 字符串、mobile 订单快照解密、create_time 格式化时间、"
+							+ " get_points/bonus_points/extra_points/point_use 整型、point_fee 元 2 位小数字符串"
+							+ "（null 为空串）、total_points 三项获取合计、username 回查解密（user_id 不透出）。"
+							+ " Advice 包装 message 固定「成功」。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.member_point_order.list,"
+							+ " version=2.0）签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 只读，无写库/异步/第三方副作用。",
+			operationId = "ecx.member_point_order.list.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功，data 见 EcxMemberPointOrderListDataDoc；"
+								+ " 业务失败：status=fail, code=E5002 每页的大小最大为500！，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxMemberPointOrderListFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxMemberPointOrderListSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "查询成功（积分为库默认 0；时间为格式演示值）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"total_count\":1,\"is_last_page\":1,"
+															+ "\"pager\":{\"page\":1,\"page_size\":20},"
+															+ "\"list\":[{\"order_id\":\"100\",\"mobile\":\"13800138000\","
+															+ "\"create_time\":\"2026-01-01 00:00:00\",\"get_points\":0,"
+															+ "\"bonus_points\":0,\"extra_points\":0,\"point_use\":0,"
+															+ "\"point_fee\":\"0.00\",\"total_points\":0,\"username\":\"张三\"}]}}"),
+									@ExampleObject(
+											name = "success-empty",
+											summary = "无匹配订单（含 mobile 查无/order_id 非数字场景）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"total_count\":0,\"is_last_page\":1,"
+															+ "\"pager\":{\"page\":1,\"page_size\":20},\"list\":[]}}"),
+									@ExampleObject(
+											name = "fail-page-size",
+											summary = "page_size 原始解析值 ≥500",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5002\","
+															+ "\"message\":\"每页的大小最大为500！\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@GetMapping(value = "/ecx.member_point_order.list", name = "开放接口查询会员订单积分列表")
 	public Map<String, Object> pointList(
-			HttpServletRequest request,
-			@RequestParam(name = "mobile", required = false) String mobileParam,
-			@RequestParam(name = "order_id", required = false) String orderIdParam,
-			@RequestParam(name = "page", required = false) String pageParam,
-			@RequestParam(name = "page_size", required = false) String pageSizeParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "会员手机号过滤；命中按 user_id 过滤；查无/空白按 user_id=0 过滤（通常空结果，不报错）",
+							example = "13800138000")
+					@RequestParam(name = "mobile", required = false)
+					String mobileParam,
+			@Parameter(
+							description = "订单号过滤；trim+parseLong 等值（\"0\" 参与；非数字按 -1 恒空不报错）；null/空串忽略",
+							example = "100")
+					@RequestParam(name = "order_id", required = false)
+					String orderIdParam,
+			@Parameter(
+							description = "页码，默认 1；PHP 式解析后 max(…,1)",
+							example = "1")
+					@RequestParam(name = "page", required = false)
+					String pageParam,
+			@Parameter(
+							description = "每页数量，默认 20；原始解析值 ≥500 报 E5002；钳制后生效 [20,499]",
+							example = "20")
+					@RequestParam(name = "page_size", required = false)
+					String pageSizeParam,
+			@RequestBody(
+							description = "可选 JSON body；4 键与 query 同名双通道（body 含键优先，值 null 视为未传）；语义见 schema",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxMemberPointOrderListBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 
 		OpenapiThirdApiV2MemberListParams.PageSpec pageSpec =
