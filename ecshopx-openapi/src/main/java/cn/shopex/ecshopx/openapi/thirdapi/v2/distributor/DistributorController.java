@@ -31,6 +31,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v2.distributor.doc.EcxDistributorCreat
 import cn.shopex.ecshopx.openapi.thirdapi.v2.distributor.doc.EcxDistributorCreateSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.distributor.doc.EcxDistributorDetailBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.distributor.doc.EcxDistributorDetailSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.distributor.doc.EcxDistributorDownloadBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.distributor.doc.EcxDistributorDownloadSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.distributor.doc.EcxDistributorListBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.distributor.doc.EcxDistributorListSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.OpenapiThirdApiV2ShippingTemplatesListParams;
@@ -319,14 +321,96 @@ public class DistributorController extends OpenapiBaseController {
 				OpenapiRequestParams.mergeString(logoParam, body, "logo"));
 	}
 
+	@Operation(
+			summary = "开放接口生成店铺码",
+			description =
+					"按签名鉴权租户 company_id 生成/复用店铺首页小程序码图片 URL："
+							+ " shop_code（精确）/distributor_name（LIKE）/status（0→delete/1→true/2→false，其他值忽略）"
+							+ " 三个可选筛选组合定位店铺（LIMIT 1 无排序，全不提供取任意一家），查无 E5401「店铺找不到」。"
+							+ " template_name 可选缺省空串（按空模板名查授权通常查无），对应 wechat_weapp 授权记录查无"
+							+ " E5700「没有开通此小程序」；常规传 yykweishop。"
+							+ " 取码：Redis hash 缓存命中直接用缓存 uri；未命中调微信 getwxacodeunlimit"
+							+ "（scene=dtid={distributorId}，页面 pages/index）并上传存储（group=distributor_qr_code，jpg），"
+							+ " 上传失败吞掉写空串缓存。成功 data 仅 url 一键（domain + / + key；uri 空退化为 domain）；"
+							+ " Advice 包装 message 固定「成功」。"
+							+ " 参数双通道：shop_code/distributor_name/status originalString（原始值），template_name mergeString。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.distributor.download, version=2.0）"
+							+ " 签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 副作用：微信第三方取码 + 图片上传存储 + 写 Redis 缓存（无 expire）；不写业务表。",
+			operationId = "ecx.distributor.download.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功，data={url}；"
+								+ " 业务失败：status=fail, code=E5401 店铺找不到 / E5700 没有开通此小程序 /"
+								+ " E0001 微信取码失败文案，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxDistributorDownloadFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxDistributorDownloadSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "生成/复用店铺码成功",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"url\":\"https://example.test/test-project/image/1/2025/01/01/"
+															+ "distributor_qr_code/abc123test.jpg\"}}"),
+									@ExampleObject(
+											name = "fail-shop-not-found",
+											summary = "筛选定位查无店铺",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5401\",\"message\":\"店铺找不到\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-no-wxapp",
+											summary = "template_name 授权查无（含缺省空串）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5700\",\"message\":\"没有开通此小程序\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@GetMapping(value = "/ecx.distributor.download", name = "开放接口生成店铺码")
 	public Map<String, Object> download(
-			HttpServletRequest request,
-			@RequestParam(name = "shop_code", required = false) String shopCodeParam,
-			@RequestParam(name = "distributor_name", required = false) String distributorNameParam,
-			@RequestParam(name = "status", required = false) String statusParam,
-			@RequestParam(name = "template_name", required = false) String templateNameParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(description = "店铺号精确过滤；可选（body 同名键优先，原始值不 trim）", example = "S001")
+					@RequestParam(name = "shop_code", required = false)
+					String shopCodeParam,
+			@Parameter(description = "店铺名称模糊过滤（LIKE）；可选（body 同名键优先）", example = "新门店名")
+					@RequestParam(name = "distributor_name", required = false)
+					String distributorNameParam,
+			@Parameter(
+							description = "状态过滤：0 已删除/1 启用/2 禁用；其他值忽略（body 同名键优先）",
+							schema = @Schema(allowableValues = {"0", "1", "2"}),
+							example = "1")
+					@RequestParam(name = "status", required = false)
+					String statusParam,
+			@Parameter(
+							description = "小程序模板名；缺省空串通常查无授权（E5700）；常规传 yykweishop（body 同名键优先，mergeString）",
+							example = "yykweishop")
+					@RequestParam(name = "template_name", required = false)
+					String templateNameParam,
+			@RequestBody(
+							description = "可选 JSON body；字段与 query 同名双通道；筛选与模板语义见 schema",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxDistributorDownloadBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		return distributorDownloadPort.download(
 				companyId,
