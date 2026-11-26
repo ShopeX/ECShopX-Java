@@ -28,6 +28,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberPointDetailBody
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberPointDetailSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberPointLogListBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberPointLogListSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberPointUpdateBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberPointUpdateSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -291,15 +293,122 @@ public class MemberPointController extends OpenapiBaseController {
 		return memberPointV2DetailPort.getMemberPointDetail(companyId, mobileRaw);
 	}
 
+	@Operation(
+			summary = "开放接口修改会员积分",
+			description =
+					"按签名鉴权租户 company_id 以手机号定位会员并增/减积分（5 键双通道，body 含键取原值否则 query trim）："
+							+ " mobile 键必须存在且格式合法（E5001「请求参数错误：会员手机号参数错误」；查无 E5501）；"
+							+ " increase_point/decrease_point 恰一键存在（都缺/同传各报 E5001 专属文案），"
+							+ " 非负整数（字符串 ^[0-9]+$ ≤Integer.MAX；数值整值 ≥0；小数/布尔/null 报 E5001），0 合法；"
+							+ " record 键必须存在且非空白（E5001）；external_id 可选标量（布尔/对象/数组 E5001，null 空串）。"
+							+ " 执行分支：达摩 CRM 积分集成租户 → 第三方 changePoint（不写本地余额/流水；"
+							+ " 会员信息查无 E0001「未查询到相关会员信息」，失败 E0001 透传或「达摩CRM积分变更失败」）；"
+							+ " 数云开放平台积分启用 → 先同步数云端、跳过本地余额（流水 point_desc「无记录，剩余积分以数云端为准」）；"
+							+ " 常规 → 加分 addPointDelta / 减分 subtractPointIfEnough（不足或无账户非 0 扣减 E0001「积分不足」；"
+							+ " 0 值不改余额）。写 point_member_log（journal_type=13、operater=外部开发者、"
+							+ " operater_remark=record、external_id、income/outcome）+ 数云推送（如启用）。"
+							+ " 执行阶段其他异常 E5000「未知错误」（事务回滚）；E5550「积分异常」为不可达防御。"
+							+ " 成功恒 data=null，Advice 包装 message 固定「成功」。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.member_point.update,"
+							+ " version=2.0）签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 副作用：@Transactional UPDATE point_member.point + INSERT point_member_log +"
+							+ " 条件性第三方调用（达摩 CRM 积分变更 / 数云积分同步与推送）。",
+			operationId = "ecx.member_point.update.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功, data 恒 null（含 0 值调整）；"
+								+ " 业务失败：status=fail, code=E5001 各参数错误 / E5501 会员找不到 /"
+								+ " E0001 积分不足·达摩透传 / E5000 未知错误，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxMemberPointUpdateFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxMemberPointUpdateSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "调整成功（无返回体）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-missing-delta",
+											summary = "increase_point/decrease_point 都缺失",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5001\","
+															+ "\"message\":\"增加积分或减去积分二选一必填\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-both-delta",
+											summary = "两键同传",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5001\","
+															+ "\"message\":\"增加积分和减去积分只能存在一个\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-point-insufficient",
+											summary = "扣减余额不足/无积分账户",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E0001\",\"message\":\"积分不足\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-member-not-found",
+											summary = "mobile 查无会员",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5501\",\"message\":\"会员找不到\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@PatchMapping(value = "/ecx.member_point.update", name = "开放接口修改会员积分")
 	public Void update(
-			HttpServletRequest request,
-			@RequestParam(name = "mobile", required = false) String mobileParam,
-			@RequestParam(name = "increase_point", required = false) String increasePointParam,
-			@RequestParam(name = "decrease_point", required = false) String decreasePointParam,
-			@RequestParam(name = "record", required = false) String recordParam,
-			@RequestParam(name = "external_id", required = false) String externalIdParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "会员手机号；键必须存在且格式合法（E5001）；查无 E5501「会员找不到」",
+							required = true,
+							example = "13800138000")
+					@RequestParam(name = "mobile", required = false)
+					String mobileParam,
+			@Parameter(
+							description = "增加积分；与 decrease_point 恰一键存在；非负整数 ≤Integer.MAX（否则 E5001）；0 合法",
+							example = "3")
+					@RequestParam(name = "increase_point", required = false)
+					String increasePointParam,
+			@Parameter(
+							description = "减去积分；与 increase_point 互斥恰一；非负整数；余额不足 E0001「积分不足」",
+							example = "3")
+					@RequestParam(name = "decrease_point", required = false)
+					String decreasePointParam,
+			@Parameter(
+							description = "积分变动原因（备注）；键必须存在且非空白（E5001）；写入流水备注（示例为格式演示值）",
+							required = true,
+							example = "开放接口调整")
+					@RequestParam(name = "record", required = false)
+					String recordParam,
+			@Parameter(
+							description = "外部唯一标识；可选标量（布尔/对象/数组 E5001；null 空串）；不做幂等去重",
+							example = "1")
+					@RequestParam(name = "external_id", required = false)
+					String externalIdParam,
+			@RequestBody(
+							description =
+									"可选 JSON body；5 键与 query 同名双通道（body 含键取原值）；"
+											+ "互斥/必填/第三方分支语义见 schema",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxMemberPointUpdateBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		Map<String, Object> merged =
 				OpenapiMemberV2UpdatePointHandlerParams.mergeAll(
