@@ -30,6 +30,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v1.OpenapiMemberQueryParams;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.OpenapiRequestParams;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxAftersalesDetailGetBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxAftersalesDetailGetSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxAftersalesIncrListBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxAftersalesIncrListSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxAftersalesListBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxAftersalesListSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
@@ -220,18 +222,141 @@ public class AftersalesController extends OpenapiBaseController {
 				timeEndRaw);
 	}
 
+	@Operation(
+			summary = "开放接口增量售后单列表",
+			description =
+					"按签名鉴权租户 company_id 分页返回增量售后单（update_time 倒序）："
+							+ " data 结构与全量列表一致（total_count/is_last_page/pager/list，行 18 键，"
+							+ " 地址默认回退、sendconfirm_data 透传等语义见 EcxAftersalesListRowDoc）。"
+							+ " 与全量差异：start_modified/end_modified 作用于 update_time 闭区间（≥/≤，strtotime，"
+							+ " 解析失败按 0，双端下界>上界报 E5320）；另支持 aftersales_type（原样等值，无枚举校验）、"
+							+ " aftersales_status/progress（整数解析非法按 0；PHP-truthy 门槛使 \"0\" 无法过滤进度 0）。"
+							+ " 分页与 mobile 校验同全量：page_size 解析后 ≥500 报 E0001（含 500）、<20 归一 20；"
+							+ " mobile 须匹配 ^1[345789][0-9]{9}$（E5320），查无会员 E5331。"
+							+ " 八参数双通道（body 含键取原始值，否则用 query）。返回 Map 由 Advice 包装（message 固定「成功」）。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.aftersales.incr.get, version=2.0）"
+							+ " 签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 只读，无写库/异步/第三方副作用。",
+			operationId = "ecx.aftersales.incr.get.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功，data 见 EcxAftersalesListDataDoc"
+								+ "（无数据时 total_count=0、is_last_page=1、list=[]）；"
+								+ " 业务失败：status=fail, code=E0001 每页的大小最大为500！ / E5320 请填写正确的手机号·"
+								+ "开始时间不能大于结束时间 / E5331 会员找不到，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxAftersalesIncrListFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxAftersalesIncrListSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "查询成功（update_time 倒序）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"total_count\":1,\"is_last_page\":1,"
+															+ "\"pager\":{\"page\":1,\"page_size\":20},"
+															+ "\"list\":[{\"aftersales_bn\":\"202605101200001\",\"order_id\":\"88001\","
+															+ "\"aftersales_type\":\"REFUND_GOODS\",\"aftersales_status\":1,\"progress\":2,"
+															+ "\"refund_fee\":100,\"refund_point\":0,\"reason\":\"测试售后\","
+															+ "\"description\":null,\"evidence_pic\":[],\"refuse_reason\":null,\"memo\":null,"
+															+ "\"sendback_data\":{\"corp_code\":\"SF\",\"logi_no\":\"1234567890\","
+															+ "\"receiver_address\":\"\",\"receiver_mobile\":\"\"},\"sendconfirm_data\":null,"
+															+ "\"create_time\":\"2023-11-15 08:00:01\",\"update_time\":\"2023-11-15 08:00:01\","
+															+ "\"aftersales_address\":{\"aftersales_address_id\":1,"
+															+ "\"aftersales_address\":\"中关村大街1号\",\"aftersales_contact\":\"王五\","
+															+ "\"aftersales_mobile\":\"13912345678\",\"is_default\":1},"
+															+ "\"detail\":[{\"goods_id\":1001,\"item_bn\":\"A1\",\"item_name\":\"示例商品\","
+															+ "\"item_pic\":\"https://example.test/key.jpg\",\"num\":1,\"refund_fee\":100,"
+															+ "\"refund_point\":0,\"aftersales_type\":\"REFUND_GOODS\",\"progress\":2,"
+															+ "\"aftersales_status\":1,\"create_time\":\"2023-11-15 08:00:01\","
+															+ "\"update_time\":\"2023-11-15 08:00:01\",\"auto_refuse_time\":\"\"}]}]}}"),
+									@ExampleObject(
+											name = "success-empty",
+											summary = "无增量售后单",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"total_count\":0,\"is_last_page\":1,"
+															+ "\"pager\":{\"page\":1,\"page_size\":20},\"list\":[]}}"),
+									@ExampleObject(
+											name = "fail-time-range",
+											summary = "start_modified > end_modified（双端生效）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5320\","
+															+ "\"message\":\"开始时间不能大于结束时间\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-page-size",
+											summary = "page_size 解析后 ≥500",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E0001\",\"message\":\"每页的大小最大为500！\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@GetMapping(value = "/ecx.aftersales.incr.get", name = "开放接口增量售后单列表")
 	public Map<String, Object> getIncrAftersalesList(
-			HttpServletRequest request,
-			@RequestParam(name = "page", required = false) String pageParam,
-			@RequestParam(name = "page_size", required = false) String pageSizeParam,
-			@RequestParam(name = "mobile", required = false) String mobileParam,
-			@RequestParam(name = "start_modified", required = false) String startModifiedParam,
-			@RequestParam(name = "end_modified", required = false) String endModifiedParam,
-			@RequestParam(name = "aftersales_type", required = false) String aftersalesTypeParam,
-			@RequestParam(name = "aftersales_status", required = false) String aftersalesStatusParam,
-			@RequestParam(name = "progress", required = false) String progressParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(description = "页码；缺省 1，<1 归一 1（PHP 整型解析，body 同名键优先）", example = "1")
+					@RequestParam(name = "page", required = false)
+					String pageParam,
+			@Parameter(
+							description = "每页条数；缺省 20，<20 归一 20；≥500 报「每页的大小最大为500！」（body 同名键优先）",
+							example = "20")
+					@RequestParam(name = "page_size", required = false)
+					String pageSizeParam,
+			@Parameter(
+							description = "会员手机号；PHP-truthy 才生效，须匹配 ^1[345789][0-9]{9}$，按会员过滤（body 同名键优先）",
+							example = "13800000000")
+					@RequestParam(name = "mobile", required = false)
+					String mobileParam,
+			@Parameter(
+							description = "update_time 下界（≥）；yyyy-MM-dd[ HH:mm:ss]，PHP-truthy 才生效（body 同名键优先）",
+							example = "2023-11-15")
+					@RequestParam(name = "start_modified", required = false)
+					String startModifiedParam,
+			@Parameter(
+							description = "update_time 上界（≤）；语义同 start_modified（body 同名键优先）",
+							example = "2023-11-16")
+					@RequestParam(name = "end_modified", required = false)
+					String endModifiedParam,
+			@Parameter(
+							description = "售后类型精确过滤；原样等值无枚举校验（body 同名键优先）",
+							schema = @Schema(allowableValues = {"ONLY_REFUND", "REFUND_GOODS", "EXCHANGING_GOODS"}),
+							example = "REFUND_GOODS")
+					@RequestParam(name = "aftersales_type", required = false)
+					String aftersalesTypeParam,
+			@Parameter(
+							description = "售后状态精确过滤；整数解析非法按 0（body 同名键优先）",
+							example = "1")
+					@RequestParam(name = "aftersales_status", required = false)
+					String aftersalesStatusParam,
+			@Parameter(
+							description = "处理进度精确过滤；整数解析非法按 0；\"0\" 视为未提供（body 同名键优先）",
+							example = "2")
+					@RequestParam(name = "progress", required = false)
+					String progressParam,
+			@RequestBody(
+							description = "可选 JSON body；字段与 query 同名双通道（取原始值）；分页/过滤语义见 schema",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxAftersalesIncrListBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		OpenapiThirdApiV2AftersalesListParams.PageSpec pageSpec =
 				OpenapiThirdApiV2AftersalesListParams.resolve(pageParam, pageSizeParam, body);
