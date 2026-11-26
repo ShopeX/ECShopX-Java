@@ -19,8 +19,8 @@ package cn.shopex.ecshopx.employeepurchase.service;
 import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.employeepurchase.mapper.EmployeeFrontCheckQueryMapper;
 import cn.shopex.ecshopx.employeepurchase.mapper.dto.EmployeeEmailVcodeEnterpriseRow;
+import java.security.SecureRandom;
 import java.util.Locale;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Pattern;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -34,6 +34,8 @@ public class EmployeeEmailVcodeSendService {
 	private static final Pattern LEGACY_EMAIL_PATTERN = Pattern.compile(
 			"^([a-z0-9]*[-_.]?[a-z0-9]+)*@([a-z0-9]*[-_]?[a-z0-9]+)+\\.[a-z]{2,3}(\\.[a-z]{2})?$",
 			Pattern.CASE_INSENSITIVE);
+
+	private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
 	private final EmployeeFrontCheckQueryMapper employeeFrontCheckQueryMapper;
 	private final EmployeePurchaseEmailVcodeRedisService emailVcodeRedisService;
@@ -113,7 +115,7 @@ public class EmployeeEmailVcodeSendService {
 		}
 
 		emailVcodeRedisService.rememberSendCooldown(companyId, limitEmail);
-		String vcode = String.format("%06d", ThreadLocalRandom.current().nextInt(100000, 1000000));
+		String vcode = generateSixDigitVcode();
 		emailVcodeRedisService.storeVcodeWithTtl(trimmedEmail, vcode, 1800L);
 
 		String body =
@@ -121,5 +123,10 @@ public class EmployeeEmailVcodeSendService {
 						+ vcode
 						+ "位数字，30分钟内有效，请尽快完成验证。</p>\n";
 		return mailGateway.send(row, trimmedEmail, body);
+	}
+
+	/** Six-digit auth code via CSPRNG (100000–999999). */
+	static String generateSixDigitVcode() {
+		return String.format("%06d", SECURE_RANDOM.nextInt(100000, 1000000));
 	}
 }
