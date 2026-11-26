@@ -31,6 +31,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxImageListBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxImageListSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxImageSaveBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxImageSaveSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxImageUploadLocalFormDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxImageUploadLocalSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -393,13 +395,101 @@ public class ImageController extends OpenapiBaseController {
 		return new OpenapiEnvelope("success", "E0000", "ok", data);
 	}
 
+	@Operation(
+			summary = "开放接口本地存储上传图片",
+			description =
+					"multipart 直传文件到当前配置的存储驱动（local/oss/qiniu/cosv5/aws 由部署决定），"
+							+ " 返回存储对象键 image_url（非完整 URL），不写 upload_images 元数据"
+							+ "（登记元数据需另调 ecx.image.save）。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}"
+							+ "（method=ecx.image.upload_localimage, version=1.0）签名校验后转发到本 internal 路径；"
+							+ " 直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 文件 part 名 images 必填非空；filetype 空/\"0\" 按 image，仅支持 image（jpeg/jpg/png/gif）"
+							+ " 与 videos（mp4），file 类型拒绝；单文件上限 50MB；Content-Type 须与类型匹配。"
+							+ " filetype/group 双通道（body 含键优先）。"
+							+ " 副作用：写存储盘一个对象；无写库/异步/第三方 API 调用（对象存储 put 即本接口目的）。",
+			operationId = "ecx.image.upload_localimage")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态。"
+								+ " 成功：status=success, code=E0000, message=ok，data 仅含 image_url（对象键）；"
+								+ " 业务失败：status=fail, code=E0001（请上传有效图片/不支持的文件存储类型{t}/"
+								+ "不支持的图片存储类型{mime}/图片上传最大为50M/上传失败），data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxImageUploadLocalFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxImageUploadLocalSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "上传成功",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"ok\","
+															+ "\"data\":{\"image_url\":\"path/key.jpg\"}}"),
+									@ExampleObject(
+											name = "fail-empty-file",
+											summary = "文件缺失或为空",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E0001\",\"message\":\"请上传有效图片\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-bad-mime",
+											summary = "Content-Type 不支持",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E0001\","
+															+ "\"message\":\"不支持的图片存储类型image/bmp\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@PostMapping(value = "/ecx.image.upload_localimage", name = "开放接口本地存储上传图片")
 	public OpenapiEnvelope uploadeImage(
-			HttpServletRequest request,
-			@RequestParam(name = "images", required = false) MultipartFile images,
-			@RequestParam(name = "filetype", required = false) String filetypeParam,
-			@RequestParam(name = "group", required = false) String groupParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "图片/视频文件（multipart part，名 images）；必填非空，单文件≤50MB",
+							required = true,
+							content =
+									@Content(
+											mediaType = "multipart/form-data",
+											schema =
+													@Schema(
+															type = "string",
+															format = "binary",
+															description = "文件本体")))
+					@RequestParam(name = "images", required = false)
+					MultipartFile images,
+			@Parameter(
+							description =
+									"文件类型：image（jpeg/jpg/png/gif）或 videos（mp4）；空/\"0\"/缺省按 image；file 拒绝"
+											+ "（body 同名键优先）",
+							example = "image")
+					@RequestParam(name = "filetype", required = false)
+					String filetypeParam,
+			@Parameter(description = "存储分组（对象键可选路径段）；可选（body 同名键优先）")
+					@RequestParam(name = "group", required = false)
+					String groupParam,
+			@RequestBody(
+							description =
+									"multipart 表单字段说明（filetype/group）；文件本体为独立 part images。"
+											+ " 同名字段也可经 query 或 JSON body 提供",
+							required = false,
+							content =
+									@Content(
+											mediaType = "multipart/form-data",
+											schema =
+													@Schema(
+															implementation =
+																	EcxImageUploadLocalFormDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		if (images == null || images.isEmpty()) {
 			throw new ResourceException("请上传有效图片");
