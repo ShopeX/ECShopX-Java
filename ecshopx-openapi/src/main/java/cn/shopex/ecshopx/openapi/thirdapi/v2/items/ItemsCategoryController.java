@@ -32,6 +32,7 @@ import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemCategoryDeleteSucc
 import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemCategoryGetSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemMaincategoryDetailGetBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemMaincategoryDetailGetSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemMaincategoryGetSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemCategoryUpdateBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemCategoryUpdateSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
@@ -143,9 +144,66 @@ public class ItemsCategoryController extends OpenapiBaseController {
 		return itemCategoryListPort.getItemCategoryList(companyId);
 	}
 
+	@Operation(
+			summary = "开放接口查询商品主类目列表",
+			description =
+					"按签名鉴权租户 company_id 返回全量商品主类目树（不分页）："
+							+ " items_category 过滤 is_main_category=1 + distributor_id=0，zh-CN 分表覆盖 category_name"
+							+ " 后组树（根 parent_id=0）。与 ecx.item.category.get 共用同一服务，仅主类目过滤值不同。"
+							+ " data 为一级节点数组，节点 9 固定键 + 条件键 children（递归同构，仅有子级时出现）："
+							+ " category_id/category_level/parent_id/sort 字符串化（null→空串）、"
+							+ " category_name/path/image_url null→空串、created/updated yyyy-MM-dd HH:mm:ss（库值 null 为 null）。"
+							+ " 无请求参数（query/body 均不读取）。DB 访问异常报 E5000（底层信息透传）。"
+							+ " Advice 包装 message 固定「成功」。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.item.maincategory.get, version=2.0）"
+							+ " 签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 只读，无写库/异步/第三方副作用。",
+			operationId = "ecx.item.maincategory.get.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功，data 为主类目树数组（见 EcxItemCategoryGetNodeDoc；"
+								+ "无主类目时 data=[]）；"
+								+ " 失败：status=fail, code=E5000 DB 异常 / E4004 未授权，data=null。见 EcxItemCategoryGetFailEnvelopeDoc。"
+								+ " 本接口无业务校验失败分支。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxItemMaincategoryGetSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "查询成功（一级主类目含子级）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":[{\"category_id\":\"1\",\"category_name\":\"HP\","
+															+ "\"category_level\":\"1\",\"parent_id\":\"0\",\"path\":\"1\",\"sort\":\"1\","
+															+ "\"image_url\":\"/fixtures/logo.png\","
+															+ "\"created\":\"2023-11-15 06:13:21\",\"updated\":\"2023-11-15 06:13:21\","
+															+ "\"children\":[{\"category_id\":\"2\",\"category_name\":\"上衣\","
+															+ "\"category_level\":\"2\",\"parent_id\":\"1\",\"path\":\"1,2\",\"sort\":\"0\","
+															+ "\"image_url\":\"\",\"created\":\"2023-11-15 06:13:21\","
+															+ "\"updated\":\"2023-11-15 06:13:21\"}]}]}"),
+									@ExampleObject(
+											name = "success-empty",
+											summary = "无主类目",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\",\"data\":[]}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@GetMapping(value = "/ecx.item.maincategory.get", name = "开放接口查询商品主类目列表")
 	public List<Map<String, Object>> getItemMainCategoryList(
-			HttpServletRequest request,
+			@Parameter(hidden = true) HttpServletRequest request,
 			@FlexibleBody(required = false) Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		return itemCategoryListPort.getItemMainCategoryList(companyId);
