@@ -31,6 +31,17 @@ import cn.shopex.ecshopx.openapi.thirdapi.v1.OpenapiMemberQueryParams;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.OpenapiRequestParams;
 import cn.shopex.ecshopx.common.web.FlexibleBody;
 import cn.shopex.ecshopx.openapi.thirdapi.OpenapiBaseController;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberCardCodeGradeUpdateBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberCardCodeGradeUpdateSuccessEnvelopeDoc;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +52,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "开放接口-会员V2")
 @OpenapiResponse
 @RestController("openapiV2Member")
 @RequestMapping("/api/openapi/internal/v2")
@@ -164,14 +176,116 @@ public class MemberController extends OpenapiBaseController {
 		return null;
 	}
 
+	@Operation(
+			summary = "开放接口修改会员卡号等级",
+			description =
+					"按签名鉴权租户 company_id 以手机号定位会员，局部更新卡号/等级（3 键双通道，body 含键优先）："
+							+ " mobile 必填，trim 后须 ^1[3456789][0-9]{9}$（E5001「手机号必填」/「手机号填写错误」）；"
+							+ " user_card_code/grade_id 按键存在性 PATCH——两键均缺席时无操作成功（mobile 仍先校验）。"
+							+ " user_card_code：body 值须字符串或 null（否则 E5001「会员卡号参数错误」）；trim 非空直接用，"
+							+ " null/空白自动生成 12 位大写随机码（Redis zset usercardcode 去重，3 次冲突→E5000）；"
+							+ " 被其他手机号会员占用 E5522「会员卡号已存在」（占用者即本手机号放行）。"
+							+ " grade_id：须数值/可 parseDouble 有限数字字符串（否则 E5001「等级ID参数错误」），小数截断；"
+							+ " membercard_grade 查无 E5531「会员等级找不到」。"
+							+ " 会员按固定加密 mobile 等值定位，查无或 UPDATE affected=0 → E5501「会员找不到」。"
+							+ " 注意：query 参数 card_code 被接收但忽略（未并入 mergeAll），改卡号须用 user_card_code。"
+							+ " 其他异常统一 E5000「系统错误」。成功恒 data=null，Advice 包装 message 固定「成功」。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}"
+							+ "（method=ecx.member_card_code_grade.update, version=2.0）签名校验后转发；"
+							+ " 直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 副作用：@Transactional UPDATE members.user_card_code/grade_id/updated；"
+							+ " 空卡号时 Redis zset usercardcode 写入随机码；无第三方调用。",
+			operationId = "ecx.member_card_code_grade.update.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功, data 恒 null（含两 PATCH 键均缺席的无操作场景）；"
+								+ " 业务失败：status=fail, code=E5001 手机号必填·手机号填写错误·会员卡号参数错误·等级ID参数错误 /"
+								+ " E5501 会员找不到 / E5522 会员卡号已存在 / E5531 会员等级找不到 / E5000 系统错误，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxMemberCardCodeGradeUpdateFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxMemberCardCodeGradeUpdateSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "更新成功（无返回体）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-mobile-format",
+											summary = "mobile 格式错误",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5001\","
+															+ "\"message\":\"手机号填写错误\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-card-exist",
+											summary = "卡号被其他会员占用",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5522\","
+															+ "\"message\":\"会员卡号已存在\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-grade-not-found",
+											summary = "grade_id 查无",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5531\","
+															+ "\"message\":\"会员等级找不到\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-member-not-found",
+											summary = "mobile 查无会员",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5501\",\"message\":\"会员找不到\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@PatchMapping(value = "/ecx.member_card_code_grade.update", name = "开放接口修改会员卡号等级")
 	public Void updateCardCodeAndGrade(
-			HttpServletRequest request,
-			@RequestParam(name = "mobile", required = false) String mobileParam,
-			@RequestParam(name = "user_card_code", required = false) String userCardCodeParam,
-			@RequestParam(name = "card_code", required = false) String cardCodeParam,
-			@RequestParam(name = "grade_id", required = false) String gradeIdParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "会员手机号（明文）；必填，trim 后须 ^1[3456789][0-9]{9}$；查无会员 E5501",
+							required = true,
+							example = "13800138000")
+					@RequestParam(name = "mobile", required = false)
+					String mobileParam,
+			@Parameter(
+							description = "新会员卡号；键存在即更新；空白/null 自动生成 12 位随机码；他人占用 E5522（详见 body schema）",
+							example = "card")
+					@RequestParam(name = "user_card_code", required = false)
+					String userCardCodeParam,
+			@Parameter(
+							description = "遗留参数：被接收但忽略（未并入 mergeAll），修改卡号请使用 user_card_code",
+							deprecated = true)
+					@RequestParam(name = "card_code", required = false)
+					String cardCodeParam,
+			@Parameter(
+							description = "新会员等级 ID；键存在即更新；数字（小数截断），membercard_grade 查无 E5531",
+							example = "1")
+					@RequestParam(name = "grade_id", required = false)
+					String gradeIdParam,
+			@RequestBody(
+							description =
+									"可选 JSON body；3 键与 query 同名双通道（body 含键优先，PATCH 键原值保留）；"
+											+ "card_code 键不被读取；语义见 schema",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxMemberCardCodeGradeUpdateBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		Map<String, Object> merged =
 				OpenapiMemberV2UpdateCardCodeGradeHandlerParams.mergeAll(
