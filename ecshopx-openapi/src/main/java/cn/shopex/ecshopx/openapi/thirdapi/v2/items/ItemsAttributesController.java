@@ -28,6 +28,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemBrandAddBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemBrandAddSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemBrandDeleteBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemBrandDeleteSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemBrandGetBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemBrandGetSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -69,12 +71,90 @@ public class ItemsAttributesController extends OpenapiBaseController {
 		this.itemBrandListPort = itemBrandListPort;
 	}
 
+	@Operation(
+			summary = "开放接口查询商品品牌列表",
+			description =
+					"按签名鉴权租户 company_id 分页返回商品品牌（items_attributes，attribute_type=brand，created 倒序）："
+							+ " data 含 total_count、is_last_page（1/0）、pager 与 list（5 键/行）——"
+							+ " brand_id（attribute_id 整型）、brand_name（zh-CN 分表非空覆盖）、image_url（可 null）、"
+							+ " created/updated（yyyy-MM-dd HH:mm:ss，库值 null 时为 null）。"
+							+ " 分页：page 缺省 1（<1 归一 1）；page_size 缺省 20、<20 归一 20；解析后 ≥500 报"
+							+ " E5002「每页的大小最大为500！」（500 本身也报错）。两参数双通道（body 含键取原始值）。"
+							+ " DB 访问异常报 E5000（底层异常信息透传）。Advice 包装 message 固定「成功」。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.item.brand.get, version=2.0）"
+							+ " 签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 只读，无写库/异步/第三方副作用。",
+			operationId = "ecx.item.brand.get.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功，data 见 EcxItemBrandGetDataDoc"
+								+ "（无品牌时 total_count=0、is_last_page=1、list=[]）；"
+								+ " 业务失败：status=fail, code=E5002 每页的大小最大为500！ / E5000 DB 异常，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxItemBrandGetFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxItemBrandGetSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "查询成功",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"total_count\":1,\"is_last_page\":1,"
+															+ "\"pager\":{\"page\":1,\"page_size\":20},"
+															+ "\"list\":[{\"brand_id\":1,\"brand_name\":\"FixtureBrand\","
+															+ "\"image_url\":\"/fixtures/logo.png\","
+															+ "\"created\":\"2023-11-15 06:13:21\","
+															+ "\"updated\":\"2023-11-15 06:13:21\"}]}}"),
+									@ExampleObject(
+											name = "success-empty",
+											summary = "无品牌",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"total_count\":0,\"is_last_page\":1,"
+															+ "\"pager\":{\"page\":1,\"page_size\":20},\"list\":[]}}"),
+									@ExampleObject(
+											name = "fail-page-size",
+											summary = "page_size 解析后 ≥500",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5002\",\"message\":\"每页的大小最大为500！\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@GetMapping(value = "/ecx.item.brand.get", name = "开放接口查询商品品牌列表")
 	public Map<String, Object> getItemBrandList(
-			HttpServletRequest request,
-			@RequestParam(name = "page", required = false) String pageParam,
-			@RequestParam(name = "page_size", required = false) String pageSizeParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(description = "页码；缺省 1，<1 归一 1（PHP 整型解析，body 同名键优先）", example = "1")
+					@RequestParam(name = "page", required = false)
+					String pageParam,
+			@Parameter(
+							description = "每页条数；缺省 20，<20 归一 20；≥500 报「每页的大小最大为500！」（body 同名键优先）",
+							example = "20")
+					@RequestParam(name = "page_size", required = false)
+					String pageSizeParam,
+			@RequestBody(
+							description = "可选 JSON body；字段与 query 同名双通道（取原始值）；分页语义见 schema",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxItemBrandGetBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		OpenapiThirdApiV2ItemBrandListParams.PageSpec pageSpec =
 				OpenapiThirdApiV2ItemBrandListParams.resolve(pageParam, pageSizeParam, body);
