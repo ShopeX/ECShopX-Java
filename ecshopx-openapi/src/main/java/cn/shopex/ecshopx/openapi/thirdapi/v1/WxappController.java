@@ -25,6 +25,15 @@ import cn.shopex.ecshopx.common.openapi.OpenapiWxappQrcodePort;
 import cn.shopex.ecshopx.common.openapi.OpenapiWxappShopListPort;
 import cn.shopex.ecshopx.common.web.FlexibleBody;
 import cn.shopex.ecshopx.openapi.thirdapi.OpenapiBaseController;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxWeappIdGetSuccessEnvelopeDoc;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Map;
 import org.springframework.http.MediaType;
@@ -35,6 +44,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /** OpenAPI v1 handler scaffold — methods added during migration. */
+@Tag(name = "开放接口-微信小程序V1")
 @OpenapiResponse
 @RestController("openapiV1Wxapp")
 @RequestMapping("/api/openapi/internal/v1")
@@ -97,8 +107,56 @@ public class WxappController extends OpenapiBaseController {
 		return new OpenapiEnvelope("success", "E0000", "success", data);
 	}
 
+	@Operation(
+			summary = "开放接口获取yykweishop模板appid",
+			description =
+					"按签名鉴权租户 company_id 查询 yykweishop 模板授权小程序 appid："
+							+ " wechat_weapp 按 company_id + template_name=yykweishop + deleted_at IS NULL 取 LIMIT 1；"
+							+ " 查无记录或 appid 为空时 weappid=null（仍成功返回，不报错）。"
+							+ " data 恒 2 键：weappid（可 null）、template_name（恒 yykweishop）；message 恒为 \"success\"。"
+							+ " 无请求参数（query/body 均不读取）。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.weappid.get, version=1.0）"
+							+ " 签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 只读，无写库/异步/第三方副作用；无业务校验失败分支。",
+			operationId = "ecx.weappid.get.v1")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态。"
+								+ " 成功：status=success, code=E0000, message=success，data 见 EcxWeappIdGetDataDoc"
+								+ "（未绑定时 weappid=null 仍成功）；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxWeappIdGetFailEnvelopeDoc。"
+								+ " 本接口无业务校验失败分支。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxWeappIdGetSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "已绑定授权小程序",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"success\","
+															+ "\"data\":{\"weappid\":\"wxResolved\",\"template_name\":\"yykweishop\"}}"),
+									@ExampleObject(
+											name = "success-unbound",
+											summary = "未绑定/已删除/appid 为空（仍成功）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"success\","
+															+ "\"data\":{\"weappid\":null,\"template_name\":\"yykweishop\"}}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@PostMapping(value = "/ecx.weappid.get", name = "开放接口获取yykweishop模板appid")
-	public OpenapiEnvelope getWeappId(HttpServletRequest request) {
+	public OpenapiEnvelope getWeappId(@Parameter(hidden = true) HttpServletRequest request) {
 		long companyId = requireCompanyId(request);
 		Map<String, Object> data = weappIdPort.getWeappIdByTemplate(companyId, "yykweishop");
 		return new OpenapiEnvelope("success", "E0000", "success", data);
