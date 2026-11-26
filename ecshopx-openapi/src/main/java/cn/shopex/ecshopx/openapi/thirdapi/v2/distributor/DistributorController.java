@@ -27,7 +27,17 @@ import cn.shopex.ecshopx.common.openapi.OpenapiErrorCode;
 import cn.shopex.ecshopx.common.web.FlexibleBody;
 import cn.shopex.ecshopx.openapi.thirdapi.OpenapiBaseController;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.OpenapiRequestParams;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.distributor.doc.EcxDistributorListBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.distributor.doc.EcxDistributorListSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.OpenapiThirdApiV2ShippingTemplatesListParams;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -39,6 +49,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /** OpenAPI v2 handler scaffold — methods added during migration. */
+@Tag(name = "开放接口-店铺")
 @OpenapiResponse
 @RestController("openapiV2Distributor")
 @RequestMapping("/api/openapi/internal/v2")
@@ -64,21 +75,71 @@ public class DistributorController extends OpenapiBaseController {
 		this.distributorDownloadPort = distributorDownloadPort;
 	}
 
+	@Operation(
+			summary = "开放接口查询店铺列表",
+			description =
+					"按租户 company_id 查询店铺（分销商）列表，支持多条件筛选。"
+							+ " query 与 JSON body 同名参数等价，body 中 key 存在时优先（OpenapiRequestParams.originalString）。"
+							+ " 只读，无写库副作用。",
+			operationId = "ecx.distributor.list")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态。"
+								+ " 成功：status=success, code=E0000，data 见 EcxDistributorListDataDoc；"
+								+ " 参数/业务校验失败：status=fail（如 E0001 page_size 超范围），见 EcxDistributorListFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxDistributorListSuccessEnvelopeDoc.class)))
+	})
 	@GetMapping(value = "/ecx.distributor.list", name = "开放接口查询店铺列表")
 	public Map<String, Object> list(
-			HttpServletRequest request,
-			@RequestParam(name = "page", required = false) String pageParam,
-			@RequestParam(name = "page_size", required = false) String pageSizeParam,
-			@RequestParam(name = "shop_code", required = false) String shopCodeParam,
-			@RequestParam(name = "distributor_name", required = false) String distributorNameParam,
-			@RequestParam(name = "status", required = false) String statusParam,
-			@RequestParam(name = "province", required = false) String provinceParam,
-			@RequestParam(name = "city", required = false) String cityParam,
-			@RequestParam(name = "area", required = false) String areaParam,
-			@RequestParam(name = "contact_username", required = false) String contactUsernameParam,
-			@RequestParam(name = "contact_mobile", required = false) String contactMobileParam,
-			@RequestParam(name = "distributor_id", required = false) String distributorIdParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(description = "页码，默认 1，最小 1", example = "1")
+					@RequestParam(name = "page", required = false)
+					String pageParam,
+			@Parameter(description = "每页条数，默认 20，范围 1–500", example = "20")
+					@RequestParam(name = "page_size", required = false)
+					String pageSizeParam,
+			@Parameter(description = "店铺号，精确匹配", example = "S001")
+					@RequestParam(name = "shop_code", required = false)
+					String shopCodeParam,
+			@Parameter(description = "店铺名称，模糊匹配")
+					@RequestParam(name = "distributor_name", required = false)
+					String distributorNameParam,
+			@Parameter(description = "状态筛选：0 已删除，1 启用，2 禁用", example = "1")
+					@RequestParam(name = "status", required = false)
+					String statusParam,
+			@Parameter(description = "省，模糊匹配")
+					@RequestParam(name = "province", required = false)
+					String provinceParam,
+			@Parameter(description = "市，模糊匹配") @RequestParam(name = "city", required = false)
+					String cityParam,
+			@Parameter(description = "区，模糊匹配") @RequestParam(name = "area", required = false)
+					String areaParam,
+			@Parameter(description = "联系人姓名，模糊匹配")
+					@RequestParam(name = "contact_username", required = false)
+					String contactUsernameParam,
+			@Parameter(description = "联系人手机，精确匹配")
+					@RequestParam(name = "contact_mobile", required = false)
+					String contactMobileParam,
+			@Parameter(description = "店铺 ID，精确匹配")
+					@RequestParam(name = "distributor_id", required = false)
+					String distributorIdParam,
+			@RequestBody(
+							description = "可选 JSON body；字段与 query 同名等价，body 优先",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema = @Schema(implementation = EcxDistributorListBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		OpenapiThirdApiV2ShippingTemplatesListParams.PageSpec pageSpec =
 				OpenapiThirdApiV2ShippingTemplatesListParams.resolve(pageParam, pageSizeParam, body);
