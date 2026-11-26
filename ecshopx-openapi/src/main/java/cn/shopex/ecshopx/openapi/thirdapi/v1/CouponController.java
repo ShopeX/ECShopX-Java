@@ -31,6 +31,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxCouponListBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxCouponListSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxCouponUpdateBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxCouponUpdateSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxCouponVerifyBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxCouponVerifySuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -423,12 +425,90 @@ public class CouponController extends OpenapiBaseController {
 		return new OpenapiEnvelope("success", "E0000", "操作成功", data);
 	}
 
+	@Operation(
+			summary = "开放接口优惠券状态更新",
+			description =
+					"按签名鉴权得到的租户 company_id 与券编码 coupon_code 更新已发放优惠券状态（事务内执行）："
+							+ " coupon_status=\"1\" 核销（status 置 2 已使用），\"2\" 反核销/恢复（置 6），其他值报错。"
+							+ " 仅当前状态为 1 或 4 且已到生效时间、未过期才允许操作。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.coupon.verify, version=1.0）"
+							+ " 签名校验后转发到本 internal 路径；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 参数双通道：body 含同名键时以 body 为准（null/空白视为未提供且不回退 query），body 无该键时读 query。"
+							+ " 副作用：更新 user_discount（status/consume_source/consume_outer_str=第三方核销）；"
+							+ " 更新成功后写 user_discount_logs 核销日志（used_status=consume，shop_name=微商城）；"
+							+ " 券绑定导购时递增导购券统计 pay_num；尽力发送微信小程序订阅消息 cardUsedSucc（失败忽略，不影响结果）。",
+			operationId = "ecx.coupon.verify")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态。"
+								+ " 成功：status=success, code=E0000, message=修改成功，data.status=true"
+								+ "（事务内二次查询未找到该券时 data.status=false，信封仍为成功）；"
+								+ " 业务失败：status=fail, code=E0001（优惠券编码必填/状态必填/不支持的核销状态/"
+								+ "优惠券使用失败，该优惠券已被使用或无效/…未到使用日期/…已过期），data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxCouponVerifyFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxCouponVerifySuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "核销成功",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"修改成功\","
+															+ "\"data\":{\"status\":true}}"),
+									@ExampleObject(
+											name = "fail-used-or-invalid",
+											summary = "业务失败（券不存在/已使用/状态不允许）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E0001\","
+															+ "\"message\":\"优惠券使用失败，该优惠券已被使用或无效\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-bad-status",
+											summary = "业务失败（coupon_status 非 1/2）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E0001\",\"message\":\"不支持的核销状态\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@PostMapping(value = "/ecx.coupon.verify", name = "开放接口优惠券状态更新")
 	public OpenapiEnvelope userConsumeCard(
-			HttpServletRequest request,
-			@RequestParam(name = "coupon_code", required = false) String couponCodeParam,
-			@RequestParam(name = "coupon_status", required = false) String couponStatusParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "已发放优惠券编码（user_discount.code，租户内定位）；必填（body 同名键优先）",
+							required = true,
+							example = "CODE-1")
+					@RequestParam(name = "coupon_code", required = false)
+					String couponCodeParam,
+			@Parameter(
+							description =
+									"目标状态：\"1\" 核销（status 置 2 已使用）；\"2\" 反核销/恢复（置 6）；"
+											+ "其他值报「不支持的核销状态」（body 同名键优先）",
+							required = true,
+							schema = @Schema(allowableValues = {"1", "2"}),
+							example = "1")
+					@RequestParam(name = "coupon_status", required = false)
+					String couponStatusParam,
+			@RequestBody(
+							description =
+									"可选 JSON body；字段与 query 同名双通道，body 含键时优先"
+											+ "（null/空白视为未提供且不回退 query）",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema = @Schema(implementation = EcxCouponVerifyBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		String couponCode =
 				OpenapiRequestParams.mergeRequiredString(couponCodeParam, body, "coupon_code", "优惠券编码必填");
