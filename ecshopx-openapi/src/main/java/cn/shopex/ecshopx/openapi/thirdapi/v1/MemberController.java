@@ -55,6 +55,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberListFpSuccessEnvelopeD
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberListSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberNotifyBecomeFriendBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberNotifyBecomeFriendSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberOrderListBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberOrderListSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -358,16 +360,121 @@ public class MemberController extends OpenapiBaseController {
 		return new OpenapiEnvelope("success", "E0000", "操作成功", data);
 	}
 
+	@Operation(
+			summary = "开放接口会员订单列表",
+			description =
+					"按签名鉴权租户 company_id 查询会员订单分页：固定过滤 order_type=normal 且"
+							+ " order_status 不为 NOTPAY/CANCEL，可选 order_class 筛选，create_time 倒序。"
+							+ " data 含 pager（count/page_no/page_size/total_amount 按 user_id 分组映射）、list"
+							+ "（每单裁剪 11 键，items 仅首条订单行 12 键）、total_count、total_amount（分）、"
+							+ " avg_amount（分，向下取整）。pay_time 实为订单 create_time 格式化（PHP 旧契约）。"
+							+ " 定位优先级：external_member_id PHP-truthy 直接作为 user_id（跳过其余校验）；"
+							+ " 否则 mobile（优先）/unionid 二选一，查无会员报「会员信息获取失败」。"
+							+ " 分页：page 缺省 1、page_size 缺省 10，非整数回退默认。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.member.orderList, version=1.0）"
+							+ " 签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 参数双通道（body 含键优先）；body unionid 须为字符串。只读，无写库/异步/第三方副作用。",
+			operationId = "ecx.member.orderList")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态。"
+								+ " 成功：status=success, code=E0000, message=操作成功，data 见 EcxMemberOrderListDataDoc"
+								+ "（无订单时 count=0、list=[]、total_amount/avg_amount=0）；"
+								+ " 业务失败：status=fail, code=E0001（请填写unionid/请填写正确的手机号/"
+								+ "unionid或者手机号必填/会员信息获取失败），data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxMemberOrderListFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxMemberOrderListSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "查询成功",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"操作成功\","
+															+ "\"data\":{\"pager\":{\"count\":1,\"page_no\":1,\"page_size\":10,"
+															+ "\"total_amount\":{\"5\":9900}},\"list\":[{\"order_id\":10001,"
+															+ "\"order_status\":\"DONE\",\"order_status_msg\":\"已完成\","
+															+ "\"order_status_des\":null,\"pay_status\":\"PAYED\","
+															+ "\"total_fee\":\"9900\",\"user_id\":5,"
+															+ "\"pay_time\":\"2026-11-26 12:00:00\",\"buy_num\":1,"
+															+ "\"gift\":\"normal\",\"items\":[{\"id\":20001,\"order_id\":10001,"
+															+ "\"user_id\":5,\"item_id\":1001,\"item_bn\":\"A1\","
+															+ "\"item_name\":\"示例商品\",\"pic\":\"https://example.test/key.jpg\","
+															+ "\"num\":1,\"price\":9900,\"item_fee\":9900,"
+															+ "\"order_item_type\":\"normal\",\"item_spec\":\"红\"}]}],"
+															+ "\"total_count\":1,\"total_amount\":9900,\"avg_amount\":9900}}"),
+									@ExampleObject(
+											name = "success-empty",
+											summary = "无订单",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"操作成功\","
+															+ "\"data\":{\"pager\":{\"count\":0,\"page_no\":1,\"page_size\":10,"
+															+ "\"total_amount\":{}},\"list\":[],\"total_count\":0,"
+															+ "\"total_amount\":0,\"avg_amount\":0}}"),
+									@ExampleObject(
+											name = "fail-member-not-found",
+											summary = "查无会员",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E0001\","
+															+ "\"message\":\"会员信息获取失败\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@PostMapping(value = "/ecx.member.orderList", name = "开放接口会员订单列表")
 	public OpenapiEnvelope getMemberOrderLists(
-			HttpServletRequest request,
-			@RequestParam(name = "mobile", required = false) String mobileParam,
-			@RequestParam(name = "unionid", required = false) String unionidParam,
-			@RequestParam(name = "external_member_id", required = false) String externalMemberIdParam,
-			@RequestParam(name = "page", required = false) String pageParam,
-			@RequestParam(name = "page_size", required = false) String pageSizeParam,
-			@RequestParam(name = "order_class", required = false) String orderClassParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "手机号；提供时须匹配 ^1[3-9]\\d{9}$；与 unionid 二选一（body 同名键优先）",
+							example = "13800000000")
+					@RequestParam(name = "mobile", required = false)
+					String mobileParam,
+			@Parameter(
+							description = "微信 unionid（wechat 关联）；body 中须为字符串（body 同名键优先）",
+							example = "union-test")
+					@RequestParam(name = "unionid", required = false)
+					String unionidParam,
+			@Parameter(
+							description = "会员 ID（user_id）；PHP-truthy 时最高优先，直接按其查询（跳过其余校验）（body 同名键优先）",
+							example = "5")
+					@RequestParam(name = "external_member_id", required = false)
+					String externalMemberIdParam,
+			@Parameter(description = "页码，从 1 起；非整数/缺省按 1（body 同名键优先）", example = "1")
+					@RequestParam(name = "page", required = false)
+					String pageParam,
+			@Parameter(description = "每页条数；非整数/缺省按 10（body 同名键优先）", example = "10")
+					@RequestParam(name = "page_size", required = false)
+					String pageSizeParam,
+			@Parameter(
+							description =
+									"订单种类：normal/groups/community/bargain/seckill/shopguide/pointsmall/excard；"
+											+ "空/\"0\" 不过滤（body 同名键优先）",
+							example = "normal")
+					@RequestParam(name = "order_class", required = false)
+					String orderClassParam,
+			@RequestBody(
+							description =
+									"可选 JSON body；字段与 query 同名双通道，body 含键时优先；unionid 须为字符串类型",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxMemberOrderListBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		boolean mobilePresent = OpenapiMemberQueryParams.isParamPresent(mobileParam, body, "mobile");
 		boolean unionidPresent = OpenapiMemberQueryParams.isParamPresent(unionidParam, body, "unionid");
