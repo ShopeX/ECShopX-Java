@@ -30,6 +30,7 @@ import cn.shopex.ecshopx.common.web.FlexibleBody;
 import cn.shopex.ecshopx.openapi.thirdapi.OpenapiBaseController;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxJurisdictionGetuserBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxJurisdictionGetuserSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxJurisdictionRoleFailEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -66,6 +67,36 @@ public class JurisdictionController extends OpenapiBaseController {
 		this.getuserPort = getuserPort;
 	}
 
+	@Operation(
+			summary = "开放接口角色查询（未实现占位）",
+			description =
+					"占位实现：无入参、无业务逻辑，恒返回 status=fail, code=E4007「找不到方法」, data=null"
+							+ "（对齐 PHP 旧契约，方法未实现）。"
+							+ " 公网经 /api/openapi/{method}（method=ecx.jurisdiction.role, version=1.0）签名校验后转发；"
+							+ " 签名失败先行返回 E4001/E4002/E4003/E4004。"
+							+ " 本方法不读取鉴权上下文；无副作用。",
+			operationId = "ecx.jurisdiction.role")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态。恒失败：status=fail, code=E4007, message=找不到方法, data=null；"
+								+ " 网关签名失败：E4001/E4002/E4003/E4004（data 为回显请求参数）。见 EcxJurisdictionRoleFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxJurisdictionRoleFailEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "fail-not-implemented",
+											summary = "恒定响应（方法未实现）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4007\",\"message\":\"找不到方法\",\"data\":null}")
+								}))
+	})
 	@PostMapping("/ecx.jurisdiction.role")
 	public OpenapiEnvelope role() {
 		return OpenapiEnvelope.fail("E4007", "找不到方法", null);
