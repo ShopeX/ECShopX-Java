@@ -35,6 +35,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberBatchCreateBody
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberBatchCreateSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberCardCodeGradeUpdateBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberCardCodeGradeUpdateSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberGradeChangeBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberGradeChangeSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberCardGradeRelListBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberCardGradeRelListSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberInfoUpdateBodyDoc;
@@ -264,13 +266,105 @@ public class MemberController extends OpenapiBaseController {
 		return memberBatchCreatePort.batchCreate(companyId, true, items);
 	}
 
+	@Operation(
+			summary = "开放接口修改会员等级",
+			description =
+					"按签名鉴权租户 company_id 修改会员等级（数云对接语义，3 键双通道均必填，body 含键取原值）："
+							+ " plat_account 为平台会员 user_id（数值/可 parseDouble 字符串，小数截断；"
+							+ " 否则 E5001「商派会员Id必填」；查无 E5501）；"
+							+ " **grade_id 为外部等级标识 external_id**（非平台内部等级 ID；数值校验后 trim 字符串化"
+							+ " 按 company_id+external_id 查 membercard_grade，查无 E5531「会员等级找不到」；"
+							+ " 小数保留字符串形态匹配，\"1.0\"≠\"1\"）；"
+							+ " grade_level 须非空白**字符串**（body 直传数字因类型校验报 E5001「等级参数必填」），"
+							+ " 仅校验不落库不参与升级判定。"
+							+ " 更新 members.grade_id/updated（affected=0 → E5501）；"
+							+ " 升级判定按库内新旧等级 promotion_condition.total_consumption（PHP 式取整）比较："
+							+ " 新门槛>旧门槛 且 新 grade_id>旧 grade_id 时事务提交后发布 member_upgrade 升级活动"
+							+ "（异步 dispatch，载荷含 grade_id/user_id/mobile 明文/grade_name）；同级/降级不触发。"
+							+ " 其他异常统一 E5000「系统错误」。成功恒 data=null，Advice 包装 message 固定「成功」。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.member.card_grade.update,"
+							+ " version=2.0）签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 副作用：@Transactional UPDATE members.grade_id/updated +"
+							+ " 条件性 afterCommit 发布升级活动异步任务；无第三方同步调用。",
+			operationId = "ecx.member.card_grade.update.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功, data 恒 null（含同级/降级）；"
+								+ " 业务失败：status=fail, code=E5001 商派会员Id必填·等级ID参数必填·等级参数必填 /"
+								+ " E5531 会员等级找不到 / E5501 会员找不到 / E5000 系统错误，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxMemberGradeChangeFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxMemberGradeChangeSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "更新成功（无返回体）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-grade-not-found",
+											summary = "external_id 查无等级",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5531\","
+															+ "\"message\":\"会员等级找不到\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-member-not-found",
+											summary = "plat_account 查无会员",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5501\",\"message\":\"会员找不到\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-grade-level-type",
+											summary = "grade_level 传数值（须字符串）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5001\",\"message\":\"等级参数必填\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@PostMapping(value = "/ecx.member.card_grade.update", name = "开放接口修改会员等级")
 	public Void updateGrade(
-			HttpServletRequest request,
-			@RequestParam(name = "plat_account", required = false) String platAccountParam,
-			@RequestParam(name = "grade_id", required = false) String gradeIdParam,
-			@RequestParam(name = "grade_level", required = false) String gradeLevelParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "商派会员 Id（user_id）；必填数值（小数截断），否则 E5001「商派会员Id必填」；查无 E5501",
+							required = true,
+							example = "50")
+					@RequestParam(name = "plat_account", required = false)
+					String platAccountParam,
+			@Parameter(
+							description = "外部等级标识（external_id，非内部等级 ID）；必填数值校验后按字符串匹配；查无 E5531",
+							required = true,
+							example = "1")
+					@RequestParam(name = "grade_id", required = false)
+					String gradeIdParam,
+			@Parameter(
+							description = "等级门槛；必填非空白字符串（body 传数字报 E5001）；仅校验不参与业务",
+							required = true,
+							example = "0")
+					@RequestParam(name = "grade_level", required = false)
+					String gradeLevelParam,
+			@RequestBody(
+							description = "可选 JSON body；3 键与 query 同名双通道（body 含键取原值）；external_id 语义见 schema",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxMemberGradeChangeBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		Map<String, Object> merged =
 				OpenapiMemberV2UpdateGradeHandlerParams.mergeAll(
