@@ -25,6 +25,8 @@ import cn.shopex.ecshopx.common.web.FlexibleBody;
 import cn.shopex.ecshopx.openapi.thirdapi.OpenapiBaseController;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxProductGoodsListBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxProductGoodsListSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxProductSkuListBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxProductSkuListSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -60,13 +62,95 @@ public class ItemController extends OpenapiBaseController {
 		this.goodsListPort = goodsListPort;
 	}
 
+	@Operation(
+			summary = "开放接口商品SKU列表",
+			description =
+					"按签名鉴权租户 company_id 分页返回普通商品 SKU（item_type=normal，item_id 倒序），"
+							+ " data 含归一化 page/page_size 回显、total_count 与 sku_list（每条仅 name/sku_id 两键，"
+							+ " name 按 country_code 语言分表覆盖，sku_id 为货品编码 item_bn）。"
+							+ " 分页：page 必填正整数、page_size 必填整数（否则 E0001）；"
+							+ " 服务层归一化 page≥1、page_size≤0→100、>2000 封顶 2000。"
+							+ " country_code 双通道（body 含键优先，null/空白不回退 query），缺省 zh-CN。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.product.sku_list, version=1.0）"
+							+ " 签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 成功 message 恒为空串。只读，无写库/异步/第三方副作用。",
+			operationId = "ecx.product.sku_list.v1")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态。"
+								+ " 成功：status=success, code=E0000, message 为空串，data 见 EcxProductSkuListDataDoc"
+								+ "（无商品时 total_count=0、sku_list=[]）；"
+								+ " 校验失败：status=fail, code=E0001（page参数必填/page_size参数必填），data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxProductSkuListFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxProductSkuListSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "查询成功（message 为空串）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"\","
+															+ "\"data\":{\"page\":1,\"page_size\":100,\"total_count\":1,"
+															+ "\"sku_list\":[{\"name\":\"示例商品\",\"sku_id\":\"A1\"}]}}"),
+									@ExampleObject(
+											name = "success-empty",
+											summary = "无普通商品",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"\","
+															+ "\"data\":{\"page\":1,\"page_size\":100,\"total_count\":0,"
+															+ "\"sku_list\":[]}}"),
+									@ExampleObject(
+											name = "fail-missing-page",
+											summary = "page 缺失/非法",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E0001\",\"message\":\"page参数必填\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@PostMapping(value = "/ecx.product.sku_list", name = "开放接口商品SKU列表")
 	public OpenapiEnvelope list(
-			HttpServletRequest request,
-			@RequestParam(name = "page", required = false) String pageParam,
-			@RequestParam(name = "page_size", required = false) String pageSizeParam,
-			@RequestParam(name = "country_code", required = false) String countryCodeParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "页码；必填正整数（缺失/非整数/小于 1 报「page参数必填」）（body 同名键优先）",
+							required = true,
+							example = "1")
+					@RequestParam(name = "page", required = false)
+					String pageParam,
+			@Parameter(
+							description = "每页条数；必填整数；≤0 按 100，>2000 封顶 2000（body 同名键优先）",
+							required = true,
+							example = "100")
+					@RequestParam(name = "page_size", required = false)
+					String pageSizeParam,
+			@Parameter(
+							description = "语言/国家码，默认 zh-CN；body 含 country_code 键时以 body 为准（body 优先）",
+							example = "zh-CN")
+					@RequestParam(name = "country_code", required = false)
+					String countryCodeParam,
+			@RequestBody(
+							description =
+									"可选 JSON body；字段与 query 同名双通道，body 含键时优先",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxProductSkuListBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		int page = OpenapiPaginationParams.resolvePage(pageParam, body);
 		int pageSize = OpenapiPaginationParams.resolvePageSize(pageSizeParam, body);
