@@ -36,6 +36,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTagDeleteBodyDo
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTagDeleteSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTagUpdateBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTagUpdateSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTaggedDeleteBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTaggedDeleteSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -409,12 +411,99 @@ public class MemberTagController extends OpenapiBaseController {
 		return memberTagTaggedGetPort.getMemberTagged(companyId, mobileRaw);
 	}
 
+	@Operation(
+			summary = "开放接口删除会员已打标签",
+			description =
+					"按签名鉴权租户 company_id 解除会员与指定标签的关联（2 键均必填，mergeString 双通道 trim，"
+							+ " body 含键优先、值 null 视为未传）："
+							+ " mobile 缺失 E5001「会员手机号必填」；tag_ids 缺失 E5001「会员标签ID必填」。"
+							+ " tag_ids 须 JSON 数组（body 数组字符串化后解析），元素标量整数/整数字符串"
+							+ "（嵌套/非整数/空串元素 E5560「会员标签ID格式错误」）；≤0 元素静默剔除，"
+							+ " 剔除后为空 → 无操作成功（不校验会员）；含系统标签 E0001「系统标签不可编辑」。"
+							+ " **mobile trim 明文与 members.mobile（加密存储列）直接等值，无加密转换**——"
+							+ " 加密启用部署下通常查无 E5501「会员找不到」（源码差异如实记录）。"
+							+ " 命中后 userRelTagDeleteNoPush 解除关联并递减标签 self_tag_count，不推送导购平台。"
+							+ " 成功 data={status:true}（布尔）。Advice 包装 message 固定「成功」。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.member.tagged.delete,"
+							+ " version=2.0）签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 副作用：@Transactional DELETE members_rel_tags 关联行 + UPDATE members_tags"
+							+ ".self_tag_count 递减；无异步、无第三方推送。",
+			operationId = "ecx.member.tagged.delete.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功, data={status:true}"
+								+ "（含 tag_ids 剔除后为空的无操作场景）；"
+								+ " 业务失败：status=fail, code=E5001 会员手机号必填·会员标签ID必填 /"
+								+ " E5560 会员标签ID格式错误 / E0001 系统标签不可编辑 / E5501 会员找不到，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxMemberTaggedDeleteFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxMemberTaggedDeleteSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "解除关联成功",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"status\":true}}"),
+									@ExampleObject(
+											name = "fail-tag-ids-format",
+											summary = "tag_ids 非数组/元素非法",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5560\","
+															+ "\"message\":\"会员标签ID格式错误\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-system-tag",
+											summary = "请求含系统标签",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E0001\","
+															+ "\"message\":\"系统标签不可编辑\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-member-not-found",
+											summary = "mobile 查无会员",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5501\",\"message\":\"会员找不到\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@DeleteMapping(value = "/ecx.member.tagged.delete", name = "开放接口删除会员已打标签")
 	public Map<String, Object> deleteMemberTagged(
-			HttpServletRequest request,
-			@RequestParam(name = "mobile", required = false) String mobileParam,
-			@RequestParam(name = "tag_ids", required = false) String tagIdsParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "会员手机号；必填（E5001）；trim 明文直接等值（无加密转换）；查无 E5501",
+							required = true,
+							example = "13800138000")
+					@RequestParam(name = "mobile", required = false)
+					String mobileParam,
+			@Parameter(
+							description = "标签 ID JSON 数组；必填（E5001）；格式错 E5560；≤0 剔除；系统标签 E0001",
+							required = true,
+							example = "[1]")
+					@RequestParam(name = "tag_ids", required = false)
+					String tagIdsParam,
+			@RequestBody(
+							description = "可选 JSON body；2 键与 query 同名双通道（body 含键优先，tag_ids 可直接传数组）；语义见 schema",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxMemberTaggedDeleteBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		String mobileRaw = OpenapiRequestParams.mergeString(mobileParam, body, "mobile");
 		String tagIdsRaw = OpenapiRequestParams.mergeString(tagIdsParam, body, "tag_ids");
