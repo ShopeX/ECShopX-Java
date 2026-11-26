@@ -45,6 +45,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberBrowserHistoryListSucc
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberBrowserHistorySuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberCardGradesBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberCardGradesSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberCreateBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberCreateSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -118,11 +120,79 @@ public class MemberController extends OpenapiBaseController {
 		this.memberTagRelationPushPort = memberTagRelationPushPort;
 	}
 
+	@Operation(
+			summary = "开放接口会员信息创建",
+			description =
+					"按签名鉴权租户 company_id 用手机号创建会员（事务内）：手机号加密存储、"
+							+ " 分配会员卡号、随机 10 位明文密码、默认等级（存在时），写 members 与 members_info（sex=0）。"
+							+ " 不做手机号格式正则校验；重复会员报「当前手机号已经是会员」。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.member.create, version=1.0）"
+							+ " 签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " mobile 双通道：body 含键取原始值（null 不回退 query），否则 query 原样。"
+							+ " 副作用：写库插入 members 与 members_info 各一行；无异步/第三方调用。",
+			operationId = "ecx.member.create.v1")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态。"
+								+ " 成功：status=success, code=E0000, message=操作成功，data 含 mobile（原样回显）与 uid；"
+								+ " 业务失败：status=fail, code=E0001（手机号必填/当前手机号已经是会员/保存数据错误），data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxMemberCreateFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxMemberCreateSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "创建成功",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"操作成功\","
+															+ "\"data\":{\"mobile\":\"13800000000\",\"uid\":5}}"),
+									@ExampleObject(
+											name = "fail-already-member",
+											summary = "手机号已是会员",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E0001\","
+															+ "\"message\":\"当前手机号已经是会员\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-missing-mobile",
+											summary = "手机号缺失",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E0001\",\"message\":\"手机号必填\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@PostMapping(value = "/ecx.member.create", name = "开放接口会员信息创建")
 	public OpenapiEnvelope memberCreate(
-			HttpServletRequest request,
-			@RequestParam(name = "mobile", required = false) String mobileParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "手机号；必填非空；不做格式正则校验；已是会员报错（body 同名键优先，原样不 trim）",
+							required = true,
+							example = "13800000000")
+					@RequestParam(name = "mobile", required = false)
+					String mobileParam,
+			@RequestBody(
+							description =
+									"可选 JSON body；mobile 与 query 同名双通道，body 含键时取原始值"
+											+ "（null 视为未提供且不回退 query）",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation = EcxMemberCreateBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		String mobileOriginal = OpenapiRequestParams.originalString(mobileParam, body, "mobile");
 		Map<String, Object> data = memberCreatePort.memberCreate(companyId, mobileOriginal);
