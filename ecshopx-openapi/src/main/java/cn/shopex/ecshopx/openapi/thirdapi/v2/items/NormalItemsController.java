@@ -37,6 +37,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemEntityStatusUpdate
 import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemEntityStatusUpdateSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemEntityUpdateBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemEntityUpdateSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemsEntityListBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemsEntityListSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -83,18 +85,136 @@ public class NormalItemsController extends OpenapiBaseController {
 		this.entityUpdatePort = entityUpdatePort;
 	}
 
+	@Operation(
+			summary = "查询平台商品列表",
+			description =
+					"按签名鉴权租户 company_id 分页查询平台商品 SPU 列表：8 键与 query 同名双通道"
+							+ "（body 含键优先、值 null 视为未传、不 trim）。固定过滤 item_type=normal 且 is_default=1。"
+							+ " page 默认 1、page_size 默认 20（PHP 式解析：非法→0、小数截断）；"
+							+ " page_size 原始解析值 ≥500 报 E5002「每页的大小最大为500！」（500 本身也报错），"
+							+ " max() 钳制后实际 page≥1、page_size∈[20,499]（E5001 两个分页文案分支不可达）。"
+							+ " approve_status truthy 时 EXISTS 同 goods_id 任一 SKU 状态等值；brand_id 须可 parseInt"
+							+ "（非数字→E5000 解析异常透传）；category_id 为 PHP 遗留缺陷：truthy 时过滤不存在列"
+							+ " items.category_id → 必触发 SQL 错误 E5000；time_begin/time_end 按 yyyy-MM-dd[ HH:mm:ss]"
+							+ " 系统时区解析为 updated 区间（非法按 0；同时 truthy 且开始>结束 E5320）；"
+							+ " is_self 按键存在性生效：值恰为 \"true\" 过滤自营（distributor_id=0），否则店铺（>0）。"
+							+ " data：total_count/is_last_page(0|1)/pager{page,page_size}/list（item_id 降序，10 键/行，"
+							+ " item_name zh-CN 分表覆盖，category_name 为 \"[分类名]\" 数组）。"
+							+ " DB 异常 E5000 message 透传。Advice 包装 message 固定「成功」。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.items.entity.get, version=2.0）"
+							+ " 签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 只读，无写库/异步/第三方副作用。summary 为语义命名（注册表未提供中文接口名）。",
+			operationId = "ecx.items.entity.get.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功，data 见 EcxItemsEntityListDataDoc；"
+								+ " 业务失败：status=fail, code=E5002 每页的大小最大为500！ / E5320 开始时间不能大于结束时间 /"
+								+ " E5000 SQL/解析异常 message 透传，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxItemsEntityListFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxItemsEntityListSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "列表查询成功（示例值取自 Wire 测试夹具；update_time 为格式演示值）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"total_count\":1,\"is_last_page\":1,"
+															+ "\"pager\":{\"page\":1,\"page_size\":20},"
+															+ "\"list\":[{\"item_id\":200,\"item_bn\":\"SKU200\","
+															+ "\"item_name\":\"Wire test goods\",\"price\":10,\"store\":10,"
+															+ "\"approve_status\":\"onsale\",\"nospec\":false,"
+															+ "\"category_name\":[\"[聚合测试类目]\"],\"is_self\":true,"
+															+ "\"update_time\":1735689600}]}}"),
+									@ExampleObject(
+											name = "success-empty",
+											summary = "无匹配结果（list 空数组）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"total_count\":0,\"is_last_page\":1,"
+															+ "\"pager\":{\"page\":1,\"page_size\":20},\"list\":[]}}"),
+									@ExampleObject(
+											name = "fail-page-size",
+											summary = "page_size 原始解析值 ≥500",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5002\","
+															+ "\"message\":\"每页的大小最大为500！\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-time-range",
+											summary = "time_begin > time_end（两者均 truthy）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5320\","
+															+ "\"message\":\"开始时间不能大于结束时间\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@GetMapping("/ecx.items.entity.get")
 	public Map<String, Object> getList(
-			HttpServletRequest request,
-			@RequestParam(name = "page", required = false) String pageParam,
-			@RequestParam(name = "page_size", required = false) String pageSizeParam,
-			@RequestParam(name = "approve_status", required = false) String approveStatusParam,
-			@RequestParam(name = "brand_id", required = false) String brandIdParam,
-			@RequestParam(name = "category_id", required = false) String categoryIdParam,
-			@RequestParam(name = "time_begin", required = false) String timeBeginParam,
-			@RequestParam(name = "time_end", required = false) String timeEndParam,
-			@RequestParam(name = "is_self", required = false) String isSelfParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "页码，默认 1；PHP 式解析后 max(…,1)，负数/0/非法按 1",
+							example = "1")
+					@RequestParam(name = "page", required = false)
+					String pageParam,
+			@Parameter(
+							description = "每页数量，默认 20；原始解析值 ≥500 报 E5002「每页的大小最大为500！」；钳制后生效 [20,499]",
+							example = "20")
+					@RequestParam(name = "page_size", required = false)
+					String pageSizeParam,
+			@Parameter(
+							description = "商品状态过滤（onsale/instock/offline_sale/only_show）；EXISTS 同 SPU 任一 SKU 等值；空串/\"0\" 忽略",
+							example = "onsale")
+					@RequestParam(name = "approve_status", required = false)
+					String approveStatusParam,
+			@Parameter(
+							description = "品牌 ID（整数字符串）等值过滤；非数字触发 E5000；空串/\"0\" 忽略",
+							example = "3")
+					@RequestParam(name = "brand_id", required = false)
+					String brandIdParam,
+			@Parameter(
+							description = "分类 ID；PHP 遗留缺陷：truthy 时过滤不存在列 items.category_id，必触发 SQL 错误 E5000；空串/\"0\" 忽略",
+							example = "1")
+					@RequestParam(name = "category_id", required = false)
+					String categoryIdParam,
+			@Parameter(
+							description = "更新时间下界；yyyy-MM-dd HH:mm:ss 或 yyyy-MM-dd，系统时区；非法按 0；空串/\"0\" 忽略（格式演示值）",
+							example = "2026-01-01 00:00:00")
+					@RequestParam(name = "time_begin", required = false)
+					String timeBeginParam,
+			@Parameter(
+							description = "更新时间上界；格式同 time_begin；与 time_begin 同传且开始>结束报 E5320（格式演示值）",
+							example = "2026-12-31 23:59:59")
+					@RequestParam(name = "time_end", required = false)
+					String timeEndParam,
+			@Parameter(
+							description = "自营/店铺过滤；键存在即生效：值恰为 \"true\" → 自营（distributor_id=0），其他值 → 店铺（>0）",
+							example = "true")
+					@RequestParam(name = "is_self", required = false)
+					String isSelfParam,
+			@RequestBody(
+							description = "可选 JSON body；8 键与 query 同名双通道（body 含键优先，值 null 视为未传）；语义见 schema",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxItemsEntityListBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		OpenapiThirdApiV2NormalItemsEntityListParams.PageSpec pageSpec =
 				OpenapiThirdApiV2NormalItemsEntityListParams.resolve(pageParam, pageSizeParam, body);
