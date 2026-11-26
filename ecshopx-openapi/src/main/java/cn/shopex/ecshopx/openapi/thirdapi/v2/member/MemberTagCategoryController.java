@@ -29,6 +29,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTagCategoryAddB
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTagCategoryAddSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTagCategoryDeleteBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTagCategoryDeleteSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTagCategoryUpdateBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTagCategoryUpdateSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -161,13 +163,100 @@ public class MemberTagCategoryController extends OpenapiBaseController {
 				companyId, categoryNameRaw, sortRaw, sortParamPresent);
 	}
 
+	@Operation(
+			summary = "开放接口修改会员标签分类",
+			description =
+					"按签名鉴权租户 company_id 修改会员标签分类（3 键双通道，body 含键优先、值 null 视为未传）："
+							+ " category_id/category_name 必填非空白（mergeString trim；"
+							+ " E5001「分类ID必填」/「分类名称必填」）；"
+							+ " category_id trim+parseLong（非整数/查无/更新后回读为空 E5571「该标签分类不存在」）；"
+							+ " category_name 恒写（同名排除自身冲突 E5572「该分类名已存在」，同名改自身放行）。"
+							+ " sort 键存在且 PHP truthy（非空非\"0\"）才更新（PHP intval 前导数字截断，"
+							+ " 允许负数，非法归 0 不报错）；键缺席/空/\"0\" 保留原排序（区别于新增默认 1）。"
+							+ " 成功 data 为更新后回读 5 键行（同新增格式，created 不变）。"
+							+ " Advice 包装 message 固定「成功」。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}"
+							+ "（method=ecx.member.tagcategory.update, version=2.0）签名校验后转发；"
+							+ " 直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 副作用：UPDATE tags_category（category_name/updated + 条件 sort；无显式事务）；"
+							+ " 无异步、无第三方调用。",
+			operationId = "ecx.member.tagcategory.update.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功，data 为更新后 5 键行；"
+								+ " 业务失败：status=fail, code=E5001 分类ID必填·分类名称必填 /"
+								+ " E5571 该标签分类不存在 / E5572 该分类名已存在，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxMemberTagCategoryUpdateFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxMemberTagCategoryUpdateSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "修改成功（时间为格式演示值）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"category_id\":1,\"category_name\":\"聚合测试类目\","
+															+ "\"sort\":1,\"created\":\"2026-01-01 00:00:00\","
+															+ "\"updated\":\"2026-01-01 00:00:00\"}}"),
+									@ExampleObject(
+											name = "fail-not-found",
+											summary = "分类查无/ID 非整数",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5571\","
+															+ "\"message\":\"该标签分类不存在\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-category-exist",
+											summary = "同名分类冲突（排除自身）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5572\","
+															+ "\"message\":\"该分类名已存在\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@PostMapping(value = "/ecx.member.tagcategory.update", name = "开放接口修改会员标签分类")
 	public Map<String, Object> updateTagCategory(
-			HttpServletRequest request,
-			@RequestParam(name = "category_id", required = false) String categoryIdParam,
-			@RequestParam(name = "category_name", required = false) String categoryNameParam,
-			@RequestParam(name = "sort", required = false) String sortParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "分类 ID；必填（E5001）；非整数/查无 E5571",
+							required = true,
+							example = "1")
+					@RequestParam(name = "category_id", required = false)
+					String categoryIdParam,
+			@Parameter(
+							description = "分类名称；必填（E5001）；恒写；同名冲突 E5572",
+							required = true,
+							example = "聚合测试类目")
+					@RequestParam(name = "category_name", required = false)
+					String categoryNameParam,
+			@Parameter(
+							description = "排序值；键存在且非空非\"0\"才更新（PHP intval）；否则保留原值",
+							example = "1")
+					@RequestParam(name = "sort", required = false)
+					String sortParam,
+			@RequestBody(
+							description = "可选 JSON body；3 键与 query 同名双通道（body 含键优先）；sort 条件更新语义见 schema",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxMemberTagCategoryUpdateBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		String categoryIdRaw = OpenapiRequestParams.mergeString(categoryIdParam, body, "category_id");
 		String categoryNameRaw = OpenapiRequestParams.mergeString(categoryNameParam, body, "category_name");
