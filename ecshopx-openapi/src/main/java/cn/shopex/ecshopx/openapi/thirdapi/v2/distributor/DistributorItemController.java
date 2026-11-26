@@ -30,6 +30,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v1.OpenapiRequestParams;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.OpenapiThirdApiV2ShippingTemplatesListParams;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.distributor.doc.EcxDistributorItemDownloadBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.distributor.doc.EcxDistributorItemDownloadSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.distributor.doc.EcxDistributorItemListBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.distributor.doc.EcxDistributorItemListSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -67,19 +69,125 @@ public class DistributorItemController extends OpenapiBaseController {
 		this.distributorItemDownloadPort = distributorItemDownloadPort;
 	}
 
+	@Operation(
+			summary = "开放接口查询店铺商品列表",
+			description =
+					"按签名鉴权租户 company_id 分页返回店铺商品（SPU 维度，is_default=1 + item_type=normal，item_id 倒序）："
+							+ " shop_code 键必须存在（缺失 E5001「店铺号参数错误」）；distributor_id 非空时优先按其定位店铺；"
+							+ " 店铺查无/非整数返回空列表不报错。过滤：item_code=item_bn 精确、item_name contains 预查"
+							+ "（查无即空列表）、status=approve_status 精确；goods_can_sale/is_total_store 读取但当前不参与过滤。"
+							+ " 分页 page 缺省 1、page_size 缺省 20（<20 归一 20；≥500 报 E0001「每页的大小最大为500！」含 500）。"
+							+ " data 行 9 键：distributor_id/item_id（整型）、item_code/item_name（默认语言分表覆盖）、"
+							+ " store/price（元两位小数字符串；店铺独立库存 is_total_store=0 时取店铺 SPU 行覆盖）、"
+							+ " goods_can_sale（任一 SKU 店铺行可售即 1）、is_total_store（无店铺行默认 1）、status。"
+							+ " 九参数双通道（body 含键取原始值）。Advice 包装 message 固定「成功」。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.distributor_item.list, version=2.0）"
+							+ " 签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 只读，无写库/异步/第三方副作用。",
+			operationId = "ecx.distributor_item.list.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功，data 见 EcxDistributorItemListDataDoc"
+								+ "（店铺查无/无商品时 total_count=0、is_last_page=1、list=[]）；"
+								+ " 业务失败：status=fail, code=E5001 店铺号参数错误 / E0001 每页的大小最大为500！，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxDistributorItemListFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxDistributorItemListSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "查询成功（总部库存商品）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"total_count\":1,\"is_last_page\":1,"
+															+ "\"pager\":{\"page\":1,\"page_size\":20},"
+															+ "\"list\":[{\"distributor_id\":1001,\"item_id\":1001,\"item_code\":\"A1\","
+															+ "\"item_name\":\"示例商品\",\"store\":10,\"price\":\"99.00\","
+															+ "\"goods_can_sale\":1,\"is_total_store\":1,\"status\":\"onsale\"}]}}"),
+									@ExampleObject(
+											name = "success-empty",
+											summary = "店铺查无或无商品（不报错）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"total_count\":0,\"is_last_page\":1,"
+															+ "\"pager\":{\"page\":1,\"page_size\":20},\"list\":[]}}"),
+									@ExampleObject(
+											name = "fail-missing-shop-code",
+											summary = "shop_code 键缺失",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5001\",\"message\":\"店铺号参数错误\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-page-size",
+											summary = "page_size 解析后 ≥500",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E0001\",\"message\":\"每页的大小最大为500！\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@GetMapping(value = "/ecx.distributor_item.list", name = "开放接口查询店铺商品列表")
 	public Map<String, Object> list(
-			HttpServletRequest request,
-			@RequestParam(name = "page", required = false) String pageParam,
-			@RequestParam(name = "page_size", required = false) String pageSizeParam,
-			@RequestParam(name = "shop_code", required = false) String shopCodeParam,
-			@RequestParam(name = "item_code", required = false) String itemCodeParam,
-			@RequestParam(name = "item_name", required = false) String itemNameParam,
-			@RequestParam(name = "goods_can_sale", required = false) String goodsCanSaleParam,
-			@RequestParam(name = "is_total_store", required = false) String isTotalStoreParam,
-			@RequestParam(name = "status", required = false) String statusParam,
-			@RequestParam(name = "distributor_id", required = false) String distributorIdParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(description = "页码；缺省 1，<1 归一 1（PHP 整型解析，body 同名键优先）", example = "1")
+					@RequestParam(name = "page", required = false)
+					String pageParam,
+			@Parameter(
+							description = "每页条数；缺省 20，<20 归一 20；≥500 报「每页的大小最大为500！」（body 同名键优先）",
+							example = "20")
+					@RequestParam(name = "page_size", required = false)
+					String pageSizeParam,
+			@Parameter(
+							description = "店铺号；键必须存在否则「店铺号参数错误」；distributor_id 提供时被忽略（body 同名键优先）",
+							required = true,
+							example = "S001")
+					@RequestParam(name = "shop_code", required = false)
+					String shopCodeParam,
+			@Parameter(description = "商品货号（item_bn 精确过滤）；可选（body 同名键优先）", example = "A1")
+					@RequestParam(name = "item_code", required = false)
+					String itemCodeParam,
+			@Parameter(description = "商品名称模糊过滤；可选，查无匹配返回空列表（body 同名键优先）", example = "示例商品")
+					@RequestParam(name = "item_name", required = false)
+					String itemNameParam,
+			@Parameter(description = "店铺可售过滤——当前实现读取但不参与过滤（body 同名键优先）", example = "1")
+					@RequestParam(name = "goods_can_sale", required = false)
+					String goodsCanSaleParam,
+			@Parameter(description = "总部库存过滤——当前实现读取但不参与过滤（body 同名键优先）", example = "1")
+					@RequestParam(name = "is_total_store", required = false)
+					String isTotalStoreParam,
+			@Parameter(
+							description = "上下架状态精确过滤（approve_status）；可选（body 同名键优先）",
+							schema = @Schema(allowableValues = {"onsale", "instock", "offline_sale", "only_show"}),
+							example = "onsale")
+					@RequestParam(name = "status", required = false)
+					String statusParam,
+			@Parameter(
+							description = "店铺 ID；可选，非空时优先于 shop_code 定位店铺（body 同名键优先）",
+							example = "1001")
+					@RequestParam(name = "distributor_id", required = false)
+					String distributorIdParam,
+			@RequestBody(
+							description = "可选 JSON body；字段与 query 同名双通道（取原始值）；过滤语义见 schema",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxDistributorItemListBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 
 		if (OpenapiRequestParams.presentOptionalString(shopCodeParam, body, "shop_code").isEmpty()) {
