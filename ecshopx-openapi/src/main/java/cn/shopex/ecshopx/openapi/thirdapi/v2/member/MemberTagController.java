@@ -30,6 +30,17 @@ import cn.shopex.ecshopx.common.openapi.OpenapiMemberTagUpdatePort;
 import cn.shopex.ecshopx.common.web.FlexibleBody;
 import cn.shopex.ecshopx.openapi.thirdapi.OpenapiBaseController;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.OpenapiRequestParams;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTagAddBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTagAddSuccessEnvelopeDoc;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Map;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -39,6 +50,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "开放接口-会员标签V2")
 @OpenapiResponse
 @RestController("openapiV2MemberTag")
 @RequestMapping("/api/openapi/internal/v2")
@@ -75,15 +87,109 @@ public class MemberTagController extends OpenapiBaseController {
 		this.memberTagMembersGetPort = memberTagMembersGetPort;
 	}
 
+	@Operation(
+			summary = "开放接口新增会员标签",
+			description =
+					"按签名鉴权租户 company_id 新增会员标签（5 键 mergeString 双通道 trim，"
+							+ " body 含键优先、值 null 视为未传）："
+							+ " tag_name 必填非空白（E5001「分类名称必填」——源码文案如此，实为标签名；"
+							+ " 同租户同名已存在 E5562「该标签名已存在」）；"
+							+ " category_id 宽松 parseInt（非法按 0，不校验分类存在）；"
+							+ " description 空白落库 null；tag_color/font_color PHP elvis："
+							+ " null/空白/\"0\" 取默认 rgba(255, 25, 57, 1)/rgba(255, 255, 255, 1)，"
+							+ " 其他值原样落库不校验格式。"
+							+ " 成功 data 8 键：tag_id/tag_name/category_id/description(nullable)/tag_color/"
+							+ " font_color/created/updated 格式化时间。Advice 包装 message 固定「成功」。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.member.tag.add,"
+							+ " version=2.0）签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 副作用：INSERT members_tags 单行（无显式事务）+ zh-CN 多语言分表 INSERT"
+							+ "（失败降级 upsert）；无异步、无第三方调用。",
+			operationId = "ecx.member.tag.add.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功，data 见 EcxMemberTagAddDataDoc；"
+								+ " 业务失败：status=fail, code=E5001 分类名称必填 / E5562 该标签名已存在，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxMemberTagAddFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxMemberTagAddSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "新增成功（默认色；时间为格式演示值）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"tag_id\":1,\"tag_name\":\"聚合测试类目\","
+															+ "\"category_id\":0,\"description\":null,"
+															+ "\"tag_color\":\"rgba(255, 25, 57, 1)\","
+															+ "\"font_color\":\"rgba(255, 255, 255, 1)\","
+															+ "\"created\":\"2026-01-01 00:00:00\","
+															+ "\"updated\":\"2026-01-01 00:00:00\"}}"),
+									@ExampleObject(
+											name = "fail-tag-exist",
+											summary = "同名标签已存在",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5562\","
+															+ "\"message\":\"该标签名已存在\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-name-missing",
+											summary = "tag_name 缺失/空白（源码文案「分类名称必填」）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5001\","
+															+ "\"message\":\"分类名称必填\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@PostMapping(value = "/ecx.member.tag.add", name = "开放接口新增会员标签")
 	public Map<String, Object> createTag(
-			HttpServletRequest request,
-			@RequestParam(name = "tag_name", required = false) String tagNameParam,
-			@RequestParam(name = "category_id", required = false) String categoryIdParam,
-			@RequestParam(name = "description", required = false) String descriptionParam,
-			@RequestParam(name = "tag_color", required = false) String tagColorParam,
-			@RequestParam(name = "font_color", required = false) String fontColorParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "标签名；必填非空白（E5001「分类名称必填」）；同名已存在 E5562",
+							required = true,
+							example = "聚合测试类目")
+					@RequestParam(name = "tag_name", required = false)
+					String tagNameParam,
+			@Parameter(
+							description = "标签分类 ID；宽松整数（非法按 0）；不校验分类存在",
+							example = "0")
+					@RequestParam(name = "category_id", required = false)
+					String categoryIdParam,
+			@Parameter(description = "标签描述；空白落库 null")
+					@RequestParam(name = "description", required = false)
+					String descriptionParam,
+			@Parameter(
+							description = "标签背景色；空/\"0\" 取默认 rgba(255, 25, 57, 1)；不校验格式",
+							example = "rgba(255, 25, 57, 1)")
+					@RequestParam(name = "tag_color", required = false)
+					String tagColorParam,
+			@Parameter(
+							description = "标签字体色；空/\"0\" 取默认 rgba(255, 255, 255, 1)",
+							example = "rgba(255, 255, 255, 1)")
+					@RequestParam(name = "font_color", required = false)
+					String fontColorParam,
+			@RequestBody(
+							description = "可选 JSON body；5 键与 query 同名双通道（mergeString trim，body 含键优先）；语义见 schema",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxMemberTagAddBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		String tagNameRaw = OpenapiRequestParams.mergeString(tagNameParam, body, "tag_name");
 		String categoryIdRaw = OpenapiRequestParams.mergeString(categoryIdParam, body, "category_id");
