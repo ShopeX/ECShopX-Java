@@ -22,6 +22,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -81,7 +82,10 @@ public class ItemsCommissionQueryRepository {
 	}
 
 	/**
-	 * 按 SPU（type=goods）查 {@code commission_conf.commission}，缺失时默认 0。
+	 * 按 SPU（type=goods）查佣金比例的<strong>百分比展示值</strong>（0–100）。
+	 *
+	 * <p>库内 {@code commission_conf.commission} 由 {@code set_commission_ratio} 按「百分比 ×100」写入
+	 * （ECX-11444）；此处除以 100 回显，便于后台回填再次保存。
 	 */
 	public Map<Long, Number> mapCommissionRatioByGoodsIds(long companyId, Collection<Long> goodsIds) {
 		Map<Long, Number> out = new LinkedHashMap<>();
@@ -95,33 +99,42 @@ public class ItemsCommissionQueryRepository {
 			if (r.getRelId() == null) {
 				continue;
 			}
-			out.put(r.getRelId(), parseCommissionNumber(r.getCommissionConf()));
+			out.put(r.getRelId(), parseCommissionPercentForDisplay(r.getCommissionConf()));
 		}
 		return out;
 	}
 
-	private static Number parseCommissionNumber(String commissionConfJson) {
-		if (!StringUtils.hasText(commissionConfJson)) {
+	/** DB scaled percent → API percent (÷100, scale 2). Missing/invalid → 0. */
+	private static Number parseCommissionPercentForDisplay(String commissionConfJson) {
+		BigDecimal scaled = parseCommissionNumber(commissionConfJson);
+		if (scaled.compareTo(BigDecimal.ZERO) == 0) {
 			return 0;
+		}
+		return scaled.divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
+	}
+
+	private static BigDecimal parseCommissionNumber(String commissionConfJson) {
+		if (!StringUtils.hasText(commissionConfJson)) {
+			return BigDecimal.ZERO;
 		}
 		try {
 			JsonNode n = OM.readTree(commissionConfJson);
 			if (n != null && n.has("commission")) {
 				JsonNode c = n.get("commission");
 				if (c.isNumber()) {
-					return c.numberValue();
+					return c.decimalValue();
 				}
 				String s = c.asText("");
 				if (!s.isEmpty()) {
 					try {
 						return new BigDecimal(s.trim());
 					} catch (NumberFormatException ignored) {
-						return 0;
+						return BigDecimal.ZERO;
 					}
 				}
 			}
 		} catch (Exception ignored) {
 		}
-		return 0;
+		return BigDecimal.ZERO;
 	}
 }
