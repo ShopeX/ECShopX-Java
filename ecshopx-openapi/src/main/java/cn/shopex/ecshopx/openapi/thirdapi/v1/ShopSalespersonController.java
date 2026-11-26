@@ -25,6 +25,17 @@ import cn.shopex.ecshopx.common.openapi.OpenapiSalespersonPushPort.OpenapiSalesp
 import cn.shopex.ecshopx.common.openapi.OpenapiSalespersonUpdateStoresPort;
 import cn.shopex.ecshopx.common.web.FlexibleBody;
 import cn.shopex.ecshopx.openapi.thirdapi.OpenapiBaseController;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxSalespersonBathStatusUpdateBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxSalespersonBathStatusUpdateSuccessEnvelopeDoc;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +45,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /** OpenAPI v1 handler scaffold — methods added during migration. */
+@Tag(name = "开放接口-导购V1")
 @OpenapiResponse
 @RestController("openapiV1ShopSalesperson")
 @RequestMapping("/api/openapi/internal/v1")
@@ -89,12 +101,80 @@ public class ShopSalespersonController extends OpenapiBaseController {
 		return new OpenapiEnvelope("success", "E0000", "操作成功", data);
 	}
 
+	@Operation(
+			summary = "批量更新导购状态",
+			description =
+					"按签名鉴权租户 company_id 批量更新导购启停状态："
+							+ " employee_number 逗号分隔企微 userid，按租户 + shop_salesperson.work_userid IN 匹配；"
+							+ " salesperson_status=\"1\" 置 is_valid=true，其他任何值（含缺失）置 is_valid=false。"
+							+ " 全部查无匹配报「导购员信息查询错误」（E0001）；employee_number 缺失按空串匹配，通常也查无。"
+							+ " 成功 data 恒为空数组 []、message=操作成功。"
+							+ " 两参数双通道（body 含键时以 body 为准，null/空白视为未提供且不回退 query；body 无键读 query 并 trim）。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.salesperson.bathStatusUpdate, version=1.0）"
+							+ " 签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 副作用：批量 UPDATE shop_salesperson.is_valid；无异步、无第三方调用、无事务注解。",
+			operationId = "ecx.salesperson.bathStatusUpdate.v1")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态。"
+								+ " 成功：status=success, code=E0000, message=操作成功, data 恒为空数组 []；"
+								+ " 业务失败：status=fail, code=E0001 导购员信息查询错误，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxSalespersonBathStatusUpdateFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxSalespersonBathStatusUpdateSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "更新成功（data 恒为空数组）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"操作成功\",\"data\":[]}"),
+									@ExampleObject(
+											name = "fail-not-found",
+											summary = "全部 work_userid 查无匹配",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E0001\",\"message\":\"导购员信息查询错误\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@PostMapping(value = "/ecx.salesperson.bathStatusUpdate", name = "批量更新导购状态")
 	public OpenapiEnvelope bathUpdateSalespersonStatus(
-			HttpServletRequest request,
-			@RequestParam(name = "employee_number", required = false) String employeeNumberParam,
-			@RequestParam(name = "salesperson_status", required = false) String salespersonStatusParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description =
+									"导购企微 userid（shop_salesperson.work_userid），逗号分隔批量匹配；"
+											+ "全部查无报「导购员信息查询错误」（缺失按空串匹配）（body 同名键优先）",
+							required = true,
+							example = "work-u")
+					@RequestParam(name = "employee_number", required = false)
+					String employeeNumberParam,
+			@Parameter(
+							description = "目标状态：\"1\" 启用（is_valid=true）；其他任何值（含缺失）置停用（body 同名键优先）",
+							example = "1")
+					@RequestParam(name = "salesperson_status", required = false)
+					String salespersonStatusParam,
+			@RequestBody(
+							description = "可选 JSON body；字段与 query 同名双通道，body 含键时优先",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxSalespersonBathStatusUpdateBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		String employeeNumber = OpenapiRequestParams.mergeString(employeeNumberParam, body, "employee_number");
 		String salespersonStatus = OpenapiRequestParams.mergeString(salespersonStatusParam, body, "salesperson_status");
