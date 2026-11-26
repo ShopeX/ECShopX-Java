@@ -31,6 +31,7 @@ import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxRechargeRuleAddBodyDo
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxRechargeRuleAddSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxRechargeRuleDeleteBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxRechargeRuleDeleteSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxRechargeRuleGetSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -74,8 +75,57 @@ public class MemberRechargeController extends OpenapiBaseController {
 		this.rechargeTradeListPort = rechargeTradeListPort;
 	}
 
+	@Operation(
+			summary = "开放接口查询储值面额规则列表",
+			description =
+					"按签名鉴权租户 company_id 查询储值面额规则列表，无业务入参。"
+							+ " 固定 page=1/page_size=20 查 deposit_recharge_rule（create_time 降序；"
+							+ " 面额上限 14 故实际全量），无分页/过滤参数。"
+							+ " data 单键 {list}，行 5 键同创建接口（rechargerule_id/money 元 2 位小数/"
+							+ " rule_type/rule_data 整型/create_time 格式化时间）。"
+							+ " **无面额规则时 data=null**（仍 success，非空 list）。Advice 包装 message 固定「成功」。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.member.rechargerule.get,"
+							+ " version=2.0）签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 只读，无写库/异步/第三方副作用。",
+			operationId = "ecx.member.rechargerule.get.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功，data={list:[行 5 键]}"
+								+ "（无规则 data=null，仍 success）；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxRechargeRuleGetFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxRechargeRuleGetSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "查询成功（时间为格式演示值）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"list\":[{\"rechargerule_id\":1,\"money\":\"80.00\","
+															+ "\"rule_type\":\"money\",\"rule_data\":0,"
+															+ "\"create_time\":\"2026-01-01 00:00:00\"}]}}"),
+									@ExampleObject(
+											name = "success-empty",
+											summary = "无面额规则（data=null，仍 success）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@GetMapping(value = "/ecx.member.rechargerule.get", name = "开放接口查询储值面额规则列表")
-	public Map<String, Object> getRechargeRuleList(HttpServletRequest request) {
+	public Map<String, Object> getRechargeRuleList(@Parameter(hidden = true) HttpServletRequest request) {
 		long companyId = requireCompanyId(request);
 		return rechargeRuleListPort.getRechargeRuleList(companyId);
 	}
