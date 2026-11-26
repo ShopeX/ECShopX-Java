@@ -29,6 +29,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v1.OpenapiRequestParams;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.OpenapiThirdApiV2ShippingTemplatesListParams;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxVipGradeCreateBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxVipGradeCreateSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxVipGradeDeleteBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxVipGradeDeleteSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxVipGradeOrderListBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxVipGradeOrderListSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
@@ -283,11 +285,94 @@ public class MemberCardVipGradeController extends OpenapiBaseController {
 				OpenapiRequestParams.presentOptionalString(externalIdParam, body, "external_id"));
 	}
 
+	@Operation(
+			summary = "开放接口删除付费会员卡等级",
+			description =
+					"按签名鉴权租户 company_id 删除付费会员卡等级：vip_grade_id 必填非空"
+							+ "（originalString 双通道，body 含键优先、值 null 视为未传、不 trim；"
+							+ " 缺失 E5001「请求参数错误」）。trim 后 parseLong，失败再按整值 double 截断"
+							+ "（如 \"2.0\"→2），仍失败按 -1 查询；kaquan_vip_grade 查无 E5541「会员付费等级找不到」。"
+							+ " 默认等级禁删（is_default=true → E5543「会员付费等级删除错误」）；"
+							+ " 关联会员检查 vip_grade_rel_user(company_id, vip_grade_id) 计数（trim+parseLong，"
+							+ " 非法按 0；不过滤 end_date，过期关联也计入），>0 报 E5543"
+							+ "「会员付费等级无法删除，该会员付费等级下扔存在关联的会员」（源码原文含错字「扔」）。"
+							+ " 成功恒 data=null，Advice 包装 message 固定「成功」。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}"
+							+ "（method=ecx.member_card_vip_grade.delete, version=2.0）签名校验后转发；"
+							+ " 直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 副作用：事务内 DELETE kaquan_vip_grade 单行；不清理 vip_grade_rel_user 关联；"
+							+ " 无异步、无第三方调用。",
+			operationId = "ecx.member_card_vip_grade.delete.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功, data 恒 null；"
+								+ " 业务失败：status=fail, code=E5001 请求参数错误 / E5541 会员付费等级找不到 /"
+								+ " E5543 会员付费等级删除错误（默认等级）·存在关联会员禁删，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxVipGradeDeleteFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxVipGradeDeleteSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "删除成功（无返回体）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-grade-not-found",
+											summary = "vip_grade_id 查无（含非法字符串按 -1 查询）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5541\","
+															+ "\"message\":\"会员付费等级找不到\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-default-grade",
+											summary = "默认等级禁删",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5543\","
+															+ "\"message\":\"会员付费等级删除错误\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-grade-in-use",
+											summary = "等级下仍有关联会员（文案原文含错字「扔」）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5543\","
+															+ "\"message\":\"会员付费等级无法删除，该会员付费等级下扔存在关联的会员\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@DeleteMapping(value = "/ecx.member_card_vip_grade.delete", name = "开放接口删除付费会员卡等级")
 	public Void delete(
-			HttpServletRequest request,
-			@RequestParam(name = "vip_grade_id", required = false) String vipGradeIdParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description =
+									"付费等级 ID；必填非空（E5001）；trim+parseLong（整值 double 兜底，非法按 -1），"
+											+ "查无 E5541；默认等级/有关联会员 E5543",
+							required = true,
+							example = "2")
+					@RequestParam(name = "vip_grade_id", required = false)
+					String vipGradeIdParam,
+			@RequestBody(
+							description = "可选 JSON body；vip_grade_id 与 query 同名双通道（body 含键优先，值 null 视为未传）",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxVipGradeDeleteBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		memberCardVipGradeDeletePort.delete(
 				companyId,
