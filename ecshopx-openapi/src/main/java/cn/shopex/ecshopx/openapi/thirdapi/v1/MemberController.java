@@ -59,6 +59,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberOrderListBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberOrderListSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberQueryBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberQuerySuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberTagRelationPushBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberTagRelationPushSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -698,13 +700,99 @@ public class MemberController extends OpenapiBaseController {
 		return new OpenapiEnvelope("success", "E0000", "操作成功", data);
 	}
 
+	@Operation(
+			summary = "开放接口推送会员标签关系",
+			description =
+					"按签名鉴权租户 company_id 批量写入会员标签关系（整体替换语义）。两种模式："
+							+ " relations 非空数组 → 正常模式：按 user_id 分组（PHP-empty 行跳过），"
+							+ " 每组定位会员（user_id 优先，mobile 兜底），标签按 wechat_tag_id 优先否则 tag_id 匹配，"
+							+ " 事务内先删后插（保留系统标签，维护 self_tag_count），行级失败计入 fail_count 不中断；"
+							+ " relations 缺失/空/非数组且 action=clear → 清空模式：须 user_id（否则 E1001），"
+							+ " 删除该会员全部非系统标签关系。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}"
+							+ "（method=ecx.member.tag.relation.push, version=1.0）签名校验后转发；"
+							+ " 直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " action/user_id/mobile 双通道（body 含键优先）；relations 仅 body 通道。"
+							+ " 失败：E1001（入参/未找到会员）、E9999（系统异常），data=[]。"
+							+ " 副作用：写库删除/插入 members_rel_tags 并更新 members_tags.self_tag_count；"
+							+ " 不回推导购平台；无异步/第三方调用。",
+			operationId = "ecx.member.tag.relation.push")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态。"
+								+ " 成功：status=success, code=E0000, message=操作成功，data 为 4 键统计"
+								+ "（success_count/fail_count/processed_members/processed_tags；行级失败计入 fail_count）；"
+								+ " 业务失败：status=fail（E1001 清空模式需要提供 user_id/标签关系数据不能为空/未找到会员；"
+								+ "E9999 标签关系推送失败：{异常信息}/清空会员标签失败：{异常信息}），data=[]；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。"
+								+ " 见 EcxMemberTagRelationPushFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxMemberTagRelationPushSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success-normal",
+											summary = "正常模式推送成功",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"操作成功\","
+															+ "\"data\":{\"success_count\":1,\"fail_count\":0,"
+															+ "\"processed_members\":1,\"processed_tags\":1}}"),
+									@ExampleObject(
+											name = "success-clear",
+											summary = "清空模式成功（固定统计）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"操作成功\","
+															+ "\"data\":{\"success_count\":1,\"fail_count\":0,"
+															+ "\"processed_members\":1,\"processed_tags\":0}}"),
+									@ExampleObject(
+											name = "fail-empty-relations",
+											summary = "relations 缺失/空且非 clear（data 为空数组）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E1001\","
+															+ "\"message\":\"标签关系数据不能为空\",\"data\":[]}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@PostMapping(value = "/ecx.member.tag.relation.push", name = "开放接口推送会员标签关系")
 	public OpenapiEnvelope tagRelationPush(
-			HttpServletRequest request,
-			@RequestParam(name = "action", required = false) String actionParam,
-			@RequestParam(name = "user_id", required = false) String userIdParam,
-			@RequestParam(name = "mobile", required = false) String mobileParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "动作；\"clear\" 且 relations 缺失/空/非数组时进入清空模式（body 同名键优先）",
+							example = "clear")
+					@RequestParam(name = "action", required = false)
+					String actionParam,
+			@Parameter(
+							description = "会员 ID（清空模式必填，PHP-truthy；缺失报 E1001）（body 同名键优先）",
+							example = "10")
+					@RequestParam(name = "user_id", required = false)
+					String userIdParam,
+			@Parameter(description = "手机号（清空模式 user_id 查无会员时兜底定位）（body 同名键优先）", example = "13900000001")
+					@RequestParam(name = "mobile", required = false)
+					String mobileParam,
+			@RequestBody(
+							description =
+									"JSON body；relations 数组仅经 body 提供；action/user_id/mobile 与 query 同名双通道，"
+											+ "body 含键时优先。行字段与两种模式语义见 schema",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxMemberTagRelationPushBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		Object relationsRaw = body != null ? body.get("relations") : null;
 		String action = OpenapiTagRelationPushParams.mergeAction(actionParam, body);
