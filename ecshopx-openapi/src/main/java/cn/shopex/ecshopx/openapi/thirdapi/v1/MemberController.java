@@ -443,7 +443,7 @@ public class MemberController extends OpenapiBaseController {
 		Map<String, Object> data =
 				assignMemberToSalespersonPort.assignMemberToSalesperson(
 						companyId, employeeNumber, unionid);
-		return new OpenapiEnvelope("success", "0", "分配成功", data);
+		return new OpenapiEnvelope("success", "E0000", "分配成功", data);
 	}
 
 	@PostMapping(value = "/ecx.member.notifyBecomeFriend", name = "开放接口导购通知加好友")
@@ -461,7 +461,7 @@ public class MemberController extends OpenapiBaseController {
 				OpenapiRequestParams.originalString(isBecomeFriendParam, body, "is_become_friend");
 		notifyBecomeFriendPort.notifyBecomeFriend(
 				companyId, unionid, salespersonCode, isBecomeFriendRaw);
-		return new OpenapiEnvelope("success", "0", "success", List.of());
+		return new OpenapiEnvelope("success", "E0000", "success", List.of());
 	}
 
 	@PostMapping(value = "/ecx.member.listFp", name = "开放接口会员列表查询（增强版）")

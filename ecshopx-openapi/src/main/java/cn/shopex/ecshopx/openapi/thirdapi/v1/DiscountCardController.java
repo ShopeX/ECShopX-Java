@@ -53,7 +53,7 @@ public class DiscountCardController extends OpenapiBaseController {
 		long companyId = requireCompanyId(request);
 		String cardId = OpenapiRequestParams.mergeString(cardIdParam, body, "card_id");
 		Map<String, Object> data = discountCardDetailPort.getDiscountCardDetail(companyId, cardId);
-		return new OpenapiEnvelope("success", "0", "success", data);
+		return new OpenapiEnvelope("success", "E0000", "success", data);
 	}
 
 	@PostMapping(value = "/ecx.discountcard.list", name = "开放接口获取卡券列表")
@@ -77,6 +77,6 @@ public class DiscountCardController extends OpenapiBaseController {
 		merged.put("is_valid", OpenapiRequestParams.mergeString(isValidParam, body, "is_valid"));
 		merged.put("status", OpenapiRequestParams.mergeString(statusParam, body, "status"));
 		Map<String, Object> data = discountCardListPort.getDiscountCardList(companyId, merged);
-		return new OpenapiEnvelope("success", "0", "success", data);
+		return new OpenapiEnvelope("success", "E0000", "success", data);
 	}
 }

@@ -51,6 +51,6 @@ public class CompanyController extends OpenapiBaseController {
 			countryCode = "zh-CN";
 		}
 		Map<String, Object> data = companyInfoPort.getCompanyInfo(companyId, countryCode);
-		return new OpenapiEnvelope("success", "0", "success", data);
+		return new OpenapiEnvelope("success", "E0000", "success", data);
 	}
 }

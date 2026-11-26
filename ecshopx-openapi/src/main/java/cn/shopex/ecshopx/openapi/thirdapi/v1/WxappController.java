@@ -94,13 +94,13 @@ public class WxappController extends OpenapiBaseController {
 		Map<String, Object> data =
 				wxappShopListPort.listWxShopLists(
 						companyId, ok.page(), ok.pageSize(), ok.updatedGt(), ok.updatedLt());
-		return new OpenapiEnvelope("success", "0", "success", data);
+		return new OpenapiEnvelope("success", "E0000", "success", data);
 	}
 
 	@PostMapping(value = "/ecx.weappid.get", name = "开放接口获取yykweishop模板appid")
 	public OpenapiEnvelope getWeappId(HttpServletRequest request) {
 		long companyId = requireCompanyId(request);
 		Map<String, Object> data = weappIdPort.getWeappIdByTemplate(companyId, "yykweishop");
-		return new OpenapiEnvelope("success", "0", "success", data);
+		return new OpenapiEnvelope("success", "E0000", "success", data);
 	}
 }
