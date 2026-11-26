@@ -31,6 +31,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v1.OpenapiMemberQueryParams;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.OpenapiRequestParams;
 import cn.shopex.ecshopx.common.web.FlexibleBody;
 import cn.shopex.ecshopx.openapi.thirdapi.OpenapiBaseController;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberBatchCreateBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberBatchCreateSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberCardCodeGradeUpdateBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberCardCodeGradeUpdateSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberCardGradeRelListBodyDoc;
@@ -150,11 +152,106 @@ public class MemberController extends OpenapiBaseController {
 		return memberCreateDetailPort.createDetail(companyId, raw);
 	}
 
+	@Operation(
+			summary = "开放接口批量创建会员异步",
+			description =
+					"按签名鉴权租户 company_id 批量创建会员（异步）：仅 data 一键双通道"
+							+ "（body 含 data 键或 query 参数表含 data 即受理；值 originalString，body 数组字符串化后 JSON 解析）。"
+							+ " data 键缺席 → data.status=0（不报错不入队）；键存在但空白/解析失败/非数组 → 空列表"
+							+ " → data.status=1（0 条入队，解析失败静默）；元素非对象静默丢弃；"
+							+ " >50 条 E5500「批量创建最多支持50个！」。"
+							+ " 逐条**同步校验**（复用单个创建 validateAndNormalize：手机号必填/格式（格式错 E5502"
+							+ "「会员手机号已存在」PHP 文案）、source_from 仅 default/openapi、推荐人/导购手机号格式、"
+							+ " union_id 须字符串、status 0|1、sex 仅 0、birthday 格式、habbit 结构、"
+							+ " edu 0-4/income 0-4/industry 0-12、email 格式、grade_id 非负整数），"
+							+ " 任一条失败整批拒绝未入队；全部通过后逐条入队 dispatch job 异步创建，返回 data.status=1。"
+							+ " **占用/推荐人查无/导购/等级/卡号类校验在异步 job 内执行**"
+							+ "（E5502 占用/E5511/E5601/E5612/E5531/E5522），失败不影响同步响应。"
+							+ " tag_ids 不被读取（标签仅 tag_names 逗号分隔字符串）。Advice 包装 message 固定「成功」。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.member.batch_create,"
+							+ " version=2.0）签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 副作用：同步阶段无写库；逐条发布 CREATE_MEMBER_JOB 异步任务"
+							+ "（job 内 INSERT members/members_info/标签关联/导购绑定/unionid 关联 + 新客标签对账）。",
+			operationId = "ecx.member.batch_create.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功，data={status:0|1}"
+								+ "（0=data 键缺席；1=已受理入队，条数可为 0）；"
+								+ " 业务失败：status=fail, code=E5500 批量创建最多支持50个！/ E5502 会员手机号已存在（格式）/"
+								+ " E5001 各字段填写错误 / E5000 系统错误，data=null（整批拒绝未入队）；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxMemberBatchCreateFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxMemberBatchCreateSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success-enqueued",
+											summary = "受理入队（异步创建）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"status\":1}}"),
+									@ExampleObject(
+											name = "success-no-data-key",
+											summary = "data 键缺席（未受理，data.status=0）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"status\":0}}"),
+									@ExampleObject(
+											name = "fail-over-limit",
+											summary = "超过 50 条",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5500\","
+															+ "\"message\":\"批量创建最多支持50个！\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-mobile-format",
+											summary = "某条 mobile 格式错（整批拒绝；PHP 文案「已存在」）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5502\","
+															+ "\"message\":\"会员手机号已存在\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-source-from",
+											summary = "source_from 非法",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5001\","
+															+ "\"message\":\"来源渠道填写错误\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@PostMapping(value = "/ecx.member.batch_create", name = "开放接口批量创建会员异步")
 	public Map<String, Object> batchCreate(
-			HttpServletRequest request,
-			@RequestParam(name = "data", required = false) String dataParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description =
+									"会员数组 JSON 字符串（≤50 条，元素字段见 body schema）；键缺席返回 data.status=0；"
+											+ "解析失败静默按空数组（data.status=1，0 条入队）",
+							example = "[{\"mobile\":\"13800138000\"}]")
+					@RequestParam(name = "data", required = false)
+					String dataParam,
+			@RequestBody(
+							description =
+									"可选 JSON body；data 与 query 同名双通道（body 含键优先，可直接传数组）；"
+											+ "元素 20 键与同步/异步校验分界见 schema",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxMemberBatchCreateBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		boolean hasData =
 				OpenapiMemberV2BatchCreateParams.hasDataParameter(request, body, dataParam);
