@@ -37,6 +37,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberCardGradeDetail
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberCardGradeDetailSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberCardGradeListBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberCardGradeListSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberCardGradeUpdateBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberCardGradeUpdateSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -421,16 +423,126 @@ public class MemberCardGradeController extends OpenapiBaseController {
 				OpenapiRequestParams.mergeString(externalIdParam, body, "external_id"));
 	}
 
+	@Operation(
+			summary = "开放接口修改会员卡等级",
+			description =
+					"按签名鉴权租户 company_id 局部更新会员卡等级（6 键双通道，body 含键优先）："
+							+ " grade_id 必填非空（originalString 不 trim；缺失 E5001「请求参数错误」），"
+							+ " 原样字符串等值定位，查无 E5531「会员等级找不到」。"
+							+ " 其余 5 键走 presentOptionalString 按键存在性 PATCH："
+							+ " grade_name/background_pic_url/external_id 键存在即原样写入（空串可清空）；"
+							+ " discount 键存在且非空须 1≤值≤10（否则 E5001），空串跳过不更新，"
+							+ " 生效时整体重建 privileges（discount_desc 原样 + discount=100-(int)(值*10)）；"
+							+ " total_consumption 键存在且非空须 ≥0（否则 E5001），空串跳过不更新，"
+							+ " 生效时整体重建 promotion_condition。"
+							+ " 5 键全缺席/均无可生效值 → 无操作成功 data=null（等级存在性仍先校验）。"
+							+ " 有更新时 data 为更新后 9 键行（同 create 格式）。序列化异常 E0001「等级数据序列化失败」。"
+							+ " 注意：PATCH 键传 JSON null 走 Optional.of(null) 存在 NPE 风险 → HTTP 500 ApiResult（非信封）。"
+							+ " Advice 包装 message 固定「成功」。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.member_card_grade.update,"
+							+ " version=2.0）签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 副作用：事务内 UPDATE membercard_grade（present 列 + updated）+ zh-CN 多语言分表 upsert；"
+							+ " 无异步、无第三方调用。",
+			operationId = "ecx.member_card_grade.update.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功，data 为更新后 9 键行"
+								+ "（无操作成功时 data=null）；"
+								+ " 业务失败：status=fail, code=E5001 请求参数错误 / E5531 会员等级找不到 /"
+								+ " E0001 等级数据序列化失败，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxMemberCardGradeUpdateFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxMemberCardGradeUpdateSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "更新成功（返回更新后等级行；时间/URL 为格式演示值）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"grade_id\":1,\"is_default\":0,\"grade_name\":\"普通会员\","
+															+ "\"discount\":\"10\",\"total_consumption\":\"0\","
+															+ "\"background_pic_url\":\"https://example.test/key.jpg\","
+															+ "\"external_id\":\"1\",\"created\":\"2026-01-01 00:00:00\","
+															+ "\"updated\":\"2026-01-01 00:00:00\"}}"),
+									@ExampleObject(
+											name = "success-noop",
+											summary = "PATCH 键全缺席（无操作成功，data=null）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-grade-not-found",
+											summary = "grade_id 查无",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5531\","
+															+ "\"message\":\"会员等级找不到\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-param",
+											summary = "grade_id 缺失或 discount/total_consumption 非法",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5001\",\"message\":\"请求参数错误\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@PatchMapping(value = "/ecx.member_card_grade.update", name = "开放接口修改会员卡等级")
 	public Map<String, Object> update(
-			HttpServletRequest request,
-			@RequestParam(name = "grade_id", required = false) String gradeIdParam,
-			@RequestParam(name = "grade_name", required = false) String gradeNameParam,
-			@RequestParam(name = "discount", required = false) String discountParam,
-			@RequestParam(name = "total_consumption", required = false) String totalConsumptionParam,
-			@RequestParam(name = "background_pic_url", required = false) String backgroundPicUrlParam,
-			@RequestParam(name = "external_id", required = false) String externalIdParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "等级 ID；必填非空（E5001）；原样字符串等值匹配，查无 E5531「会员等级找不到」",
+							required = true,
+							example = "1")
+					@RequestParam(name = "grade_id", required = false)
+					String gradeIdParam,
+			@Parameter(
+							description = "新等级名称；键存在即更新（原样不 trim，空串可清空）",
+							example = "普通会员")
+					@RequestParam(name = "grade_name", required = false)
+					String gradeNameParam,
+			@Parameter(
+							description = "新会员折扣（折）；键存在且非空须 1≤值≤10（否则 E5001）；空串跳过不更新",
+							example = "10")
+					@RequestParam(name = "discount", required = false)
+					String discountParam,
+			@Parameter(
+							description = "新升级条件（累计消费门槛）；键存在且非空须 ≥0（否则 E5001）；空串跳过不更新",
+							example = "0")
+					@RequestParam(name = "total_consumption", required = false)
+					String totalConsumptionParam,
+			@Parameter(
+							description = "新会员卡背景图 URL；键存在即更新（空串可清空；示例为格式演示值）",
+							example = "https://example.test/key.jpg")
+					@RequestParam(name = "background_pic_url", required = false)
+					String backgroundPicUrlParam,
+			@Parameter(
+							description = "新外部等级唯一标识；键存在即更新（空串可清空），不校验唯一性",
+							example = "1")
+					@RequestParam(name = "external_id", required = false)
+					String externalIdParam,
+			@RequestBody(
+							description =
+									"可选 JSON body；6 键与 query 同名双通道（body 含键优先）；"
+											+ "5 个 PATCH 键按键存在性生效；null 值风险与空串语义见 schema",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxMemberCardGradeUpdateBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		return memberCardGradeUpdatePort.update(
 				companyId,
