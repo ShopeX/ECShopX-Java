@@ -25,6 +25,17 @@ import cn.shopex.ecshopx.common.openapi.OpenapiMemberRechargeTradeListPort;
 import cn.shopex.ecshopx.common.web.FlexibleBody;
 import cn.shopex.ecshopx.openapi.thirdapi.OpenapiBaseController;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.OpenapiRequestParams;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberRechargeTradeListBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberRechargeTradeListSuccessEnvelopeDoc;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Map;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -34,6 +45,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "开放接口-会员储值V2")
 @OpenapiResponse
 @RestController("openapiV2MemberRecharge")
 @RequestMapping("/api/openapi/internal/v2")
@@ -64,17 +76,124 @@ public class MemberRechargeController extends OpenapiBaseController {
 		return rechargeRuleListPort.getRechargeRuleList(companyId);
 	}
 
+	@Operation(
+			summary = "开放接口查询储值交易记录",
+			description =
+					"按签名鉴权租户 company_id 分页查询储值交易（deposit_trade，固定 trade_status=SUCCESS，"
+							+ " time_start 降序）：7 键双通道（page/page_size originalString 不 trim；"
+							+ " 其余 5 键 mergeString trim；body 含键优先、值 null 视为未传）。"
+							+ " 过滤键 PHP truthy（空串/\"0\" 忽略）：mobile trim 加密等值、trade_id/shop_id trim 等值；"
+							+ " date_begin/date_end 按 yyyy-MM-dd HH:mm:ss（系统时区）解析为 time_start 区间，"
+							+ " **解析失败静默按 0 不报错**（begin=0 等于不过滤；end=0 通常空结果）。"
+							+ " page 默认 1、page_size 默认 20（PHP 式解析），原始 page_size ≥500 报"
+							+ " E5002「每页的大小最大为500！」，钳制后 page≥1、page_size∈[20,499]。"
+							+ " data：total_count/is_last_page(0|1)/pager{page,page_size}/list；行 15 键："
+							+ " trade_id/trade_type(recharge|consume)/money 元 2 位小数字符串/mobile 解密（null 透传）/"
+							+ " member_card_code/shop_id/shop_name/open_id/transaction_id/recharge_rule_id/bank_type"
+							+ "（后三键空白归 null）/authorizer_appid/detail/time_start/time_expire 格式化时间"
+							+ "（Unix 字符串非法按 epoch 0）。Advice 包装 message 固定「成功」。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.member.recharge.trade.get,"
+							+ " version=2.0）签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 只读，无写库/异步/第三方副作用。",
+			operationId = "ecx.member.recharge.trade.get.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功，data 见 EcxMemberRechargeTradeListDataDoc；"
+								+ " 业务失败：status=fail, code=E5002 每页的大小最大为500！，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxMemberRechargeTradeListFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxMemberRechargeTradeListSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "查询成功（trade_id/money 取自 AdapayDepositTradeRechargeCallback 测试夹具；时间为格式演示值）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"total_count\":1,\"is_last_page\":1,"
+															+ "\"pager\":{\"page\":1,\"page_size\":20},"
+															+ "\"list\":[{\"trade_id\":\"d1\",\"trade_type\":\"recharge\","
+															+ "\"money\":\"80.00\",\"mobile\":\"13800138000\","
+															+ "\"member_card_code\":\"card\",\"shop_id\":\"0\",\"shop_name\":\"\","
+															+ "\"open_id\":null,\"transaction_id\":null,\"recharge_rule_id\":null,"
+															+ "\"bank_type\":null,\"authorizer_appid\":\"\",\"detail\":\"\","
+															+ "\"time_start\":\"2026-01-01 00:00:00\","
+															+ "\"time_expire\":\"2026-01-01 00:00:00\"}]}}"),
+									@ExampleObject(
+											name = "success-empty",
+											summary = "无成功交易（list 空数组）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"total_count\":0,\"is_last_page\":1,"
+															+ "\"pager\":{\"page\":1,\"page_size\":20},\"list\":[]}}"),
+									@ExampleObject(
+											name = "fail-page-size",
+											summary = "page_size 原始解析值 ≥500",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5002\","
+															+ "\"message\":\"每页的大小最大为500！\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@GetMapping(value = "/ecx.member.recharge.trade.get", name = "开放接口查询储值交易记录")
 	public Map<String, Object> getRechargeTradeList(
-			HttpServletRequest request,
-			@RequestParam(name = "page", required = false) String pageParam,
-			@RequestParam(name = "page_size", required = false) String pageSizeParam,
-			@RequestParam(name = "mobile", required = false) String mobileParam,
-			@RequestParam(name = "trade_id", required = false) String tradeIdParam,
-			@RequestParam(name = "shop_id", required = false) String shopIdParam,
-			@RequestParam(name = "date_begin", required = false) String dateBeginParam,
-			@RequestParam(name = "date_end", required = false) String dateEndParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(description = "页码，默认 1；PHP 式解析后 max(…,1)", example = "1")
+					@RequestParam(name = "page", required = false)
+					String pageParam,
+			@Parameter(
+							description = "每页数量，默认 20；原始解析值 ≥500 报 E5002；钳制后生效 [20,499]",
+							example = "20")
+					@RequestParam(name = "page_size", required = false)
+					String pageSizeParam,
+			@Parameter(
+							description = "会员手机号；trim 加密等值过滤；空串/\"0\" 忽略",
+							example = "13800138000")
+					@RequestParam(name = "mobile", required = false)
+					String mobileParam,
+			@Parameter(
+							description = "储值交易单号；trim 等值过滤；空串/\"0\" 忽略",
+							example = "d1")
+					@RequestParam(name = "trade_id", required = false)
+					String tradeIdParam,
+			@Parameter(
+							description = "门店 ID（字符串等值）；空串/\"0\" 忽略（示例为格式演示值）",
+							example = "1")
+					@RequestParam(name = "shop_id", required = false)
+					String shopIdParam,
+			@Parameter(
+							description = "起始时间 yyyy-MM-dd HH:mm:ss；解析失败静默按 0（不过滤）；空串/\"0\" 忽略（格式演示值）",
+							example = "2026-01-01 00:00:00")
+					@RequestParam(name = "date_begin", required = false)
+					String dateBeginParam,
+			@Parameter(
+							description = "截止时间；解析失败按 0（time_start≤0 通常空结果）（格式演示值）",
+							example = "2026-12-31 23:59:59")
+					@RequestParam(name = "date_end", required = false)
+					String dateEndParam,
+			@RequestBody(
+							description = "可选 JSON body；7 键与 query 同名双通道（body 含键优先，值 null 视为未传）；语义见 schema",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxMemberRechargeTradeListBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		OpenapiThirdApiV2MemberRechargeTradeListParams.PageSpec pageSpec =
 				OpenapiThirdApiV2MemberRechargeTradeListParams.resolve(pageParam, pageSizeParam, body);
