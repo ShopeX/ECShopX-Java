@@ -37,6 +37,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberCardGradeRelLis
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberCardGradeRelListSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberInfoUpdateBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberInfoUpdateSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberMobileUpdateBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberMobileUpdateSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -298,13 +300,108 @@ public class MemberController extends OpenapiBaseController {
 		return null;
 	}
 
+	@Operation(
+			summary = "开放接口修改会员手机号",
+			description =
+					"按签名鉴权租户 company_id 修改会员手机号（3 键双通道，body 含键取原值否则 query mergeString trim）："
+							+ " mobile 定位旧会员，必填（格式错统一 E5502「会员手机号已存在」——PHP 旧契约文案，"
+							+ " 实为格式校验；查无 E5501「会员找不到」）；"
+							+ " new_mobile 必填：null/空白/\"0\"/false/数值 0 报 E5001「会员新手机号参数错误」，"
+							+ " 归一化（整型数值转长整字符串、trim）后须 ^1[3456789][0-9]{9}$"
+							+ "（否则 E5001「新手机号填写错误」）；被其他会员占用报 E5502「会员新手机号已存在」"
+							+ "（占用者即本人放行——同号重设幂等成功，仅刷新 updated，不写操作日志）。"
+							+ " user_id 被接收但忽略（定位仅按 mobile）。"
+							+ " 其他异常统一 E5000「系统错误」。成功恒 data=null，Advice 包装 message 固定「成功」。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.member_mobile.update,"
+							+ " version=2.0）签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 副作用：@Transactional UPDATE members.mobile（固定加密存储）/updated +"
+							+ " 新旧号不同时 INSERT member_operate_log（operate_type=mobile，明文新旧号，"
+							+ " operater=外部开发者）；无异步、无第三方调用。",
+			operationId = "ecx.member_mobile.update.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功, data 恒 null（含同号重设幂等场景）；"
+								+ " 业务失败：status=fail, code=E5502 会员手机号已存在（格式）·会员新手机号已存在（占用）/"
+								+ " E5001 会员新手机号参数错误·新手机号填写错误 / E5501 会员找不到 / E5000 系统错误，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxMemberMobileUpdateFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxMemberMobileUpdateSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "修改成功（无返回体）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-new-mobile-exist",
+											summary = "新号被其他会员占用",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5502\","
+															+ "\"message\":\"会员新手机号已存在\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-mobile-format",
+											summary = "mobile 缺失/格式错（PHP 旧契约文案「已存在」）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5502\","
+															+ "\"message\":\"会员手机号已存在\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-new-mobile-format",
+											summary = "new_mobile 格式错误",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5001\","
+															+ "\"message\":\"新手机号填写错误\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-member-not-found",
+											summary = "mobile 查无会员",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5501\",\"message\":\"会员找不到\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@PatchMapping(value = "/ecx.member_mobile.update", name = "开放接口修改会员手机号")
 	public Void updateMobile(
-			HttpServletRequest request,
-			@RequestParam(name = "user_id", required = false) String userIdParam,
-			@RequestParam(name = "mobile", required = false) String mobileParam,
-			@RequestParam(name = "new_mobile", required = false) String newMobileParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "遗留参数：被接收但服务不消费（定位仅按 mobile）",
+							deprecated = true)
+					@RequestParam(name = "user_id", required = false)
+					String userIdParam,
+			@Parameter(
+							description = "当前会员手机号（定位键）；必填，格式错统一 E5502「会员手机号已存在」；查无 E5501",
+							required = true,
+							example = "13800138000")
+					@RequestParam(name = "mobile", required = false)
+					String mobileParam,
+			@Parameter(
+							description = "新手机号；必填（空/\"0\"/false E5001 参数错误）；格式错 E5001；他人占用 E5502「会员新手机号已存在」",
+							required = true,
+							example = "13800000000")
+					@RequestParam(name = "new_mobile", required = false)
+					String newMobileParam,
+			@RequestBody(
+							description = "可选 JSON body；3 键与 query 同名双通道（body 含键取原值）；语义见 schema",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxMemberMobileUpdateBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		Map<String, Object> merged =
 				OpenapiMemberV2UpdateMobileHandlerParams.mergeAll(
