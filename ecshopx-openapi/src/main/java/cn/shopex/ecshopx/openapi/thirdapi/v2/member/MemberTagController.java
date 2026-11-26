@@ -38,6 +38,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTagUpdateBodyDo
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTagUpdateSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTaggedDeleteBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTaggedDeleteSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTaggedGetBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTaggedGetSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -401,11 +403,93 @@ public class MemberTagController extends OpenapiBaseController {
 				companyId, pageSpec.page(), pageSpec.pageSize(), tagIdRaw);
 	}
 
+	@Operation(
+			summary = "开放接口查询会员已打标签",
+			description =
+					"按签名鉴权租户 company_id 以手机号查询会员已打标签："
+							+ " mobile 必填非空白（mergeString 双通道 trim，body 含键优先、值 null 视为未传；"
+							+ " 缺失报 **E0001「会员手机号必填」**——ResourceException 通道，"
+							+ " 区别于 tagged.delete 的 E5001）。"
+							+ " **mobile trim 明文与 members.mobile（加密存储列）直接等值，无加密转换**"
+							+ "（同 tagged.delete，加密启用部署下通常查无）；查无 E5501「会员找不到」。"
+							+ " 命中后 selectUserRelTagList 查关联标签；**无标签时 data=null**（仍 success，非空数组）。"
+							+ " data 为行数组（8 键/行）：mobile（**库内原样，加密启用时为密文未解密**）、"
+							+ " username（解密，无 info/空白为 null）、tag_id/tag_name/category_id/description/"
+							+ " tag_color/font_color。Advice 包装 message 固定「成功」。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.member.tagged.get,"
+							+ " version=2.0）签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 只读，无写库/异步/第三方副作用。",
+			operationId = "ecx.member.tagged.get.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功，data 为行数组（8 键/行，"
+								+ " 见 EcxMemberTaggedGetSuccessEnvelopeDoc；无标签 data=null 仍 success）；"
+								+ " 业务失败：status=fail, code=E0001 会员手机号必填 / E5501 会员找不到，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxMemberTaggedGetFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxMemberTaggedGetSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "查询成功（mobile 为库内原样，未加密部署下即明文）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":[{\"mobile\":\"13800138000\",\"username\":\"张三\","
+															+ "\"tag_id\":1,\"tag_name\":\"聚合测试类目\",\"category_id\":0,"
+															+ "\"description\":null,\"tag_color\":\"rgba(255, 25, 57, 1)\","
+															+ "\"font_color\":\"rgba(255, 255, 255, 1)\"}]}"),
+									@ExampleObject(
+											name = "success-no-tags",
+											summary = "会员存在但无标签（data=null，仍 success）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-mobile-missing",
+											summary = "mobile 缺失/空白（E0001 通道）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E0001\","
+															+ "\"message\":\"会员手机号必填\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-member-not-found",
+											summary = "mobile 查无会员",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5501\",\"message\":\"会员找不到\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@GetMapping(value = "/ecx.member.tagged.get", name = "开放接口查询会员已打标签")
 	public Object getMemberTagged(
-			HttpServletRequest request,
-			@RequestParam(name = "mobile", required = false) String mobileParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "会员手机号；必填（缺失 E0001「会员手机号必填」）；trim 明文直接等值；查无 E5501",
+							required = true,
+							example = "13800138000")
+					@RequestParam(name = "mobile", required = false)
+					String mobileParam,
+			@RequestBody(
+							description = "可选 JSON body；mobile 与 query 同名双通道（mergeString trim，body 含键优先）",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxMemberTaggedGetBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		String mobileRaw = OpenapiRequestParams.mergeString(mobileParam, body, "mobile");
 		return memberTagTaggedGetPort.getMemberTagged(companyId, mobileRaw);
