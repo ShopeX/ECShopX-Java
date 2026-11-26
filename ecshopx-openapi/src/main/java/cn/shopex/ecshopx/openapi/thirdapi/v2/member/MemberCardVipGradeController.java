@@ -33,6 +33,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxVipGradeDeleteBodyDoc
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxVipGradeDeleteSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxVipGradeDetailBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxVipGradeDetailSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxVipGradeListBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxVipGradeListSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxVipGradeOrderListBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxVipGradeOrderListSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
@@ -83,13 +85,105 @@ public class MemberCardVipGradeController extends OpenapiBaseController {
 		this.memberCardVipGradeDeletePort = memberCardVipGradeDeletePort;
 	}
 
+	@Operation(
+			summary = "开放接口查询付费会员卡等级列表",
+			description =
+					"按签名鉴权租户 company_id 分页查询付费会员卡等级：3 键双通道"
+							+ "（body 含键优先、值 null 视为未传、不 trim）。"
+							+ " page 默认 1、page_size 默认 20（PHP 式解析），page_size 原始解析 ≥500 报"
+							+ " E0001「每页的大小最大为500！」（复用运费模板分页解析器，ResourceException 通道；"
+							+ " 500 本身也报错），钳制后 page≥1、page_size∈[20,499]（另两条分页文案分支不可达）。"
+							+ " vip_grade_id 过滤按 PHP isset 非空语义（null/空串忽略，\"0\" 参与）：可 parseLong → 等值；"
+							+ " 非数字 → 按 vip_grade_id=-1 过滤（恒空结果，不报错）。"
+							+ " vip_grade_id 降序；无多语言覆盖（区别于 membercard 等级列表）。"
+							+ " data 键序 total_count/is_last_page(0|1)/pager{page,page_size}/list；"
+							+ " 行 15 键（同 create：vip_grade_id/type/grade_name/三档 fee 原样字符串或 null/discount/"
+							+ " guide_title/description/background_pic_url/is_default(0|1)/is_disabled(0|1)/external_id/"
+							+ " created/updated）。Advice 包装 message 固定「成功」。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.member_card_vip_grade.list,"
+							+ " version=2.0）签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 只读，无写库/异步/第三方副作用。",
+			operationId = "ecx.member_card_vip_grade.list.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功，data 见 EcxVipGradeListDataDoc；"
+								+ " 业务失败：status=fail, code=E0001 每页的大小最大为500！，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxVipGradeListFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxVipGradeListSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "列表查询成功（时间为格式演示值）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"total_count\":1,\"is_last_page\":1,"
+															+ "\"pager\":{\"page\":1,\"page_size\":20},"
+															+ "\"list\":[{\"vip_grade_id\":2,\"type\":\"vip\","
+															+ "\"grade_name\":\"Gold\",\"monthly_fee\":\"0\","
+															+ "\"quarter_fee\":null,\"year_fee\":null,\"discount\":\"10\","
+															+ "\"guide_title\":\"\",\"description\":\"\","
+															+ "\"background_pic_url\":\"\",\"is_default\":0,\"is_disabled\":0,"
+															+ "\"external_id\":\"\",\"created\":\"2026-01-01 00:00:00\","
+															+ "\"updated\":\"2026-01-01 00:00:00\"}]}}"),
+									@ExampleObject(
+											name = "success-empty",
+											summary = "vip_grade_id 过滤无匹配（含非数字恒空场景）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"total_count\":0,\"is_last_page\":1,"
+															+ "\"pager\":{\"page\":1,\"page_size\":20},\"list\":[]}}"),
+									@ExampleObject(
+											name = "fail-page-size",
+											summary = "page_size 原始解析值 ≥500（E0001 通道）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E0001\","
+															+ "\"message\":\"每页的大小最大为500！\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@GetMapping(value = "/ecx.member_card_vip_grade.list", name = "开放接口查询付费会员卡等级列表")
 	public Map<String, Object> list(
-			HttpServletRequest request,
-			@RequestParam(name = "page", required = false) String pageParam,
-			@RequestParam(name = "page_size", required = false) String pageSizeParam,
-			@RequestParam(name = "vip_grade_id", required = false) String vipGradeIdParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "页码，默认 1；PHP 式解析后 max(…,1)，负数/0/非法按 1",
+							example = "1")
+					@RequestParam(name = "page", required = false)
+					String pageParam,
+			@Parameter(
+							description = "每页数量，默认 20；原始解析值 ≥500 报 E0001「每页的大小最大为500！」；钳制后生效 [20,499]",
+							example = "20")
+					@RequestParam(name = "page_size", required = false)
+					String pageSizeParam,
+			@Parameter(
+							description = "付费等级 ID 过滤；null/空串忽略（\"0\" 参与过滤）；非数字按 -1 过滤恒空结果，不报错",
+							example = "2")
+					@RequestParam(name = "vip_grade_id", required = false)
+					String vipGradeIdParam,
+			@RequestBody(
+							description = "可选 JSON body；3 键与 query 同名双通道（body 含键优先，值 null 视为未传）；语义见 schema",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxVipGradeListBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		OpenapiThirdApiV2ShippingTemplatesListParams.PageSpec pageSpec =
 				OpenapiThirdApiV2ShippingTemplatesListParams.resolve(pageParam, pageSizeParam, body);
