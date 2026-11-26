@@ -49,9 +49,10 @@ public class NormalOrderNumericIdService {
 		Long redisId = redisTemplate.opsForHash().increment(dateKey, String.valueOf(minute), inc);
 		redisTemplate.expire(dateKey, java.time.Duration.ofDays(1));
 		long rid = redisId != null ? redisId : inc;
+		// Align with PromotionGroupsTeamIdGenerator: keep seq field to 5 digits (ECX-11443).
 		String idStr = day
 				+ String.format("%03d", Math.min(minute, 999L))
-				+ String.format("%05d", rid)
+				+ String.format("%05d", Math.floorMod(rid, 100_000L))
 				+ String.format("%04d", Math.floorMod(userId, 10_000L));
 		return Long.parseLong(idStr);
 	}

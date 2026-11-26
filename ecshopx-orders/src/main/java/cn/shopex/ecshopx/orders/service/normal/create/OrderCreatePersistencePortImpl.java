@@ -43,11 +43,15 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 @Service
 public class OrderCreatePersistencePortImpl implements OrderCreatePersistencePort {
+
+	/** ECX-11443: order_id PK collision → regenerate and retry insert. */
+	private static final int ORDER_ID_INSERT_MAX_ATTEMPTS = 3;
 
 	private final NormalOrdersMapper normalOrdersMapper;
 	private final NormalOrdersItemsMapper normalOrdersItemsMapper;
@@ -190,7 +194,8 @@ public class OrderCreatePersistencePortImpl implements OrderCreatePersistencePor
 		order.setDiscountInfo(writeDiscountInfoJson(od.get("discount_info")));
 		order.setCouponDiscountDesc(writeCouponDiscountDescJson(od));
 		applyCurrencyFields(order, od);
-		normalOrdersMapper.insert(order);
+		orderId = insertOrderWithIdCollisionRetry(order, od, userId, orderId);
+		od.put("order_id", orderId);
 
 		boolean usesPlatformItemStock = intVal(od.get("uses_platform_item_stock"), 0) != 0;
 		Object itemsRaw = od.get("items");
@@ -354,6 +359,29 @@ public class OrderCreatePersistencePortImpl implements OrderCreatePersistencePor
 		res.put("fee_rate", od.get("fee_rate"));
 		res.put("fee_symbol", stringVal(od.get("fee_symbol")));
 		p.setOrdersInsertResult(res);
+	}
+
+	/**
+	 * Inserts the order row; on primary-key collision regenerates {@code order_id} and retries
+	 * (ECX-11443). Returns the order id that was successfully inserted.
+	 */
+	private long insertOrderWithIdCollisionRetry(
+			NormalOrders order, Map<String, Object> od, long userId, long orderId) {
+		DuplicateKeyException last = null;
+		for (int attempt = 0; attempt < ORDER_ID_INSERT_MAX_ATTEMPTS; attempt++) {
+			if (attempt > 0) {
+				orderId = normalOrderNumericIdService.generate(userId);
+				od.put("order_id", orderId);
+				order.setOrderId(orderId);
+			}
+			try {
+				normalOrdersMapper.insert(order);
+				return orderId;
+			} catch (DuplicateKeyException e) {
+				last = e;
+			}
+		}
+		throw last;
 	}
 
 	private void ensureCurrencyFields(Map<String, Object> od) {
