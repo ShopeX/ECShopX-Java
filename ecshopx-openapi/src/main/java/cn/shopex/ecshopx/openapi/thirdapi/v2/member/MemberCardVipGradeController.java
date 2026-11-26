@@ -27,6 +27,17 @@ import cn.shopex.ecshopx.common.web.FlexibleBody;
 import cn.shopex.ecshopx.openapi.thirdapi.OpenapiBaseController;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.OpenapiRequestParams;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.OpenapiThirdApiV2ShippingTemplatesListParams;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxVipGradeOrderListBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxVipGradeOrderListSuccessEnvelopeDoc;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Map;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -38,6 +49,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /** OpenAPI v2 handler scaffold — methods added during migration. */
+@Tag(name = "开放接口-付费会员卡等级V2")
 @OpenapiResponse
 @RestController("openapiV2MemberCardVipGrade")
 @RequestMapping("/api/openapi/internal/v2")
@@ -152,12 +164,99 @@ public class MemberCardVipGradeController extends OpenapiBaseController {
 		return null;
 	}
 
+	@Operation(
+			summary = "开放接口查询付费会员卡等级购买记录列表",
+			description =
+					"按签名鉴权租户 company_id 分页查询付费会员卡购买记录：仅 page/page_size 2 键双通道"
+							+ "（body 含键优先、值 null 视为未传、不 trim）。"
+							+ " 固定过滤 kaquan_vip_grade_order.order_status=DONE（已完成订单，含购买/领取/续期/赠送来源），"
+							+ " order_id 降序。page 默认 1、page_size 默认 20（PHP 式解析），"
+							+ " page_size 原始解析 ≥500 报 E0001「每页的大小最大为500！」（复用运费模板分页解析器，"
+							+ " ResourceException 通道；500 本身也报错），钳制后 page≥1、page_size∈[20,499]。"
+							+ " data 键序 total_count/is_last_page(0|1)/pager{page,page_size}/list；行 11 键："
+							+ " order_id 字符串、price 元 2 位小数字符串（分 HALF_UP 除 100）、user_id/vip_grade_id 整型、"
+							+ " mobile 解密明文（失败回退原存储值）、lv_type(vip/svip)、title、"
+							+ " card_type 为天数整型（card_type JSON.day：monthly=30/quarter=90/year=365）、"
+							+ " discount 折 1 位小数字符串（(100-额度)/10，0 额度→\"10.0\"）、created/updated 格式化时间。"
+							+ " Advice 包装 message 固定「成功」。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}"
+							+ "（method=ecx.member_card_vip_grade_order.list, version=2.0）签名校验后转发；"
+							+ " 直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 只读，无写库/异步/第三方副作用。",
+			operationId = "ecx.member_card_vip_grade_order.list.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功，data 见 EcxVipGradeOrderListDataDoc；"
+								+ " 业务失败：status=fail, code=E0001 每页的大小最大为500！，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxVipGradeOrderListFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxVipGradeOrderListSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "查询成功（示例值取自 VipGradeMembercardSalePaidFlowTest；时间/手机号为格式演示值）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"total_count\":1,\"is_last_page\":1,"
+															+ "\"pager\":{\"page\":1,\"page_size\":20},"
+															+ "\"list\":[{\"order_id\":\"100\",\"price\":\"0.00\","
+															+ "\"user_id\":50,\"mobile\":\"13800138000\",\"vip_grade_id\":2,"
+															+ "\"lv_type\":\"vip\",\"title\":\"Gold\",\"card_type\":30,"
+															+ "\"discount\":\"10.0\",\"created\":\"2026-01-01 00:00:00\","
+															+ "\"updated\":\"2026-01-01 00:00:00\"}]}}"),
+									@ExampleObject(
+											name = "success-empty",
+											summary = "无已完成购买记录（list 空数组）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"total_count\":0,\"is_last_page\":1,"
+															+ "\"pager\":{\"page\":1,\"page_size\":20},\"list\":[]}}"),
+									@ExampleObject(
+											name = "fail-page-size",
+											summary = "page_size 原始解析值 ≥500（E0001 通道）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E0001\","
+															+ "\"message\":\"每页的大小最大为500！\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@GetMapping(value = "/ecx.member_card_vip_grade_order.list", name = "开放接口查询付费会员卡等级购买记录列表")
 	public Map<String, Object> orderList(
-			HttpServletRequest request,
-			@RequestParam(name = "page", required = false) String pageParam,
-			@RequestParam(name = "page_size", required = false) String pageSizeParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "页码，默认 1；PHP 式解析后 max(…,1)，负数/0/非法按 1",
+							example = "1")
+					@RequestParam(name = "page", required = false)
+					String pageParam,
+			@Parameter(
+							description = "每页数量，默认 20；原始解析值 ≥500 报 E0001「每页的大小最大为500！」；钳制后生效 [20,499]",
+							example = "20")
+					@RequestParam(name = "page_size", required = false)
+					String pageSizeParam,
+			@RequestBody(
+							description = "可选 JSON body；page/page_size 与 query 同名双通道（body 含键优先，值 null 视为未传）",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxVipGradeOrderListBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		OpenapiThirdApiV2ShippingTemplatesListParams.PageSpec pageSpec =
 				OpenapiThirdApiV2ShippingTemplatesListParams.resolve(pageParam, pageSizeParam, body);
