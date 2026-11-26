@@ -41,6 +41,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberCardGradeRelLis
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberCardGradeRelListSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberCreateBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberCreateSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberDetailBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberDetailSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberInfoUpdateBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberInfoUpdateSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberMobileUpdateBodyDoc;
@@ -965,11 +967,104 @@ public class MemberController extends OpenapiBaseController {
 		return null;
 	}
 
+	@Operation(
+			summary = "开放接口查询会员详情",
+			description =
+					"按签名鉴权租户 company_id 以手机号查询会员详情："
+							+ " mobile 必填（originalString 双通道，body 含键优先、值 null 视为未传；服务内 trim 后须"
+							+ " ^1[3456789][0-9]{9}$，缺失/空白/格式错统一 E5502「会员手机号已存在」——PHP 旧契约文案）。"
+							+ " 主查询 selectMemberV2ListForOpenapi LIMIT 1（members JOIN members_info/"
+							+ " members_associations/membercard_grade），**查无会员不报错**（data=null success）；"
+							+ " 主查询 DB 异常 E0001「系统异常」。"
+							+ " data 27 键：SQL 21 列（inviter_id 被 inviter 对象取代移除；mobile/username 解密）"
+							+ " + inviter/salesperson（各 id/name/mobile 3 键）+ tags（id/name 数组）"
+							+ " + vip_grades（id/type/end_date/**grade_nme**——源码键名拼写如此，仅未过期行）"
+							+ " + point 整型 + deposit{have,total} 元字符串。"
+							+ " **detail 路径不执行列表的 handleDataToList**：created/updated 保持 Unix 秒整型、"
+							+ " disabled 原样（无 status 反演）、habbit 保持 JSON 字符串（不解析数组）。"
+							+ " Advice 包装 message 固定「成功」。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.member.detail,"
+							+ " version=2.0）签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 只读，无写库/异步/第三方副作用。",
+			operationId = "ecx.member.detail.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功，data 见 EcxMemberDetailDataDoc"
+								+ "（会员查无 data=null，仍 success）；"
+								+ " 业务失败：status=fail, code=E5502 会员手机号已存在（格式）/ E0001 系统异常，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxMemberDetailFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxMemberDetailSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "查询成功（时间戳/生日为格式演示值）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"user_id\":50,\"mobile\":\"13800138000\","
+															+ "\"source_from\":\"openapi\",\"disabled\":false,"
+															+ "\"created\":1735689600,\"updated\":1735689600,\"remarks\":\"\","
+															+ "\"grade_id\":1,\"user_card_code\":\"card\",\"username\":\"张三\","
+															+ "\"avatar\":\"\",\"sex\":0,\"birthday\":\"1990-01-01\","
+															+ "\"habbit\":\"[]\",\"edu_background\":\"4\",\"income\":\"4\","
+															+ "\"industry\":\"12\",\"email\":\"\",\"address\":\"\","
+															+ "\"unionid\":null,\"grade_name\":\"普通会员\","
+															+ "\"inviter\":{\"id\":0,\"name\":\"\",\"mobile\":\"\"},"
+															+ "\"salesperson\":{\"id\":0,\"name\":\"\",\"mobile\":\"\"},"
+															+ "\"tags\":[],\"vip_grades\":[],\"point\":10,"
+															+ "\"deposit\":{\"have\":\"0.00\",\"total\":\"0.00\"}}}"),
+									@ExampleObject(
+											name = "success-not-found",
+											summary = "会员查无（data=null，仍 success）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-mobile-format",
+											summary = "mobile 缺失/格式错（PHP 文案「已存在」）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5502\","
+															+ "\"message\":\"会员手机号已存在\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-sql-error",
+											summary = "主查询 DB 异常",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E0001\",\"message\":\"系统异常\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@GetMapping(value = "/ecx.member.detail", name = "开放接口查询会员详情")
 	public Map<String, Object> detail(
-			HttpServletRequest request,
-			@RequestParam(name = "mobile", required = false) String mobileParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "会员手机号（明文）；必填，格式错统一 E5502「会员手机号已存在」；查无会员 data=null 不报错",
+							required = true,
+							example = "13800138000")
+					@RequestParam(name = "mobile", required = false)
+					String mobileParam,
+			@RequestBody(
+							description = "可选 JSON body；mobile 与 query 同名双通道（body 含键优先，值 null 视为未传）",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxMemberDetailBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		String mobile = OpenapiRequestParams.originalString(mobileParam, body, "mobile");
 		return memberV2DetailPort.getMemberDetail(companyId, mobile);
