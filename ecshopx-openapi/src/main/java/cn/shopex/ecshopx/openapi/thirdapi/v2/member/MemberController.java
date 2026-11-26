@@ -45,6 +45,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberDetailBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberDetailSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberInfoUpdateBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberInfoUpdateSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberListBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberListSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberMobileUpdateBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberMobileUpdateSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
@@ -1070,28 +1072,191 @@ public class MemberController extends OpenapiBaseController {
 		return memberV2DetailPort.getMemberDetail(companyId, mobile);
 	}
 
+	@Operation(
+			summary = "开放接口查询会员批量",
+			description =
+					"按签名鉴权租户 company_id 分页查询会员（18 键双通道，按键存在性合并，body 含键取原值）："
+							+ " user_id 降序，total_count 为 DISTINCT 会员数。"
+							+ " page/page_size 同会员域分页（E5002，钳制 [20,499]）；"
+							+ " start_date/end_date 须 yyyy-MM-dd HH:mm:ss（纯数字/非法 E4002，空白忽略，created 区间）；"
+							+ " mobile trim 加密等值；source_from 原样等值（空串忽略）；status 宽松整数"
+							+ "（0 查禁用/1 查启用/其他原样 disabled 等值）；have_consume 宽松整数等值；"
+							+ " card_code 优先、user_card_code 缺席 card_code 时重命名生效；"
+							+ " inviter_mobile 查推荐人 IN 过滤（**查无不过滤返回全量**）；"
+							+ " salesperson_mobile 查导购（**查无不过滤**；命中时过滤 SQL 引用未 JOIN 的"
+							+ " rel_salesperson 别名 → SQL 错误 E0001「系统异常」，源码缺陷如实记录）；"
+							+ " tag_id>tag_name、grade_id>grade_name、vip_grade_id>vip_grade_name 键优先级；"
+							+ " 名称解析查无：tag/vip 不过滤、grade 按 0 等值（空结果）；"
+							+ " vip_grade_name 解析**仅匹配 is_disabled=true 等级（源码条件疑似缺陷）**；"
+							+ " vip_grade_id>0 过滤仅含未过期付费关联。主查询 DB 异常 E0001「系统异常」。"
+							+ " data：total_count/is_last_page(0|1)/pager/list；行 26 键（完整格式化："
+							+ " created/updated 格式化时间、status 反演（disabled 移除）、habbit 数组、"
+							+ " sex/edu/income/industry 整数枚举归一、inviter/salesperson/tags/vip_grades；"
+							+ " 无 point/deposit，区别于 detail）。Advice 包装 message 固定「成功」。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.member.list,"
+							+ " version=2.0）签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 只读，无写库/异步/第三方副作用。",
+			operationId = "ecx.member.list.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功，data 见 EcxMemberListDataDoc；"
+								+ " 业务失败：status=fail, code=E4002 时间格式有误 / E5002 每页的大小最大为500！/"
+								+ " E0001 系统异常，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxMemberListFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxMemberListSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "查询成功（时间为格式演示值）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"total_count\":1,\"is_last_page\":1,"
+															+ "\"pager\":{\"page\":1,\"page_size\":20},"
+															+ "\"list\":[{\"user_id\":50,\"mobile\":\"13800138000\","
+															+ "\"source_from\":\"openapi\",\"status\":1,"
+															+ "\"created\":\"2026-01-01 00:00:00\",\"updated\":\"2026-01-01 00:00:00\","
+															+ "\"remarks\":\"\",\"grade_id\":1,\"user_card_code\":\"card\","
+															+ "\"username\":\"张三\",\"avatar\":\"\",\"sex\":0,"
+															+ "\"birthday\":\"1990-01-01\",\"habbit\":[],"
+															+ "\"edu_background\":4,\"income\":4,\"industry\":12,"
+															+ "\"email\":\"\",\"address\":\"\",\"unionid\":null,"
+															+ "\"grade_name\":\"普通会员\","
+															+ "\"inviter\":{\"id\":0,\"name\":\"\",\"mobile\":\"\"},"
+															+ "\"salesperson\":{\"id\":0,\"name\":\"\",\"mobile\":\"\"},"
+															+ "\"tags\":[],\"vip_grades\":[]}]}}"),
+									@ExampleObject(
+											name = "success-empty",
+											summary = "无匹配会员（list 空数组）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"total_count\":0,\"is_last_page\":1,"
+															+ "\"pager\":{\"page\":1,\"page_size\":20},\"list\":[]}}"),
+									@ExampleObject(
+											name = "fail-time-format",
+											summary = "start_date/end_date 传时间戳或非法格式",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4002\",\"message\":\"时间格式有误\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-page-size",
+											summary = "page_size 原始解析值 ≥500",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5002\","
+															+ "\"message\":\"每页的大小最大为500！\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@GetMapping(value = "/ecx.member.list", name = "开放接口查询会员批量")
 	public Map<String, Object> list(
-			HttpServletRequest request,
-			@RequestParam(name = "page", required = false) String pageParam,
-			@RequestParam(name = "page_size", required = false) String pageSizeParam,
-			@RequestParam(name = "mobile", required = false) String mobileParam,
-			@RequestParam(name = "source_from", required = false) String sourceFromParam,
-			@RequestParam(name = "inviter_mobile", required = false) String inviterMobileParam,
-			@RequestParam(name = "salesperson_mobile", required = false) String salespersonMobileParam,
-			@RequestParam(name = "status", required = false) String statusParam,
-			@RequestParam(name = "tag_id", required = false) String tagIdParam,
-			@RequestParam(name = "tag_name", required = false) String tagNameParam,
-			@RequestParam(name = "have_consume", required = false) String haveConsumeParam,
-			@RequestParam(name = "card_code", required = false) String cardCodeParam,
-			@RequestParam(name = "user_card_code", required = false) String userCardCodeParam,
-			@RequestParam(name = "grade_id", required = false) String gradeIdParam,
-			@RequestParam(name = "grade_name", required = false) String gradeNameParam,
-			@RequestParam(name = "vip_grade_id", required = false) String vipGradeIdParam,
-			@RequestParam(name = "vip_grade_name", required = false) String vipGradeNameParam,
-			@RequestParam(name = "start_date", required = false) String startDateParam,
-			@RequestParam(name = "end_date", required = false) String endDateParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(description = "页码，默认 1；PHP 式解析后 max(…,1)", example = "1")
+					@RequestParam(name = "page", required = false)
+					String pageParam,
+			@Parameter(
+							description = "每页数量，默认 20；原始解析值 ≥500 报 E5002；钳制后生效 [20,499]",
+							example = "20")
+					@RequestParam(name = "page_size", required = false)
+					String pageSizeParam,
+			@Parameter(
+							description = "会员手机号；trim 加密等值过滤；空白忽略；查无空列表",
+							example = "13800138000")
+					@RequestParam(name = "mobile", required = false)
+					String mobileParam,
+			@Parameter(description = "来源渠道等值（原样不 trim；空串忽略）", example = "openapi")
+					@RequestParam(name = "source_from", required = false)
+					String sourceFromParam,
+			@Parameter(
+							description = "推荐人手机号；查推荐人 IN 过滤；查无不过滤（返回全量）",
+							example = "13800000000")
+					@RequestParam(name = "inviter_mobile", required = false)
+					String inviterMobileParam,
+			@Parameter(
+							description = "绑定导购手机号；查无不过滤；命中时 SQL 缺陷触发 E0001「系统异常」（见 body schema）",
+							example = "13800000000")
+					@RequestParam(name = "salesperson_mobile", required = false)
+					String salespersonMobileParam,
+			@Parameter(
+							description = "会员状态；0 查禁用/1 查启用/其他原样 disabled 等值（宽松整数）",
+							example = "1")
+					@RequestParam(name = "status", required = false)
+					String statusParam,
+			@Parameter(description = "标签 ID；>0 关联过滤；优先于 tag_name", example = "1")
+					@RequestParam(name = "tag_id", required = false)
+					String tagIdParam,
+			@Parameter(
+							description = "标签名（tag_id 缺席时生效）；查无不过滤",
+							example = "聚合测试类目")
+					@RequestParam(name = "tag_name", required = false)
+					String tagNameParam,
+			@Parameter(description = "是否消费过（have_consume 等值；宽松整数）", example = "0")
+					@RequestParam(name = "have_consume", required = false)
+					String haveConsumeParam,
+			@Parameter(
+							description = "会员卡号等值；空串忽略；优先于 user_card_code",
+							example = "card")
+					@RequestParam(name = "card_code", required = false)
+					String cardCodeParam,
+			@Parameter(
+							description = "会员卡号别名；card_code 缺席时重命名生效",
+							example = "card")
+					@RequestParam(name = "user_card_code", required = false)
+					String userCardCodeParam,
+			@Parameter(
+							description = "等级 ID 等值（宽松整数）；优先于 grade_name",
+							example = "1")
+					@RequestParam(name = "grade_id", required = false)
+					String gradeIdParam,
+			@Parameter(
+							description = "等级名（grade_id 缺席时生效）；查无按 grade_id=0 过滤（空结果）",
+							example = "普通会员")
+					@RequestParam(name = "grade_name", required = false)
+					String gradeNameParam,
+			@Parameter(
+							description = "付费等级 ID；>0 过滤未过期付费关联；优先于 vip_grade_name",
+							example = "2")
+					@RequestParam(name = "vip_grade_id", required = false)
+					String vipGradeIdParam,
+			@Parameter(
+							description = "付费等级名（vip_grade_id 缺席时生效）；仅匹配已停用等级（源码条件）；查无不过滤",
+							example = "Gold")
+					@RequestParam(name = "vip_grade_name", required = false)
+					String vipGradeNameParam,
+			@Parameter(
+							description = "注册起始时间 yyyy-MM-dd HH:mm:ss；纯数字/非法 E4002；空白忽略（格式演示值）",
+							example = "2026-01-01 00:00:00")
+					@RequestParam(name = "start_date", required = false)
+					String startDateParam,
+			@Parameter(
+							description = "注册截止时间；解析同 start_date（格式演示值）",
+							example = "2026-12-31 23:59:59")
+					@RequestParam(name = "end_date", required = false)
+					String endDateParam,
+			@RequestBody(
+							description =
+									"可选 JSON body；18 键与 query 同名双通道（按键存在性合并，body 含键取原值）；"
+											+ "过滤优先级/查无语义/源码缺陷见 schema",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxMemberListBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		OpenapiThirdApiV2MemberListParams.PageSpec pageSpec =
 				OpenapiThirdApiV2MemberListParams.resolve(pageParam, pageSizeParam, body);
