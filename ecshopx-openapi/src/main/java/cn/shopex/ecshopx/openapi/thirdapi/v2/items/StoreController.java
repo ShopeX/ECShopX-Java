@@ -26,6 +26,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemStoreGetBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemStoreGetSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemStoreSyncBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemStoreSyncSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemStoreUpdateBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxItemStoreUpdateSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -146,10 +148,95 @@ public class StoreController extends OpenapiBaseController {
 		return null;
 	}
 
+	@Operation(
+			summary = "增量更新商品库存",
+			description =
+					"按签名鉴权租户 company_id 对商品库存做加/减增量（4 键白名单，body 含键优先否则 query）："
+							+ " item_code 必填非空白（E5001「商品货号参数错误」）；"
+							+ " increase_store 与 decrease_store 恰一必填（都缺 E5001「增加库存或减去库存二选一必填」，"
+							+ " 同时存在 E5001「增加库存或减去库存不能同时存在！」），非负整数"
+							+ "（字符串 ^[0-9]+$ 且 ≤Integer.MAX，否则 E5001「增加库存数参数错误」/「减去库存数参数错误」）；"
+							+ " distributor_code 键存在须标量（E5001「店铺ID参数错误」）。"
+							+ " productModel=standard 且 distributor_code 非空白：直接无操作成功（不更新店铺库存）。"
+							+ " 否则总部增量分支：按 item_bn 定位（查无 E5101），delta=0 不写库；"
+							+ " SQL 原子加/减 items.store（减量带 store ≥ 扣减数守卫，不足 affected=0 静默成功）；"
+							+ " 扣/加成功则回读新库存并权威覆盖 Redis 库存 + 库存变更事件。"
+							+ " 其他异常 E5000（空则「未知错误」）。成功恒 data=null，Advice 包装 message 固定「成功」。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.item.store.update, version=2.0）"
+							+ " 签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 副作用：UPDATE items.store/updated + Redis item_store 权威覆盖写 + 库存变更事件；无第三方调用。"
+							+ " summary 为语义命名（注册表未提供中文接口名）。",
+			operationId = "ecx.item.store.update.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功, data 恒 null"
+								+ "（含 standard 店铺无操作、delta=0、减量库存不足静默成功场景）；"
+								+ " 业务失败：status=fail, code=E5001 商品货号·二选一必填·增加/减去库存数·不能同时存在·店铺ID参数错误 /"
+								+ " E5101 商品找不到 / E5000 未知错误，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxItemStoreUpdateFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxItemStoreUpdateSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "增量更新成功（无返回体）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-missing-delta",
+											summary = "increase_store/decrease_store 都缺失",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5001\","
+															+ "\"message\":\"增加库存或减去库存二选一必填\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-both-delta",
+											summary = "increase_store 与 decrease_store 同时传",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5001\","
+															+ "\"message\":\"增加库存或减去库存不能同时存在！\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-decrease-invalid",
+											summary = "decrease_store 负数/非整数",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5001\","
+															+ "\"message\":\"减去库存数参数错误\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-goods-not-found",
+											summary = "item_code 查无（总部分支）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5101\",\"message\":\"商品找不到\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@PutMapping("/ecx.item.store.update")
 	public Void update(
-			HttpServletRequest request,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@RequestBody(
+							description =
+									"可选 JSON body；4 键白名单与 query 同名双通道（body 含键优先）；"
+											+ "increase_store/decrease_store 恰一必填，standard 店铺无操作语义见 schema",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxItemStoreUpdateBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		Map<String, Object> merged = OpenapiThirdApiV2ItemStoreUpdateParams.buildMergedParams(request, body);
 		itemStoreUpdatePort.updateStore(companyId, merged);
