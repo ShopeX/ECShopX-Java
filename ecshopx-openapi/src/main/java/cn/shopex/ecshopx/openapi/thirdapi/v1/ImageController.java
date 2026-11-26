@@ -25,6 +25,17 @@ import cn.shopex.ecshopx.common.openapi.OpenapiImageSavePort;
 import cn.shopex.ecshopx.common.openapi.OpenapiImageUploadTokenPort;
 import cn.shopex.ecshopx.common.web.FlexibleBody;
 import cn.shopex.ecshopx.openapi.thirdapi.OpenapiBaseController;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxImageDelBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxImageDelSuccessEnvelopeDoc;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -35,6 +46,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 /** OpenAPI v1 handler scaffold — methods added during migration. */
+@Tag(name = "开放接口-图片")
 @OpenapiResponse
 @RestController("openapiV1Image")
 @RequestMapping("/api/openapi/internal/v1")
@@ -90,11 +102,80 @@ public class ImageController extends OpenapiBaseController {
 		return new OpenapiEnvelope("success", "E0000", "ok", data);
 	}
 
+	@Operation(
+			summary = "开放接口删除图片",
+			description =
+					"按签名鉴权得到的租户 company_id 批量软删除图片（upload_images.disabled=true，不删除物理文件）。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.image.del, version=1.0）"
+							+ " 签名校验后转发到本 internal 路径；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " image_id 双通道：body 含键时取原始值（null 不回退 query），否则用 query 原样；"
+							+ " 逗号分隔多个，单次最多 100 个（超出返回 E0002）；空/\"0\" 报 E0001；"
+							+ " 更新影响 0 行返回 status=fail 且 code=E0000（未查询到更新数据，PHP 旧契约）。"
+							+ " 副作用：写库批量更新 upload_images.disabled；无异步/第三方调用。",
+			operationId = "ecx.image.del")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态。"
+								+ " 成功：status=success, code=E0000, message=ok，data 仅含 status=true；"
+								+ " 超过100个：status=fail, code=E0002 单次最多删除100个图片；"
+								+ " 未选图片：status=fail, code=E0001 请选择要删除的图片；"
+								+ " 无匹配记录：status=fail 且 code=E0000 未查询到更新数据（PHP 旧契约）；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权。失败 data 均为 null，见 EcxImageDelFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation = EcxImageDelSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "删除成功",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"ok\","
+															+ "\"data\":{\"status\":true}}"),
+									@ExampleObject(
+											name = "fail-too-many",
+											summary = "超过 100 个（E0002）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E0002\","
+															+ "\"message\":\"单次最多删除100个图片\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-no-rows",
+											summary = "无匹配记录（PHP 旧契约：code=E0000 但 status=fail）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E0000\",\"message\":\"未查询到更新数据\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@PostMapping(value = "/ecx.image.del", name = "开放接口删除图片")
 	public OpenapiEnvelope deleteImage(
-			HttpServletRequest request,
-			@RequestParam(name = "image_id", required = false) String imageIdParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description =
+									"图片 ID，逗号分隔多个；必填（空/\"0\" 报错）；单次最多 100 个"
+											+ "（body 同名键优先，原样不 trim）",
+							required = true,
+							example = "99")
+					@RequestParam(name = "image_id", required = false)
+					String imageIdParam,
+			@RequestBody(
+							description =
+									"可选 JSON body；image_id 与 query 同名双通道，body 含键时取原始值"
+											+ "（null 视为未提供且不回退 query）",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema = @Schema(implementation = EcxImageDelBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		OpenapiImageDeleteParams.ParseResult parsed =
 				OpenapiImageDeleteParams.parse(imageIdParam, body);
