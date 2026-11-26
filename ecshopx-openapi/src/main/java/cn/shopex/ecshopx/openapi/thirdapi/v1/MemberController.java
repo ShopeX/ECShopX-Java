@@ -50,6 +50,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberCreateSuccessEnvelopeD
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberFrequentItemsBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberFrequentItemsSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberListBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberListFpBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberListFpSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberListSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -1154,25 +1156,142 @@ public class MemberController extends OpenapiBaseController {
 		return new OpenapiEnvelope("success", "E0000", "success", List.of());
 	}
 
+	@Operation(
+			summary = "开放接口会员列表查询（增强版）",
+			description =
+					"按签名鉴权租户 company_id 多条件查询会员。scope=fp（默认）：分页返回 {count,list}，"
+							+ " 每行 55 键（members+members_info 联查 48 列，mobile/username 解密、nickname 恒空串、"
+							+ " unionid/open_id 子查询、total_amount 累计消费分、浏览 4 键），user_id 倒序；"
+							+ " 筛选：生日区间/tag_id 数组/type 分配状态/salesperson_code/store_bn/积分区间/grade_id/keyword 手机号模糊。"
+							+ " scope=customer：salesperson_code 必填，经第三方营销中心签名接口"
+							+ "（basics.salesperson.getBindMemberUnionids）取导购绑定客户 unionid，本地按 grade_id/积分/buy 区间过滤后"
+							+ " 返回 unionid 字符串数组（第三方失败/errcode≠0 时返回空数组）。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.member.listFp, version=1.0）"
+							+ " 签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 参数双通道（body 含键取原始值优先）；各键提供时严格校验（E0001），customer 系统异常 E9999 且 data=[]。"
+							+ " 副作用：fp 只读；customer 发起第三方 HTTP 调用；无写库/异步。",
+			operationId = "ecx.member.listFp")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态。"
+								+ " 成功：status=success, code=E0000, message=操作成功；scope=fp 时 data={count,list}"
+								+ "（行字段见 EcxMemberListFpDataDoc），scope=customer 时 data 为 unionid 字符串数组；"
+								+ " 参数校验失败：status=fail, code=E0001（文案见 EcxMemberListFpFailEnvelopeDoc），data=null；"
+								+ " customer 系统异常：status=fail, code=E9999，data=[]；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxMemberListFpSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success-fp",
+											summary = "scope=fp（字段节选，完整 55 键见 schema）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"操作成功\","
+															+ "\"data\":{\"count\":1,\"list\":[{\"user_id\":5,\"company_id\":100,"
+															+ "\"grade_id\":1,\"mobile\":\"13800000000\",\"user_card_code\":null,"
+															+ "\"created\":1764115200,\"updated\":1764115200,"
+															+ "\"fp_salesperson\":\"E9\",\"has_fp\":true,\"op_distributor\":0,"
+															+ "\"username\":\"u1\",\"name\":null,\"sex\":0,"
+															+ "\"birthday\":\"2000-01-02\",\"habbit\":null,"
+															+ "\"unionid\":\"union-test\",\"open_id\":null,\"nickname\":\"\","
+															+ "\"total_amount\":9900,\"browse_count\":3,"
+															+ "\"browse_time\":\"2026-11-26 12:00:00\","
+															+ "\"browse_item_name\":\"示例商品\",\"browse_item_id\":1001}]}}"),
+									@ExampleObject(
+											name = "success-customer",
+											summary = "scope=customer（data 为 unionid 数组）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"操作成功\","
+															+ "\"data\":[\"union-test\"]}"),
+									@ExampleObject(
+											name = "fail-bad-scope",
+											summary = "scope 非法",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E0001\","
+															+ "\"message\":\"scope参数错误，应为fp或customer\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-customer-system",
+											summary = "customer 系统异常（E9999，data 为空数组）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E9999\","
+															+ "\"message\":\"获取导购客户unionid列表失败：连接超时\",\"data\":[]}")
+								}))
+	})
 	@PostMapping(value = "/ecx.member.listFp", name = "开放接口会员列表查询（增强版）")
 	public OpenapiEnvelope memberList(
-			HttpServletRequest request,
-			@RequestParam(name = "scope", required = false) String scopeParam,
-			@RequestParam(name = "page", required = false) String pageParam,
-			@RequestParam(name = "page_size", required = false) String pageSizeParam,
-			@RequestParam(name = "birthday_start", required = false) String birthdayStartParam,
-			@RequestParam(name = "birthday_end", required = false) String birthdayEndParam,
-			@RequestParam(name = "tag_id", required = false) List<String> tagIdQueryList,
-			@RequestParam(name = "type", required = false) String typeParam,
-			@RequestParam(name = "salesperson_code", required = false) String salespersonCodeParam,
-			@RequestParam(name = "store_bn", required = false) String storeBnParam,
-			@RequestParam(name = "point_start", required = false) String pointStartParam,
-			@RequestParam(name = "point_end", required = false) String pointEndParam,
-			@RequestParam(name = "grade_id", required = false) String gradeIdParam,
-			@RequestParam(name = "buy_start", required = false) String buyStartParam,
-			@RequestParam(name = "buy_end", required = false) String buyEndParam,
-			@RequestParam(name = "keyword", required = false) String keywordParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "查询范围：fp（默认，会员分页列表）/ customer（导购客户 unionid 数组）（body 同名键优先）",
+							schema = @Schema(allowableValues = {"fp", "customer"}),
+							example = "fp")
+					@RequestParam(name = "scope", required = false)
+					String scopeParam,
+			@Parameter(description = "页码；提供时须为正整数；缺省 1（body 同名键优先）", example = "1")
+					@RequestParam(name = "page", required = false)
+					String pageParam,
+			@Parameter(description = "每页条数；提供时须为整数；缺省/小于 1 按 10（body 同名键优先）", example = "10")
+					@RequestParam(name = "page_size", required = false)
+					String pageSizeParam,
+			@Parameter(description = "生日开始日期 YYYY-MM-DD（body 同名键优先）", example = "2000-01-01")
+					@RequestParam(name = "birthday_start", required = false)
+					String birthdayStartParam,
+			@Parameter(description = "生日结束日期 YYYY-MM-DD（body 同名键优先）", example = "2000-12-31")
+					@RequestParam(name = "birthday_end", required = false)
+					String birthdayEndParam,
+			@Parameter(
+							description = "会员标签 ID（query 可重复传参；body 中须为整数数组）；命中任一标签（body 同名键优先）",
+							example = "1")
+					@RequestParam(name = "tag_id", required = false)
+					List<String> tagIdQueryList,
+			@Parameter(
+							description = "分配状态：noassign 未分配 / assign 已分配且未加好友（body 同名键优先）",
+							schema = @Schema(allowableValues = {"noassign", "assign"}),
+							example = "assign")
+					@RequestParam(name = "type", required = false)
+					String typeParam,
+			@Parameter(description = "导购编号（fp_salesperson 精确匹配）；scope=customer 时必填（body 同名键优先）", example = "E9")
+					@RequestParam(name = "salesperson_code", required = false)
+					String salespersonCodeParam,
+			@Parameter(description = "门店编号（shop_code→op_distributor）；查无门店返回空列表（body 同名键优先）", example = "S001")
+					@RequestParam(name = "store_bn", required = false)
+					String storeBnParam,
+			@Parameter(description = "积分下限（含）；非负整数（body 同名键优先）", example = "0")
+					@RequestParam(name = "point_start", required = false)
+					String pointStartParam,
+			@Parameter(description = "积分上限（含）；非负整数（body 同名键优先）", example = "1000")
+					@RequestParam(name = "point_end", required = false)
+					String pointEndParam,
+			@Parameter(description = "会员卡等级 ID；正整数（body 同名键优先）", example = "1")
+					@RequestParam(name = "grade_id", required = false)
+					String gradeIdParam,
+			@Parameter(description = "累计购买金额下限（含，分）；非负整数（body 同名键优先）", example = "0")
+					@RequestParam(name = "buy_start", required = false)
+					String buyStartParam,
+			@Parameter(description = "累计购买金额上限（含，分）；非负整数（body 同名键优先）", example = "100000")
+					@RequestParam(name = "buy_end", required = false)
+					String buyEndParam,
+			@Parameter(description = "关键词（手机号模糊查询）（body 同名键优先）", example = "13800000000")
+					@RequestParam(name = "keyword", required = false)
+					String keywordParam,
+			@RequestBody(
+							description =
+									"可选 JSON body；字段与 query 同名双通道，body 含键时取原始值优先；"
+											+ "tag_id 在 body 中须为整数数组",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(implementation = EcxMemberListFpBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		Map<String, Object> mergedParams =
 				OpenapiMemberListParams.buildMergedParams(
