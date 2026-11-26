@@ -19,7 +19,27 @@ package cn.shopex.ecshopx.deposit.mapper;
 import cn.shopex.ecshopx.deposit.domain.UserDeposit;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Update;
 
 @Mapper
 public interface UserDepositMapper extends BaseMapper<UserDeposit> {
+
+	/**
+	 * Atomically apply {@code delta} to {@code money}. When {@code minBalance} &gt; 0, requires
+	 * {@code money >= minBalance} (use {@code -delta} for debits; use {@code 0} for credits).
+	 */
+	@Update("""
+			UPDATE user_deposit
+			SET money = money + #{delta}, updated = #{updated}
+			WHERE company_id = #{companyId}
+			  AND user_id = #{userId}
+			  AND money >= #{minBalance}
+			""")
+	int addMoneyDelta(
+			@Param("companyId") long companyId,
+			@Param("userId") long userId,
+			@Param("delta") long delta,
+			@Param("minBalance") long minBalance,
+			@Param("updated") int updated);
 }

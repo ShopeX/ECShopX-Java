@@ -16,6 +16,7 @@
 
 package cn.shopex.ecshopx.deposit.service;
 
+import cn.shopex.ecshopx.common.exception.ResourceException;
 import cn.shopex.ecshopx.deposit.domain.UserDeposit;
 import cn.shopex.ecshopx.deposit.mapper.UserDepositMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -23,9 +24,13 @@ import java.time.Instant;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 @Service
 public class UserDepositBalanceMutationService {
+
+	private static final String BALANCE_SHORT = "余额不足，支付失败";
 
 	private final UserDepositMapper userDepositMapper;
 	private final StringRedisTemplate redis;
@@ -42,33 +47,65 @@ public class UserDepositBalanceMutationService {
 	}
 
 	public void applyUserDepositTotalDelta(long companyId, long userId, long signedDeltaFen) {
-		String redisKey = "userDepositTotal_" + companyId;
-		String field = String.valueOf(userId);
-		redis.opsForHash().delete(redisKey, field);
+		if (signedDeltaFen == 0L) {
+			return;
+		}
+		int now = (int) Instant.now().getEpochSecond();
+		long minBalance = signedDeltaFen < 0L ? -signedDeltaFen : 0L;
+		int affected = userDepositMapper.addMoneyDelta(companyId, userId, signedDeltaFen, minBalance, now);
+		long newMoney;
+		if (affected > 0) {
+			newMoney = currentMoney(companyId, userId);
+		} else if (signedDeltaFen < 0L) {
+			throw new ResourceException(BALANCE_SHORT);
+		} else {
+			UserDeposit row = new UserDeposit();
+			row.setCompanyId(companyId);
+			row.setUserId(userId);
+			row.setMoney(signedDeltaFen);
+			row.setCreated(now);
+			row.setUpdated(now);
+			try {
+				userDepositMapper.insert(row);
+				newMoney = signedDeltaFen;
+			} catch (RuntimeException insertEx) {
+				int retried = userDepositMapper.addMoneyDelta(companyId, userId, signedDeltaFen, 0L, now);
+				if (retried == 0) {
+					throw insertEx;
+				}
+				newMoney = currentMoney(companyId, userId);
+			}
+		}
+		scheduleRedisRefresh(companyId, userId, newMoney);
+	}
+
+	private long currentMoney(long companyId, long userId) {
 		UserDeposit existing =
 				userDepositMapper.selectOne(
 						new LambdaQueryWrapper<UserDeposit>()
 								.eq(UserDeposit::getCompanyId, companyId)
 								.eq(UserDeposit::getUserId, userId)
 								.last("LIMIT 1"));
-		int now = (int) Instant.now().getEpochSecond();
-		long newMoney;
-		if (existing != null) {
-			long base = existing.getMoney() != null ? existing.getMoney() : 0L;
-			newMoney = base + signedDeltaFen;
-			existing.setMoney(newMoney);
-			existing.setUpdated(now);
-			userDepositMapper.updateById(existing);
-		} else {
-			newMoney = signedDeltaFen;
-			UserDeposit row = new UserDeposit();
-			row.setCompanyId(companyId);
-			row.setUserId(userId);
-			row.setMoney(newMoney);
-			row.setCreated(now);
-			row.setUpdated(now);
-			userDepositMapper.insert(row);
+		if (existing == null || existing.getMoney() == null) {
+			return 0L;
 		}
-		redis.opsForHash().put(redisKey, field, String.valueOf(newMoney));
+		return existing.getMoney();
+	}
+
+	private void scheduleRedisRefresh(long companyId, long userId, long newMoney) {
+		String redisKey = "userDepositTotal_" + companyId;
+		String field = String.valueOf(userId);
+		String value = String.valueOf(newMoney);
+		if (TransactionSynchronizationManager.isSynchronizationActive()) {
+			TransactionSynchronizationManager.registerSynchronization(
+					new TransactionSynchronization() {
+						@Override
+						public void afterCommit() {
+							redis.opsForHash().put(redisKey, field, value);
+						}
+					});
+		} else {
+			redis.opsForHash().put(redisKey, field, value);
+		}
 	}
 }
