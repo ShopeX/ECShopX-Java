@@ -29,6 +29,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberRechargeTradeLi
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberRechargeTradeListSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxRechargeRuleAddBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxRechargeRuleAddSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxRechargeRuleDeleteBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxRechargeRuleDeleteSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -342,11 +344,84 @@ public class MemberRechargeController extends OpenapiBaseController {
 				companyId, rechargeruleIdRaw, fixedMoneyRaw, ruleTypeRaw, ruleDataRaw);
 	}
 
+	@Operation(
+			summary = "开放接口删除储值面额规则",
+			description =
+					"按签名鉴权租户 company_id 删除储值面额规则：rechargerule_id 必填"
+							+ "（mergeString 双通道 trim，body 含键优先、值 null 视为未传；"
+							+ " trim 后须可 parseLong 且 ≥1，否则 E5001「请填写正确的储值规则ID」）。"
+							+ " 按 company_id+id 定位 deposit_recharge_rule（LIMIT 1），"
+							+ " 查无 E5581「未查询到该储值规则」；命中后按 company_id+id 删除，"
+							+ " 不校验规则是否被交易引用。"
+							+ " 成功 data={status:true}（布尔）。Advice 包装 message 固定「成功」。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}"
+							+ "（method=ecx.member.rechargerule.delete, version=2.0）签名校验后转发；"
+							+ " 直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 副作用：@Transactional DELETE deposit_recharge_rule 单行；无异步、无第三方调用。",
+			operationId = "ecx.member.rechargerule.delete.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功, data={status:true}；"
+								+ " 业务失败：status=fail, code=E5001 请填写正确的储值规则ID /"
+								+ " E5581 未查询到该储值规则，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxRechargeRuleDeleteFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxRechargeRuleDeleteSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "删除成功",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"status\":true}}"),
+									@ExampleObject(
+											name = "fail-not-found",
+											summary = "规则查无",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5581\","
+															+ "\"message\":\"未查询到该储值规则\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-param",
+											summary = "rechargerule_id 缺失/非整数/小于 1",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5001\","
+															+ "\"message\":\"请填写正确的储值规则ID\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@DeleteMapping(value = "/ecx.member.rechargerule.delete", name = "开放接口删除储值面额规则")
 	public Map<String, Object> deleteRechargeRule(
-			HttpServletRequest request,
-			@RequestParam(name = "rechargerule_id", required = false) String rechargeruleIdParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "储值规则 ID；必填整数 ≥1（否则 E5001）；查无 E5581「未查询到该储值规则」",
+							required = true,
+							example = "1")
+					@RequestParam(name = "rechargerule_id", required = false)
+					String rechargeruleIdParam,
+			@RequestBody(
+							description = "可选 JSON body；rechargerule_id 与 query 同名双通道（mergeString trim，body 含键优先）",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxRechargeRuleDeleteBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		String rechargeruleIdRaw =
 				OpenapiRequestParams.mergeString(rechargeruleIdParam, body, "rechargerule_id");
