@@ -53,6 +53,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberListBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberListFpBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberListFpSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberListSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberNotifyBecomeFriendBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxMemberNotifyBecomeFriendSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -1138,13 +1140,98 @@ public class MemberController extends OpenapiBaseController {
 		return new OpenapiEnvelope("success", "E0000", "分配成功", data);
 	}
 
+	@Operation(
+			summary = "开放接口导购通知加好友",
+			description =
+					"企微加好友回调：按签名鉴权租户 company_id 与 unionid（wechat 关联）定位会员，"
+							+ " 校验其归属导购与 salesperson_code 一致（has_fp=true 且 fp_salesperson 相等），"
+							+ " 将 members.is_become_friend 置 true。幂等：已是好友状态直接返回成功。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}"
+							+ "（method=ecx.member.notifyBecomeFriend, version=1.0）签名校验后转发；"
+							+ " 直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 参数双通道：body 含键取原始值（null 不回退 query），否则 query 原样。"
+							+ " is_become_friend 必须为 \"1\"。失败码为接口自定义语义：E0001 缺参/标记非法、"
+							+ " E4002 会员不存在、E4004 该会员未分配给该导购、E5001 系统错误。"
+							+ " 成功 data 恒为空数组 []。副作用：写库更新 members.is_become_friend；无异步/第三方调用。",
+			operationId = "ecx.member.notifyBecomeFriend")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态。"
+								+ " 成功：status=success, code=E0000, message=success，data 恒为 []；"
+								+ " 业务失败：status=fail（E0001 请填写会员unionid/请填写导购编号/is_become_friend必须为1；"
+								+ "E4002 会员不存在；E4004 该会员未分配给该导购；E5001 系统错误：{异常信息}），data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。"
+								+ " 见 EcxMemberNotifyBecomeFriendFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxMemberNotifyBecomeFriendSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "通知成功（data 恒为空数组）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"success\",\"data\":[]}"),
+									@ExampleObject(
+											name = "fail-not-assigned",
+											summary = "会员未分配给该导购（E4004，业务语义）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\","
+															+ "\"message\":\"该会员未分配给该导购\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-bad-flag",
+											summary = "is_become_friend 非 1",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E0001\","
+															+ "\"message\":\"is_become_friend必须为1\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@PostMapping(value = "/ecx.member.notifyBecomeFriend", name = "开放接口导购通知加好友")
 	public OpenapiEnvelope notifyBecomeFriend(
-			HttpServletRequest request,
-			@RequestParam(name = "unionid", required = false) String unionidParam,
-			@RequestParam(name = "salesperson_code", required = false) String salespersonCodeParam,
-			@RequestParam(name = "is_become_friend", required = false) String isBecomeFriendParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "会员微信 unionid（租户内 wechat 关联定位）；必填非空（body 同名键优先）",
+							required = true,
+							example = "union-test")
+					@RequestParam(name = "unionid", required = false)
+					String unionidParam,
+			@Parameter(
+							description = "导购编号；必填非空；须与会员归属导购一致（body 同名键优先）",
+							required = true,
+							example = "E9")
+					@RequestParam(name = "salesperson_code", required = false)
+					String salespersonCodeParam,
+			@Parameter(
+							description = "加好友标记；必须为 \"1\"（body 同名键优先）",
+							required = true,
+							schema = @Schema(allowableValues = {"1"}),
+							example = "1")
+					@RequestParam(name = "is_become_friend", required = false)
+					String isBecomeFriendParam,
+			@RequestBody(
+							description =
+									"可选 JSON body；字段与 query 同名双通道，body 含键时取原始值"
+											+ "（null 视为未提供且不回退 query）",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxMemberNotifyBecomeFriendBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		String unionid = OpenapiRequestParams.originalString(unionidParam, body, "unionid");
 		String salespersonCode =
