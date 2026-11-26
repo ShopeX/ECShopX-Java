@@ -32,6 +32,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.OpenapiBaseController;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.OpenapiRequestParams;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTagAddBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTagAddSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTagDeleteBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTagDeleteSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -305,11 +307,85 @@ public class MemberTagController extends OpenapiBaseController {
 		return memberTagTaggedDeletePort.deleteMemberTagged(companyId, mobileRaw, tagIdsRaw);
 	}
 
+	@Operation(
+			summary = "开放接口删除会员标签",
+			description =
+					"按签名鉴权租户 company_id 删除会员标签：tag_id 必填非空白"
+							+ "（mergeString 双通道 trim，body 含键优先、值 null 视为未传；缺失 E5001「标签ID必填」）。"
+							+ " trim 后须可 parseLong（非整数按查无处理），company_id+tag_id 定位 members_tags"
+							+ "（LIMIT 1），非整数/查无均 E5561「该标签不存在」。"
+							+ " **系统标签禁删**（tag_kind 系统类 → ResourceException E0001「系统标签不可编辑」）。"
+							+ " 删除全部语言分表行（zhCN/enCN/arSA/zhTW/jaJP/ruRU）+ members_tags 行；"
+							+ " **不清理会员关联 members_rel_tags**（关联行残留，如实记录）。"
+							+ " 成功 data={status:true}（布尔）。Advice 包装 message 固定「成功」。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.member.tag.delete,"
+							+ " version=2.0）签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 副作用：@Transactional DELETE members_tags 单行 + 6 语言分表 DELETE；"
+							+ " 无异步、无第三方调用。",
+			operationId = "ecx.member.tag.delete.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功, data={status:true}；"
+								+ " 业务失败：status=fail, code=E5001 标签ID必填 / E5561 该标签不存在 /"
+								+ " E0001 系统标签不可编辑，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxMemberTagDeleteFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxMemberTagDeleteSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "删除成功",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"status\":true}}"),
+									@ExampleObject(
+											name = "fail-not-found",
+											summary = "标签查无/ID 非整数",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5561\","
+															+ "\"message\":\"该标签不存在\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-system-tag",
+											summary = "系统标签禁删",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E0001\","
+															+ "\"message\":\"系统标签不可编辑\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@DeleteMapping(value = "/ecx.member.tag.delete", name = "开放接口删除会员标签")
 	public Map<String, Object> deleteTag(
-			HttpServletRequest request,
-			@RequestParam(name = "tag_id", required = false) String tagIdParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "标签 ID；必填（E5001）；非整数/查无 E5561；系统标签 E0001「系统标签不可编辑」",
+							required = true,
+							example = "1")
+					@RequestParam(name = "tag_id", required = false)
+					String tagIdParam,
+			@RequestBody(
+							description = "可选 JSON body；tag_id 与 query 同名双通道（mergeString trim，body 含键优先）",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxMemberTagDeleteBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		String tagIdRaw = OpenapiRequestParams.mergeString(tagIdParam, body, "tag_id");
 		return memberTagDeletePort.deleteTag(companyId, tagIdRaw);
