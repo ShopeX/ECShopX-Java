@@ -29,6 +29,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxImageDelBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxImageDelSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxImageListBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxImageListSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxImageSaveBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxImageSaveSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -271,17 +273,93 @@ public class ImageController extends OpenapiBaseController {
 		return new OpenapiEnvelope("success", "E0000", "ok", data);
 	}
 
+	@Operation(
+			summary = "开放接口保存图片元数据",
+			description =
+					"按签名鉴权得到的租户 company_id 新建图片素材记录（upload_images 插入一行，"
+							+ "supplier_id/merchant_id=0，created/updated=当前时间），返回自增 image_id。"
+							+ " 不上传文件本体，仅登记元数据（文件先经 upload_token/upload_localimage 上传）。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.image.save, version=1.0）"
+							+ " 签名校验后转发到本 internal 路径；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 全部参数双通道（body 含键优先）。校验：image_name 必填≤100（文案写 50）、storage 必填、"
+							+ " image_url 必填、image_type 提供时≤20；多条错误以「，」拼接一次性返回 E0001。"
+							+ " 副作用：写库插入 upload_images；无异步/第三方调用。",
+			operationId = "ecx.image.save")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态。"
+								+ " 成功：status=success, code=E0000, message=ok，data 仅含 image_id；"
+								+ " 校验失败：status=fail, code=E0001（图片名称必填,不能超过50个字符/存储类型必填/"
+								+ "图片分类长度不能超过20个字符/图片链接必填，多条以「，」拼接），data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxImageSaveFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation = EcxImageSaveSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "保存成功",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"ok\","
+															+ "\"data\":{\"image_id\":99}}"),
+									@ExampleObject(
+											name = "fail-validation",
+											summary = "校验失败（多条错误拼接）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E0001\","
+															+ "\"message\":\"图片名称必填,不能超过50个字符，图片链接必填，\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@PostMapping(value = "/ecx.image.save", name = "开放接口保存图片元数据")
 	public OpenapiEnvelope saveImage(
-			HttpServletRequest request,
-			@RequestParam(name = "image_name", required = false) String imageNameParam,
-			@RequestParam(name = "storage", required = false) String storageParam,
-			@RequestParam(name = "image_url", required = false) String imageUrlParam,
-			@RequestParam(name = "image_cat_id", required = false) String imageCatIdParam,
-			@RequestParam(name = "brief", required = false) String briefParam,
-			@RequestParam(name = "image_type", required = false) String imageTypeParam,
-			@RequestParam(name = "image_full_url", required = false) String imageFullUrlParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "图片名称；必填非空白，长度上限 100（错误文案写 50）（body 同名键优先）",
+							required = true,
+							example = "示例图片")
+					@RequestParam(name = "image_name", required = false)
+					String imageNameParam,
+			@Parameter(description = "存储类型；必填（如 image/videos）（body 同名键优先）", required = true, example = "image")
+					@RequestParam(name = "storage", required = false)
+					String storageParam,
+			@Parameter(
+							description = "图片存储 key/链接；必填（body 同名键优先）",
+							required = true,
+							example = "path/key.jpg")
+					@RequestParam(name = "image_url", required = false)
+					String imageUrlParam,
+			@Parameter(description = "图片分类 ID；可选，缺省/空/\"0\"/非整数按 0（body 同名键优先）", example = "10")
+					@RequestParam(name = "image_cat_id", required = false)
+					String imageCatIdParam,
+			@Parameter(description = "图片简介；可选（body 同名键优先）")
+					@RequestParam(name = "brief", required = false)
+					String briefParam,
+			@Parameter(description = "图片业务类型；可选，长度上限 20；缺省落库默认 item（body 同名键优先）", example = "item")
+					@RequestParam(name = "image_type", required = false)
+					String imageTypeParam,
+			@Parameter(description = "图片完整访问 URL；可选，仅存档（body 同名键优先）")
+					@RequestParam(name = "image_full_url", required = false)
+					String imageFullUrlParam,
+			@RequestBody(
+							description =
+									"可选 JSON body；字段与 query 同名双通道，body 含键时优先",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema = @Schema(implementation = EcxImageSaveBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		OpenapiImageSaveParams.BuildResult built = OpenapiImageSaveParams.build(
 				imageNameParam,
