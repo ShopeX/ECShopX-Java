@@ -33,6 +33,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberCardGradeCreate
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberCardGradeCreateSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberCardGradeDeleteBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberCardGradeDeleteSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberCardGradeDetailBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberCardGradeDetailSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -99,11 +101,96 @@ public class MemberCardGradeController extends OpenapiBaseController {
 				companyId, pageSpec.page(), pageSpec.pageSize(), gradeIdRaw, langRaw);
 	}
 
+	@Operation(
+			summary = "开放接口查询会员关联等级信息",
+			description =
+					"按签名鉴权租户 company_id 以手机号查询会员当前关联的会员卡等级："
+							+ " mobile 必填（originalString 双通道，body 含键优先、值 null 视为未传；服务内 trim 后须"
+							+ " ^1[3456789][0-9]{9}$，缺失/空白/格式错统一 E5001「缺少参数」）。"
+							+ " 会员按固定加密 mobile 等值定位（LIMIT 1），查无 E5501「会员找不到」。"
+							+ " 会员 grade_id 为 null 按 0 查 membercard_grade；等级行查无不报错，"
+							+ " 返回占位行（grade_id=0、discount/total_consumption=\"0\"、其余字符串键空串）。"
+							+ " data 8 固定键：grade_id(整型)/grade_name/discount/total_consumption/"
+							+ " background_pic_url/external_id/created/updated（格式化时间，查无空串）；"
+							+ " 无 is_default 键（区别于 create/update 行格式）。Advice 包装 message 固定「成功」。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.member_card_grade.detail,"
+							+ " version=2.0）签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 只读，无写库/异步/第三方副作用。",
+			operationId = "ecx.member_card_grade.detail.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功，data 见 EcxMemberCardGradeDetailDataDoc"
+								+ "（等级查无为占位行，仍 success）；"
+								+ " 业务失败：status=fail, code=E5001 缺少参数 / E5501 会员找不到，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxMemberCardGradeDetailFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxMemberCardGradeDetailSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "查询成功（时间/URL 为格式演示值）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"grade_id\":1,\"grade_name\":\"普通会员\","
+															+ "\"discount\":\"10\",\"total_consumption\":\"0\","
+															+ "\"background_pic_url\":\"https://example.test/key.jpg\","
+															+ "\"external_id\":\"1\",\"created\":\"2026-01-01 00:00:00\","
+															+ "\"updated\":\"2026-01-01 00:00:00\"}}"),
+									@ExampleObject(
+											name = "success-grade-missing",
+											summary = "会员存在但等级行查无（占位行，仍 success）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"grade_id\":0,\"grade_name\":\"\","
+															+ "\"discount\":\"0\",\"total_consumption\":\"0\","
+															+ "\"background_pic_url\":\"\",\"external_id\":\"\","
+															+ "\"created\":\"\",\"updated\":\"\"}}"),
+									@ExampleObject(
+											name = "fail-mobile",
+											summary = "mobile 缺失/空白/格式错",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5001\",\"message\":\"缺少参数\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-member-not-found",
+											summary = "mobile 查无会员",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5501\",\"message\":\"会员找不到\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@GetMapping(value = "/ecx.member_card_grade.detail", name = "开放接口查询会员关联等级信息")
 	public Map<String, Object> detail(
-			HttpServletRequest request,
-			@RequestParam(name = "mobile", required = false) String mobileParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "会员手机号（明文）；必填，trim 后须 ^1[3456789][0-9]{9}$；缺失/格式错 E5001「缺少参数」；查无会员 E5501",
+							required = true,
+							example = "13800138000")
+					@RequestParam(name = "mobile", required = false)
+					String mobileParam,
+			@RequestBody(
+							description = "可选 JSON body；mobile 与 query 同名双通道（body 含键优先，值 null 视为未传）",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxMemberCardGradeDetailBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		String mobileRaw = OpenapiRequestParams.originalString(mobileParam, body, "mobile");
 		return memberCardGradeDetailPort.getGradeDetailByMobile(companyId, mobileRaw);
