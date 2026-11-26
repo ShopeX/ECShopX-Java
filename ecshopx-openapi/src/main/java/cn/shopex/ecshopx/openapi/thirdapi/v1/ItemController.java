@@ -27,6 +27,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxProductGoodsListBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxProductGoodsListSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxProductSkuListBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxProductSkuListSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxProductStockUpdateBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v1.doc.EcxProductStockUpdateSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -245,11 +247,88 @@ public class ItemController extends OpenapiBaseController {
 		return new OpenapiEnvelope("success", "E0000", "ok", data);
 	}
 
+	@Operation(
+			summary = "开放接口库存同步",
+			description =
+					"按签名鉴权租户 company_id 批量覆盖库存：sku_list JSON 数组逐行处理，"
+							+ " sku_id 匹配 items.item_bn；shop_code PHP-empty 走总部分支"
+							+ "（Redis item_store 覆盖 + 库存变更事件 + items.store 更新，stock 宽松解析无范围校验）；"
+							+ " shop_code 非空走门店分支——查无门店记「门店不存在」，"
+							+ " 门店存在时当前 v1 实现固定返回「请填写店铺ID」错误（门店分支未完成，如实记录）。"
+							+ " 行级失败不中断，明细在成功 data 的 not_find_sku/not_update_sku（恒空）/update_error 中。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.product.stock_update, version=1.0）"
+							+ " 签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " sku_list 双通道（body 含键优先）且必填。"
+							+ " 副作用：总部分支写 Redis 库存 + 发布库存变更事件 + 更新 items.store；无第三方调用。",
+			operationId = "ecx.product.stock_update.v1")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态。"
+								+ " 成功：status=success, code=E0000, message=更新成功，data 含三数组"
+								+ "（not_find_sku/not_update_sku 恒空/update_error，行级失败明细）；"
+								+ " 整体入参失败：status=fail, code=E0001（sku_list必填/数据有误），data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxProductStockUpdateFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxProductStockUpdateSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "同步完成（含行级失败明细）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"更新成功\","
+															+ "\"data\":{\"not_find_sku\":[\"A2\"],\"not_update_sku\":[],"
+															+ "\"update_error\":[{\"sku_id\":\"A1\",\"shop_code\":\"S01\","
+															+ "\"error\":\"请填写店铺ID\"}]}}"),
+									@ExampleObject(
+											name = "success-all-applied",
+											summary = "全部行更新成功（总部分支）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"更新成功\","
+															+ "\"data\":{\"not_find_sku\":[],\"not_update_sku\":[],"
+															+ "\"update_error\":[]}}"),
+									@ExampleObject(
+											name = "fail-invalid-data",
+											summary = "sku_list 非 JSON 数组",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E0001\",\"message\":\"数据有误\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@PostMapping(value = "/ecx.product.stock_update", name = "开放接口库存同步")
 	public OpenapiEnvelope updateItemStore(
-			HttpServletRequest request,
-			@RequestParam(name = "sku_list", required = false) String skuListParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description =
+									"库存行 JSON 数组字符串 [{sku_id, stock, shop_code?}]；必填（body 同名键优先，"
+											+ "body 可直接传数组）",
+							required = true,
+							example = "[{\"sku_id\":\"A1\",\"stock\":10,\"shop_code\":\"S01\"}]")
+					@RequestParam(name = "sku_list", required = false)
+					String skuListParam,
+			@RequestBody(
+							description =
+									"可选 JSON body；sku_list 与 query 同名双通道，body 含键时优先；行字段与分支语义见 schema",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxProductStockUpdateBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		String skuListRaw = OpenapiRequestParams.mergeRequiredString(
 				skuListParam, body, "sku_list", "sku_list必填");
