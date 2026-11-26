@@ -30,6 +30,8 @@ import cn.shopex.ecshopx.common.openapi.OpenapiMemberTagUpdatePort;
 import cn.shopex.ecshopx.common.web.FlexibleBody;
 import cn.shopex.ecshopx.openapi.thirdapi.OpenapiBaseController;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.OpenapiRequestParams;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTagBatchCoverBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTagBatchCoverSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTagAddBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTagAddSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTagDeleteBodyDoc;
@@ -364,12 +366,104 @@ public class MemberTagController extends OpenapiBaseController {
 				companyId, pageSpec.page(), pageSpec.pageSize(), tagNameRaw, langRaw);
 	}
 
+	@Operation(
+			summary = "开放接口批量覆盖会员标签",
+			description =
+					"按签名鉴权租户 company_id 批量覆盖会员标签（2 键 mergeString 双通道 trim，"
+							+ " body 含键优先、值 null 视为未传，body 数组字符串化后 JSON 解析）："
+							+ " mobiles 必填非空白（E5001「会员手机号必填」），须 JSON 字符串数组"
+							+ "（嵌套元素 E5560「会员手机号格式错误」）；元素原样与 members.mobile"
+							+ "（加密存储列）IN 匹配（**无加密转换**，加密启用部署下通常查无）；"
+							+ " 任一查无 E5501「{手机号}会员不存在」（动态文案）；[] 合法（无会员直接成功）。"
+							+ " tag_ids 缺失/空白/非数组均 E5560「会员标签ID格式错误」；元素宽松字符串化匹配，"
+							+ " 任一标签查无 E5561「{标签ID}标签不存在」；含系统标签 E0001「系统标签不可编辑」；"
+							+ " **[] 合法：清空各会员全部非系统标签**。"
+							+ " 覆盖语义：逐会员 createRelTagsByUserId——先删全部非系统标签关联（计数递减），"
+							+ " 再重建 tag_ids 关联（计数递增）；系统标签关联保留。校验全部通过后才开始写入，"
+							+ " 逐会员独立事务（中途 DB 异常已处理会员不回滚）。"
+							+ " 成功 data={status:true}（布尔）。Advice 包装 message 固定「成功」。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}"
+							+ "（method=ecx.member.tagging.batch.cover, version=2.0）签名校验后转发；"
+							+ " 直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 副作用：逐会员 @Transactional DELETE/INSERT members_rel_tags +"
+							+ " UPDATE members_tags.self_tag_count；不推送导购平台（NoPush 路径外重建，"
+							+ " createRelTagsByUserId 本身无推送）；无异步。",
+			operationId = "ecx.member.tagging.batch.cover.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功, data={status:true}；"
+								+ " 业务失败：status=fail, code=E5001 会员手机号必填 / E5560 手机号·标签ID格式错误 /"
+								+ " E5501 {手机号}会员不存在 / E5561 {标签ID}标签不存在 / E0001 系统标签不可编辑，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxMemberTagBatchCoverFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxMemberTagBatchCoverSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "覆盖成功",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"status\":true}}"),
+									@ExampleObject(
+											name = "fail-member-not-found",
+											summary = "任一手机号查无（动态文案）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5501\","
+															+ "\"message\":\"13800138000会员不存在\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-tag-not-found",
+											summary = "任一标签查无（动态文案）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5561\","
+															+ "\"message\":\"1标签不存在\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-tag-ids-format",
+											summary = "tag_ids 缺失/非数组",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5560\","
+															+ "\"message\":\"会员标签ID格式错误\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@PostMapping(value = "/ecx.member.tagging.batch.cover", name = "开放接口批量覆盖会员标签")
 	public Map<String, Object> batchCoverMemberTags(
-			HttpServletRequest request,
-			@RequestParam(name = "mobiles", required = false) String mobilesParam,
-			@RequestParam(name = "tag_ids", required = false) String tagIdsParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "会员手机号 JSON 数组；必填（E5001）；任一查无 E5501 动态文案；[] 合法",
+							required = true,
+							example = "[\"13800138000\"]")
+					@RequestParam(name = "mobiles", required = false)
+					String mobilesParam,
+			@Parameter(
+							description = "标签 ID JSON 数组；缺失/非数组 E5560；任一查无 E5561；[] 清空非系统标签",
+							required = true,
+							example = "[1]")
+					@RequestParam(name = "tag_ids", required = false)
+					String tagIdsParam,
+			@RequestBody(
+							description = "可选 JSON body；2 键与 query 同名双通道（body 含键优先，可直接传数组）；覆盖语义见 schema",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxMemberTagBatchCoverBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		String mobilesRaw = OpenapiRequestParams.mergeString(mobilesParam, body, "mobiles");
 		String tagIdsRaw = OpenapiRequestParams.mergeString(tagIdsParam, body, "tag_ids");
