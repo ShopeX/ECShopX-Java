@@ -442,7 +442,7 @@
     "sort": 5,
     "is_menu": true,
     "pid": 691,
-    "apis": "refund.list\nrefund.logexport\ntrade.refunderrorlogs.list\ntrade.refunderrorlogs.resubmit\nrefund.info\ndelivery.process.list\nrefund.offline\nrefund.abnormal",
+    "apis": "refund.list\nrefund.logexport\ntrade.refunderrorlogs.list\ntrade.refunderrorlogs.resubmit\nrefund.info\ndelivery.process.list\nrefund.offline",
     "icon": null,
     "is_show": true,
     "alias_name": "aftersalesrefundlist",
