@@ -69,17 +69,33 @@ public class ItemStoreService {
 		}
 		long store = newVal != null ? newVal : 0L;
 		int storeInt = (int) Math.min(store, Integer.MAX_VALUE);
-		if (writeDistributorItems && redisDistributorId > 0L) {
-			distributorItemsMapper.update(null, new LambdaUpdateWrapper<DistributorItems>()
-					.eq(DistributorItems::getCompanyId, companyId)
-					.eq(DistributorItems::getDistributorId, redisDistributorId)
-					.eq(DistributorItems::getItemId, itemId)
-					.set(DistributorItems::getStore, (long) storeInt));
-		} else {
-			itemsMapper.update(null, new LambdaUpdateWrapper<Items>()
-					.eq(Items::getCompanyId, companyId)
-					.eq(Items::getItemId, itemId)
-					.set(Items::getStore, storeInt));
+		int rows;
+		try {
+			if (writeDistributorItems && redisDistributorId > 0L) {
+				rows =
+						distributorItemsMapper.update(
+								null,
+								new LambdaUpdateWrapper<DistributorItems>()
+										.eq(DistributorItems::getCompanyId, companyId)
+										.eq(DistributorItems::getDistributorId, redisDistributorId)
+										.eq(DistributorItems::getItemId, itemId)
+										.set(DistributorItems::getStore, (long) storeInt));
+			} else {
+				rows =
+						itemsMapper.update(
+								null,
+								new LambdaUpdateWrapper<Items>()
+										.eq(Items::getCompanyId, companyId)
+										.eq(Items::getItemId, itemId)
+										.set(Items::getStore, storeInt));
+			}
+		} catch (RuntimeException e) {
+			redisTemplate.opsForValue().increment(redisKey, num);
+			throw e;
+		}
+		if (rows < 1) {
+			redisTemplate.opsForValue().increment(redisKey, num);
+			return false;
 		}
 		return true;
 	}
