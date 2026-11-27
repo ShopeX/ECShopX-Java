@@ -32,7 +32,8 @@ RUN apk add --no-cache fontconfig ttf-dejavu tzdata curl wget \
     && wget -q -O /etc/apk/keys/admin@openresty.com-5ea678a6.rsa.pub \
          https://openresty.org/package/admin@openresty.com-5ea678a6.rsa.pub \
     && echo "https://openresty.org/package/alpine/v3.18/main" >> /etc/apk/repositories \
-    && apk add --no-cache openresty \
+    && apk add --no-cache 'openresty=1.31.9.1-r0' \
+    && openresty -v 2>&1 | grep -F 'openresty/1.31.9.1' \
     && ln -snf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
     && fc-cache -f > /dev/null \
     && mkdir -p /app/logs /var/log/nginx \

@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-# ECShopX Java app runtime base: Temurin 17.0.21+9 JRE + Node 22 + OpenResty.
+# ECShopX Java app runtime base: Temurin 17.0.21.1+2 JRE + Node 22 + OpenResty.
 #
 # Default image:
 #   registry.cn-hangzhou.aliyuncs.com/shopex_company/ecshopx-java:17-node22-openresty
@@ -10,25 +10,27 @@
 #   ./docker/build-runtime-base.sh --save docker/images/ecshopx-java-17-node22-openresty.tar
 #
 # Base image still ships an older Temurin JRE; JAVA_HOME is replaced from the
-# 17.0.21+9 JRE tarball via BuildKit bind mount (no COPY layer). CVE-2026-91403.
+# 17.0.21.1+2 JRE tarball via BuildKit bind mount (no COPY layer).
+# CVE-2026-114938 (Java4Shell) / prior CVE-2026-91403 pin.
+# OpenResty pinned to 1.31.9.1 (nginx 1.31.9) for NGINX2Root / CVE-2026-123007 et al.
 # Build with --platform linux/amd64.
 
 FROM eclipse-temurin:17-jre-jammy
 
 LABEL org.opencontainers.image.title="ecshopx-java-runtime" \
-      org.opencontainers.image.description="Temurin 17.0.21+9 JRE + Node 22 + OpenResty for ecshopx-app"
+      org.opencontainers.image.description="Temurin 17.0.21.1+2 JRE + Node 22 + OpenResty for ecshopx-app"
 
-ARG TEMURIN_JRE_SHA256=9f41bf88c7900c7097444a1bdeb84146ae692bc08842490ab098063c74bf9a8a
+ARG TEMURIN_JRE_SHA256=5a092a0bc21de4c3d855480edd7945be9cfe157b38cdb84dac280511893bb009
 
 ENV DEBIAN_FRONTEND=noninteractive \
     TZ=Asia/Shanghai
 
-RUN --mount=type=bind,source=docker/vendor/OpenJDK17U-jre_x64_linux_hotspot_17.0.21_9.tar.gz,target=/tmp/temurin-jre.tar.gz,ro \
+RUN --mount=type=bind,source=docker/vendor/OpenJDK17U-jre_x64_linux_hotspot_17.0.21.1_2.tar.gz,target=/tmp/temurin-jre.tar.gz,ro \
     echo "$TEMURIN_JRE_SHA256  /tmp/temurin-jre.tar.gz" | sha256sum -c - \
     && rm -rf /opt/java/openjdk \
     && mkdir -p /opt/java/openjdk \
     && tar -xzf /tmp/temurin-jre.tar.gz -C /opt/java/openjdk --strip-components=1 \
-    && java -version 2>&1 | grep -F 'Temurin-17.0.21+9' \
+    && java -version 2>&1 | grep -F 'Temurin-17.0.21.1+2' \
     && printf '%s\n' \
          'deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ jammy main restricted' \
          'deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ jammy-updates main restricted' \
@@ -43,7 +45,8 @@ RUN --mount=type=bind,source=docker/vendor/OpenJDK17U-jre_x64_linux_hotspot_17.0
     && echo "deb [signed-by=/usr/share/keyrings/openresty.gpg] http://openresty.org/package/ubuntu jammy main" \
          > /etc/apt/sources.list.d/openresty.list \
     && apt-get -o Acquire::Retries=5 update \
-    && apt-get -o Acquire::Retries=5 install -y --no-install-recommends openresty \
+    && apt-get -o Acquire::Retries=5 install -y --no-install-recommends 'openresty=1.31.9.1-1~jammy1' \
+    && openresty -v 2>&1 | grep -F 'openresty/1.31.9.1' \
     && ln -snf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
     && echo Asia/Shanghai > /etc/timezone \
     && apt-get clean && rm -rf /var/lib/apt/lists/* \

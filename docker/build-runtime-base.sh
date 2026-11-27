@@ -47,15 +47,15 @@ done
 
 cd "$PROJECT_ROOT"
 
-# CVE-2026-91403: pin Temurin 17.0.21+9 JRE (vendor tarball, bind-mounted at build).
+# CVE-2026-114938 (Java4Shell): pin Temurin 17.0.21.1+2 JRE (vendor tarball, bind-mounted at build).
 VENDOR_DIR="$PROJECT_ROOT/docker/vendor"
-TEMURIN_TGZ="$VENDOR_DIR/OpenJDK17U-jre_x64_linux_hotspot_17.0.21_9.tar.gz"
-TEMURIN_SHA256="${TEMURIN_JRE_SHA256:-9f41bf88c7900c7097444a1bdeb84146ae692bc08842490ab098063c74bf9a8a}"
+TEMURIN_TGZ="$VENDOR_DIR/OpenJDK17U-jre_x64_linux_hotspot_17.0.21.1_2.tar.gz"
+TEMURIN_SHA256="${TEMURIN_JRE_SHA256:-5a092a0bc21de4c3d855480edd7945be9cfe157b38cdb84dac280511893bb009}"
 TEMURIN_URLS=(
   "${TEMURIN_JRE_URL:-}"
-  "https://ghfast.top/https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.21%2B9/OpenJDK17U-jre_x64_linux_hotspot_17.0.21_9.tar.gz"
-  "https://api.adoptium.net/v3/binary/version/jdk-17.0.21%2B9/linux/x64/jre/hotspot/normal/eclipse?project=jdk"
-  "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.21%2B9/OpenJDK17U-jre_x64_linux_hotspot_17.0.21_9.tar.gz"
+  "https://ghfast.top/https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.21.1%2B2/OpenJDK17U-jre_x64_linux_hotspot_17.0.21.1_2.tar.gz"
+  "https://api.adoptium.net/v3/binary/version/jdk-17.0.21.1%2B2/linux/x64/jre/hotspot/normal/eclipse?project=jdk"
+  "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.21.1%2B2/OpenJDK17U-jre_x64_linux_hotspot_17.0.21.1_2.tar.gz"
 )
 mkdir -p "$VENDOR_DIR"
 if [ ! -f "$TEMURIN_TGZ" ]; then
@@ -71,7 +71,7 @@ if [ ! -f "$TEMURIN_TGZ" ]; then
     fi
     rm -f "${TEMURIN_TGZ}.partial"
   done
-  [ "$fetched" = true ] || { echo "ERROR: failed to download Temurin 17.0.21+9 JRE" >&2; exit 1; }
+  [ "$fetched" = true ] || { echo "ERROR: failed to download Temurin 17.0.21.1+2 JRE" >&2; exit 1; }
 fi
 echo "$TEMURIN_SHA256  $TEMURIN_TGZ" | shasum -a 256 -c -
 
