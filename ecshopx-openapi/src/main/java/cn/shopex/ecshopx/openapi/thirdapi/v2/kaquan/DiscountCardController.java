@@ -27,6 +27,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v2.kaquan.doc.EcxDiscountcardSendBodyD
 import cn.shopex.ecshopx.openapi.thirdapi.v2.kaquan.doc.EcxDiscountcardSendSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.kaquan.doc.EcxDiscountcardV2ListBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.kaquan.doc.EcxDiscountcardV2ListSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.kaquan.doc.EcxUserdiscountListBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.kaquan.doc.EcxUserdiscountListSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -276,14 +278,125 @@ public class DiscountCardController extends OpenapiBaseController {
 				params.activityName());
 	}
 
+	@Operation(
+			summary = "开放接口会员优惠券列表",
+			description =
+					"按签名鉴权租户 company_id 分页返回指定会员已领取的平台券（kaquan_user_discount，"
+							+ " rel_distributor_ids='all'，end_date 升序、id 降序）："
+							+ " plat_account（商派会员 ID）必填非空白，缺失报 E5001「商派会员Id参数错误」；"
+							+ " 先按租户查会员手机号预检，查无/无手机号报 E5501「商派会员Id错误，未查询到会员信息」"
+							+ "（非整数 plat_account 按 -1 查会员，同样报 E5501）。"
+							+ " code 可选券码精确过滤，PHP truthy（trim 后非空且不为 \"0\"）才生效。"
+							+ " 分页：page 缺省 1（<1 归一 1）；page_size 缺省 20、<20 归一 20；解析后 ≥500 报"
+							+ " E5002「每页的大小最大为500！」（500 本身也报错）。"
+							+ " 四参数双通道（body 含键取原始值，null/空白不回退 query）。"
+							+ " data 含 total_count、is_last_page（1/0）、pager 与 list（7 键/行精简形态）："
+							+ " card_id 整型；code/plat_account/card_type/begin_date/end_date 字符串化"
+							+ "（begin_date/end_date 为 Unix 秒字符串，不格式化日期）；"
+							+ " status 映射 unused/redeemed/expired/空串（DB 1/4/10 未过期→unused，"
+							+ " end_date>0 且已过→expired，2→redeemed，6→expired，其他→空串）。"
+							+ " 成功 message 固定「成功」（Advice 包装）。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.userdiscount.list, version=2.0）"
+							+ " 签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 只读，无写库/异步/第三方副作用。",
+			operationId = "ecx.userdiscount.list.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功，data 见 EcxUserdiscountListDataDoc"
+								+ "（无券时 total_count=0、is_last_page=1、list=[]）；"
+								+ " 业务失败：status=fail, code=E5001 商派会员Id参数错误 /"
+								+ " E5002 每页的大小最大为500！ / E5501 商派会员Id错误，未查询到会员信息，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxUserdiscountListFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxUserdiscountListSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "查询成功（会员持一张未使用代金券；code 为 12 位数字格式演示）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"total_count\":1,\"is_last_page\":1,"
+															+ "\"pager\":{\"page\":1,\"page_size\":20},"
+															+ "\"list\":[{\"card_id\":3,\"code\":\"000000000000\","
+															+ "\"plat_account\":\"5\",\"card_type\":\"cash\","
+															+ "\"begin_date\":\"1700000000\",\"end_date\":\"1800000000\","
+															+ "\"status\":\"unused\"}]}}"),
+									@ExampleObject(
+											name = "success-empty",
+											summary = "会员无平台券",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"total_count\":0,\"is_last_page\":1,"
+															+ "\"pager\":{\"page\":1,\"page_size\":20},\"list\":[]}}"),
+									@ExampleObject(
+											name = "fail-member-not-found",
+											summary = "会员查无/无手机号",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5501\","
+															+ "\"message\":\"商派会员Id错误，未查询到会员信息\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-plat-account",
+											summary = "plat_account 缺失/空白",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5001\","
+															+ "\"message\":\"商派会员Id参数错误\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-page-size",
+											summary = "page_size 解析后 ≥500",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5002\",\"message\":\"每页的大小最大为500！\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@PostMapping(value = "/ecx.userdiscount.list", name = "开放接口会员优惠券列表")
 	public Map<String, Object> getUserDiscountList(
-			HttpServletRequest request,
-			@RequestParam(name = "plat_account", required = false) String platAccountParam,
-			@RequestParam(name = "code", required = false) String codeParam,
-			@RequestParam(name = "page", required = false) String pageParam,
-			@RequestParam(name = "page_size", required = false) String pageSizeParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description =
+									"商派会员 ID（user_id 整数）；必填非空白，缺失报「商派会员Id参数错误」；"
+											+ "查无会员报「商派会员Id错误，未查询到会员信息」（body 同名键优先）",
+							required = true,
+							example = "5")
+					@RequestParam(name = "plat_account", required = false)
+					String platAccountParam,
+			@Parameter(
+							description =
+									"券码精确过滤；可选；trim 后非空且不为 \"0\" 才生效（PHP truthy，body 同名键优先）",
+							example = "000000000000")
+					@RequestParam(name = "code", required = false)
+					String codeParam,
+			@Parameter(description = "页码；缺省 1，<1 归一 1（PHP 整型解析，body 同名键优先）", example = "1")
+					@RequestParam(name = "page", required = false)
+					String pageParam,
+			@Parameter(
+							description = "每页条数；缺省 20，<20 归一 20；≥500 报「每页的大小最大为500！」（body 同名键优先）",
+							example = "20")
+					@RequestParam(name = "page_size", required = false)
+					String pageSizeParam,
+			@RequestBody(
+							description = "可选 JSON body；字段与 query 同名双通道（body 含键取原始值）；语义见 schema",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxUserdiscountListBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		OpenapiThirdApiV2DiscountCardUserDiscountListParams.QueryParams params =
 				OpenapiThirdApiV2DiscountCardUserDiscountListParams.validate(
