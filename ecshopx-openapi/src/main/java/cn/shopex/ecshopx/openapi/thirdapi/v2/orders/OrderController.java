@@ -55,6 +55,9 @@ import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxOrdersSoldGetBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxOrdersSoldGetSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxShippingTemplatesGetBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxShippingTemplatesGetSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxTradesGetBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxTradesGetFailEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxTradesGetSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -575,12 +578,104 @@ public class OrderController extends OpenapiBaseController {
 		return cancelReasonsPort.listAllAsStringKeyMap();
 	}
 
+	@Operation(
+			summary = "开放接口交易单列表",
+			description =
+					"按签名鉴权租户 company_id 分页返回交易单（trade 表仅 company_id 等值过滤，"
+							+ "无状态/来源过滤，time_start 字符串列倒序）：data 含 total_count、is_last_page（1/0）、"
+							+ "pager（page/page_size 归一化回显）与 list（11 固定键/行，见 EcxTradesGetRowDoc）。"
+							+ " 分页：page 缺省 1（<1 归一 1）；page_size 缺省 20、<20 归一 20；解析后 ≥500 报 E0001"
+							+ "「每页的大小最大为500！」（500 本身也报错）。两参数双通道（body 含键取原始值，否则用 query）。"
+							+ " 行内金额为整型分；time_start/time_expire 库值为 epoch 字符串（≥13 位按毫秒、否则按秒，"
+							+ "系统时区格式化 yyyy-MM-dd HH:mm:ss），空/非纯数字/解析失败按 epoch 0 格式化；"
+							+ "order_id/mch_id 可空 null 透传。"
+							+ " 返回 Map 由 Advice 包装（message 固定「成功」）。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.trades.get,"
+							+ " version=2.0）签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 只读（count + 分页 SELECT），无写库/异步/第三方副作用。",
+			operationId = "ecx.trades.get.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功，data 见 EcxTradesGetDataDoc"
+								+ "（无数据时 total_count=0、is_last_page=1、list=[]）；"
+								+ " 业务失败：status=fail, code=E0001 每页的大小最大为500！，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxTradesGetFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxTradesGetSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "查询成功（微信支付成功交易；时间为格式演示值，金额整型分）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"total_count\":1,\"is_last_page\":1,"
+															+ "\"pager\":{\"page\":1,\"page_size\":20},"
+															+ "\"list\":[{\"trade_id\":\"5353724000040002\","
+															+ "\"order_id\":\"100\",\"mch_id\":\"1900000109\","
+															+ "\"total_fee\":8000,\"discount_fee\":0,"
+															+ "\"fee_type\":\"CNY\",\"pay_fee\":8000,"
+															+ "\"trade_state\":\"SUCCESS\",\"pay_type\":\"wxpay\","
+															+ "\"time_start\":\"2026-01-01 00:00:00\","
+															+ "\"time_expire\":\"2026-01-01 00:00:00\"}]}}"),
+									@ExampleObject(
+											name = "success-empty",
+											summary = "该租户无交易单",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"total_count\":0,\"is_last_page\":1,"
+															+ "\"pager\":{\"page\":1,\"page_size\":20},\"list\":[]}}"),
+									@ExampleObject(
+											name = "fail-page-size",
+											summary = "page_size 解析后 ≥500",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E0001\",\"message\":\"每页的大小最大为500！\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								})),
+		@ApiResponse(
+				responseCode = "500",
+				description = "未处理异常兜底（GlobalExceptionHandler，ApiResult 非本信封）",
+				content =
+						@Content(
+								examples =
+										@ExampleObject(
+												name = "internal-error",
+												value = "{\"code\":500,\"msg\":\"服务器内部错误\"}")))
+	})
 	@GetMapping(value = "/ecx.trades.get", name = "开放接口交易单列表")
 	public Map<String, Object> getTradeList(
-			HttpServletRequest request,
-			@RequestParam(name = "page", required = false) String pageParam,
-			@RequestParam(name = "page_size", required = false) String pageSizeParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(description = "页码；缺省 1，<1 归一 1（PHP 整型解析，body 同名键优先）", example = "1")
+					@RequestParam(name = "page", required = false)
+					String pageParam,
+			@Parameter(
+							description = "每页条数；缺省 20，<20 归一 20；≥500 报「每页的大小最大为500！」（body 同名键优先）",
+							example = "20")
+					@RequestParam(name = "page_size", required = false)
+					String pageSizeParam,
+			@RequestBody(
+							description = "可选 JSON body；字段与 query 同名双通道（取原始值）；分页语义见 schema",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxTradesGetBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		OpenapiThirdApiV2TradeListParams.PageSpec pageSpec =
 				OpenapiThirdApiV2TradeListParams.resolve(pageParam, pageSizeParam, body);
