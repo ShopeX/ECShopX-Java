@@ -43,6 +43,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxOrderCancelConfirmBod
 import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxOrderCancelConfirmSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxOrderCancelReasonsGetSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxOrderCancelSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxOrderGetBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxOrderGetSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -612,12 +614,124 @@ public class OrderController extends OpenapiBaseController {
 		return Map.of("status", true);
 	}
 
+	@Operation(
+			summary = "开放接口订单详情",
+			description =
+					"鉴权：openapi 签名（公网网关校验后转发 internal；直连 internal 无鉴权上下文报 E4004）。"
+							+ " 2 键 query 与 JSON body 同名双通道：body 含键优先（值 null 视为未传），取值不 trim。"
+							+ " order_id 与 ziti_code 二选一（PHP falsy：null/空串/\"0\" 视为未传），order_id 优先；"
+							+ " ziti_code 经 Redis orderziticode:{code} 映射订单号。"
+							+ " 数据源 buildOrderBundle（checkaftersales=false）：订单 42 固定键 + 商品行 14 键 +"
+							+ " 优惠明细 5 键；无旧式快递单号时回填首张发货单的快递公司/单号；"
+							+ " trade_no 取成功交易单号（无则 \"-\"）、pay_time 取成功交易 time_expire；"
+							+ " username/unionid/openid 经会员表+微信用户表匹配（缺失空串）；goods_id 按 item_id 反查（查不到 0）。"
+							+ " 副作用：无（只读，含 Redis 读）。"
+							+ " 失败：HTTP 200 信封 E0001（请填写订单编号/订单相应的明细不存在）、"
+							+ " E0000+status=fail（订单号为{id}的订单不存在，PHP 零码契约）；"
+							+ " order_id 非整数 → HTTP 400 ApiResult{code:400,msg:参数错误}（非信封）。",
+			operationId = "ecx.order.get.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功，data 见 EcxOrderGetDataDoc（42 固定键）；"
+								+ " 业务失败：status=fail，code=E0001 或 E0000（PHP 零码，订单不存在），data=null，"
+								+ "见 EcxOrderGetFailEnvelopeDoc；鉴权失败：status=fail, code=E4004 未授权，data=null。",
+				content =
+						@Content(
+								schema = @Schema(implementation = EcxOrderGetSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "已支付已发货订单（时间为格式演示值；空串键为 null 归一结果）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\",\"data\":{"
+															+ "\"order_id\":\"100\",\"trade_no\":\"-\",\"title\":\"\","
+															+ "\"shop_code\":null,\"total_fee\":8000,\"mobile\":\"\","
+															+ "\"freight_fee\":0,\"item_fee\":8000,\"receipt_type\":\"logistics\","
+															+ "\"order_status\":\"WAIT_BUYER_CONFIRM\",\"pay_status\":\"PAYED\","
+															+ "\"pay_time\":\"2026-01-01 00:00:00\",\"delivery_corp\":\"SF\","
+															+ "\"delivery_code\":\"SFTRACK001\","
+															+ "\"delivery_time\":\"2026-01-01 00:00:00\",\"end_time\":\"\","
+															+ "\"delivery_status\":\"DONE\",\"cancel_status\":\"NO_APPLY_CANCEL\","
+															+ "\"receiver_name\":\"\",\"receiver_mobile\":\"\",\"receiver_zip\":\"\","
+															+ "\"receiver_state\":\"\",\"receiver_city\":\"\",\"receiver_district\":\"\","
+															+ "\"receiver_address\":\"\",\"member_discount\":0,\"coupon_discount\":0,"
+															+ "\"discount_fee\":0,\"discount_info\":[],"
+															+ "\"create_time\":\"2026-01-01 00:00:00\","
+															+ "\"update_time\":\"2026-01-01 00:00:00\",\"pay_type\":\"\","
+															+ "\"remark\":\"\",\"distributor_remark\":\"\",\"point_use\":0,"
+															+ "\"point_fee\":0,\"items\":[{\"goods_id\":1,\"item_bn\":\"\","
+															+ "\"item_name\":\"Item-A\",\"num\":1,\"price\":8000,\"total_fee\":8000,"
+															+ "\"item_fee\":8000,\"discount_info\":[],\"point_use\":0,\"point_fee\":0,"
+															+ "\"item_spec_desc\":\"\",\"volume\":0,\"weight\":0.0,"
+															+ "\"item_type\":\"normal\"}],\"user_id\":50,\"username\":\"\","
+															+ "\"unionid\":\"\",\"openid\":\"\",\"order_class\":\"normal\"}}"),
+									@ExampleObject(
+											name = "fail-missing-order-id",
+											summary = "order_id 与 ziti_code 均未传（E0001）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E0001\",\"message\":\"请填写订单编号\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-ziti-expired",
+											summary = "核销码无映射/过期（E0001）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E0001\",\"message\":\"订单相应的明细不存在\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-order-not-found-zero-code",
+											summary = "订单不存在（E0000 + status=fail，PHP 零码契约）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E0000\","
+															+ "\"message\":\"订单号为100的订单不存在\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								})),
+		@ApiResponse(
+				responseCode = "400",
+				description = "order_id 非整数（BadRequest「参数错误」，GlobalExceptionHandler，ApiResult 非本信封）",
+				content =
+						@Content(
+								examples =
+										@ExampleObject(
+												name = "bad-order-id",
+												value = "{\"code\":400,\"msg\":\"参数错误\"}"))),
+		@ApiResponse(
+				responseCode = "500",
+				description = "未处理异常兜底（GlobalExceptionHandler，ApiResult 非本信封）",
+				content =
+						@Content(
+								examples =
+										@ExampleObject(
+												name = "internal-error",
+												value = "{\"code\":500,\"msg\":\"服务器内部错误\"}")))
+	})
+	@RequestBody(
+			required = false,
+			description = "GET 可选 JSON body（与 query 同名键双通道，body 含键优先）",
+			content = @Content(schema = @Schema(implementation = EcxOrderGetBodyDoc.class)))
 	@GetMapping(value = "/ecx.order.get", name = "开放接口订单详情")
 	public Map<String, Object> getDetail(
-			HttpServletRequest request,
-			@RequestParam(name = "order_id", required = false) String orderIdParam,
-			@RequestParam(name = "ziti_code", required = false) String zitiCodeParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description =
+									"订单 ID（与 body 同名键双通道，body 含键优先）；与 ziti_code 二选一（本键优先，"
+											+ "PHP falsy：null/空串/\"0\" 视为未传）；非整数 → HTTP 400「参数错误」；"
+											+ "无此单 → E0000+fail「订单号为{id}的订单不存在」",
+							example = "100")
+					@RequestParam(name = "order_id", required = false)
+					String orderIdParam,
+			@Parameter(
+							description =
+									"自提核销码（双通道同上）；order_id 未传时经 Redis 映射订单号，无映射/过期 →"
+											+ " E0001「订单相应的明细不存在」",
+							example = "760773986531")
+					@RequestParam(name = "ziti_code", required = false)
+					String zitiCodeParam,
+			@Parameter(hidden = true) @FlexibleBody(required = false) Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		return orderDetailPort.getOrderDetail(
 				companyId,
