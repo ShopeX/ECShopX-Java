@@ -403,21 +403,21 @@
     }
   },
   {
-    "shopmenu_id": 789,
+    "shopmenu_id": 791,
     "company_id": 0,
-    "name": "库存规则",
-    "url": "/entity/goodsbase/inventorysourcerule",
+    "name": "搜索热词",
+    "url": "/entity/goodsbase/searchhotword",
     "sort": 2,
     "is_menu": true,
     "pid": 434,
     "apis": null,
     "icon": null,
     "is_show": true,
-    "alias_name": "inventorysourcerule",
+    "alias_name": "searchhotword",
     "version": 1,
     "disabled": false,
-    "created": 1795426754,
-    "updated": 1795426754,
+    "created": 1795687282,
+    "updated": 1795687282,
     "level": 3,
     "parent_name": "基础配置",
     "isChildrenMenu": false,
@@ -425,7 +425,7 @@
       "all"
     ],
     "name_lang": {
-      "zh-CN": "库存规则",
+      "zh-CN": "搜索热词",
       "en-CN": "",
       "ar-SA": "",
       "zh-TW": "",
@@ -6011,161 +6011,6 @@
       "zh-TW": "CRM設置",
       "ja-JP": "CRM設定",
       "ru-RU": "Настройки CRM"
-    }
-  },
-  {
-    "shopmenu_id": 782,
-    "company_id": 0,
-    "name": "POS",
-    "url": "/applications/pos",
-    "sort": 2,
-    "is_menu": true,
-    "pid": 609,
-    "apis": null,
-    "icon": null,
-    "is_show": true,
-    "alias_name": "pos",
-    "version": 1,
-    "disabled": false,
-    "created": 1792376041,
-    "updated": 1793378541,
-    "level": 2,
-    "parent_name": "应用",
-    "isChildrenMenu": true,
-    "menu_type": [
-      "all"
-    ],
-    "name_lang": {
-      "zh-CN": "POS",
-      "en-CN": "",
-      "ar-SA": "",
-      "zh-TW": "",
-      "ja-JP": "",
-      "ru-RU": ""
-    }
-  },
-  {
-    "shopmenu_id": 784,
-    "company_id": 0,
-    "name": "进销存设置",
-    "url": "/applications/pos/digios-psi-config",
-    "sort": 1,
-    "is_menu": true,
-    "pid": 782,
-    "apis": null,
-    "icon": null,
-    "is_show": true,
-    "alias_name": "digios-psi-config",
-    "version": 1,
-    "disabled": false,
-    "created": 1793336083,
-    "updated": 1793336083,
-    "level": 3,
-    "parent_name": "POS",
-    "isChildrenMenu": false,
-    "menu_type": [
-      "all"
-    ],
-    "name_lang": {
-      "zh-CN": "进销存设置",
-      "en-CN": "",
-      "ar-SA": "",
-      "zh-TW": "",
-      "ja-JP": "",
-      "ru-RU": ""
-    }
-  },
-  {
-    "shopmenu_id": 785,
-    "company_id": 0,
-    "name": "日结记录",
-    "url": "/applications/pos/daily-close-records",
-    "sort": 1,
-    "is_menu": true,
-    "pid": 782,
-    "apis": null,
-    "icon": null,
-    "is_show": true,
-    "alias_name": "daily-close-records",
-    "version": 1,
-    "disabled": false,
-    "created": 1794365682,
-    "updated": 1794365682,
-    "level": 3,
-    "parent_name": "POS",
-    "isChildrenMenu": false,
-    "menu_type": [
-      "all"
-    ],
-    "name_lang": {
-      "zh-CN": "日结记录",
-      "en-CN": "",
-      "ar-SA": "",
-      "zh-TW": "",
-      "ja-JP": "",
-      "ru-RU": ""
-    }
-  },
-  {
-    "shopmenu_id": 787,
-    "company_id": 0,
-    "name": "订单列表",
-    "url": "/applications/pos/pos_orders",
-    "sort": 1,
-    "is_menu": true,
-    "pid": 782,
-    "apis": null,
-    "icon": null,
-    "is_show": true,
-    "alias_name": "pos_orders",
-    "version": 1,
-    "disabled": false,
-    "created": 1794995225,
-    "updated": 1794995225,
-    "level": 3,
-    "parent_name": "POS",
-    "isChildrenMenu": false,
-    "menu_type": [
-      "all"
-    ],
-    "name_lang": {
-      "zh-CN": "订单列表",
-      "en-CN": "",
-      "ar-SA": "",
-      "zh-TW": "",
-      "ja-JP": "",
-      "ru-RU": ""
-    }
-  },
-  {
-    "shopmenu_id": 783,
-    "company_id": 0,
-    "name": "POS账号管理",
-    "url": "/applications/pos/pos_accounts",
-    "sort": 2,
-    "is_menu": true,
-    "pid": 782,
-    "apis": null,
-    "icon": null,
-    "is_show": true,
-    "alias_name": "pos_accounts",
-    "version": 1,
-    "disabled": false,
-    "created": 1792376073,
-    "updated": 1793336087,
-    "level": 3,
-    "parent_name": "POS",
-    "isChildrenMenu": false,
-    "menu_type": [
-      "all"
-    ],
-    "name_lang": {
-      "zh-CN": "POS账号管理",
-      "en-CN": "",
-      "ar-SA": "",
-      "zh-TW": "",
-      "ja-JP": "",
-      "ru-RU": ""
     }
   },
   {
