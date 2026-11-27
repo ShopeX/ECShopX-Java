@@ -112,6 +112,15 @@ public class DistributorWriteRepository {
 		return Optional.ofNullable(distributorMapper.selectOne(w));
 	}
 
+	/** 含撤店（{@code is_valid=delete}）在内的按 id 查询，供批量改状态判定 skip。 */
+	public Optional<Distributor> selectByCompanyAndIdIncludeDeleted(long companyId, long distributorId) {
+		LambdaQueryWrapper<Distributor> w = new LambdaQueryWrapper<>();
+		w.eq(Distributor::getCompanyId, companyId)
+				.eq(Distributor::getDistributorId, distributorId)
+				.last("LIMIT 1");
+		return Optional.ofNullable(distributorMapper.selectOne(w));
+	}
+
 	/** 同城配店名查重：同名且非当前店且非 delete。 */
 	public Optional<Distributor> selectByCompanyAndNameNotSelf(long companyId, String name, long excludeDistributorId) {
 		if (name == null || name.isBlank()) {

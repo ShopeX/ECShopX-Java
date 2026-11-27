@@ -48,6 +48,7 @@ import cn.shopex.ecshopx.distribution.service.DistributorItemsUpdateRequestGate;
 import cn.shopex.ecshopx.distribution.service.dto.SaveDistributorItemsResult;
 import cn.shopex.ecshopx.distribution.service.DistributorPaymentSubjectRequestGate;
 import cn.shopex.ecshopx.distribution.service.DistributorPaymentSubjectService;
+import cn.shopex.ecshopx.distribution.service.DistributorBatchStatusService;
 import cn.shopex.ecshopx.distribution.service.DistributorUpdateOrchestrator;
 import cn.shopex.ecshopx.distribution.service.DistributorUpdateParamNormalizer;
 import cn.shopex.ecshopx.distribution.service.DistributorUpdateParamValidator;
@@ -133,6 +134,7 @@ public class DistributorController {
 	private final DistributorUpdateRequestGate distributorUpdateRequestGate;
 	private final DistributorUpdateParamNormalizer distributorUpdateParamNormalizer;
 	private final DistributorUpdateOrchestrator distributorUpdateOrchestrator;
+	private final DistributorBatchStatusService distributorBatchStatusService;
 	private final DistributorPaymentSubjectRequestGate distributorPaymentSubjectRequestGate;
 	private final DistributorPaymentSubjectService distributorPaymentSubjectService;
 	private final DistributorInfoResolveService distributorInfoResolveService;
@@ -172,6 +174,7 @@ public class DistributorController {
 			DistributorUpdateRequestGate distributorUpdateRequestGate,
 			DistributorUpdateParamNormalizer distributorUpdateParamNormalizer,
 			DistributorUpdateOrchestrator distributorUpdateOrchestrator,
+			DistributorBatchStatusService distributorBatchStatusService,
 			DistributorPaymentSubjectRequestGate distributorPaymentSubjectRequestGate,
 			DistributorPaymentSubjectService distributorPaymentSubjectService,
 			DistributorInfoResolveService distributorInfoResolveService,
@@ -209,6 +212,7 @@ public class DistributorController {
 		this.distributorUpdateRequestGate = distributorUpdateRequestGate;
 		this.distributorUpdateParamNormalizer = distributorUpdateParamNormalizer;
 		this.distributorUpdateOrchestrator = distributorUpdateOrchestrator;
+		this.distributorBatchStatusService = distributorBatchStatusService;
 		this.distributorPaymentSubjectRequestGate = distributorPaymentSubjectRequestGate;
 		this.distributorPaymentSubjectService = distributorPaymentSubjectService;
 		this.distributorInfoResolveService = distributorInfoResolveService;
@@ -301,6 +305,54 @@ public class DistributorController {
 			return n.longValue();
 		}
 		return Long.parseLong(o.toString());
+	}
+
+	private static List<Long> parseDistributorIdList(Object raw) {
+		if (raw == null) {
+			return List.of();
+		}
+		List<Long> out = new ArrayList<>();
+		if (raw instanceof Collection<?> col) {
+			for (Object o : col) {
+				if (o == null) {
+					continue;
+				}
+				try {
+					long id = o instanceof Number n ? n.longValue() : Long.parseLong(String.valueOf(o).trim());
+					if (id > 0L) {
+						out.add(id);
+					}
+				} catch (NumberFormatException ignored) {
+					// skip invalid element
+				}
+			}
+			return out;
+		}
+		if (raw instanceof Object[] arr) {
+			return parseDistributorIdList(List.of(arr));
+		}
+		String s = String.valueOf(raw).trim();
+		if (!StringUtils.hasText(s)) {
+			return List.of();
+		}
+		if (s.startsWith("[") && s.endsWith("]")) {
+			s = s.substring(1, s.length() - 1);
+		}
+		for (String part : s.split(",")) {
+			String t = part.trim();
+			if (!StringUtils.hasText(t)) {
+				continue;
+			}
+			try {
+				long id = Long.parseLong(t);
+				if (id > 0L) {
+					out.add(id);
+				}
+			} catch (NumberFormatException ignored) {
+				// skip
+			}
+		}
+		return out;
 	}
 
 	private record DeliveryDistanceWriteParsed(int forDb, Object echoInData) {}
@@ -576,6 +628,52 @@ public class DistributorController {
 		operatorLogsWriteService.addLogs(logCtx);
 
 		return ResponseEntity.ok(ApiResult.ok(row));
+	}
+
+	@Activated(routeAlias = "distributor.edit")
+	@PutMapping(value = "/distributors/batch-status", name = "批量更改店铺状态")
+	public ResponseEntity<ApiResult<Map<String, Object>>> batchUpdateDistributorStatus(
+			HttpServletRequest request, @FlexibleBody(required = false) Map<String, Object> body) {
+		Object raw = request.getAttribute(OperatorJwtAuthenticationFilter.OPERATOR_JWT_USER_DATA);
+		if (!(raw instanceof Map<?, ?> ud)) {
+			throw new UnauthorizedException("未登录");
+		}
+		Map<String, Object> user = new LinkedHashMap<>();
+		for (Map.Entry<?, ?> e : ud.entrySet()) {
+			user.put(String.valueOf(e.getKey()), e.getValue());
+		}
+		long companyId = toLong(ud.get("company_id"));
+		companysActivationService.assertShopOperatorCompanyActive(companyId);
+		Map<String, Object> merged = mergeInputLikeFlexibleResolver(request, body);
+		List<Long> ids = parseDistributorIdList(merged.get("distributor_ids"));
+		Object isValidObj = merged.get("is_valid");
+		String isValid = isValidObj == null ? "" : String.valueOf(isValidObj).trim();
+		String requestLang = RequestCountryCode.resolve(langueProperties, merged);
+		Map<String, Object> result =
+				distributorBatchStatusService.batch(companyId, user, ids, isValid, requestLang);
+
+		long operatorId = toLong(ud.get("operator_id"));
+		Map<String, Object> logCtx = new LinkedHashMap<>();
+		logCtx.put("company_id", companyId);
+		logCtx.put("operator_id", (int) operatorId);
+		logCtx.put("request_uri", "/api/v1/distributors/batch-status");
+		logCtx.put("ip", clientIp(request));
+		try {
+			logCtx.put("params", objectMapper.writeValueAsString(merged));
+		} catch (Exception e) {
+			logCtx.put("params", merged.toString());
+		}
+		logCtx.put("operator_name", "批量更改店铺状态");
+		logCtx.put("log_type", "operator");
+		Object merchantId = ud.get("merchant_id");
+		if (merchantId != null) {
+			logCtx.put(
+					"merchant_id",
+					merchantId instanceof Number n ? n.longValue() : Long.parseLong(merchantId.toString()));
+		}
+		operatorLogsWriteService.addLogs(logCtx);
+
+		return ResponseEntity.ok(ApiResult.ok(result));
 	}
 
 	@Activated(routeAlias = "distributor.payment.subject.set")
