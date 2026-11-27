@@ -38,6 +38,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v1.OpenapiRequestParams;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxLogisticsEnabledGetBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxLogisticsEnabledGetErrorBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxLogisticsEnabledGetSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxOrderCancelBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxOrderCancelSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -352,13 +354,105 @@ public class OrderController extends OpenapiBaseController {
 		return Map.of("status", true);
 	}
 
+	@Operation(
+			summary = "开放接口取消订单",
+			description =
+					"鉴权：openapi 签名（公网网关校验后转发 internal；直连 internal 无鉴权上下文报 E4004）。"
+							+ " 3 键 query 与 JSON body 同名双通道：body 含键优先（值 null 视为未传），取值不 trim，服务内 trim 后解析。"
+							+ " 仅 order_associations 中 order_type=normal（实体类）订单可取消，否则 E5310「实体类订单才能取消订单」。"
+							+ " cancel_reason_id 限 1..12（OrderCancelReasonConfig 内置文案）；=12 时 cancel_reason 必填；"
+							+ " cancel_reason 非空覆盖配置文案。"
+							+ " 副作用（AdminNormalOrderFullCancelService，事务）：未支付（NOTPAY）直接写取消单并关单、"
+							+ " 返还下单积分/购物金；已支付（PAYED/REVIEW_PASS 且发货 PENDING）写取消单并创建退款、"
+							+ " 订单状态置 WAIT_PROCESS（取消审核流程，非立即退款完成），达达单校验骑手状态并联动取消。"
+							+ " 发票状态置 cancel、写订单流程日志（operator_type=openapi、cancel_from=shop）；"
+							+ " PAYED 时同步发布 SaasErp 退款事件与聚水潭/旺店通 ERP 取消分发，事务提交后异步分发退款与订单取消事件。"
+							+ " 失败 HTTP 仍 200：E5001 参数缺失 / E5301 订单不存在 / E5310 处理失败（下游异常 message 透传），data=null。",
+			operationId = "ecx.order.cancel.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功，data.status 恒 true；"
+								+ " 业务失败：status=fail，code=E5001 参数缺失 / E5301 订单相应的明细不存在 /"
+								+ " E5310 处理失败（各分支文案见 EcxOrderCancelFailEnvelopeDoc），data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。",
+				content =
+						@Content(
+								schema = @Schema(implementation = EcxOrderCancelSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "取消受理成功",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"status\":true}}"),
+									@ExampleObject(
+											name = "missing-order-id",
+											summary = "缺少订单编号（E5001）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5001\",\"message\":\"请填写订单编号\",\"data\":null}"),
+									@ExampleObject(
+											name = "order-not-found",
+											summary = "订单不存在或 order_id 非整数（E5301）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5301\",\"message\":\"订单相应的明细不存在\",\"data\":null}"),
+									@ExampleObject(
+											name = "bad-reason-id",
+											summary = "取消原因 ID 非法（E5310）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5310\",\"message\":\"请填写正确的取消原因ID\",\"data\":null}"),
+									@ExampleObject(
+											name = "status-not-cancelable",
+											summary = "订单状态不可取消（E5310，下游文案透传）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5310\",\"message\":\"订单状态已不能申请取消\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								})),
+		@ApiResponse(
+				responseCode = "500",
+				description = "未处理异常兜底（GlobalExceptionHandler，ApiResult 非本信封）",
+				content =
+						@Content(
+								examples =
+										@ExampleObject(
+												name = "internal-error",
+												value = "{\"code\":500,\"msg\":\"服务器内部错误\"}")))
+	})
+	@RequestBody(
+			required = false,
+			description = "JSON body（与 query 同名键双通道，body 含键优先）",
+			content = @Content(schema = @Schema(implementation = EcxOrderCancelBodyDoc.class)))
 	@PostMapping(value = "/ecx.order.cancel", name = "开放接口取消订单")
 	public Map<String, Object> orderCancel(
-			HttpServletRequest request,
-			@RequestParam(name = "order_id", required = false) String orderIdParam,
-			@RequestParam(name = "cancel_reason_id", required = false) String cancelReasonIdParam,
-			@RequestParam(name = "cancel_reason", required = false) String cancelReasonParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description =
+									"订单 ID（与 body 同名键双通道，body 含键优先）；必填，trim 后 Long 解析，"
+											+ "失败或无此单 → E5301「订单相应的明细不存在」",
+							example = "100")
+					@RequestParam(name = "order_id", required = false)
+					String orderIdParam,
+			@Parameter(
+							description =
+									"取消原因 ID（双通道同上）；必填，1..12（内置文案），解析失败或超范围 →"
+											+ " E5310「请填写正确的取消原因ID」；=12 时须传 cancel_reason",
+							example = "1")
+					@RequestParam(name = "cancel_reason_id", required = false)
+					String cancelReasonIdParam,
+			@Parameter(
+							description =
+									"自定义取消原因描述（双通道同上）；cancel_reason_id=12 时必填；trim 后 >255 字符报"
+											+ " E5001「请填写取消原因描述」；非空覆盖内置文案",
+							example = "客户电话要求取消")
+					@RequestParam(name = "cancel_reason", required = false)
+					String cancelReasonParam,
+			@Parameter(hidden = true) @FlexibleBody(required = false) Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		orderCancelPort.executeCancel(
 				companyId,
