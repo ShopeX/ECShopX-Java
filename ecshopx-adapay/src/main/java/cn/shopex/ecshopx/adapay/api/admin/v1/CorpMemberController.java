@@ -22,6 +22,7 @@ import cn.shopex.ecshopx.adapay.api.admin.v1.doc.AdapayAlipayIndustryCatListServ
 import cn.shopex.ecshopx.adapay.api.admin.v1.doc.AdapayCorpMemberCreateBizFailEnvelopeDoc;
 import cn.shopex.ecshopx.adapay.api.admin.v1.doc.AdapayCorpMemberCreateBodyDoc;
 import cn.shopex.ecshopx.adapay.api.admin.v1.doc.AdapayCorpMemberCreateSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.adapay.api.admin.v1.doc.AdapayCorpMemberGetSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.adapay.service.AdapayCorpMemberCreateService;
 import cn.shopex.ecshopx.adapay.service.AdapayCorpMemberModifyService;
 import cn.shopex.ecshopx.adapay.service.AdapayCorpMemberReadService;
@@ -85,9 +86,126 @@ public class CorpMemberController {
 		this.adapayCorpMemberReadService = adapayCorpMemberReadService;
 	}
 
+	@Operation(
+			summary = "获取企业用户对象",
+			description =
+					"按 JWT 租户 company_id + operator_id 查询 adapay_corp_member（id 升序取第一条），"
+							+ "返回企业开户详情 34 固定键 + 3 条件键：敏感字段 legal_person/legal_cert_id/legal_mp/card_no"
+							+ " 解密后明文；operator_id 库值 null/0 → null；prov_code 空白 → null；"
+							+ "area_code null → 空串；disabled_type 恒空串；div_fee_mode 恒「内扣」。"
+							+ " 条件键：bank_name（bank_code 非空白才出现，反查 adapay_bank_codes，查无空串）、"
+							+ "attach_file_url / confirm_letter_file_url（对应路径非空白才出现，"
+							+ "私有下载链接 3600 秒，local 驱动为直链）。"
+							+ " 无 query/path/body 入参。查无记录报「用户信息不存在」"
+							+ "（BadRequest + DINGO_422：HTTP 200 + data.status_code=422）。"
+							+ " 鉴权面 admin：Operator JWT；JWT 缺 company_id/operator_id 报 401「未登录」。"
+							+ " 只读，无写库/异步/第三方副作用。",
+			operationId = "adapay.corp_member.info")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200。成功：ApiResult code=200、msg=success、data 见 AdapayCorpMemberGetData；"
+								+ "业务失败也走 HTTP 200：Dingo 信封 data.message=用户信息不存在 + data.status_code=422。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												oneOf = {
+													AdapayCorpMemberGetSuccessEnvelopeDoc.class,
+													AdapayCorpMemberCreateBizFailEnvelopeDoc.class
+												}),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "查询成功（对公已开户；字段值为按代码规则/种子数据构造的样例）",
+											value =
+													"{\"code\":200,\"msg\":\"success\",\"data\":{\"id\":1,\"app_id\":\"app-x\","
+															+ "\"order_no\":\"20231127120000123456\",\"member_id\":1,"
+															+ "\"company_id\":1,\"operator_id\":1,\"name\":\"示例科技有限公司\","
+															+ "\"prov_code\":\"0011\",\"area_code\":\"1100\","
+															+ "\"social_credit_code\":\"91110000123456789X\","
+															+ "\"social_credit_code_expires\":\"20991231\","
+															+ "\"business_scope\":\"软件开发与销售\",\"legal_person\":\"李四\","
+															+ "\"legal_cert_id\":\"110101199001011234\","
+															+ "\"legal_cert_id_expires\":\"20991231\","
+															+ "\"legal_mp\":\"13800138000\",\"address\":\"北京市东城区示例路1号\","
+															+ "\"zip_code\":\"100000\",\"telphone\":\"010-12345678\","
+															+ "\"email\":\"a@b.com\","
+															+ "\"attach_file\":\"adapay/1/1700000000/0123456789abcdef0123456789abcdef.zip\","
+															+ "\"attach_file_name\":\"attach.zip\",\"confirm_letter_file\":\"\","
+															+ "\"confirm_letter_file_name\":\"\",\"bank_code\":\"01020000\","
+															+ "\"bank_acct_type\":\"1\",\"card_no\":\"622200\","
+															+ "\"card_name\":\"示例科技有限公司\",\"audit_state\":\"E\","
+															+ "\"audit_desc\":\"审核通过\",\"create_time\":1700000000,"
+															+ "\"update_time\":1700000000,\"disabled_type\":\"\","
+															+ "\"bank_name\":\"中国工商银行\","
+															+ "\"attach_file_url\":\"https://example.com/storage/adapay/1/1700000000/"
+															+ "0123456789abcdef0123456789abcdef.zip\",\"div_fee_mode\":\"内扣\"}}"),
+									@ExampleObject(
+											name = "fail-not-found",
+											summary = "查无企业用户（HTTP 200，Dingo 422 信封）",
+											value = "{\"data\":{\"message\":\"用户信息不存在\",\"status_code\":422}}")
+								})),
+		@ApiResponse(
+				responseCode = "401",
+				description =
+						"鉴权失败：过滤器/拦截器 401 Dingo 信封（data.message/data.status_code=401，无业务 code）；"
+								+ "JWT 缺 company_id/operator_id 时本方法抛「未登录」，经 unauthorized=true 包装。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														AdapayAlipayIndustryCatListAuthFailEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "missing-credentials",
+											summary = "缺失/非法 Authorization 头",
+											value =
+													"{\"data\":{\"message\":\"Failed to authenticate because of bad"
+															+ " credentials or an invalid authorization header.\","
+															+ "\"status_code\":401}}"),
+									@ExampleObject(
+											name = "invalid-token",
+											summary = "token 过期/校验失败",
+											value = "{\"data\":{\"message\":\"登录验证错误\",\"status_code\":401}}")
+								})),
+		@ApiResponse(
+				responseCode = "403",
+				description = "租户/账号校验失败（拦截器 ApiResult.fail(403, msg)，data 省略）。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														AdapayAlipayIndustryCatListForbiddenEnvelopeDoc.class),
+								examples =
+										@ExampleObject(
+												name = "forbidden",
+												value = "{\"code\":403,\"msg\":\"未登录\"}"))),
+		@ApiResponse(
+				responseCode = "500",
+				description = "未处理异常（GlobalExceptionHandler.handleException），固定文案。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														AdapayAlipayIndustryCatListServerErrorEnvelopeDoc.class),
+								examples =
+										@ExampleObject(
+												name = "server-error",
+												value = "{\"code\":500,\"msg\":\"服务器内部错误\"}")))
+	})
 	@Activated(routeAlias = "adapay.corp_member.info")
 	@GetMapping(value = "/corp_member/get", name = "获取企业用户对象")
-	public ResponseEntity<ApiResult<Map<String, Object>>> get(HttpServletRequest request) {
+	public ResponseEntity<ApiResult<Map<String, Object>>> get(
+			@Parameter(hidden = true) HttpServletRequest request) {
 		Object raw = request.getAttribute(OperatorJwtAuthenticationFilter.OPERATOR_JWT_USER_DATA);
 		if (!(raw instanceof Map<?, ?> jwtMapRaw) || jwtMapRaw.isEmpty()) {
 			throw new UnauthorizedException("未登录");
