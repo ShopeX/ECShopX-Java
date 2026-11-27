@@ -16,6 +16,10 @@
 
 package cn.shopex.ecshopx.adapay.api.admin.v1;
 
+import cn.shopex.ecshopx.adapay.api.admin.v1.doc.AdapayAlipayIndustryCatListAuthFailEnvelopeDoc;
+import cn.shopex.ecshopx.adapay.api.admin.v1.doc.AdapayAlipayIndustryCatListForbiddenEnvelopeDoc;
+import cn.shopex.ecshopx.adapay.api.admin.v1.doc.AdapayAlipayIndustryCatListServerErrorEnvelopeDoc;
+import cn.shopex.ecshopx.adapay.api.admin.v1.doc.AdapayAlipayIndustryCatListSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.adapay.domain.dto.AdapayAlipayIndustryCategoryTreeNodeDto;
 import cn.shopex.ecshopx.adapay.domain.dto.AdapayBankCodesListRowDto;
 import cn.shopex.ecshopx.adapay.domain.dto.AdapayRegionsListRowDto;
@@ -46,6 +50,13 @@ import cn.shopex.ecshopx.common.exception.UnauthorizedException;
 import cn.shopex.ecshopx.common.web.FlexibleBody;
 import cn.shopex.ecshopx.espier.security.OperatorJwtAuthenticationFilter;
 import cn.shopex.ecshopx.espier.storage.FileStorageService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -62,6 +73,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+@Tag(name = "Adapay 开户", description = "汇付 Adapay 商户开户：证照上传、进件、结算与类目/地区基础数据")
 @DingoResponse(
 		resource = DingoResponse.ResourceStyle.DINGO,
 		badRequest = DingoResponse.BadRequestStyle.DINGO_422,
@@ -281,6 +293,112 @@ public class OpenAccountController {
 		return ResponseEntity.ok(ApiResult.ok(data));
 	}
 
+	@Operation(
+			summary = "获取支付宝行业类目",
+			description =
+					"全量读取 adapay_alipay_industry_category 表并按 parent_id 组装三级类目树"
+							+ "（顶级 parent_id=0；category_level=3 的叶子节点省略 children 键，"
+							+ "其余层级 children 恒有键、无子分类时为 []）。"
+							+ " 节点字段 snake_case：id/category_name/parent_id/category_level/"
+							+ "alipay_cls_id/alipay_category_id；一、二级节点 alipay_cls_id 与"
+							+ " alipay_category_id 为 null，三级叶子才有值；种子数据部分名称含尾随空格，原样返回。"
+							+ " 无 query/path/body 入参；不按租户过滤（全局静态字典）。"
+							+ " 鉴权面 admin：Operator JWT（Authorization: Bearer），POS JWT 白名单同样放行；"
+							+ " 鉴权失败由过滤器/拦截器直接写 401 Dingo 信封（data.message/data.status_code），"
+							+ " 租户/账号校验失败写 403 ApiResult。"
+							+ " 只读，无写库/异步/第三方副作用。",
+			operationId = "adapay.alipay_industry_cat.list")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，ApiResult 信封：code=200、msg=success，data 为顶级类目数组"
+								+ "（children 逐级嵌套；表空时 data=[]）。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														AdapayAlipayIndustryCatListSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "查询成功（节选「零售业」分支至三级叶子；真实数据共约 300 条）",
+											value =
+													"{\"code\":200,\"msg\":\"success\",\"data\":[{\"id\":1,"
+															+ "\"category_name\":\"零售业 \",\"parent_id\":0,"
+															+ "\"category_level\":1,\"alipay_cls_id\":null,"
+															+ "\"alipay_category_id\":null,\"children\":[{\"id\":2,"
+															+ "\"category_name\":\"综合零售 \",\"parent_id\":1,"
+															+ "\"category_level\":2,\"alipay_cls_id\":null,"
+															+ "\"alipay_category_id\":null,\"children\":[{\"id\":3,"
+															+ "\"category_name\":\"百货商店 \",\"parent_id\":2,"
+															+ "\"category_level\":3,\"alipay_cls_id\":207,"
+															+ "\"alipay_category_id\":\"5311\"}]}]}]}"),
+									@ExampleObject(
+											name = "success-empty",
+											summary = "类目表为空",
+											value = "{\"code\":200,\"msg\":\"success\",\"data\":[]}")
+								})),
+		@ApiResponse(
+				responseCode = "401",
+				description =
+						"鉴权失败（OperatorJwtAuthenticationFilter / AdminAuthInterceptor 直接写出）："
+								+ "缺失/非法 Authorization 为固定英文句；token 过期或校验失败为「登录验证错误」。"
+								+ " Dingo 信封 data.message + data.status_code=401，无业务 code 键。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														AdapayAlipayIndustryCatListAuthFailEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "missing-credentials",
+											summary = "缺失/非法 Authorization 头",
+											value =
+													"{\"data\":{\"message\":\"Failed to authenticate because of bad"
+															+ " credentials or an invalid authorization header.\","
+															+ "\"status_code\":401}}"),
+									@ExampleObject(
+											name = "invalid-token",
+											summary = "token 过期/校验失败",
+											value = "{\"data\":{\"message\":\"登录验证错误\",\"status_code\":401}}")
+								})),
+		@ApiResponse(
+				responseCode = "403",
+				description =
+						"租户/账号校验失败（CompanysActivationService.checkUserAuth 抛 ResourceException，"
+								+ "拦截器转 ApiResult.fail(403, msg)，data 省略）。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														AdapayAlipayIndustryCatListForbiddenEnvelopeDoc.class),
+								examples =
+										@ExampleObject(
+												name = "forbidden",
+												summary = "校验失败（缺省文案）",
+												value = "{\"code\":403,\"msg\":\"未登录\"}"))),
+		@ApiResponse(
+				responseCode = "500",
+				description = "未处理异常（GlobalExceptionHandler.handleException），固定文案。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														AdapayAlipayIndustryCatListServerErrorEnvelopeDoc.class),
+								examples =
+										@ExampleObject(
+												name = "server-error",
+												value = "{\"code\":500,\"msg\":\"服务器内部错误\"}")))
+	})
 	@Activated(routeAlias = "adapay.alipay_industry_cat.list")
 	@GetMapping(value = "/alipay_industry_cat/list", name = "获取支付宝行业类目")
 	public ResponseEntity<ApiResult<List<AdapayAlipayIndustryCategoryTreeNodeDto>>> getAlipayIndustryCatList() {
