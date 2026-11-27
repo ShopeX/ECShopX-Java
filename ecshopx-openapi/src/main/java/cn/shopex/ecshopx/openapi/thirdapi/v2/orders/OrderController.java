@@ -53,6 +53,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxOrdersIncrGetBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxOrdersIncrGetSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxOrdersSoldGetBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxOrdersSoldGetSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxShippingTemplatesGetBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxShippingTemplatesGetSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -585,12 +587,115 @@ public class OrderController extends OpenapiBaseController {
 		return tradeListPort.list(companyId, pageSpec.page(), pageSpec.pageSize());
 	}
 
+	@Operation(
+			summary = "开放接口运费模板列表",
+			description =
+					"按签名鉴权租户 company_id 分页返回总部运费模板（distributor_id=0 等值，create_time 倒序，"
+							+ "不过滤 status/supplier_id）：data 含 total_count、is_last_page（1/0）、"
+							+ "pager（page/page_size 归一化回显）与 list（13 固定键/行 + 条件键 name_lang）。"
+							+ " 分页：page 缺省 1（<1 归一 1）；page_size 缺省 20、<20 归一 20；解析后 ≥500 报 E0001"
+							+ "「每页的大小最大为500！」（500 本身也报错）。两参数双通道（body 含键取原始值，否则用 query）。"
+							+ " 行内 fee_conf/nopost_conf/free_conf 为库内 JSON 字符串原样透传（内部键集随 valuation，"
+							+ "见 EcxShippingTemplatesGetRowDoc）；protect_rate/minprice 定标小数字符串（null 透传）；"
+							+ "update_time 空/≤0 为空串。name 经 zh-CN 语言分片覆盖（locale 固定 zh-CN），"
+							+ "有非空覆盖时另携条件键 name_lang={\"zh-CN\":覆盖名}。"
+							+ " 返回 Map 由 Advice 包装（message 固定「成功」）。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.shipping.templates.get,"
+							+ " version=2.0）签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 只读，无写库/异步/第三方副作用。",
+			operationId = "ecx.shipping.templates.get.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功，data 见 EcxShippingTemplatesGetDataDoc"
+								+ "（无数据时 total_count=0、is_last_page=1、list=[]）；"
+								+ " 业务失败：status=fail, code=E0001 每页的大小最大为500！，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxShippingTemplatesGetFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxShippingTemplatesGetSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "查询成功（按重量计费模板，含指定地区运费与包邮条件；无语言覆盖）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"total_count\":1,\"is_last_page\":1,"
+															+ "\"pager\":{\"page\":1,\"page_size\":20},"
+															+ "\"list\":[{\"template_id\":1,\"supplier_id\":0,"
+															+ "\"name\":\"全国包邮模板\",\"is_free\":\"0\",\"valuation\":\"1\","
+															+ "\"protect\":false,\"protect_rate\":\"0.000\",\"minprice\":\"0.00\","
+															+ "\"status\":true,"
+															+ "\"fee_conf\":\"[{\\\"start_standard\\\":\\\"1\\\",\\\"start_fee\\\":\\\"10\\\","
+															+ "\\\"add_standard\\\":\\\"1\\\",\\\"add_fee\\\":\\\"5\\\"},"
+															+ "{\\\"area\\\":[110000],\\\"start_standard\\\":\\\"1\\\","
+															+ "\\\"start_fee\\\":\\\"15\\\",\\\"add_standard\\\":\\\"1\\\","
+															+ "\\\"add_fee\\\":\\\"8\\\"}]}\","
+															+ "\"nopost_conf\":\"[110000]\","
+															+ "\"free_conf\":\"[{\\\"freetype\\\":3,\\\"inweight\\\":\\\"2\\\","
+															+ "\\\"upmoney\\\":\\\"99\\\"}]\","
+															+ "\"update_time\":\"2023-11-15 08:00:01\"}]}}"),
+									@ExampleObject(
+											name = "success-lang-overlay",
+											summary = "zh-CN 语言分片有覆盖名（name 被覆盖并携带条件键 name_lang）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"total_count\":1,\"is_last_page\":1,"
+															+ "\"pager\":{\"page\":1,\"page_size\":20},"
+															+ "\"list\":[{\"template_id\":1,\"supplier_id\":0,"
+															+ "\"name\":\"覆盖后的模板名\",\"is_free\":\"1\",\"valuation\":\"1\","
+															+ "\"protect\":null,\"protect_rate\":null,\"minprice\":null,"
+															+ "\"status\":true,\"fee_conf\":null,\"nopost_conf\":\"[]\","
+															+ "\"free_conf\":null,\"update_time\":\"\","
+															+ "\"name_lang\":{\"zh-CN\":\"覆盖后的模板名\"}}]}}"),
+									@ExampleObject(
+											name = "success-empty",
+											summary = "无运费模板",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"total_count\":0,\"is_last_page\":1,"
+															+ "\"pager\":{\"page\":1,\"page_size\":20},\"list\":[]}}"),
+									@ExampleObject(
+											name = "fail-page-size",
+											summary = "page_size 解析后 ≥500",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E0001\",\"message\":\"每页的大小最大为500！\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@GetMapping(value = "/ecx.shipping.templates.get", name = "开放接口运费模板列表")
 	public Map<String, Object> getShippingtemplates(
-			HttpServletRequest request,
-			@RequestParam(name = "page", required = false) String pageParam,
-			@RequestParam(name = "page_size", required = false) String pageSizeParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(description = "页码；缺省 1，<1 归一 1（PHP 整型解析，body 同名键优先）", example = "1")
+					@RequestParam(name = "page", required = false)
+					String pageParam,
+			@Parameter(
+							description = "每页条数；缺省 20，<20 归一 20；≥500 报「每页的大小最大为500！」（body 同名键优先）",
+							example = "20")
+					@RequestParam(name = "page_size", required = false)
+					String pageSizeParam,
+			@RequestBody(
+							description = "可选 JSON body；字段与 query 同名双通道（取原始值）；分页语义见 schema",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxShippingTemplatesGetBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		OpenapiThirdApiV2ShippingTemplatesListParams.PageSpec pageSpec =
 				OpenapiThirdApiV2ShippingTemplatesListParams.resolve(pageParam, pageSizeParam, body);
