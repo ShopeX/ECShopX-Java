@@ -26,6 +26,17 @@ import cn.shopex.ecshopx.openapi.thirdapi.OpenapiBaseController;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.OpenapiGoodsListParams;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.OpenapiPaginationParams;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.OpenapiRequestParams;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxProductGoodsListBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxProductGoodsListSuccessEnvelopeDoc;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Map;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,6 +44,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "开放接口-导购云店商品V2")
 @OpenapiResponse
 @RestController("openapiV2Item")
 @RequestMapping("/api/openapi/internal/v2")
@@ -71,14 +83,104 @@ public class ItemController extends OpenapiBaseController {
 		return new OpenapiEnvelope("success", "E0000", "", data);
 	}
 
+	@Operation(
+			summary = "开放接口导购云店商品列表V2",
+			description =
+					"鉴权：openapi 签名（公网网关校验后转发 internal；直连 internal 无鉴权上下文报 E4004）。"
+							+ " 4 键 query 与 JSON body 同名双通道：page/page_size body 值非 null 优先（数字直取），"
+							+ " time_begin/time_end body 含键优先（null 视为未传）。"
+							+ " 按 items.updated 时间窗拉取商品 SKU 行（仅租户过滤——含全部上下架状态与店铺商品，"
+							+ " is_self 区分自营；无 ORDER BY，分页顺序不保证稳定）。"
+							+ " item_name 经 zh-CN 语言分表覆盖；sku 为规格值空格拼接（关联查询全局 LIMIT 100 无排序，"
+							+ " 超出部分商品 sku 为空串）；goods_bn 键实为货品 item_id（PHP 历史契约）。"
+							+ " 分页无上下限校验：page 默认 1（≤0 → 负 offset SQL 错误 → HTTP 500）、"
+							+ " page_size 默认 100（≤0 → 全量返回）。"
+							+ " 信封显式构造：message 固定 \"ok\"。副作用：无（只读）。"
+							+ " 失败 HTTP 仍 200：E5320「开始时间不能大于结束时间」（两时间均生效且起点>终点），data=null。",
+			operationId = "ecx.product.goods_list.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（显式构造，message 固定 ok）。"
+								+ " 成功：status=success, code=E0000, message=ok，data 见 EcxProductGoodsListDataDoc"
+								+ "（4 固定键，行 8 键）；"
+								+ " 业务失败：status=fail, code=E5320 开始时间不能大于结束时间，data=null，"
+								+ "见 EcxProductGoodsListFailEnvelopeDoc；鉴权失败：status=fail, code=E4004 未授权，data=null。",
+				content =
+						@Content(
+								schema = @Schema(implementation = EcxProductGoodsListSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "一条平台商品（pic 取 seed 真实 URL 仅作格式演示）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"ok\",\"data\":{"
+															+ "\"page\":1,\"page_size\":100,\"total_count\":1,\"goods_list\":["
+															+ "{\"item_name\":\"Wire test goods\",\"item_price\":10,"
+															+ "\"pic\":\"https://b-img-cdn.yuanyuanke.cn/image/21/2021/05/21/"
+															+ "f425f5ae2e6032eb6fded1015fc979e4xPndgZMDIyfeGTWsMJOTcmWvaPQjWPbL\","
+															+ "\"sku\":\"\",\"goods_bn\":200,\"item_bn\":\"SKU200\","
+															+ "\"approve_status\":\"onsale\",\"is_self\":true}]}}"),
+									@ExampleObject(
+											name = "success-empty",
+											summary = "窗口内无商品（goods_list 空数组）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"ok\","
+															+ "\"data\":{\"page\":1,\"page_size\":100,\"total_count\":0,"
+															+ "\"goods_list\":[]}}"),
+									@ExampleObject(
+											name = "fail-time-window",
+											summary = "开始时间大于结束时间（E5320，唯一业务失败码）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5320\","
+															+ "\"message\":\"开始时间不能大于结束时间\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								})),
+		@ApiResponse(
+				responseCode = "500",
+				description = "未处理异常兜底（含 page≤0 负 offset SQL 错误；GlobalExceptionHandler，ApiResult 非本信封）",
+				content =
+						@Content(
+								examples =
+										@ExampleObject(
+												name = "internal-error",
+												value = "{\"code\":500,\"msg\":\"服务器内部错误\"}")))
+	})
+	@RequestBody(
+			required = false,
+			description = "JSON body（与 query 同名键双通道，body 优先）",
+			content = @Content(schema = @Schema(implementation = EcxProductGoodsListBodyDoc.class)))
 	@PostMapping(value = "/ecx.product.goods_list", name = "开放接口导购云店商品列表V2")
 	public OpenapiEnvelope goodsList(
-			HttpServletRequest request,
-			@RequestParam(name = "page", required = false) String pageParam,
-			@RequestParam(name = "page_size", required = false) String pageSizeParam,
-			@RequestParam(name = "time_begin", required = false) String timeBeginParam,
-			@RequestParam(name = "time_end", required = false) String timeEndParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "页码（与 body 同名键双通道，body 值非 null 优先）；默认 1，无下限校验（≤0 → HTTP 500）",
+							example = "1")
+					@RequestParam(name = "page", required = false)
+					String pageParam,
+			@Parameter(
+							description = "每页数量（双通道同上）；默认 100，无上限校验；≤0 全量返回",
+							example = "100")
+					@RequestParam(name = "page_size", required = false)
+					String pageSizeParam,
+			@Parameter(
+							description =
+									"更新时间窗口起点 items.updated≥（双通道同上）；yyyy-MM-dd HH:mm:ss 或 yyyy-MM-dd，"
+											+ "非法静默 0（≤0 跳过过滤）；与终点同生效且更大 → E5320（示例为格式演示值）",
+							example = "2026-01-01 00:00:00")
+					@RequestParam(name = "time_begin", required = false)
+					String timeBeginParam,
+			@Parameter(
+							description = "更新时间窗口终点 items.updated≤（双通道同上）；语义同起点（示例为格式演示值）",
+							example = "2026-01-02 00:00:00")
+					@RequestParam(name = "time_end", required = false)
+					String timeEndParam,
+			@Parameter(hidden = true) @FlexibleBody(required = false) Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		int page = OpenapiGoodsListParams.resolvePage(pageParam, body);
 		int pageSize = OpenapiGoodsListParams.resolvePageSize(pageSizeParam, body);
