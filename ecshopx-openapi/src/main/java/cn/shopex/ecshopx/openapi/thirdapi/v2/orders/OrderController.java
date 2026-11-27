@@ -47,6 +47,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxOrderGetBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxOrderGetSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxOrderListBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxOrderListSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxOrderWriteoffBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxOrderWriteoffSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -241,13 +243,103 @@ public class OrderController extends OpenapiBaseController {
 		return new OpenapiEnvelope("success", "E0000", message, data);
 	}
 
+	@Operation(
+			summary = "开放接口自提订单核销",
+			description =
+					"鉴权：openapi 签名（公网网关校验后转发 internal；直连 internal 无鉴权上下文报 E4004）。"
+							+ " @Activated(routeAlias=order.writeoff.set) 供 PHP 网关 activated 菜单权限校验；"
+							+ " Java 侧拦截器仅在运营端 JWT 上下文存在时生效，openapi 转发无该上下文则跳过。"
+							+ " 2 键 query 与 JSON body 同名双通道：body 含键优先（值 null 视为未传），取值不 trim，服务内 trim。"
+							+ " 仅自提（ziti）实体单可核销：order_status=PAYED、ziti_status=PENDING、pay_status=PAYED、"
+							+ " cancel_status∈{NO_APPLY_CANCEL,FAILS}；service 族/supplier_order/membercard 类型拒绝。"
+							+ " 租户提货码开关开启时校验并消费提货码（Redis 短信码或扫码映射，一码一用；community 单强制关闭开关）。"
+							+ " 副作用（事务，进程内 company:order 互斥）：主单/明细/关联表置 DONE（ziti_status=DONE、"
+							+ " delivery_status=DONE、写发货/完成时间、可售后数量=商品总数、按平台 latest_aftersale_time 设置写自动关闭售后时间），"
+							+ " 关联表 cancel_status 重置 NO_APPLY_CANCEL；结算分销佣金、累计会员消费（非积分支付）、"
+							+ " 银联商务分账（chinaums+店铺单）、写核销流程日志（operator_type=openapi，含核销号）；"
+							+ " 事务提交后异步上报微信小程序发货（ziti/batch/全部发货），有成功交易时同步分发第三方交易更新。"
+							+ " 失败 HTTP 仍 200：E5001 参数缺失 / E5301 订单或自提单不存在 / E5310 处理失败"
+							+ "（文案见 EcxOrderWriteoffFailEnvelopeDoc），data=null。",
+			operationId = "ecx.order.writeoff.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功，data.status 恒 true；"
+								+ " 业务失败：status=fail，code=E5001/E5301/E5310，data=null，"
+								+ "各分支文案见 EcxOrderWriteoffFailEnvelopeDoc；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。",
+				content =
+						@Content(
+								schema = @Schema(implementation = EcxOrderWriteoffSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "核销成功",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"status\":true}}"),
+									@ExampleObject(
+											name = "fail-missing-pickupcode",
+											summary = "提货码开关开启但未传提货码（E5001）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5001\",\"message\":\"请填写提货码\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-not-ziti",
+											summary = "非自提订单（E5301）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5301\",\"message\":\"自提订单相应的明细不存在\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-status",
+											summary = "订单状态不可核销（E5310）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5310\","
+															+ "\"message\":\"自提订单状态不正确，不能进行操作\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-bad-pickupcode",
+											summary = "提货码验证失败（E5310）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5310\",\"message\":\"提货码验证错误！\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								})),
+		@ApiResponse(
+				responseCode = "500",
+				description = "未处理异常兜底（GlobalExceptionHandler，ApiResult 非本信封）",
+				content =
+						@Content(
+								examples =
+										@ExampleObject(
+												name = "internal-error",
+												value = "{\"code\":500,\"msg\":\"服务器内部错误\"}")))
+	})
+	@RequestBody(
+			required = false,
+			description = "JSON body（与 query 同名键双通道，body 含键优先）",
+			content = @Content(schema = @Schema(implementation = EcxOrderWriteoffBodyDoc.class)))
 	@Activated(routeAlias = "order.writeoff.set")
 	@PostMapping(value = "/ecx.order.writeoff", name = "开放接口自提订单核销")
 	public Map<String, Object> orderWriteoff(
-			HttpServletRequest request,
-			@RequestParam(name = "order_id", required = false) String orderIdParam,
-			@RequestParam(name = "pickupcode", required = false) String pickupcodeParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description =
+									"订单 ID（与 body 同名键双通道，body 含键优先）；必填，trim 后 Long 解析，"
+											+ "非整数/≤0/无此单 → E5301「订单相应的明细不存在」",
+							example = "501")
+					@RequestParam(name = "order_id", required = false)
+					String orderIdParam,
+			@Parameter(
+							description =
+									"提货码（双通道同上）；租户提货码开关开启时必填（否则 E5001「请填写提货码」），"
+											+ "验证失败 → E5310「提货码验证错误！」；开关关闭时忽略",
+							example = "760773986531")
+					@RequestParam(name = "pickupcode", required = false)
+					String pickupcodeParam,
+			@Parameter(hidden = true) @FlexibleBody(required = false) Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		orderWriteoffPort.executeWriteoff(
 				companyId,
