@@ -41,6 +41,7 @@ import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxLogisticsEnabledGetSu
 import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxOrderCancelBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxOrderCancelConfirmBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxOrderCancelConfirmSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxOrderCancelReasonsGetSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxOrderCancelSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -196,8 +197,57 @@ public class OrderController extends OpenapiBaseController {
 				payStatusRaw);
 	}
 
+	@Operation(
+			summary = "开放接口订单取消原因列表",
+			description =
+					"鉴权：openapi 签名（公网网关校验后转发 internal；直连 internal 无鉴权上下文报 E4004）。"
+							+ " 无入参（HttpServletRequest 仅容器注入，方法内未读取；无 query/body 参数）。"
+							+ " 返回内置取消原因映射（OrderCancelReasonConfig.REASONS 静态配置，固定 12 键 \"1\"～\"12\"，"
+							+ " 插入序 1→12），键即 ecx.order.cancel 的 cancel_reason_id 取值；选 12 须另传 cancel_reason。"
+							+ " 副作用：无（纯静态配置读取，不访问 DB）。本接口无业务失败码。",
+			operationId = "ecx.order.cancel.reasons.get.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功，data 为固定 12 键原因映射；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxOrderCancelReasonsGetFailEnvelopeDoc。",
+				content =
+						@Content(
+								schema =
+										@Schema(
+												implementation =
+														EcxOrderCancelReasonsGetSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "全部 12 条内置取消原因（线上真实键值）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"1\":\"客户现在不想购买\",\"2\":\"客户商品价格较贵\","
+															+ "\"3\":\"客户价格波动\",\"4\":\"客户商品缺货\",\"5\":\"客户重复下单\","
+															+ "\"6\":\"客户订单商品选择有误\",\"7\":\"客户支付方式选择有误\","
+															+ "\"8\":\"客户收货信息填写有误\",\"9\":\"客户发票信息填写有误\","
+															+ "\"10\":\"客户无法支付订单\",\"11\":\"客户长时间未付款\",\"12\":\"客户其他原因\"}}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								})),
+		@ApiResponse(
+				responseCode = "500",
+				description = "未处理异常兜底（GlobalExceptionHandler，ApiResult 非本信封）",
+				content =
+						@Content(
+								examples =
+										@ExampleObject(
+												name = "internal-error",
+												value = "{\"code\":500,\"msg\":\"服务器内部错误\"}")))
+	})
 	@GetMapping(value = "/ecx.order.cancel.reasons.get", name = "开放接口订单取消原因列表")
-	public Map<String, String> getCancelReasons(HttpServletRequest request) {
+	public Map<String, String> getCancelReasons(@Parameter(hidden = true) HttpServletRequest request) {
 		return cancelReasonsPort.listAllAsStringKeyMap();
 	}
 
