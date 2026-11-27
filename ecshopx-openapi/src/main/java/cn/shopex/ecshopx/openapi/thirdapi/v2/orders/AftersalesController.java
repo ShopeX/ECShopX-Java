@@ -36,6 +36,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxAftersalesListBodyDoc
 import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxAftersalesListSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxRefundDetailGetBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxRefundDetailGetSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxRefundListBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxRefundListSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -392,15 +394,145 @@ public class AftersalesController extends OpenapiBaseController {
 				progressRaw);
 	}
 
+	@Operation(
+			summary = "开放接口退款单列表",
+			description =
+					"按签名鉴权租户 company_id 分页返回退款单（create_time 倒序）："
+							+ " data 含 total_count、is_last_page（1/0）、pager（page/page_size 归一化回显）与 list（15 键/行）。"
+							+ " 分页：page 缺省 1（<1 归一 1）；page_size 缺省 20、<20 归一 20；解析后 ≥500 报 E0001"
+							+ "「每页的大小最大为500！」（500 本身也报错）。"
+							+ " mobile PHP-truthy 才生效：须匹配 ^1[345789][0-9]{9}$（E5340），查无会员 E5331，命中按 user_id 过滤；"
+							+ " time_begin/time_end PHP-truthy + yyyy-MM-dd[ HH:mm:ss] 转 Unix 秒做 create_time 闭区间（≥/≤），"
+							+ " 解析失败按 0；双端生效且下界>上界报 E5340「开始时间不能大于结束时间」。"
+							+ " 行 15 键：refund_bn/order_id 字符串形态，aftersales_bn 售前取消退款为 null，金额单位分，"
+							+ " 时间 yyyy-MM-dd HH:mm:ss（null/≤0 按 epoch 0）；refund_success_time 空值按 epoch 0"
+							+ "（区别于详情接口的当前时间）；无 return_freight、无 cancel_reason（详情接口才有）。"
+							+ " 五参数双通道（body 含键取原始值，否则用 query）。返回 Map 由 Advice 包装（message 固定「成功」）。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.refund.get, version=2.0）"
+							+ " 签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 只读，无写库/异步/第三方副作用。",
+			operationId = "ecx.refund.get.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功，data 见 EcxRefundListDataDoc"
+								+ "（无数据时 total_count=0、is_last_page=1、list=[]）；"
+								+ " 业务失败：status=fail, code=E0001 每页的大小最大为500！ / E5340 请填写正确的手机号·"
+								+ "开始时间不能大于结束时间 / E5331 会员找不到，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxRefundListFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxRefundListSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "查询成功（售后退款单，create_time 倒序）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"total_count\":1,\"is_last_page\":1,"
+															+ "\"pager\":{\"page\":1,\"page_size\":20},"
+															+ "\"list\":[{\"refund_bn\":\"2202608258337278667\","
+															+ "\"aftersales_bn\":\"202605101200001\",\"order_id\":\"88001\","
+															+ "\"trade_id\":\"\",\"refund_channel\":\"original\","
+															+ "\"refund_status\":\"SUCCESS\",\"refund_fee\":100,\"refunded_fee\":100,"
+															+ "\"pay_type\":\"\",\"refund_id\":null,\"refund_point\":0,"
+															+ "\"refunded_point\":0,\"refund_success_time\":\"2023-11-15 08:00:01\","
+															+ "\"create_time\":\"2023-11-15 08:00:01\","
+															+ "\"update_time\":\"2023-11-15 08:00:01\"}]}}"),
+									@ExampleObject(
+											name = "success-presale-cancel",
+											summary = "售前取消退款（aftersales_bn=null；未退款成功，refund_success_time 按 epoch 0）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"total_count\":1,\"is_last_page\":1,"
+															+ "\"pager\":{\"page\":1,\"page_size\":20},"
+															+ "\"list\":[{\"refund_bn\":\"2202608258337278667\","
+															+ "\"aftersales_bn\":null,\"order_id\":\"88001\","
+															+ "\"trade_id\":\"\",\"refund_channel\":\"original\","
+															+ "\"refund_status\":\"READY\",\"refund_fee\":100,\"refunded_fee\":0,"
+															+ "\"pay_type\":\"\",\"refund_id\":null,\"refund_point\":0,"
+															+ "\"refunded_point\":0,\"refund_success_time\":\"1970-01-01 08:00:00\","
+															+ "\"create_time\":\"2023-11-15 08:00:01\","
+															+ "\"update_time\":\"2023-11-15 08:00:01\"}]}}"),
+									@ExampleObject(
+											name = "success-empty",
+											summary = "无退款单",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"total_count\":0,\"is_last_page\":1,"
+															+ "\"pager\":{\"page\":1,\"page_size\":20},\"list\":[]}}"),
+									@ExampleObject(
+											name = "fail-page-size",
+											summary = "page_size 解析后 ≥500",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E0001\",\"message\":\"每页的大小最大为500！\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-mobile",
+											summary = "mobile 格式非法（E5340）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5340\",\"message\":\"请填写正确的手机号\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-time-range",
+											summary = "time_begin > time_end（双端生效，E5340）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5340\","
+															+ "\"message\":\"开始时间不能大于结束时间\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-member-not-found",
+											summary = "mobile 查无会员（E5331）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5331\",\"message\":\"会员找不到\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@GetMapping(value = "/ecx.refund.get", name = "开放接口退款单列表")
 	public Map<String, Object> getRefundList(
-			HttpServletRequest request,
-			@RequestParam(name = "page", required = false) String pageParam,
-			@RequestParam(name = "page_size", required = false) String pageSizeParam,
-			@RequestParam(name = "mobile", required = false) String mobileParam,
-			@RequestParam(name = "time_begin", required = false) String timeBeginParam,
-			@RequestParam(name = "time_end", required = false) String timeEndParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(description = "页码；缺省 1，<1 归一 1（PHP 整型解析，body 同名键优先）", example = "1")
+					@RequestParam(name = "page", required = false)
+					String pageParam,
+			@Parameter(
+							description = "每页条数；缺省 20，<20 归一 20；≥500 报「每页的大小最大为500！」（body 同名键优先）",
+							example = "20")
+					@RequestParam(name = "page_size", required = false)
+					String pageSizeParam,
+			@Parameter(
+							description = "会员手机号；PHP-truthy 才生效，须匹配 ^1[345789][0-9]{9}$，按会员过滤（body 同名键优先）",
+							example = "13800000000")
+					@RequestParam(name = "mobile", required = false)
+					String mobileParam,
+			@Parameter(
+							description = "create_time 下界（≥）；yyyy-MM-dd[ HH:mm:ss]，PHP-truthy 才生效（body 同名键优先）",
+							example = "2023-11-15")
+					@RequestParam(name = "time_begin", required = false)
+					String timeBeginParam,
+			@Parameter(
+							description = "create_time 上界（≤）；语义同 time_begin（body 同名键优先）",
+							example = "2023-11-16")
+					@RequestParam(name = "time_end", required = false)
+					String timeEndParam,
+			@RequestBody(
+							description = "可选 JSON body；字段与 query 同名双通道（取原始值）；分页/过滤语义见 schema",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxRefundListBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		OpenapiThirdApiV2AftersalesListParams.PageSpec pageSpec =
 				OpenapiThirdApiV2AftersalesListParams.resolve(pageParam, pageSizeParam, body);
