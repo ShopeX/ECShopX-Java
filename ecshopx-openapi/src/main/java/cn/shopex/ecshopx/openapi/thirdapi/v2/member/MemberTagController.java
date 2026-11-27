@@ -38,6 +38,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTagAddBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTagAddSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTagDeleteBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTagDeleteSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTagMembersGetBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTagMembersGetSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTagUpdateBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTagUpdateSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTaggedDeleteBodyDoc;
@@ -671,13 +673,110 @@ public class MemberTagController extends OpenapiBaseController {
 		return memberTagBatchUpdatePort.batchUpdateMemberTags(companyId, mobilesRaw, tagIdsRaw);
 	}
 
+	@Operation(
+			summary = "开放接口查询标签关联会员列表",
+			description =
+					"按签名鉴权租户 company_id 分页返回打了指定标签的会员（members LEFT JOIN members_rel_tags "
+							+ "按 tag_id 过滤，SELECT DISTINCT，user_id 倒序）："
+							+ " data 含 total_count、is_last_page（1/0）、pager（page/page_size 归一化回显）与 list（3 键/行）。"
+							+ " tag_id 必填（mergeString 双通道 trim，body 含键优先、值 null 视为未传）："
+							+ " 缺失/空白/非整数报 E5001「会员标签必填」，租户内查无报 E5561「该标签不存在」。"
+							+ " 分页：page 缺省 1（<1 归一 1）；page_size 缺省 20、<20 归一 20；解析后 ≥500 报 E0001"
+							+ "「每页的大小最大为500！」（500 本身也报错）；page/page_size 双通道取原始值。"
+							+ " 行内 mobile/username 解密后明文（null/空白为空串，解密失败原样透传）；"
+							+ " tag_list 为该会员**全部**关联标签（非仅查询标签，2 键 tag_id/tag_name，无语言覆盖）。"
+							+ " total_count 为 JOIN 行 count(*)（会员多标签关联时可能大于去重会员数，PHP 旧契约）。"
+							+ " 返回 Map 由 Advice 包装（message 固定「成功」）。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.tag.members.get, version=2.0）"
+							+ " 签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 只读，无写库/异步/第三方副作用。",
+			operationId = "ecx.tag.members.get.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功，data 见 EcxMemberTagMembersGetDataDoc"
+								+ "（无数据时 total_count=0、is_last_page=1、list=[]）；"
+								+ " 业务失败：status=fail, code=E0001 每页的大小最大为500！ / E5001 会员标签必填 /"
+								+ " E5561 该标签不存在，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxMemberTagMembersGetFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxMemberTagMembersGetSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "查询成功（会员含多个关联标签，tag_list 返回全部）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"total_count\":1,\"is_last_page\":1,"
+															+ "\"pager\":{\"page\":1,\"page_size\":20},"
+															+ "\"list\":[{\"mobile\":\"13800000000\",\"username\":\"张三\","
+															+ "\"tag_list\":[{\"tag_id\":1,\"tag_name\":\"高价值会员\"},"
+															+ "{\"tag_id\":2,\"tag_name\":\"复购会员\"}]}]}}"),
+									@ExampleObject(
+											name = "success-empty",
+											summary = "标签存在但无关联会员",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"total_count\":0,\"is_last_page\":1,"
+															+ "\"pager\":{\"page\":1,\"page_size\":20},\"list\":[]}}"),
+									@ExampleObject(
+											name = "fail-missing-tag-id",
+											summary = "tag_id 缺失/空白/非整数（E5001）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5001\",\"message\":\"会员标签必填\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-tag-not-found",
+											summary = "租户内查无该标签（E5561）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5561\",\"message\":\"该标签不存在\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-page-size",
+											summary = "page_size 解析后 ≥500",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E0001\",\"message\":\"每页的大小最大为500！\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@GetMapping(value = "/ecx.tag.members.get", name = "开放接口查询标签关联会员列表")
 	public Map<String, Object> getTagMembers(
-			HttpServletRequest request,
-			@RequestParam(name = "page", required = false) String pageParam,
-			@RequestParam(name = "page_size", required = false) String pageSizeParam,
-			@RequestParam(name = "tag_id", required = false) String tagIdParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(description = "页码；缺省 1，<1 归一 1（PHP 整型解析，body 同名键优先）", example = "1")
+					@RequestParam(name = "page", required = false)
+					String pageParam,
+			@Parameter(
+							description = "每页条数；缺省 20，<20 归一 20；≥500 报「每页的大小最大为500！」（body 同名键优先）",
+							example = "20")
+					@RequestParam(name = "page_size", required = false)
+					String pageSizeParam,
+			@Parameter(
+							description = "会员标签 ID；必填（trim 后须为合法整数）；查无报 E5561（body 同名键优先，mergeString trim）",
+							required = true,
+							example = "1")
+					@RequestParam(name = "tag_id", required = false)
+					String tagIdParam,
+			@RequestBody(
+							description = "可选 JSON body；字段与 query 同名双通道（page/page_size 取原始值，tag_id 经 trim）",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxMemberTagMembersGetBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		OpenapiThirdApiV2MemberTagsListParams.PageSpec pageSpec =
 				OpenapiThirdApiV2MemberTagsListParams.resolve(pageParam, pageSizeParam, body);
