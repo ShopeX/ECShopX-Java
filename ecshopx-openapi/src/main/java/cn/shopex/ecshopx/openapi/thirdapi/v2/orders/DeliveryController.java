@@ -22,6 +22,8 @@ import cn.shopex.ecshopx.common.web.FlexibleBody;
 import cn.shopex.ecshopx.openapi.thirdapi.OpenapiBaseController;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.OpenapiRequestParams;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxOrderDeliverBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxOrderDeliverGetBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxOrderDeliverGetSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxOrderDeliverSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -53,11 +55,93 @@ public class DeliveryController extends OpenapiBaseController {
 		this.orderDeliverPort = orderDeliverPort;
 	}
 
+	@Operation(
+			summary = "开放接口订单发货单列表",
+			description =
+					"鉴权：openapi 签名（公网网关校验后转发 internal；直连 internal 无鉴权上下文报 E4004）。"
+							+ " 1 键 query 与 JSON body 同名双通道：body 含键优先（null/空白串视为未传），mergeString trim。"
+							+ " 按租户查 orders_delivery（发货单 ID 升序），每单带发货明细（明细 ID 升序，status=1「已发货」）；"
+							+ " 订单行中未发完且待发余量（num-已取消-已发）>0 的，末尾附一条未发货合成行"
+							+ "（status=0「未发货」，delivery_id 等 5 键为空字符串；其 items[].num 为订单行总 num，"
+							+ " items_num 为余量合计）。delivery_num 只计真实发货单。"
+							+ " order_id 非整数或无此单不报错——返回成功空结果（delivery_num=0、list=[]）。"
+							+ " 副作用：无（只读）。失败 HTTP 仍 200：仅 E5001「请填写订单编号」，data=null。",
+			operationId = "ecx.order.deliver.get.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功，data 见 EcxOrderDeliverGetDataDoc"
+								+ "（delivery_num/list，行 9 键、商品行 5 键）；"
+								+ " 业务失败：status=fail, code=E5001 请填写订单编号，data=null，见 EcxOrderDeliverGetFailEnvelopeDoc；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。",
+				content =
+						@Content(
+								schema =
+										@Schema(
+												implementation =
+														EcxOrderDeliverGetSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "一条已发货 + 一条未发货合成行（时间为格式演示值）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\",\"data\":{"
+															+ "\"delivery_num\":1,\"list\":["
+															+ "{\"delivery_id\":1,\"delivery_corp\":\"SF\","
+															+ "\"delivery_corp_name\":\"顺丰快递\",\"delivery_code\":\"SFTRACK001\","
+															+ "\"delivery_time\":\"2026-01-01 08:00:00\","
+															+ "\"items\":[{\"order_items_id\":1,\"item_id\":1,\"num\":1,"
+															+ "\"item_name\":\"Item-A\",\"pic\":\"\"}],\"items_num\":1,"
+															+ "\"status_msg\":\"已发货\",\"status\":1},"
+															+ "{\"delivery_id\":\"\",\"delivery_corp\":\"\",\"delivery_corp_name\":\"\","
+															+ "\"delivery_code\":\"\",\"delivery_time\":\"\","
+															+ "\"items\":[{\"order_items_id\":2,\"item_id\":1,\"num\":2,"
+															+ "\"item_name\":\"Item-A\",\"pic\":\"\"}],\"items_num\":2,"
+															+ "\"status_msg\":\"未发货\",\"status\":0}]}}"),
+									@ExampleObject(
+											name = "success-empty",
+											summary = "order_id 非整数 / 无此单 / 无发货单且无待发余量",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"delivery_num\":0,\"list\":[]}}"),
+									@ExampleObject(
+											name = "fail-missing-order-id",
+											summary = "缺少订单编号（E5001，唯一业务失败码）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5001\",\"message\":\"请填写订单编号\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								})),
+		@ApiResponse(
+				responseCode = "500",
+				description = "未处理异常兜底（GlobalExceptionHandler，ApiResult 非本信封）",
+				content =
+						@Content(
+								examples =
+										@ExampleObject(
+												name = "internal-error",
+												value = "{\"code\":500,\"msg\":\"服务器内部错误\"}")))
+	})
+	@RequestBody(
+			required = false,
+			description = "GET 可选 JSON body（与 query 同名键双通道，body 含键优先）",
+			content = @Content(schema = @Schema(implementation = EcxOrderDeliverGetBodyDoc.class)))
 	@GetMapping(value = "/ecx.order.deliver.get", name = "开放接口订单发货单列表")
 	public Map<String, Object> getOrderDeliveryList(
-			HttpServletRequest request,
-			@RequestParam(name = "order_id", required = false) String orderIdParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description =
+									"订单 ID（与 body 同名键双通道，body 含键优先）；必填（缺失 → E5001「请填写订单编号」）；"
+											+ "非整数或无此单返回成功空结果",
+							example = "100")
+					@RequestParam(name = "order_id", required = false)
+					String orderIdParam,
+			@Parameter(hidden = true) @FlexibleBody(required = false) Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		String orderIdRaw = OpenapiRequestParams.mergeString(orderIdParam, body, "order_id");
 		return orderDeliverPort.getOrderDeliveryListV2(companyId, orderIdRaw);
