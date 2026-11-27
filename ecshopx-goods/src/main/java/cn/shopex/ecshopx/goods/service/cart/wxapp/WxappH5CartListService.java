@@ -65,6 +65,9 @@ public class WxappH5CartListService {
 
 	private static final ObjectMapper OM = new ObjectMapper();
 
+	/** Internal: checkout empty-valid tip; stripped before return / throw. */
+	static final String CHECKOUT_INVALID_OFF_SHELF_ONLY_KEY = "__checkout_invalid_off_shelf_only";
+
 	/**
 	 * SKU fields merged into cart lines (narrow per-line column map). Do not
 	 * {@code putAll(sku)} — avoids fat DTO keys and wrong {@code item_type} from SKU.
@@ -291,8 +294,10 @@ public class WxappH5CartListService {
 		assembleCartLinesIntoOut(
 				companyId, userId, shopId, shopType, isCheckout, iscrossborder, isShopScreen, userDevice, inputData, rows, out);
 		if (isCheckout && countLinesInValidCartBlocks(out) == 0) {
-			throw new ResourceException("购物车商品不是来自同一个店铺");
+			boolean offShelfOnly = Boolean.TRUE.equals(out.remove(CHECKOUT_INVALID_OFF_SHELF_ONLY_KEY));
+			throw new ResourceException(messageWhenCheckoutValidCartEmpty(offShelfOnly));
 		}
+		out.remove(CHECKOUT_INVALID_OFF_SHELF_ONLY_KEY);
 		return out;
 	}
 
@@ -754,6 +759,11 @@ public class WxappH5CartListService {
 			out.put("valid_cart", groupValidByShop(validLines));
 			wxappH5CartListTotalAndPromotionAggregator.apply(companyId, userId, out);
 		}
+		if (isCheckout) {
+			out.put(
+					CHECKOUT_INVALID_OFF_SHELF_ONLY_KEY,
+					allInvalidCartLinesAreOffShelf(invalidLines, validShopSet, shopTypeForList));
+		}
 	}
 
 	private void enrichDistributorShopBlocks(long companyId, List<Map<String, Object>> shopBlocks) {
@@ -1065,6 +1075,41 @@ public class WxappH5CartListService {
 			}
 		}
 		return n;
+	}
+
+	/** Visible for tests: tip when checkout has no valid cart lines. */
+	static String messageWhenCheckoutValidCartEmpty(boolean allInvalidAreOffShelf) {
+		return allInvalidAreOffShelf ? "商品已下架" : "购物车商品不是来自同一个店铺";
+	}
+
+	/**
+	 * Visible for tests: every invalid line is unsellable by approve_status (not stock/member/etc.),
+	 * and not the distributor shop-forced {@code instock} override.
+	 */
+	static boolean allInvalidCartLinesAreOffShelf(
+			List<?> invalidCart, Set<Long> validShopIds, String shopType) {
+		if (invalidCart == null || invalidCart.isEmpty()) {
+			return false;
+		}
+		Set<Long> shops = validShopIds == null ? Set.of() : validShopIds;
+		String st = shopType == null ? "" : shopType.trim();
+		for (Object row : invalidCart) {
+			if (!(row instanceof Map<?, ?> m)) {
+				return false;
+			}
+			if (!m.containsKey("approve_status")) {
+				return false;
+			}
+			String approve = stringVal(m.get("approve_status"));
+			if ("onsale".equals(approve) || "offline_sale".equals(approve)) {
+				return false;
+			}
+			long sid = longObj(m.get("shop_id"));
+			if ("distributor".equals(st) && sid > 0L && !shops.contains(sid)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	private static boolean shouldCheckMemberPreferenceForCartList(String rowShopType) {
