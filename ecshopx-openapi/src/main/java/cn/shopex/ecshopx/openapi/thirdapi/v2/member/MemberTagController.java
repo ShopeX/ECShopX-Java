@@ -32,6 +32,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.OpenapiBaseController;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.OpenapiRequestParams;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTagBatchCoverBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTagBatchCoverSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTagBatchUpdateBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTagBatchUpdateSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTagAddBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTagAddSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTagDeleteBodyDoc;
@@ -470,12 +472,103 @@ public class MemberTagController extends OpenapiBaseController {
 		return memberTagBatchCoverPort.batchCoverMemberTags(companyId, mobilesRaw, tagIdsRaw);
 	}
 
+	@Operation(
+			summary = "开放接口批量增量打标",
+			description =
+					"按签名鉴权租户 company_id 批量为会员追加标签（2 键均必填，mergeString 双通道 trim，"
+							+ " body 含键优先、值 null 视为未传，body 数组字符串化后 JSON 解析）："
+							+ " mobiles/tag_ids 缺失分别 E5001「会员手机号必填」/「会员标签ID必填」"
+							+ "（tag_ids 必填文案区别于 batch.cover 的格式错误）；"
+							+ " 均须 JSON 数组（嵌套元素 E5560 对应格式错误文案）。"
+							+ " mobiles 元素原样与 members.mobile（加密存储列）IN 匹配（**无加密转换**）；"
+							+ " 任一查无 E5501「{手机号}会员不存在」；tag_ids 宽松匹配任一查无 E5561「{标签ID}标签不存在」；"
+							+ " 含系统标签 E0001「系统标签不可编辑」；两键 [] 均合法（无操作成功）。"
+							+ " **增量语义**：createRelTags 单事务为每会员×每标签追加关联"
+							+ "（已存在关联跳过、不删除既有标签、self_tag_count 递增），区别于 batch.cover 覆盖清空。"
+							+ " 事务提交后触发导购平台推送（afterCommitPushAdd，失败仅告警不影响响应）。"
+							+ " 成功 data={status:true}（布尔）。Advice 包装 message 固定「成功」。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}"
+							+ "（method=ecx.member.tagging.batch.update, version=2.0）签名校验后转发；"
+							+ " 直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 副作用：@Transactional INSERT members_rel_tags + UPDATE members_tags"
+							+ ".self_tag_count + afterCommit 导购平台标签推送（条件性第三方调用）。",
+			operationId = "ecx.member.tagging.batch.update.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功, data={status:true}；"
+								+ " 业务失败：status=fail, code=E5001 会员手机号必填·会员标签ID必填 /"
+								+ " E5560 手机号·标签ID格式错误 / E5501 {手机号}会员不存在 /"
+								+ " E5561 {标签ID}标签不存在 / E0001 系统标签不可编辑，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxMemberTagBatchUpdateFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxMemberTagBatchUpdateSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "增量打标成功",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"status\":true}}"),
+									@ExampleObject(
+											name = "fail-member-not-found",
+											summary = "任一手机号查无（动态文案）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5501\","
+															+ "\"message\":\"13800138000会员不存在\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-tag-not-found",
+											summary = "任一标签查无（动态文案）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5561\","
+															+ "\"message\":\"1标签不存在\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-tag-ids-missing",
+											summary = "tag_ids 缺失/空白（E5001 必填文案）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5001\","
+															+ "\"message\":\"会员标签ID必填\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@PostMapping(value = "/ecx.member.tagging.batch.update", name = "开放接口批量增量打标")
 	public Map<String, Object> batchUpdateMemberTags(
-			HttpServletRequest request,
-			@RequestParam(name = "mobiles", required = false) String mobilesParam,
-			@RequestParam(name = "tag_ids", required = false) String tagIdsParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "会员手机号 JSON 数组；必填（E5001）；任一查无 E5501 动态文案；[] 合法",
+							required = true,
+							example = "[\"13800138000\"]")
+					@RequestParam(name = "mobiles", required = false)
+					String mobilesParam,
+			@Parameter(
+							description = "标签 ID JSON 数组；必填（E5001「会员标签ID必填」）；任一查无 E5561；[] 合法（无操作）",
+							required = true,
+							example = "[1]")
+					@RequestParam(name = "tag_ids", required = false)
+					String tagIdsParam,
+			@RequestBody(
+							description = "可选 JSON body；2 键与 query 同名双通道（body 含键优先，可直接传数组）；增量语义见 schema",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxMemberTagBatchUpdateBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		String mobilesRaw = OpenapiRequestParams.mergeString(mobilesParam, body, "mobiles");
 		String tagIdsRaw = OpenapiRequestParams.mergeString(tagIdsParam, body, "tag_ids");
