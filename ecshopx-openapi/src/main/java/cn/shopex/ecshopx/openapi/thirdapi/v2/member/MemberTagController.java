@@ -44,6 +44,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTaggedDeleteBod
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTaggedDeleteSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTaggedGetBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTaggedGetSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTagsListBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.member.doc.EcxMemberTagsListSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -351,14 +353,108 @@ public class MemberTagController extends OpenapiBaseController {
 		return new OpenapiEnvelope("success", "E0000", "操作成功", data);
 	}
 
+	@Operation(
+			summary = "开放接口查询会员标签列表",
+			description =
+					"按签名鉴权租户 company_id 分页查询会员标签（members_tags，含系统标签，created 降序）："
+							+ " 4 键双通道（page/page_size/tag_name originalString 不 trim；country_code mergeString trim；"
+							+ " body 含键优先、值 null 视为未传）。"
+							+ " tag_name PHP isset 非空语义（null/空串/\"0\" 忽略）时 LIKE %值% 模糊过滤。"
+							+ " page 默认 1、page_size 默认 20（PHP 式解析），原始 page_size ≥500 报"
+							+ " E0001「每页的大小最大为500！」（本域解析器 ResourceException 通道），"
+							+ " 钳制后 page≥1、page_size∈[20,499]。"
+							+ " country_code 空白默认 zh-CN，按语言分表覆盖 tag_name/description，"
+							+ " **但 description 覆盖后被库内原值还原——仅 tag_name 实际生效**。"
+							+ " data 键序 total_count/is_last_page(0|1)/pager{page,page_size}/list；"
+							+ " 行 9 键：tag_id/tag_name/category_id/description/tag_color/font_color/"
+							+ " self_tag_count（已打会员数）/created/updated 格式化时间（null 透传）。"
+							+ " Advice 包装 message 固定「成功」。"
+							+ " 鉴权面 openapi sign：公网经 /api/openapi/{method}（method=ecx.member.tags.get,"
+							+ " version=2.0）签名校验后转发；直连 internal 无鉴权上下文返回 E4004 未授权。"
+							+ " 只读，无写库/异步/第三方副作用。",
+			operationId = "ecx.member.tags.get.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功，data 见 EcxMemberTagsListDataDoc；"
+								+ " 业务失败：status=fail, code=E0001 每页的大小最大为500！，data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。见 EcxMemberTagsListFailEnvelopeDoc。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														EcxMemberTagsListSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "查询成功（时间为格式演示值）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"total_count\":1,\"is_last_page\":1,"
+															+ "\"pager\":{\"page\":1,\"page_size\":20},"
+															+ "\"list\":[{\"tag_id\":1,\"tag_name\":\"聚合测试类目\","
+															+ "\"category_id\":0,\"description\":null,"
+															+ "\"tag_color\":\"rgba(255, 25, 57, 1)\","
+															+ "\"font_color\":\"rgba(255, 255, 255, 1)\","
+															+ "\"self_tag_count\":0,\"created\":\"2026-01-01 00:00:00\","
+															+ "\"updated\":\"2026-01-01 00:00:00\"}]}}"),
+									@ExampleObject(
+											name = "success-empty",
+											summary = "无标签（list 空数组）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"total_count\":0,\"is_last_page\":1,"
+															+ "\"pager\":{\"page\":1,\"page_size\":20},\"list\":[]}}"),
+									@ExampleObject(
+											name = "fail-page-size",
+											summary = "page_size 原始解析值 ≥500（E0001 通道）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E0001\","
+															+ "\"message\":\"每页的大小最大为500！\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								}))
+	})
 	@GetMapping(value = "/ecx.member.tags.get", name = "开放接口查询会员标签列表")
 	public Map<String, Object> getTagsList(
-			HttpServletRequest request,
-			@RequestParam(name = "page", required = false) String pageParam,
-			@RequestParam(name = "page_size", required = false) String pageSizeParam,
-			@RequestParam(name = "tag_name", required = false) String tagNameParam,
-			@RequestParam(name = "country_code", required = false) String countryCodeParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(description = "页码，默认 1；PHP 式解析后 max(…,1)", example = "1")
+					@RequestParam(name = "page", required = false)
+					String pageParam,
+			@Parameter(
+							description = "每页数量，默认 20；原始解析值 ≥500 报 E0001；钳制后生效 [20,499]",
+							example = "20")
+					@RequestParam(name = "page_size", required = false)
+					String pageSizeParam,
+			@Parameter(
+							description = "标签名模糊过滤（LIKE %值%）；null/空串/\"0\" 忽略；不 trim",
+							example = "聚合测试类目")
+					@RequestParam(name = "tag_name", required = false)
+					String tagNameParam,
+			@Parameter(
+							description = "多语言代码；trim，空白默认 zh-CN；仅 tag_name 覆盖实际生效（description 还原库值）",
+							example = "zh-CN")
+					@RequestParam(name = "country_code", required = false)
+					String countryCodeParam,
+			@RequestBody(
+							description = "可选 JSON body；4 键与 query 同名双通道（body 含键优先，值 null 视为未传）；语义见 schema",
+							required = false,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	EcxMemberTagsListBodyDoc.class)))
+					@FlexibleBody(required = false)
+					Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		OpenapiThirdApiV2MemberTagsListParams.PageSpec pageSpec =
 				OpenapiThirdApiV2MemberTagsListParams.resolve(pageParam, pageSizeParam, body);
