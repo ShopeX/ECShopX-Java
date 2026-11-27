@@ -34,6 +34,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxAftersalesIncrListBod
 import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxAftersalesIncrListSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxAftersalesListBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxAftersalesListSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxRefundDetailGetBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxRefundDetailGetSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -559,11 +561,103 @@ public class AftersalesController extends OpenapiBaseController {
 				OpenapiRequestParams.originalString(aftersalesBnParam, body, "aftersales_bn"));
 	}
 
+	@Operation(
+			summary = "开放接口退款单详情",
+			description =
+					"鉴权：openapi 签名（公网网关校验后转发 internal；直连 internal 无鉴权上下文报 E4004）。"
+							+ " 1 键 query 与 JSON body 同名双通道：body 含键优先（值 null 视为未传），取值不 trim，服务内 trim。"
+							+ " 按租户 + refund_bn 等值查 aftersales_refund（无 LIMIT 1——多行命中 TooManyResults → E5340）。"
+							+ " data 16 固定键 + 条件键 cancel_reason（仅售前取消退款 aftersales_bn null/0 时携带，"
+							+ " 取 cancel_orders.cancel_reason）；refund_success_time 空值返回当前时间"
+							+ "（区别于列表行的 epoch 0）；create/update_time 空值按 epoch 0（1970-01-01 08:00:00）。"
+							+ " 副作用：无（只读）。"
+							+ " 失败 HTTP 仍 200：E5001「请填写退款单号」/ E5340（查无 → PHP 文案"
+							+ " 「Undefined array key \\\"refund_channel\\\"」；其他异常 message 透传），data=null。",
+			operationId = "ecx.refund.detail.get.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功，data 见 EcxRefundDetailGetDataDoc"
+								+ "（16 固定键 + 条件键 cancel_reason）；"
+								+ " 业务失败：status=fail，code=E5001/E5340，data=null，见 EcxRefundDetailGetFailEnvelopeDoc；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。",
+				content =
+						@Content(
+								schema = @Schema(implementation = EcxRefundDetailGetSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success-aftersales-refund",
+											summary = "售后退款单（无 cancel_reason 键；时间为格式演示值）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\",\"data\":{"
+															+ "\"refund_bn\":\"2202608258337278667\","
+															+ "\"aftersales_bn\":\"202605101200001\",\"order_id\":\"88001\","
+															+ "\"trade_id\":\"\",\"refund_channel\":\"original\","
+															+ "\"refund_status\":\"SUCCESS\",\"return_freight\":0,"
+															+ "\"refund_fee\":100,\"refunded_fee\":100,\"pay_type\":\"\","
+															+ "\"refund_id\":null,\"refund_point\":0,\"refunded_point\":0,"
+															+ "\"refund_success_time\":\"2023-11-15 08:00:01\","
+															+ "\"create_time\":\"2023-11-15 08:00:01\","
+															+ "\"update_time\":\"2023-11-15 08:00:01\"}}"),
+									@ExampleObject(
+											name = "success-presale-cancel",
+											summary = "售前取消退款（aftersales_bn=null，携带 cancel_reason）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\",\"data\":{"
+															+ "\"refund_bn\":\"2202608258337278667\",\"aftersales_bn\":null,"
+															+ "\"order_id\":\"88001\",\"trade_id\":\"\","
+															+ "\"refund_channel\":\"original\",\"refund_status\":\"READY\","
+															+ "\"return_freight\":0,\"refund_fee\":100,\"refunded_fee\":0,"
+															+ "\"pay_type\":\"\",\"refund_id\":null,\"refund_point\":0,"
+															+ "\"refunded_point\":0,\"refund_success_time\":\"2023-11-15 08:00:01\","
+															+ "\"create_time\":\"2023-11-15 08:00:01\","
+															+ "\"update_time\":\"2023-11-15 08:00:01\","
+															+ "\"cancel_reason\":\"客户现在不想购买\"}}"),
+									@ExampleObject(
+											name = "fail-missing-refund-bn",
+											summary = "缺少退款单号（E5001）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5001\",\"message\":\"请填写退款单号\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-not-found",
+											summary = "查无此退款单（E5340，PHP 错误文案对齐）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5340\","
+															+ "\"message\":\"Undefined array key \\\"refund_channel\\\"\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								})),
+		@ApiResponse(
+				responseCode = "500",
+				description = "未处理异常兜底（GlobalExceptionHandler，ApiResult 非本信封）",
+				content =
+						@Content(
+								examples =
+										@ExampleObject(
+												name = "internal-error",
+												value = "{\"code\":500,\"msg\":\"服务器内部错误\"}")))
+	})
+	@RequestBody(
+			required = false,
+			description = "JSON body（与 query 同名键双通道，body 含键优先）",
+			content = @Content(schema = @Schema(implementation = EcxRefundDetailGetBodyDoc.class)))
 	@PostMapping(value = "/ecx.refund.detail.get", name = "开放接口退款单详情")
 	public Map<String, Object> getRefundDetail(
-			HttpServletRequest request,
-			@RequestParam(name = "refund_bn", required = false) String refundBnParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description =
+									"退款单号（与 body 同名键双通道，body 含键优先）；必填；查无 → E5340"
+											+ "「Undefined array key \\\"refund_channel\\\"」",
+							required = true,
+							example = "2202608258337278667")
+					@RequestParam(name = "refund_bn", required = false)
+					String refundBnParam,
+			@Parameter(hidden = true) @FlexibleBody(required = false) Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		return refundDetailPort.getRefundDetail(
 				companyId,
