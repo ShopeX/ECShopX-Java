@@ -39,6 +39,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxLogisticsEnabledGetBo
 import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxLogisticsEnabledGetErrorBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxLogisticsEnabledGetSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxOrderCancelBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxOrderCancelConfirmBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxOrderCancelConfirmSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxOrderCancelSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -338,13 +340,111 @@ public class OrderController extends OpenapiBaseController {
 		return enabledLogisticsListPort.listEnabled(companyId, distributorId, supplierId);
 	}
 
+	@Operation(
+			summary = "开放接口确认订单取消审核",
+			description =
+					"鉴权：openapi 签名（公网网关校验后转发 internal；直连 internal 无鉴权上下文报 E4004）。"
+							+ " 3 键 query 与 JSON body 同名双通道：body 含键优先（值 null 视为未传），取值不 trim，服务内 trim 后校验。"
+							+ " 审核对象：该订单最新一条待审核（READY）售前退款单（refund_type=1 且未挂售后单，create_time 降序取 1）；"
+							+ " order_type 固定 normal、operator_type=openapi、operator_id=0（不接受 order_type/refund_bn 入参）。"
+							+ " cancel_handle=1 同意：退款单置 AUDIT_SUCCESS、取消单 progress=2，主单取消状态置 CANCEL/SUCCESS，"
+							+ " 回补库存与优惠资源、返还下单积分、关闭分销佣金、订单分润置 0、发票置 cancel、写流程日志，"
+							+ " PAYED 单同步分发聚水潭/旺店通 ERP 取消（action=pass_refund），事务提交后异步 SaasErp 订单同步与第三方交易更新"
+							+ "（实际退款到账由退款分发异步完成，本接口返回不代表已到账）。"
+							+ " cancel_handle=0 拒绝：退款单置 REFUSE、取消单 progress=4/refund_status=SHOP_CHECK_FAILS、"
+							+ " 落 shop_reject_reason，主单取消状态置 FAILS、写流程日志；达达单（dada_status=5）重新下发达达并置 1；"
+							+ " 事务提交后异步分发 SaasErp 退款取消与旺店通取消事件。"
+							+ " 失败 HTTP 仍 200：E5001 参数缺失 / E5310 处理失败（下游文案经映射表转换，见 EcxOrderCancelConfirmFailEnvelopeDoc），data=null。",
+			operationId = "ecx.order.cancel.confirm.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功，data.status 恒 true；"
+								+ " 业务失败：status=fail，code=E5001 参数缺失 / E5310 处理失败"
+								+ "（各分支文案见 EcxOrderCancelConfirmFailEnvelopeDoc），data=null；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。",
+				content =
+						@Content(
+								schema =
+										@Schema(
+												implementation =
+														EcxOrderCancelConfirmSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "审核受理成功（同意或拒绝均此形状）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"status\":true}}"),
+									@ExampleObject(
+											name = "missing-order-id",
+											summary = "缺少订单编号（E5001）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5001\",\"message\":\"订单编号必填\",\"data\":null}"),
+									@ExampleObject(
+											name = "missing-reject-reason",
+											summary = "拒绝但未填原因（E5001）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5001\",\"message\":\"拒绝退款时原因必填\",\"data\":null}"),
+									@ExampleObject(
+											name = "refund-not-found",
+											summary = "无待审退款单或订单号格式错误（E5310，映射文案）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5310\","
+															+ "\"message\":\"没有查到退款单，无法同意取消订单\",\"data\":null}"),
+									@ExampleObject(
+											name = "refund-not-ready",
+											summary = "拒绝时退款单非待审核（E5310，映射文案）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5310\","
+															+ "\"message\":\"退款单状态不是待审核状态，无法拒绝\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								})),
+		@ApiResponse(
+				responseCode = "500",
+				description = "未处理异常兜底（GlobalExceptionHandler，ApiResult 非本信封）",
+				content =
+						@Content(
+								examples =
+										@ExampleObject(
+												name = "internal-error",
+												value = "{\"code\":500,\"msg\":\"服务器内部错误\"}")))
+	})
+	@RequestBody(
+			required = false,
+			description = "JSON body（与 query 同名键双通道，body 含键优先）",
+			content = @Content(schema = @Schema(implementation = EcxOrderCancelConfirmBodyDoc.class)))
 	@PostMapping(value = "/ecx.order.cancel.confirm", name = "开放接口确认订单取消审核")
 	public Map<String, Object> confirmCancel(
-			HttpServletRequest request,
-			@RequestParam(name = "order_id", required = false) String orderIdParam,
-			@RequestParam(name = "cancel_handle", required = false) String cancelHandleParam,
-			@RequestParam(name = "reject_reason", required = false) String rejectReasonParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description =
+									"订单 ID（与 body 同名键双通道，body 含键优先）；必填，trim 后 Long 解析，"
+											+ "格式错误或无待审退款单 → E5310「没有查到退款单，无法同意取消订单」",
+							example = "100")
+					@RequestParam(name = "order_id", required = false)
+					String orderIdParam,
+			@Parameter(
+							description =
+									"是否同意取消（双通道同上）；必填，\"1\" 同意 / \"0\" 拒绝（trim 后须匹配 ^[01]$，"
+											+ "否则 E5001「是否同意必填」）",
+							example = "1")
+					@RequestParam(name = "cancel_handle", required = false)
+					String cancelHandleParam,
+			@Parameter(
+							description =
+									"拒绝原因（双通道同上）；cancel_handle=0 时必填（trim 后非空，否则"
+											+ " E5001「拒绝退款时原因必填」），落 shop_reject_reason；=1 时忽略",
+							example = "档期已满")
+					@RequestParam(name = "reject_reason", required = false)
+					String rejectReasonParam,
+			@Parameter(hidden = true) @FlexibleBody(required = false) Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		confirmCancelPort.executeConfirmCancel(
 				companyId,
