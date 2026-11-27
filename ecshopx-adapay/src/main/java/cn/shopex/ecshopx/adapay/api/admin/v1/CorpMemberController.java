@@ -25,6 +25,8 @@ import cn.shopex.ecshopx.adapay.api.admin.v1.doc.AdapayCorpMemberCreateSuccessEn
 import cn.shopex.ecshopx.adapay.api.admin.v1.doc.AdapayCorpMemberGetSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.adapay.api.admin.v1.doc.AdapayCorpMemberModifyBodyDoc;
 import cn.shopex.ecshopx.adapay.api.admin.v1.doc.AdapayCorpMemberModifySuccessEnvelopeDoc;
+import cn.shopex.ecshopx.adapay.api.admin.v1.doc.AdapayCorpMemberUpdateBodyDoc;
+import cn.shopex.ecshopx.adapay.api.admin.v1.doc.AdapayCorpMemberUpdateSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.adapay.service.AdapayCorpMemberCreateService;
 import cn.shopex.ecshopx.adapay.service.AdapayCorpMemberModifyService;
 import cn.shopex.ecshopx.adapay.service.AdapayCorpMemberReadService;
@@ -623,12 +625,156 @@ public class CorpMemberController {
 		return ResponseEntity.ok(ApiResult.ok(Map.of("status", true)));
 	}
 
+	@Operation(
+			summary = "更新企业用户对象",
+			description =
+					"按 member_id 更新已开户企业资料并出站提交 AdaPay CorpMember.update："
+							+ " 置 adapay_member.is_update=1；附件（可选 part attach_file，仅 .zip、<8.5MiB）存文件存储"
+							+ "并随出站报文传 URL+Base64；出站网关 adapay.callback.settle-outbound-base-url 为空时"
+							+ "本地 no-op 返回 succeeded。出站 status=failed → 记修改日志（audit_state=B）并抛"
+							+ "「数据更新失败: {error_msg}」；否则记修改日志（audit_state=A，敏感字段加密），"
+							+ "status=succeeded 时同步走 corp_member_update 回调处理（入站 S→D：更新基础资料、"
+							+ "删旧建新结算账户出站、按 is_sms 发短信）；最后记操作日志。"
+							+ " 字段双通道：@FlexibleBody 18 键；area 支持字符串或数组（元素逗号 join）；"
+							+ "name≤30、address≤60、business_scope≤500、legal_person≤20、zip_code≤6 码点截断；"
+							+ "legal_mp 仅校验长度 11（不校验纯数字）；card_name 无 20 码点上限；email 不校验格式；"
+							+ "bank_acct_type=1（对公）时 card_name 必须等于 name。"
+							+ " 鉴权面 admin：Operator JWT；JWT 无 company_id 或 ≤0 报 401「未登录」。"
+							+ " 失败信封：Resource/BadRequest（DINGO/DINGO_422）→ HTTP 200 + data.status_code=422；"
+							+ "特例「开户信息不存在」embedded 400 → data.status_code=400（HTTP 仍 200）。"
+							+ "成功 data 固定 {status:true}（审核中 A 同样返回成功）。",
+			operationId = "adapay.corp_member.update")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200。成功：ApiResult code=200、msg=success、data={status:true}；"
+								+ "失败也走 HTTP 200：Dingo 信封 data.message + data.status_code=422"
+								+ "（如 开户id不能为空 / 支付应用未配置 / 文件类型不符合要求 / 附件不能超过8M /"
+								+ " 数据更新失败: {error_msg} / 用户信息更新失败 等）；"
+								+ "「开户信息不存在」时 data.status_code=400。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												oneOf = {
+													AdapayCorpMemberUpdateSuccessEnvelopeDoc.class,
+													AdapayCorpMemberCreateBizFailEnvelopeDoc.class
+												}),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "提交成功（含审核中）",
+											value = "{\"code\":200,\"msg\":\"success\",\"data\":{\"status\":true}}"),
+									@ExampleObject(
+											name = "fail-outbound",
+											summary = "AdaPay 出站返回 failed（HTTP 200，Dingo 422 信封）",
+											value =
+													"{\"data\":{\"message\":\"数据更新失败: channel declined\","
+															+ "\"status_code\":422}}"),
+									@ExampleObject(
+											name = "fail-not-found",
+											summary = "开户记录查无（embedded 400，HTTP 仍 200）",
+											value = "{\"data\":{\"message\":\"开户信息不存在\",\"status_code\":400}}"),
+									@ExampleObject(
+											name = "fail-app-not-configured",
+											summary = "会员 app_id 为空",
+											value = "{\"data\":{\"message\":\"支付应用未配置\",\"status_code\":422}}")
+								})),
+		@ApiResponse(
+				responseCode = "401",
+				description =
+						"鉴权失败：过滤器/拦截器 401 Dingo 信封（data.message/data.status_code=401，无业务 code）；"
+								+ "JWT 缺 company_id 时本方法抛「未登录」，经 unauthorized=true 包装。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														AdapayAlipayIndustryCatListAuthFailEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "missing-credentials",
+											summary = "缺失/非法 Authorization 头",
+											value =
+													"{\"data\":{\"message\":\"Failed to authenticate because of bad"
+															+ " credentials or an invalid authorization header.\","
+															+ "\"status_code\":401}}"),
+									@ExampleObject(
+											name = "invalid-token",
+											summary = "token 过期/校验失败",
+											value = "{\"data\":{\"message\":\"登录验证错误\",\"status_code\":401}}")
+								})),
+		@ApiResponse(
+				responseCode = "403",
+				description = "租户/账号校验失败（拦截器 ApiResult.fail(403, msg)，data 省略）。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														AdapayAlipayIndustryCatListForbiddenEnvelopeDoc.class),
+								examples =
+										@ExampleObject(
+												name = "forbidden",
+												value = "{\"code\":403,\"msg\":\"未登录\"}"))),
+		@ApiResponse(
+				responseCode = "500",
+				description = "未处理异常（GlobalExceptionHandler.handleException），固定文案。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														AdapayAlipayIndustryCatListServerErrorEnvelopeDoc.class),
+								examples =
+										@ExampleObject(
+												name = "server-error",
+												value = "{\"code\":500,\"msg\":\"服务器内部错误\"}")))
+	})
 	@Activated(routeAlias = "adapay.corp_member.update")
 	@PostMapping(value = "/corp_member/update", name = "更新企业用户对象")
 	public ResponseEntity<ApiResult<Map<String, Object>>> update(
-			HttpServletRequest request,
-			@FlexibleBody Map<String, Object> body,
-			@RequestPart(value = "attach_file", required = false) MultipartFile attachFile) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@RequestBody(
+							description =
+									"企业用户更新字段（JSON 或 form 双通道；multipart 时字段放 form part）。"
+											+ "18 键语义与校验见 schema；附件走独立文件 part",
+							required = true,
+							content =
+									@Content(
+											mediaType = "application/json",
+											schema =
+													@Schema(
+															implementation =
+																	AdapayCorpMemberUpdateBodyDoc.class),
+											examples =
+													@ExampleObject(
+															name = "corp-update",
+															summary = "对公资料更新（字段值为按校验规则/种子数据构造的样例）",
+															value =
+																	"{\"member_id\":\"1\",\"name\":\"示例科技有限公司\","
+																			+ "\"area\":\"0011,1100\",\"bank_acct_type\":\"1\","
+																			+ "\"social_credit_code\":\"91110000123456789X\","
+																			+ "\"social_credit_code_expires\":\"20991231\","
+																			+ "\"business_scope\":\"软件开发与销售\",\"legal_person\":\"李四\","
+																			+ "\"legal_cert_id\":\"110101199001011234\","
+																			+ "\"legal_cert_id_expires\":\"20991231\","
+																			+ "\"legal_mp\":\"13800138000\",\"address\":\"北京市东城区示例路1号\","
+																			+ "\"zip_code\":\"100000\",\"telphone\":\"010-12345678\","
+																			+ "\"email\":\"a@b.com\",\"bank_code\":\"01020000\","
+																			+ "\"card_no\":\"622200\",\"card_name\":\"示例科技有限公司\"}")))
+					@FlexibleBody Map<String, Object> body,
+			@Parameter(
+							description =
+									"开户附件（multipart 文件 part）；可选；上传时仅 .zip 扩展名（否则「文件类型不符合要求」）、"
+											+ "大小 <8.5MiB（≥ 报「附件不能超过8M」）；随出站报文传公网 URL 与 Base64 内容",
+							schema = @Schema(type = "string", format = "binary"))
+					@RequestPart(value = "attach_file", required = false) MultipartFile attachFile) {
 		Object raw = request.getAttribute(OperatorJwtAuthenticationFilter.OPERATOR_JWT_USER_DATA);
 		if (!(raw instanceof Map<?, ?> jwtMapRaw) || jwtMapRaw.isEmpty()) {
 			throw new UnauthorizedException("未登录");
