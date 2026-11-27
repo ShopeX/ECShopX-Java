@@ -28,6 +28,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v1.OpenapiPaginationParams;
 import cn.shopex.ecshopx.openapi.thirdapi.v1.OpenapiRequestParams;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxProductGoodsListBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxProductGoodsListSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxProductSkuListBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxProductSkuListSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -63,15 +65,118 @@ public class ItemController extends OpenapiBaseController {
 		this.goodsListV2Port = goodsListV2Port;
 	}
 
+	@Operation(
+			summary = "开放接口商品SKU列表V2",
+			description =
+					"鉴权：openapi 签名（公网网关校验后转发 internal；直连 internal 无鉴权上下文报 E4004）。"
+							+ " 5 键 query 与 JSON body 同名双通道：page/page_size/country_code body 值非 null 优先，"
+							+ " time_begin/time_end body 含键优先（null 视为未传）。"
+							+ " page/page_size 必填（缺失/非法 → E0001；page 须 ≥1）；服务内归一 page≥1、"
+							+ " page_size≤0→100、>2000→2000（生效值回显）。"
+							+ " 按 items.updated 时间窗拉取普通类型（item_type=normal）SKU 行（含店铺商品，is_self 区分），"
+							+ " item_id 降序；name 经 country_code 语言分表覆盖（默认 zh-CN）；sku_id 即货品编码 item_bn。"
+							+ " 信封显式构造：message 固定空字符串 \"\"。副作用：无（只读）。"
+							+ " 失败 HTTP 仍 200：E0001（page参数必填/page_size参数必填）/"
+							+ " E5320「开始时间不能大于结束时间」，data=null。",
+			operationId = "ecx.product.sku_list.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（显式构造，message 固定空串）。"
+								+ " 成功：status=success, code=E0000, message=\"\"，data 见 EcxProductSkuListDataDoc"
+								+ "（4 固定键，行 3 键）；"
+								+ " 业务失败：status=fail，code=E0001 分页参数缺失/非法 或 E5320 时间窗非法，data=null，"
+								+ "见 EcxProductSkuListFailEnvelopeDoc；鉴权失败：status=fail, code=E4004 未授权，data=null。",
+				content =
+						@Content(
+								schema = @Schema(implementation = EcxProductSkuListSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "一条平台 SKU（message 为空串）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"\",\"data\":{"
+															+ "\"page\":1,\"page_size\":100,\"total_count\":1,\"sku_list\":["
+															+ "{\"name\":\"Wire test goods\",\"sku_id\":\"SKU200\","
+															+ "\"is_self\":true}]}}"),
+									@ExampleObject(
+											name = "success-empty",
+											summary = "窗口内无 SKU（sku_list 空数组）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"\","
+															+ "\"data\":{\"page\":1,\"page_size\":100,\"total_count\":0,"
+															+ "\"sku_list\":[]}}"),
+									@ExampleObject(
+											name = "fail-missing-page",
+											summary = "page 缺失或非法（E0001）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E0001\",\"message\":\"page参数必填\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-missing-page-size",
+											summary = "page_size 缺失或非法（E0001）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E0001\",\"message\":\"page_size参数必填\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-time-window",
+											summary = "开始时间大于结束时间（E5320）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5320\","
+															+ "\"message\":\"开始时间不能大于结束时间\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								})),
+		@ApiResponse(
+				responseCode = "500",
+				description = "未处理异常兜底（GlobalExceptionHandler，ApiResult 非本信封）",
+				content =
+						@Content(
+								examples =
+										@ExampleObject(
+												name = "internal-error",
+												value = "{\"code\":500,\"msg\":\"服务器内部错误\"}")))
+	})
+	@RequestBody(
+			required = false,
+			description = "JSON body（与 query 同名键双通道，body 优先；page/page_size 契约必填）",
+			content = @Content(schema = @Schema(implementation = EcxProductSkuListBodyDoc.class)))
 	@PostMapping(value = "/ecx.product.sku_list", name = "开放接口商品SKU列表V2")
 	public OpenapiEnvelope list(
-			HttpServletRequest request,
-			@RequestParam(name = "page", required = false) String pageParam,
-			@RequestParam(name = "page_size", required = false) String pageSizeParam,
-			@RequestParam(name = "time_begin", required = false) String timeBeginParam,
-			@RequestParam(name = "time_end", required = false) String timeEndParam,
-			@RequestParam(name = "country_code", required = false) String countryCodeParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description = "页码（与 body 同名键双通道，body 值非 null 优先）；必填，≥1（否则 E0001「page参数必填」）",
+							required = true,
+							example = "1")
+					@RequestParam(name = "page", required = false)
+					String pageParam,
+			@Parameter(
+							description =
+									"每页数量（双通道同上）；必填整数（否则 E0001「page_size参数必填」）；≤0 归一 100、>2000 截断 2000",
+							required = true,
+							example = "100")
+					@RequestParam(name = "page_size", required = false)
+					String pageSizeParam,
+			@Parameter(
+							description =
+									"更新时间窗口起点 items.updated≥（双通道同上）；yyyy-MM-dd HH:mm:ss 或 yyyy-MM-dd，"
+											+ "非法静默 0（≤0 跳过过滤）；与终点同生效且更大 → E5320（示例为格式演示值）",
+							example = "2026-01-01 00:00:00")
+					@RequestParam(name = "time_begin", required = false)
+					String timeBeginParam,
+			@Parameter(
+							description = "更新时间窗口终点 items.updated≤（双通道同上）；语义同起点（示例为格式演示值）",
+							example = "2026-01-02 00:00:00")
+					@RequestParam(name = "time_end", required = false)
+					String timeEndParam,
+			@Parameter(
+							description = "多语言代码（双通道同上）；默认 zh-CN；按语言分表覆盖 name",
+							example = "zh-CN")
+					@RequestParam(name = "country_code", required = false)
+					String countryCodeParam,
+			@Parameter(hidden = true) @FlexibleBody(required = false) Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		int page = OpenapiPaginationParams.resolvePage(pageParam, body);
 		int pageSize = OpenapiPaginationParams.resolvePageSize(pageSizeParam, body);
