@@ -20,6 +20,8 @@ import cn.shopex.ecshopx.adapay.api.admin.v1.doc.AdapayAlipayIndustryCatListAuth
 import cn.shopex.ecshopx.adapay.api.admin.v1.doc.AdapayAlipayIndustryCatListForbiddenEnvelopeDoc;
 import cn.shopex.ecshopx.adapay.api.admin.v1.doc.AdapayAlipayIndustryCatListServerErrorEnvelopeDoc;
 import cn.shopex.ecshopx.adapay.api.admin.v1.doc.AdapayAlipayIndustryCatListSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.adapay.api.admin.v1.doc.AdapayBankListParamErrorEnvelopeDoc;
+import cn.shopex.ecshopx.adapay.api.admin.v1.doc.AdapayBankListSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.adapay.domain.dto.AdapayAlipayIndustryCategoryTreeNodeDto;
 import cn.shopex.ecshopx.adapay.domain.dto.AdapayBankCodesListRowDto;
 import cn.shopex.ecshopx.adapay.domain.dto.AdapayRegionsListRowDto;
@@ -51,6 +53,7 @@ import cn.shopex.ecshopx.common.web.FlexibleBody;
 import cn.shopex.ecshopx.espier.security.OperatorJwtAuthenticationFilter;
 import cn.shopex.ecshopx.espier.storage.FileStorageService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -220,12 +223,125 @@ public class OpenAccountController {
 		return ResponseEntity.ok(ApiResult.ok(data));
 	}
 
+	@Operation(
+			summary = "获取结算银行列表",
+			description =
+					"查询 adapay_bank_codes 银行代码表（全局静态字典，不按租户过滤），"
+							+ " 返回行仅 id/bank_name/bank_code 三键（snake_case），无 total_count。"
+							+ " bank_name 非空时 LIKE %值% 模糊过滤（空串不过滤，不 trim）。"
+							+ " 分页：page 缺省 1；page_size 缺省 20；page_size≤0 时不分页返回全量；"
+							+ " page/page_size 须为整数，否则 HTTP 400「参数类型错误: {参数名}」。"
+							+ " 鉴权面 admin：Operator JWT（Authorization: Bearer），POS JWT 白名单同样放行；"
+							+ " 鉴权失败由过滤器/拦截器直接写 401 Dingo 信封（data.message/data.status_code），"
+							+ " 租户/账号校验失败写 403 ApiResult。"
+							+ " 只读，无写库/异步/第三方副作用。",
+			operationId = "adapay.bank.list")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，ApiResult 信封：code=200、msg=success，data 为银行数组"
+								+ "（当前页；page_size≤0 时全量；无匹配时 []）。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(implementation = AdapayBankListSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "查询成功（bank_name=工商银行 模糊匹配示例）",
+											value =
+													"{\"code\":200,\"msg\":\"success\",\"data\":[{\"id\":8,"
+															+ "\"bank_name\":\"中国工商银行\",\"bank_code\":\"01020000\"}]}"),
+									@ExampleObject(
+											name = "success-empty",
+											summary = "无匹配银行",
+											value = "{\"code\":200,\"msg\":\"success\",\"data\":[]}")
+								})),
+		@ApiResponse(
+				responseCode = "400",
+				description = "page/page_size 非整数（GlobalExceptionHandler.handleTypeMismatch），data 省略。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(implementation = AdapayBankListParamErrorEnvelopeDoc.class),
+								examples =
+										@ExampleObject(
+												name = "type-mismatch",
+												value = "{\"code\":400,\"msg\":\"参数类型错误: page\"}"))),
+		@ApiResponse(
+				responseCode = "401",
+				description =
+						"鉴权失败（OperatorJwtAuthenticationFilter / AdminAuthInterceptor 直接写出）："
+								+ "缺失/非法 Authorization 为固定英文句；token 过期或校验失败为「登录验证错误」。"
+								+ " Dingo 信封 data.message + data.status_code=401，无业务 code 键。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														AdapayAlipayIndustryCatListAuthFailEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "missing-credentials",
+											summary = "缺失/非法 Authorization 头",
+											value =
+													"{\"data\":{\"message\":\"Failed to authenticate because of bad"
+															+ " credentials or an invalid authorization header.\","
+															+ "\"status_code\":401}}"),
+									@ExampleObject(
+											name = "invalid-token",
+											summary = "token 过期/校验失败",
+											value = "{\"data\":{\"message\":\"登录验证错误\",\"status_code\":401}}")
+								})),
+		@ApiResponse(
+				responseCode = "403",
+				description =
+						"租户/账号校验失败（CompanysActivationService.checkUserAuth 抛 ResourceException，"
+								+ "拦截器转 ApiResult.fail(403, msg)，data 省略）。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														AdapayAlipayIndustryCatListForbiddenEnvelopeDoc.class),
+								examples =
+										@ExampleObject(
+												name = "forbidden",
+												summary = "校验失败（缺省文案）",
+												value = "{\"code\":403,\"msg\":\"未登录\"}"))),
+		@ApiResponse(
+				responseCode = "500",
+				description = "未处理异常（GlobalExceptionHandler.handleException），固定文案。",
+				content =
+						@Content(
+								mediaType = "application/json",
+								schema =
+										@Schema(
+												implementation =
+														AdapayAlipayIndustryCatListServerErrorEnvelopeDoc.class),
+								examples =
+										@ExampleObject(
+												name = "server-error",
+												value = "{\"code\":500,\"msg\":\"服务器内部错误\"}")))
+	})
 	@Activated(routeAlias = "adapay.bank.list")
 	@GetMapping(value = "/bank/list", name = "获取结算银行列表")
 	public ResponseEntity<ApiResult<List<AdapayBankCodesListRowDto>>> getBanksLists(
-			@RequestParam(value = "bank_name", required = false) String bankName,
-			@RequestParam(value = "page", required = false) Integer page,
-			@RequestParam(value = "page_size", required = false) Integer pageSize) {
+			@Parameter(
+							description = "银行名称模糊过滤（LIKE %值%）；可选，空串不过滤，不 trim",
+							example = "工商银行")
+					@RequestParam(value = "bank_name", required = false) String bankName,
+			@Parameter(description = "页码；可选，缺省 1；须为整数，否则 400", example = "1")
+					@RequestParam(value = "page", required = false) Integer page,
+			@Parameter(
+							description = "每页条数；可选，缺省 20；≤0 时不分页返回全量；须为整数，否则 400",
+							example = "20")
+					@RequestParam(value = "page_size", required = false) Integer pageSize) {
 		return ResponseEntity.ok(
 				ApiResult.ok(adapayBankCodesQueryService.getBanksLists(bankName, page, pageSize)));
 	}

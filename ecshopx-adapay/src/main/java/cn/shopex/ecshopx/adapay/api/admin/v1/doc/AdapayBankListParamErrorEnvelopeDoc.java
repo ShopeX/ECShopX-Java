@@ -1,0 +1,36 @@
+/**
+ * Copyright 2019-2026 ShopeX
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package cn.shopex.ecshopx.adapay.api.admin.v1.doc;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+
+/**
+ * 仅 OpenAPI 文档；400 参数失败信封，对应运行时
+ * {@code ApiResult.fail(400, "参数类型错误: {name}")}
+ * （{@code GlobalExceptionHandler.handleTypeMismatch}，NON_NULL 序列化，data 省略）。
+ */
+@Schema(name = "AdapayBankListParamErrorEnvelope")
+public class AdapayBankListParamErrorEnvelopeDoc {
+
+	@Schema(description = "业务码，固定 400", example = "400")
+	public Integer code;
+
+	@Schema(
+			description = "错误文案：page/page_size 非整数时为「参数类型错误: {参数名}」",
+			example = "参数类型错误: page")
+	public String msg;
+}
