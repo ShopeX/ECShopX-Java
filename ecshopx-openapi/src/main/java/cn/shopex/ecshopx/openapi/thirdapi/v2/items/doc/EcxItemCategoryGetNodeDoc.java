@@ -57,8 +57,9 @@ public class EcxItemCategoryGetNodeDoc {
 			example = "2023-11-15 06:13:21")
 	public String updated;
 
+	// 递归树：字段类型勿用自身（Jackson/springdoc 会 StackOverflow）；契约用 $ref 指向同名 schema
 	@ArraySchema(
 			arraySchema = @Schema(description = "子分类节点（条件键：仅有子级时出现，递归同构；叶子节点无此键）"),
-			schema = @Schema(implementation = EcxItemCategoryGetNodeDoc.class))
-	public List<EcxItemCategoryGetNodeDoc> children;
+			schema = @Schema(ref = "#/components/schemas/EcxItemCategoryGetNode"))
+	public List<Object> children;
 }
