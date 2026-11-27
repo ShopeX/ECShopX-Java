@@ -49,6 +49,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxOrderListBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxOrderListSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxOrderWriteoffBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxOrderWriteoffSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxOrdersIncrGetBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxOrdersIncrGetSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -348,19 +350,140 @@ public class OrderController extends OpenapiBaseController {
 		return Map.of("status", true);
 	}
 
+	@Operation(
+			summary = "开放接口增量订单搜索",
+			description =
+					"鉴权：openapi 签名（公网网关校验后转发 internal；直连 internal 无鉴权上下文报 E4004）。"
+							+ " 9 键 query 与 JSON body 同名双通道：body 含键优先（值 null 视为未传），取值不 trim。"
+							+ " 按 update_time 窗口增量拉取订单（固定 supplier_id=0 不含供应商单，update_time 降序）。"
+							+ " mobile/shop_code/start_modified/end_modified 走 PHP truthy；is_self/order_status/pay_status"
+							+ " 走键出现即生效（present）：is_self 值精确 \"true\" → 仅平台单，其他任意值 → 仅店铺单（覆盖 shop_code）；"
+							+ " 状态键 null 视为空串精确匹配。时间窗仅接受 yyyy-MM-dd HH:mm:ss / yyyy-MM-dd（系统时区），"
+							+ " 非法格式静默为 0。mobile 查无会员 → 成功空数组 data=[]（非分页结构）。"
+							+ " shop_code 查询无 company_id 条件（按现状记录）。"
+							+ " 分页：page≥1、page_size∈[20,499]，原始解析值 ≥500 报 E0001。"
+							+ " 副作用：无（只读）。失败 HTTP 仍 200：E0001 分页参数错误，data=null。",
+			operationId = "ecx.orders.incr.get.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（Advice 自动包装）。"
+								+ " 成功：status=success, code=E0000, message=成功，data 见 EcxOrdersIncrGetDataDoc"
+								+ "（4 固定键，行 22 键；mobile 查无会员时 data=[]）；"
+								+ " 业务失败：status=fail, code=E0001 分页参数错误，data=null，见 EcxOrdersIncrGetFailEnvelopeDoc；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。",
+				content =
+						@Content(
+								schema = @Schema(implementation = EcxOrdersIncrGetSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "增量窗口内一条平台单（时间为格式演示值；total_fee 为分字符串）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\",\"data\":{"
+															+ "\"total_count\":1,\"is_last_page\":1,"
+															+ "\"pager\":{\"page\":1,\"page_size\":20},"
+															+ "\"list\":[{\"order_id\":\"100\",\"trade_no\":\"-\",\"title\":\"\","
+															+ "\"total_fee\":\"8000\",\"shop_code\":\"\",\"shop_name\":\"\","
+															+ "\"mobile\":\"\",\"order_status\":\"PAYED\",\"pay_status\":\"PAYED\","
+															+ "\"create_time\":\"2026-01-01 00:00:00\","
+															+ "\"update_time\":\"2026-01-01 00:00:00\",\"delivery_corp\":\"SF\","
+															+ "\"delivery_code\":\"SFTRACK001\","
+															+ "\"delivery_time\":\"2026-01-01 00:00:00\","
+															+ "\"delivery_status\":\"DONE\",\"member_discount\":0,"
+															+ "\"coupon_discount\":0,\"discount_fee\":0,\"discount_info\":[],"
+															+ "\"cancel_status\":\"NO_APPLY_CANCEL\",\"end_time\":\"\","
+															+ "\"is_self\":true}]}}"),
+									@ExampleObject(
+											name = "success-member-not-found",
+											summary = "mobile 查无会员（data 为空数组，非分页结构）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\",\"data\":[]}"),
+									@ExampleObject(
+											name = "success-empty",
+											summary = "窗口内无订单（分页结构，list 空数组）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"total_count\":0,\"is_last_page\":1,"
+															+ "\"pager\":{\"page\":1,\"page_size\":20},\"list\":[]}}"),
+									@ExampleObject(
+											name = "fail-page-size",
+											summary = "page_size 原始解析值 ≥500（E0001）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E0001\","
+															+ "\"message\":\"每页的大小最大为500！\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								})),
+		@ApiResponse(
+				responseCode = "500",
+				description = "未处理异常兜底（GlobalExceptionHandler，ApiResult 非本信封）",
+				content =
+						@Content(
+								examples =
+										@ExampleObject(
+												name = "internal-error",
+												value = "{\"code\":500,\"msg\":\"服务器内部错误\"}")))
+	})
+	@RequestBody(
+			required = false,
+			description = "GET 可选 JSON body（与 query 同名键双通道，body 含键优先）",
+			content = @Content(schema = @Schema(implementation = EcxOrdersIncrGetBodyDoc.class)))
 	@GetMapping(value = "/ecx.orders.incr.get", name = "开放接口增量订单搜索")
 	public Object getIncrOrderList(
-			HttpServletRequest request,
-			@RequestParam(name = "page", required = false) String pageParam,
-			@RequestParam(name = "page_size", required = false) String pageSizeParam,
-			@RequestParam(name = "mobile", required = false) String mobileParam,
-			@RequestParam(name = "start_modified", required = false) String startModifiedParam,
-			@RequestParam(name = "end_modified", required = false) String endModifiedParam,
-			@RequestParam(name = "shop_code", required = false) String shopCodeParam,
-			@RequestParam(name = "is_self", required = false) String isSelfParam,
-			@RequestParam(name = "order_status", required = false) String orderStatusParam,
-			@RequestParam(name = "pay_status", required = false) String payStatusParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(description = "页码（与 body 同名键双通道，body 含键优先）；默认 1，生效 ≥1", example = "1")
+					@RequestParam(name = "page", required = false)
+					String pageParam,
+			@Parameter(
+							description = "每页数量（双通道同上）；默认 20，生效 [20,499]；原始解析值 ≥500 报 E0001",
+							example = "20")
+					@RequestParam(name = "page_size", required = false)
+					String pageSizeParam,
+			@Parameter(
+							description = "会员手机号过滤（双通道同上）；PHP truthy 才生效；查无会员返回成功空数组 data=[]",
+							example = "13800138000")
+					@RequestParam(name = "mobile", required = false)
+					String mobileParam,
+			@Parameter(
+							description =
+									"增量窗口起点 update_time≥（双通道同上）；yyyy-MM-dd HH:mm:ss 或 yyyy-MM-dd，"
+											+ "非法格式静默为 0（示例为格式演示值）",
+							example = "2026-01-01 00:00:00")
+					@RequestParam(name = "start_modified", required = false)
+					String startModifiedParam,
+			@Parameter(
+							description = "增量窗口终点 update_time≤（双通道同上）；语义同 start_modified（示例为格式演示值）",
+							example = "2026-01-02 00:00:00")
+					@RequestParam(name = "end_modified", required = false)
+					String endModifiedParam,
+			@Parameter(
+							description =
+									"店铺编码过滤（双通道同上）；PHP truthy 才生效；查不到空结果；is_self 键出现时覆盖本键",
+							example = "SHOP001")
+					@RequestParam(name = "shop_code", required = false)
+					String shopCodeParam,
+			@Parameter(
+							description =
+									"平台/店铺单过滤（双通道同上）；键出现即生效：精确 \"true\" 仅平台单，其他值仅店铺单",
+							example = "true")
+					@RequestParam(name = "is_self", required = false)
+					String isSelfParam,
+			@Parameter(
+							description = "订单状态精确过滤（双通道同上）；键出现即生效（null 视为空串匹配）",
+							example = "PAYED")
+					@RequestParam(name = "order_status", required = false)
+					String orderStatusParam,
+			@Parameter(
+							description = "支付状态精确过滤（双通道同上）；键出现即生效（null 视为空串匹配）",
+							example = "PAYED")
+					@RequestParam(name = "pay_status", required = false)
+					String payStatusParam,
+			@Parameter(hidden = true) @FlexibleBody(required = false) Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		OpenapiThirdApiV2OrderIncrListParams.PageSpec pageSpec =
 				OpenapiThirdApiV2OrderIncrListParams.resolve(pageParam, pageSizeParam, body);
