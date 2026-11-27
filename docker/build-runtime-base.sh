@@ -75,6 +75,31 @@ if [ ! -f "$TEMURIN_TGZ" ]; then
 fi
 echo "$TEMURIN_SHA256  $TEMURIN_TGZ" | shasum -a 256 -c -
 
+# Node 22.23.4 official linux-x64 tarball (NodeSource apt no longer ships this pin).
+NODE_TGZ="$VENDOR_DIR/node-v22.23.4-linux-x64.tar.gz"
+NODE_SHA256="${NODE_SHA256:-b8492284c76a54baf58d61668dd0e41ee0fc98adabf9503d30f05d08f55b4406}"
+NODE_URLS=(
+  "${NODE_URL:-}"
+  "https://npmmirror.com/mirrors/node/v22.23.4/node-v22.23.4-linux-x64.tar.gz"
+  "https://nodejs.org/dist/v22.23.4/node-v22.23.4-linux-x64.tar.gz"
+)
+if [ ! -f "$NODE_TGZ" ]; then
+  fetched=false
+  for url in "${NODE_URLS[@]}"; do
+    [ -n "$url" ] || continue
+    echo "[fetch] $url"
+    if curl -fL --connect-timeout 20 --retry 2 --retry-delay 1 -o "${NODE_TGZ}.partial" "$url" \
+      && echo "$NODE_SHA256  ${NODE_TGZ}.partial" | shasum -a 256 -c -; then
+      mv "${NODE_TGZ}.partial" "$NODE_TGZ"
+      fetched=true
+      break
+    fi
+    rm -f "${NODE_TGZ}.partial"
+  done
+  [ "$fetched" = true ] || { echo "ERROR: failed to download Node 22.23.4" >&2; exit 1; }
+fi
+echo "$NODE_SHA256  $NODE_TGZ" | shasum -a 256 -c -
+
 echo "[build] docker build --platform $PLATFORM -f docker/Dockerfile.runtime -t $IMAGE_NAME ."
 DOCKER_BUILDKIT=1 docker build --platform "$PLATFORM" -f docker/Dockerfile.runtime -t "$IMAGE_NAME" .
 

@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-# ECShopX Java app runtime base: Temurin 17.0.21.1+2 JRE + Node 22 + OpenResty.
+# ECShopX Java app runtime base: Temurin 17.0.21.1+2 JRE + Node 22.23.4 + OpenResty.
 #
 # Default image:
 #   registry.cn-hangzhou.aliyuncs.com/shopex_company/ecshopx-java:17-node22-openresty
@@ -9,28 +9,34 @@
 #   ./docker/build-runtime-base.sh --push
 #   ./docker/build-runtime-base.sh --save docker/images/ecshopx-java-17-node22-openresty.tar
 #
-# Base image still ships an older Temurin JRE; JAVA_HOME is replaced from the
-# 17.0.21.1+2 JRE tarball via BuildKit bind mount (no COPY layer).
+# Base image still ships an older Temurin JRE; JAVA_HOME and Node are replaced from
+# vendor tarballs via BuildKit bind mounts (no COPY layer).
 # CVE-2026-114938 (Java4Shell) / prior CVE-2026-91403 pin.
 # OpenResty pinned to 1.31.9.1 (nginx 1.31.9) for NGINX2Root / CVE-2026-123007 et al.
+# Node from official linux-x64 tarball (NodeSource apt no longer ships nodejs=22.23.4).
 # Build with --platform linux/amd64.
 
 FROM eclipse-temurin:17-jre-jammy
 
 LABEL org.opencontainers.image.title="ecshopx-java-runtime" \
-      org.opencontainers.image.description="Temurin 17.0.21.1+2 JRE + Node 22 + OpenResty for ecshopx-app"
+      org.opencontainers.image.description="Temurin 17.0.21.1+2 JRE + Node 22.23.4 + OpenResty for ecshopx-app"
 
 ARG TEMURIN_JRE_SHA256=5a092a0bc21de4c3d855480edd7945be9cfe157b38cdb84dac280511893bb009
+ARG NODE_SHA256=b8492284c76a54baf58d61668dd0e41ee0fc98adabf9503d30f05d08f55b4406
 
 ENV DEBIAN_FRONTEND=noninteractive \
     TZ=Asia/Shanghai
 
 RUN --mount=type=bind,source=docker/vendor/OpenJDK17U-jre_x64_linux_hotspot_17.0.21.1_2.tar.gz,target=/tmp/temurin-jre.tar.gz,ro \
+    --mount=type=bind,source=docker/vendor/node-v22.23.4-linux-x64.tar.gz,target=/tmp/node.tar.gz,ro \
     echo "$TEMURIN_JRE_SHA256  /tmp/temurin-jre.tar.gz" | sha256sum -c - \
+    && echo "$NODE_SHA256  /tmp/node.tar.gz" | sha256sum -c - \
     && rm -rf /opt/java/openjdk \
     && mkdir -p /opt/java/openjdk \
     && tar -xzf /tmp/temurin-jre.tar.gz -C /opt/java/openjdk --strip-components=1 \
     && java -version 2>&1 | grep -F 'Temurin-17.0.21.1+2' \
+    && tar -xzf /tmp/node.tar.gz -C /usr/local --strip-components=1 \
+    && node -v 2>&1 | grep -F 'v22.23.4' \
     && printf '%s\n' \
          'deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ jammy main restricted' \
          'deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ jammy-updates main restricted' \
@@ -39,8 +45,6 @@ RUN --mount=type=bind,source=docker/vendor/OpenJDK17U-jre_x64_linux_hotspot_17.0
     && apt-get -o Acquire::Retries=5 update \
     && apt-get -o Acquire::Retries=5 install -y --no-install-recommends \
       curl ca-certificates gnupg tzdata gettext-base \
-    && curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
-    && apt-get -o Acquire::Retries=5 install -y --no-install-recommends 'nodejs=22.23.4' \
     && curl -fsSL https://openresty.org/package/pubkey.gpg | gpg --dearmor -o /usr/share/keyrings/openresty.gpg \
     && echo "deb [signed-by=/usr/share/keyrings/openresty.gpg] http://openresty.org/package/ubuntu jammy main" \
          > /etc/apt/sources.list.d/openresty.list \
