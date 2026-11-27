@@ -30,6 +30,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxProductGoodsListBodyDo
 import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxProductGoodsListSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxProductSkuListBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxProductSkuListSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxProductStockUpdateBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.items.doc.EcxProductStockUpdateSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -296,11 +298,99 @@ public class ItemController extends OpenapiBaseController {
 		return new OpenapiEnvelope("success", "E0000", "ok", data);
 	}
 
+	@Operation(
+			summary = "开放接口库存同步V2",
+			description =
+					"鉴权：openapi 签名（公网网关校验后转发 internal；直连 internal 无鉴权上下文报 E4004）。"
+							+ " 1 键 query 与 JSON body 同名双通道：body 含键优先（null/空白视为未传），mergeString trim；"
+							+ " body 内 sku_list 可直接传 JSON 数组（自动序列化）。"
+							+ " 按货号（item_bn）覆盖式更新总店库存：写 Redis item_store:{item_id} 并发布库存变更事件、"
+							+ " 更新 items.store/updated（无事务包裹，逐行独立）。货号匹配不含 company_id 条件"
+							+ "（同 bn 多行后者覆盖，按现状记录）。"
+							+ " 带 shop_code（PHP truthy）的行进店铺分支：查无店铺 → update_error「门店不存在」；"
+							+ " 查到店铺时当前实现恒抛「请填写店铺ID」记入 update_error——店铺库存实际不可经本接口更新（按现状记录）。"
+							+ " 逐行失败不影响整体 success（明细在 data 三数组）；全部货号查不到 → E5101。"
+							+ " 信封显式构造：message 固定「成功」。"
+							+ " 失败 HTTP 仍 200：E5002 格式错误 / E5001 货号或库存非法 / E5101 商品找不到，data=null。",
+			operationId = "ecx.product.stock_update.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（显式构造，message 固定「成功」）。"
+								+ " 成功：status=success, code=E0000，data 见 EcxProductStockUpdateDataDoc"
+								+ "（not_find_sku/not_update_sku/update_error，均空即全部成功）；"
+								+ " 业务失败：status=fail，code=E5002/E5001/E5101，data=null，见 EcxProductStockUpdateFailEnvelopeDoc；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。",
+				content =
+						@Content(
+								schema =
+										@Schema(
+												implementation =
+														EcxProductStockUpdateSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "全部更新成功（三数组均空）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"not_find_sku\":[],\"not_update_sku\":[],"
+															+ "\"update_error\":[]}}"),
+									@ExampleObject(
+											name = "success-partial",
+											summary = "部分货号未命中 + 店铺分支失败（整体仍 success）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"not_find_sku\":[\"SKU404\"],\"not_update_sku\":[],"
+															+ "\"update_error\":[{\"sku_id\":\"SKU200\","
+															+ "\"shop_code\":\"SHOP001\",\"error\":\"门店不存在\"}]}}"),
+									@ExampleObject(
+											name = "fail-format",
+											summary = "sku_list 非法 JSON 或非数组（E5002）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5002\",\"message\":\"商品信息格式错误\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-stock",
+											summary = "库存非 0..999999999 整数（E5001）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5001\","
+															+ "\"message\":\"商品信息的库存为0-999999999的整数\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-goods-not-found",
+											summary = "全部货号查不到（E5101）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E5101\",\"message\":\"商品找不到\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								})),
+		@ApiResponse(
+				responseCode = "500",
+				description = "未处理异常兜底（GlobalExceptionHandler，ApiResult 非本信封）",
+				content =
+						@Content(
+								examples =
+										@ExampleObject(
+												name = "internal-error",
+												value = "{\"code\":500,\"msg\":\"服务器内部错误\"}")))
+	})
+	@RequestBody(
+			required = false,
+			description = "JSON body（sku_list 与 query 同名键双通道，body 含键优先；可直接传数组）",
+			content = @Content(schema = @Schema(implementation = EcxProductStockUpdateBodyDoc.class)))
 	@PostMapping(value = "/ecx.product.stock_update", name = "开放接口库存同步V2")
 	public OpenapiEnvelope updateItemStore(
-			HttpServletRequest request,
-			@RequestParam(name = "sku_list", required = false) String skuListParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description =
+									"库存更新列表（与 body 同名键双通道，body 含键优先）；必填 JSON 数组字符串，"
+											+ "元素 sku_id/stock 必填（stock 0..999999999 整数），shop_code 可选；格式错误 → E5002",
+							example = "[{\"sku_id\":\"SKU200\",\"stock\":10}]")
+					@RequestParam(name = "sku_list", required = false)
+					String skuListParam,
+			@Parameter(hidden = true) @FlexibleBody(required = false) Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		String skuListRaw = OpenapiRequestParams.mergeString(skuListParam, body, "sku_list");
 		Map<String, Object> data = stockUpdateV2Port.updateItemStore(companyId, skuListRaw);
