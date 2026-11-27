@@ -45,6 +45,8 @@ import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxOrderCancelReasonsGet
 import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxOrderCancelSuccessEnvelopeDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxOrderGetBodyDoc;
 import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxOrderGetSuccessEnvelopeDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxOrderListBodyDoc;
+import cn.shopex.ecshopx.openapi.thirdapi.v2.orders.doc.EcxOrderListSuccessEnvelopeDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -106,14 +108,115 @@ public class OrderController extends OpenapiBaseController {
 		this.tradeListPort = tradeListPort;
 	}
 
+	@Operation(
+			summary = "开放接口会员订单列表",
+			description =
+					"鉴权：openapi 签名（公网网关校验后转发 internal；直连 internal 无鉴权上下文报 E4004）。"
+							+ " 4 键 query 与 JSON body 同名双通道：body 含键优先（null/空白串视为未传），mergeString trim。"
+							+ " mobile 与 unionid 至少一个非空（PHP empty 语义）；mobile 优先按手机号查会员，"
+							+ " 否则按 unionid（user_type=wechat）查会员；查无会员 → E0001「会员信息获取失败」。"
+							+ " 统计（count/total_fee/order_avg）覆盖该会员全部订单（含未支付/已取消，不随分页变化）；"
+							+ " list 为分页内订单按商品行展平（create_time 降序，无商品行的订单跳过），"
+							+ " 行级 total_fee 为商品行金额（覆盖订单级同名键）。金额键为元字符串（2 位小数）。"
+							+ " 分页：page 未传固定 LIMIT 10；page 已传且 page_size 缺失/PHP empty/解析失败 → 返回全部；"
+							+ " page_size>0 才 LIMIT/OFFSET，无上下限校验（page≤0 → 负 OFFSET SQL 错误 → HTTP 500）。"
+							+ " 信封显式构造：message 按 count 判定（≤0「成功」，>0「操作成功」）。副作用：无（只读）。"
+							+ " 失败 HTTP 仍 200：E0001（请填写unionid/请填写正确的手机号/unionid或者手机号必填/会员信息获取失败），data=null。",
+			operationId = "ecx.order.list.v2")
+	@ApiResponses({
+		@ApiResponse(
+				responseCode = "200",
+				description =
+						"HTTP 200，OpenapiEnvelope 形态（显式构造）。"
+								+ " 成功：status=success, code=E0000，message=count>0「操作成功」/否则「成功」，"
+								+ " data 见 EcxOrderListDataDoc（4 固定键，行 12 键）；"
+								+ " 业务失败：status=fail, code=E0001，data=null，见 EcxOrderListFailEnvelopeDoc；"
+								+ " 鉴权失败：status=fail, code=E4004 未授权，data=null。",
+				content =
+						@Content(
+								schema = @Schema(implementation = EcxOrderListSuccessEnvelopeDoc.class),
+								examples = {
+									@ExampleObject(
+											name = "success",
+											summary = "有订单（金额为元字符串；时间为格式演示值）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"操作成功\",\"data\":{"
+															+ "\"count\":1,\"total_fee\":\"80.00\",\"order_avg\":\"80.00\","
+															+ "\"list\":[{\"order_id\":\"100\",\"trade_no\":\"-\","
+															+ "\"order_status\":\"PAYED\",\"total_fee\":\"80.00\","
+															+ "\"create_time\":1767225600,\"item_name\":\"Item-A\",\"item_id\":1,"
+															+ "\"item_bn\":\"\",\"price\":\"80.00\",\"num\":1,"
+															+ "\"item_spec_desc\":\"\",\"pic\":\"\"}]}}"),
+									@ExampleObject(
+											name = "success-empty",
+											summary = "会员无订单（数值键为整型 0，message「成功」）",
+											value =
+													"{\"status\":\"success\",\"code\":\"E0000\",\"message\":\"成功\","
+															+ "\"data\":{\"count\":0,\"total_fee\":0,\"order_avg\":0,\"list\":[]}}"),
+									@ExampleObject(
+											name = "fail-missing-identity",
+											summary = "mobile 与 unionid 均空（E0001）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E0001\",\"message\":\"unionid或者手机号必填\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-bad-mobile",
+											summary = "mobile 键出现但格式非法（E0001）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E0001\",\"message\":\"请填写正确的手机号\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-member-not-found",
+											summary = "手机号/unionid 查无会员（E0001）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E0001\",\"message\":\"会员信息获取失败\",\"data\":null}"),
+									@ExampleObject(
+											name = "fail-unauthorized",
+											summary = "鉴权失败（直连 internal 无鉴权上下文）",
+											value =
+													"{\"status\":\"fail\",\"code\":\"E4004\",\"message\":\"未授权\",\"data\":null}")
+								})),
+		@ApiResponse(
+				responseCode = "500",
+				description = "未处理异常兜底（含 page≤0 负 OFFSET SQL 错误；GlobalExceptionHandler，ApiResult 非本信封）",
+				content =
+						@Content(
+								examples =
+										@ExampleObject(
+												name = "internal-error",
+												value = "{\"code\":500,\"msg\":\"服务器内部错误\"}")))
+	})
+	@RequestBody(
+			required = false,
+			description = "JSON body（与 query 同名键双通道，body 含键优先）",
+			content = @Content(schema = @Schema(implementation = EcxOrderListBodyDoc.class)))
 	@PostMapping(value = "/ecx.order.list", name = "开放接口会员订单列表")
 	public OpenapiEnvelope list(
-			HttpServletRequest request,
-			@RequestParam(name = "unionid", required = false) String unionidParam,
-			@RequestParam(name = "mobile", required = false) String mobileParam,
-			@RequestParam(name = "page", required = false) String pageParam,
-			@RequestParam(name = "page_size", required = false) String pageSizeParam,
-			@FlexibleBody(required = false) Map<String, Object> body) {
+			@Parameter(hidden = true) HttpServletRequest request,
+			@Parameter(
+							description =
+									"微信 unionid（与 body 同名键双通道，body 含键优先）；与 mobile 至少一个非空；"
+											+ "body 值须为字符串或 null（非字符串 → E0001「请填写unionid」）",
+							example = "oX1vU0abcDEF123456")
+					@RequestParam(name = "unionid", required = false)
+					String unionidParam,
+			@Parameter(
+							description =
+									"会员手机号（双通道同上）；键一旦出现即须匹配 ^1[345789][0-9]{9}$"
+											+ "（否则 E0001「请填写正确的手机号」）；非空时优先于 unionid",
+							example = "13800138000")
+					@RequestParam(name = "mobile", required = false)
+					String mobileParam,
+			@Parameter(
+							description = "页码（双通道同上）；默认 1；PHP truthy 才启用自定义分页；无下限校验",
+							example = "1")
+					@RequestParam(name = "page", required = false)
+					String pageParam,
+			@Parameter(
+							description =
+									"每页数量（双通道同上）；page 未传时忽略（固定 10）；page 已传且本键空/非法 → 返回全部；>0 才分页",
+							example = "10")
+					@RequestParam(name = "page_size", required = false)
+					String pageSizeParam,
+			@Parameter(hidden = true) @FlexibleBody(required = false) Map<String, Object> body) {
 		long companyId = requireCompanyId(request);
 		boolean mobilePresent = OpenapiMemberQueryParams.isParamPresent(mobileParam, body, "mobile");
 		String mobileRaw = OpenapiRequestParams.mergeString(mobileParam, body, "mobile");
